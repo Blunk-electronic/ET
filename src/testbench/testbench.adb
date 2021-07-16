@@ -40,8 +40,9 @@
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
 
-with ada.numerics.generic_elementary_functions;
+--with ada.numerics.generic_elementary_functions;
 
+with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;
 
@@ -51,27 +52,64 @@ use et_board_shapes_and_text.pac_shapes;
 
 procedure testbench is
 
-	type type_place is (BEFORE, AFTER);
-						
-	place : type_place := AFTER;
-
-	P : type_point := type_point (set (x => 150.7417, y => 1.4900));
+	use functions_float;
 
 	
-	S : type_point := type_point (set (x => 150.0, y => 2.0));
-	E : type_point := type_point (set (x => 170.0, y => 10.0)); 
+	C : type_point := type_point (set (x => 3.1, y => 4.1));
+
+	type type_segment_area is new type_polygon_base with null record;
+	P : type_segment_area;
+
+		
+	use pac_polygon_segments;
+	s : type_polygon_segments := (circular => false, others => <>);
+
+	L : type_line;
+	A : type_arc;
 	
-	L : type_line := (S, E);
-
-	d : type_distance_polar;
-
 begin
+	L.start_point := type_point (set (x =>  3.0000, y =>  4.1000));
+	L.end_point   := type_point (set (x =>  8.0000, y =>  4.1000));
+	append (s.segments, (LINE, L));
+
+	A.start_point := type_point (set (x =>  8.0000, y =>  4.1000));
+	A.end_point   := type_point (set (x =>  8.0000, y =>  3.9000));
+	A.center      := type_point (set (x =>  8.0000, y =>  4.0000));
+	A.direction   := CW;
+	append (s.segments, (ARC, A));
+
+	L.start_point := type_point (set (x =>  8.0000, y =>  3.9000));
+	L.end_point   := type_point (set (x =>  3.0000, y =>  3.9000));
+	append (s.segments, (LINE, L));
+
+	A.start_point := type_point (set (x =>  3.0000, y =>  3.9000));
+	A.end_point   := type_point (set (x =>  3.0000, y =>  4.1000));
+	A.center      := type_point (set (x =>  3.0000, y =>  4.0000));
+	A.direction   := CW;
+	append (s.segments, (ARC, A));
 	
-	d := get_shortest_distance (P, L);
+	P.contours := s;
+
 
 	new_line;
 
-	put_line ("d" & to_string (get_absolute (d)) & to_string (get_angle (d)));
+	if is_closed (P).closed then
+
+		put_line ("point" & to_string (C));
+		put_line (to_string (P));
+		new_line;
+
+		case in_polygon_status (P, C).status is
+			when INSIDE =>
+				null;
+				
+			when OUTSIDE =>
+				null;
+		end case;
+
+	else
+		put_line ("not closed");
+	end if;
 	
 end testbench;
 
