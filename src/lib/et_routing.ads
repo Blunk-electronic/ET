@@ -113,7 +113,7 @@ package et_routing is
 	-- Returns the sum of track.width and track.clearance:
 	function get_total_width (
 		track	: in type_track)
-		return type_track_clearance;
+		return type_distance_positive;
 		
 
 	type type_place is (
@@ -281,7 +281,7 @@ package et_routing is
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
 		direction		: in type_rotation;
-		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;

@@ -4564,9 +4564,6 @@ package body et_board_ops is
 					-- The cursor that points to the polygon being filled:
 					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 					
-					-- Get the net class settings of the class the net is member of:
-					net_class : constant type_net_class := get_net_class (module_cursor, net.class);
-
 					-- The width of a fill line:
 					line_width : type_track_width;
 
@@ -4631,7 +4628,7 @@ package body et_board_ops is
 								start_point		=> start,
 								place			=> BEFORE,
 								direction		=> zero_rotation,
-								net				=> n,
+								net_cursor		=> n,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
@@ -4655,7 +4652,7 @@ package body et_board_ops is
 								start_point		=> start,
 								place			=> AFTER,
 								direction		=> zero_rotation,
-								net				=> n,
+								net_cursor		=> n,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,

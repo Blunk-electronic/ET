@@ -412,7 +412,7 @@ package et_project.modules is
 		return et_pcb.type_net_class;
 
 	-- Returns the class settings of a net in a module.
-	-- If given net is no_element then the settings of the
+	-- If given net is no_element (freetrack) then the settings of the
 	-- "default" class will be returned:
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver

@@ -615,7 +615,7 @@ package body et_routing is
 	function clear_for_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
-		net				: in et_schematic.pac_nets.cursor;
+		net_cursor		: in et_schematic.pac_nets.cursor;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -624,7 +624,13 @@ package body et_routing is
 	is
 		result : boolean := false;
 
+		-- get the design rules of the module:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+
+		-- Get the net class settings of the given net.
+		-- If no net was given (freetrack), then we get the settings of class "default":
+		--net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -804,6 +810,7 @@ package body et_routing is
 				query_tracks;
 			end if;
 
+			-- CS query freetracks
 			
 		end query_module;
 
@@ -815,6 +822,8 @@ package body et_routing is
 			 & " in layer " & to_string (layer),
 			 level => lth);
 
+		-- CS write the net name or "freetrack" in log message
+		
 		log_indentation_up;
 
 		-- The first an basic test is to figure out whether the point is on
@@ -868,7 +877,7 @@ package body et_routing is
 
 	function get_total_width (
 		track	: in type_track)
-		return type_track_clearance
+		return type_distance_positive
 	is begin
 		return track.width + 2.0 * track.clearance;
 	end get_total_width;
@@ -1771,7 +1780,7 @@ package body et_routing is
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
 		direction		: in type_rotation;
-		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -1781,7 +1790,13 @@ package body et_routing is
 		probe_ray : constant type_ray := (start_point, direction);
 		probe_line : constant type_line_vector := to_line_vector (probe_ray);
 
+		-- get the design rules of the module:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+
+		-- Get the net class settings of the given net.
+		-- If no net was given (freetrack), then we get the settings of class "default":
+		net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
+
 		
 		track : type_track := (
 			center		=> probe_line,
@@ -1987,8 +2002,11 @@ package body et_routing is
 					
 				begin -- query_net
 					log (text => "net " & to_string (key (c)), level => log_threshold + 2);
+					-- CS compare with given net
 					-- CS set track.clearance according to net class
 					-- CS or polygon isolation. take the greater one
+
+					track.clearance	:= net_class.clearance;
 					
 					log_indentation_up;
 					iterate (element (c).route.lines, query_line'access);
@@ -2025,6 +2043,8 @@ package body et_routing is
 			query_global_cutouts;
 
 			query_tracks;
+
+			-- CS query freetracks
 			
 			-- - net specific cutout areas
 			
@@ -2048,7 +2068,7 @@ package body et_routing is
 			c := points_after_obstacles.first;
 			while c /= pac_points_after_obstacles.no_element loop
 
-				if clear_for_track (module_cursor, element (c), net, fill_zone, layer, width, log_threshold + 1) then
+				if clear_for_track (module_cursor, element (c), net_cursor, fill_zone, layer, width, log_threshold + 1) then
 					distance_after_obstacle := get_distance_total (start_point, element (c));
 					exit;
 				end if;
@@ -2076,7 +2096,7 @@ package body et_routing is
 				
 				-- Test whether start_point is suitable to start a track.
 				-- At the given start_point or in its vicinity could be an obstacle already.
-				if clear_for_track (module_cursor, start_point, net, fill_zone, layer, width, log_threshold + 1) then
+				if clear_for_track (module_cursor, start_point, net_cursor, fill_zone, layer, width, log_threshold + 1) then
 
 					-- start_point qualifies to start a track
 

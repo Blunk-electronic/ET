@@ -952,12 +952,18 @@ package body et_project.modules is
 			use et_schematic;
 			use pac_nets;
 		begin
-			if net = et_schematic.pac_nets.no_element then
+			if net = et_schematic.pac_nets.no_element then -- freetrack
 				null;
 				-- CS load result with DRU settings (min track clearance, min track width, 
 				-- min via drill size)
 			else
-				result := element (find (module.net_classes, element (net).class));
+				if element (net).class = net_class_name_default then
+					null;
+					-- CS load result with DRU settings (min track clearance, min track width, 
+					-- min via drill size)
+				else
+					result := element (find (module.net_classes, element (net).class));
+				end if;
 			end if;
 		end query_module;
 		

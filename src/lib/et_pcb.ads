@@ -95,14 +95,15 @@ package et_pcb is
 	type type_net_class is tagged record
 		description				: pac_net_class_description.bounded_string;
 
-		-- The net class parameters assume default values with the largest/greates structures allowed.
-		-- So the manufacturing costs will be at minimum if parameters had not been provided on instanciation.
-		clearance				: type_track_clearance := type_track_clearance'last;
-		track_width_min			: type_track_width := type_track_width'last;
-		via_drill_min			: type_drill_size := type_drill_size'last;
-		via_restring_min		: type_restring_width := type_restring_width'last;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last;
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;
+		-- The net class parameters assume default values 
+		-- that cause minimal manufacturing costs even if 
+		-- no net classes have been defined by the operator:
+		clearance				: type_track_clearance := 0.3;
+		track_width_min			: type_track_width := 0.3;
+		via_drill_min			: type_drill_size := 0.3;
+		via_restring_min		: type_restring_width := 0.3;
+		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
+		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
 	end record;
 
 	package pac_net_classes is new ordered_maps (
