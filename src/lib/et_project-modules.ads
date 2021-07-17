@@ -411,6 +411,15 @@ package et_project.modules is
 		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
 		return et_pcb.type_net_class;
 
+	-- Returns the class settings of a net in a module.
+	-- If given net is no_element then the settings of the
+	-- "default" class will be returned:
+	function get_net_class (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		net		: in et_schematic.pac_nets.cursor)  -- GND, RESET_N, ...
+		return et_pcb.type_net_class;
+
+
 	
 	-- Returns the names of all nets that exist in the given module.
 	-- The return is a vector with alphabetically sorted net names

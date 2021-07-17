@@ -932,6 +932,40 @@ package body et_project.modules is
 		
 		return result;
 	end get_net_class;
+
+
+	function get_net_class (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		net		: in et_schematic.pac_nets.cursor) -- GND, RESET_N, ...
+		return et_pcb.type_net_class
+	is
+		use et_pcb;
+		result : type_net_class;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module)
+		is
+			use pac_net_classes;
+			use pac_net_class_name;
+
+			use et_schematic;
+			use pac_nets;
+		begin
+			if net = et_schematic.pac_nets.no_element then
+				null;
+				-- CS load result with DRU settings (min track clearance, min track width, 
+				-- min via drill size)
+			else
+				result := element (find (module.net_classes, element (net).class));
+			end if;
+		end query_module;
+		
+	begin
+		query_element (module, query_module'access);
+		return result;
+	end get_net_class;
+
 	
 	
 	function get_indexed_nets (
