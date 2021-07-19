@@ -215,9 +215,17 @@ package et_geometry is
 		
 		-- For collecting and sorting distances:
 		package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
-
+		package pac_distances_positive_sorting is new pac_distances_positive.generic_sorting;
+		
 		package pac_distances is new doubly_linked_lists (type_distance);
 		package pac_distances_sorting is new pac_distances.generic_sorting;
+
+
+		-- Returns the greatest distance from a list of positive distances:
+		function get_greatest (
+			distances	: in pac_distances_positive.list)
+			return type_distance_positive;
+		
 		
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;

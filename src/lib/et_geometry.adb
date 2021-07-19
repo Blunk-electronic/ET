@@ -175,6 +175,18 @@ package body et_geometry is
 			end if;
 		end get_smallest;
 
+
+		function get_greatest (
+			distances	: in pac_distances_positive.list)
+			return type_distance_positive
+		is
+			ds : pac_distances_positive.list := distances;
+			use pac_distances_positive_sorting;
+		begin
+			sort (ds);
+			return ds.last_element;
+		end get_greatest;
+
 		
 		function to_positive_rotation (
 			rotation	: in type_rotation)
