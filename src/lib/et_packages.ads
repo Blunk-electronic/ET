@@ -376,6 +376,27 @@ package et_packages is
 	type type_conductor_arc is new type_arc with record
 		width	: type_track_width;
 	end record;
+
+	type type_conductor_arc_segment is private;
+
+	function to_string (segment : in type_conductor_arc_segment)
+		return string;
+	
+	function to_arc_segment (arc : in type_conductor_arc)
+		return type_conductor_arc_segment;
+
+	function get_inner_edge (segment : in type_conductor_arc_segment)
+		return type_arc;
+
+	function get_outer_edge (segment : in type_conductor_arc_segment)
+		return type_arc;
+
+	function get_start_cap (segment : in type_conductor_arc_segment)
+		return type_arc;
+
+	function get_end_cap (segment : in type_conductor_arc_segment)
+		return type_arc;
+
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
@@ -1157,6 +1178,11 @@ private
 
 	type type_conductor_line_segment is record
 		left_edge, right_edge : type_line;
+		cap_start, cap_end : type_arc;
+	end record;
+
+	type type_conductor_arc_segment is record
+		inner_edge, outer_edge : type_arc;
 		cap_start, cap_end : type_arc;
 	end record;
 

@@ -2875,7 +2875,6 @@ package body et_geometry is
 
 		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
-		-- Returns the start and end angles of an arc.
 		-- The angles may be negative. For example instead of 270 degree
 		-- the angle will be -90 degree.
 			result : type_arc_angles;
@@ -2924,6 +2923,14 @@ package body et_geometry is
 			return result;
 		end to_arc_angles;
 
+
+		function to_arc (arc : in type_arc_angles) return type_arc'class is
+			result : type_arc;
+		begin
+			-- CS
+			return result;
+		end to_arc;
+		
 		
 		function get_boundaries (
 			arc			: in type_arc;

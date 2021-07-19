@@ -749,8 +749,9 @@ package body et_routing is
 					clearances.append (class_given_net.clearance);
 					clearances.append (class_foregin_net.clearance);
 
-					-- CS if fill_zone.observe then 
-					-- CS clearance polygon.isolation
+					if fill_zone.observe then 
+						clearances.append (fill_zone.outline.isolation);
+					end if;
 					
 					-- LINES
 					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
@@ -1993,6 +1994,7 @@ package body et_routing is
 				procedure query_net (nf : in pac_nets.cursor) is
 					use et_nets.pac_net_name;
 					use et_pcb.pac_conductor_lines;
+					use et_pcb.pac_conductor_arcs;
 	
 					class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
@@ -2012,9 +2014,24 @@ package body et_routing is
 							test_line (get_right_edge (segment));
 							test_arc (get_start_cap (segment));
 							test_arc (get_end_cap (segment));
-
 						end if;
 					end query_line;
+
+					procedure query_arc (c : in et_pcb.pac_conductor_arcs.cursor) is
+						segment : type_conductor_arc_segment;
+					begin
+						if element (c).layer = layer then
+							log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
+
+							segment := to_arc_segment (element (c));
+
+							test_arc (get_outer_edge (segment));
+							test_arc (get_end_cap (segment));
+							test_arc (get_inner_edge (segment));
+							test_arc (get_end_cap (segment));
+						end if;
+					end query_arc;
+
 					
 				begin -- query_net
 					log (text => "net " & to_string (key (nf)), level => log_threshold + 2);
@@ -2025,15 +2042,16 @@ package body et_routing is
 					clearances.append (class_foregin_net.clearance);
 
 					if fill_zone.observe then 
-						null;
-						-- CS or polygon isolation
+						clearances.append (fill_zone.outline.isolation);
 					end if;
 
 					track.clearance	:= get_greatest (clearances);
 					
 					log_indentation_up;
 					iterate (element (nf).route.lines, query_line'access);
-					-- CS arcs, ... see et_pcb.type_route
+					iterate (element (nf).route.arcs, query_arc'access);
+					
+					-- CS other objects ... see et_pcb.type_route
 					log_indentation_down;
 				end query_net;
 				

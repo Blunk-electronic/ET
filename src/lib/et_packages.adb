@@ -269,10 +269,8 @@ package body et_packages is
 		return type_conductor_line_segment
 	is
 		result : type_conductor_line_segment;
-
 		direction : constant type_rotation := get_direction (line);
-		distance : constant type_track_width := line.width * 0.5;
-		
+		distance : constant type_track_width := line.width * 0.5;		
 	begin
 		result.left_edge := type_line (line);
 		move_by (result.left_edge, add (direction, +90.0), distance);
@@ -292,7 +290,6 @@ package body et_packages is
 		result.cap_end.end_point := result.right_edge.end_point;
 		result.cap_end.direction := CW;
 
-		--log (text => to_string (result));
 		return result;
 	end to_line_segment;
 
@@ -383,6 +380,96 @@ package body et_packages is
 		return result;
 	end get_shortest_distance;
 
+
+
+	function to_string (segment : in type_conductor_arc_segment)
+		return string
+	is begin
+		return ("arc segment:" 
+			& " outer edge:" & to_string (segment.outer_edge)
+			& " cap end" & to_string (segment.cap_end)
+			& " inner edge:" & to_string (segment.inner_edge)
+			& " cap start:" & to_string (segment.cap_start));
+	end to_string;
+
+	
+	function to_arc_segment (arc : in type_conductor_arc)
+		return type_conductor_arc_segment
+	is
+		arc_n : type_conductor_arc := arc;
+		arc_c : type_arc_angles;
+
+		arc_i, arc_o : type_arc_angles;
+		
+		center_radius : constant type_distance_positive := radius_start (arc_n);
+		half_width : constant type_distance_positive := arc_n.width * 0.5;
+		inner_radius, outer_radius : type_distance_positive;
+		result : type_conductor_arc_segment;
+
+		
+	begin
+		-- normalize given arc so that it runs CW:
+		if arc_n.direction = CCW then
+			reverse_arc (arc_n);
+		end if;
+
+		-- set directions:
+		result.outer_edge.direction := CW;
+		result.cap_end.direction := CW;
+		result.inner_edge.direction := CCW;
+		result.cap_start.direction := CW;
+
+		-- set center points:
+		result.outer_edge.center := arc_n.center;
+		result.cap_end.center := arc_n.end_point;
+		result.inner_edge.center := arc_n.center;
+		result.cap_start.center := arc_n.start_point;
+
+		-- set radii
+		inner_radius := center_radius - half_width;
+		outer_radius := center_radius + half_width;
+		
+		-- CS
+		arc_c := to_arc_angles (arc_n);
+		
+		arc_o := arc_c;
+		arc_o.radius := outer_radius;
+		result.outer_edge := to_arc (arc_o);
+		
+		arc_i := arc_c;
+		arc_i.radius := inner_radius;
+		result.inner_edge := to_arc (arc_i);
+
+		-- set start and end points of caps:
+		-- CS
+		
+		return result;
+	end to_arc_segment;
+
+	
+	function get_inner_edge (segment : in type_conductor_arc_segment)
+		return type_arc
+	is begin
+		return segment.inner_edge;
+	end get_inner_edge;
+
+	function get_outer_edge (segment : in type_conductor_arc_segment)
+		return type_arc
+	is begin
+		return segment.outer_edge;
+	end get_outer_edge;
+
+	function get_start_cap (segment : in type_conductor_arc_segment)
+		return type_arc
+	is begin
+		return segment.cap_start;
+	end get_start_cap;
+
+	function get_end_cap (segment : in type_conductor_arc_segment)
+		return type_arc
+	is begin
+		return segment.cap_end;
+	end get_end_cap;
 
 	
 	

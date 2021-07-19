@@ -1200,12 +1200,11 @@ package et_geometry is
 			
 		
 	-- ARC
-		type type_arc_base is abstract tagged record
+		type type_arc_base is abstract tagged record  -- CS should be private ?
 			center			: type_point;
 			start_point		: type_point;
 			end_point		: type_point;
 			direction		: type_direction_of_rotation := CW;
-			-- CS locked : type_locked;		
 		end record;
 
 		type type_arc is new type_arc_base with null record;
@@ -1246,16 +1245,18 @@ package et_geometry is
 		
 		-- Returns the distance between the start point and the center of the arc.
 		function radius_start (arc : in type_arc) return type_distance_positive;
-
+		-- CS rename to get_radius_start
+		
 		-- Returns the distance between the end point and the center of the arc.
 		function radius_end (arc : in type_arc) return type_distance_positive;
-
+		-- CS rename to get_radius_end
+		
 		-- Returns true if start and end point of given arc have same distance to center.
 		function is_valid (arc : in type_arc) return boolean;
 		
 		-- Sometimes (for example with cairo) an arc must be
 		-- expressed in terms of start and end angle:
-		type type_arc_angles is record
+		type type_arc_angles is record -- CS should be private ?
 			center		: type_point;
 			radius		: type_distance_positive;
 			angle_start	: type_rotation;
@@ -1263,8 +1264,12 @@ package et_geometry is
 			direction	: type_direction_of_rotation := CW;
 		end record;
 
-		function to_arc_angles (arc : in type_arc) return type_arc_angles;
 		-- Returns the start and end angles of an arc.
+		function to_arc_angles (arc : in type_arc) return type_arc_angles;
+
+		-- Returns the start and end points of an arc.
+		function to_arc (arc : in type_arc_angles) return type_arc'class;
+
 		
 		-- Returns the boundaries of the given arc.
 		-- The arc has the given width. 
