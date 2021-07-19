@@ -629,7 +629,7 @@ package body et_routing is
 
 		-- Get the net class settings of the given net.
 		-- If no net was given (freetrack), then we get the settings of class "default":
-		--net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
+		class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
 		
 		procedure query_module (
@@ -727,7 +727,9 @@ package body et_routing is
 				use et_nets.pac_net_name;
 				use et_schematic;
 				use pac_nets;
-				n : pac_nets.cursor := module.nets.first;
+				
+				-- the cursor to the foregin net
+				nf : pac_nets.cursor := module.nets.first;
 
 				procedure query_net (
 					name : in pac_net_name.bounded_string;
@@ -737,9 +739,19 @@ package body et_routing is
 					l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
 					segment : type_conductor_line_segment;
 					distance : type_distance;
+					class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
+
+					use pac_distances_sorting;
+					clearances : pac_distances_positive.list;
 				begin
 					log (text => "net " & to_string (name), level => lth + 2);
 
+					clearances.append (class_given_net.clearance);
+					clearances.append (class_foregin_net.clearance);
+
+					-- CS if fill_zone.observe then 
+					-- CS clearance polygon.isolation
+					
 					-- LINES
 					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
 						segment := to_line_segment (element (l));
@@ -759,16 +771,14 @@ package body et_routing is
 
 							-- Due to unavoidable rounding errors the difference between 
 							-- distance and border can be -type_distance'small:
-							if distance >= - type_distance'small then
+							if (distance - get_greatest (clearances)) >= - type_distance'small then
 								log (text => "point is in safe distance to segment", level => lth + 3);
 							else
 								log (text => "point is too close to segment", level => lth + 3);
 								result := false;
 							end if;							
 						end if;
-						
-						-- CS clearance polygon.isolation, clearance 
-						-- given net, clearance candidate net
+
 						next (l);
 					end loop;
 
@@ -780,9 +790,9 @@ package body et_routing is
 				log (text => "probing tracks ...", level => lth + 1);
 				log_indentation_up;
 				
-				while n /= pac_nets.no_element and result = true loop
-					query_element (n, query_net'access);
-					next (n);
+				while nf /= pac_nets.no_element and result = true loop
+					query_element (nf, query_net'access);
+					next (nf);
 				end loop;
 				
 				log_indentation_down;
@@ -1795,7 +1805,7 @@ package body et_routing is
 
 		-- Get the net class settings of the given net.
 		-- If no net was given (freetrack), then we get the settings of class "default":
-		net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
+		class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
 		
 		track : type_track := (
@@ -1979,10 +1989,16 @@ package body et_routing is
 				use et_schematic;
 				use pac_nets;
 
-				procedure query_net (c : in pac_nets.cursor) is
+				-- Queries the conductor segments of foregin nets.
+				procedure query_net (nf : in pac_nets.cursor) is
 					use et_nets.pac_net_name;
 					use et_pcb.pac_conductor_lines;
 	
+					class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
+
+					use pac_distances_sorting;
+					clearances : pac_distances_positive.list;
+
 					
 					procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
 						segment : type_conductor_line_segment;
@@ -2001,15 +2017,22 @@ package body et_routing is
 					end query_line;
 					
 				begin -- query_net
-					log (text => "net " & to_string (key (c)), level => log_threshold + 2);
-					-- CS compare with given net
-					-- CS set track.clearance according to net class
-					-- CS or polygon isolation. take the greater one
+					log (text => "net " & to_string (key (nf)), level => log_threshold + 2);
 
-					track.clearance	:= net_class.clearance;
+					-- The clearance to foregin nets is the greatest of several other distances.
+					-- The greatest of them will later be applied to the track clearance.
+					clearances.append (class_given_net.clearance);
+					clearances.append (class_foregin_net.clearance);
+
+					if fill_zone.observe then 
+						null;
+						-- CS or polygon isolation
+					end if;
+
+					track.clearance	:= get_greatest (clearances);
 					
 					log_indentation_up;
-					iterate (element (c).route.lines, query_line'access);
+					iterate (element (nf).route.lines, query_line'access);
 					-- CS arcs, ... see et_pcb.type_route
 					log_indentation_down;
 				end query_net;
