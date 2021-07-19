@@ -2876,7 +2876,7 @@ package body et_geometry is
 		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- The angles may be negative. For example instead of 270 degree
-		-- the angle will be -90 degree.
+		-- the angle can be -90 degree.
 			result : type_arc_angles;
 						
 			-- Take a copy of the given arc in arc_tmp.
@@ -2926,8 +2926,21 @@ package body et_geometry is
 
 		function to_arc (arc : in type_arc_angles) return type_arc'class is
 			result : type_arc;
+			x, y : float;
 		begin
-			-- CS
+			result.center := arc.center;
+			result.direction := arc.direction;
+
+			-- start point:
+			x := float (arc.radius) * cos (float (arc.angle_start), float (units_per_cycle));
+			y := float (arc.radius) * sin (float (arc.angle_start), float (units_per_cycle));
+			result.start_point := type_point (set (type_distance (x), type_distance (y)));
+
+			-- end point:
+			x := float (arc.radius) * cos (float (arc.angle_end), float (units_per_cycle));
+			y := float (arc.radius) * sin (float (arc.angle_end), float (units_per_cycle));
+			result.end_point := type_point (set (type_distance (x), type_distance (y)));
+
 			return result;
 		end to_arc;
 		

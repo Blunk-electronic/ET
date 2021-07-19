@@ -404,9 +404,7 @@ package body et_packages is
 		center_radius : constant type_distance_positive := radius_start (arc_n);
 		half_width : constant type_distance_positive := arc_n.width * 0.5;
 		inner_radius, outer_radius : type_distance_positive;
-		result : type_conductor_arc_segment;
-
-		
+		result : type_conductor_arc_segment;		
 	begin
 		-- normalize given arc so that it runs CW:
 		if arc_n.direction = CCW then
@@ -429,20 +427,27 @@ package body et_packages is
 		inner_radius := center_radius - half_width;
 		outer_radius := center_radius + half_width;
 		
-		-- CS
 		arc_c := to_arc_angles (arc_n);
 		
+		-- set inner edge:
 		arc_o := arc_c;
 		arc_o.radius := outer_radius;
-		result.outer_edge := to_arc (arc_o);
-		
+		result.outer_edge := type_arc (to_arc (arc_o));
+
+		-- set outer edge:
 		arc_i := arc_c;
 		arc_i.radius := inner_radius;
-		result.inner_edge := to_arc (arc_i);
+		result.inner_edge := type_arc (to_arc (arc_i));
 
 		-- set start and end points of caps:
-		-- CS
+		-- cap at start point:
+		result.cap_start.start_point := result.inner_edge.end_point;
+		result.cap_start.end_point   := result.outer_edge.start_point;
 		
+		-- cap at end point:
+		result.cap_end.start_point := result.outer_edge.end_point;
+		result.cap_end.end_point   := result.inner_edge.start_point;
+
 		return result;
 	end to_arc_segment;
 
