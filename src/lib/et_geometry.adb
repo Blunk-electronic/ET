@@ -2927,6 +2927,7 @@ package body et_geometry is
 		function to_arc (arc : in type_arc_angles) return type_arc'class is
 			result : type_arc;
 			x, y : float;
+			offset : constant type_distance_relative := (get_x (arc.center), get_y (arc.center));
 		begin
 			result.center := arc.center;
 			result.direction := arc.direction;
@@ -2935,12 +2936,14 @@ package body et_geometry is
 			x := float (arc.radius) * cos (float (arc.angle_start), float (units_per_cycle));
 			y := float (arc.radius) * sin (float (arc.angle_start), float (units_per_cycle));
 			result.start_point := type_point (set (type_distance (x), type_distance (y)));
-
+			move_by (result.start_point, offset);
+			
 			-- end point:
 			x := float (arc.radius) * cos (float (arc.angle_end), float (units_per_cycle));
 			y := float (arc.radius) * sin (float (arc.angle_end), float (units_per_cycle));
 			result.end_point := type_point (set (type_distance (x), type_distance (y)));
-
+			move_by (result.end_point, offset);
+			
 			return result;
 		end to_arc;
 		

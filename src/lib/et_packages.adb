@@ -397,8 +397,6 @@ package body et_packages is
 		return type_conductor_arc_segment
 	is
 		arc_n : type_conductor_arc := arc;
-		arc_c : type_arc_angles;
-
 		arc_i, arc_o : type_arc_angles;
 		
 		center_radius : constant type_distance_positive := radius_start (arc_n);
@@ -411,31 +409,18 @@ package body et_packages is
 			reverse_arc (arc_n);
 		end if;
 
-		-- set directions:
-		result.outer_edge.direction := CW;
-		result.cap_end.direction := CW;
-		result.inner_edge.direction := CCW;
-		result.cap_start.direction := CW;
-
-		-- set center points:
-		result.outer_edge.center := arc_n.center;
-		result.cap_end.center := arc_n.end_point;
-		result.inner_edge.center := arc_n.center;
-		result.cap_start.center := arc_n.start_point;
-
 		-- set radii
 		inner_radius := center_radius - half_width;
 		outer_radius := center_radius + half_width;
-		
-		arc_c := to_arc_angles (arc_n);
-		
-		-- set inner edge:
-		arc_o := arc_c;
+
+
+		-- set outer edge:
+		arc_o := to_arc_angles (arc_n);
 		arc_o.radius := outer_radius;
 		result.outer_edge := type_arc (to_arc (arc_o));
 
-		-- set outer edge:
-		arc_i := arc_c;
+		-- set inner edge:
+		arc_i := to_arc_angles (reverse_arc (arc_n));
 		arc_i.radius := inner_radius;
 		result.inner_edge := type_arc (to_arc (arc_i));
 
@@ -443,10 +428,14 @@ package body et_packages is
 		-- cap at start point:
 		result.cap_start.start_point := result.inner_edge.end_point;
 		result.cap_start.end_point   := result.outer_edge.start_point;
+		result.cap_start.direction := CW;
+		result.cap_start.center := arc_n.start_point;
 		
 		-- cap at end point:
 		result.cap_end.start_point := result.outer_edge.end_point;
 		result.cap_end.end_point   := result.inner_edge.start_point;
+		result.cap_end.direction := CW;
+		result.cap_end.center := arc_n.end_point;
 
 		return result;
 	end to_arc_segment;
