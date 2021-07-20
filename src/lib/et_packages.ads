@@ -397,6 +397,15 @@ package et_packages is
 	function get_end_cap (segment : in type_conductor_arc_segment)
 		return type_arc;
 
+
+	-- Computes the shortest distance from a point to
+	-- a conductor arc segment. If the return is negative,
+	-- then the point is inside the segment:
+	function get_shortest_distance (
+		point	: in type_point;
+		segment	: in type_conductor_arc_segment)
+		return type_distance;
+
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;

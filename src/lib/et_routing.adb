@@ -737,7 +737,12 @@ package body et_routing is
 				is
 					use et_pcb.pac_conductor_lines;
 					l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-					segment : type_conductor_line_segment;
+					segment_line : type_conductor_line_segment;
+
+					use et_pcb.pac_conductor_arcs;
+					a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
+					segment_arc : type_conductor_arc_segment;
+
 					distance : type_distance;
 					class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
@@ -755,9 +760,9 @@ package body et_routing is
 					
 					-- LINES
 					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
-						segment := to_line_segment (element (l));
-						log (text => to_string (segment), level => lth + 3);
-						distance := get_shortest_distance (start_point, segment);
+						segment_line := to_line_segment (element (l));
+						log (text => to_string (segment_line), level => lth + 3);
+						distance := get_shortest_distance (start_point, segment_line);
 
 						if distance <= zero then 
 							-- start_point is inside segment or on the edge of the segment
@@ -784,7 +789,34 @@ package body et_routing is
 					end loop;
 
 					-- ARCS
-					-- CS
+					while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
+						segment_arc := to_arc_segment (element (a));
+						log (text => to_string (segment_arc), level => lth + 3);
+						distance := get_shortest_distance (start_point, segment_arc);
+
+						if distance <= zero then 
+							-- start_point is inside segment or on the edge of the segment
+							log (text => "point is in segment", level => lth + 3);
+							result := false;
+						else
+							-- start_point is outside the segment
+							log (text => "point is outside the segment", level => lth + 3);
+							
+							-- the distance of the start point to the border of the segment:
+							distance := distance - width * 0.5;
+
+							-- Due to unavoidable rounding errors the difference between 
+							-- distance and border can be -type_distance'small:
+							if (distance - get_greatest (clearances)) >= - type_distance'small then
+								log (text => "point is in safe distance to segment", level => lth + 3);
+							else
+								log (text => "point is too close to segment", level => lth + 3);
+								result := false;
+							end if;							
+						end if;
+
+						next (a);
+					end loop;
 				end query_net;
 				
 			begin -- query_tracks

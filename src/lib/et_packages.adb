@@ -466,6 +466,47 @@ package body et_packages is
 	end get_end_cap;
 
 	
+	function get_shortest_distance (
+		point	: in type_point;
+		segment	: in type_conductor_arc_segment)
+		return type_distance
+	is 
+		result : type_distance := zero;
+
+		type type_segment_area is new type_polygon_base with null record;
+		polygon : type_segment_area;
+
+		procedure build_polygon is 
+			use pac_polygon_segments;
+			s : type_polygon_segments := (circular => false, others => <>);
+		begin
+			append (s.segments, (ARC, segment.outer_edge));
+			append (s.segments, (ARC, segment.cap_end));
+			append (s.segments, (ARC, segment.inner_edge));
+			append (s.segments, (ARC, segment.cap_start));
+			polygon.contours := s;
+		end build_polygon;
+
+		distance : type_distance_polar;
+	begin
+		-- build a polygon from the given segment:
+		build_polygon;
+
+		distance := get_shortest_distance (polygon, point);
+
+		case in_polygon_status (polygon, point).status is
+			when INSIDE =>
+				result := - get_absolute (distance);
+				
+			when OUTSIDE =>
+				result := get_absolute (distance);
+		end case;
+		
+		return result;
+	end get_shortest_distance;
+
+	
+	
 	
 	function to_string (appearance : in type_package_appearance) return string is begin
 		return to_lower (type_package_appearance'image (appearance));
