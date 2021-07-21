@@ -2131,25 +2131,30 @@ package body et_routing is
 			query_outline;
 			query_holes;
 
-			--log (text => "holes done");
-				 
+			
+			-- next step is querying fill zones. There the clearance to the
+			-- zone borders is zero. The track is to approach the border as
+			-- close as possible (from inside the area):
 			track.clearance := zero;
 			
 			if fill_zone.observe then 
 				query_fill_zone;
 			end if;
-			
+
+			-- For global cutout areas the track must approach the border
+			-- of the area as close as possible (from outside the area):
 			query_global_cutouts;
 
+			-- Probe net segments. The clearance is set for each net individually:
 			query_tracks;
 
 			-- CS query freetracks
 			
 			-- - net specific cutout areas
 			
-			-- CS abort if status is invalid.
+			-- CS abort if status is invalid ??? obsolete ??
 			
-			-- query tracks, texts, pads, ...
+			-- query texts, pads, ...
 
 			-- CS: submodules ?
 		end query_obstacles;
@@ -2195,14 +2200,15 @@ package body et_routing is
 				
 				-- Test whether start_point is suitable to start a track.
 				-- At the given start_point or in its vicinity could be an obstacle already.
-				if clear_for_track (module_cursor, start_point, net_cursor, fill_zone, layer, width, log_threshold + 1) then
-
+				if clear_for_track (module_cursor, start_point, 
+					net_cursor, fill_zone, layer, width, log_threshold + 1) 
+				then
 					-- start_point qualifies to start a track
 
 					-- Probe everything on the board that could be an obstacle
-					-- for track in the given direction, net, layer. The distance to 
-					-- the nearest obstacle will finally be stored in variable
-					-- distance_to_obstacle:
+					-- for the track in the given direction, net, layer. The distance to 
+					-- the nearest obstacle (to the right of start_point) will finally be
+					-- stored in variable distance_to_obstacle:
 					query_element (module_cursor, query_obstacles'access);
 					
 					log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
