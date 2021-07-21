@@ -1036,6 +1036,7 @@ package body et_routing is
 			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
 
 			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
+
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
@@ -1418,6 +1419,52 @@ package body et_routing is
 					bp2 := type_point (set (element (x_cursor), zero));
 			end case;
 		end set_break_points;
+
+		
+		-- Searches the break point (before or after) by means 
+		-- of the boundaries of the whole overlapping area.
+		procedure use_overlap_area is begin
+			log (text => "using boundaries of whole overlapping area", level => lth);
+			log_indentation_up;
+			
+			case place is
+				when BEFORE =>
+					-- The start point of the search is the LEFT border of the
+					-- overlapping area:
+					start_point := bi.intersection.smallest_x;
+														
+				when AFTER =>
+					-- The start point of the search is the RIGHT border of the
+					-- overlapping area:
+					start_point := bi.intersection.greatest_x;
+			end case;
+
+			bp1 := type_point (set (get_break (
+				init		=> start_point,
+				place		=> place,
+				obstacle	=> (et_geometry.ARC, arc_tmp),
+				clearance	=> clearance,
+				lth			=> lth + 1),
+				zero));
+
+			-- The computed break point must be after the start of the track.
+			-- If it is before the start of the track, then it is discarded.
+			if get_x (bp1) > zero then -- CS really necessary ?
+
+				-- Rotate and move the break point back according to
+				-- the track direction and offset:
+				rotate_to (bp1, track_dimensions.direction);
+				move_by (bp1, track_dimensions.offset);
+
+				break_count := 1;
+
+				log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
+					level => lth + 2);
+			end if;
+
+			log_indentation_down;
+		end use_overlap_area;
+		
 		
 	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
@@ -1425,101 +1472,80 @@ package body et_routing is
 			log (text => "break by arc:" & to_string (arc), level => lth);
 			log_indentation_up;
 
-			if length (x_values_pre) <= 2 then
-				-- The arc intersects the track in up to two points.
-				-- If x_values_pre is empty then the arc is embedded in the track
-				-- without touching the upper or lower edge of the track.
+			-- The number of intersections with the arc determines
+			-- how to proceed:
+			case length (x_values_pre) is
 
-				-- If we search for a break before the arc, then it makes sense
-				-- only if the area of overlap begins after the start of the track.
-				if (place = BEFORE and bi.intersection.smallest_x >= zero)
+				when 0 =>
+					-- The arc is embedded in the track and does NOT intersect the track.
+					-- If x_values_pre is empty then the arc is embedded in the track
+					-- without touching the upper or lower edge of the track.
+					-- If we search for a break before the arc, then it makes sense
+					-- only if the area of overlap begins after the start of the track.
+					if (place = BEFORE and bi.intersection.smallest_x >= zero)
 
-				-- CS: A similar optimization when place is AFTER ?				
-				or place = AFTER 
-				then
-					-- The search for the break point (before or after) can be 
-					-- done by means of the boundaries of the whole overlapping area.
-					log (text => "using boundaries of whole overlapping area", level => lth);
-					log_indentation_up;
-					
-					case place is
-						when BEFORE =>
-							-- The start point of the search is the LEFT border of the
-							-- overlapping area:
-							start_point := bi.intersection.smallest_x;
-																
-						when AFTER =>
-							-- The start point of the search is the RIGHT border of the
-							-- overlapping area:
-							start_point := bi.intersection.greatest_x;
-					end case;
-
-					bp1 := type_point (set (get_break (
-						init		=> start_point,
-						place		=> place,
-						obstacle	=> (et_geometry.ARC, arc_tmp),
-						clearance	=> clearance,
-						lth			=> lth + 1),
-						zero));
-
-					-- The computed break point must be after the start of the track.
-					-- If it is before the start of the track, then it is discarded.
-					if get_x (bp1) > zero then -- CS really necessary ?
-
-						-- Rotate and move the break point back according to
-						-- the track direction and offset:
-						rotate_to (bp1, track_dimensions.direction);
-						move_by (bp1, track_dimensions.offset);
-
-						break_count := 1;
-
-						log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
-							level => lth + 2);
+					-- CS: A similar optimization when place is AFTER ?				
+					or place = AFTER 
+					then
+						use_overlap_area;
+					else
+						log (text => "boundaries of arc are before start of track -> arc skipped" , level => lth);
 					end if;
 
+				when 1..2 =>
+					-- The arc intersects the track in up to two points.
+					-- If we search for a break before the arc, then it makes sense
+					-- only if the last intersection comss after the start of the track.
+					if (place = BEFORE and x_values_pre.last_element >= zero)
+
+					-- CS: A similar optimization when place is AFTER ?				
+					or place = AFTER 
+					then
+						use_overlap_area;
+					else
+						log (text => "all intersections are before start of track -> arc skipped" , level => lth);
+					end if;
+				
+				when 3..4 =>					
+					-- The arc intersects the track in 3 or 4 points.
+					-- So the arc must be split in 2 or 3 segments. Each of them
+					-- will then be treated separately.
+					log (text => "splitting of arc required", level => lth);
+					log_indentation_up;
+					
+					set_break_points (arc_tmp);
+
+					case break_count is
+						when 0 => null;
+						when 1 =>
+
+							-- Rotate and move the break point back according to
+							-- the track direction and offset:
+							rotate_to (bp1, track_dimensions.direction);
+							move_by (bp1, track_dimensions.offset);
+
+							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+									level => lth + 2);
+
+						when 2 =>
+							rotate_to (bp1, track_dimensions.direction);
+							move_by (bp1, track_dimensions.offset);
+
+							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+									level => lth + 2);
+
+							rotate_to (bp2, track_dimensions.direction);
+							move_by (bp2, track_dimensions.offset);
+							
+							log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
+								level => lth + 2);
+
+					end case;
+
 					log_indentation_down;
-				else
-					log (text => "boundaries of arc before start of track -> arc skipped" , level => lth);
-				end if;
-				
-			else
-				-- The arc intersects the track in 3 or 4 points.
-				-- So the arc must be split in 2 or 3 segments. Each of them
-				-- will then be treated separately.
-				log (text => "splitting of arc required", level => lth);
-				log_indentation_up;
-				
-				set_break_points (arc_tmp);
 
-				case break_count is
-					when 0 => null;
-					when 1 =>
-
-						-- Rotate and move the break point back according to
-						-- the track direction and offset:
-						rotate_to (bp1, track_dimensions.direction);
-						move_by (bp1, track_dimensions.offset);
-
-						log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-								level => lth + 2);
-
-					when 2 =>
-						rotate_to (bp1, track_dimensions.direction);
-						move_by (bp1, track_dimensions.offset);
-
-						log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-								level => lth + 2);
-
-						rotate_to (bp2, track_dimensions.direction);
-						move_by (bp2, track_dimensions.offset);
-						
-						log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
-							level => lth + 2);
-
-				end case;
-
-				log_indentation_down;
-			end if;
+				when others => raise constraint_error; -- CS should never happen
+			end case;
 			
 			log_indentation_down;
 		end if;
@@ -1669,7 +1695,10 @@ package body et_routing is
 
 			log (text => "break by circle:" & to_string (circle), level => lth);
 			log_indentation_up;
-			
+
+			-- The number of intersections with the arc determines
+			-- how to proceed:
+			-- CS: see get_break_by_arc for possible improvements here.
 			case length (x_values_pre) is
 				when 0 .. 2 =>
 					-- when 0: 
@@ -1687,7 +1716,7 @@ package body et_routing is
 
 					-- If we search for a break before the circle, then it makes sense
 					-- only if the area of overlap begins after the start of the track.
-					if (place = BEFORE and bi.intersection.smallest_x >= zero)
+					if (place = BEFORE and bi.intersection.smallest_x >= zero) -- CS ?
 
 					-- CS: A similar optimization when place is AFTER ?				
 					or place = AFTER 
