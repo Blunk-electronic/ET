@@ -113,7 +113,7 @@ package body et_conductor_polygons is
 		then
 			append ("net " & pac_net_name.to_string (net_name));
 			
-			connected_with_net (type_polygon_conductor_route_solid (polygon));
+			-- CS connected_with_net (type_polygon_conductor_route_solid (polygon));
 		end if;
 
 		
@@ -132,7 +132,7 @@ package body et_conductor_polygons is
 		append (keyword_easing_style & space & to_string (polygon.easing.style));
 		append (keyword_easing_radius & to_string (polygon.easing.radius));
 		
-		append (keyword_layer & to_string (properties.layer));
+		append (keyword_layer & space & to_string (properties.layer));
 		append (keyword_priority & to_string (properties.priority_level));
 
 		return to_string (result);

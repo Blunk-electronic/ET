@@ -4577,7 +4577,7 @@ package body et_board_ops is
 					-- The total height of the polygon:
 					height : type_distance_positive;
 
-					-- The number of rows in a ratonal number (like 45.7):
+					-- The number of rows in a rational number (like 45.7):
 					rows_rational : type_distance_positive;
 
 					-- The minimal number of rows in a natural number (like 45):
@@ -4798,7 +4798,6 @@ package body et_board_ops is
 						end if;
 						
 					end compute_fill_lines;
-
 					
 				begin -- route_solid
 					while p /= pac_signal_polygons_solid.no_element loop
@@ -4853,19 +4852,54 @@ package body et_board_ops is
 						next (p);
 					end loop;
 				end route_solid;
-			
+
+				
 				procedure route_hatched (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is 
 					p : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
+
+					-- The width of a fill line:
+					line_width : type_track_width;
+
+					-- The boundaries of the polygon (greatest/smallest x/y):
+					boundaries : type_boundaries;
+
+					-- The total height of the polygon:
+					height : type_distance_positive;
+
+					-- The number of rows in a rational number (like 45.7):
+					--rows_rational : type_distance_positive;
+
+					-- The minimal number of rows in a natural number (like 45):
+					--rows_min : natural;
+
+					
 				begin
 					while p /= pac_signal_polygons_hatched.no_element loop
 
+						log_net_name;
+
+						-- Get the boundaries of the polygon. From the boundaries we will
+						-- later derive the total height and the lower left corner:
+						boundaries := get_boundaries (element (p), zero);
+
+						log_indentation_up;
+						log (text => to_string (boundaries), level => log_threshold + 2);
+
+						-- Get the total height of the polygon:
+						height := get_height (boundaries);
+
+						-- Get the width of the fill lines:
+						line_width := element (p).width_min;
+
+						
 						--log_net_name;
 						--lower_left_corner := get_lower_left_corner (element (p));
 						--log_lower_left_corner (log_threshold + 3);
-						
+
+						log_indentation_down;
 						next (p);
 					end loop;
 				end route_hatched;
@@ -4879,7 +4913,7 @@ package body et_board_ops is
 					-- CS test if key (n) is in given list of nets
 					
 					update_element (module.nets, n, route_solid'access);
-					--update_element (module.nets, n, route_hatched'access);
+					update_element (module.nets, n, route_hatched'access);
 
 
 					-- CS draw contours around obstacles ?
@@ -4907,7 +4941,8 @@ package body et_board_ops is
 
 		-- Fill floating polygons if no explicit net names given:
 		if is_empty (nets) then
-			floating_polygons;
+			null;
+			-- CS floating_polygons;
 		end if;
 
 		route_polygons;
