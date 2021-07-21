@@ -4477,7 +4477,7 @@ package body et_board_ops is
 
 		
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
-			log (text => "lower left corner" 
+			log (text => "lower left corner:" 
 				& to_string (lower_left_corner),
 				--& " status " 
 				--& type_lower_left_corner_status'image (lower_left_corner.status),
@@ -4632,7 +4632,7 @@ package body et_board_ops is
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
-								log_threshold	=> log_threshold + 3);
+								log_threshold	=> log_threshold + 4);
 							begin
 								status := d.status;
 
@@ -4656,7 +4656,7 @@ package body et_board_ops is
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
-								log_threshold	=> log_threshold + 3);
+								log_threshold	=> log_threshold + 4);
 							begin
 								status := d.status;
 
@@ -4679,7 +4679,8 @@ package body et_board_ops is
 							for lc in 1.. type_line_count'last loop
 								
 								log (text => "fill line" & positive'image (lc), level => log_threshold + 3);
-
+								log_indentation_up;
+								
 								get_distance_after_obstacle (point);
 								
 								if status = VALID then 
@@ -4715,10 +4716,12 @@ package body et_board_ops is
 									
 								else
 									-- no place to start another fill line.
-									-- Abort this row.
+									-- Abort this row:
+									log_indentation_down;
 									exit;
 								end if;
-							
+
+								log_indentation_down;
 							end loop;
 
 							-- Row finished.
@@ -4763,7 +4766,10 @@ package body et_board_ops is
 								move_by (start_point, offset);
 							end if;
 
-							log (text => "row" & natural'image (r), level => log_threshold + 2);							
+							log (text => "row" & natural'image (r) 
+								 & ": start" & to_string (start_point),
+								 level => log_threshold + 2);
+							
 							fill_row;					
 						end loop;
 
@@ -4785,7 +4791,9 @@ package body et_board_ops is
 
 							move_by (start_point, offset);
 
-							log (text => "extra row", level => log_threshold + 2);							
+							log (text => "extra row: start" & to_string (start_point),
+								 level => log_threshold + 2);
+							
 							fill_row;
 						end if;
 						
@@ -4821,9 +4829,9 @@ package body et_board_ops is
 						-- Compute the minimal number of fill lines in a natural number (like 6)
 						rows_min := natural (float'floor (float (rows_rational)));
 						
-						log (text => "height" & to_string (height) 
-							& " line width" & to_string (line_width)
-							& " rows min" & natural'image (rows_min),
+						log (text => "height:" & to_string (height) 
+							& " / line width:" & to_string (line_width)
+							& " / rows min:" & natural'image (rows_min),
 							level => log_threshold + 2);
 
 						if rows_rational > type_distance_positive (rows_min) then

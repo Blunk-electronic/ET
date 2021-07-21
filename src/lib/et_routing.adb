@@ -636,7 +636,7 @@ package body et_routing is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
-			-- FILL ZONES
+			-- FILL ZONE
 			procedure query_fill_zone is 
 				distance_to_border : type_distance; -- CS rename to distance_to_border
 			begin
@@ -649,7 +649,7 @@ package body et_routing is
 					-- the distance of the point to the border of the fill zone:
 					distance_to_border := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-					log (text => "distance to border" & to_string (distance_to_border),
+					log (text => "distance to border:" & to_string (distance_to_border),
 						level => lth + 1);
 					
 					-- the distance of the start point to the border:
@@ -690,7 +690,7 @@ package body et_routing is
 							-- the distance of the point to the border of the cutout area:
 							distance_to_border := get_absolute (get_shortest_distance (element (c), start_point));
 
-							log (text => "distance to border" & to_string (distance_to_border),
+							log (text => " distance to border:" & to_string (distance_to_border),
 								level => lth + 1);
 							
 							-- the distance of the start point line to the border:
@@ -699,14 +699,14 @@ package body et_routing is
 							-- Due to unavoidable rounding errors the difference between 
 							-- distance_to_edge and border can be -type_distance'small:
 							if distance_to_border >= - type_distance'small then
-								log (text => "point is in safe distance to border", level => lth + 1);
+								log (text => " point is in safe distance to border", level => lth + 1);
 							else
-								log (text => "point is too close to border", level => lth + 1);
+								log (text => " point is too close to border", level => lth + 1);
 								result := false;
 							end if;
 							
 						else
-							log (text => "point is in global cutout area", level => lth + 1);
+							log (text => " point is in global cutout area", level => lth + 1);
 							result := false;
 						end if;
 						
@@ -860,6 +860,7 @@ package body et_routing is
 		distance_to_edge : type_distance;
 		
 	begin -- clear_for_track
+		log (text => "----CLEAR FOR TRACK QUERY BEGIN-----", level => lth);
 		log (text => "probing whether point" & to_string (start_point) 
 			 & " qualifies to start a track of width" & to_string (width)
 			 & " in layer " & to_string (layer),
@@ -878,13 +879,13 @@ package body et_routing is
 			distance_to_edge := get_absolute (
 				get_distance_to_edge (module_cursor, start_point, lth + 1));
 
-			log (text => "distance point to board edge" & to_string (distance_to_edge),
+			log (text => " distance point to board edge:" & to_string (distance_to_edge),
 				level => lth + 1);
 			
 			-- the distance of the conductor to the board edge:
 			distance_to_edge := distance_to_edge - 0.5 * width;
 
-			log (text => "distance conductor to board edge" & to_string (distance_to_edge),
+			log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
 				level => lth + 1);
 
 			-- Due to unavoidable rounding errors the difference between 
@@ -893,16 +894,16 @@ package body et_routing is
 			if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
 				>= -type_distance'small 
 			then				
-				log (text => "point is in safe distance to board edge", level => lth + 1);
+				log (text => " point is in safe distance to board edge", level => lth + 1);
 
 				-- probe other objects:
 				query_element (module_cursor, query_module'access);
 			else
-				log (text => "point is too close to board edge", level => lth + 1);			
+				log (text => " point is too close to board edge", level => lth + 1);			
 			end if;
 				
 		else
-			log (text => "point is not in board area", level => lth + 1);			
+			log (text => " point is not in board area", level => lth + 1);			
 		end if;
 
 		
@@ -913,6 +914,8 @@ package body et_routing is
 		end if;
 		
 		log_indentation_down;
+
+		log (text => "----CLEAR FOR TRACK QUERY END-----", level => lth);
 		
 		return result;
 	end clear_for_track;
@@ -1174,7 +1177,7 @@ package body et_routing is
 	begin -- get_break_by_line
 		if bi.exists then -- line and track boundaries do intersect in some way
 
-			log (text => "break by line:" & to_string (line), level => lth);
+			log (text => "break by" & to_string (line), level => lth);
 			log_indentation_up;
 			
 			-- If we search for a break before the line, then it makes sense
@@ -1388,7 +1391,7 @@ package body et_routing is
 							place		=> place,
 							obstacle	=> (et_geometry.ARC, arcs (i)),
 							clearance	=> clearance,
-							lth			=> lth + 1);
+							lth			=> lth + 2);
 						
 						-- The break must be after the start of the track.
 						-- Otherwise the break is ignored.
@@ -1424,7 +1427,7 @@ package body et_routing is
 		-- Searches the break point (before or after) by means 
 		-- of the boundaries of the whole overlapping area.
 		procedure use_overlap_area is begin
-			log (text => "using boundaries of whole overlapping area", level => lth);
+			log (text => "using boundaries of whole overlapping area", level => lth + 1);
 			log_indentation_up;
 			
 			case place is
@@ -1444,7 +1447,7 @@ package body et_routing is
 				place		=> place,
 				obstacle	=> (et_geometry.ARC, arc_tmp),
 				clearance	=> clearance,
-				lth			=> lth + 1),
+				lth			=> lth + 2),
 				zero));
 
 			-- The computed break point must be after the start of the track.
@@ -1469,7 +1472,7 @@ package body et_routing is
 	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
 
-			log (text => "break by arc:" & to_string (arc), level => lth);
+			log (text => "break by" & to_string (arc), level => lth);
 			log_indentation_up;
 
 			-- The number of intersections with the arc determines
@@ -1489,7 +1492,8 @@ package body et_routing is
 					then
 						use_overlap_area;
 					else
-						log (text => "boundaries of arc are before start of track -> arc skipped" , level => lth);
+						log (text => "boundaries of arc are before start of track -> arc skipped",
+							 level => lth);
 					end if;
 
 				when 1..2 =>
@@ -1503,14 +1507,15 @@ package body et_routing is
 					then
 						use_overlap_area;
 					else
-						log (text => "all intersections are before start of track -> arc skipped" , level => lth);
+						log (text => "all intersections are before start of track -> arc skipped",
+							level => lth);
 					end if;
 				
 				when 3..4 =>					
 					-- The arc intersects the track in 3 or 4 points.
 					-- So the arc must be split in 2 or 3 segments. Each of them
 					-- will then be treated separately.
-					log (text => "splitting of arc required", level => lth);
+					log (text => "splitting of arc required", level => lth + 1);
 					log_indentation_up;
 					
 					set_break_points (arc_tmp);
@@ -1656,7 +1661,7 @@ package body et_routing is
 							place		=> place,
 							obstacle	=> (et_geometry.ARC, arcs (i)),
 							clearance	=> clearance,
-							lth			=> lth + 1);
+							lth			=> lth + 2);
 						
 						-- The break must be after the start of the track.
 						-- Otherwise the break is ignored.
@@ -1693,7 +1698,7 @@ package body et_routing is
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
 
-			log (text => "break by circle:" & to_string (circle), level => lth);
+			log (text => "break by" & to_string (circle), level => lth);
 			log_indentation_up;
 
 			-- The number of intersections with the arc determines
@@ -1723,7 +1728,9 @@ package body et_routing is
 					then
 						-- The search for the break point (before or after) can be 
 						-- done by means of the boundaries of the whole overlapping area.
-						log (text => "using boundaries of whole overlapping area", level => lth);
+						log (text => "using boundaries of whole overlapping area",
+							 level => lth + 1);
+						
 						log_indentation_up;
 						
 						case place is
@@ -1743,7 +1750,7 @@ package body et_routing is
 							place		=> place,
 							obstacle	=> (et_geometry.CIRCLE, circle_tmp),
 							clearance	=> clearance,
-							lth			=> lth + 1),
+							lth			=> lth + 2),
 							zero));
 
 
@@ -1764,14 +1771,15 @@ package body et_routing is
 
 						log_indentation_down;
 					else
-						log (text => "boundaries of circle before start of track -> circle skipped" , level => lth);
+						log (text => "boundaries of circle before start of track -> circle skipped",
+							 level => lth);
 					end if;
 
 				when 4 =>					
 					-- The circle intersects the track in 4 points.
 					-- So the circle must be split in 2 arcs. Each arc
 					-- will then be treated separately.
-					log (text => "splitting of circle required", level => lth);
+					log (text => "splitting of circle required", level => lth + 1);
 					log_indentation_up;
 					
 					set_break_points (circle_tmp);
@@ -2191,7 +2199,7 @@ package body et_routing is
 			when BEFORE =>
 				log (text => "computing distance to obstacle from point" 
 					 & to_string (start_point)
-					 & " direction" & to_string (direction),
+					 & " direction" & to_string (direction) & " ...",
 					 level => log_threshold);
 
 				log_indentation_up;
@@ -2207,21 +2215,21 @@ package body et_routing is
 					-- the nearest obstacle will finally be stored in variable
 					-- distance_to_obstacle:
 					query_element (module_cursor, query_obstacles'access);
-
-					log_indentation_down;
 					
 					log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
-						level => log_threshold);
+						 level => log_threshold);
+					
+					log_indentation_down;
 					
 					return (VALID, distance_to_obstacle);
 					
 				else 
 					-- start_point does NOT qualify to start a track
-
-					log_indentation_down;
 					
 					log (text => "track not allowed here",
 						level => log_threshold);
+
+					log_indentation_down;
 					
 					return (status => INVALID);
 				end if;
@@ -2229,9 +2237,9 @@ package body et_routing is
 
 				
 			when AFTER =>
-				log (text => "computing distance after obstacles from point" 
+				log (text => "computing distance until after obstacles from point" 
 					 & to_string (start_point)
-					 & " direction" & to_string (direction),
+					 & " direction" & to_string (direction) & " ...",
 					 level => log_threshold);
 
 				log_indentation_up;
@@ -2246,20 +2254,22 @@ package body et_routing is
 				
 				case status is
 					when VALID => -- suitable point found
-						log_indentation_down;
 
-						log (text => "distance after obstacle:" & to_string (distance_after_obstacle),
+						log (text => "distance until after obstacle:" & to_string (distance_after_obstacle),
 							level => log_threshold);
 						
+						log_indentation_down;
+
 						return (VALID, distance_after_obstacle);
 
 						
 					when INVALID => -- NO suitable point found 
-						log_indentation_down;
 						
 						log (text => "no obstacle found",
 							level => log_threshold);
 						
+						log_indentation_down;
+
 						return (status => INVALID);
 				end case;
 
