@@ -748,9 +748,38 @@ package body et_routing is
 
 					use pac_distances_sorting;
 					clearances : pac_distances_positive.list;
-				begin
-					log (text => "net " & to_string (name), level => lth + 2);
 
+					procedure test_distance is begin
+						log_indentation_up;
+						
+						if distance <= zero then 
+							-- start_point is inside segment or on the edge of the segment
+							log (text => "point is in segment", level => lth + 4);
+							result := false;
+						else
+							-- start_point is outside the segment
+							log (text => "point is outside the segment", level => lth + 4);
+							
+							-- the distance of the start point to the border of the segment:
+							distance := distance - width * 0.5;
+
+							-- Due to unavoidable rounding errors the difference between 
+							-- distance and border can be -type_distance'small:
+							if (distance - get_greatest (clearances)) >= - type_distance'small then
+								log (text => "point is in safe distance to segment", level => lth + 4);
+							else
+								log (text => "point is too close to segment", level => lth + 4);
+								result := false;
+							end if;							
+						end if;
+
+						log_indentation_down;
+					end test_distance;
+					
+				begin -- query_net
+					log (text => "net " & to_string (name), level => lth + 2);
+					log_indentation_up;
+					
 					clearances.append (class_given_net.clearance);
 					clearances.append (class_foregin_net.clearance);
 
@@ -763,28 +792,7 @@ package body et_routing is
 						segment_line := to_line_segment (element (l));
 						log (text => to_string (segment_line), level => lth + 3);
 						distance := get_shortest_distance (start_point, segment_line);
-
-						if distance <= zero then 
-							-- start_point is inside segment or on the edge of the segment
-							log (text => "point is in segment", level => lth + 3);
-							result := false;
-						else
-							-- start_point is outside the segment
-							log (text => "point is outside the segment", level => lth + 3);
-							
-							-- the distance of the start point to the border of the segment:
-							distance := distance - width * 0.5;
-
-							-- Due to unavoidable rounding errors the difference between 
-							-- distance and border can be -type_distance'small:
-							if (distance - get_greatest (clearances)) >= - type_distance'small then
-								log (text => "point is in safe distance to segment", level => lth + 3);
-							else
-								log (text => "point is too close to segment", level => lth + 3);
-								result := false;
-							end if;							
-						end if;
-
+						test_distance;
 						next (l);
 					end loop;
 
@@ -793,30 +801,11 @@ package body et_routing is
 						segment_arc := to_arc_segment (element (a));
 						log (text => to_string (segment_arc), level => lth + 3);
 						distance := get_shortest_distance (start_point, segment_arc);
-
-						if distance <= zero then 
-							-- start_point is inside segment or on the edge of the segment
-							log (text => "point is in segment", level => lth + 3);
-							result := false;
-						else
-							-- start_point is outside the segment
-							log (text => "point is outside the segment", level => lth + 3);
-							
-							-- the distance of the start point to the border of the segment:
-							distance := distance - width * 0.5;
-
-							-- Due to unavoidable rounding errors the difference between 
-							-- distance and border can be -type_distance'small:
-							if (distance - get_greatest (clearances)) >= - type_distance'small then
-								log (text => "point is in safe distance to segment", level => lth + 3);
-							else
-								log (text => "point is too close to segment", level => lth + 3);
-								result := false;
-							end if;							
-						end if;
-
+						test_distance;
 						next (a);
 					end loop;
+
+					log_indentation_down;
 				end query_net;
 				
 			begin -- query_tracks
