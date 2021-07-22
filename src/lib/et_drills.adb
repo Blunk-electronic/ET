@@ -34,10 +34,7 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+
 
 with et_string_processing;		use et_string_processing;
 
@@ -54,7 +51,7 @@ package body et_drills is
 	end validate_drill_size;
 
 	function to_string (drill : in type_drill) return string is begin
-		return (to_string (drill.position) & " drill_diameter" & to_string (drill.diameter));
+		return ("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter));
 	end to_string;
 
 	

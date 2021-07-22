@@ -57,8 +57,8 @@ package et_drills is
 		-- CS locked : type_locked;
 	end record;
 
+	-- returns the properties of the given drill as string:
 	function to_string (drill : in type_drill) return string;
-	-- returns the properties of the given drill as string.
 
 
 	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;

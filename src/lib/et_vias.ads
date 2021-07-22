@@ -141,12 +141,18 @@ package et_vias is
 
 			when BLIND_DRILLED_FROM_TOP =>
 				restring_top	: type_restring_width;
-				lower			: type_via_layer;
+
+				-- the deepest layer of the via:
+				lower			: type_via_layer; -- CS rename to deepest
+				
 				-- CS: stop mask open
 				
 			when BLIND_DRILLED_FROM_BOTTOM =>
 				restring_bottom	: type_restring_width;
-				upper			: type_via_layer;
+
+				-- the topmost layer of the via:
+				upper			: type_via_layer; -- CS rename to highest
+				
 				-- CS: stop mask open
 				
 			when BURIED =>
@@ -155,6 +161,10 @@ package et_vias is
 		end case;
 	end record;
 
+	-- returns the properties of the given via as string:
+	function to_string (via : in type_via) return string;
+
+	
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 

@@ -59,6 +59,34 @@ package body et_vias is
 		return type_via_category'value (category);
 	end to_via_category;
 
+
+	function to_string (via : in type_via) return string is
+		
+		function get_misc return string is begin
+			case via.category is
+				when THROUGH =>
+					return ""; -- nothing special
+				
+				when BLIND_DRILLED_FROM_TOP =>
+					return " / restr. top:" & to_string (via.restring_top)
+						& " / deepest layer:" & to_string (via.lower);
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					return " / restr. bottom:" & to_string (via.restring_bottom)
+						& " / hightest layer:" & to_string (via.upper);
+
+				when BURIED =>
+					return " / layers:" & to_string (via.layers);
+			end case;
+		end get_misc;
+
+	begin
+		return "via: " & to_string (type_drill (via)) 
+			& " / CAT: " & to_string (via.category)
+			& " / restr. inner: " & to_string (via.restring_inner)
+			& get_misc;
+	end to_string;
+	
 	
 	function to_buried_layers (
 		upper, lower	: in string; -- 2, 6
