@@ -627,6 +627,21 @@ package body et_routing is
 		-- get the design rules of the module:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
+		-- The top conductor layer 1 is always there:
+		top_layer		: constant type_signal_layer := type_signal_layer'first;
+
+		-- The deepest conductor layer towards bottom is defined by the layer stack:
+		bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
+		
+		function is_inner_layer (layer : in type_signal_layer) return boolean is begin
+			if layer > top_layer and layer < bottom_layer then
+				return true;
+			else
+				return false;
+			end if;
+		end is_inner_layer;		
+
+		
 		-- Get the net class settings of the given net.
 		-- If no net was given (freetrack), then we get the settings of class "default":
 		class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
@@ -742,39 +757,92 @@ package body et_routing is
 					use et_pcb.pac_conductor_arcs;
 					a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
 					segment_arc : type_conductor_arc_segment;
-
+					
 					distance : type_distance;
 					class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
 					use pac_distances_sorting;
 					clearances : pac_distances_positive.list;
 
+					-- clears the "result" flag if variable "distance" is:
+					-- - negative
+					-- - the requested track is too close to the foregin segment or via
 					procedure test_distance is begin
 						log_indentation_up;
 						
 						if distance <= zero then 
-							-- start_point is inside segment or on the edge of the segment
-							log (text => "point is in segment", level => lth + 4);
+							-- start_point is inside segment/via or on the edge of the segment/via
+							log (text => "point is inside", level => lth + 4);
 							result := false;
 						else
-							-- start_point is outside the segment
-							log (text => "point is outside the segment", level => lth + 4);
+							-- start_point is outside the segment/via
+							log (text => "point is outside", level => lth + 4);
 							
-							-- the distance of the start point to the border of the segment:
+							-- the distance of the start point to the border of the segment/via:
 							distance := distance - width * 0.5;
 
 							-- Due to unavoidable rounding errors the difference between 
 							-- distance and border can be -type_distance'small:
 							if (distance - get_greatest (clearances)) >= - type_distance'small then
-								log (text => "point is in safe distance to segment", level => lth + 4);
+								log (text => "point is in safe distance", level => lth + 4);
 							else
-								log (text => "point is too close to segment", level => lth + 4);
+								log (text => "point is too close", level => lth + 4);
 								result := false;
 							end if;							
 						end if;
 
 						log_indentation_down;
 					end test_distance;
+
+
+					procedure query_vias is
+						use et_vias;
+						use pac_vias;
+						v : pac_vias.cursor := net.route.vias.first;
+						c : type_circle;
+
+						procedure set_radius (restring : in type_restring_width) is begin
+							c.radius := element (v).diameter * 0.5 + restring;
+						end set_radius;
+
+						procedure compute_and_test_distance is begin
+							if get_point_to_circle_status (start_point, c) = OUTSIDE then
+								distance := get_absolute (get_shortest_distance (start_point, c));
+								test_distance;
+							end if;							
+						end compute_and_test_distance;
+						
+						
+					begin -- query_vias
+						while v /= pac_vias.no_element and result = true loop
+
+							c.center := element (v).position;
+							
+							case element (v).category is
+								when THROUGH =>
+									log (text => to_string (element (v)), level => lth + 3);
+
+									if is_inner_layer (layer) then
+										set_radius (element (v).restring_inner);
+										compute_and_test_distance;
+									else
+										set_radius (element (v).restring_outer);
+										compute_and_test_distance;
+									end if;
+									
+								when BURIED =>
+									null; -- CS
+									
+								when BLIND_DRILLED_FROM_TOP =>
+									null; -- CS
+
+								when BLIND_DRILLED_FROM_BOTTOM =>
+									null; -- CS
+							end case;
+
+							next (v);
+						end loop;
+					end query_vias;
 					
 				begin -- query_net
 					log (text => "net " & to_string (name), level => lth + 2);
@@ -795,7 +863,8 @@ package body et_routing is
 						test_distance;
 						next (l);
 					end loop;
-
+					-- CS separate procedure
+					
 					-- ARCS
 					while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
 						segment_arc := to_arc_segment (element (a));
@@ -804,7 +873,11 @@ package body et_routing is
 						test_distance;
 						next (a);
 					end loop;
-
+					-- CS separate procedure
+					
+					-- VIAS
+					query_vias;
+				
 					log_indentation_down;
 				end query_net;
 				
@@ -1861,7 +1934,22 @@ package body et_routing is
 
 		-- get the design rules of the module:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+		
+		-- The top conductor layer 1 is always there:
+		top_layer		: constant type_signal_layer := type_signal_layer'first;
 
+		-- The deepest conductor layer towards bottom is defined by the layer stack:
+		bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
+		
+		function is_inner_layer (layer : in type_signal_layer) return boolean is begin
+			if layer > top_layer and layer < bottom_layer then
+				return true;
+			else
+				return false;
+			end if;
+		end is_inner_layer;		
+
+		
 		-- Get the net class settings of the given net.
 		-- If no net was given (freetrack), then we get the settings of class "default":
 		class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
@@ -2090,6 +2178,34 @@ package body et_routing is
 						end if;
 					end query_arc;
 
+					use et_vias;
+					use pac_vias;
+					
+					procedure query_via (v : in pac_vias.cursor) is begin
+						case element (v).category is
+							when THROUGH =>
+								log (text => to_string (element (v)), level => log_threshold + 3);
+
+								if is_inner_layer (layer) then
+									test_circle ((
+										center	=> element (v).position,
+										radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+								else
+									test_circle ((
+										center	=> element (v).position,
+										radius	=> element (v).diameter * 0.5 + element (v).restring_outer));
+								end if;
+
+							when BURIED =>
+								null; -- CS
+								
+							when BLIND_DRILLED_FROM_TOP =>
+								null; -- CS
+
+							when BLIND_DRILLED_FROM_BOTTOM =>
+								null; -- CS
+						end case;
+					end query_via;
 					
 				begin -- query_net
 					log (text => "net " & to_string (key (nf)), level => log_threshold + 2);
@@ -2108,6 +2224,7 @@ package body et_routing is
 					log_indentation_up;
 					iterate (element (nf).route.lines, query_line'access);
 					iterate (element (nf).route.arcs, query_arc'access);
+					iterate (element (nf).route.vias, query_via'access);
 					
 					-- CS other objects ... see et_pcb.type_route
 					log_indentation_down;
