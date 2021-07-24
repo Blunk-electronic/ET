@@ -1070,7 +1070,8 @@ package body et_routing is
 		
 		-- There is a maximum of iterations. If maximum reached
 		-- a constraint_error is raised.
-		max_iterations : constant positive := 1000; -- CS increase if necessary
+		--max_iterations : constant positive := 1000; -- CS increase if necessary
+		max_iterations : constant positive := 20; -- CS increase if necessary
 
 	begin		
 		log (text => "starting numerical search ...", level => lth);
@@ -1099,7 +1100,8 @@ package body et_routing is
 			end case;
 					
 			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
-
+			put_line (" D:" & to_string (d_cap_to_obstacle));-- & " C:" & to_string (c.center));
+			
 			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
 
 			
@@ -1696,8 +1698,11 @@ package body et_routing is
 			-- Loop in collection of arc segments (it is an array of arcs):
 			for i in arcs'first .. arcs'last loop
 
+				-- log the candidate arc:
+				log (text => to_string (arcs (i)), level => lth + 2);
+				
 				-- Get the boundaries of the candidate arc:
-				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
+				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero line width
 				
 				declare
 					-- Get the overlap area of the track and arc boundaries:
@@ -1718,6 +1723,12 @@ package body et_routing is
 								start_point := bi.intersection.greatest_x;
 						end case;
 
+						log (text => "place" & type_place'image (place) 
+							& "start point: " & to_string (start_point) 
+							& " clearance" & to_string (clearance));
+
+						log (text => "arc" & to_string (arcs (i)));
+						
 						x_pre := get_break (
 							init		=> start_point,
 							place		=> place,
@@ -1755,7 +1766,6 @@ package body et_routing is
 					bp2 := type_point (set (element (x_cursor), zero));
 			end case;
 		end set_break_points;
-
 		
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way

@@ -2698,13 +2698,14 @@ package body et_geometry is
 		is
 			-- Build a line that runs from the given point to the center of the arc:
 			line : constant type_line_vector := to_line_vector (line => (point, arc.center));
+			-- CS exception if point = arc.center !
 
 			-- Get the intersection(s) of the line with the arc:
 			i : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
 			
 			result : type_distance_polar;
 
-			d_to_center : constant type_distance_polar := get_distance (point, arc.center);
+			DPC : constant type_distance_polar := get_distance (point, arc.center);
 			radius : constant type_distance_positive := radius_start (arc);
 
 			procedure compare_start_and_end_point is 
@@ -2720,17 +2721,21 @@ package body et_geometry is
 				end if;
 			end compare_start_and_end_point;
 
-			procedure on_circumfence is begin
-				-- The arc can be threated like a circle:
-				result := get_distance (point, arc.center);
-				set_absolute (result, get_absolute (d_to_center) - radius);
-			end on_circumfence;
+			procedure intersection_on_circumfence is begin
+				-- The arc can be treated like a circle.
+				-- Compute the distance of point to circle:
+				result := DPC;
+				set_absolute (result, get_absolute (DPC) - radius);
+			end intersection_on_circumfence;
 			
-			function after_center (v : in type_vector) return boolean is
-				d_to_intersection : constant type_distance_polar := 
-					get_distance (point, to_point (v));
+			function after_center (i : in type_vector) return boolean is
+				lambda : type_distance;
+				dir_vector : type_vector := line.v_direction;
+				start_vector : type_vector := line.v_start;
 			begin
-				if get_absolute (d_to_intersection) > get_absolute (d_to_center) then
+				lambda := divide ( (subtract (i, start_vector)), dir_vector);
+				--put_line ("lambda" & to_string (lambda));
+				if lambda > 1.0 then --zero then
 					return true;
 				else 
 					return false;
@@ -2738,25 +2743,31 @@ package body et_geometry is
 			end after_center;
 			
 		begin -- get_shortest_distance
-			if get_absolute (d_to_center) >= radius then
+			
+			if get_absolute (DPC) >= radius then
 				-- point outside or on virtual circle
+				--put_line ("outside");
 				
 				case i.status is
 					when NONE_EXIST =>
-						-- line travels past the arc
+						-- line travels past the arc. no intersections
 						compare_start_and_end_point;
 
 					when ONE_EXISTS =>
 						if i.tangent_status = SECANT then
 						-- line intersects the arc only once
+
+							--put_line ("i: " & to_string (i.intersection.point));
 							
 							if after_center (i.intersection.point) then
 								-- intersection after center of arc
+								--put_line ("i after center");
 								compare_start_and_end_point;
 							else
-								-- intersection on circumfence 
-								-- between point and center of arc
-								on_circumfence;
+								-- intersection on circumfence between point and center of arc
+								--put_line ("i before center");
+								--put_line ("p betweeen circumfence and center");
+								intersection_on_circumfence;
 							end if;
 							
 						else
@@ -2768,29 +2779,37 @@ package body et_geometry is
 						-- line intersects the virtual circle twice on
 						-- its circumfence. But the intersection nearest
 						-- to point is relevant:
-						on_circumfence;
+						intersection_on_circumfence;
 						
 				end case;
 
 			else -- point is inside the virtual circle
+				--put_line ("inside");
+				
 				case i.status is
 					when NONE_EXIST =>
 						-- line travels past the arc
 						compare_start_and_end_point;
 
 					when ONE_EXISTS =>
+						--put_line ("one");
+						
 						if i.tangent_status = SECANT then
 						-- line intersects the arc only once
 
+							--put_line ("i: " & to_string (i.intersection.point));
+							
 							if after_center (i.intersection.point) then
 								-- intersection after center of arc
+								--put_line ("i after center");
 								compare_start_and_end_point;
 							else
-								-- point between circumfence and
-								-- center of arc
-								result := get_distance (arc.center, point);
-								set_absolute (result, radius - get_absolute (d_to_center));
-
+								-- point is between circumfence and center of arc
+								--put_line ("i before center");
+								
+								result := DPC;
+								set_absolute (result, radius - get_absolute (DPC));
+								set_angle (result, add (get_angle (DPC), 180.0));
 							end if;
 
 						else
@@ -2799,6 +2818,7 @@ package body et_geometry is
 						end if;
 
 					when TWO_EXIST =>
+						-- treat the arc like a circle and compute distance point to circle:
 						result := get_distance_to_circumfence (point, (arc.center, radius));
 						
 				end case;				
@@ -3856,15 +3876,16 @@ package body et_geometry is
 
 			dp : type_distance_polar;
 		begin
-
-			--put_line ("circle" & to_string (circle));
-			--put_line ("arc" & to_string (arc));
+			new_line;
+			put_line (to_string (circle));
+			--put_line ("-" & to_string (arc));
 
 			--log (text => "circle" & to_string (circle));
 			--log (text => "arc" & to_string (arc));
 			
 			dp := get_shortest_distance (circle.center, arc);
-			--log (text => "shortest distance" & to_string (get_absolute (dp)));
+			put_line ("D C-A:" & to_string (get_absolute (dp)) 
+				& to_string (get_angle (dp)));
 			
 			result := get_absolute (dp) - circle.radius;
 			return result;

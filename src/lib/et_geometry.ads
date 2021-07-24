@@ -447,7 +447,7 @@ package et_geometry is
 			point		: in out type_point'class;
 			position	: in type_point);
 		
-		-- Moves a point into direction at distance.
+		-- Moves a point into direction by distance.
 		function move (
 			point		: in type_point;
 			direction	: in type_rotation;
@@ -1032,7 +1032,13 @@ package et_geometry is
 
 		-- Converts a line (consisting of start and end point)
 		-- to a line vector consisting of start vector and
-		-- direction vector:
+		-- direction vector.
+		-- The start vector of the result will be directly derived 
+		--  from the start point of the given line.
+		-- The direction vector of the result will be computed as:
+		--  dx = line.end_point.x - line.start_point.x
+		--  dy = line.end_point.y - line.start_point.y
+		--  dz = zero
 		function to_line_vector (
 			line	: in type_line)
 			return type_line_vector;

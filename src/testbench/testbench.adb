@@ -50,77 +50,85 @@ use et_pcb_coordinates.pac_geometry_brd;
 use et_board_shapes_and_text.pac_shapes;
 
 with et_packages;				use et_packages;
+with et_routing;				use et_routing;
 
 procedure testbench is
 
 	use functions_float;
 
+
+ --circle: C: (x/y)  18.0233/ 0.0000 R: 0.3500
+--D C-A: 0.4208 -86.363
+ --D: 0.0708
+
 	
-	--C : type_point := type_point (set (x => 3.1, y => 4.1));
+	A : type_arc;
 
-	--type type_segment_area is new type_polygon_base with null record;
-	--P : type_segment_area;
+	P0 : type_point := type_point (set (18.4, 0.0));
+	P1 : type_point := type_point (set (18.05, 0.0));
+	P2 : type_point := type_point (set (18.0233, 0.0));
+	P3 : type_point := type_point (set (18.0, 0.0));
 
-		
-	--use pac_polygon_segments;
-	--s : type_polygon_segments := (circular => false, others => <>);
-
-	--L : type_line;
-	A1 : type_conductor_arc;
-	--A2 : type_arc_an
+	P : type_point;
 	
+	x : type_distance;
+
+	dp : type_distance_polar;
 begin
-	--L.start_point := type_point (set (x =>  3.0000, y =>  4.1000));
-	--L.end_point   := type_point (set (x =>  8.0000, y =>  4.1000));
-	--append (s.segments, (LINE, L));
-
-	--A.start_point := type_point (set (x =>  8.0000, y =>  4.1000));
-	--A.end_point   := type_point (set (x =>  8.0000, y =>  3.9000));
-	--A.center      := type_point (set (x =>  8.0000, y =>  4.0000));
-	--A.direction   := CW;
-	--append (s.segments, (ARC, A));
-
-	--L.start_point := type_point (set (x =>  8.0000, y =>  3.9000));
-	--L.end_point   := type_point (set (x =>  3.0000, y =>  3.9000));
-	--append (s.segments, (LINE, L));
-
-	A1.width := 0.1;
-	A1.start_point := type_point (set (x =>  3.0000, y =>  22.000));
-	A1.end_point   := type_point (set (x =>  8.0000, y =>  17.000));
-	A1.center      := type_point (set (x =>  3.0000, y =>  17.000));
-	A1.direction   := CW;
-	--append (s.segments, (ARC, A));
-	
-	--P.contours := s;
-
-
 	new_line;
 
-	if is_valid (A1) then
-		put_line ("valid");
+	A.start_point := type_point (set (x =>  18.05, y =>  0.48));
+	A.end_point   := type_point (set (x =>  18.05, y => -0.42));
+	A.center      := type_point (set (x =>  18.05, y =>  0.03));
+	A.direction   := CCW;
+
+	if is_valid (A) then
+		--put_line ("valid");
 		
-		put_line (to_string (to_arc_segment (A1)));
+		--put_line (to_string (A));
+
+		--x := get_break (
+			--init		=> 18.05,
+			--place		=> AFTER,
+			--obstacle	=> (ARC, A),
+			--clearance	=> 0.35,
+			--lth			=> 1);
+
+		--put_line (to_string (x));
+
+		P := P0;
+		
+		for i in 1 .. 20 loop
+
+			put_line ("P:" & to_string (P));
+			--put_line (to_string (A));
+
+			dp := get_shortest_distance (P , A);
+			put_line (" D: " & to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+			new_line;
+
+			P := type_point (move (P, 180.0, 0.025));
+		end loop;
+		
+		--dp := get_shortest_distance (P1, A);
+		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+
+		--new_line;
+		
+		--dp := get_shortest_distance (P2, A);
+		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+
+		--new_line;
+		
+		--dp := get_shortest_distance (P3, A);
+		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+
+		
 	else
 		put_line ("invalid");
 	end if;
 	
-	--if is_closed (P).closed then
 
-		--put_line ("point" & to_string (C));
-		--put_line (to_string (P));
-		--new_line;
-
-		--case in_polygon_status (P, C).status is
-			--when INSIDE =>
-				--null;
-				
-			--when OUTSIDE =>
-				--null;
-		--end case;
-
-	--else
-		--put_line ("not closed");
-	--end if;
 	
 end testbench;
 
