@@ -104,7 +104,7 @@ begin
 			--put_line (to_string (A));
 
 			dp := get_shortest_distance (P , A);
-			put_line (" D: " & to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+			put_line (to_string (dp));
 			new_line;
 
 			P := type_point (move (P, 180.0, 0.025));

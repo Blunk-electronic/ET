@@ -520,6 +520,10 @@ package et_geometry is
 		
 		type type_distance_polar is private;
 
+		function to_string (
+			distance : in type_distance_polar)
+			return string;
+		
 		function to_polar (
 			absolute	: in type_distance_positive;
 			angle		: in type_rotation)
@@ -536,6 +540,11 @@ package et_geometry is
 			distance : in out type_distance_polar;
 			angle    : in type_rotation);
 
+		-- Adds 180 degree to the angle of the given polar distance.
+		-- Example: changes 45 degrees to 225 degrees:
+		procedure reverse_angle (
+			distance : in out type_distance_polar);
+									
 		
 		-- Returns the distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
@@ -1226,8 +1235,9 @@ package et_geometry is
 
 
 			
-		-- Returns the shortest distance from the given point to the
-		-- given arc:
+		-- Returns the shortest distance between a point and an arc.
+		-- If the point is on the center of the arc, then the return is
+		-- absolute zero and angle zero degree:
 		function get_shortest_distance (
 			point	: in type_point;
 			arc		: in type_arc)

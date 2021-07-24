@@ -867,6 +867,15 @@ package body et_geometry is
 		end;
 
 
+		function to_string (
+			distance : in type_distance_polar)
+			return string
+		is begin
+			return ("abs:" & to_string (distance.absolute) 
+				& " / angle:" & to_string (distance.angle));
+		end to_string;
+		
+		
 		function to_polar (
 			absolute	: in type_distance_positive;
 			angle		: in type_rotation)
@@ -890,6 +899,14 @@ package body et_geometry is
 		is begin
 			distance.angle := angle;
 		end set_angle;
+
+
+		procedure reverse_angle (
+			distance : in out type_distance_polar)
+		is begin
+			distance.angle := add (distance.angle, 180.0);
+		end reverse_angle;
+
 		
 		
 		function get_distance (
@@ -2735,7 +2752,7 @@ package body et_geometry is
 			begin
 				lambda := divide ( (subtract (i, start_vector)), dir_vector);
 				--put_line ("lambda" & to_string (lambda));
-				if lambda > 1.0 then --zero then
+				if lambda > 1.0 then
 					return true;
 				else 
 					return false;
@@ -2809,7 +2826,8 @@ package body et_geometry is
 								
 								result := DPC;
 								set_absolute (result, radius - get_absolute (DPC));
-								set_angle (result, add (get_angle (DPC), 180.0));
+								--set_angle (result, add (get_angle (DPC), 180.0));
+								reverse_angle (result);
 							end if;
 
 						else
