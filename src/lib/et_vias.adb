@@ -60,6 +60,23 @@ package body et_vias is
 	end to_via_category;
 
 
+	function buried_via_uses_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer)
+		return boolean
+	is
+		-- if the given via is not buried, then an exception is raised here,
+		-- because only buried vias have the element "layers":
+		subtype stack is type_via_layer range via.layers.upper .. via.layers.lower;
+	begin
+		if layer in stack then
+			return true;
+		else
+			return false;
+		end if;
+	end buried_via_uses_layer;
+
+	
 	function to_string (via : in type_via) return string is
 		
 		function get_misc return string is begin

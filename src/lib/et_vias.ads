@@ -164,6 +164,17 @@ package et_vias is
 	-- returns the properties of the given via as string:
 	function to_string (via : in type_via) return string;
 
+
+	-- Returns true if the given buried via uses the given layer.
+	-- The given via must be of category BURIED ! Otherwise an exception
+	-- is raised.
+	-- NOTE: If The given layer is the top layer (1) then the
+	-- return is false, because a buried via never uses this layer.
+	function buried_via_uses_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer)
+		return boolean;
+
 	
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);

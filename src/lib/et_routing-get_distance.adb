@@ -315,14 +315,18 @@ is
 								test_circle ((
 									center	=> element (v).position,
 									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
-							else
+							else -- top or bottom layer
 								test_circle ((
 									center	=> element (v).position,
 									radius	=> element (v).diameter * 0.5 + element (v).restring_outer));
 							end if;
 
 						when BURIED =>
-							null; -- CS
+							if buried_via_uses_layer (element (v), layer) then
+								test_circle ((
+									center	=> element (v).position,
+									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+							end if;
 							
 						when BLIND_DRILLED_FROM_TOP =>
 							null; -- CS

@@ -260,7 +260,10 @@ is
 								end if;
 								
 							when BURIED =>
-								null; -- CS
+								if buried_via_uses_layer (element (v), layer) then
+									set_radius (element (v).restring_inner);
+									compute_and_test_distance;
+								end if;
 								
 							when BLIND_DRILLED_FROM_TOP =>
 								null; -- CS
