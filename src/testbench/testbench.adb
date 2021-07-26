@@ -64,12 +64,12 @@ procedure testbench is
 	
 	A : type_arc;
 
-	P0 : type_point := type_point (set (18.4, 0.0));
-	P1 : type_point := type_point (set (18.05, 0.0));
-	P2 : type_point := type_point (set (18.0233, 0.0));
-	P3 : type_point := type_point (set (18.0, 0.0));
+--	P0 : type_point := type_point (set (18.4, 0.03));
+	P : type_point := type_point (set (18.20, 0.03));
+	--P2 : type_point := type_point (set (18.0233, 0.0));
+	--P3 : type_point := type_point (set (18.0, 0.0));
 
-	P : type_point;
+	--P : type_point;
 	
 	x : type_distance;
 
@@ -87,41 +87,29 @@ begin
 		
 		--put_line (to_string (A));
 
-		--x := get_break (
-			--init		=> 18.05,
-			--place		=> AFTER,
-			--obstacle	=> (ARC, A),
-			--clearance	=> 0.35,
-			--lth			=> 1);
+		x := get_break (
+			init		=> 18.05,
+			place		=> AFTER,
+			obstacle	=> (ARC, A),
+			clearance	=> 0.35,
+			lth			=> 1);
 
-		--put_line (to_string (x));
+		put_line (to_string (x));
 
-		P := P0;
+
+		--put_line ("P:" & to_string (P));
 		
-		for i in 1 .. 20 loop
+		--for i in 1 .. 20 loop
 
-			put_line ("P:" & to_string (P));
-			--put_line (to_string (A));
+			--put_line ("P:" & to_string (P));
+			----put_line (to_string (A));
 
-			dp := get_shortest_distance (P , A);
-			put_line (to_string (dp));
-			new_line;
+			--dp := get_shortest_distance (P , A);
+			--put_line (to_string (dp));
+			--new_line;
 
-			P := type_point (move (P, 180.0, 0.025));
-		end loop;
-		
-		--dp := get_shortest_distance (P1, A);
-		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
-
-		--new_line;
-		
-		--dp := get_shortest_distance (P2, A);
-		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
-
-		--new_line;
-		
-		--dp := get_shortest_distance (P3, A);
-		--put_line (to_string (get_absolute (dp)) & to_string (get_angle (dp)));
+			--P := type_point (move (P, 180.0, 0.05));
+		--end loop;
 
 		
 	else

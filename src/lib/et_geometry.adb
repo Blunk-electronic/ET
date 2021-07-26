@@ -3936,16 +3936,14 @@ package body et_geometry is
 
 			dp : type_distance_polar;
 		begin
-			new_line;
-			put_line (to_string (circle));
+			--new_line;
+			--put_line (to_string (circle));
 			--put_line ("-" & to_string (arc));
 
 			--log (text => "circle" & to_string (circle));
 			--log (text => "arc" & to_string (arc));
 			
 			dp := get_shortest_distance (circle.center, arc);
-			put_line ("D C-A:" & to_string (get_absolute (dp)) 
-				& to_string (get_angle (dp)));
 			
 			result := get_absolute (dp) - circle.radius;
 			return result;

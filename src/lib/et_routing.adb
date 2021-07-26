@@ -1100,7 +1100,7 @@ package body et_routing is
 			end case;
 					
 			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
-			put_line (" D:" & to_string (d_cap_to_obstacle));-- & " C:" & to_string (c.center));
+			--put_line (" D:" & to_string (d_cap_to_obstacle));-- & " C:" & to_string (c.center));
 			
 			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
 
