@@ -340,7 +340,7 @@ package body et_packages is
 					s : type_polygon_segments := (circular => true, others => <>);
 				begin
 					s.circle.center := segment.cap_start.center;
-					s.circle.radius := radius_start (segment.cap_start);
+					s.circle.radius := get_radius_start (segment.cap_start);
 					polygon.contours := s;
 				end;
 			else
@@ -399,7 +399,7 @@ package body et_packages is
 		arc_n : type_conductor_arc := arc;
 		arc_i, arc_o : type_arc_angles;
 		
-		center_radius : constant type_distance_positive := radius_start (arc_n);
+		center_radius : constant type_distance_positive := get_radius_start (arc_n);
 		half_width : constant type_distance_positive := arc_n.width * 0.5;
 		inner_radius, outer_radius : type_distance_positive;
 		result : type_conductor_arc_segment;		

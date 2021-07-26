@@ -2727,7 +2727,7 @@ package body et_geometry is
 				ILC : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
 
 				DPC : constant type_distance_polar := get_distance (point, arc.center);
-				radius : constant type_distance_positive := radius_start (arc);
+				radius : constant type_distance_positive := get_radius_start (arc);
 
 				-- Assigns to the result either the start or the end point of
 				-- the arc, depending on which is closer.
@@ -2919,18 +2919,32 @@ package body et_geometry is
 		end get_curvature;
 		
 		
-		function radius_start (arc : in type_arc) return type_distance_positive is begin
+		function get_radius_start (
+			arc : in type_arc) 
+			return type_distance_positive 
+		is begin
 			return get_distance_total (arc.center, arc.start_point);
-		end radius_start;
+		end get_radius_start;
 
 		function radius_end (arc : in type_arc) return type_distance_positive is begin
 			return get_distance_total (arc.center, arc.end_point);
 		end radius_end;
 
 		
-		function is_valid (arc : in type_arc) return boolean is begin
-			if radius_start (arc) = radius_end (arc) then
-				return true;
+		function is_valid (
+			arc : in type_arc)
+			return boolean 
+		is 
+			rs : constant type_distance_positive := get_radius_start (arc);
+			re : constant type_distance_positive := radius_end (arc);
+		begin
+			if rs = re then
+
+				if rs > zero then				
+					return true;
+				else
+					return false;
+				end if;
 			else
 				return false;
 			end if;
@@ -3318,7 +3332,7 @@ package body et_geometry is
 			-- Build a virtual circle from the given arc:
 			vc : constant type_circle := (
 					center => arc.center, 
-					radius => radius_start (arc));
+					radius => get_radius_start (arc));
 
 			-- Compute the virtual intersections of line with circle:
 			vi : constant type_intersection_of_line_and_circle := 
@@ -3490,7 +3504,7 @@ package body et_geometry is
 			EX : type_distance;
 
 			-- the radius of the given arc:
-			R  : constant type_distance_positive := radius_start (arc);
+			R  : constant type_distance_positive := get_radius_start (arc);
 
 			-- The connecting points between the resulting arcs are where an
 			-- imaginary vertical line intersects an imaginary circle at its highest and 
@@ -5527,7 +5541,7 @@ package body et_geometry is
 
 			procedure query_arc (a : in type_arc) is
 				-- the radius of the arc:
-				radius : constant type_distance_positive := radius_start (a);
+				radius : constant type_distance_positive := get_radius_start (a);
 				
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate arc of the polygon.
