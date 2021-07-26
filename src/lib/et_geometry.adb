@@ -2926,9 +2926,12 @@ package body et_geometry is
 			return get_distance_total (arc.center, arc.start_point);
 		end get_radius_start;
 
-		function radius_end (arc : in type_arc) return type_distance_positive is begin
+		function get_radius_end (
+			arc : in type_arc)
+			return type_distance_positive
+		is begin
 			return get_distance_total (arc.center, arc.end_point);
-		end radius_end;
+		end get_radius_end;
 
 		
 		function is_valid (
@@ -2936,7 +2939,7 @@ package body et_geometry is
 			return boolean 
 		is 
 			rs : constant type_distance_positive := get_radius_start (arc);
-			re : constant type_distance_positive := radius_end (arc);
+			re : constant type_distance_positive := get_radius_end (arc);
 		begin
 			if rs = re then
 
