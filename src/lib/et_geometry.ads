@@ -1265,7 +1265,8 @@ package et_geometry is
 			return type_distance_positive;
 		
 		-- Returns the distance between the end point and the center of the arc.
-		function get_radius_end (arc : in type_arc) 
+		function get_radius_end (
+			arc : in type_arc) 
 			return type_distance_positive;
 
 		-- Test whether the given arc is valid. The arc is valid if:
