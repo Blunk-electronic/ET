@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+
 separate (et_routing)
 
 function get_distance (
@@ -69,6 +70,8 @@ is
 		end if;
 	end is_inner_layer;		
 
+
+	use et_pcb;
 	
 	-- Get the net class settings of the given net.
 	-- If no net was given (freetrack), then we get the settings of class "default":
@@ -190,6 +193,7 @@ is
 
 		-- holes
 		procedure query_holes is
+			use et_packages;			
 			use pac_pcb_cutouts;
 
 			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
@@ -267,6 +271,7 @@ is
 				use pac_distances_sorting;
 				clearances : pac_distances_positive.list;
 
+				use et_packages;				
 				
 				procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
 					segment : type_conductor_line_segment;
