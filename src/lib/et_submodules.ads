@@ -65,13 +65,15 @@ package et_submodules is
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is pac_geometry_sch.type_distance_positive range 20.0 .. 1000.0;
+	subtype type_submodule_edge_length is pac_geometry_sch.type_distance_positive
+		range 20.0 .. 1000.0; -- unit is mm
 
 	keyword_size	: constant string := "size";
 	keyword_file	: constant string := "file";
 	
 	type type_submodule_size is record
-		x, y : type_submodule_edge_length; -- size x/y of the box
+		x : type_submodule_edge_length := 60.0; -- width of the box
+		y : type_submodule_edge_length := 40.0; -- height of the box
 	end record;
 
 	function to_submodule_size (size : in type_submodule_size) return string;
@@ -172,7 +174,7 @@ package et_submodules is
 		-- net in the parent module.
 		-- Master means: The net in the parent module enforces its name onto the
 		-- net in the submodule:
-		direction	: type_netchanger_port_name;
+		direction	: type_netchanger_port_name := MASTER;
 	end record;
 
 	use pac_net_name;
@@ -276,7 +278,6 @@ package et_submodules is
 		-- the arc that connects the ports
 		arc	: et_symbols.type_arc := (
 						center		=> type_point (set (x => 0.0, y => 0.0)),
-						radius		=> 5.0,
 						start_point	=> type_point (set (x => -5.0, y => 0.0)),
 						end_point	=> type_point (set (x =>  5.0, y => 0.0)),
 						direction	=> CW,

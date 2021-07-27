@@ -1176,10 +1176,6 @@ package body et_device_rw is
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
-
-									elsif kw = keyword_radius then
-										expect_field_count (line, 2);
-										symbol_arc.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

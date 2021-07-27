@@ -178,7 +178,7 @@ package et_packages is
 -- TEXT
 	type type_text is new pac_text_fab.type_text with record
 		position	: type_position; -- x/y/rotation
-		line_width	: pac_text_fab.type_text_line_width; -- CS default := line_width_default; 
+		line_width	: pac_text_fab.type_text_line_width := pac_text_fab.type_text_line_width'first;
 		-- CS locked : type_locked;		
 	end record;
 
@@ -746,7 +746,7 @@ package et_packages is
 
 
 	type type_conductor_text is new type_text_with_content with record
-		layer	: type_signal_layer;
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);

@@ -132,10 +132,10 @@ package et_pcb is
 	function to_meaning (meaning : in string) return type_text_meaning_conductor;
 	
 	type type_text_placeholder_conductors is new type_text with record
-		meaning : type_text_meaning_conductor;
+		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
 
 		-- the conductor layer the placeholder is placed in:
-		layer	: type_signal_layer; 
+		layer	: type_signal_layer := type_signal_layer'first; 
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
@@ -146,10 +146,11 @@ package et_pcb is
 	
 	
 -- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS
-	subtype type_text_meaning is type_text_meaning_conductor range COMPANY .. REVISION;
+	subtype type_text_meaning is type_text_meaning_conductor 
+		range COMPANY .. REVISION;
 	
 	type type_text_placeholder is new type_text with record
-		meaning : type_text_meaning;
+		meaning : type_text_meaning := type_text_meaning'first;
 	end record;
 
 	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);

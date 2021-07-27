@@ -584,6 +584,8 @@ package et_kicad.pcb is
 		NONE, -- "line" in gui
 		FULL); -- "fully hatched" in gui
 
+	hatch_width_default : constant type_distance_positive := 0.508;
+	
 	-- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 	-- Currently there is no need to output this stuff:
 	-- CS function to_string (hatch_style)
@@ -606,13 +608,13 @@ package et_kicad.pcb is
 	
 	type type_polygon is record
 		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
-		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
-		layer				: type_signal_layer_id;
-		timestamp			: type_timestamp;
+		net_id				: type_net_id := type_net_id'first; -- if id is 0, the polygon is not connected to any net
+		layer				: type_signal_layer_id := type_signal_layer_id'first;
+		timestamp			: type_timestamp := timestamp_default;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
-		gui_hatch_width		: type_distance_positive;	-- see spec for type_polygon_hatch. always 0.508.
-		min_thickness		: type_track_width;	-- minimum line width
-		filled				: boolean; -- CS probably no need
+		gui_hatch_width		: type_distance_positive := hatch_width_default;
+		min_thickness		: type_track_width := type_track_width'first; -- minimum line width
+		filled				: boolean := true; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
 		thermal_gap			: type_polygon_thermal_gap := type_polygon_thermal_gap'first;

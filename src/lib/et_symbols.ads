@@ -439,7 +439,6 @@ package et_symbols is
 
 	-- Arcs
 	type type_arc is new pac_shapes.type_arc with record
-		radius		: type_distance_positive; -- CS really required ?
 		width		: type_line_width := line_width_default;
 	end record;
 	package pac_arcs is new doubly_linked_lists (type_arc);

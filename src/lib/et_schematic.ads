@@ -93,8 +93,8 @@ package et_schematic is
 	-- A text/note in the schematic:
 	type type_text is new pac_text.type_text with record
 		position	: pac_geometry_sch.type_point;
-		rotation	: et_text.type_rotation_documentation;
-		sheet		: type_sheet;
+		rotation	: et_text.type_rotation_documentation := et_text.HORIZONTAL;
+		sheet		: type_sheet := type_sheet'first;
 		content		: et_text.type_text_content.bounded_string;
 		--font		: et_text.type_font;
 	end record;
