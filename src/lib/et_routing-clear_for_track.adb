@@ -194,7 +194,7 @@ is
 				clearances : pac_distances_positive.list;
 
 				-- clears the "result" flag if variable "distance" is:
-				-- - negative
+				-- - negative or
 				-- - the requested track is too close to the foregin segment or via
 				procedure test_distance is begin
 					log_indentation_up;
@@ -232,57 +232,51 @@ is
 
 					procedure set_radius (restring : in type_restring_width) is begin
 						c.radius := element (v).diameter * 0.5 + restring;
-					end set_radius;
 
-					procedure compute_and_test_distance is begin
 						if get_point_to_circle_status (start_point, c) = OUTSIDE then
 							distance := get_absolute (get_shortest_distance (start_point, c));
 							test_distance;
+						else
+							-- the start_point is inside the via
+							result := false;
+							log (text => " point is inside the via", level => lth + 4);
 						end if;							
-					end compute_and_test_distance;
-					
+					end set_radius;
 					
 				begin -- query_vias
 					while v /= pac_vias.no_element and result = true loop
 
 						c.center := element (v).position;
+						log (text => to_string (element (v)), level => lth + 3);
 						
 						case element (v).category is
 							when THROUGH =>
-								log (text => to_string (element (v)), level => lth + 3);
-
 								if is_inner_layer (layer) then
 									set_radius (element (v).restring_inner);
-									compute_and_test_distance;
 								else
 									set_radius (element (v).restring_outer);
-									compute_and_test_distance;
 								end if;
 								
 							when BURIED =>
 								if buried_via_uses_layer (element (v), layer) then
 									set_radius (element (v).restring_inner);
-									compute_and_test_distance;
 								end if;
 								
 							when BLIND_DRILLED_FROM_TOP =>
 								if layer = type_signal_layer'first then
 									set_radius (element (v).restring_top);
-									compute_and_test_distance;
+
 								elsif blind_via_uses_layer (element (v), layer) then
 									set_radius (element (v).restring_inner);
-									compute_and_test_distance;
 								end if;
 
 							when BLIND_DRILLED_FROM_BOTTOM =>
 								if layer = bottom_layer then
 									set_radius (element (v).restring_bottom);
-									compute_and_test_distance;
+
 								elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
 									set_radius (element (v).restring_inner);
-									compute_and_test_distance;
 								end if;
-
 						end case;
 
 						next (v);
