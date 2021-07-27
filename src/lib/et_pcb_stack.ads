@@ -80,8 +80,8 @@ package et_pcb_stack is
 	layer_term_separator : constant character := ',';
 	layer_term_range : constant character := '-';
 	
-	function to_string (layers : in type_signal_layers.set) return string;
 	-- Returns a string like "[1,3,5-9]"
+	function to_string (layers : in type_signal_layers.set) return string;
 
 	-- Converts a string like [1,3,5-9] to a set 
 	-- of signal layers.

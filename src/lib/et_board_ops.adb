@@ -4632,7 +4632,8 @@ package body et_board_ops is
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
-								log_threshold	=> log_threshold + 4);
+								ignore_same_net	=> true,
+								lth				=> log_threshold + 4);
 							begin
 								status := d.status;
 
@@ -4656,7 +4657,8 @@ package body et_board_ops is
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
-								log_threshold	=> log_threshold + 4);
+								ignore_same_net	=> true,
+								lth				=> log_threshold + 4);
 							begin
 								status := d.status;
 

@@ -47,7 +47,8 @@ function get_distance (
 	fill_zone		: in type_fill_zone;
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
-	log_threshold	: in type_log_level)
+	ignore_same_net	: in boolean;
+	lth				: in type_log_level)
 	return type_route_distance
 is
 	probe_ray : constant type_ray := (start_point, direction);
@@ -119,7 +120,7 @@ is
 	-- If there is a break then its position is sent to procedure
 	-- process_break for further processing.
 	procedure test_line (l : in type_line) is 
-		b : constant type_break := get_break_by_line (track, l, place, log_threshold + 2);
+		b : constant type_break := get_break_by_line (track, l, place, lth + 2);
 	begin
 		--log (text => "test line");
 		
@@ -130,7 +131,7 @@ is
 
 	-- See procedure test_line for details.
 	procedure test_arc (a : in type_arc) is
-		b : constant type_break_double := get_break_by_arc (track, a, place, log_threshold + 2);
+		b : constant type_break_double := get_break_by_arc (track, a, place, lth + 2);
 	begin
 		--log (text => "test arc");
 
@@ -143,7 +144,7 @@ is
 
 	-- See procedure test_line for details.
 	procedure test_circle (c : in type_circle) is 
-		b : constant type_break_double := get_break_by_circle (track, c, place, log_threshold + 2);
+		b : constant type_break_double := get_break_by_circle (track, c, place, lth + 2);
 	begin
 		--log (text => "test circle");
 				
@@ -179,7 +180,7 @@ is
 
 		-- BOARD OUTLINE
 		procedure query_outline is begin
-			log (text => "probing outline ...", level => log_threshold + 1);
+			log (text => "probing outline ...", level => lth + 1);
 			log_indentation_up;
 			
 			if module.board.contours.outline.contours.circular then
@@ -211,14 +212,14 @@ is
 			end query_hole;
 			
 		begin -- query_holes
-			log (text => "probing holes ...", level => log_threshold + 1);				
+			log (text => "probing holes ...", level => lth + 1);				
 			iterate (module.board.contours.holes, query_hole'access);
 		end query_holes;
 
 		
 		-- CONDUCTOR FILL ZONES
 		procedure query_fill_zone is begin
-			log (text => "probing fill zone ...", level => log_threshold + 1);
+			log (text => "probing fill zone ...", level => lth + 1);
 			log_indentation_up;
 			
 			if fill_zone.outline.contours.circular then
@@ -250,7 +251,7 @@ is
 			end query_cutout;
 		
 		begin -- query_global_cutouts
-			log (text => "probing global cutout areas ...", level => log_threshold + 1);
+			log (text => "probing global cutout areas ...", level => lth + 1);
 			iterate (module.board.conductors.cutouts, query_cutout'access);
 		end query_global_cutouts;
 
@@ -277,7 +278,7 @@ is
 					segment : type_conductor_line_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
+						log (text => "segment" & to_string (element (c)), level => lth + 3);
 
 						segment := to_line_segment (element (c));
 
@@ -292,7 +293,7 @@ is
 					segment : type_conductor_arc_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
+						log (text => "segment" & to_string (element (c)), level => lth + 3);
 
 						segment := to_arc_segment (element (c));
 
@@ -303,9 +304,11 @@ is
 					end if;
 				end query_arc;
 
+				
+				-- VIAS
 				use et_vias;
 				use pac_vias;
-				
+
 				procedure query_via (v : in pac_vias.cursor) is 
 
 					function to_circle (restring : in type_restring_width) return type_circle is begin
@@ -317,7 +320,7 @@ is
 				begin
 					case element (v).category is
 						when THROUGH =>
-							log (text => to_string (element (v)), level => log_threshold + 3);
+							log (text => to_string (element (v)), level => lth + 3);
 
 							if is_inner_layer (layer) then
 								test_circle (to_circle (element (v).restring_inner));
@@ -349,11 +352,14 @@ is
 
 					end case;
 				end query_via;
+
 				
 			begin -- query_net
-				log (text => "net " & to_string (key (nf)), level => log_threshold + 2);
+				log (text => "net " & to_string (key (nf)), level => lth + 2);
 
-				-- The clearance to foregin nets is the greatest of several other distances.
+				--if ignore_same_net and then
+					
+				-- The clearance to foregin nets is the greatest of several different distances.
 				-- The greatest of them will later be applied to the track clearance.
 				clearances.append (class_given_net.clearance);
 				clearances.append (class_foregin_net.clearance);
@@ -374,7 +380,7 @@ is
 			end query_net;
 			
 		begin -- query_tracks
-			log (text => "probing tracks ...", level => log_threshold + 1);
+			log (text => "probing tracks ...", level => lth + 1);
 			log_indentation_up;
 			
 			iterate (module.nets, query_net'access);
@@ -432,7 +438,10 @@ is
 		c := points_after_obstacles.first;
 		while c /= pac_points_after_obstacles.no_element loop
 
-			if clear_for_track (module_cursor, element (c), net_cursor, fill_zone, layer, width, log_threshold + 1) then
+			if clear_for_track (
+				module_cursor, element (c), net_cursor,
+				fill_zone, layer, width, ignore_same_net, lth + 1) 
+			then
 				distance_after_obstacle := get_distance_total (start_point, element (c));
 				exit;
 			end if;
@@ -454,14 +463,14 @@ begin -- get_distance
 			log (text => "computing distance to obstacle from point" 
 					& to_string (start_point)
 					& " direction" & to_string (direction) & " ...",
-					level => log_threshold);
+					level => lth);
 
 			log_indentation_up;
 			
 			-- Test whether start_point is suitable to start a track.
 			-- At the given start_point or in its vicinity could be an obstacle already.
 			if clear_for_track (module_cursor, start_point, 
-				net_cursor, fill_zone, layer, width, log_threshold + 1) 
+				net_cursor, fill_zone, layer, width, ignore_same_net, lth + 1) 
 			then
 				-- start_point qualifies to start a track
 
@@ -472,7 +481,7 @@ begin -- get_distance
 				query_element (module_cursor, query_obstacles'access);
 				
 				log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
-						level => log_threshold);
+						level => lth);
 				
 				log_indentation_down;
 				
@@ -482,7 +491,7 @@ begin -- get_distance
 				-- start_point does NOT qualify to start a track
 				
 				log (text => "track not allowed here",
-					level => log_threshold);
+					level => lth);
 
 				log_indentation_down;
 				
@@ -495,7 +504,7 @@ begin -- get_distance
 			log (text => "computing distance until after obstacles from point" 
 					& to_string (start_point)
 					& " direction" & to_string (direction) & " ...",
-					level => log_threshold);
+					level => lth);
 
 			log_indentation_up;
 
@@ -511,7 +520,7 @@ begin -- get_distance
 				when VALID => -- suitable point found
 
 					log (text => "distance until after obstacle:" & to_string (distance_after_obstacle),
-						level => log_threshold);
+						level => lth);
 					
 					log_indentation_down;
 
@@ -521,7 +530,7 @@ begin -- get_distance
 				when INVALID => -- NO suitable point found 
 					
 					log (text => "no obstacle found",
-						level => log_threshold);
+						level => lth);
 					
 					log_indentation_down;
 

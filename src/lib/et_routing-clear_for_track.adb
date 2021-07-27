@@ -45,6 +45,7 @@ function clear_for_track (
 	fill_zone		: in type_fill_zone;
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
+	ignore_same_net	: in boolean;
 	lth				: in type_log_level)		
 	return boolean
 is

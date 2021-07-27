@@ -621,6 +621,7 @@ package body et_routing is
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
+		ignore_same_net	: in boolean;
 		lth				: in type_log_level)		
 		return boolean is separate;
 
@@ -1578,7 +1579,8 @@ package body et_routing is
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		log_threshold	: in type_log_level)
+		ignore_same_net	: in boolean;
+		lth				: in type_log_level)
 		return type_route_distance is separate;
 
 
