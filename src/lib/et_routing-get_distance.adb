@@ -306,50 +306,45 @@ is
 				use et_vias;
 				use pac_vias;
 				
-				procedure query_via (v : in pac_vias.cursor) is begin
+				procedure query_via (v : in pac_vias.cursor) is 
+
+					function to_circle (restring : in type_restring_width) return type_circle is begin
+						return (
+							center => element (v).position,
+							radius	=> element (v).diameter * 0.5 + restring);
+					end to_circle;
+					
+				begin
 					case element (v).category is
 						when THROUGH =>
 							log (text => to_string (element (v)), level => log_threshold + 3);
 
 							if is_inner_layer (layer) then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+								test_circle (to_circle (element (v).restring_inner));
+
 							else -- top or bottom layer
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_outer));
+								test_circle (to_circle (element (v).restring_outer));
 							end if;
 
 						when BURIED =>
 							if buried_via_uses_layer (element (v), layer) then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+								test_circle (to_circle (element (v).restring_inner));
 							end if;
 							
 						when BLIND_DRILLED_FROM_TOP =>
 							if layer = type_signal_layer'first then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_top));
+								test_circle (to_circle (element (v).restring_top));
 
 							elsif blind_via_uses_layer (element (v), layer) then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+								test_circle (to_circle (element (v).restring_inner));
 							end if;
 
 						when BLIND_DRILLED_FROM_BOTTOM =>
 							if layer = bottom_layer then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_bottom));
+								test_circle (to_circle (element (v).restring_bottom));
 
 							elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
-								test_circle ((
-									center	=> element (v).position,
-									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+								test_circle (to_circle (element (v).restring_inner));
 							end if;
 
 					end case;
