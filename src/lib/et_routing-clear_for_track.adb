@@ -266,10 +266,23 @@ is
 								end if;
 								
 							when BLIND_DRILLED_FROM_TOP =>
-								null; -- CS
+								if layer = type_signal_layer'first then
+									set_radius (element (v).restring_top);
+									compute_and_test_distance;
+								elsif blind_via_uses_layer (element (v), layer) then
+									set_radius (element (v).restring_inner);
+									compute_and_test_distance;
+								end if;
 
 							when BLIND_DRILLED_FROM_BOTTOM =>
-								null; -- CS
+								if layer = bottom_layer then
+									set_radius (element (v).restring_bottom);
+									compute_and_test_distance;
+								elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
+									set_radius (element (v).restring_inner);
+									compute_and_test_distance;
+								end if;
+
 						end case;
 
 						next (v);

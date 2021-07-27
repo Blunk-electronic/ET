@@ -76,6 +76,42 @@ package body et_vias is
 		end if;
 	end buried_via_uses_layer;
 
+
+	function blind_via_uses_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer := type_signal_layer'last)
+		return boolean
+	is begin
+		case via.category is
+			when BLIND_DRILLED_FROM_TOP =>
+				declare
+					subtype stack is type_via_layer 
+						range type_signal_layer'first + 1 .. via.lower;
+				begin
+					if layer in stack then
+						return true;
+					else
+						return false;
+					end if;
+				end;
+				
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				declare
+					subtype stack is type_via_layer 
+						range via.upper .. bottom - 1;
+				begin
+					if layer in stack then
+						return true;
+					else
+						return false;
+					end if;
+				end;
+				
+			when others => raise constraint_error;
+		end case;
+	end blind_via_uses_layer;
+
 	
 	function to_string (via : in type_via) return string is
 		

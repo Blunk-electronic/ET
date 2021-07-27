@@ -1365,11 +1365,11 @@ package body et_routing is
 								start_point := bi.intersection.greatest_x;
 						end case;
 
-						log (text => "place" & type_place'image (place) 
-							& "start point: " & to_string (start_point) 
-							& " clearance" & to_string (clearance));
+						--log (text => "place" & type_place'image (place) 
+							--& "start point: " & to_string (start_point) 
+							--& " clearance" & to_string (clearance));
 
-						log (text => "arc" & to_string (arcs (i)));
+						--log (text => "arc" & to_string (arcs (i)));
 						
 						x_pre := get_break (
 							init		=> start_point,

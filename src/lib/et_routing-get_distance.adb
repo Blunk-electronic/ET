@@ -329,10 +329,29 @@ is
 							end if;
 							
 						when BLIND_DRILLED_FROM_TOP =>
-							null; -- CS
+							if layer = type_signal_layer'first then
+								test_circle ((
+									center	=> element (v).position,
+									radius	=> element (v).diameter * 0.5 + element (v).restring_top));
+
+							elsif blind_via_uses_layer (element (v), layer) then
+								test_circle ((
+									center	=> element (v).position,
+									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+							end if;
 
 						when BLIND_DRILLED_FROM_BOTTOM =>
-							null; -- CS
+							if layer = bottom_layer then
+								test_circle ((
+									center	=> element (v).position,
+									radius	=> element (v).diameter * 0.5 + element (v).restring_bottom));
+
+							elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
+								test_circle ((
+									center	=> element (v).position,
+									radius	=> element (v).diameter * 0.5 + element (v).restring_inner));
+							end if;
+
 					end case;
 				end query_via;
 				

@@ -166,13 +166,24 @@ package et_vias is
 
 
 	-- Returns true if the given buried via uses the given layer.
-	-- The given via must be of category BURIED ! Otherwise an exception
-	-- is raised.
+	-- The given via must be of category BURIED. Otherwise an exception
+	-- will be raised.
 	-- NOTE: If The given layer is the top layer (1) then the
 	-- return is false, because a buried via never uses this layer.
 	function buried_via_uses_layer (
 		via		: in type_via;
 		layer	: in type_signal_layer)
+		return boolean;
+
+	-- Returns true if the given blind via uses the given layer.
+	-- The given via must be of category BLIND_DRILLED_FROM_TOP or
+	-- BLIND_DRILLED_FROM_BOTTOM. Otherwise an exception will be raised.
+	-- The bottom layer must be provided if the via is a
+	-- BLIND_DRILLED_FROM_BOTTOM.
+	function blind_via_uses_layer (
+		via		: in type_via;
+		layer	: in type_signal_layer;
+		bottom	: in type_signal_layer := type_signal_layer'last)
 		return boolean;
 
 	
