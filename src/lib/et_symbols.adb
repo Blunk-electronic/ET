@@ -113,7 +113,7 @@ package body et_symbols is
 		log_indentation_up;
 		
 		-- content
-		if type_text_content.length (text.content) > 0 then
+		if pac_text_content.length (text.content) > 0 then
 			log (text => "content '" & et_text.to_string (text.content) & "'",
 				level => log_threshold);
 		else
@@ -148,7 +148,7 @@ package body et_symbols is
 
 	function content (text : in type_text) return string is
 	-- Returns the content of the given text as string.
-		c : et_text.type_text_content.bounded_string;
+		c : et_text.pac_text_content.bounded_string;
 	begin
 		c := text.content;
 		return et_text.to_string (c);

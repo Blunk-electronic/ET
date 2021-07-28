@@ -723,7 +723,7 @@ package body et_packages is
 		face			: in type_face;
 		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use et_text.type_text_content;
+		use et_text.pac_text_content;
 		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin
@@ -801,7 +801,7 @@ package body et_packages is
 		face			: in type_face;
 		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use et_text.type_text_content;
+		use et_text.pac_text_content;
 		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin
@@ -906,7 +906,7 @@ package body et_packages is
 		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
 	is
-		use et_text.type_text_content;
+		use et_text.pac_text_content;
 		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin

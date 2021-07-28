@@ -46,7 +46,7 @@ procedure draw_tag_label (
 is
 	use et_schematic;
 	
-	content : type_text_content.bounded_string := to_content (to_string (net));
+	content : pac_text_content.bounded_string := to_content (to_string (net));
 	-- CS append to content the position of the net on the next sheet (strand position)
 	
 	-- The position, width and height of the enshrouding box (lower left corner)

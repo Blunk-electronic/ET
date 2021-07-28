@@ -675,8 +675,8 @@ package body et_frame_rw is
 
 		-- The content of a cam marker may not be specified via the frame template.
 		-- In this case the default content must be assigned to the tb_cam_marker.
-		procedure set_content (content : in et_text.type_text_content.bounded_string) is 
-			use et_text.type_text_content;
+		procedure set_content (content : in et_text.pac_text_content.bounded_string) is 
+			use et_text.pac_text_content;
 		begin
 			if length (tb_cam_marker.content) = 0 then
 				tb_cam_marker.content := content;

@@ -158,7 +158,7 @@ package body pac_draw_frame is
 		
 		use et_text;
 		procedure draw_index (
-			content	: in type_text_content.bounded_string;
+			content	: in pac_text_content.bounded_string;
 			pos		: in pac_geometry.type_point) is
 		begin
 			draw_ops.draw_text (
@@ -323,7 +323,7 @@ package body pac_draw_frame is
 	end query_line;
 
 	procedure draw_text (
-		content	: in type_text_content.bounded_string;
+		content	: in pac_text_content.bounded_string;
 		size	: in type_text_size;
 		font	: in type_font;
 		pos		: in et_frames.type_position) is

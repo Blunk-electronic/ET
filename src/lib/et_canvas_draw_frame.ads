@@ -86,7 +86,7 @@ package pac_draw_frame is
 	-- Draws a single text of the title block.
 	-- The line position is relative to the lower left corner of the title block.	
 	procedure draw_text (
-		content	: in type_text_content.bounded_string;
+		content	: in pac_text_content.bounded_string;
 		size	: in type_text_size;
 		font	: in type_font;
 		pos		: in et_frames.type_position);

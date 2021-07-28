@@ -956,7 +956,7 @@ package body et_kicad.pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_text.type_text_content;
+			use et_text.pac_text_content;
 			use et_pcb_coordinates;
 			use pac_geometry_brd;
 			

@@ -422,7 +422,7 @@ package body et_symbol_rw is
 		symbol_inserted		: boolean;
 		
 		symbol_text_position		: type_point;
-		symbol_text_content			: et_text.type_text_content.bounded_string;
+		symbol_text_content			: et_text.pac_text_content.bounded_string;
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;

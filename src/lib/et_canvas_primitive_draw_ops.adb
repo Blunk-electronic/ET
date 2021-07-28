@@ -674,7 +674,7 @@ package body pac_draw is
 	
 	procedure draw_text (
 		context		: in type_draw_context;
-		content		: in type_text_content.bounded_string;
+		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
@@ -737,7 +737,7 @@ package body pac_draw is
 
 	function get_text_extents (
 		context		: in type_draw_context;
-		content		: in type_text_content.bounded_string;
+		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
 		return cairo_text_extents is
@@ -759,7 +759,7 @@ package body pac_draw is
 	procedure draw_text (
 		area		: in type_rectangle;
 		context		: in type_draw_context;
-		content		: in type_text_content.bounded_string;
+		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
 		position	: in type_point; -- anchor point in the drawing, the origin

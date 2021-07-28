@@ -127,10 +127,10 @@ is
 
 		-- Maps from meaning of given placeholder to text content:
 		function to_placeholder_content (ph : in type_text_placeholder)
-			return et_text.type_text_content.bounded_string is
+			return et_text.pac_text_content.bounded_string is
 			use et_devices;
 			use et_text;
-			result : type_text_content.bounded_string;
+			result : pac_text_content.bounded_string;
 		begin
 			case ph.meaning is
 				when NAME => result := to_content (to_string (device_name));

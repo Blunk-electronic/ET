@@ -95,7 +95,7 @@ package et_schematic is
 		position	: pac_geometry_sch.type_point;
 		rotation	: et_text.type_rotation_documentation := et_text.HORIZONTAL;
 		sheet		: type_sheet := type_sheet'first;
-		content		: et_text.type_text_content.bounded_string;
+		content		: et_text.pac_text_content.bounded_string;
 		--font		: et_text.type_font;
 	end record;
 		
@@ -567,7 +567,7 @@ package et_schematic is
 
 		rules			: type_rules; -- design rules, erc rules ...
 		
-		description		: et_text.type_text_content.bounded_string; -- a short description of the module
+		description		: et_text.pac_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_frames.type_frames_schematic;

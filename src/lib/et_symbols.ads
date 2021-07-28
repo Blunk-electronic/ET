@@ -154,7 +154,7 @@ package et_symbols is
 	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_text is new type_text_basic with record
 		position	: type_point;		
-        content		: et_text.type_text_content.bounded_string;
+        content		: et_text.pac_text_content.bounded_string;
 	end record;
 
 	-- GUI relevant only:

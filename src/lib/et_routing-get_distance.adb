@@ -389,13 +389,30 @@ is
 		begin -- query_tracks
 			log (text => "probing tracks ...", level => lth + 1);
 			log_indentation_up;
-			
 			iterate (module.nets, query_net'access);
-
 			log_indentation_down;
 		end query_tracks;
 
 		
+		procedure query_texts is
+
+			use et_packages;
+			use pac_conductor_texts;
+			
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+			begin
+				--log (text => "text: " & to_string (element (c).content), level => lth + 2);
+				null;
+			end query_text;
+			
+		begin
+			log (text => "probing texts ...", level => lth + 1);
+			log_indentation_up;
+			iterate (module.board.conductors.texts, query_text'access);
+			log_indentation_down;
+		end query_texts;
+
+			
 	begin -- query_obstacles
 
 		track.clearance	:= design_rules.clearances.conductor_to_board_edge;
@@ -426,8 +443,10 @@ is
 		-- - net specific cutout areas
 		
 		-- CS abort if status is invalid ??? obsolete ??
+
+		query_texts;
 		
-		-- query texts, pads, ...
+		-- query pads, ...
 
 		-- CS: submodules ?
 	end query_obstacles;

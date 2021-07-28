@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -184,7 +184,7 @@ package et_frames is
 
 	
 	type type_text is new type_placeholder with record
-		content			: type_text_content.bounded_string;
+		content			: pac_text_content.bounded_string;
 	end record;
 
 	package pac_texts is new doubly_linked_lists (type_text);
@@ -366,7 +366,7 @@ package et_frames is
 	function to_category (cat : in string) return type_schematic_sheet_category;
 	
 	type type_schematic_description is record
-		content		: type_text_content.bounded_string := to_content ("no description");
+		content		: pac_text_content.bounded_string := to_content ("no description");
 		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 		

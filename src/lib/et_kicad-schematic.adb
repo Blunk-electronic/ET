@@ -7977,7 +7977,7 @@ package body et_kicad.schematic is
 		log_indentation_up;
 
 		-- content
-		if type_text_content.length (note.content) > 0 then
+		if pac_text_content.length (note.content) > 0 then
 			log (text => "content '" & to_string (note.content) & "'", level => log_threshold);
 		else
 			log (text => message_warning & "no content !", level => log_threshold); 

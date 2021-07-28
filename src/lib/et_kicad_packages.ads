@@ -234,7 +234,7 @@ package et_kicad_packages is
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
 	type type_text_package is new et_packages.type_text with record
-		content	: et_text.type_text_content.bounded_string;
+		content	: et_text.pac_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;

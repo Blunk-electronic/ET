@@ -512,7 +512,7 @@ package body et_canvas_board is
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (
 		meaning : in et_pcb.type_text_meaning)
-		return et_text.type_text_content.bounded_string 
+		return et_text.pac_text_content.bounded_string 
 	is
 		use et_text;
 		use et_meta;
@@ -523,7 +523,7 @@ package body et_canvas_board is
 		use pac_assembly_variant_name;
 		variant : constant pac_assembly_variant_name.bounded_string := element (current_active_module).active_variant;
 
-		result : type_text_content.bounded_string;
+		result : pac_text_content.bounded_string;
 
 		use et_pcb;
 	begin

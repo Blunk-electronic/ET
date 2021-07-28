@@ -66,7 +66,7 @@ package body et_kicad_libraries is
 
 	function content (text : in type_text_placeholder) return string is
 	-- Returns the content of the given text placeholder as string.
-		c : et_text.type_text_content.bounded_string;
+		c : et_text.pac_text_content.bounded_string;
 	begin
 		c := text.content;
 		return et_text.to_string (c);
@@ -1672,13 +1672,13 @@ package body et_kicad_libraries is
 -- 					return a;
 -- 				end to_style;
 
-				function to_content (text_in : in string) return et_text.type_text_content.bounded_string is
-				-- Replaces tildss in given string by space and returns a type_text_content.bounded_string.
+				function to_content (text_in : in string) return et_text.pac_text_content.bounded_string is
+				-- Replaces tildss in given string by space and returns a pac_text_content.bounded_string.
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, tilde_to_space'access);
-					return et_text.type_text_content.to_bounded_string (t);
+					return et_text.pac_text_content.to_bounded_string (t);
 				end to_content;
 
 			begin -- to_text
@@ -1899,7 +1899,7 @@ package body et_kicad_libraries is
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
-				use et_text.type_text_content;
+				use et_text.pac_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);
@@ -1914,7 +1914,7 @@ package body et_kicad_libraries is
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
 				check_text_content_length (strip_quotes (f (line,2)));
-				text.content := type_text_content.to_bounded_string (strip_quotes (f (line,2)));
+				text.content := pac_text_content.to_bounded_string (strip_quotes (f (line,2)));
 					
 				-- check content vs. meaning. 
 				case meaning is
@@ -3535,7 +3535,7 @@ package body et_kicad_libraries is
 		log_indentation_up;
 
 		-- content
-		if type_text_content.length (note.content) > 0 then
+		if pac_text_content.length (note.content) > 0 then
 			log (text => "content '" & to_string (note.content) & "'", level => log_threshold);
 		else
 			log (text => message_warning & "no content !", level => log_threshold); 
