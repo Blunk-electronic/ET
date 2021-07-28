@@ -95,15 +95,15 @@ package et_text is
 	keyword_content : constant string := "content";
 	
 	text_length_max : constant natural := 200;
-	package type_text_content is new generic_bounded_length (text_length_max); -- CS rename to pac_text_content
+	package pac_text_content is new generic_bounded_length (text_length_max);
 
-	function to_string (text_content : in type_text_content.bounded_string) return string;
-	function to_content (content : in string) return type_text_content.bounded_string;
+	function to_string (text_content : in pac_text_content.bounded_string) return string;
+	function to_content (content : in string) return pac_text_content.bounded_string;
 
-	empty_text_content : constant type_text_content.bounded_string :=
-		type_text_content.to_bounded_string ("");
+	empty_text_content : constant pac_text_content.bounded_string :=
+		pac_text_content.to_bounded_string ("");
 	
-	function is_empty (content : in type_text_content.bounded_string) return boolean;
+	function is_empty (content : in pac_text_content.bounded_string) return boolean;
 	
 	valid_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/ "); 
@@ -112,7 +112,7 @@ package et_text is
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	function characters_valid (
-		content		: in type_text_content.bounded_string;
+		content		: in pac_text_content.bounded_string;
 		characters	: in character_set := valid_characters) 
 		return boolean;
 
@@ -120,7 +120,7 @@ package et_text is
 
 	-- Replaces invalid characters in content by character given in replace_by:
 	procedure replace_invalid_characters (
-		content		: in out type_text_content.bounded_string;
+		content		: in out pac_text_content.bounded_string;
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters);
 
@@ -824,7 +824,7 @@ package et_text is
 		-- IMPORTANT: Argument "content" MUST contain something ! If empty
 		-- constraint error will arise !
 		function vectorize_text (
-			content		: in type_text_content.bounded_string;
+			content		: in pac_text_content.bounded_string;
 			size		: in type_text_size;
 			rotation	: in pac_geometry.type_rotation;
 			position	: in type_point;

@@ -37,8 +37,6 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_general;
@@ -121,16 +119,16 @@ package body et_text is
 
 	
 
-	function to_string (text_content : in type_text_content.bounded_string) return string is begin
-		return type_text_content.to_string (text_content);
+	function to_string (text_content : in pac_text_content.bounded_string) return string is begin
+		return pac_text_content.to_string (text_content);
 	end to_string;
 
-	function to_content (content : in string) return type_text_content.bounded_string is begin
-		return type_text_content.to_bounded_string (content);
+	function to_content (content : in string) return pac_text_content.bounded_string is begin
+		return pac_text_content.to_bounded_string (content);
 	end to_content;
 
-	function is_empty (content : in type_text_content.bounded_string) return boolean is begin
-		if type_text_content.length (content) > 0 then -- contains something -> not empty
+	function is_empty (content : in pac_text_content.bounded_string) return boolean is begin
+		if pac_text_content.length (content) > 0 then -- contains something -> not empty
 			return false;
 		else
 			return true; -- contains nothing -> is empty
@@ -138,11 +136,11 @@ package body et_text is
 	end is_empty;
 
 	function characters_valid (
-		content		: in type_text_content.bounded_string;
+		content		: in pac_text_content.bounded_string;
 		characters	: in character_set := valid_characters) 
 		return boolean 
 	is
-		use type_text_content;
+		use pac_text_content;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -163,11 +161,11 @@ package body et_text is
 	end characters_valid;
 
 	procedure replace_invalid_characters (
-		content		: in out type_text_content.bounded_string;
+		content		: in out pac_text_content.bounded_string;
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters)
 	is
-		use type_text_content;
+		use pac_text_content;
 		invalid_character_position : natural := 0;
 
 		l_max : natural;
@@ -405,7 +403,7 @@ package body et_text is
 			
 		
 		function vectorize_text (
-			content		: in type_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
+			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in pac_geometry.type_rotation; 
 			position	: in type_point; -- the anchor point of the text (where the origin is)
@@ -424,7 +422,7 @@ package body et_text is
 			-- This is the text we will be displaying. It will be read
 			-- character by character. Each character will be mapped 
 			-- to a vectorized character (which is a list of lines):
-			text : constant string := type_text_content.to_string (content);
+			text : constant string := pac_text_content.to_string (content);
 
 			package sorting is new generic_sorting;
 			use sorting;
