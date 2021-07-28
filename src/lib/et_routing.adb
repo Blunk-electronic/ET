@@ -614,16 +614,6 @@ package body et_routing is
 	end on_board;
 
 						  
-	function clear_for_track (
-		module_cursor	: in pac_generic_modules.cursor;
-		start_point		: in type_point;
-		net_cursor		: in et_schematic.pac_nets.cursor;
-		fill_zone		: in type_fill_zone;
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		ignore_same_net	: in boolean;
-		lth				: in type_log_level)		
-		return boolean is separate;
 
 
 	function get_total_width (
@@ -1583,6 +1573,17 @@ package body et_routing is
 		lth				: in type_log_level)
 		return type_route_distance is separate;
 
+	
+	function clear_for_track (
+		module_cursor	: in pac_generic_modules.cursor;
+		start_point		: in type_point;
+		net_cursor		: in et_schematic.pac_nets.cursor;
+		fill_zone		: in type_fill_zone;
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		ignore_same_net	: in boolean;
+		lth				: in type_log_level)		
+		return boolean is separate;
 
 	
 end et_routing;

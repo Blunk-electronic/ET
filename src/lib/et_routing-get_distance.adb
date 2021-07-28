@@ -353,30 +353,37 @@ is
 					end case;
 				end query_via;
 
+				procedure query_segments_and_vias is begin
+					-- The clearance to foregin nets is the greatest of several different distances.
+					-- The greatest of them will later be applied to the track clearance.
+					clearances.append (class_given_net.clearance);
+					clearances.append (class_foregin_net.clearance);
+
+					if fill_zone.observe then 
+						clearances.append (fill_zone.outline.isolation);
+					end if;
+
+					track.clearance	:= get_greatest (clearances);
+					
+					log_indentation_up;
+					iterate (element (nf).route.lines, query_line'access);
+					iterate (element (nf).route.arcs, query_arc'access);
+					iterate (element (nf).route.vias, query_via'access);
+					
+					-- CS other objects ... see et_pcb.type_route
+					log_indentation_down;
+				end query_segments_and_vias;
 				
 			begin -- query_net
 				log (text => "net " & to_string (key (nf)), level => lth + 2);
 
-				--if ignore_same_net and then
-					
-				-- The clearance to foregin nets is the greatest of several different distances.
-				-- The greatest of them will later be applied to the track clearance.
-				clearances.append (class_given_net.clearance);
-				clearances.append (class_foregin_net.clearance);
-
-				if fill_zone.observe then 
-					clearances.append (fill_zone.outline.isolation);
+				if ignore_same_net then
+					if net_cursor /= nf then
+						query_segments_and_vias;
+					end if;
+				else
+					query_segments_and_vias;
 				end if;
-
-				track.clearance	:= get_greatest (clearances);
-				
-				log_indentation_up;
-				iterate (element (nf).route.lines, query_line'access);
-				iterate (element (nf).route.arcs, query_arc'access);
-				iterate (element (nf).route.vias, query_via'access);
-				
-				-- CS other objects ... see et_pcb.type_route
-				log_indentation_down;
 			end query_net;
 			
 		begin -- query_tracks

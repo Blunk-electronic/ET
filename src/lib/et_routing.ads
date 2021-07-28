@@ -99,6 +99,7 @@ package et_routing is
 		return boolean;
 
 	
+	
 	-- A track starts at a certain point and travels into
 	-- a certain direction. It has a width and a
 	-- clearance to other objects. 
@@ -277,6 +278,9 @@ package et_routing is
 	--    after one or more obstacles, that qualifies to start a track.
 	--  - If no suitable point found then the return is INVALID.
 	--  - If no obstacle found then the return is INVALID.
+	-- If the parameter "ignore_same_net" is true, then the segments
+	-- of the same net as indicated by net_cursor are ignored. When filling
+	-- fill areas (polygons) this setting should be used.
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
@@ -289,6 +293,22 @@ package et_routing is
 		ignore_same_net	: in boolean;
 		lth				: in type_log_level)
 		return type_route_distance;
+
+
+	-- Returns true if a track can be started at the given start_point.
+	-- If parameter "ignore_same_net" is true then the segments of
+	-- the net indicated by net_cursor are ignored. This setting should
+	-- be used when filling fill areas (polygons):
+	function clear_for_track (
+		module_cursor	: in pac_generic_modules.cursor;
+		start_point		: in type_point;
+		net_cursor		: in et_schematic.pac_nets.cursor;
+		fill_zone		: in type_fill_zone;
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		ignore_same_net	: in boolean;
+		lth				: in type_log_level)		
+		return boolean;
 
 	
 end et_routing;

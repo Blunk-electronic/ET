@@ -180,148 +180,161 @@ is
 				name : in pac_net_name.bounded_string;
 				net  : in type_net) 
 			is
-				use et_pcb.pac_conductor_lines;
-				l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-				segment_line : et_packages.type_conductor_line_segment;
-
-				use et_pcb.pac_conductor_arcs;
-				a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
-				segment_arc : et_packages.type_conductor_arc_segment;
-				
-				distance : type_distance;
 				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
+						
+				procedure query_segments_and_vias is 
+					distance : type_distance;
+					clearances : pac_distances_positive.list;
 
-				use pac_distances_sorting;
-				clearances : pac_distances_positive.list;
+					-- clears the "result" flag if variable "distance" is:
+					-- - negative or
+					-- - the requested track is too close to the foregin segment or via
+					procedure test_distance is begin
+						log_indentation_up;
+						
+						if distance <= zero then 
+							-- start_point is inside segment/via or on the edge of the segment/via
+							log (text => "point is inside", level => lth + 4);
+							result := false;
+						else
+							-- start_point is outside the segment/via
+							log (text => "point is outside", level => lth + 4);
+							
+							-- the distance of the start point to the border of the segment/via:
+							distance := distance - width * 0.5;
 
-				-- clears the "result" flag if variable "distance" is:
-				-- - negative or
-				-- - the requested track is too close to the foregin segment or via
-				procedure test_distance is begin
+							-- Due to unavoidable rounding errors the difference between 
+							-- distance and border can be -type_distance'small:
+							if (distance - get_greatest (clearances)) >= - type_distance'small then
+								log (text => "point is in safe distance", level => lth + 4);
+							else
+								log (text => "point is too close", level => lth + 4);
+								result := false;
+							end if;							
+						end if;
+
+						log_indentation_down;
+					end test_distance;
+					
+					procedure query_lines is 
+						use et_pcb.pac_conductor_lines;
+						l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
+						segment_line : et_packages.type_conductor_line_segment;
+						use et_packages;
+					begin
+						while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
+							segment_line := to_line_segment (element (l));
+							log (text => to_string (segment_line), level => lth + 3);
+							distance := get_shortest_distance (start_point, segment_line);
+							test_distance;
+							next (l);
+						end loop;
+					end query_lines;
+					
+					procedure query_arcs is 
+						use et_pcb.pac_conductor_arcs;
+						a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
+						segment_arc : et_packages.type_conductor_arc_segment;
+						use et_packages;
+					begin
+						while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
+							segment_arc := to_arc_segment (element (a));
+							log (text => to_string (segment_arc), level => lth + 3);
+							distance := get_shortest_distance (start_point, segment_arc);
+							test_distance;
+							next (a);
+						end loop;
+					end query_arcs;
+
+					procedure query_vias is
+						use et_vias;
+						use pac_vias;
+						v : pac_vias.cursor := net.route.vias.first;
+						c : type_circle;
+
+						procedure set_radius (restring : in type_restring_width) is begin
+							c.radius := element (v).diameter * 0.5 + restring;
+
+							if get_point_to_circle_status (start_point, c) = OUTSIDE then
+								distance := get_absolute (get_shortest_distance (start_point, c));
+								test_distance;
+							else
+								-- the start_point is inside the via
+								result := false;
+								log (text => " point is inside the via", level => lth + 4);
+							end if;							
+						end set_radius;
+						
+					begin -- query_vias
+						while v /= pac_vias.no_element and result = true loop
+
+							c.center := element (v).position;
+							log (text => to_string (element (v)), level => lth + 3);
+							
+							case element (v).category is
+								when THROUGH =>
+									if is_inner_layer (layer) then
+										set_radius (element (v).restring_inner);
+									else
+										set_radius (element (v).restring_outer);
+									end if;
+									
+								when BURIED =>
+									if buried_via_uses_layer (element (v), layer) then
+										set_radius (element (v).restring_inner);
+									end if;
+									
+								when BLIND_DRILLED_FROM_TOP =>
+									if layer = type_signal_layer'first then
+										set_radius (element (v).restring_top);
+
+									elsif blind_via_uses_layer (element (v), layer) then
+										set_radius (element (v).restring_inner);
+									end if;
+
+								when BLIND_DRILLED_FROM_BOTTOM =>
+									if layer = bottom_layer then
+										set_radius (element (v).restring_bottom);
+
+									elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
+										set_radius (element (v).restring_inner);
+									end if;
+							end case;
+
+							next (v);
+						end loop;
+					end query_vias;
+
+					
+				begin -- query_segments_and_vias
 					log_indentation_up;
 					
-					if distance <= zero then 
-						-- start_point is inside segment/via or on the edge of the segment/via
-						log (text => "point is inside", level => lth + 4);
-						result := false;
-					else
-						-- start_point is outside the segment/via
-						log (text => "point is outside", level => lth + 4);
-						
-						-- the distance of the start point to the border of the segment/via:
-						distance := distance - width * 0.5;
+					clearances.append (class_given_net.clearance);
+					clearances.append (class_foregin_net.clearance);
 
-						-- Due to unavoidable rounding errors the difference between 
-						-- distance and border can be -type_distance'small:
-						if (distance - get_greatest (clearances)) >= - type_distance'small then
-							log (text => "point is in safe distance", level => lth + 4);
-						else
-							log (text => "point is too close", level => lth + 4);
-							result := false;
-						end if;							
+					if fill_zone.observe then 
+						clearances.append (fill_zone.outline.isolation);
 					end if;
 
+					query_lines;
+					query_arcs;
+					query_vias;
+				
 					log_indentation_down;
-				end test_distance;
-
-
-				procedure query_vias is
-					use et_vias;
-					use pac_vias;
-					v : pac_vias.cursor := net.route.vias.first;
-					c : type_circle;
-
-					procedure set_radius (restring : in type_restring_width) is begin
-						c.radius := element (v).diameter * 0.5 + restring;
-
-						if get_point_to_circle_status (start_point, c) = OUTSIDE then
-							distance := get_absolute (get_shortest_distance (start_point, c));
-							test_distance;
-						else
-							-- the start_point is inside the via
-							result := false;
-							log (text => " point is inside the via", level => lth + 4);
-						end if;							
-					end set_radius;
-					
-				begin -- query_vias
-					while v /= pac_vias.no_element and result = true loop
-
-						c.center := element (v).position;
-						log (text => to_string (element (v)), level => lth + 3);
-						
-						case element (v).category is
-							when THROUGH =>
-								if is_inner_layer (layer) then
-									set_radius (element (v).restring_inner);
-								else
-									set_radius (element (v).restring_outer);
-								end if;
-								
-							when BURIED =>
-								if buried_via_uses_layer (element (v), layer) then
-									set_radius (element (v).restring_inner);
-								end if;
-								
-							when BLIND_DRILLED_FROM_TOP =>
-								if layer = type_signal_layer'first then
-									set_radius (element (v).restring_top);
-
-								elsif blind_via_uses_layer (element (v), layer) then
-									set_radius (element (v).restring_inner);
-								end if;
-
-							when BLIND_DRILLED_FROM_BOTTOM =>
-								if layer = bottom_layer then
-									set_radius (element (v).restring_bottom);
-
-								elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
-									set_radius (element (v).restring_inner);
-								end if;
-						end case;
-
-						next (v);
-					end loop;
-				end query_vias;
-
-				use et_packages;
+				end query_segments_and_vias;
 				
 			begin -- query_net
 				log (text => "net " & to_string (name), level => lth + 2);
-				log_indentation_up;
-				
-				clearances.append (class_given_net.clearance);
-				clearances.append (class_foregin_net.clearance);
 
-				if fill_zone.observe then 
-					clearances.append (fill_zone.outline.isolation);
+				if ignore_same_net then
+					if net_cursor /= nf then
+						query_segments_and_vias;
+					end if;
+				else
+					query_segments_and_vias;
 				end if;
-				
-				-- LINES
-				while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
-					segment_line := to_line_segment (element (l));
-					log (text => to_string (segment_line), level => lth + 3);
-					distance := get_shortest_distance (start_point, segment_line);
-					test_distance;
-					next (l);
-				end loop;
-				-- CS separate procedure
-				
-				-- ARCS
-				while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
-					segment_arc := to_arc_segment (element (a));
-					log (text => to_string (segment_arc), level => lth + 3);
-					distance := get_shortest_distance (start_point, segment_arc);
-					test_distance;
-					next (a);
-				end loop;
-				-- CS separate procedure
-				
-				-- VIAS
-				query_vias;
-			
-				log_indentation_down;
 			end query_net;
+
 			
 		begin -- query_tracks
 			log (text => "probing tracks ...", level => lth + 1);
