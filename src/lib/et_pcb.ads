@@ -60,6 +60,7 @@ with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_text;
 with et_nets;					use et_nets;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
@@ -112,6 +113,14 @@ package et_pcb is
 	
 
 
+	-- Maps from signal layer to mirror status of a vectorized text.
+	-- Use it for drawing non-device related texts and placeholders.
+	function signal_layer_to_mirror (
+		current_layer	: in et_pcb_stack.type_signal_layer;
+		bottom_layer	: in et_pcb_stack.type_signal_layer)
+		return et_text.type_vector_text_mirrored;
+
+	
 	
 -- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS
 	

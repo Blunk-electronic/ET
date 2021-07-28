@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_text;
 
 separate (et_routing)
 
@@ -286,6 +287,8 @@ is
 						test_line (get_right_edge (segment));
 						test_arc (get_start_cap (segment));
 						test_arc (get_end_cap (segment));
+
+						-- CS procedure test_segment_line (segment)
 					end if;
 				end query_line;
 
@@ -398,11 +401,61 @@ is
 
 			use et_packages;
 			use pac_conductor_texts;
+
+			use et_text;
+			--use pac_text_content;
 			
 			procedure query_text (c : in pac_conductor_texts.cursor) is
-			begin
-				--log (text => "text: " & to_string (element (c).content), level => lth + 2);
-				null;
+				use et_board_shapes_and_text.pac_text_fab;
+				use pac_vector_text_lines;
+				vector_text : pac_vector_text_lines.list;
+
+				procedure query_line (l : in pac_vector_text_lines.cursor) is
+					-- Convert the line of the vector text to a 
+					-- conductor line.
+					cl : constant et_packages.type_conductor_line := 
+						(type_line (element (l)) with element (c).line_width);
+					
+					-- Now we treat the line of the vector text like a regular
+					-- line of conductor material:
+					segment : constant type_conductor_line_segment := to_line_segment (cl);
+				begin
+					-- CS log segment ?
+					
+					test_line (get_left_edge (segment));
+					test_line (get_right_edge (segment));
+					test_arc (get_start_cap (segment));
+					test_arc (get_end_cap (segment));
+					-- CS procedure test_segment_line (segment)
+					
+				end query_line;
+
+			begin -- query_text
+				log (text => "text:" 
+					 & " P:" & to_string (element (c).position)
+					 & " / L: " & to_string (element (c).layer)
+					 & " / C: " & enclose_in_quotes (to_string (element (c).content)),
+					 level => lth + 2);
+
+				if element (c).layer = layer then
+					
+					-- Vectorize the text:
+					vector_text := vectorize_text (
+						content		=> element (c).content,
+						size		=> element (c).size,
+						rotation	=> rot (element (c).position),
+						position	=> type_point (element (c).position),
+
+						-- Mirror the text only if it is in the bottom layer:
+						mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
+						
+						line_width	=> element (c).line_width,
+						alignment	=> element (c).alignment -- right, bottom
+						);
+
+					vector_text.iterate (query_line'access);
+
+				end if;
 			end query_text;
 			
 		begin
@@ -447,6 +500,8 @@ is
 		query_texts;
 		
 		-- query pads, ...
+
+		-- query route restrict (ignore-parameter ?)
 
 		-- CS: submodules ?
 	end query_obstacles;

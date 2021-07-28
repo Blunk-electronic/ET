@@ -748,6 +748,9 @@ package et_packages is
 	type type_conductor_text is new type_text_with_content with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
+
+	--function to_string (text : in type_conductor_text)
+		--return string;
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 

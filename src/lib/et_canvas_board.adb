@@ -493,21 +493,6 @@ package body et_canvas_board is
 		end case;
 	end face_to_mirror;
 
-	-- Maps from signal layer to mirror status of a vectorized text.
-	-- Use it for drawing non-device related texts and placeholders.
-	function signal_layer_to_mirror (
-		current_layer, bottom_layer : in et_pcb_stack.type_signal_layer)
-		return et_text.type_vector_text_mirrored 
-	is
-		use et_text;
-		use et_pcb_stack;
-	begin
-		if current_layer = bottom_layer then
-			return YES;
-		else
-			return NO;
-		end if;
-	end signal_layer_to_mirror;
 	
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (

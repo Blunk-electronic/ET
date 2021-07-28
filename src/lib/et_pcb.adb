@@ -67,6 +67,23 @@ package body et_pcb is
 	begin
 		return pac_net_class_description.to_bounded_string (class_description);
 	end to_net_class_description;
+
+	
+	function signal_layer_to_mirror (
+		current_layer	: in et_pcb_stack.type_signal_layer;
+		bottom_layer	: in et_pcb_stack.type_signal_layer)
+		return et_text.type_vector_text_mirrored 
+	is
+		use et_text;
+	begin
+		if current_layer = bottom_layer then
+			return YES;
+		else
+			return NO;
+		end if;
+	end signal_layer_to_mirror;
+
+
 	
 	function text_properties (text : in et_packages.type_text) return string is
 	-- Returns the properties of the given text in a long single string.
@@ -90,6 +107,12 @@ package body et_pcb is
 
 
 
+	--function to_string (text : in type_conductor_text)
+		--return string
+	--is
+	--begin
+		--return "";
+	--end to_string;
 
 
 		

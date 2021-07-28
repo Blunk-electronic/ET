@@ -347,6 +347,113 @@ is
 			
 			log_indentation_down;
 		end query_tracks;
+		
+
+		-- TEXTS
+		procedure query_texts is
+			use et_packages;
+			use pac_conductor_texts;
+			t : pac_conductor_texts.cursor := module.board.conductors.texts.first;
+
+			distance : type_distance;
+			clearances : pac_distances_positive.list;
+
+			-- clears the "result" flag if variable "distance" is:
+			-- - negative or
+			-- - the requested track is too close to the segment of the text
+			procedure test_distance is begin
+				log_indentation_up;
+				
+				if distance <= zero then 
+					-- start_point is inside text segment or on the edge of the segment
+					log (text => "point is inside", level => lth + 4);
+					result := false;
+				else
+					-- start_point is outside the segment
+					log (text => "point is outside", level => lth + 4);
+					
+					-- the distance of the start point to the border of the segment:
+					distance := distance - width * 0.5;
+
+					-- Due to unavoidable rounding errors the difference between 
+					-- distance and border can be -type_distance'small:
+					if (distance - get_greatest (clearances)) >= - type_distance'small then
+						log (text => "point is in safe distance", level => lth + 4);
+					else
+						log (text => "point is too close", level => lth + 4);
+						result := false;
+					end if;							
+				end if;
+
+				log_indentation_down;
+			end test_distance;
+
+			use et_board_shapes_and_text.pac_text_fab;
+			use pac_vector_text_lines;
+			vector_text : pac_vector_text_lines.list;
+
+			procedure query_lines is
+				vl : pac_vector_text_lines.cursor := vector_text.first;
+				cl : et_packages.type_conductor_line;
+				segment : type_conductor_line_segment;
+
+			begin
+				while vl /= pac_vector_text_lines.no_element and result = true loop
+					-- CS log segment ?
+
+					-- Convert the line of the vector text to a conductor line.
+					cl := (type_line (element (vl)) with element (t).line_width);
+					
+					-- Now we treat the line of the vector text like a regular
+					-- line of conductor material:
+					segment := to_line_segment (cl);
+
+					log (text => to_string (segment), level => lth + 2);
+					distance := get_shortest_distance (start_point, segment);
+					test_distance;
+					
+					next (vl);
+				end loop;
+			end query_lines;
+			
+		begin -- query_texts
+			log (text => "probing texts ...", level => lth + 1);
+			log_indentation_up;
+
+			clearances.append (class_given_net.clearance);
+
+			if fill_zone.observe then 
+				clearances.append (fill_zone.outline.isolation);
+			end if;
+
+			
+			while t /= pac_conductor_texts.no_element and result = true loop
+				-- CS log text properties
+
+				if element (t).layer = layer then
+
+					-- Vectorize the text:
+					vector_text := vectorize_text (
+						content		=> element (t).content,
+						size		=> element (t).size,
+						rotation	=> rot (element (t).position),
+						position	=> type_point (element (t).position),
+
+						-- Mirror the text only if it is in the bottom layer:
+						mirror		=> signal_layer_to_mirror (element (t).layer, bottom_layer),
+						
+						line_width	=> element (t).line_width,
+						alignment	=> element (t).alignment -- right, bottom
+						);
+
+					query_lines;
+				end if;
+				
+				next (t);
+			end loop;
+			
+			log_indentation_down;
+		end query_texts;
 
 		
 	begin -- query_module
@@ -364,13 +471,18 @@ is
 		
 		-- CS abort if status is invalid.
 		
-		-- cs texts, pads, ...
+		-- cs pads, ...
 
 		if result = true then
 			query_tracks;
 		end if;
 
-		-- CS query freetracks
+		if result = true then
+			query_texts;
+		end if;
+
+		
+		-- CS query freetracks, route restrict
 		
 	end query_module;
 
