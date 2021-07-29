@@ -121,7 +121,7 @@ package et_routing is
 		BEFORE,
 		AFTER);					
 
-
+	function to_string (place : in type_place) return string;
 
 	
 	-- The dimensions of a track:

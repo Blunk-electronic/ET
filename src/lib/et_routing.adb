@@ -624,6 +624,11 @@ package body et_routing is
 	end get_total_width;
 
 
+	function to_string (place : in type_place) return string is begin
+		return "place: " & type_place'image (place);
+	end to_string;
+
+	
 	function get_dimensions (
 		track : in type_track)
 		return type_track_dimensions
@@ -710,6 +715,19 @@ package body et_routing is
 		log (text => "starting numerical search ...", level => lth);
 		log_indentation_up;
 
+		case obstacle.shape is
+			when LINE =>
+				log (text => to_string (place) & " obstacle" & to_string (obstacle.line), level => lth + 1);
+			when ARC =>
+				log (text => to_string (place) & " obstacle" & to_string (obstacle.arc), level => lth + 1);
+			when CIRCLE =>
+				log (text => to_string (place) & " obstacle" & to_string (obstacle.circle), level => lth + 1);
+		end case;
+
+		log (text => "clearance: " & to_string (clearance), level => lth + 1);
+		log (text => "init     : " & to_string (init), level => lth + 1);
+		
+		
 		-- Set the inital position of the cap:
 		case place is
 			when BEFORE =>
@@ -719,10 +737,14 @@ package body et_routing is
 				c.center := type_point (set (init + c.radius, zero));
 		end case;
 
+		log (text => "cap start: " & to_string (c), level => lth + 1);
+
 		
 		for i in 1 .. max_iterations loop
 			
 			-- Calculate the distance between the cap (incl. clearance) and the obstacle:
+			log (text => "cap      : " & to_string (c), level => lth + 1);
+			
 			case obstacle.shape is
 				when LINE =>
 					d_cap_to_obstacle := get_distance (c, obstacle.line);
