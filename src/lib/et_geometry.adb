@@ -2468,7 +2468,8 @@ package body et_geometry is
 				
 				-- Theoretically we must compare with zero here. But due to rounding
 				-- errors we compare with the doubled rounding error:
-				if get_distance (line, iv) > 2.0 * rounding_error then
+				--if get_distance (line, iv) > 4.0 * rounding_error then
+				if get_distance (line, iv) > rounding_error then
 					
 					-- we went the wrong direction
 					iv := to_vector (point); -- restore iv
@@ -3279,7 +3280,8 @@ package body et_geometry is
 
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc:
-			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			
 			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			
 				-- Point is on circumfence of virtual circle.
@@ -3738,8 +3740,7 @@ package body et_geometry is
 
 			dd := get_absolute (d_pc) - circle.radius;
 			
-			if dd > zero then -- point outside of circle
-			-- CS consider the unavoidable rounding error. compare with type_distance'small ?
+			if dd > rounding_error then -- point outside of circle
 
 				-- Now the polar distance from point to center matters:
 				result := d_pc;
@@ -4113,7 +4114,7 @@ package body et_geometry is
 
 			-- if d < zero then 
 			-- works theoretically. due to unavoidable rounding error we must do this:
-			if d < - type_distance'small then
+			if d < - float (rounding_error) then
 				--put_line ("none" & float'image (d));
 				
 				s := NONE_EXIST;
@@ -4122,7 +4123,7 @@ package body et_geometry is
 				
 			--elsif d = zero then
 			-- works theoretically. due to unavoidable rounding error we must do this:				
-			elsif abs (d) <= type_distance'small then
+			elsif abs (d) <= float (rounding_error) then
 				--put_line ("one");
 				
 				s := ONE_EXISTS; -- tangent
