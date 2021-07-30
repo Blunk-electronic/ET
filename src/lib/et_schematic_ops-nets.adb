@@ -52,10 +52,11 @@ package body et_schematic_ops.nets is
 		raise constraint_error;
 	end;
 
+	
 	function between_start_and_end_point (
 		point 		: in type_point;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
+		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -64,8 +65,7 @@ package body et_schematic_ops.nets is
 		dist := get_distance (
 			point 		=> point,
 			line		=> element (segment),
-			line_range	=> BETWEEN_END_POINTS,
-			catch_zone	=> catch_zone);
+			line_range	=> BETWEEN_END_POINTS);
 
 		if (not out_of_range (dist)) and get_distance (dist) <= catch_zone then
 			return true;
@@ -74,10 +74,11 @@ package body et_schematic_ops.nets is
 		end if;
 	end between_start_and_end_point;
 
+	
 	function on_segment (
 		point 		: in type_point;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
+		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -86,8 +87,7 @@ package body et_schematic_ops.nets is
 		dist := get_distance (
 			point 		=> point,
 			line		=> element (segment),
-			line_range	=> WITH_END_POINTS,
-			catch_zone	=> catch_zone);
+			line_range	=> WITH_END_POINTS);
 
 -- 		log (text => 
 -- 			"catch zone" & to_string (catch_zone) 
@@ -101,6 +101,7 @@ package body et_schematic_ops.nets is
 			return false;
 		end if;
 	end on_segment;
+	
 	
 	procedure rename_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

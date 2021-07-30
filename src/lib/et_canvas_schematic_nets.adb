@@ -267,7 +267,7 @@ package body et_canvas_schematic_nets is
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_catch_zone := type_catch_zone'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
 	is
@@ -515,7 +515,6 @@ package body et_canvas_schematic_nets is
 		segments_at_start_point := collect_segments (
 			module			=> module,
 			place			=> start_point,
-			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
 		-- We assume there are either no segments at all or 
@@ -526,7 +525,6 @@ package body et_canvas_schematic_nets is
 		segments_at_end_point := collect_segments (
 			module			=> module,
 			place			=> end_point,
-			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
 		-- We assume there are either no segments at all or 
@@ -601,9 +599,9 @@ package body et_canvas_schematic_nets is
 		end if;
 		
 		log_indentation_down;
-
 	end insert_net_segment;
 
+	
 	function valid_for_net_segment (
 		point			: in type_point;
 		log_threshold	: in type_log_level)
@@ -619,7 +617,6 @@ package body et_canvas_schematic_nets is
 		segments := collect_segments (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> zero,
 			log_threshold	=> log_threshold); 
 
 		-- If there are no segments at given point, then the point is valid:

@@ -47,22 +47,22 @@ package et_schematic_ops.nets is
 		EVERYWHERE
 		);
 
-	function between_start_and_end_point (
 	-- Returns true if given point sits between start and end point of given segment.
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
+	function between_start_and_end_point (
 		point 		: in type_point;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
+		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
 
-	function on_segment (
 	-- Returns true if given point sits on the given segment.
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
+	function on_segment (
 		point 		: in type_point;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
+		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
 	
 	procedure rename_net (

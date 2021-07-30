@@ -2624,12 +2624,11 @@ package body et_geometry is
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_catch_zone := rounding_error)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean
 		is
 			distance : type_distance_point_line;
 		begin
-			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
 			distance := get_distance (point, line, WITH_END_POINTS);
 
 			if not distance.out_of_range and distance.distance <= catch_zone then
@@ -3233,7 +3232,7 @@ package body et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := rounding_error)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean 
 		is
 			-- The angle of the given point relative to the

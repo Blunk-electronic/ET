@@ -1201,7 +1201,7 @@ package et_geometry is
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_catch_zone := rounding_error)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean; 
 
 		-- Returns the shortest distance from the given point to the
@@ -1307,7 +1307,7 @@ package et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := rounding_error)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean; 
 
 
