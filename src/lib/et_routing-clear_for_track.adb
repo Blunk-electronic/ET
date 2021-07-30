@@ -101,8 +101,8 @@ is
 				distance_to_border := distance_to_border - 0.5 * width;
 
 				-- Due to unavoidable rounding errors the difference between 
-				-- distance_to_border and border can be -type_distance'small:
-				if distance_to_border >= - type_distance'small then
+				-- distance_to_border and border can be -rounding_error:
+				if distance_to_border >= - rounding_error then
 					log (text => "point is in safe distance to border", level => lth + 1);
 					result := true;
 				else
@@ -142,8 +142,8 @@ is
 						distance_to_border := distance_to_border - 0.5 * width;
 
 						-- Due to unavoidable rounding errors the difference between 
-						-- distance_to_edge and border can be -type_distance'small:
-						if distance_to_border >= - type_distance'small then
+						-- distance_to_edge and border can be -rounding_error:
+						if distance_to_border >= - rounding_error then
 							log (text => " point is in safe distance to border", level => lth + 1);
 						else
 							log (text => " point is too close to border", level => lth + 1);
@@ -204,8 +204,8 @@ is
 							distance := distance - width * 0.5;
 
 							-- Due to unavoidable rounding errors the difference between 
-							-- distance and border can be -type_distance'small:
-							if (distance - get_greatest (clearances)) >= - type_distance'small then
+							-- distance and border can be -rounding_error:
+							if (distance - get_greatest (clearances)) >= - rounding_error then
 								log (text => "point is in safe distance", level => lth + 4);
 							else
 								log (text => "point is too close", level => lth + 4);
@@ -376,8 +376,8 @@ is
 					distance := distance - width * 0.5;
 
 					-- Due to unavoidable rounding errors the difference between 
-					-- distance and border can be -type_distance'small:
-					if (distance - get_greatest (clearances)) >= - type_distance'small then
+					-- distance and border can be -rounding_error:
+					if (distance - get_greatest (clearances)) >= - rounding_error then
 						log (text => "point is in safe distance", level => lth + 4);
 					else
 						log (text => "point is too close", level => lth + 4);
@@ -519,9 +519,9 @@ begin -- clear_for_track
 
 		-- Due to unavoidable rounding errors the difference between 
 		-- distance_to_edge and DRU given minimal clearance to edge can
-		-- be -type_distance'small:
+		-- be -rounding_error:
 		if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
-			>= -type_distance'small 
+			>= -rounding_error 
 		then				
 			log (text => " point is in safe distance to board edge", level => lth + 1);
 

@@ -762,7 +762,7 @@ package body et_routing is
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
-			if d_cap_to_obstacle_abs <= type_distance'small then
+			if d_cap_to_obstacle_abs <= rounding_error then
 				log (text => " break point found after" & positive'image (i) & " iterations",
 					level => lth + 2);
 				exit;
