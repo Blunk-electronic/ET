@@ -163,6 +163,7 @@ package et_geometry is
 		far_left	: constant type_distance := axis_min;
 		far_right	: constant type_distance := axis_max;
 
+		
 		-- The position along an axis:
 		subtype type_position_axis is type_distance 
 			range axis_min .. axis_max;
@@ -177,8 +178,10 @@ package et_geometry is
 		subtype type_distance_positive is type_distance 
 			range zero .. type_distance'last;
 		
+		rounding_error : constant type_distance_positive := type_distance'small;
+		
 		subtype type_catch_zone is type_distance_positive
-			range zero .. type_distance_positive'last/1000;
+			range rounding_error .. type_distance_positive'last/1000;
 
 		
 		subtype type_rotation_positive is type_rotation
@@ -1185,25 +1188,20 @@ package et_geometry is
 			);
 		
 		-- Computes the shortest distance (perpendicular) of a point to a line. 
-		-- The optional parameter catch_zone specifies the range at which 
-		-- the point is regarded as sitting on the line.
-		-- In the result the flag out_of_range will be cleared if the point
-		-- sits on the line or inside the catch_zone.
-		-- CS insufficiend ! More details !!!
+		-- CS insufficiend ! More details !!! especially on the out_of_range flag
 		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
-			line_range	: in type_line_range;
-			catch_zone	: in type_catch_zone := zero) -- CS remove ?
+			line_range	: in type_line_range)
 			return type_distance_point_line;
 
 		-- Returns true if the given point sits on the given line.
-		-- The optional parameter accuracy may be used to specifiy the range at
+		-- The optional parameter catch_zone may be used to specifiy the range at
 		-- which the point is regarded as sitting on the line.
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := rounding_error)
 			return boolean; 
 
 		-- Returns the shortest distance from the given point to the
@@ -1309,7 +1307,7 @@ package et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := type_distance'small) -- CS remove
+			catch_zone	: in type_catch_zone := rounding_error)
 			return boolean; 
 
 

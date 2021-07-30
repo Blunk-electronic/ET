@@ -2437,8 +2437,7 @@ package body et_geometry is
 		function get_distance (
 			point		: in type_point;
 			line		: in type_line;
-			line_range	: in type_line_range;
-			catch_zone	: in type_catch_zone := zero)
+			line_range	: in type_line_range)
 			return type_distance_point_line 
 		is
 			result : type_distance_point_line;
@@ -2467,9 +2466,10 @@ package body et_geometry is
 
 				--log (text => "delta:" & to_string (get_distance (line, iv)));
 				
-				-- Due to rounding error we must not compare with zero but with
-				-- the smallest increment of type_distance:
-				if get_distance (line, iv) > 2.0 * type_distance'small then 
+				-- Theoretically we must compare with zero here. But due to rounding
+				-- errors we compare with the doubled rounding error:
+				if get_distance (line, iv) > 2.0 * rounding_error then
+					
 					-- we went the wrong direction
 					iv := to_vector (point); -- restore iv
 
@@ -2512,28 +2512,34 @@ package body et_geometry is
 				when others => null;
 			end case;
 
-			-- If the ends of the line are included,
-			-- test whether the point is in the vicinity of the line start or end point.
-			-- Exit this function prematurely in that case.
-			if line_range = WITH_END_POINTS then
+			---- If the ends of the line are included,
+			---- test whether the point is in the vicinity of the line start or end point.
+			---- Exit this function prematurely in that case.
+			--if line_range = WITH_END_POINTS then
 
-				-- compute distance of point to start of line:
-				result.distance := get_distance_total (point, line.start_point);
+				---- compute distance of point to start of line:
+				--result.distance := get_distance_total (point, line.start_point);
 				
-				if result.distance <= catch_zone then
-					result.out_of_range := false;
-					return result;
-				end if;
+				--if result.distance <= accuracy then
+					--result.out_of_range := false;
+					--return result;
+				--end if;
 
-				-- compute distance of point to end of line:
-				result.distance := get_distance_total (point, line.end_point);
+				--if point = line.start_point then
+					--result.out_of_range := false;
+					--return result;
+				--end if;
+					
+
+				---- compute distance of point to end of line:
+				--result.distance := get_distance_total (point, line.end_point);
 				
-				if result.distance <= catch_zone then
-					result.out_of_range := false;
-					return result;
-				end if;
+				--if result.distance <= accuracy then
+					--result.out_of_range := false;
+					--return result;
+				--end if;
 
-			end if;
+			--end if;
 			
 			-- Compute the distance from point to line.
 			-- This computation does not care about end or start point of the line.
@@ -2618,16 +2624,15 @@ package body et_geometry is
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := rounding_error)
 			return boolean
 		is
 			distance : type_distance_point_line;
 		begin
 			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
-			distance := get_distance (point, line, WITH_END_POINTS, catch_zone);
+			distance := get_distance (point, line, WITH_END_POINTS);
 
 			if not distance.out_of_range and distance.distance <= catch_zone then
-				-- CS consider rounding errors !!
 				return true;
 			else
 				return false;
@@ -3228,7 +3233,7 @@ package body et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := type_distance'small)
+			catch_zone	: in type_catch_zone := rounding_error)
 			return boolean 
 		is
 			-- The angle of the given point relative to the
@@ -3274,13 +3279,10 @@ package body et_geometry is
 				 --& " distance center to point" & to_string (distance_center_to_point));
 
 			-- First test whether the given point is on the circumfence of
-			-- a virtual circle. The circle has the same radius as the arc.
-			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
+			-- a virtual circle. The circle has the same radius as the arc:
 			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			
-			--if abs (distance_center_to_point - arc_angles.radius) <= 2.0 * type_distance'small then
-				-- Due to unavoidable rounding errors, a minimal error occurs.
-
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
 
