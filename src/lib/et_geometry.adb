@@ -2459,16 +2459,21 @@ package body et_geometry is
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
 				-- At this stage we do not know in which direction to go. So we just try
-				-- to go in 90 degree direction. If the distance of ip to the line
+				-- to go in 90 degree direction. If the distance from iv to the line
 				-- is not zero, then we try in -90 degree direction.
 
 				iv := to_vector (point);
 				move_by (iv, line_direction + 90.0, result.distance);
 
+				--log (text => "delta:" & to_string (get_distance (line, iv)));
+				
 				-- Due to rounding error we must not compare with zero but with
 				-- the smallest increment of type_distance:
-				if get_distance (line, iv) > type_distance'small then
-					iv := to_vector (point);
+				if get_distance (line, iv) > 2.0 * type_distance'small then 
+					-- we went the wrong direction
+					iv := to_vector (point); -- restore iv
+
+					-- try opposite direction:
 					move_by (iv, line_direction - 90.0, result.distance);
 				end if;
 				
@@ -2552,6 +2557,8 @@ package body et_geometry is
 			line_start_vector := start_vector (line);
 			lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
 
+			--put_line ("lambda forward:" & to_string (lambda_forward));
+			
 			if lambda_forward < zero then -- iv points BEFORE start of line
 				--put_line ("before start point");
 				case line_range is
@@ -2563,8 +2570,7 @@ package body et_geometry is
 			end if;
 			
 			if lambda_forward = zero then -- iv points TO start point of line
-				-- log (text => "at start point");
-				--result.sits_on_start := true;
+				--put_line ("on start point");
 				case line_range is
 					when BETWEEN_END_POINTS => result.out_of_range := true;
 					when others => result.out_of_range := false;
@@ -2574,10 +2580,13 @@ package body et_geometry is
 			end if;
 
 			--put_line ("after start point");
+
 			
 			line_end_vector := end_vector (line);
 			lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
 
+			--put_line ("lambda backward:" & to_string (lambda_backward));
+			
 			if lambda_backward > zero then -- iv points AFTER end of line
 				--put_line ("after end point");
 				case line_range is
@@ -2589,8 +2598,7 @@ package body et_geometry is
 			end if;
 
 			if lambda_backward = zero then -- iv points TO end point of line
-				-- log (text => "at end point");
-				--result.sits_on_end := true;
+				--put_line ("on end point");
 				case line_range is
 					when BETWEEN_END_POINTS => result.out_of_range := true;
 					when others => result.out_of_range := false;
@@ -2756,7 +2764,7 @@ package body et_geometry is
 				-- 1. It bases on the well known vector formula:
 				--    i = start_vector + lambda * direction_vector
 				--    This formula is solved by lambda.
-				-- 2. It basss on the assumption that the direction_vector of line is
+				-- 2. It bases on the assumption that the direction_vector of line is
 				--    already properly set (see comment above):
 				function after_center (i : in type_vector) return boolean is
 					lambda : type_distance;
@@ -2819,6 +2827,7 @@ package body et_geometry is
 					case ILC.status is
 						when NONE_EXIST =>
 							-- line travels past the arc
+							--put_line ("none");
 							compare_start_and_end_point;
 
 						when ONE_EXISTS =>
@@ -2827,7 +2836,7 @@ package body et_geometry is
 							if ILC.tangent_status = SECANT then
 							-- line intersects the arc only once
 
-								--put_line ("i: " & to_string (i.intersection.point));
+								--put_line ("i: " & to_string (ILC.intersection.point));
 								
 								if after_center (ILC.intersection.point) then
 									-- intersection after center of arc
@@ -3214,6 +3223,7 @@ package body et_geometry is
 			
 			return result;
 		end get_boundaries;
+
 		
 		function on_arc (
 			point		: in type_point;
@@ -3256,7 +3266,7 @@ package body et_geometry is
 				get_distance_total (point, arc.center);
 			
 		begin
-			--log (text => "center" & to_string (arc.center) 
+			--put_line ("center" & to_string (arc.center) 
 				 --& " radius" & to_string (arc_angles.radius)
 				 --& " start" & to_string (arc.start_point)
 				 --& " end" & to_string (arc.end_point)
@@ -3266,6 +3276,9 @@ package body et_geometry is
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc.
 			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
+			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			
+			--if abs (distance_center_to_point - arc_angles.radius) <= 2.0 * type_distance'small then
 				-- Due to unavoidable rounding errors, a minimal error occurs.
 
 				-- Point is on circumfence of virtual circle.
@@ -3368,13 +3381,15 @@ package body et_geometry is
 				when TWO_EXIST => 
 					-- line is a secant to the virtual circle:
 					
-					--put_line ("two");
+					--put_line ("B two");
 
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
 
 					--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
 					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
+
+					-- CS optimize !
 					
 					if	on_arc (to_point (vi.intersection_1.point), arc) 
 					and on_arc (to_point (vi.intersection_2.point), arc) then
@@ -3886,10 +3901,8 @@ package body et_geometry is
 			dp := get_distance (circle.center, line, WITH_END_POINTS);
 			
 			if debug then
-				put_line ("");
-				put_line ("get_distance:");
-				put_line ("circle: " & to_string (circle));
-				put_line ("line:   " & to_string (line));
+				--put_line ("circle: " & to_string (circle));
+				put_line ( "is" & to_string (get_intersection (dp)));
 				put_line ( "dl" & to_string (get_distance (dp)));
 				put_line ( "ds" & to_string (get_distance_total (circle.center, line.start_point)));
 				put_line ( "de" & to_string (get_distance_total (circle.center, line.end_point)));
@@ -3919,9 +3932,9 @@ package body et_geometry is
 			
 			--log (text => "dp" & to_string (result));
 
-			if debug then
-				put_line ("d " & to_string (result));
-			end if;
+			--if debug then
+				--put_line ("d " & to_string (result));
+			--end if;
 			
 			return result;
 		end get_distance;

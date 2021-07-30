@@ -1309,7 +1309,7 @@ package et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := type_distance'small)
+			catch_zone	: in type_catch_zone := type_distance'small) -- CS remove
 			return boolean; 
 
 
