@@ -904,6 +904,7 @@ package body et_routing is
 			-- This condition test should avoid useless searching for a break. 
 			-- CS: not verified ! Remove this test if assumption is wrong.
 			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
+			--if place = BEFORE
 
 			-- CS: A similar optimization when place is AFTER ?				
 			or place = AFTER 

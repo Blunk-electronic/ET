@@ -183,6 +183,7 @@ package et_geometry is
 			range zero .. type_distance'last;
 		
 		rounding_error : constant type_distance_positive := 10.0 * type_distance'small;
+		--rounding_error : constant type_distance_positive := type_distance'small;
 		--rounding_error : constant type_distance := zero;
 		
 		subtype type_catch_zone is type_distance_positive
