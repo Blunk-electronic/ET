@@ -446,7 +446,7 @@ package body et_text is
 
 			-- For alignment we need the total length of the text:
 			text_length : constant type_distance_positive := line_width * 0.5 +
-					(text'length - 1) * (spacing * M);
+				type_distance (text'length - 1) * type_distance (spacing * M);
 
 			text_length_half : constant type_distance_positive := text_length * 0.5;
 
@@ -487,7 +487,7 @@ package body et_text is
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
 						offset	=> to_distance_relative (set (
-									x => (place - 1) * spacing,
+									x => type_distance (place - 1) * spacing,
 									y => zero)));
 
 					-- Collect the line in scratch:

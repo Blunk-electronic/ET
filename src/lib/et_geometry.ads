@@ -153,9 +153,13 @@ package et_geometry is
 	-------------------------
 	
 	generic
-		type type_distance is delta <>;
+		--type type_distance is delta <>;
+		type type_distance is delta <> digits <>;
+		--type type_distance is digits <>;
 		axis_min, axis_max : type_distance;
-		type type_rotation is delta <>;
+		--type type_rotation is delta <>;
+		type type_rotation is delta <> digits <>;
+		--type type_rotation is digits <>;
 		
 	package generic_pac_geometry is
 		
@@ -178,10 +182,11 @@ package et_geometry is
 		subtype type_distance_positive is type_distance 
 			range zero .. type_distance'last;
 		
-		rounding_error : constant type_distance_positive := type_distance'small;
+		rounding_error : constant type_distance_positive := 10.0 * type_distance'small;
+		--rounding_error : constant type_distance := zero;
 		
 		subtype type_catch_zone is type_distance_positive
-			range rounding_error .. type_distance_positive'last/1000;
+			range rounding_error .. type_distance_positive'last/1000.0;
 
 		
 		subtype type_rotation_positive is type_rotation
@@ -230,7 +235,7 @@ package et_geometry is
 			return type_distance_positive;
 		
 		
-		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
+		grid_max : constant type_distance_positive := type_distance_positive'last/1000.0;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
 		grid_default : constant type_distance_grid := 2.5;
 		
@@ -1478,7 +1483,7 @@ package et_geometry is
 		function on_circle (
 			point		: in type_point;
 			circle		: in type_circle;
-			catch_zone	: in type_catch_zone := type_distance'small)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean;
 
 		-- Gives the status (inside/outside) of a point relative to a circle.
@@ -1816,6 +1821,8 @@ package et_geometry is
 
 		type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
 		for type_polygon_scale'small use 0.1;
+		--type type_polygon_scale is new float range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
+		--for type_polygon_scale'small use 0.1;
 
 		polygon_scale_default : constant type_polygon_scale := 1.0;
 

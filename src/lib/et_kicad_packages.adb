@@ -131,10 +131,10 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 
 		-- supportive frequently used values
-		xp : constant type_position_axis := size_x / 2;
+		xp : constant type_position_axis := size_x / 2.0;
 		xn : constant type_position_axis := -(xp);
 
-		yp : constant type_position_axis := size_y / 2;
+		yp : constant type_position_axis := size_y / 2.0;
 		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:
@@ -211,10 +211,10 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
-		x1p : constant type_position_axis := size_x / 2;
+		x1p : constant type_position_axis := size_x / 2.0;
 		x1n : constant type_position_axis := -(x1p);
 
-		y1p : constant type_position_axis := size_y / 2;
+		y1p : constant type_position_axis := size_y / 2.0;
 		y1n : constant type_position_axis := -(y1p);
 
 		x2p : constant type_position_axis := x1p - y1p;
@@ -312,10 +312,10 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
-		xp : constant type_position_axis := size_x / 2;
+		xp : constant type_position_axis := size_x / 2.0;
 		xn : constant type_position_axis := -(xp);
 
-		yp : constant type_position_axis := size_y / 2;
+		yp : constant type_position_axis := size_y / 2.0;
 		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:

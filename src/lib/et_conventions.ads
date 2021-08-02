@@ -379,9 +379,9 @@ package et_conventions is
 
 	-- Text sizes of various categories are collected in a map:
 	package type_text_sizes_schematic is new ordered_maps (
-		key_type => type_text_schematic,
-		element_type => et_coordinates.type_distance,
-		"=" => et_coordinates."=");
+		key_type		=> type_text_schematic,
+		element_type	=> et_coordinates.pac_geometry_sch.type_distance_positive,
+		"="				=> et_coordinates."=");
 
 	-- After reading the conventions file, text sizes are collected here:
 	text_sizes_schematic : type_text_sizes_schematic.map;

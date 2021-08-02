@@ -3816,7 +3816,7 @@ package body et_geometry is
 		function on_circle (
 			point		: in type_point;
 			circle		: in type_circle;
-			catch_zone	: in type_catch_zone := type_distance'small)
+			catch_zone	: in type_catch_zone := type_catch_zone'first)
 			return boolean 
 		is begin
 			if get_distance_total (point, circle.center) - circle.radius <= catch_zone then
@@ -5243,8 +5243,8 @@ package body et_geometry is
 			use pac_polygon_segments;
 
 			function scale_point (point	: in type_point) return type_point is
-				x_new : type_distance := get_x (point) * offset.scale;
-				y_new : type_distance := get_y (point) * offset.scale;
+				x_new : type_distance := get_x (point) * type_distance (offset.scale);
+				y_new : type_distance := get_y (point) * type_distance (offset.scale);
 			begin
 				return type_point (set (x_new, y_new));
 			end scale_point;

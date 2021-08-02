@@ -3245,11 +3245,11 @@ package body et_kicad.pcb is
 				net_class_cursor	: type_net_classes.cursor;
 			begin -- insert_net_class
 				-- calculate validate restring for regular and micro vias
-				net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
+				net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2.0;
 				validate_restring_width (net_class_via_restring);
 				net_class.via_restring_min := net_class_via_restring;
 
-				net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
+				net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2.0;
 				validate_restring_width (net_class_via_restring);
 				net_class.micro_via_restring_min := net_class_via_restring;
 
@@ -4879,7 +4879,7 @@ package body et_kicad.pcb is
 
 							-- For converting a kicad via to an ET via, the restring must be calculated.
 							-- It is the (total via diameter - drill diameter) divided by 2:
-							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2;
+							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2.0;
 						
 							-- copy position, drill diameter (by a conversion to the base type)
 							via := (type_drill (element (via_cursor)) with 

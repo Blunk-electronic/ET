@@ -52,10 +52,13 @@ package et_coordinates is
 -- 	pragma assertion_policy (check);
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-	type type_distance is delta 0.01
+	--type type_distance is delta 0.01
+	distance_smallest : constant := 0.01;
+	--type type_distance is new float
+	type type_distance is delta distance_smallest digits 8
 		range -100_000.00 .. 100_000.00;
 		
-	for type_distance'small use 0.01; 
+	--for type_distance'small use 0.01; 
 	-- this is the accuracy required for schematic
 
 
@@ -64,8 +67,14 @@ package et_coordinates is
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 
-	type type_rotation is delta 0.1 range -360.0 .. 360.0;
-	for type_rotation'small use 0.1;
+	--type type_rotation is delta 0.1 
+	rotation_smallest : constant := 0.1;	
+	--type type_rotation is new float
+	type type_rotation is delta rotation_smallest digits 4
+		range -360.0 .. 360.0;
+		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
+
+		--for type_rotation'small use 0.1;
 
 	
 	-- instantiation of the geometry package:
