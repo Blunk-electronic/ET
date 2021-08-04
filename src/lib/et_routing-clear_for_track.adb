@@ -399,8 +399,9 @@ is
 
 			begin
 				while vl /= pac_vector_text_lines.no_element and result = true loop
-					-- CS log segment ?
-
+					log (text => "X" & to_string (element (vl)), level => lth + 2);
+					log_indentation_up;
+					
 					-- Convert the line of the vector text to a conductor line.
 					cl := (type_line (element (vl)) with element (t).line_width);
 					
@@ -408,9 +409,11 @@ is
 					-- line of conductor material:
 					segment := to_line_segment (cl);
 
-					log (text => to_string (segment), level => lth + 2);
+					log (text => to_string (segment), level => lth + 3);
 					distance := get_shortest_distance (start_point, segment);
 					test_distance;
+
+					log_indentation_down;
 					
 					next (vl);
 				end loop;
@@ -428,9 +431,11 @@ is
 
 			
 			while t /= pac_conductor_texts.no_element and result = true loop
+				
 				-- CS log text properties
-
+				
 				if element (t).layer = layer then
+					--log_indentation_up;
 
 					-- Vectorize the text:
 					vector_text := vectorize_text (
@@ -447,6 +452,8 @@ is
 						);
 
 					query_lines;
+
+					--log_indentation_down;
 				end if;
 				
 				next (t);

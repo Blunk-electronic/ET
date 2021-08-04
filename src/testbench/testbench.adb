@@ -57,67 +57,26 @@ procedure testbench is
 	use functions_float;
 
 
- --circle: C: (x/y)  18.0233/ 0.0000 R: 0.3500
---D C-A: 0.4208 -86.363
- --D: 0.0708
+	P : type_point := type_point (set (10.5000, 39.3600));
 
 	
-	A : type_arc;
+	S : type_point := type_point (set (27.5562, 39.2921));
+	E : type_point := type_point (set (24.6461, 38.7789));
 
---	P0 : type_point := type_point (set (18.4, 0.03));
-	P : type_point := type_point (set (18.20, 0.03));
-	--P2 : type_point := type_point (set (18.0233, 0.0));
-	--P3 : type_point := type_point (set (18.0, 0.0));
-
-	--P : type_point;
+	CL : type_conductor_line := (S, E, 0.15);
 	
-	x : type_distance;
+	LS : type_conductor_line_segment;
 
-	dp : type_distance_polar;
+	d : type_distance;
+	
 begin
 	new_line;
 
-	A.start_point := type_point (set (x =>  18.05, y =>  0.48));
-	A.end_point   := type_point (set (x =>  18.05, y => -0.42));
-	A.center      := type_point (set (x =>  18.05, y =>  0.03));
-	A.direction   := CCW;
+	LS := to_line_segment (CL);
 
-	if is_valid (A) then
-		--put_line ("valid");
-		
-		--put_line (to_string (A));
+	d := get_shortest_distance (P, LS);
 
-		x := get_break (
-			init		=> 18.05,
-			place		=> AFTER,
-			obstacle	=> (ARC, A),
-			clearance	=> 0.35,
-			lth			=> 1);
-
-		put_line (to_string (x));
-
-
-		--put_line ("P:" & to_string (P));
-		
-		--for i in 1 .. 20 loop
-
-			--put_line ("P:" & to_string (P));
-			----put_line (to_string (A));
-
-			--dp := get_shortest_distance (P , A);
-			--put_line (to_string (dp));
-			--new_line;
-
-			--P := type_point (move (P, 180.0, 0.05));
-		--end loop;
-
-		
-	else
-		put_line ("invalid");
-	end if;
-	
-
-	
+	put_line (to_string (d));
 end testbench;
 
 -- Soli Deo Gloria

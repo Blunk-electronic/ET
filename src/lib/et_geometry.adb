@@ -3292,7 +3292,7 @@ package body et_geometry is
 
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc:
-			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
 			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			
@@ -3371,11 +3371,14 @@ package body et_geometry is
 			
 		begin
 			--new_line;
+			--put_line ("---");
 			--put_line (to_string (line));
 			--put_line (to_string (arc));
 			
 			case vi.status is
 				when NONE_EXIST => 
+					--put_line ("none");
+					
 					-- line does not meet the virtual circle
 					-- and does not meet the given arc either.
 					return (status => NONE_EXIST);
@@ -3396,7 +3399,7 @@ package body et_geometry is
 				when TWO_EXIST => 
 					-- line is a secant to the virtual circle:
 					
-					--put_line ("B two");
+					--put_line ("two");
 
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
@@ -4124,18 +4127,18 @@ package body et_geometry is
 			
 			d := a * b - c; -- incidence of line and circle
 
-			-- if d < zero then 
+			if d < zero then 
 			-- works theoretically. due to unavoidable rounding error we must do this:
-			if d < - float (rounding_error) then
+			--if d < - float (rounding_error) then
 				--put_line ("none" & float'image (d));
 				
 				s := NONE_EXIST;
 				
 				return (status => NONE_EXIST);
 				
-			--elsif d = zero then
+			elsif d = zero then
 			-- works theoretically. due to unavoidable rounding error we must do this:				
-			elsif abs (d) <= float (rounding_error) then
+			--elsif abs (d) <= float (rounding_error) then
 				--put_line ("one");
 				
 				s := ONE_EXISTS; -- tangent
@@ -5600,12 +5603,16 @@ package body et_geometry is
 				end count_two;
 				
 			begin -- query_arc
+				--put_line ("##");
 				--put_line (to_string (a));
 				
 				case i.status is
 					when NONE_EXIST => null;
+						--put_line ("none");
 					
 					when ONE_EXISTS =>
+						--put_line ("one");
+						
 						case i.tangent_status is
 							when TANGENT => null; -- not counted
 							
@@ -5630,6 +5637,7 @@ package body et_geometry is
 						end case;
 
 					when TWO_EXIST =>
+						--put_line ("two");
 						--put_line ("i1" & to_string (i.intersection_1));
 						--put_line ("i2" & to_string (i.intersection_2));
 						

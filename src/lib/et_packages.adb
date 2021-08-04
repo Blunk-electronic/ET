@@ -259,9 +259,9 @@ package body et_packages is
 	is begin
 		return ("line segment:" 
 			& " edge left:" & to_string (segment.left_edge)
-			& " cap end" & to_string (segment.cap_end)
-			& " edge right:" & to_string (segment.right_edge)
-			& " cap start:" & to_string (segment.cap_start));
+			& " / cap end" & to_string (segment.cap_end)
+			& " / edge right:" & to_string (segment.right_edge)
+			& " / cap start:" & to_string (segment.cap_start));
 	end to_string;
 
 	
@@ -272,6 +272,7 @@ package body et_packages is
 		direction : constant type_rotation := get_direction (line);
 		distance : constant type_track_width := line.width * 0.5;		
 	begin
+		--log (text => "cond line" & to_string (line) & " width" & to_string (line.width));
 		result.left_edge := type_line (line);
 		move_by (result.left_edge, add (direction, +90.0), distance);
 
@@ -364,8 +365,10 @@ package body et_packages is
 		-- build a polygon from the given segment:
 		build_polygon;
 
+		--put_line (to_string (polygon));
+		
 		distance := get_shortest_distance (polygon, point);
-		--log (text => to_string (polygon));
+
 		--log (text => "p" & to_string (point));
 		--log (text => "d" & to_string (get_absolute (distance)));
 

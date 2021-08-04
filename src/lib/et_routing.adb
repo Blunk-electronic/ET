@@ -812,6 +812,8 @@ package body et_routing is
 		return type_break
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
+		-- The track starts at some x-position (may be negative)
+		-- and runs to the far right.
 
 		-- the clearance between center of cap and line:
 		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
@@ -864,8 +866,14 @@ package body et_routing is
 
 			-- The angle between clearance and spacing:
 			angle : constant float := float (90.0 - i_center.intersection.angle);
+			--angle : float;
 
 		begin
+			--log (text => "discr: " 
+				 --& type_intersection_status_of_two_lines'image (i_center.status));
+				 
+			--angle :=  float (90.0 - i_center.intersection.angle);
+			
 			log_indentation_up;
 
 			--log (text => "line " & to_string (line_tmp) 
@@ -898,27 +906,40 @@ package body et_routing is
 
 			log (text => "break by" & to_string (line), level => lth);
 			log_indentation_up;
-			
-			-- If we search for a break before the line, then it makes sense
-			-- only if the area of overlap begins after the start of the track.
-			-- This condition test should avoid useless searching for a break. 
-			-- CS: not verified ! Remove this test if assumption is wrong.
-			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
-			--if place = BEFORE
 
-			-- CS: A similar optimization when place is AFTER ?				
-			or place = AFTER 
-			then
+			--log (text => "track " & to_string (track_dimensions.boundaries));
+			--log (text => "line  " & to_string (line_boundaries));
+			
+			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
+				-- The candidate line intersects the upper and lower edge of the track.
+
+				log (text => "line intersects track upper and lower edge", level => lth + 1);
+		
+				full_intersection;
+				-- bp is now set
+
+			else
+				-- We have a partial intersection:
+			
+				-- If we search for a break before the line, then it makes sense
+				-- only if the area of overlap begins after the start of the track.
+				-- This condition test should avoid useless searching for a break. 
+				-- CS: not verified ! Remove this test if assumption is wrong.
+				if (place = BEFORE) -- and bi.intersection.smallest_x >= zero) 
+
+				-- CS: A similar optimization when place is AFTER ?				
+				or place = AFTER 
+				then
 				
-				if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
-					-- The candidate line intersects the upper and lower edge of the track.
+				--if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
+					---- The candidate line intersects the upper and lower edge of the track.
 
-					log (text => "line intersects track upper and lower edge", level => lth + 1);
+					--log (text => "line intersects track upper and lower edge", level => lth + 1);
 			
-					full_intersection;
-					-- bp is now set
+					--full_intersection;
+					---- bp is now set
 					
-				else
+				--else
 					-- The candidate line intersects only one edge or none at all.
 					log (text => "line intersects track partially", level => lth + 1);
 					log_indentation_up;
@@ -927,13 +948,16 @@ package body et_routing is
 						when BEFORE =>
 							-- Use the LEFT border of the overlap area as start point for the
 							-- search operation:
-							start_point := bi.intersection.smallest_x;
+							--start_point := bi.intersection.smallest_x;
+							start_point := line_boundaries.smallest_x;
 
 						when AFTER =>
 							-- Use the RIGHT border of the overlap area as start point for the
 							-- search operation:
-							start_point := bi.intersection.greatest_x;
+							--start_point := bi.intersection.greatest_x;
+							start_point := line_boundaries.greatest_x;
 					end case;
+
 					
 					bp := type_point (set (get_break (
 							init		=> start_point,
@@ -946,27 +970,28 @@ package body et_routing is
 					log_indentation_down;
 				end if;
 
-			
-				-- The computed break point must be after the start of the track.
-				-- If it is before the start of the track, then it is discarded.
-				if get_x (bp) > zero then
-
-					-- Rotate and move the break point back according to
-					-- the track direction and offset:
-					rotate_to (bp, track_dimensions.direction);
-					move_by (bp, track_dimensions.offset);
-
-					break_exists := true;
-
-					log (text => "break point " & type_place'image (place) & " line:" & to_string (bp),
-						level => lth + 2);
-				end if;
-
 			end if;
 
 			log_indentation_down;
 		end if;
 
+
+		-- The computed break point must be after the start of the track.
+		-- If it is before the start of the track, then it is discarded.
+		if get_x (bp) > zero then
+
+			-- Rotate and move the break point back according to
+			-- the track direction and offset:
+			rotate_to (bp, track_dimensions.direction);
+			move_by (bp, track_dimensions.offset);
+
+			break_exists := true;
+
+			log (text => " break point " & type_place'image (place) & " line:" & to_string (bp),
+				level => lth + 2);
+		end if;
+
+		
 		
 		if break_exists then
 			return (exists => true, point => bp);
