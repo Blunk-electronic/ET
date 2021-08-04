@@ -212,6 +212,18 @@ package body et_geometry is
 			return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
 		end;
 
+
+		--function "=" (left, right : in type_point) return boolean is begin
+			--if abs (left.x - right.x) <= type_distance'small 
+			--and abs (left.y - right.y) <= type_distance'small
+			--then
+				--return true;
+			--else
+				--return false;
+			--end if;
+		--end;
+		
+		
 		function to_string (point : in type_point) return string is begin
 			return point_preamble
 				& to_string (point.x)
@@ -1936,7 +1948,7 @@ package body et_geometry is
 				
 					-- The intersection must be ON OR AFTER the start point
 					-- of probe_line, means in direction of travel.
-					if get_x (to_point (i.intersection.point)) >= get_x (to_point (probe_line.v_start)) then
+					--if get_x (to_point (i.intersection.point)) >= get_x (to_point (probe_line.v_start)) then
 
 						-- The intersection must be between start and end point of
 						-- the candidate line (start and end point itself included).
@@ -1950,9 +1962,9 @@ package body et_geometry is
 							return (status => NOT_EXISTENT);
 						end if;
 
-					else
-						return (status => NOT_EXISTENT);
-					end if;
+					--else
+						--return (status => NOT_EXISTENT);
+					--end if;
 
 				when others =>		
 					return i;
@@ -5588,6 +5600,8 @@ package body et_geometry is
 				end count_two;
 				
 			begin -- query_arc
+				--put_line (to_string (a));
+				
 				case i.status is
 					when NONE_EXIST => null;
 					
@@ -5632,8 +5646,7 @@ package body et_geometry is
 							count_two;
 							
 						else
-							-- Special case: Start or end point of arc lies exactly
-							-- at the probe line.
+							-- Special case: Start or end point of arc is ON the probe line.
 							
 							-- If start and end point of the candidate arc is ABOVE-OR-ON the 
 							-- threshold then we consider the arc to be threshold-crossing.
@@ -5670,11 +5683,11 @@ package body et_geometry is
 											
 								-- If the arc starts ON the probe line and ends BELOW
 								-- the probe line, then it runs first upwards through the upper half,
-								-- goes down, crosses the threshold at point P1 and ends somewhere 
+								-- goes down, crosses the threshold at point P and ends somewhere 
 								-- in the lower half.
 								elsif get_y (a.end_point) < y_threshold then
 
-									-- Count the start point and point P1 as intersections:
+									-- Count the start point and point P as intersections:
 									count_two;
 								end if;
 
@@ -5776,8 +5789,34 @@ package body et_geometry is
 
 			procedure sort_x_values is
 				use pac_probe_line_intersections_sorting;
+				c : pac_probe_line_intersections.cursor;
 			begin
-				sort (result.intersections);				
+				sort (result.intersections);
+
+				-- If x-positions differ by type_distance'small then we
+				-- treat them as redundant.
+				-- Remove redundant x-positions:
+				c := result.intersections.first;
+				while c /= pac_probe_line_intersections.no_element loop
+
+					if c /= result.intersections.first then
+						if abs (element (c).x_position - element (previous (c)).x_position)
+							<= type_distance'small 
+						then
+							delete (result.intersections, c);
+						end if;
+					end if;
+						
+					next (c);
+				end loop;
+
+				-- for testing/verifying only:
+				--c := result.intersections.first;				
+				--while c /= pac_probe_line_intersections.no_element loop
+					--put_line (to_string (element (c).x_position));
+					--next (c);
+				--end loop;
+
 			end sort_x_values;
 			
 		begin -- in_polygon_status
@@ -5790,21 +5829,24 @@ package body et_geometry is
 
 			
 			-- The x-values are not sorted yet. We need them sorted with the
-			-- smallest x first:
+			-- smallest x first and redundant x-positions removed:
 			sort_x_values;
 
 			-- get the total number of intersections
 			it := pac_probe_line_intersections.length (result.intersections);
+			--put_line (count_type'image (it));
 			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.
 			-- If the total is even, then the point is outside the polygon.
 			if (it rem 2) = 1 then
 				result.status := INSIDE;
+				--put_line ("inside");
 			else 
 				result.status := OUTSIDE;
+				--put_line ("outside");
 			end if;
-			
+
 			return result;
 		end in_polygon_status;
 

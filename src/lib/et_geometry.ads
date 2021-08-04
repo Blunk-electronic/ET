@@ -252,6 +252,8 @@ package et_geometry is
 		
 		type type_point is tagged private;
 
+		--function "=" (left, right : in type_point) return boolean;
+		
 		origin			: constant type_point;		
 		far_upper_left	: constant type_point;
 		far_upper_right	: constant type_point;
