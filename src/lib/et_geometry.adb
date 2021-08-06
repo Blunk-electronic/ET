@@ -4152,8 +4152,6 @@ package body et_geometry is
 			d := a * b - c; -- incidence of line and circle
 
 			if d < zero then 
-			-- works theoretically. due to unavoidable rounding error we must do this:
-			--if d < - float (rounding_error) then
 				--put_line ("none" & float'image (d));
 				
 				s := NONE_EXIST;
@@ -4161,8 +4159,6 @@ package body et_geometry is
 				return (status => NONE_EXIST);
 				
 			elsif d = zero then
-			-- works theoretically. due to unavoidable rounding error we must do this:				
-			--elsif abs (d) <= float (rounding_error) then
 				--put_line ("one");
 				
 				s := ONE_EXISTS; -- tangent
