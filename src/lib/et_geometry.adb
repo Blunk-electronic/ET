@@ -1970,25 +1970,17 @@ package body et_geometry is
 			case i.status is
 				when EXISTS =>
 				
-					-- The intersection must be ON OR AFTER the start point
-					-- of probe_line, means in direction of travel.
-					--if get_x (to_point (i.intersection.point)) >= get_x (to_point (probe_line.v_start)) then
-
-						-- The intersection must be between start and end point of
-						-- the candidate line (start and end point itself included).
-						-- If the intersection is between start and end point
-						-- of candidate line, then return the intersection as it is.
-						-- If the intersection is before start point or
-						-- beyond end point, then return NOT_EXISTENT.
-						if on_line (to_point (i.intersection.point), candidate_line) then
-							return i;
-						else
-							return (status => NOT_EXISTENT);
-						end if;
-
-					--else
-						--return (status => NOT_EXISTENT);
-					--end if;
+					-- The intersection must be between start and end point of
+					-- the candidate line (start and end point itself included).
+					-- If the intersection is between start and end point
+					-- of candidate line, then return the intersection as it is.
+					-- If the intersection is before start point or
+					-- beyond end point, then return NOT_EXISTENT.
+					if on_line (to_point (i.intersection.point), candidate_line) then
+						return i;
+					else
+						return (status => NOT_EXISTENT);
+					end if;
 
 				when others =>		
 					return i;
