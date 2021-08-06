@@ -61,6 +61,10 @@ package et_coordinates is
 	--for type_distance'small use 0.01; 
 	-- this is the accuracy required for schematic
 
+	distance_coarse_smallest : constant := type_distance'small * 10.0;
+	type type_distance_coarse is delta distance_coarse_smallest 
+		digits type_distance'digits - 1
+		range type_distance'first .. type_distance'last;
 
 	
 	-- Angle or rotation is in mathematical sense, means:
@@ -79,10 +83,11 @@ package et_coordinates is
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry.generic_pac_geometry (
-		type_distance		=> type_distance,
-		axis_max			=> 2_000.0,
-		axis_min			=>  -100.0,
-		type_rotation		=> type_rotation);
+		type_distance			=> type_distance,
+		type_distance_coarse	=> type_distance_coarse,
+		axis_max				=> 2_000.0,
+		axis_min				=>  -100.0,
+		type_rotation			=> type_rotation);
 	
 	use pac_geometry_sch;
 

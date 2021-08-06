@@ -155,6 +155,7 @@ package et_geometry is
 	generic
 		--type type_distance is delta <>;
 		type type_distance is delta <> digits <>;
+		type type_distance_coarse is delta <> digits <>;
 		--type type_distance is digits <>;
 		axis_min, axis_max : type_distance;
 		--type type_rotation is delta <>;
@@ -172,6 +173,9 @@ package et_geometry is
 		subtype type_position_axis is type_distance 
 			range axis_min .. axis_max;
 
+		function round (d_fine : in type_distance) 
+			return type_distance_coarse;
+		
 		function clip_distance (d : in type_distance)
 			return type_position_axis;
 
@@ -181,13 +185,15 @@ package et_geometry is
 		-- The distance between two objects:
 		subtype type_distance_positive is type_distance 
 			range zero .. type_distance'last;
+
+
 		
 		--rounding_error : constant type_distance_positive := 10.0 * type_distance'small;
 		rounding_error : constant type_distance_positive := type_distance'small;
 		--rounding_error : constant type_distance := zero;
 		
 		subtype type_catch_zone is type_distance_positive
-			range rounding_error .. type_distance_positive'last/1000.0;
+			range 10.0 * rounding_error .. type_distance_positive'last/1000.0;
 
 		
 		subtype type_rotation_positive is type_rotation

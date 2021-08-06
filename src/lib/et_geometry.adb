@@ -128,9 +128,33 @@ package body et_geometry is
 		return type_curvature'image (curvature);
 	end to_string;
 	
+
+
+
 	
 	package body generic_pac_geometry is
 
+		
+		function round (d_fine : in type_distance) 
+			return type_distance_coarse 
+		is
+			d_coarse : type_distance_coarse := type_distance_coarse (d_fine);
+			d_delta : type_distance;
+		begin
+			d_delta := abs (d_fine) - abs (type_distance (d_coarse));
+			
+			if d_delta >= 5.0 * type_distance'small then
+				if d_fine > 0.0 then
+					d_coarse := d_coarse + type_distance_coarse'small;
+				else
+					d_coarse := d_coarse - type_distance_coarse'small;
+				end if;
+			end if;
+
+			return d_coarse;
+		end round;
+	
+		
 		function clip_distance (d : in type_distance)
 			return type_position_axis
 		is begin
@@ -2481,7 +2505,7 @@ package body et_geometry is
 				-- Theoretically we must compare with zero here. But due to rounding
 				-- errors we compare with the doubled rounding error:
 				--if get_distance (line, iv) > 4.0 * rounding_error then
-				if get_distance (line, iv) > rounding_error then
+				if get_distance (line, iv) > 10.0 * rounding_error then
 					
 					-- we went the wrong direction
 					iv := to_vector (point); -- restore iv

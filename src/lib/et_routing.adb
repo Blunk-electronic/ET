@@ -762,7 +762,7 @@ package body et_routing is
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
-			if d_cap_to_obstacle_abs <= rounding_error then
+			if d_cap_to_obstacle_abs <= 10.0 * rounding_error then
 				log (text => " break point found after" & positive'image (i) & " iterations",
 					level => lth + 2);
 				exit;
@@ -866,13 +866,10 @@ package body et_routing is
 
 			-- The angle between clearance and spacing:
 			angle : constant float := float (90.0 - i_center.intersection.angle);
-			--angle : float;
 
 		begin
-			--log (text => "discr: " 
-				 --& type_intersection_status_of_two_lines'image (i_center.status));
-				 
-			--angle :=  float (90.0 - i_center.intersection.angle);
+			--log (text => "X angle: " & float'image (angle) 
+				 --& " clearance " & float'image (float (clearance)));
 			
 			log_indentation_up;
 
@@ -882,11 +879,14 @@ package body et_routing is
 				 --level => lth + 2);
 			
 			-- clearance is the distance from center of the cap perpendicular to the line.
-			spacing := type_distance_positive (
-					float (clearance) / cos (angle, float (units_per_cycle)));
+			spacing := type_distance (round (type_distance_positive 
+				(float (clearance) / cos (angle, float (units_per_cycle)))
+				));
 
-			--spacing := 0.0;
-			log (text => "required spacing" & to_string (spacing), level => lth + 2);
+			log (text => "required spacing" & to_string (spacing),
+				 --" Fl: " & float'image (float (clearance) / cos (angle, float (units_per_cycle)))
+				 --,
+				 level => lth + 2);
 			
 			-- Depending on the given place, the break point must be moved 
 			-- left or right by the spacing:

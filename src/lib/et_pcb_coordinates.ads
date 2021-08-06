@@ -76,7 +76,13 @@ package et_pcb_coordinates is
 	distance_smallest : constant := 0.0001;
 	type type_distance is delta distance_smallest digits 15
 		range -10_000_000_000.00 .. 10_000_000_000.00; 
-	
+
+	distance_coarse_smallest : constant := type_distance'small * 10.0;
+	type type_distance_coarse is delta distance_coarse_smallest 
+		digits type_distance'digits - 1
+		range type_distance'first .. type_distance'last;
+
+		
 	--for type_distance'small use 0.0001;
 	--for type_distance'small use 0.0000001;
 	-- CS increase accuracy if required
@@ -102,10 +108,11 @@ package et_pcb_coordinates is
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
-		type_distance		=> type_distance,
-		axis_max			=> +10_000_000.0,
-		axis_min			=> -10_000_000.0,
-		type_rotation 		=> type_rotation);
+		type_distance			=> type_distance,
+		type_distance_coarse	=> type_distance_coarse,
+		axis_max				=> +10_000_000.0,
+		axis_min				=> -10_000_000.0,
+		type_rotation 			=> type_rotation);
 
 	use pac_geometry_brd;
 

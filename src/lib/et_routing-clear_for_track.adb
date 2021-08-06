@@ -377,7 +377,12 @@ is
 
 					-- Due to unavoidable rounding errors the difference between 
 					-- distance and border can be -rounding_error:
-					if (distance - get_greatest (clearances)) >= - rounding_error then
+					--log (text => "distance: " & to_string (distance));
+					distance := type_distance (round (distance));
+					--log (text => "distance: " & to_string (distance));
+					
+					--if (distance - get_greatest (clearances)) >= - rounding_error * 2.0 then
+					if distance >= get_greatest (clearances) then
 						log (text => "point is in safe distance", level => lth + 4);
 					else
 						log (text => "point is too close", level => lth + 4);
@@ -399,7 +404,7 @@ is
 
 			begin
 				while vl /= pac_vector_text_lines.no_element and result = true loop
-					log (text => "X" & to_string (element (vl)), level => lth + 2);
+					log (text => to_string (element (vl)), level => lth + 2);
 					log_indentation_up;
 					
 					-- Convert the line of the vector text to a conductor line.
