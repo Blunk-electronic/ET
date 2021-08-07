@@ -153,14 +153,13 @@ package et_geometry is
 	-------------------------
 	
 	generic
-		--type type_distance is delta <>;
 		type type_distance is delta <> digits <>;
 		type type_distance_coarse is delta <> digits <>;
-		--type type_distance is digits <>;
+
 		axis_min, axis_max : type_distance;
-		--type type_rotation is delta <>;
+
 		type type_rotation is delta <> digits <>;
-		--type type_rotation is digits <>;
+
 		
 	package generic_pac_geometry is
 		
@@ -188,12 +187,11 @@ package et_geometry is
 
 
 		
-		--rounding_error : constant type_distance_positive := 10.0 * type_distance'small;
-		rounding_error : constant type_distance_positive := type_distance'small;
-		--rounding_error : constant type_distance := zero;
+		rounding_error : constant type_distance_positive := type_distance_coarse'small;
+
 		
 		subtype type_catch_zone is type_distance_positive
-			range 10.0 * rounding_error .. type_distance_positive'last/1000.0;
+			range rounding_error .. type_distance_positive'last/1000.0;
 
 		
 		subtype type_rotation_positive is type_rotation

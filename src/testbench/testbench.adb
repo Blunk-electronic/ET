@@ -57,11 +57,11 @@ procedure testbench is
 	use functions_float;
 
 
-	P : type_point := type_point (set (10.5000, 39.3600));
+	P : type_point := type_point (set (19.9331, 31.4400));
 
 	
-	S : type_point := type_point (set (27.5562, 39.2921));
-	E : type_point := type_point (set (24.6461, 38.7789));
+	S : type_point := type_point (set (13.3505, 36.7872));
+	E : type_point := type_point (set (21.8510, 28.2841));
 
 	CL : type_conductor_line := (S, E, 0.15);
 	

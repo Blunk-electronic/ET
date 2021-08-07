@@ -71,8 +71,6 @@ package et_pcb_coordinates is
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-	--type type_distance is delta 0.0001
-	--type type_distance is new float
 	distance_smallest : constant := 0.0001;
 	type type_distance is delta distance_smallest digits 15
 		range -10_000_000_000.00 .. 10_000_000_000.00; 
@@ -82,13 +80,8 @@ package et_pcb_coordinates is
 		digits type_distance'digits - 1
 		range type_distance'first .. type_distance'last;
 
+
 		
-	--for type_distance'small use 0.0001;
-	--for type_distance'small use 0.0000001;
-	-- CS increase accuracy if required
-
-
-	
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
@@ -97,9 +90,8 @@ package et_pcb_coordinates is
 	--for type_rotation'small use 0.001;
 	-- CS increase accuracy if required
 
-	--rotation_smallest : constant float := float'small;
+
 	rotation_smallest : constant := 0.001;
-	--type type_rotation is new float 
 	type type_rotation is delta rotation_smallest digits 6 
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		

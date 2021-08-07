@@ -868,9 +868,6 @@ package body et_routing is
 			angle : constant float := float (90.0 - i_center.intersection.angle);
 
 		begin
-			--log (text => "X angle: " & float'image (angle) 
-				 --& " clearance " & float'image (float (clearance)));
-			
 			log_indentation_up;
 
 			--log (text => "line " & to_string (line_tmp) 
@@ -883,10 +880,7 @@ package body et_routing is
 				(float (clearance) / cos (angle, float (units_per_cycle)))
 				));
 
-			log (text => "required spacing" & to_string (spacing),
-				 --" Fl: " & float'image (float (clearance) / cos (angle, float (units_per_cycle)))
-				 --,
-				 level => lth + 2);
+			log (text => "required spacing" & to_string (spacing), level => lth + 2);
 			
 			-- Depending on the given place, the break point must be moved 
 			-- left or right by the spacing:
