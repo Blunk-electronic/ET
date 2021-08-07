@@ -856,7 +856,7 @@ package body et_geometry is
 				delta_x := float (get_x (point_one) - get_x (point_two));
 				delta_y := float (get_y (point_one) - get_y (point_two));
 
-				-- put_line (float'image (delta_x) & " " & float'image (delta_y));
+				--log (text => float'image (delta_x) & " " & float'image (delta_y));
 				
 				distance := type_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
 			end if;
@@ -4271,23 +4271,23 @@ package body et_geometry is
 		
 		
 		function to_string (line : in type_line) return string is begin
-			return space 
-				& "line: S:" & to_string (line.start_point) 
-				& " E:" & to_string (line.end_point);
+			return 
+				"line: S:" & to_string (line.start_point) 
+				& " / E:" & to_string (line.end_point);
 		end;
 
 		function to_string (arc : in type_arc) return string is begin
-			return space 
-				& "arc: S:" & to_string (arc.start_point) 
-				& " E:" & to_string (arc.end_point)
-				& " C:" & to_string (arc.center) 
-				& " D: " & to_string (arc.direction);
+			return
+				"arc: S:" & to_string (arc.start_point) 
+				& " / E:" & to_string (arc.end_point)
+				& " / C:" & to_string (arc.center) 
+				& " / D: " & to_string (arc.direction);
 		end to_string;
 
 		function to_string (circle : in type_circle) return string is begin
-			return space
-				& "circle: C:" & to_string (circle.center) 
-				& " R:" & to_string (circle.radius);
+			return
+				"circle: C:" & to_string (circle.center) 
+				& " / R:" & to_string (circle.radius);
 		end to_string;
 
 

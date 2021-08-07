@@ -708,7 +708,7 @@ package body et_routing is
 		
 		-- There is a maximum of iterations. If maximum reached
 		-- a constraint_error is raised.
-		max_iterations : constant positive := 1000; -- CS increase if necessary
+		max_iterations : constant positive := 500; -- CS increase if necessary
 		--max_iterations : constant positive := 20; -- CS increase if necessary
 
 	begin		
@@ -717,11 +717,11 @@ package body et_routing is
 
 		case obstacle.shape is
 			when LINE =>
-				log (text => to_string (place) & " obstacle" & to_string (obstacle.line), level => lth + 1);
+				log (text => to_string (place) & " obstacle " & to_string (obstacle.line), level => lth + 1);
 			when ARC =>
-				log (text => to_string (place) & " obstacle" & to_string (obstacle.arc), level => lth + 1);
+				log (text => to_string (place) & " obstacle " & to_string (obstacle.arc), level => lth + 1);
 			when CIRCLE =>
-				log (text => to_string (place) & " obstacle" & to_string (obstacle.circle), level => lth + 1);
+				log (text => to_string (place) & " obstacle " & to_string (obstacle.circle), level => lth + 1);
 		end case;
 
 		log (text => "clearance: " & to_string (clearance), level => lth + 1);
@@ -897,7 +897,7 @@ package body et_routing is
 	begin -- get_break_by_line
 		if bi.exists then -- line and track boundaries do intersect in some way
 
-			log (text => "break by" & to_string (line), level => lth);
+			log (text => "break by " & to_string (line), level => lth);
 			log_indentation_up;
 
 			--log (text => "track " & to_string (track_dimensions.boundaries));
@@ -912,57 +912,33 @@ package body et_routing is
 				-- bp is now set
 
 			else
-				-- We have a partial intersection:
-			
-				-- If we search for a break before the line, then it makes sense
-				-- only if the area of overlap begins after the start of the track.
-				-- This condition test should avoid useless searching for a break. 
-				-- CS: not verified ! Remove this test if assumption is wrong.
-				if (place = BEFORE) -- and bi.intersection.smallest_x >= zero) 
-
-				-- CS: A similar optimization when place is AFTER ?				
-				or place = AFTER 
-				then
+				-- We have a partial intersection.			
+				-- The candidate line intersects only one edge or none at all.
+				log (text => "line intersects track partially", level => lth + 1);
+				log_indentation_up;
 				
-				--if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
-					---- The candidate line intersects the upper and lower edge of the track.
+				case place is
+					when BEFORE =>
+						-- Use the LEFT border of the line boundaries 
+						-- as start point for the search operation:
+						start_point := line_boundaries.smallest_x;
 
-					--log (text => "line intersects track upper and lower edge", level => lth + 1);
-			
-					--full_intersection;
-					---- bp is now set
-					
-				--else
-					-- The candidate line intersects only one edge or none at all.
-					log (text => "line intersects track partially", level => lth + 1);
-					log_indentation_up;
-					
-					case place is
-						when BEFORE =>
-							-- Use the LEFT border of the overlap area as start point for the
-							-- search operation:
-							--start_point := bi.intersection.smallest_x;
-							start_point := line_boundaries.smallest_x;
+					when AFTER =>
+						-- Use the RIGHT border of the line boundaries 
+						-- as start point for the search operation:
+						start_point := line_boundaries.greatest_x;
+				end case;
 
-						when AFTER =>
-							-- Use the RIGHT border of the overlap area as start point for the
-							-- search operation:
-							--start_point := bi.intersection.greatest_x;
-							start_point := line_boundaries.greatest_x;
-					end case;
+				-- start the numerical search for the break point:
+				bp := type_point (set (get_break (
+						init		=> start_point,
+						place		=> place,
+						obstacle	=> (et_geometry.LINE, line_tmp),
+						clearance	=> clearance,
+						lth			=> lth + 1),
+						zero));
 
-					
-					bp := type_point (set (get_break (
-							init		=> start_point,
-							place		=> place,
-							obstacle	=> (et_geometry.LINE, line_tmp),
-							clearance	=> clearance,
-							lth			=> lth + 1),
-							zero));
-
-					log_indentation_down;
-				end if;
-
+				log_indentation_down;
 			end if;
 
 			log_indentation_down;
@@ -1210,7 +1186,7 @@ package body et_routing is
 	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
 
-			log (text => "break by" & to_string (arc), level => lth);
+			log (text => "break by " & to_string (arc), level => lth);
 			log_indentation_up;
 
 			-- The number of intersections with the arc determines
@@ -1444,7 +1420,7 @@ package body et_routing is
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
 
-			log (text => "break by" & to_string (circle), level => lth);
+			log (text => "break by " & to_string (circle), level => lth);
 			log_indentation_up;
 
 			-- The number of intersections with the arc determines

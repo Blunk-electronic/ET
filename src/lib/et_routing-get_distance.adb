@@ -138,8 +138,15 @@ is
 
 		case b.count is
 			when 0 => null;
-			when 1 => process_break (b.point);
-			when 2 => process_break (b.point_1); process_break (b.point_2);
+				--log (text => "test arc 0");
+				 
+			when 1 => 
+				--log (text => "test arc 1");
+				process_break (b.point);
+				
+			when 2 => 
+				--log (text => "test arc 2");
+				process_break (b.point_1); process_break (b.point_2);
 		end case;
 	end test_arc;
 
@@ -420,14 +427,18 @@ is
 					-- line of conductor material:
 					segment : constant type_conductor_line_segment := to_line_segment (cl);
 				begin
-					-- CS log segment ?
-					
+					log_indentation_up;
+					log (text => to_string (element (l)), level => lth + 3);
+
 					test_line (get_left_edge (segment));
 					test_line (get_right_edge (segment));
+
 					test_arc (get_start_cap (segment));
 					test_arc (get_end_cap (segment));
-					-- CS procedure test_segment_line (segment)
 					
+					-- CS procedure test_segment_line (segment)
+
+					log_indentation_down;
 				end query_line;
 
 			begin -- query_text
