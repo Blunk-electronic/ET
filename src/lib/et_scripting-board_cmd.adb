@@ -2952,7 +2952,8 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when VERB_EXIT | VERB_QUIT => terminate_main;
+			when VERB_EXIT | VERB_QUIT => terminate_main; 
+			-- CS does not work via script (gtk error ...)
 
 			when VERB_FILL =>
 				case noun is

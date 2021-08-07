@@ -471,15 +471,15 @@ package body et_scripting is
 
 					-- We are inside the project directory right now.
 					-- The module should be visible either because it is
-					-- in the current project directory or because a environment
+					-- in the current project directory or because an environment
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
 					read_module (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
-					-- The command must have at least four fields.
-					if field_count (cmd) >= 4 then
+					-- The command must have at least three fields.
+					if field_count (cmd) >= 3 then
 						schematic_cmd (
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
@@ -487,6 +487,7 @@ package body et_scripting is
 					else
 						command_incomplete;
 					end if;
+
 					
 				when DOM_BOARD =>
 					module := to_module_name (f (2));
@@ -501,8 +502,8 @@ package body et_scripting is
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
-					-- The command must have at least four fields.
-					if field_count (cmd) >= 4 then
+					-- The command must have at least three fields.
+					if field_count (cmd) >= 3 then
 						board_cmd (
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
@@ -511,6 +512,7 @@ package body et_scripting is
 						command_incomplete;
 					end if;
 
+					
 				when DOM_PROJECT =>
 
 					-- CS test minimum field count

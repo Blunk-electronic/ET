@@ -1198,7 +1198,8 @@ is
 				end case;
 
 			when VERB_EXIT | VERB_QUIT => terminate_main;
-				
+			-- CS does not work via script (gtk error ...)
+			
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
