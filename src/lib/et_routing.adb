@@ -743,7 +743,7 @@ package body et_routing is
 		for i in 1 .. max_iterations loop
 			
 			-- Calculate the distance between the cap (incl. clearance) and the obstacle:
-			log (text => "cap      : " & to_string (c), level => lth + 1);
+			--log (text => "cap      : " & to_string (c), level => lth + 1);
 			
 			case obstacle.shape is
 				when LINE =>
@@ -755,16 +755,15 @@ package body et_routing is
 			end case;
 					
 			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
-			--put_line (" D:" & to_string (d_cap_to_obstacle));-- & " C:" & to_string (c.center));
 			
 			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
 
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
-			if d_cap_to_obstacle_abs <= 10.0 * rounding_error then
+			if d_cap_to_obstacle_abs <= rounding_error then
 				log (text => " break point found after" & positive'image (i) & " iterations",
-					level => lth + 2);
+					level => lth + 1);
 				exit;
 			else
 				step := d_cap_to_obstacle_abs * 0.5;
