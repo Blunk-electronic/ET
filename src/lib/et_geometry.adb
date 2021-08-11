@@ -143,7 +143,7 @@ package body et_geometry is
 		begin
 			d_delta := abs (d_fine) - abs (type_distance (d_coarse));
 			
-			if d_delta >= 5.0 * type_distance'small then
+			if d_delta >= 500000.0 * type_distance'small then
 				if d_fine > 0.0 then
 					d_coarse := d_coarse + type_distance_coarse'small;
 				else
@@ -256,6 +256,17 @@ package body et_geometry is
 		end to_string;
 
 
+		function round (point : in type_point)
+			return type_point'class
+		is
+			r : type_point := (
+				x => type_distance (round (point.x)),
+				y => type_distance (round (point.y)));
+		begin
+			return r;
+		end round;
+
+		
 		
 		function to_point (
 			d 		: in type_distance_relative;
@@ -1461,6 +1472,21 @@ package body et_geometry is
 				);
 		end to_vector;
 
+
+		function round (
+			vector : in type_vector)
+			return type_vector
+		is
+			r : type_vector;
+		begin
+			r.x := type_distance (round (vector.x));
+			r.y := type_distance (round (vector.y));
+			r.z := zero;
+
+			return r;
+		end round;
+		
+		
 		function to_point (
 			v	: in type_vector)
 			return type_point is
@@ -1479,8 +1505,8 @@ package body et_geometry is
 
 			exception
 				when constraint_error =>
-					log (text => "vector component too great:" & to_string (v));
-					raise;
+					raise constraint_error 
+						with "vector component too great:" & to_string (v);
 
 		end to_point;
 		
@@ -1534,6 +1560,8 @@ package body et_geometry is
 			a, b	: in type_vector)
 			return type_vector
 		is begin
+			--log (text => "vector a" & to_string (a));
+			--log (text => "vector b" & to_string (b));
 			return (
 				x => a.y * b.z - a.z * b.y,
 				y => a.z * b.x - a.x * b.z,
@@ -1690,6 +1718,7 @@ package body et_geometry is
 			return to_string (to_point (intersection.point)) 
 				& " angle" & to_string (intersection.angle);
 		end to_string;
+
 		
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
@@ -1799,7 +1828,6 @@ package body et_geometry is
 						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
-
 					i.angle := get_angle_of_itersection (line_1, line_2);
 					
 					return (status => EXISTS, intersection => i);
@@ -1816,15 +1844,32 @@ package body et_geometry is
 			line_1, line_2	: in type_line_vector)
 			return type_rotation
 		is 
-			a, b : float;
+			a, b, c : float;
+			r : type_rotation;
 		begin
 			a := float (dot_product (line_1.v_direction, line_2.v_direction));
 			b := float (absolute (line_1.v_direction) * absolute (line_2.v_direction));
+			c := a / b;
+			
+			r := type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
 
-			return type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
+			return r;
 		end get_angle_of_itersection;
 
 
+		function round (line : in type_line)
+			return type_line'class
+		is 
+			r : type_line;
+		begin
+			r := (
+				start_point	=> type_point (round (line.start_point)),
+				end_point	=> type_point (round (line.end_point)));
+
+			return r;
+		end round;
+
+		
 		function get_length (line : in type_line)
 			return type_distance_positive
 		is begin
@@ -1969,7 +2014,6 @@ package body et_geometry is
 		begin
 			case i.status is
 				when EXISTS =>
-				
 					-- The intersection must be between start and end point of
 					-- the candidate line (start and end point itself included).
 					-- If the intersection is between start and end point
@@ -2468,53 +2512,70 @@ package body et_geometry is
 			line_range	: in type_line_range)
 			return type_distance_point_line 
 		is
+			--point_rounded : constant type_point := type_point (round (point));
+			--line_rounded : constant type_line := type_line (round (line));
+			point_rounded : constant type_point := point;
+			line_rounded : constant type_line := line;
+			
 			result : type_distance_point_line;
 
-			-- Imagine a line that starts at point, travels perpendicular towards
+			-- Imagine a line that starts on the given point, travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
 			-- The intersection may be betweeen the start and end point of the given line.
 			-- The intersection may be virtual, before start or after end point 
 			-- of the given line.
 			
-			line_direction : constant type_rotation := get_direction (line);
-			line_direction_vector : constant type_vector := direction_vector (line);
+			line_direction : constant type_rotation := get_direction (line_rounded);
+			line_direction_vector : constant type_vector := direction_vector (line_rounded);
 			line_start_vector, line_end_vector : type_vector;
 
 			iv : type_vector;
 
-			procedure compute_intersection is begin
+			procedure compute_intersection is 
+				distance : type_distance_positive;
+				tol : constant type_distance_positive := 10_000.0 * type_distance'small;
+			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
 				-- At this stage we do not know in which direction to go. So we just try
 				-- to go in 90 degree direction. If the distance from iv to the line
 				-- is not zero, then we try in -90 degree direction.
 
-				iv := to_vector (point);
+				iv := to_vector (point_rounded);
 				move_by (iv, line_direction + 90.0, result.distance);
 
-				--log (text => "delta:" & to_string (get_distance (line, iv)));
+				distance := get_distance (line_rounded, iv);
+				--put_line ("delta  :" & to_string (distance));
+				--tol := 1000.0 * rounding_error;
+				--put_line ("r err  :" & to_string (tol));
 				
 				-- Theoretically we must compare with zero here. But due to rounding
-				-- errors we compare with the doubled rounding error:
-				--if get_distance (line, iv) > 4.0 * rounding_error then
-				if get_distance (line, iv) > 10.0 * rounding_error then
+				-- errors we compare with a tolerance:
+				if distance > tol then
+					--put_line ("wrong direction");
 					
 					-- we went the wrong direction
-					iv := to_vector (point); -- restore iv
+					iv := to_vector (point_rounded); -- restore iv
 
 					-- try opposite direction:
 					move_by (iv, line_direction - 90.0, result.distance);
 				end if;
+
+				--put_line ("iv" & to_string (iv));
 				
 				-- Assign the direction (from point to intersection) to the result:
-				result.direction := get_angle (get_distance (to_vector (point), iv));
+				result.direction := get_angle (get_distance (to_vector (point_rounded), iv));
+				--put_line ("direction" & to_string (result.direction));
 
 				-- Assign the virtual point of intersection to the result:
 				result.intersection := to_point (iv);
 			end compute_intersection;
 			
-			lambda_forward, lambda_backward : type_distance;			
+			lambda_forward, lambda_backward : type_distance;
 		begin
+			--put_line ("line direction vector: " & to_string (line_direction_vector));
+			--put_line ("line direction angle : " & to_string (line_direction));
+			
 			-- The first and simplest test is to figure out whether
 			-- the given point sits exactly on the start or end point of the line.
 			-- Mind: result.distance has default zero.
@@ -2524,13 +2585,13 @@ package body et_geometry is
 			case line_range is
 				when WITH_END_POINTS | BEYOND_END_POINTS =>
 					
-					if point = line.start_point then
+					if point_rounded = line.start_point then
 						
 						result.sits_on_start := true;
 						result.out_of_range := false;
 						return result;
 
-					elsif point = line.end_point then
+					elsif point_rounded = line.end_point then
 						
 						result.sits_on_end := true;
 						result.out_of_range := false;
@@ -2570,10 +2631,10 @@ package body et_geometry is
 
 			--end if;
 			
-			-- Compute the distance from point to line.
+			-- Compute the distance from the given point to the given line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.
-			result.distance := get_distance (line, point);
+			result.distance := get_distance (line_rounded, point_rounded);
 
 			--put_line ("distance " & to_string (result.distance));
 
@@ -2589,7 +2650,7 @@ package body et_geometry is
 			-- Using these formula we can calculate whether iv points between 
 			-- (or to) the start and/or end points of the line:
 			
-			line_start_vector := start_vector (line);
+			line_start_vector := start_vector (line_rounded);
 			lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
 
 			--put_line ("lambda forward:" & to_string (lambda_forward));
@@ -2617,7 +2678,7 @@ package body et_geometry is
 			--put_line ("after start point");
 
 			
-			line_end_vector := end_vector (line);
+			line_end_vector := end_vector (line_rounded);
 			lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
 
 			--put_line ("lambda backward:" & to_string (lambda_backward));
@@ -2660,7 +2721,9 @@ package body et_geometry is
 		begin
 			distance := get_distance (point, line, WITH_END_POINTS);
 
+			log (text => "on_line dist:" & to_string (distance.distance));
 			if not distance.out_of_range and distance.distance <= catch_zone then
+			--if not distance.out_of_range and distance.distance <= type_distance (type_distance_coarse'first) then
 				return true;
 			else
 				return false;
@@ -3308,7 +3371,7 @@ package body et_geometry is
 
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc:
-			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
 			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			
@@ -4430,6 +4493,8 @@ package body et_geometry is
 			else
 				polygon.contours.segments.iterate (query_segment'access);				
 			end if;			
+
+			set_absolute (result, type_distance (round (get_absolute (result))));
 			
 			return result;
 		end get_shortest_distance;
@@ -5568,7 +5633,7 @@ package body et_geometry is
 			procedure query_line (l : in type_line) is 
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate line of the polygon.
-				i : constant type_intersection_of_two_lines := get_intersection (probe_line, l);				
+				i : constant type_intersection_of_two_lines := get_intersection (probe_line, l);
 			begin
 				if i.status = EXISTS then
 

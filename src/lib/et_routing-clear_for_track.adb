@@ -102,7 +102,8 @@ is
 
 				-- Due to unavoidable rounding errors the difference between 
 				-- distance_to_border and border can be -rounding_error:
-				if distance_to_border >= - rounding_error then
+				--if distance_to_border >= - rounding_error then
+				if distance_to_border >= zero then
 					log (text => "point is in safe distance to border", level => lth + 1);
 					result := true;
 				else
@@ -119,7 +120,7 @@ is
 		end query_fill_zone;
 
 		
-		-- GLOBAL CUTOUTS
+		-- GLOBAL CUTOUTS IN CONDUCTOR POLYGONS
 		procedure query_global_cutouts is 
 			use et_conductor_polygons.pac_conductor_cutouts;
 
@@ -143,7 +144,8 @@ is
 
 						-- Due to unavoidable rounding errors the difference between 
 						-- distance_to_edge and border can be -rounding_error:
-						if distance_to_border >= - rounding_error then
+						--if distance_to_border >= - rounding_error then
+						if distance_to_border >= zero then
 							log (text => " point is in safe distance to border", level => lth + 1);
 						else
 							log (text => " point is too close to border", level => lth + 1);
@@ -205,7 +207,8 @@ is
 
 							-- Due to unavoidable rounding errors the difference between 
 							-- distance and border can be -rounding_error:
-							if (distance - get_greatest (clearances)) >= - rounding_error then
+							--if (distance - get_greatest (clearances)) >= - rounding_error then
+							if distance >= get_greatest (clearances) then
 								log (text => "point is in safe distance", level => lth + 4);
 							else
 								log (text => "point is too close", level => lth + 4);
@@ -377,9 +380,10 @@ is
 
 					-- Due to unavoidable rounding errors the difference between 
 					-- distance and border can be rounding_error:
-					--log (text => "distance:" & to_string (distance), level => lth + 5);
+					log (text => "distance:" & to_string (distance), level => lth + 5);
 					
-					if (distance - get_greatest (clearances)) >= - rounding_error then
+					--if (distance - get_greatest (clearances)) >= - rounding_error then
+					if distance >= get_greatest (clearances) then
 						log (text => "point is in safe distance", level => lth + 4);
 					else
 						log (text => "point is too close", level => lth + 4);
@@ -513,7 +517,7 @@ begin -- clear_for_track
 	-- other objects will be probed:
 	if on_board (module_cursor, start_point, lth + 1) then
 
-		-- the distance of the point to the board edge:
+		-- the distance of the point to the board edge (incl. holes):
 		distance_to_edge := get_absolute (
 			get_distance_to_edge (module_cursor, start_point, lth + 1));
 
@@ -529,9 +533,9 @@ begin -- clear_for_track
 		-- Due to unavoidable rounding errors the difference between 
 		-- distance_to_edge and DRU given minimal clearance to edge can
 		-- be -rounding_error:
-		if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
-			>= -rounding_error 
-		then				
+		--if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
+			-->= -rounding_error 
+		if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
 			log (text => " point is in safe distance to board edge", level => lth + 1);
 
 			-- probe other objects:

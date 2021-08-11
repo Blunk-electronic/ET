@@ -61,7 +61,8 @@ package et_routing is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
-									  
+
+	fab_tolerance : constant type_distance_positive := 0.001;
 	
 	-- Computes the clearance in x-direction of a 
 	-- fill line to its imaginary intersection with the edge of 

@@ -71,13 +71,16 @@ package et_pcb_coordinates is
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-	distance_smallest : constant := 0.00001;
-	type type_distance is delta distance_smallest digits 16
-		range -10_000_000_000.00 .. 10_000_000_000.00; 
+	--distance_smallest : constant := 0.00001;
+	--type type_distance is delta distance_smallest digits 16
+	distance_smallest : constant := 0.000_000_000_1;
+	
+	type type_distance is delta distance_smallest digits 26
+		range -1_000_000_000_000_000.00 .. 1_000_000_000_000_000.00; -- 16
 
-	distance_coarse_smallest : constant := type_distance'small * 10.0;
+	distance_coarse_smallest : constant := type_distance'small * 1_000_000.0;
 	type type_distance_coarse is delta distance_coarse_smallest 
-		digits type_distance'digits - 1
+		digits type_distance'digits - 6
 		range type_distance'first .. type_distance'last;
 
 
@@ -91,8 +94,10 @@ package et_pcb_coordinates is
 	-- CS increase accuracy if required
 
 
-	rotation_smallest : constant := 0.001;
-	type type_rotation is delta rotation_smallest digits 6 
+	--rotation_smallest : constant := 0.001;
+	--type type_rotation is delta rotation_smallest digits 6 
+	rotation_smallest : constant := 0.0000001;
+	type type_rotation is delta rotation_smallest digits 10
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
 	
@@ -102,8 +107,8 @@ package et_pcb_coordinates is
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
 		type_distance			=> type_distance,
 		type_distance_coarse	=> type_distance_coarse,
-		axis_max				=> +10_000_000.0,
-		axis_min				=> -10_000_000.0,
+		axis_max				=> +10_000_000_000.0,
+		axis_min				=> -10_000_000_000.0,
 		type_rotation 			=> type_rotation);
 
 	use pac_geometry_brd;

@@ -258,10 +258,10 @@ package body et_packages is
 		return string
 	is begin
 		return ("line segment:" 
-			& " edge left:" & to_string (segment.left_edge)
-			& " / cap end" & to_string (segment.cap_end)
-			& " / edge right:" & to_string (segment.right_edge)
-			& " / cap start:" & to_string (segment.cap_start));
+			& " edge left: " & to_string (segment.left_edge)
+			& " / cap end: " & to_string (segment.cap_end)
+			& " / edge right: " & to_string (segment.right_edge)
+			& " / cap start: " & to_string (segment.cap_start));
 	end to_string;
 
 	
@@ -290,7 +290,7 @@ package body et_packages is
 		result.cap_end.start_point := result.left_edge.end_point;
 		result.cap_end.end_point := result.right_edge.end_point;
 		result.cap_end.direction := CW;
-
+		
 		return result;
 	end to_line_segment;
 
@@ -366,6 +366,12 @@ package body et_packages is
 		build_polygon;
 
 		--put_line (to_string (polygon));
+		--log (text => "poly" & to_string (polygon));
+		
+		if not is_closed (polygon).closed then
+			raise constraint_error with "contour of conductor segment not closed !";
+		end if;
+
 		
 		distance := get_shortest_distance (polygon, point);
 

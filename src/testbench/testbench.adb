@@ -57,26 +57,53 @@ procedure testbench is
 	use functions_float;
 
 
-	P : type_point := type_point (set (19.9331, 31.4400));
+	--P : type_point := type_point (set (24.8887514, 29.7050000));
+	--S : type_point := type_point (set (24.9999996, 32.2500000));
+	--E : type_point := type_point (set (24.9999999, 30.7950000));
+	-- D: 0.3112487274
+	-- out of range: TRU
+	
+	--P : type_point := type_point (set (160.9, 0.0));
+	--S : type_point := type_point (set (160.25, -19.705));
+	--E : type_point := type_point (set (159.25, 0.2950));
+	--D: 1.4334592930
+	--out of range: FALSE
 
 	
-	S : type_point := type_point (set (13.3505, 36.7872));
-	E : type_point := type_point (set (21.8510, 28.2841));
-
-	CL : type_conductor_line := (S, E, 0.15);
+	--P : type_point := type_point (set (10.7999999, 0.0));
+	--S : type_point := type_point (set (10.2499989, 0.3949991));
+	--E : type_point := type_point (set (10.2499999, 1.8500000));
+	-- D: 0.3500012535
+	-- out of range: TRUE
 	
-	LS : type_conductor_line_segment;
+	P : type_point := type_point (set (210.9, 0.0));
+	S : type_point := type_point (set (210.25, -13.535));
+	E : type_point := type_point (set (190.25, 93.265));
+	--D: 2.9336481243
+	--out of range: FALSE
 
-	d : type_distance;
+	
+	L : type_line := (S, E);
+	
+	d : type_distance_point_line;
 	
 begin
-	new_line;
+	--P := type_point (round (P));
+	--put_line (to_string (P));
+	--L := type_line (round (L));
+	--put_line (to_string (L));
 
-	LS := to_line_segment (CL);
+	for i in 1 .. 1 loop
+		new_line;
+		P := type_point (move (P, 180.0, 0.2));
+		put_line ("P:" & to_string (P));
+		
+		d := get_distance (P, L, WITH_END_POINTS);
+		put_line ("D:" & to_string (get_distance (d)));
+		put_line ("out of range: " & boolean'image (out_of_range (d)));
+	end loop;
 
-	d := get_shortest_distance (P, LS);
 
-	put_line (to_string (d));
 end testbench;
 
 -- Soli Deo Gloria

@@ -761,7 +761,7 @@ package body et_routing is
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
-			if d_cap_to_obstacle_abs <= rounding_error then
+			if d_cap_to_obstacle_abs <= type_distance_coarse'small then
 				log (text => " break point found after" & positive'image (i) & " iterations",
 					level => lth + 1);
 				exit;
@@ -827,12 +827,12 @@ package body et_routing is
 
 		-- The line we will work with from now on:
 		line_tmp : constant type_line := move_and_rotate_line (line);
-
+		
 		-- the boundaries of the rotated line
 		line_boundaries : constant type_boundaries := get_boundaries (line_tmp, zero);
 		-- (The line has zero line width.)
-		
-		
+
+	
 		-- the intersections of the upper and lower edge of the track 
 		-- with the rotated line:
 		i_upper : constant type_intersection_of_two_lines :=
@@ -873,13 +873,15 @@ package body et_routing is
 				 --& " intersects center of track at" & to_string (i_center.intersection.point)
 				 --& " angle" & to_string (i_center.intersection.angle),
 				 --level => lth + 2);
+
+			--log (text => "clearance" & float'image (float (clearance)), level => lth + 2);
 			
 			-- clearance is the distance from center of the cap perpendicular to the line.
-			spacing := type_distance (round (type_distance_positive 
-				(float (clearance) / cos (angle, float (units_per_cycle)))
-				));
+			spacing := type_distance (round (type_distance_positive
+				(float (clearance) / cos (angle, float (units_per_cycle)))));
 
-			log (text => "required spacing" & to_string (spacing), level => lth + 2);
+			--log (text => "spacing float " & float'image (float (clearance) / cos (angle, float (units_per_cycle))));
+			--log (text => "required spacing" & to_string (spacing), level => lth + 2);
 			
 			-- Depending on the given place, the break point must be moved 
 			-- left or right by the spacing:
@@ -944,7 +946,9 @@ package body et_routing is
 			log_indentation_down;
 		end if;
 
+		bp := type_point (round (bp));
 
+		
 		-- The computed break point must be after the start of the track.
 		-- If it is before the start of the track, then it is discarded.
 		if get_x (bp) > zero then
@@ -953,7 +957,8 @@ package body et_routing is
 			-- the track direction and offset:
 			rotate_to (bp, track_dimensions.direction);
 			move_by (bp, track_dimensions.offset);
-
+			bp := type_point (round (bp));
+			
 			break_exists := true;
 
 			log (text => " break point " & type_place'image (place) & " line:" & to_string (bp),

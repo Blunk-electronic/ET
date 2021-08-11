@@ -191,7 +191,7 @@ package et_geometry is
 
 		
 		subtype type_catch_zone is type_distance_positive
-			range rounding_error .. type_distance_positive'last/1000.0;
+			range 100.0 * type_distance'small .. type_distance_positive'last/1000.0;
 
 		
 		subtype type_rotation_positive is type_rotation
@@ -265,6 +265,10 @@ package et_geometry is
 		far_lower_right	: constant type_point;
 		
 		function to_string (point : in type_point) return string;
+
+		
+		function round (point : in type_point)
+			return type_point'class;
 
 		
 		type type_distance_relative is record
@@ -829,6 +833,11 @@ package et_geometry is
 		function to_vector (
 			point	: in type_point)
 			return type_vector;
+
+		function round (
+			vector : in type_vector)
+			return type_vector;
+
 		
 		function to_point (
 			v	: in type_vector)
@@ -976,6 +985,11 @@ package et_geometry is
 		type type_line is new type_line_base with null record;
 		-- CS use this type wherever a type_line is declared unnessecarily.
 
+		
+		function round (line : in type_line)
+			return type_line'class;
+
+		
 		-- Returns the length of a line:
 		function get_length (line : in type_line)
 			return type_distance_positive;
