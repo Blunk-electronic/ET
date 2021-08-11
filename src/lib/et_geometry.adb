@@ -2512,11 +2512,6 @@ package body et_geometry is
 			line_range	: in type_line_range)
 			return type_distance_point_line 
 		is
-			--point_rounded : constant type_point := type_point (round (point));
-			--line_rounded : constant type_line := type_line (round (line));
-			point_rounded : constant type_point := point;
-			line_rounded : constant type_line := line;
-			
 			result : type_distance_point_line;
 
 			-- Imagine a line that starts on the given point, travels perpendicular towards
@@ -2525,15 +2520,15 @@ package body et_geometry is
 			-- The intersection may be virtual, before start or after end point 
 			-- of the given line.
 			
-			line_direction : constant type_rotation := get_direction (line_rounded);
-			line_direction_vector : constant type_vector := direction_vector (line_rounded);
+			line_direction : constant type_rotation := get_direction (line);
+			line_direction_vector : constant type_vector := direction_vector (line);
 			line_start_vector, line_end_vector : type_vector;
 
 			iv : type_vector;
 
 			procedure compute_intersection is 
 				distance : type_distance_positive;
-				tol : constant type_distance_positive := 10_000.0 * type_distance'small;
+				--tol : constant type_distance_positive := 10_000.0 * type_distance'small;
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
@@ -2541,21 +2536,22 @@ package body et_geometry is
 				-- to go in 90 degree direction. If the distance from iv to the line
 				-- is not zero, then we try in -90 degree direction.
 
-				iv := to_vector (point_rounded);
+				iv := to_vector (point);
 				move_by (iv, line_direction + 90.0, result.distance);
 
-				distance := get_distance (line_rounded, iv);
+				distance := type_distance (round (get_distance (line, iv)));
 				--put_line ("delta  :" & to_string (distance));
 				--tol := 1000.0 * rounding_error;
 				--put_line ("r err  :" & to_string (tol));
 				
 				-- Theoretically we must compare with zero here. But due to rounding
 				-- errors we compare with a tolerance:
-				if distance > tol then
+				--if distance > tol then
+				if distance > zero then
 					--put_line ("wrong direction");
 					
 					-- we went the wrong direction
-					iv := to_vector (point_rounded); -- restore iv
+					iv := to_vector (point); -- restore iv
 
 					-- try opposite direction:
 					move_by (iv, line_direction - 90.0, result.distance);
@@ -2564,7 +2560,7 @@ package body et_geometry is
 				--put_line ("iv" & to_string (iv));
 				
 				-- Assign the direction (from point to intersection) to the result:
-				result.direction := get_angle (get_distance (to_vector (point_rounded), iv));
+				result.direction := get_angle (get_distance (to_vector (point), iv));
 				--put_line ("direction" & to_string (result.direction));
 
 				-- Assign the virtual point of intersection to the result:
@@ -2585,13 +2581,13 @@ package body et_geometry is
 			case line_range is
 				when WITH_END_POINTS | BEYOND_END_POINTS =>
 					
-					if point_rounded = line.start_point then
+					if point = line.start_point then
 						
 						result.sits_on_start := true;
 						result.out_of_range := false;
 						return result;
 
-					elsif point_rounded = line.end_point then
+					elsif point = line.end_point then
 						
 						result.sits_on_end := true;
 						result.out_of_range := false;
@@ -2634,7 +2630,7 @@ package body et_geometry is
 			-- Compute the distance from the given point to the given line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.
-			result.distance := get_distance (line_rounded, point_rounded);
+			result.distance := get_distance (line, point);
 
 			--put_line ("distance " & to_string (result.distance));
 
@@ -2650,7 +2646,7 @@ package body et_geometry is
 			-- Using these formula we can calculate whether iv points between 
 			-- (or to) the start and/or end points of the line:
 			
-			line_start_vector := start_vector (line_rounded);
+			line_start_vector := start_vector (line);
 			lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
 
 			--put_line ("lambda forward:" & to_string (lambda_forward));
@@ -2678,7 +2674,7 @@ package body et_geometry is
 			--put_line ("after start point");
 
 			
-			line_end_vector := end_vector (line_rounded);
+			line_end_vector := end_vector (line);
 			lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
 
 			--put_line ("lambda backward:" & to_string (lambda_backward));
