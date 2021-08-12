@@ -2514,6 +2514,16 @@ package body et_geometry is
 		is
 			result : type_distance_point_line;
 
+			function round (dp : in type_distance_point_line) 
+				return type_distance_point_line 
+			is
+				r : type_distance_point_line := dp;
+			begin
+				r.distance := type_distance (round (dp.distance));
+				-- CS round dp.direction and dp.intersection ?
+				return r;
+			end round;
+		
 			-- Imagine a line that starts on the given point, travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
 			-- The intersection may be betweeen the start and end point of the given line.
@@ -2658,7 +2668,7 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				return result; -- no more computations required
+				return round (result); -- no more computations required
 			end if;
 			
 			if lambda_forward = zero then -- iv points TO start point of line
@@ -2668,7 +2678,7 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				return result; -- no more computations required
+				return round (result); -- no more computations required
 			end if;
 
 			--put_line ("after start point");
@@ -2686,7 +2696,7 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				return result; -- no more computations required
+				return round (result); -- no more computations required
 			end if;
 
 			if lambda_backward = zero then -- iv points TO end point of line
@@ -2696,14 +2706,14 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				return result; -- no more computations required
+				return round (result); -- no more computations required
 			end if;
 
 			--put_line ("before end point");
 
 			result.out_of_range := false;
 			
-			return result;
+			return round (result);
 		end get_distance;
 
 		
@@ -2717,9 +2727,8 @@ package body et_geometry is
 		begin
 			distance := get_distance (point, line, WITH_END_POINTS);
 
-			log (text => "on_line dist:" & to_string (distance.distance));
-			if not distance.out_of_range and distance.distance <= catch_zone then
-			--if not distance.out_of_range and distance.distance <= type_distance (type_distance_coarse'first) then
+			--if not distance.out_of_range and distance.distance <= catch_zone then
+			if not distance.out_of_range and distance.distance = zero then
 				return true;
 			else
 				return false;
@@ -4490,7 +4499,7 @@ package body et_geometry is
 				polygon.contours.segments.iterate (query_segment'access);				
 			end if;			
 
-			set_absolute (result, type_distance (round (get_absolute (result))));
+			--set_absolute (result, type_distance (round (get_absolute (result))));
 			
 			return result;
 		end get_shortest_distance;

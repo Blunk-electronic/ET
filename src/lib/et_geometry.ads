@@ -192,7 +192,7 @@ package et_geometry is
 		
 		subtype type_catch_zone is type_distance_positive
 			range 100.0 * type_distance'small .. type_distance_positive'last/1000.0;
-
+			-- CS ? range type_distance (type_distance_coarse'first) .. type_distance_positive'last/1000.0;
 		
 		subtype type_rotation_positive is type_rotation
 			range 0.0 .. type_rotation'last;
