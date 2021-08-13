@@ -1222,12 +1222,9 @@ package et_geometry is
 			return type_distance_point_line;
 
 		-- Returns true if the given point sits on the given line.
-		-- The optional parameter catch_zone may be used to specifiy the range at
-		-- which the point is regarded as sitting on the line.
 		function on_line (
 			point		: in type_point;
-			line		: in type_line;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			line		: in type_line)
 			return boolean; 
 
 		-- Returns the shortest distance from the given point to the
@@ -1326,14 +1323,9 @@ package et_geometry is
 			return type_boundaries;
 		
 		-- Returns true if the given point sits on the given arc.
-		-- The optional parameter catch_zone may be used to specifiy the range at
-		-- which the point is regarded as sitting on the arc.
-		-- If no catch_zone provided, then the minimal possible range
-		-- will be used:
 		function on_arc (
 			point		: in type_point;
-			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			arc			: in type_arc)
 			return boolean; 
 
 
@@ -1497,14 +1489,9 @@ package et_geometry is
 			return type_boundaries;
 		
 		-- Returns true if the given point sits on the given circle circumfence.
-		-- The optional parameter catch_zone may be used to specifiy the range at
-		-- which the point is regarded as sitting on the arc.
-		-- If no catch_zone provided, then the minimal possible range
-		-- will be used:
 		function on_circle (
 			point		: in type_point;
-			circle		: in type_circle;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			circle		: in type_circle)
 			return boolean;
 
 		-- Gives the status (inside/outside) of a point relative to a circle.

@@ -2719,8 +2719,7 @@ package body et_geometry is
 		
 		function on_line (
 			point		: in type_point;
-			line		: in type_line;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			line		: in type_line)
 			return boolean
 		is
 			distance : type_distance_point_line;
@@ -3328,8 +3327,7 @@ package body et_geometry is
 		
 		function on_arc (
 			point		: in type_point;
-			arc			: in type_arc;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			arc			: in type_arc)
 			return boolean 
 		is
 			-- The angle of the given point relative to the
@@ -3915,11 +3913,16 @@ package body et_geometry is
 		
 		function on_circle (
 			point		: in type_point;
-			circle		: in type_circle;
-			catch_zone	: in type_catch_zone := type_catch_zone'first)
+			circle		: in type_circle)
 			return boolean 
-		is begin
-			if get_distance_total (point, circle.center) - circle.radius <= catch_zone then
+		is
+			DCP: constant type_distance_positive := 
+				get_distance_total (point, circle.center);
+		begin
+			--if get_distance_total (point, circle.center) - circle.radius <= catch_zone then
+			if type_distance (round (abs (DCP - circle.radius))) = zero then
+
+				-- Point is on circumfence of circle.
 				return true;
 			else
 				return false; 
