@@ -3365,7 +3365,7 @@ package body et_geometry is
 
 			distance_center_to_point : constant type_distance_positive :=
 				get_distance_total (point, arc.center);
-			
+
 		begin
 			--put_line ("center" & to_string (arc.center) 
 				 --& " radius" & to_string (arc_angles.radius)
@@ -3378,7 +3378,8 @@ package body et_geometry is
 			-- a virtual circle. The circle has the same radius as the arc:
 			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
-			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
+			--if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
+			if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
 			
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
@@ -3766,7 +3767,7 @@ package body et_geometry is
 				
 				
 			else
-				raise constraint_error with "can not split arc" & to_string (arc) & " !";
+				raise constraint_error with "can not split " & to_string (arc) & " !";
 			end if;
 
 			--return result;
