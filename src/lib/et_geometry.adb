@@ -2538,7 +2538,6 @@ package body et_geometry is
 
 			procedure compute_intersection is 
 				distance : type_distance_positive;
-				--tol : constant type_distance_positive := 10_000.0 * type_distance'small;
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
@@ -2551,12 +2550,7 @@ package body et_geometry is
 
 				distance := type_distance (round (get_distance (line, iv)));
 				--put_line ("delta  :" & to_string (distance));
-				--tol := 1000.0 * rounding_error;
-				--put_line ("r err  :" & to_string (tol));
 				
-				-- Theoretically we must compare with zero here. But due to rounding
-				-- errors we compare with a tolerance:
-				--if distance > tol then
 				if distance > zero then
 					--put_line ("wrong direction");
 					
@@ -3836,9 +3830,9 @@ package body et_geometry is
 			--result := get_distance (point, circle.center);
 			--set_absolute (result, get_absolute (result) - circle.radius);
 
-			dd := get_absolute (d_pc) - circle.radius;
+			dd := type_distance (round (get_absolute (d_pc) - circle.radius));
 			
-			if dd > rounding_error then -- point outside of circle
+			if dd > zero then -- point outside of circle
 
 				-- Now the polar distance from point to center matters:
 				result := d_pc;

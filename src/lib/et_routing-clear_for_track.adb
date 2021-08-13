@@ -100,9 +100,6 @@ is
 				-- the distance of the start point to the border:
 				distance_to_border := distance_to_border - 0.5 * width;
 
-				-- Due to unavoidable rounding errors the difference between 
-				-- distance_to_border and border can be -rounding_error:
-				--if distance_to_border >= - rounding_error then
 				if distance_to_border >= zero then
 					log (text => "point is in safe distance to border", level => lth + 1);
 					result := true;
@@ -142,9 +139,6 @@ is
 						-- the distance of the start point line to the border:
 						distance_to_border := distance_to_border - 0.5 * width;
 
-						-- Due to unavoidable rounding errors the difference between 
-						-- distance_to_edge and border can be -rounding_error:
-						--if distance_to_border >= - rounding_error then
 						if distance_to_border >= zero then
 							log (text => " point is in safe distance to border", level => lth + 1);
 						else
@@ -205,9 +199,6 @@ is
 							-- the distance of the start point to the border of the segment/via:
 							distance := distance - width * 0.5;
 
-							-- Due to unavoidable rounding errors the difference between 
-							-- distance and border can be -rounding_error:
-							--if (distance - get_greatest (clearances)) >= - rounding_error then
 							if distance >= get_greatest (clearances) then
 								log (text => "point is in safe distance", level => lth + 4);
 							else
@@ -378,11 +369,8 @@ is
 					-- the distance of the start point to the border of the segment:
 					distance := distance - width * 0.5;
 
-					-- Due to unavoidable rounding errors the difference between 
-					-- distance and border can be rounding_error:
 					log (text => "distance:" & to_string (distance), level => lth + 5);
 					
-					--if (distance - get_greatest (clearances)) >= - rounding_error then
 					if distance >= get_greatest (clearances) then
 						log (text => "point is in safe distance", level => lth + 4);
 					else
@@ -530,11 +518,6 @@ begin -- clear_for_track
 		log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
 			level => lth + 1);
 
-		-- Due to unavoidable rounding errors the difference between 
-		-- distance_to_edge and DRU given minimal clearance to edge can
-		-- be -rounding_error:
-		--if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
-			-->= -rounding_error 
 		if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
 			log (text => " point is in safe distance to board edge", level => lth + 1);
 
