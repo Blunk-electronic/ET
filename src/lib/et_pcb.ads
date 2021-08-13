@@ -207,8 +207,7 @@ package et_pcb is
 	function on_segment (
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
-		line		: in pac_conductor_lines.cursor;
-		accuracy	: in type_catch_zone)
+		line		: in pac_conductor_lines.cursor)
 		return boolean;
 	
 	type type_conductor_arc is new et_packages.type_conductor_arc with record
@@ -220,8 +219,7 @@ package et_pcb is
 	function on_segment (
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
-		arc			: in pac_conductor_arcs.cursor;
-		accuracy	: in type_catch_zone)
+		arc			: in pac_conductor_arcs.cursor)
 		return boolean;
 	
 	type type_conductor_circle is new et_packages.type_conductor_circle with record

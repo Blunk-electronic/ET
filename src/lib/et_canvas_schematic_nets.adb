@@ -301,8 +301,10 @@ package body et_canvas_schematic_nets is
 						-- the current net, stand and segment cursor to the result:
 						if on_line (
 							point		=> type_point (place),
-							line		=> element (segment_cursor),
-							catch_zone	=> catch_zone) then
+							line		=> element (segment_cursor)) 
+						then
+						-- CS use get_shortest_distance (point, element)
+						-- and compare distance with catch_zone	
 
 							log_indentation_up;
 							log (text => "sits on segment", level => log_threshold + 1);
