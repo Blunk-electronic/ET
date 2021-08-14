@@ -187,8 +187,8 @@ package et_geometry is
 
 		
 		subtype type_catch_zone is type_distance_positive
-			range 100.0 * type_distance'small .. type_distance_positive'last/1000.0;
-			-- CS ? range type_distance (type_distance_coarse'first) .. type_distance_positive'last/1000.0;
+			range zero .. type_distance_positive'last/1000.0;
+
 		
 		subtype type_rotation_positive is type_rotation
 			range 0.0 .. type_rotation'last;
@@ -519,7 +519,8 @@ package et_geometry is
 			point_one, point_two : in type_point)
 			return type_distance_positive;
 
-		-- Returns true if point_2 is within the catch zone around point_1:
+		-- Returns true if point_2 is within the 
+		-- catch zone around point_1:
 		function in_catch_zone (
 			point_1		: in type_point; -- the reference point
 			catch_zone	: in type_catch_zone; -- zone around reference point
