@@ -1102,10 +1102,19 @@ package body et_routing is
 									-- search operation:
 									start_point := bi.intersection.smallest_x;
 
+									-- ? Use the LEFT border of the arc boundaries
+									-- as start point for the search operation:
+									--start_point := arc_boundaries.smallest_x;
+
 								when AFTER =>
 									-- Use the RIGHT border of the overlap area as start point for the
 									-- search operation:
 									start_point := bi.intersection.greatest_x;
+
+									-- ? Use the RIGHT border of the arc boundaries
+									-- as start point for the search operation:
+									start_point := arc_boundaries.greatest_x;
+
 							end case;
 
 							x_pre := get_break (
@@ -1371,10 +1380,13 @@ package body et_routing is
 			for i in arcs'first .. arcs'last loop
 
 				-- log the candidate arc:
-				log (text => to_string (arcs (i)), level => lth + 2);
+				log (text => "fragment" & natural'image (i) & ": "
+					& to_string (arcs (i)), level => lth + 2);
 				
 				-- Get the boundaries of the candidate arc:
 				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero line width
+
+				log_indentation_up;
 				
 				declare
 					-- Get the overlap area of the track and arc boundaries:
@@ -1385,14 +1397,14 @@ package body et_routing is
 						
 						case place is
 							when BEFORE =>
-								-- Use the LEFT border of the overlap area as start point for the
-								-- search operation:
-								start_point := bi.intersection.smallest_x;
+								-- Use the LEFT border of the arc boundaries
+								-- as start point for the search operation:
+								start_point := arc_boundaries.smallest_x;
 
 							when AFTER =>
-								-- Use the RIGHT border of the overlap area as start point for the
-								-- search operation:
-								start_point := bi.intersection.greatest_x;
+								-- Use the RIGHT border of the arc boundaries
+								-- as start point for the search operation:
+								start_point := arc_boundaries.greatest_x;
 						end case;
 
 						--log (text => "place" & type_place'image (place) 
@@ -1417,6 +1429,8 @@ package body et_routing is
 						
 					end if;
 				end;
+
+				log_indentation_down;
 			end loop;
 
 			-- sort the x-positions (increasing order)
