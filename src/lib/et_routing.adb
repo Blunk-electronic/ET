@@ -1291,7 +1291,6 @@ package body et_routing is
 				
 				when 3..4 =>
 					-- The arc intersects the track in 3 or 4 points.
-					-- CS: NOT TESTED YET !
 					split;
 
 				when others => raise constraint_error; -- CS should never happen
