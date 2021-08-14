@@ -1098,20 +1098,12 @@ package body et_routing is
 						if bi.exists then
 							case place is
 								when BEFORE =>
-									-- Use the LEFT border of the overlap area as start point for the
-									-- search operation:
-									start_point := bi.intersection.smallest_x;
-
-									-- ? Use the LEFT border of the arc boundaries
+									-- Use the LEFT border of the arc boundaries
 									-- as start point for the search operation:
-									--start_point := arc_boundaries.smallest_x;
+									start_point := arc_boundaries.smallest_x;
 
 								when AFTER =>
-									-- Use the RIGHT border of the overlap area as start point for the
-									-- search operation:
-									start_point := bi.intersection.greatest_x;
-
-									-- ? Use the RIGHT border of the arc boundaries
+									-- Use the RIGHT border of the arc boundaries
 									-- as start point for the search operation:
 									start_point := arc_boundaries.greatest_x;
 
