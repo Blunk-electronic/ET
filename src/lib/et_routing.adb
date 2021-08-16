@@ -1010,6 +1010,96 @@ package body et_routing is
 		return result;
 	end get_x_values;
 
+
+	-- Searches for each arc fragment the break before/after 
+	-- the intersection with the track.
+	procedure set_break_points (
+		track_dimensions	: in type_track_dimensions;
+		clearance			: in type_distance_positive;						   
+		place				: in type_place;
+		arcs				: in type_arcs; -- arcs is an array of arc segments
+		bp1					: in out type_point;
+		bp2					: in out type_point;
+		break_count			: in out type_break_count;
+		lth					: in type_log_level)
+	is
+		arc_boundaries : type_boundaries;
+
+		use pac_distances;
+		x_values : pac_distances.list;
+		x_cursor : pac_distances.cursor;
+	begin
+		-- Loop in collection of arc segments (it is an array of arcs):
+		for i in arcs'first .. arcs'last loop
+
+			-- log the candidate arc:
+			log (text => "fragment" & natural'image (i) & ": "
+				& to_string (arcs (i)), level => lth);
+			
+			-- Get the boundaries of the candidate arc:
+			arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
+
+			declare
+				-- Get the overlap area of the track and arc boundaries:
+				bi : constant type_boundaries_intersection := 
+					get_intersection (track_dimensions.boundaries, arc_boundaries);
+
+				-- the place along the x-axis where the search for the break is to begin:
+				start_point : type_distance;
+
+				x_pre : type_distance;
+			begin
+				if bi.exists then
+					case place is
+						when BEFORE =>
+							-- Use the LEFT border of the arc boundaries
+							-- as start point for the search operation:
+							start_point := arc_boundaries.smallest_x;
+
+						when AFTER =>
+							-- Use the RIGHT border of the arc boundaries
+							-- as start point for the search operation:
+							start_point := arc_boundaries.greatest_x;
+
+					end case;
+
+					x_pre := get_break (
+						init		=> start_point,
+						place		=> place,
+						obstacle	=> (et_geometry.ARC, arcs (i)),
+						clearance	=> clearance,
+						lth			=> lth + 1);
+					
+					-- The break must be after the start of the track.
+					-- Otherwise the break is ignored.
+					-- Collect the x-position of the break in container x_values.
+					if x_pre > zero then
+						x_values.append (x_pre);
+					end if;
+				end if;
+			end;
+		end loop;
+
+		-- sort the x-positions (increasing order)
+		pac_distances_sorting.sort (x_values);
+
+		-- derive the break count from the number of x-positions
+		break_count := type_break_count (length (x_values));
+
+		case break_count is
+			when 0 => null;
+			when 1 => 
+				x_cursor := x_values.first;
+				bp1 := type_point (set (element (x_cursor), zero));
+				
+			when 2 =>
+				x_cursor := x_values.first;					
+				bp1 := type_point (set (element (x_cursor), zero));
+				next (x_cursor);
+				bp2 := type_point (set (element (x_cursor), zero));
+		end case;
+	end set_break_points;
+
 	
 	function get_break_by_arc (
 		track	: in type_track;
@@ -1051,8 +1141,6 @@ package body et_routing is
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
 
-		-- the place along the x-axis where the search for the break is to begin:
-		start_point : type_distance;
 		
 		-- the possible break points and the number of break points:
 		break_count : type_break_count := 0;
@@ -1067,92 +1155,16 @@ package body et_routing is
 
 		-- The arc must be split in 2 or 3 smaller arcs. Each of them
 		-- will then be treated separately.
-		procedure split is 
-
-			-- Searches for each segment the break before/after 
-			-- the intersection with the track.
-			procedure set_break_points (arc : in type_arc) is
-				-- this is the split operation:
-				arcs : constant type_arcs := split_arc (arc);
-				-- arcs is now a collection of arc segments
-
-				arc_boundaries : type_boundaries;
-
-				x_pre : type_distance;
-				x_values : pac_distances.list;
-				x_cursor : pac_distances.cursor;
-
-				use pac_distances_sorting;
-			begin
-				-- Loop in collection of arc segments (it is an array of arcs):
-				for i in arcs'first .. arcs'last loop
-
-					-- Get the boundaries of the candidate arc:
-					arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
-
-					declare
-						-- Get the overlap area of the track and arc boundaries:
-						bi : constant type_boundaries_intersection := 
-							get_intersection (track_dimensions.boundaries, arc_boundaries);
-					begin
-						if bi.exists then
-							case place is
-								when BEFORE =>
-									-- Use the LEFT border of the arc boundaries
-									-- as start point for the search operation:
-									start_point := arc_boundaries.smallest_x;
-
-								when AFTER =>
-									-- Use the RIGHT border of the arc boundaries
-									-- as start point for the search operation:
-									start_point := arc_boundaries.greatest_x;
-
-							end case;
-
-							x_pre := get_break (
-								init		=> start_point,
-								place		=> place,
-								obstacle	=> (et_geometry.ARC, arcs (i)),
-								clearance	=> clearance,
-								lth			=> lth + 2);
-							
-							-- The break must be after the start of the track.
-							-- Otherwise the break is ignored.
-							-- Collect the x-position of the break in container x_values.
-							if x_pre > zero then
-								x_values.append (x_pre);
-							end if;
-						end if;
-					end;
-				end loop;
-
-				-- sort the x-positions (increasing order)
-				sort (x_values);
-
-				-- derive the break count from the number of x-positions
-				break_count := type_break_count (length (x_values));
-
-				case break_count is
-					when 0 => null;
-					when 1 => 
-						x_cursor := x_values.first;
-						bp1 := type_point (set (element (x_cursor), zero));
-						
-					when 2 =>
-						x_cursor := x_values.first;					
-						bp1 := type_point (set (element (x_cursor), zero));
-						next (x_cursor);
-						bp2 := type_point (set (element (x_cursor), zero));
-				end case;
-			end set_break_points;
-
-			
-		begin -- split			
+		procedure split is begin
 			log (text => "splitting of arc required", level => lth + 1);
 			log_indentation_up;
 			
-			set_break_points (arc_tmp);
+			set_break_points (
+				track_dimensions, clearance, place, 
+				split_arc (arc_tmp), -- the arc is split here
+				bp1, bp2, break_count, lth + 2);
 
+			
 			case break_count is
 				when 0 => null;
 				when 1 =>
@@ -1186,7 +1198,10 @@ package body et_routing is
 		
 		-- Searches the break point (before or after) by means 
 		-- of the boundaries of the whole overlapping area.
-		procedure use_overlap_area is begin
+		procedure use_overlap_area is 
+			-- the place along the x-axis where the search for the break is to begin:
+			start_point : type_distance;
+		begin
 			log (text => "using boundaries of whole overlapping area", level => lth + 1);
 			log_indentation_up;
 			
@@ -1351,98 +1366,6 @@ package body et_routing is
 		use pac_distances;
 		x_values_pre : pac_distances.list := get_x_values (i_upper, i_lower);
 		-- x_values_pre now contains the sorted x-positions from left to right
-
-		-- Splits the circle in 2 arcs. Searches for each arc segment
-		-- the break before/after the intersection with the track.
-		procedure set_break_points (circle : in type_circle) is
-			-- this is the split operation:
-			arcs : constant type_arcs := split_circle (circle);
-			-- arcs is now a collection of two arc segments
-
-			arc_boundaries : type_boundaries;
-
-			x_pre : type_distance;
-			x_values : pac_distances.list;
-			x_cursor : pac_distances.cursor;
-
-			use pac_distances_sorting;
-		begin
-			-- Loop in collection of arc segments (it is an array of arcs):
-			for i in arcs'first .. arcs'last loop
-
-				-- log the candidate arc:
-				log (text => "fragment" & natural'image (i) & ": "
-					& to_string (arcs (i)), level => lth + 2);
-				
-				-- Get the boundaries of the candidate arc:
-				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero line width
-
-				log_indentation_up;
-				
-				declare
-					-- Get the overlap area of the track and arc boundaries:
-					bi : constant type_boundaries_intersection := 
-						get_intersection (track_dimensions.boundaries, arc_boundaries);
-				begin
-					if bi.exists then
-						
-						case place is
-							when BEFORE =>
-								-- Use the LEFT border of the arc boundaries
-								-- as start point for the search operation:
-								start_point := arc_boundaries.smallest_x;
-
-							when AFTER =>
-								-- Use the RIGHT border of the arc boundaries
-								-- as start point for the search operation:
-								start_point := arc_boundaries.greatest_x;
-						end case;
-
-						--log (text => "place" & type_place'image (place) 
-							--& "start point: " & to_string (start_point) 
-							--& " clearance" & to_string (clearance));
-
-						--log (text => "arc" & to_string (arcs (i)));
-						
-						x_pre := get_break (
-							init		=> start_point,
-							place		=> place,
-							obstacle	=> (et_geometry.ARC, arcs (i)),
-							clearance	=> clearance,
-							lth			=> lth + 2);
-						
-						-- The break must be after the start of the track.
-						-- Otherwise the break is ignored.
-						-- Collect the x-position of the break in container x_values.
-						if x_pre > zero then
-							x_values.append (x_pre);
-						end if;
-						
-					end if;
-				end;
-
-				log_indentation_down;
-			end loop;
-
-			-- sort the x-positions (increasing order)
-			sort (x_values);
-
-			-- derive the break count from the number of x-positions
-			break_count := type_break_count (length (x_values));
-
-			case break_count is
-				when 0 => null;
-				when 1 => 
-					x_cursor := x_values.first;
-					bp1 := type_point (set (element (x_cursor), zero));
-					
-				when 2 =>
-					x_cursor := x_values.first;					
-					bp1 := type_point (set (element (x_cursor), zero));
-					next (x_cursor);
-					bp2 := type_point (set (element (x_cursor), zero));
-			end case;
-		end set_break_points;
 		
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
@@ -1502,10 +1425,9 @@ package body et_routing is
 							lth			=> lth + 2),
 							zero));
 
-
 						-- The computed break point must be after the start of the track.
 						-- If it is before the start of the track, then it is discarded.
-						if get_x (bp1) > zero then -- CS really necessary ?
+						if get_x (bp1) > zero then
 
 							-- Rotate and move the break point back according to
 							-- the track direction and offset:
@@ -1524,6 +1446,7 @@ package body et_routing is
 							 level => lth);
 					end if;
 
+					
 				when 4 =>					
 					-- The circle intersects the track in 4 points.
 					-- So the circle must be split in 2 arcs. Each arc
@@ -1531,7 +1454,12 @@ package body et_routing is
 					log (text => "splitting of circle required", level => lth + 1);
 					log_indentation_up;
 					
-					set_break_points (circle_tmp);
+					-- split the circle in 2 arcs:
+					set_break_points (
+						track_dimensions, clearance, place, 
+						split_circle (circle_tmp), -- the circle is split here
+						bp1, bp2, break_count, lth + 2);
+
 
 					case break_count is
 						when 0 => null;
