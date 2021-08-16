@@ -1098,6 +1098,34 @@ package body et_routing is
 				next (x_cursor);
 				bp2 := type_point (set (element (x_cursor), zero));
 		end case;
+
+		
+		case break_count is
+			when 0 => null;
+			when 1 =>
+
+				-- Rotate and move the break point back according to
+				-- the track direction and offset:
+				rotate_to (bp1, track_dimensions.direction);
+				move_by (bp1, track_dimensions.offset);
+
+				log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+						level => lth + 2);
+
+			when 2 =>
+				rotate_to (bp1, track_dimensions.direction);
+				move_by (bp1, track_dimensions.offset);
+
+				log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+						level => lth + 2);
+
+				rotate_to (bp2, track_dimensions.direction);
+				move_by (bp2, track_dimensions.offset);
+				
+				log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
+					level => lth + 2);
+
+		end case;		
 	end set_break_points;
 
 	
@@ -1163,34 +1191,6 @@ package body et_routing is
 				track_dimensions, clearance, place, 
 				split_arc (arc_tmp), -- the arc is split here
 				bp1, bp2, break_count, lth + 2);
-
-			
-			case break_count is
-				when 0 => null;
-				when 1 =>
-
-					-- Rotate and move the break point back according to
-					-- the track direction and offset:
-					rotate_to (bp1, track_dimensions.direction);
-					move_by (bp1, track_dimensions.offset);
-
-					log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-							level => lth + 2);
-
-				when 2 =>
-					rotate_to (bp1, track_dimensions.direction);
-					move_by (bp1, track_dimensions.offset);
-
-					log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-							level => lth + 2);
-
-					rotate_to (bp2, track_dimensions.direction);
-					move_by (bp2, track_dimensions.offset);
-					
-					log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
-						level => lth + 2);
-
-			end case;
 
 			log_indentation_down;
 		end split;
@@ -1459,34 +1459,6 @@ package body et_routing is
 						track_dimensions, clearance, place, 
 						split_circle (circle_tmp), -- the circle is split here
 						bp1, bp2, break_count, lth + 2);
-
-
-					case break_count is
-						when 0 => null;
-						when 1 =>
-
-							-- Rotate and move the break point back according to
-							-- the track direction and offset:
-							rotate_to (bp1, track_dimensions.direction);
-							move_by (bp1, track_dimensions.offset);
-
-							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-									level => lth + 1);
-
-						when 2 =>
-							rotate_to (bp1, track_dimensions.direction);
-							move_by (bp1, track_dimensions.offset);
-
-							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-									level => lth + 1);
-
-							rotate_to (bp2, track_dimensions.direction);
-							move_by (bp2, track_dimensions.offset);
-							
-							log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
-								level => lth + 1);
-
-					end case;
 
 					log_indentation_down;
 					
