@@ -872,13 +872,13 @@ package body et_routing is
 				 --& " angle" & to_string (i_center.intersection.angle),
 				 --level => lth + 2);
 
-			--log (text => "clearance" & float'image (float (clearance)), level => lth + 2);
-			
 			-- clearance is the distance from center of the cap perpendicular to the line.
-			spacing := type_distance (round (type_distance_positive
-				(float (clearance) / cos (angle, float (units_per_cycle)))));
+			spacing := type_distance (round (
+				d_fine	=> type_distance_positive (float (clearance) / cos (angle, float (units_per_cycle))),
+				mode	=> UP));
 
 			--log (text => "spacing float " & float'image (float (clearance) / cos (angle, float (units_per_cycle))));
+			--log (text => "spacing       " & to_string (spacing));
 			--log (text => "required spacing" & to_string (spacing), level => lth + 2);
 			
 			-- Depending on the given place, the break point must be moved 
@@ -1091,18 +1091,6 @@ package body et_routing is
 			when 1 => 
 				x_cursor := x_values.first;
 				bp1 := type_point (set (element (x_cursor), zero));
-				
-			when 2 =>
-				x_cursor := x_values.first;					
-				bp1 := type_point (set (element (x_cursor), zero));
-				next (x_cursor);
-				bp2 := type_point (set (element (x_cursor), zero));
-		end case;
-
-		
-		case break_count is
-			when 0 => null;
-			when 1 =>
 
 				-- Rotate and move the break point back according to
 				-- the track direction and offset:
@@ -1112,7 +1100,15 @@ package body et_routing is
 				log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
 						level => lth + 2);
 
+				
 			when 2 =>
+				x_cursor := x_values.first;					
+				bp1 := type_point (set (element (x_cursor), zero));
+				next (x_cursor);
+				bp2 := type_point (set (element (x_cursor), zero));
+
+				-- Rotate and move the break points back according to
+				-- the track direction and offset:
 				rotate_to (bp1, track_dimensions.direction);
 				move_by (bp1, track_dimensions.offset);
 
@@ -1125,7 +1121,7 @@ package body et_routing is
 				log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
 					level => lth + 2);
 
-		end case;		
+		end case;
 	end set_break_points;
 
 	

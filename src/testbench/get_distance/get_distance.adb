@@ -52,7 +52,7 @@ use et_board_shapes_and_text.pac_shapes;
 with et_packages;				use et_packages;
 with et_routing;				use et_routing;
 
-procedure testbench is
+procedure get_distance is
 
 	use functions_float;
 
@@ -104,7 +104,7 @@ begin
 	end loop;
 
 
-end testbench;
+end get_distance;
 
 -- Soli Deo Gloria
 

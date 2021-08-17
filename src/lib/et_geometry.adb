@@ -134,23 +134,76 @@ package body et_geometry is
 	
 	package body generic_pac_geometry is
 
+
+		function to_distance (distance : in string) 
+			return type_distance 
+		is begin
+			return type_distance'value (distance);
+
+			exception when event: others =>
+				raise syntax_error_2 with 
+					"ERROR: Expect a distance instead of " 
+					& enclose_in_quotes (distance) & " !";
+		end to_distance;
+
 		
-		function round (d_fine : in type_distance) 
-			return type_distance_coarse 
+		function to_string (distance : in type_distance) 
+			return string
+		is begin
+			if distance < zero then
+				return space & type_distance'image (distance);
+			else
+				return type_distance'image (distance);
+			end if;
+		end to_string;
+
+
+		function to_string (d_coarse : in type_distance_coarse) 
+			return string
+		is begin
+			if d_coarse < 0.0 then
+				return space & type_distance_coarse'image (d_coarse);
+			else
+				return type_distance_coarse'image (d_coarse);
+			end if;
+		end to_string;
+
+		
+		
+		function round (
+			d_fine	: in type_distance;
+			mode	: in type_rounding_mode := rounding_mode_default) 
+			return type_distance_coarse
 		is
 			d_coarse : type_distance_coarse := type_distance_coarse (d_fine);
-			d_delta : type_distance;
-		begin
-			d_delta := abs (d_fine) - abs (type_distance (d_coarse));
-			
-			if d_delta >= 500000.0 * type_distance'small then
+			d_delta : type_distance_positive;
+
+			procedure do_it is begin
 				if d_fine > 0.0 then
 					d_coarse := d_coarse + type_distance_coarse'small;
 				else
 					d_coarse := d_coarse - type_distance_coarse'small;
 				end if;
-			end if;
+			end do_it;
+			
+		begin
+			d_delta := abs (d_fine) - abs (type_distance (d_coarse));
 
+			case mode is
+				when UP =>
+					if d_delta > zero then
+						do_it;
+					end if;
+						
+				when DOWN =>
+					null;
+					
+				when BANKERS_RULE =>
+					if d_delta >= 500_000.0 * type_distance'small then
+						do_it;
+					end if;
+			end case;
+			
 			return d_coarse;
 		end round;
 	
@@ -309,22 +362,7 @@ package body et_geometry is
 
 		
 		
-		function to_distance (distance : in string) return type_distance is begin
-			return type_distance'value (distance);
 
-			exception when event: others =>
-				raise syntax_error_2 with 
-					"ERROR: Expect a distance instead of " 
-					& enclose_in_quotes (distance) & " !";
-		end to_distance;
-		
-		function to_string (distance : in type_distance) return string is begin
-			if distance < zero then
-				return space & type_distance'image (distance);
-			else
-				return type_distance'image (distance);
-			end if;
-		end;
 		
 		function get_x (point : in type_point'class) return type_position_axis is begin
 			return point.x;

@@ -73,12 +73,12 @@ package et_pcb_coordinates is
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 	--distance_smallest : constant := 0.00001;
 	--type type_distance is delta distance_smallest digits 16
-	distance_smallest : constant := 0.000_000_000_1;
+	distance_smallest : constant := 0.000_000_000_1; -- 0.1pm
 	
 	type type_distance is delta distance_smallest digits 26
 		range -1_000_000_000_000_000.00 .. 1_000_000_000_000_000.00; -- 16
 
-	distance_coarse_smallest : constant := type_distance'small * 1_000_000.0;
+	distance_coarse_smallest : constant := type_distance'small * 1_000_000.0; -- 0.1um
 	type type_distance_coarse is delta distance_coarse_smallest 
 		digits type_distance'digits - 6
 		range type_distance'first .. type_distance'last;

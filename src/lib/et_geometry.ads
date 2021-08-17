@@ -167,12 +167,37 @@ package et_geometry is
 		far_left	: constant type_distance := axis_min;
 		far_right	: constant type_distance := axis_max;
 
+		function to_distance (distance : in string) 
+			return type_distance;		
+		
+		function to_string (distance : in type_distance)
+			return string;
+
+		function to_string (d_coarse : in type_distance_coarse)
+			return string;
+
+
 		
 		-- The position along an axis:
 		subtype type_position_axis is type_distance 
 			range axis_min .. axis_max;
 
-		function round (d_fine : in type_distance) 
+
+		
+		type type_rounding_mode is (
+			DOWN,			-- down to nearest multiple of type_distance_coarse'small
+			BANKERS_RULE,	-- 0..4 down, 5..9 up				
+			UP);			-- up to nearest multiple of type_distance_coarse'small
+
+		rounding_mode_default : constant type_rounding_mode := BANKERS_RULE;
+
+		--type type_rounding_digit is range 1 .. type_distance'digits;
+			
+		-- Rounds the given distance to the nearest multiple of 
+		-- type_distance_course'small.
+		function round (
+			d_fine	: in type_distance;
+			mode	: in type_rounding_mode := rounding_mode_default) 
 			return type_distance_coarse;
 		
 		function clip_distance (d : in type_distance)
@@ -288,8 +313,6 @@ package et_geometry is
 		
 		
 		
-		function to_distance (distance : in string) return type_distance;		
-		function to_string (distance : in type_distance) return string;
 		
 		function get_x (point : in type_point'class) return type_position_axis;
 		function get_y (point : in type_point'class) return type_position_axis;		

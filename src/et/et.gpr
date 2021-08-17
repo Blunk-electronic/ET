@@ -10,6 +10,7 @@ project et is
 
 end et;
 
--- build with command "gprbuild -j2 et"
--- build with command "gprbuild -j2 -g et"
+-- build with command "gprbuild -j4"
+-- build with command "gprbuild -j4 -gnatm4"
+-- build with command "gprbuild -j4 -g et"
 -- clean up with command "gprclean"
