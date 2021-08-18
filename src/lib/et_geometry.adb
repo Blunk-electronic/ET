@@ -2862,6 +2862,16 @@ package body et_geometry is
 			end case;
 		end normalize_arc;
 
+
+		function zero_length (arc : in type_arc) return boolean is
+		begin
+			if arc.start_point = arc.end_point then
+				return true;
+			else
+				return false;
+			end if;
+		end zero_length;
+		
 		
 		function get_shortest_distance (
 			point	: in type_point;
@@ -3624,7 +3634,8 @@ package body et_geometry is
 		function split_arc (arc_in : in type_arc) 
 			return type_arcs
 		is
-			arc : type_arc := arc_in;
+			-- normalize the given arc so that its direction is always CCW
+			arc : type_arc := type_arc (normalize_arc (arc_in));
 			
 			-- the x and y-position of the center, start and end point of the given arc:
 			CX : constant type_distance := get_x (arc.center);
@@ -3642,7 +3653,7 @@ package body et_geometry is
 			PL : constant type_point := type_point (set (CX, CY - R));
 			
 			-- the boundaries of the given arc:
-			by : type_boundaries := get_boundaries (arc, zero);
+			by : constant type_boundaries := get_boundaries (arc, zero);
 
 			S_left, E_left : boolean := false;
 
@@ -3654,19 +3665,34 @@ package body et_geometry is
 
 			-- There can be up to 3 segments after splitting the arc.
 			-- All arc segments have the same center and direction:
-			result : type_arcs (1..3);
+			result_2 : type_arcs (1..2);
+			result_3 : type_arcs (1..3);
+
+			-- If the arc breaks up into 3 arc fragments, then it may
+			-- happen that the first or the last fragment has zero length.
+			-- In this case this function removes such a fragment and 
+			-- returns two fragments instead.
+			-- Otherwise the three fragments are untouched.
+			function remove_useless_fragments return type_arcs is begin
+				if zero_length (result_3 (1)) then
+					result_2 (1) := result_3 (2);
+					result_2 (2) := result_3 (3);
+					return result_2;
+					
+				elsif zero_length (result_3 (3)) then
+					result_2 (1) := result_3 (1);
+					result_2 (2) := result_3 (2);
+					return result_2;
+				else
+					return result_3;
+				end if;
+			end remove_useless_fragments;
 			
-		begin
-			--put_line ("arc: " & to_string (by));
-			
+		begin -- split_arc
+
 			-- test whether the arc can be split at all:
 			if by.smallest_x < CX and by.greatest_x > CX then
 				-- arc extends to the right and to the left of its center
-
-				-- normalize the given arc so that its direction is always CCW
-				if arc.direction = CW then
-					reverse_arc (arc);
-				end if;
 
 				-- get x of start and end point:
 				SX := get_x (arc.start_point);
@@ -3681,47 +3707,45 @@ package body et_geometry is
 						-- start point is below end point
 
 						-- the lower left segment:
-						result (1) := (
+						result_3 (1) := (
 							center		=> arc.center, 
 							start_point	=> arc.start_point,
 							end_point	=> PL,
 							direction 	=> CCW);
 
 						-- the segment on the right
-						result (2) := (
+						result_3 (2) := (
 							center		=> arc.center, 
 							start_point	=> PL,
 							end_point	=> PU,
 							direction 	=> CCW);
 
 						-- the upper left segment:
-						result (3) := (
+						result_3 (3) := (
 							center		=> arc.center, 
 							start_point	=> PU,
 							end_point	=> arc.end_point,
 							direction 	=> CCW);
 
-						-- return all segments
-						return result;
+						return remove_useless_fragments;
 						
 					else -- end point is on the right
-
 						-- the segment on the left:
-						result (1) := (
+						result_2 (1) := (
 							center		=> arc.center, 
 							start_point	=> arc.start_point,
 							end_point	=> PL,
 							direction 	=> CCW);
 
 						-- the segment on the right
-						result (2) := (
+						result_2 (2) := (
 							center		=> arc.center, 
 							start_point	=> PL,
 							end_point	=> arc.end_point,
 							direction 	=> CCW);
 
-						-- return only segment 1 and 2
-						return result (1..2);
+						-- return segment 1 and 2
+						return result_2;
 					end if;
 
 					
@@ -3729,58 +3753,56 @@ package body et_geometry is
 					if E_left then
 
 						-- the segment on the right:
-						result (1) := (
+						result_2 (1) := (
 							center		=> arc.center, 
 							start_point	=> arc.start_point,
 							end_point	=> PU,
 							direction 	=> CCW);
 
 						-- the segment on the left
-						result (2) := (
+						result_2 (2) := (
 							center		=> arc.center, 
 							start_point	=> PU,
 							end_point	=> arc.end_point,
 							direction 	=> CCW);
 
-						-- return only segment 1 and 2
-						return result (1..2);
+						-- return segment 1 and 2
+						return result_2;
 
 						
 					else
+						-- end point is on the right
+						
 						-- start point is above end point
 
 						-- the upper right segment:
-						result (1) := (
+						result_3 (1) := (
 							center		=> arc.center, 
 							start_point	=> arc.start_point,
 							end_point	=> PU,
 							direction 	=> CCW);
 
 						-- the segment on the left
-						result (2) := (
+						result_3 (2) := (
 							center		=> arc.center, 
 							start_point	=> PU,
 							end_point	=> PL,
 							direction 	=> CCW);
 
-						result (3) := (
+						result_3 (3) := (
 							center		=> arc.center, 
 							start_point	=> PL,
 							end_point	=> arc.end_point,
 							direction 	=> CCW);
 
-						-- return all segments
-						return result;
-						
+						return remove_useless_fragments;
 					end if;
 				end if;
-				
 				
 			else
 				raise constraint_error with "can not split " & to_string (arc) & " !";
 			end if;
 
-			--return result;
 		end split_arc;
 
 

@@ -1278,7 +1278,8 @@ package et_geometry is
 		-- then nothing happens.
 		function normalize_arc (arc: in type_arc) return type_arc'class;
 
-
+		-- Returns true if start and end point of arc are equal:
+		function zero_length (arc : in type_arc) return boolean;
 			
 		-- Returns the shortest distance between a point and an arc.
 		-- If the point is on the center of the arc, then the return is
