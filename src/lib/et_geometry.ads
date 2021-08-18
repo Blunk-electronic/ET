@@ -457,7 +457,7 @@ package et_geometry is
 		type type_quadrant is (ONE, TWO, THREE, FOUR);
 
 		-- Returns the quadrant the point is located in.
-		-- ONE  : point is right of the y-axis or on top of it AND above the x-axis or on top of it
+		-- ONE  : point is on the right of the y-axis or on it AND above the x-axis or on it
 		-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
 		-- THREE: point is left of the y-axis AND below the x-axis
 		-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
@@ -1273,6 +1273,10 @@ package et_geometry is
 		function reverse_arc (arc : in type_arc) return type_arc'class;
 		procedure reverse_arc (arc : in out type_arc);
 
+		-- Changes the direction of an arc to CCW (mathematical sense)
+		-- by swapping start and end point. If direction is already CCW
+		-- then nothing happens.
+		function normalize_arc (arc: in type_arc) return type_arc'class;
 
 
 			

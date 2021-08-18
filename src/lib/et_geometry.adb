@@ -155,6 +155,7 @@ package body et_geometry is
 			else
 				return type_distance'image (distance);
 			end if;
+			-- CS suppress trailing zeros
 		end to_string;
 
 
@@ -166,6 +167,7 @@ package body et_geometry is
 			else
 				return type_distance_coarse'image (d_coarse);
 			end if;
+			-- CS suppress trailing zeros
 		end to_string;
 
 		
@@ -397,14 +399,16 @@ package body et_geometry is
 		is begin
 			return boundaries.greatest_x - boundaries.smallest_x;
 		end get_width;
+
 		
 		function to_string (boundaries : in type_boundaries) return string is begin
-			return "boundaries: smallest x" & to_string (boundaries.smallest_x) 
-				& " greatest x" & to_string (boundaries.greatest_x)
-				& " smallest y" & to_string (boundaries.smallest_y)
-				& " greatest y" & to_string (boundaries.greatest_y);
+			return "boundaries: SX:" & to_string (boundaries.smallest_x) 
+				& " / GX:" & to_string (boundaries.greatest_x)
+				& " / SY:" & to_string (boundaries.smallest_y)
+				& " / GY:" & to_string (boundaries.greatest_y);
 		end;
 
+		
 		function intersect (
 			boundaries_one : in type_boundaries;
 			boundaries_two : in type_boundaries)
@@ -1059,8 +1063,10 @@ package body et_geometry is
 			else
 				return type_rotation'image (rotation);
 			end if;
+			-- CS suppress trailing zeros
 		end;
 
+		
 		function to_string (direction : in type_direction_of_rotation) return string is begin
 			return to_lower (type_direction_of_rotation'image (direction));
 		end to_string;
@@ -2833,7 +2839,8 @@ package body et_geometry is
 			
 			return result;
 		end reverse_arc;
-			
+
+		
 		procedure reverse_arc (arc : in out type_arc) is
 			scratch : type_point := arc.start_point;
 		begin
@@ -2846,6 +2853,14 @@ package body et_geometry is
 			end case;
 		end reverse_arc;
 
+
+		function normalize_arc (arc: in type_arc) return type_arc'class is
+		begin
+			case arc.direction is
+				when CW  => return reverse_arc (arc);
+				when CCW => return arc;
+			end case;
+		end normalize_arc;
 
 		
 		function get_shortest_distance (
@@ -3181,13 +3196,14 @@ package body et_geometry is
 			
 			result : type_boundaries; -- to be returned
 
-			-- Take a copy of the given arc in arc_tmp.
-			arc_tmp : type_arc := arc;
+			-- normalize the given arc
+			arc_norm : type_arc := type_arc (normalize_arc (arc));
 
 			-- Calculate the radius of the arc:
-			radius : type_distance_positive := get_distance_total (arc.center, arc.start_point);
+			--radius : type_distance_positive := get_distance_total (arc.center, arc.start_point);
+			radius : type_distance_positive := get_radius_start (arc_norm);
 
-			-- The quadrant where start and end point are in:
+			-- The quadrant of start and end point:
 			q_start : type_quadrant;
 			q_end   : type_quadrant;
 
@@ -3197,147 +3213,109 @@ package body et_geometry is
 			procedure set_gy is begin result.greatest_y :=   radius; end;
 			
 		begin -- get_boundaries
-			-- move arc_tmp so that its center is at 0/0
-			move_to (arc_tmp, origin);
+			-- move arc_norm so that its center is at 0/0
+			move_to (arc_norm, origin);
 
-			-- Calculate the quadrant where start and end point are in:
-			q_start := get_quadrant (arc_tmp.start_point);
-			q_end   := get_quadrant (arc_tmp.end_point);
+			-- Calculate the quadrants of start and end point:
+			q_start := get_quadrant (arc_norm.start_point);
+			q_end   := get_quadrant (arc_norm.end_point);
+
+			--put_line ("Q Start:" & type_quadrant'image (q_start));
+			--put_line ("Q End:  " & type_quadrant'image (q_end));
 			
 			-- Calculate the boundaries of start and end point.
 			-- For the moment we regard start and end point of the arc being
 			-- connected with a straight line, ignoring the line width:
-			result := get_boundaries (arc_tmp.start_point, arc_tmp.end_point, zero);
+			result := get_boundaries (arc_norm.start_point, arc_norm.end_point, zero);
 
+			--put_line ("result: " & to_string (result));
+			
 			-- Depending on the quadrants of start and end point, other quadrants may
 			-- be crossed. The boundaries (held in result) must be pushed away into x
 			-- or y direction if start and end point are not in the same quadrant.
 			case q_start is
 				when ONE =>
 					case q_end is
-						when ONE => null; -- same quadrants, leave result as it is
-
+						when ONE =>
+							set_gy;
+							set_sx;
+							set_sy;
+							set_gx;
+						
 						when TWO => 
-							if arc.direction = CCW then
-								set_gy;
-							else
-								set_sy;
-							end if;
+							set_gy;
 
 						when THREE =>
-							if arc.direction = CCW then
-								set_gy;
-								set_sx;
-							else
-								set_sy;
-								set_gx;
-							end if;
+							set_gy;
+							set_sx;
 
 						when FOUR =>
-							if arc.direction = CCW then
-								set_gy;
-								set_sx;
-								set_sy;
-							else
-								set_gx;
-							end if;
+							set_gy;
+							set_sx;
+							set_sy;
 					end case;
 
 				when TWO =>
 					case q_end is
 						when ONE => 
-							if arc.direction = CCW then
-								set_sx;
-								set_sy;
-								set_gx;
-							else
-								set_gy;
-							end if;
+							set_sx;
+							set_sy;
+							set_gx;
 
-						when TWO => null; -- same quadrants, leave result as it is
+						when TWO =>
+							set_sx;
+							set_sy;
+							set_gx;
+							set_gy;
 
 						when THREE =>
-							if arc.direction = CCW then
-								set_sx;
-							else
-								set_gy;
-								set_gx;
-								set_sy;
-							end if;
+							set_sx;
 
 						when FOUR =>
-							if arc.direction = CCW then
-								set_sx;
-								set_sy;
-							else
-								set_gy;
-								set_gx;
-							end if;
+							set_sx;
+							set_sy;
 					end case;
 					
 				when THREE =>
 					case q_end is
 						when ONE =>
-							if arc.direction = CCW then
-								set_sy;
-								set_gx;
-							else
-								set_sx;
-								set_gy;
-							end if;
+							set_sy;
+							set_gx;
 
 						when TWO =>
-							if arc.direction = CCW then
-								set_sy;
-								set_gx;
-								set_gy;
-							else
-								set_sx;
-							end if;
+							set_sy;
+							set_gx;
+							set_gy;
 
-						when THREE => null; -- same quadrants, leave result as it is
+						when THREE =>
+							set_sy;
+							set_gx;
+							set_gy;
+							set_sx;
 
 						when FOUR =>
-							if arc.direction = CCW then
-								set_sy;
-							else
-								set_sx;
-								set_gy;
-								set_gx;
-							end if;
-
+							set_sy;
 					end case;
 
 				when FOUR =>
 					case q_end is
 						when ONE =>
-							if arc.direction = CCW then
-								set_gx;
-							else
-								set_sy;
-								set_sx;
-								set_gy;
-							end if;
+							set_gx;
 
 						when TWO =>
-							if arc.direction = CCW then
-								set_gx;
-								set_gy;
-							else
-								set_sy;
-								set_sx;
-							end if;
+							set_gx;
+							set_gy;
 
 						when THREE =>
-							if arc.direction = CCW then
-								set_gx;
-								set_gy;
-								set_sx;
-							else
-								set_sy;
-							end if;
+							set_gx;
+							set_gy;
+							set_sx;
 
-						when FOUR => null; -- same quadrants, leave result as it is
+						when FOUR =>
+							set_gx;
+							set_gy;
+							set_sx;
+							set_sy;
 					end case;
 					
 			end case;
@@ -3679,6 +3657,8 @@ package body et_geometry is
 			result : type_arcs (1..3);
 			
 		begin
+			--put_line ("arc: " & to_string (by));
+			
 			-- test whether the arc can be split at all:
 			if by.smallest_x < CX and by.greatest_x > CX then
 				-- arc extends to the right and to the left of its center
@@ -3688,7 +3668,7 @@ package body et_geometry is
 					reverse_arc (arc);
 				end if;
 
-				-- get x of start and end of arc:
+				-- get x of start and end point:
 				SX := get_x (arc.start_point);
 				EX := get_x (arc.end_point);
 
@@ -4381,10 +4361,10 @@ package body et_geometry is
 		end;
 
 		function to_string (arc : in type_arc) return string is begin
-			return
-				"arc: S:" & to_string (arc.start_point) 
+			return "arc: "
+				& "C:" & to_string (arc.center) 
+				& " / S:" & to_string (arc.start_point) 
 				& " / E:" & to_string (arc.end_point)
-				& " / C:" & to_string (arc.center) 
 				& " / D: " & to_string (arc.direction);
 		end to_string;
 
