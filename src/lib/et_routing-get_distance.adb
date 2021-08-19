@@ -405,13 +405,10 @@ is
 
 		
 		procedure query_texts is
-
 			use et_packages;
 			use pac_conductor_texts;
-
 			use et_text;
-			--use pac_text_content;
-			
+				
 			procedure query_text (c : in pac_conductor_texts.cursor) is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
@@ -468,10 +465,26 @@ is
 
 				end if;
 			end query_text;
+
+			use pac_distances_sorting;
+			clearances : pac_distances_positive.list;
 			
 		begin
 			log (text => "probing texts ...", level => lth + 1);
 			log_indentation_up;
+
+			-- The clearance to the text is the greatest of 
+			-- either the polygon isolation or the clearance of the given net.
+			-- The greatest of them will be applied to the track clearance.
+			clearances.append (class_given_net.clearance);
+
+			if fill_zone.observe then 
+				clearances.append (fill_zone.outline.isolation);
+			end if;
+
+			track.clearance	:= get_greatest (clearances);
+
+			
 			iterate (module.board.conductors.texts, query_text'access);
 			log_indentation_down;
 		end query_texts;
@@ -499,8 +512,7 @@ is
 		-- of the area as close as possible (from outside the area):
 		query_global_cutouts;
 
-		-- Probe net segments. The clearance is set for each net individually:
-		query_tracks;
+		query_tracks; -- The clearance is set for each net individually:
 
 		-- CS query freetracks
 		
@@ -508,7 +520,7 @@ is
 		
 		-- CS abort if status is invalid ??? obsolete ??
 
-		query_texts;
+		query_texts; -- The clearance is set according to net class and polygon isolation.
 		
 		-- query pads, ...
 
