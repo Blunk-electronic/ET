@@ -1145,20 +1145,16 @@ package body et_geometry is
 		begin
 			position.rotation := add (position.rotation, offset);
 		end;
+
 		
 		procedure rotate_by (
 			point		: in out type_point'class;
 			rotation	: in type_rotation) 
 		is			
-			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
-			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
-			use functions_angle;
-
-			angle_out			: type_float_angle;		-- unit is degrees
-			distance_to_origin	: float;	-- unit is mm
+			angle_out			: float; -- unit is degrees
+			distance_to_origin	: float; -- unit is mm
 			scratch				: float;
-
-		begin -- rotate
+		begin
 			-- Do nothing if the given rotation is zero.
 			if rotation /= 0.0 then
 
@@ -1206,28 +1202,29 @@ package body et_geometry is
 
 				else
 					-- neither x nor y of point is zero
-					angle_out := type_float_angle (arctan (
-						x => float (get_x (point)),
-						y => float (get_y (point)),
-						cycle => float (units_per_cycle))
-						);
+					angle_out := arctan (
+						x		=> float (get_x (point)),
+						y		=> float (get_y (point)),
+						cycle	=> float (units_per_cycle));
 				end if;
 
 				-- Compute new angle by adding current angle and given angle.
-				angle_out := angle_out + type_float_angle (rotation);
+				angle_out := angle_out + float (rotation);
 
 				-- compute new x   -- (cos angle_out) * distance_to_origin
-				scratch := cos (float (angle_out), float (units_per_cycle));
-				set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
+				scratch := cos (angle_out, float (units_per_cycle));
+				--set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
+				set (axis => X, point => point, value => type_distance (round (type_distance (scratch * distance_to_origin))));
 
 				-- compute new y   -- (sin angle_out) * distance_to_origin
-				scratch := sin (float (angle_out), float (units_per_cycle));
-				set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
+				scratch := sin (angle_out, float (units_per_cycle));
+				--set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
+				set (axis => Y, point => point, value => type_distance (round (type_distance (scratch * distance_to_origin))));
 		
-			end if; -- if angle not zero
-			
+			end if; -- if angle not zero			
 		end rotate_by;
 
+		
 		procedure rotate_to (
 			point		: in out type_point'class;
 			rotation	: in type_rotation) is
