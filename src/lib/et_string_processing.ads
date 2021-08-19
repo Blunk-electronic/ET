@@ -70,7 +70,7 @@ package et_string_processing is
 	
 	--log_level : type_log_level := type_log_level'first;
 
-	log_level_cmd_line_max : constant type_log_level := 15;
+	log_level_cmd_line_max : constant type_log_level := 20;
 	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
 
 	-- This global variable is set on launching ET. See et.adb. It receives its
