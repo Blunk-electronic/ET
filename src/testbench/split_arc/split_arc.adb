@@ -39,9 +39,6 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
-with ada.strings.unbounded;
-
---with ada.numerics.generic_elementary_functions;
 
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -50,19 +47,16 @@ with et_board_shapes_and_text;
 use et_pcb_coordinates.pac_geometry_brd;
 use et_board_shapes_and_text.pac_shapes;
 
-with et_packages;				use et_packages;
-with et_routing;				use et_routing;
-
 procedure split_arc is
 
 	use functions_float;
 
 
-	C : type_point := type_point (set (22.75,  0.46));
-	S : type_point := type_point (set (22.75, 20.46));
-	E : type_point := type_point (set (42.75,  0.46));
+	C : type_point := type_point (set ( 22.75,  0.46));
+	S : type_point := type_point (set ( 22.75, 20.46));
+	E : type_point := type_point (set (  2.75,  0.46));
 	
-	A : type_arc := (C, S, E, CCW);
+	A : type_arc := (C, S, E, CW);
 
 	procedure show (arcs : in type_arcs) is begin
 		for i in arcs'first .. arcs'last loop
@@ -72,9 +66,13 @@ procedure split_arc is
 	end;
 	
 begin
+
+	
 	--put_line (to_string (A));
 
-	show (split_arc (A));
+	if is_valid (A) then
+		show (split_arc (A));
+	end if;
 
 
 end split_arc;
