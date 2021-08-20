@@ -3208,17 +3208,13 @@ package body et_geometry is
 		is
 			half_width : constant type_distance_positive := line_width * 0.5;
 			
-			-- The current implementation is probably not the best solution.
-			-- CS: A more professional approach is required here.
-			
 			result : type_boundaries; -- to be returned
 
 			-- normalize the given arc
 			arc_norm : type_arc := type_arc (normalize_arc (arc));
 
 			-- Calculate the radius of the arc:
-			--radius : type_distance_positive := get_distance_total (arc.center, arc.start_point);
-			radius : type_distance_positive := get_radius_start (arc_norm);
+			radius : constant type_distance_positive := get_radius_start (arc_norm);
 
 			-- The quadrant of start and end point:
 			q_start : type_quadrant;
