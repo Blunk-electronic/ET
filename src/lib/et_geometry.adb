@@ -2834,7 +2834,7 @@ package body et_geometry is
 		
 
 		function reverse_arc (arc : in type_arc) return type_arc'class is
-			result : type_arc'class := arc;
+			result : type_arc := arc;
 		begin
 			result.start_point := arc.end_point;
 			result.end_point := arc.start_point;
@@ -2864,7 +2864,7 @@ package body et_geometry is
 		function normalize_arc (arc: in type_arc) return type_arc'class is
 		begin
 			case arc.direction is
-				when CW  => return reverse_arc (arc);
+				when CW  => return reverse_arc (arc);					
 				when CCW => return arc;
 			end case;
 		end normalize_arc;
