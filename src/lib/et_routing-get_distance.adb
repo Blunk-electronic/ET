@@ -286,8 +286,9 @@ is
 					segment : type_conductor_line_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment" & to_string (element (c)), level => lth + 3);
-
+						log (text => "segment " & to_string (element (c)), level => lth + 3);
+						log_indentation_up;
+						
 						segment := to_line_segment (element (c));
 
 						test_line (get_left_edge (segment));
@@ -296,6 +297,7 @@ is
 						test_arc (get_end_cap (segment));
 
 						-- CS procedure test_segment_line (segment)
+						log_indentation_down;
 					end if;
 				end query_line;
 
@@ -303,14 +305,17 @@ is
 					segment : type_conductor_arc_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment" & to_string (element (c)), level => lth + 3);
-
+						log (text => "segment " & to_string (element (c)), level => lth + 3);
+						log_indentation_up;
+						
 						segment := to_arc_segment (element (c));
 
 						test_arc (get_outer_edge (segment));
 						test_arc (get_end_cap (segment));
 						test_arc (get_inner_edge (segment));
 						test_arc (get_end_cap (segment));
+
+						log_indentation_down;
 					end if;
 				end query_arc;
 
