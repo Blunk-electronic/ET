@@ -321,6 +321,16 @@ package body et_geometry is
 			return r;
 		end round;
 
+
+		function to_string (distance : in type_distance_relative)
+			return string
+		is begin
+			return "distance relative: x/y" 
+				& to_string (distance.x)
+				& "/"
+				& to_string (distance.y);
+		end to_string;
+
 		
 		
 		function to_point (
@@ -728,7 +738,6 @@ package body et_geometry is
 
 		
 		function invert (point : in type_point'class) return type_point'class is
-		-- Inverts the given point by multiplying x by -1 and y by -1.
 			pi : type_point'class := point;
 		begin
 			pi.x := - pi.x;
@@ -751,11 +760,11 @@ package body et_geometry is
 		end invert;
 		
 		procedure reset (point : in out type_point'class) is begin
-		-- Moves the given point to the origin (0/0).
 			point.x := zero;
 			point.y := zero;
 		end;
 
+		
 		procedure move_by (
 			point	: in out type_point'class;
 			offset	: in type_distance_relative) 
@@ -764,6 +773,7 @@ package body et_geometry is
 			point.y := point.y + offset.y;
 		end move_by;
 
+		
 		procedure move_to (
 			point		: in out type_point'class;
 			position	: in type_point) is
@@ -3219,13 +3229,31 @@ package body et_geometry is
 			-- The quadrant of start and end point:
 			q_start : type_quadrant;
 			q_end   : type_quadrant;
-
+			
 			procedure set_sx is begin result.smallest_x := - radius; end;
 			procedure set_gx is begin result.greatest_x :=   radius; end;
 			procedure set_sy is begin result.smallest_y := - radius; end;
 			procedure set_gy is begin result.greatest_y :=   radius; end;
+
+			procedure same_quadrant is 
+				angles : type_arc_angles;
+			begin
+				-- get start and end angles of normalized arc:
+				angles := to_arc_angles (arc_norm);
+
+				if angles.angle_start <= angles.angle_end then
+					null; -- arc is only in this quadrant
+				else
+					-- arc runs through all quadrants
+					set_gy;
+					set_sx;
+					set_sy;
+					set_gx;
+				end if;
+			end same_quadrant;
 			
 		begin -- get_boundaries
+	
 			-- move arc_norm so that its center is at 0/0
 			move_to (arc_norm, origin);
 
@@ -3250,11 +3278,8 @@ package body et_geometry is
 				when ONE =>
 					case q_end is
 						when ONE =>
-							set_gy;
-							set_sx;
-							set_sy;
-							set_gx;
-						
+							same_quadrant;
+							
 						when TWO => 
 							set_gy;
 
@@ -3276,11 +3301,8 @@ package body et_geometry is
 							set_gx;
 
 						when TWO =>
-							set_sx;
-							set_sy;
-							set_gx;
-							set_gy;
-
+							same_quadrant;
+								
 						when THREE =>
 							set_sx;
 
@@ -3301,10 +3323,7 @@ package body et_geometry is
 							set_gy;
 
 						when THREE =>
-							set_sy;
-							set_gx;
-							set_gy;
-							set_sx;
+							same_quadrant;
 
 						when FOUR =>
 							set_sy;
@@ -3325,10 +3344,7 @@ package body et_geometry is
 							set_sx;
 
 						when FOUR =>
-							set_gx;
-							set_gy;
-							set_sx;
-							set_sy;
+							same_quadrant;
 					end case;
 					
 			end case;
@@ -3590,6 +3606,7 @@ package body et_geometry is
 			
 		end arc_end_point;
 
+		
 		procedure move_by (
 			arc		: in out type_arc;
 			offset	: in type_distance_relative)
@@ -3599,6 +3616,7 @@ package body et_geometry is
 			move_by (point => arc.end_point,   offset => offset);
 		end move_by;
 
+		
 		procedure move_to (
 			arc			: in out type_arc;
 			position	: in type_point)
@@ -3614,6 +3632,7 @@ package body et_geometry is
 			move_by (point => arc.end_point,   offset => offset);
 		end move_to;
 
+		
 		procedure mirror (
 			arc			: in out type_arc;
 			axis		: in type_axis_2d)

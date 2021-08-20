@@ -296,6 +296,9 @@ package et_geometry is
 			x, y : type_distance := zero;
 		end record;
 
+		function to_string (distance : in type_distance_relative)
+			return string;
+		
 		
 		function to_point (
 			d 		: in type_distance_relative;
