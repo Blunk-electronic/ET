@@ -672,15 +672,15 @@ package et_geometry is
 			position	: in out type_position'class;
 			offset		: in type_rotation);
 		
-		procedure rotate_by (
 		-- Rotates the given point BY the given angle about the origin.
 		-- Changes point.x and point.y only.
+		procedure rotate_by (
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 
-		procedure rotate_to (
 		-- Rotates the given point TO the given angle about the origin.
 		-- Changes point.x and point.y only.
+		procedure rotate_to (
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 

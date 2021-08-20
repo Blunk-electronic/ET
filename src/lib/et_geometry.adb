@@ -1214,12 +1214,20 @@ package body et_geometry is
 				-- compute new x   -- (cos angle_out) * distance_to_origin
 				scratch := cos (angle_out, float (units_per_cycle));
 				--set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
-				set (axis => X, point => point, value => type_distance (round (type_distance (scratch * distance_to_origin))));
+				set (
+					axis	=> X, 
+					point	=> point, 
+					value	=> type_distance (round (type_distance (scratch * distance_to_origin)))
+					);
 
 				-- compute new y   -- (sin angle_out) * distance_to_origin
 				scratch := sin (angle_out, float (units_per_cycle));
 				--set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
-				set (axis => Y, point => point, value => type_distance (round (type_distance (scratch * distance_to_origin))));
+				set (
+					axis	=> Y,
+					point	=> point,
+					value	=> type_distance (round (type_distance (scratch * distance_to_origin)))
+					);
 		
 			end if; -- if angle not zero			
 		end rotate_by;
@@ -1227,20 +1235,12 @@ package body et_geometry is
 		
 		procedure rotate_to (
 			point		: in out type_point'class;
-			rotation	: in type_rotation) is
-
-			-- CS probably way to much stuff here. simplify. use code of procedure rotate_by (see above).
-			
-			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
-			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
-			use functions_angle;
-
-			angle_out			: type_float_angle;		-- unit is degrees
-			distance_to_origin	: float;	-- unit is mm
+			rotation	: in type_rotation) 
+		is
+			angle_out			: float; -- unit is degrees
+			distance_to_origin	: float; -- unit is mm
 			scratch				: float;
-
-		begin -- rotate
-
+		begin
 			-- compute distance of given point to origin
 			if get_x (point) = zero and get_y (point) = zero then
 				distance_to_origin := float (zero);
@@ -1260,18 +1260,27 @@ package body et_geometry is
 			end if;
 
 			-- The new angle is the given rotation:
-			angle_out := type_float_angle (rotation);
+			angle_out := float (rotation);
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (float (angle_out), float (units_per_cycle));
-			set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
+			scratch := cos (angle_out, float (units_per_cycle));
+			set (
+				axis	=> X,
+				point	=> point,
+				value	=> type_distance (round (type_distance (scratch * distance_to_origin)))
+				);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (float (angle_out), float (units_per_cycle));
-			set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
+			scratch := sin (angle_out, float (units_per_cycle));
+			set (
+				axis 	=> Y,
+				point	=> point,
+				value	=> type_distance (round (type_distance (scratch * distance_to_origin)))
+				);
 			
 		end rotate_to;
 
+		
 -- 		procedure rotate_by (
 -- 		-- Rotates the given point BY the given angle around the given center point.
 -- 		-- Changes point.x and point.y only.
@@ -1281,6 +1290,7 @@ package body et_geometry is
 -- 		begin
 -- 			null;
 -- 		end rotate_by;
+		
 
 		function round (
 			distance	: in type_position_axis;
