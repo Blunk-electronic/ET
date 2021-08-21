@@ -4216,7 +4216,7 @@ package body et_geometry is
 			-- The appoach assumes the circle center at 0/0.
 			-- So we must first move the line by
 			-- the given center of the circle. The intersections,
-			-- if any exist, must finally be moved back by this offset:
+			-- if any exist, must in the end be moved back by this offset:
 			offset : constant type_distance_relative := to_distance_relative (circle.center);
 			
 			-- The circle radius is:
@@ -4234,8 +4234,10 @@ package body et_geometry is
 			line_moved : type_line_vector;
 			v_end : type_vector;
 			a, b, c, d : float;
+
+			d1 : type_distance;
 			
-			zero : constant float := 0.0;
+			--zero : constant float := 0.0;
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
@@ -4280,11 +4282,14 @@ package body et_geometry is
 
 			
 		begin -- get_intersection
+			--new_line;
+			--put_line ("GI LC");
 			--put_line (to_string (line));
 			--put_line (to_string (circle));
 			
 			-- Move the line by an offset (which is the center of the given circle):
 			line_moved := move_by (line, invert (offset));
+			--put_line ("lm " & to_string (line_moved));
 			v_end := add (line_moved.v_start, line_moved.v_direction);
 			
 			-- compute start and end point of line:
@@ -4296,7 +4301,7 @@ package body et_geometry is
 
 			dx := x2 - x1; -- the delta in x
 			dy := y2 - y1; -- the delta in y
-			--put_line ("dx" & float'image (dx) & " dy" & float'image (dy));
+			--put_line ("dx " & float'image (dx) & " dy " & float'image (dy));
 
 			dr := sqrt (dx ** 2 + dy ** 2);
 			--put_line ("dr" & float'image (dr));
@@ -4310,14 +4315,20 @@ package body et_geometry is
 			
 			d := a * b - c; -- incidence of line and circle
 
-			if d < zero then 
+			--put_line ("d  " & float'image (d));
+
+			d1 := type_distance (round (type_distance (d)));
+
+			--put_line ("d1" & to_string (d1));
+			
+			if d1 < zero then 
 				--put_line ("none" & float'image (d));
 				
 				s := NONE_EXIST;
 				
 				return (status => NONE_EXIST);
 				
-			elsif d = zero then
+			elsif d1 = zero then
 				--put_line ("one");
 				
 				s := ONE_EXISTS; -- tangent
@@ -6009,7 +6020,8 @@ package body et_geometry is
 			end sort_x_values;
 			
 		begin -- in_polygon_status
-
+			--put_line ("Y-threshold:" & to_string (y_threshold));
+			
 			if polygon.contours.circular then
 				query_circle (polygon.contours.circle);
 			else
@@ -6023,7 +6035,7 @@ package body et_geometry is
 
 			-- get the total number of intersections
 			it := pac_probe_line_intersections.length (result.intersections);
-			--put_line (count_type'image (it));
+			--put_line ("intersections total:" & count_type'image (it));
 			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.

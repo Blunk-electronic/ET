@@ -1,0 +1,16 @@
+with "gtkada.gpr";
+
+project get_intersection is
+
+	--for exec_dir use external ("HOME") & "/bin";
+	for exec_dir use ".";
+	for object_dir use "obj";
+ 	for source_dirs use ("." , "../../lib");
+ 	for main use ("get_intersection");
+
+end get_intersection;
+
+-- build with command "gprbuild -j2"
+-- build with command "gprbuild -j2 -g"
+-- build with command "gprbuild -j4 -gnatm4"
+-- clean up with command "gprclean"

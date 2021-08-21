@@ -52,60 +52,42 @@ use et_board_shapes_and_text.pac_shapes;
 with et_packages;				use et_packages;
 with et_routing;				use et_routing;
 
-procedure get_distance is
+procedure get_intersection is
 
 	use functions_float;
 
+	S : type_point := type_point (set (0.7118000000, 25.0000000000));
+	D : type_point := type_point (set (1.0, 0.0));
 
-	--P : type_point := type_point (set (24.8887514, 29.7050000));
-	--S : type_point := type_point (set (24.9999996, 32.2500000));
-	--E : type_point := type_point (set (24.9999999, 30.7950000));
-	-- D: 0.3112487274
-	-- out of range: TRU
-	
-	--P : type_point := type_point (set (160.9, 0.0));
-	--S : type_point := type_point (set (160.25, -19.705));
-	--E : type_point := type_point (set (159.25, 0.2950));
-	--D: 1.4334592930
-	--out of range: FALSE
+	L : type_line_vector := (
+		v_start => to_vector (S),
+		v_direction => to_vector (D));
 
 	
-	--P : type_point := type_point (set (10.7999999, 0.0));
-	--S : type_point := type_point (set (10.2499989, 0.3949991));
-	--E : type_point := type_point (set (10.2499999, 1.8500000));
-	-- D: 0.3500012535
-	-- out of range: TRUE
-	
-	P : type_point := type_point (set ( 0.7118000000, 25.0000000000));
-	S : type_point := type_point (set (14.1975000000, 24.9250000000));
-	E : type_point := type_point (set (10.8025000000, 24.9250000000));
-	--D: 2.9336481243
-	--out of range: FALSE
+	C : type_circle := (
+		center => type_point (set (10.8025000000, 24.9250000000)),
+		radius => 0.075);
 
+	I : type_intersection_of_line_and_circle := get_intersection (L, C);
 	
-	L : type_line := (S, E);
-	
-	d : type_distance_point_line;
-
-	cl : et_packages.type_conductor_line;
-	
-	segment : type_conductor_line_segment;
-	distance : type_distance;
 begin
 
-	cl := (S, E, 0.15);
-	put_line (to_string (cl));
+	put_line (type_intersection_status_of_line_and_circle'image (I.status));
+	--cl := (S, E, 0.15);
+	--put_line (to_string (cl));
 	--new_line;
+
+
 	
-	segment := to_line_segment (cl);
+	--segment := to_line_segment (cl);
 
 		
-	--put_line ("segment " & to_string (segment));
+	----put_line ("segment " & to_string (segment));
 	--new_line;
 	
-	distance := get_shortest_distance (P,segment);
+	--distance := get_shortest_distance (P,segment);
 
-	put_line ("distance" & to_string (distance));
+	--put_line ("distance" & to_string (distance));
 	
 	--P := type_point (round (P));
 	--L := type_line (round (L));
@@ -116,13 +98,14 @@ begin
 		--P := type_point (move (P, 180.0, 0.2));
 		--put_line ("P:" & to_string (P));
 		
-		--d := get_distance (P, L, WITH_END_POINTS);
-		--put_line ("D:" & to_string (get_distance (d)));
+		--d := get_intersection (P, L, WITH_END_POINTS);
+		--put_line ("D:" & to_string (get_intersection (d)));
 		--put_line ("out of range: " & boolean'image (out_of_range (d)));
 	--end loop;
 
-
-end get_distance;
+	null;
+	
+end get_intersection;
 
 -- Soli Deo Gloria
 
