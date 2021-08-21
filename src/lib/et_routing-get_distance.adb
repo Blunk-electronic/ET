@@ -430,7 +430,7 @@ is
 					segment : constant type_conductor_line_segment := to_line_segment (cl);
 				begin
 					log_indentation_up;
-					log (text => to_string (element (l)), level => lth + 3);
+					log (text => "text " & to_string (element (l)), level => lth + 3);
 
 					test_line (get_left_edge (segment));
 					test_line (get_right_edge (segment));
@@ -475,7 +475,7 @@ is
 			clearances : pac_distances_positive.list;
 			
 		begin
-			log (text => "probing texts ...", level => lth + 1);
+			log (text => "probing vector texts ...", level => lth + 1);
 			log_indentation_up;
 
 			-- The clearance to the text is the greatest of 

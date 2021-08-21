@@ -194,7 +194,7 @@ package et_geometry is
 		--type type_rounding_digit is range 1 .. type_distance'digits;
 			
 		-- Rounds the given distance to the nearest multiple of 
-		-- type_distance_course'small.
+		-- type_distance_coarse'small.
 		function round (
 			d_fine	: in type_distance;
 			mode	: in type_rounding_mode := rounding_mode_default) 
@@ -1012,6 +1012,8 @@ package et_geometry is
 		function round (line : in type_line)
 			return type_line'class;
 
+		procedure round (line : in out type_line);
+		
 		
 		-- Returns the length of a line:
 		function get_length (line : in type_line)
@@ -1269,6 +1271,11 @@ package et_geometry is
 		type type_arc is new type_arc_base with null record;
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
+		
+		function round (arc : in type_arc)
+			return type_arc'class;
+
+		procedure round (arc : in out type_arc);
 		
 
 		

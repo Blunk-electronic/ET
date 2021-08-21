@@ -533,6 +533,7 @@ package body et_geometry is
 			return result;
 		end get_boundaries;
 
+		
 		procedure move_by (
 			boundaries	: in out type_boundaries;
 			offset		: in type_distance_relative)
@@ -1039,13 +1040,15 @@ package body et_geometry is
 			return result;
 		end get_distance;
 
+		
 		function get_angle (
 			distance : in type_distance_polar) 
 			return type_rotation 
 		is begin
 			return distance.angle;
 		end get_angle;
-	
+
+		
 		function get_absolute (
 			distance : in type_distance_polar) 
 			return type_distance_positive
@@ -1105,6 +1108,7 @@ package body et_geometry is
 				when CCW => return CW;
 			end case;
 		end reverse_direction;
+
 		
 		function to_radians (degrees : in type_rotation) return float is
 		-- Converts degrees to radians.
@@ -1113,6 +1117,7 @@ package body et_geometry is
 			return (pi * float (degrees)) / (units_per_cycle * 0.5);
 		end to_radians;
 
+		
 		function to_degrees (radians : in float) return type_rotation is
 		-- Converts radians to degrees.
 			use ada.numerics;
@@ -1120,6 +1125,7 @@ package body et_geometry is
 			return type_rotation ((units_per_cycle * 0.5 * radians) / pi);
 		end to_degrees;
 
+		
 		function to_position (
 			point		: in type_point;
 			rotation	: in type_rotation)
@@ -1309,7 +1315,8 @@ package body et_geometry is
 		begin
 			return type_position_axis (integer (distance / grid)) * grid;
 		end round;
-			
+
+		
 		function round_to_string (
 			point 	: in type_point;
 			grid	: in type_grid) 
@@ -1321,6 +1328,7 @@ package body et_geometry is
 				& to_string (round (point.y, grid.y));
 		end;
 
+		
 		function round (
 			point 	: in type_point;
 			grid	: in type_grid) 
@@ -1333,6 +1341,7 @@ package body et_geometry is
 			return p;
 		end;
 
+		
 		function to_string (point : in type_position) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)
@@ -1929,6 +1938,13 @@ package body et_geometry is
 
 			return r;
 		end round;
+
+		procedure round (line : in out type_line) 
+		is begin
+			line.start_point := type_point (round (line.start_point));
+			line.end_point := type_point (round (line.end_point));
+		end round;
+
 
 		
 		function get_length (line : in type_line)
@@ -2840,6 +2856,29 @@ package body et_geometry is
 			
 			return result;
 		end get_shortest_distance;
+
+
+		function round (arc : in type_arc)
+			return type_arc'class
+		is 
+			r : type_arc;
+		begin
+			r := (
+				center		=> type_point (round (arc.center)),
+				start_point	=> type_point (round (arc.start_point)),
+				end_point	=> type_point (round (arc.end_point)),
+				direction	=> arc.direction);
+
+			return r;
+		end round;
+
+		procedure round (arc : in out type_arc) 
+		is begin
+			arc.center		:= type_point (round (arc.center));
+			arc.start_point	:= type_point (round (arc.start_point));
+			arc.end_point	:= type_point (round (arc.end_point));
+		end round;
+
 
 		
 
