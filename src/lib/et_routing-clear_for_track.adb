@@ -360,7 +360,9 @@ is
 				
 				if distance <= zero then 
 					-- start_point is inside text segment or on the edge of the segment
-					log (text => "point is inside", level => lth + 4);
+					log (text => "point is inside. distance to border" 
+						 & to_string (distance), level => lth + 4);
+					
 					result := false;
 				else
 					-- start_point is outside the segment
@@ -393,7 +395,11 @@ is
 
 			begin
 				while vl /= pac_vector_text_lines.no_element and result = true loop
-					log (text => to_string (element (vl)), level => lth + 2);
+					
+					log (text => to_string (element (vl)) 
+						 & " width" & to_string (element (t).line_width),
+						 level => lth + 2);
+					
 					log_indentation_up;
 					
 					-- Convert the line of the vector text to a conductor line.
