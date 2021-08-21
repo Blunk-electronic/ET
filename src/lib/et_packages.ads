@@ -360,7 +360,9 @@ package et_packages is
 
 	-- Computes the shortest distance from a point to
 	-- a conductor line segment. If the return is negative,
-	-- then the point is inside the segment:
+	-- then the point is inside the segment.
+	-- If the segment contour is not closed, then an exception
+	-- is raised:
 	function get_shortest_distance (
 		point	: in type_point;
 		segment	: in type_conductor_line_segment)

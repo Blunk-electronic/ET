@@ -370,7 +370,6 @@ package body et_packages is
 		build_polygon;
 
 		--put_line (to_string (polygon));
-		--log (text => "poly" & to_string (polygon));
 		
 		if not is_closed (polygon).closed then
 			raise constraint_error with "contour of conductor segment not closed !";
@@ -379,8 +378,8 @@ package body et_packages is
 		
 		distance := get_shortest_distance (polygon, point);
 
-		--log (text => "p" & to_string (point));
-		--log (text => "d" & to_string (get_absolute (distance)));
+		--put_line ("p" & to_string (point));
+		--put_line ("d" & to_string (get_absolute (distance)));
 
 		case in_polygon_status (polygon, point).status is
 			when INSIDE =>
