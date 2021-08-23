@@ -167,6 +167,12 @@ package et_geometry is
 		far_left	: constant type_distance := axis_min;
 		far_right	: constant type_distance := axis_max;
 
+		
+		function get_info (editor: in string)
+			return string;
+
+
+		
 		function to_distance (distance : in string) 
 			return type_distance;		
 		

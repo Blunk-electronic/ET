@@ -52,33 +52,39 @@ package et_coordinates is
 -- 	pragma assertion_policy (check);
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-	--type type_distance is delta 0.01
-	distance_smallest : constant := 0.01;
-	--type type_distance is new float
-	type type_distance is delta distance_smallest digits 8
-		range -100_000.00 .. 100_000.00;
-		
-	--for type_distance'small use 0.01; 
-	-- this is the accuracy required for schematic
 
-	distance_coarse_smallest : constant := type_distance'small * 10.0;
+	distance_digits_left  : constant := 6;
+	distance_digits_right : constant := 2; -- 0.01mm
+	
+	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
+
+	type type_distance is delta distance_smallest 
+		digits distance_digits_left + distance_digits_right
+		range - 0.1 * (10 ** distance_digits_left) .. 
+			  + 0.1 * (10 ** distance_digits_left);
+
+		
+	distance_coarse_digits_right : constant := distance_digits_right - 1; -- 0.1mm
+	distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
+
 	type type_distance_coarse is delta distance_coarse_smallest 
-		digits type_distance'digits - 1
+		digits distance_digits_left + distance_coarse_digits_right
 		range type_distance'first .. type_distance'last;
+
 
 	
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 
-	--type type_rotation is delta 0.1 
-	rotation_smallest : constant := 0.1;	
-	--type type_rotation is new float
-	type type_rotation is delta rotation_smallest digits 4
+	rotation_digits_left  : constant := 3;
+	rotation_digits_right : constant := 1;
+
+	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
+	type type_rotation is delta rotation_smallest
+		digits rotation_digits_left + rotation_digits_right
 		range -360.0 .. 360.0;
 		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
-
-		--for type_rotation'small use 0.1;
 
 	
 	-- instantiation of the geometry package:

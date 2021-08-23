@@ -74,6 +74,7 @@ with et_frames;
 with et_frame_rw;
 
 with et_coordinates;
+with et_pcb_coordinates;
 
 with et_gui;
 
@@ -689,6 +690,13 @@ procedure et is
 	end process_commandline_arguments;
 
 
+	procedure log_sys_info is 
+	begin
+		log (text => et_pcb_coordinates.pac_geometry_brd.get_info ("layout/board"));
+		log (text => et_coordinates.pac_geometry_sch.get_info ("schematic"));
+	end log_sys_info;
+
+
 	
 begin -- main
 
@@ -705,6 +713,8 @@ begin -- main
 		create_report_directory;
 
 		create_report;
+
+		log_sys_info;
 		
 		get_commandline_arguments;
 

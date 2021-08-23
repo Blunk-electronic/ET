@@ -77,6 +77,7 @@ package body et_pcb_coordinates is
 		end case;
 	end flip;
 
+	
 	function to_string (p : in type_package_position) return string is begin
 		return position_preamble
 				& to_string (get_x (p))

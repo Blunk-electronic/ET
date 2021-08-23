@@ -71,16 +71,23 @@ package et_pcb_coordinates is
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-	--distance_smallest : constant := 0.00001;
-	--type type_distance is delta distance_smallest digits 16
-	distance_smallest : constant := 0.000_000_000_1; -- 0.1pm
-	
-	type type_distance is delta distance_smallest digits 26
-		range -1_000_000_000_000_000.00 .. 1_000_000_000_000_000.00; -- 16
 
-	distance_coarse_smallest : constant := type_distance'small * 1_000_000.0; -- 0.1um
-	type type_distance_coarse is delta distance_coarse_smallest 
-		digits type_distance'digits - 6
+	distance_digits_left  : constant := 16;
+	distance_digits_right : constant := 10; -- 0.1pm
+	
+	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
+	
+	type type_distance is delta distance_smallest 
+		digits distance_digits_left + distance_digits_right
+		range - 0.1 * (10 ** distance_digits_left) .. 
+			  + 0.1 * (10 ** distance_digits_left);
+
+		
+	distance_coarse_digits_right : constant := distance_digits_right - 6; -- 0.1um
+	distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
+	
+	type type_distance_coarse is delta distance_coarse_smallest
+		digits distance_digits_left + distance_coarse_digits_right
 		range type_distance'first .. type_distance'last;
 
 
@@ -88,20 +95,18 @@ package et_pcb_coordinates is
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
-	
-	--type type_rotation is delta 0.001 range -359.999 .. 359.999;
-	--for type_rotation'small use 0.001;
-	-- CS increase accuracy if required
 
+	rotation_digits_left  : constant := 3;
+	rotation_digits_right : constant := 7;
 
-	--rotation_smallest : constant := 0.001;
-	--type type_rotation is delta rotation_smallest digits 6 
-	rotation_smallest : constant := 0.0000001;
-	type type_rotation is delta rotation_smallest digits 10
+	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
+	type type_rotation is delta rotation_smallest 
+		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
 	
-	
+
+
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
