@@ -297,6 +297,8 @@ package et_geometry is
 		function round (point : in type_point)
 			return type_point'class;
 
+		procedure round (point : in out type_point'class);
+		
 		
 		type type_distance_relative is record
 			x, y : type_distance := zero;

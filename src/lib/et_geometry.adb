@@ -357,6 +357,7 @@ package body et_geometry is
 		end to_string;
 
 
+		
 		function round (point : in type_point)
 			return type_point'class
 		is
@@ -368,6 +369,13 @@ package body et_geometry is
 		end round;
 
 
+		procedure round (point : in out type_point'class) is begin
+			point.x := type_distance (round (point.x));
+			point.y := type_distance (round (point.y));
+		end round;
+
+		
+		
 		function to_string (distance : in type_distance_relative)
 			return string
 		is begin
@@ -4460,6 +4468,8 @@ package body et_geometry is
 				-- (Which is the center of the given circle):
 				move_by (intersection_1, offset);
 
+				round (intersection_1);
+				
 				return (ONE_EXISTS, 
 						(point => to_vector (intersection_1), angle => line_angle),
 						TANGENT);
