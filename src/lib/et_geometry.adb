@@ -3082,7 +3082,7 @@ package body et_geometry is
 				if get_absolute (DPC) >= radius then
 					-- point outside or on virtual circle
 					--put_line ("outside");
-					log (text => "outside");
+					--log (text => "outside");
 					
 					case ILC.status is
 						when NONE_EXIST =>
@@ -3121,7 +3121,7 @@ package body et_geometry is
 
 				else -- point is inside the virtual circle
 					--put_line ("inside");
-					log (text => "inside");
+					--log (text => "inside");
 					
 					case ILC.status is
 						when NONE_EXIST =>
@@ -3682,25 +3682,27 @@ package body et_geometry is
 					--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
 					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 
-					-- CS optimize !
-					
-					if	on_arc (to_point (vi.intersection_1.point), arc) 
-					and on_arc (to_point (vi.intersection_2.point), arc) then
-						-- both intersections are on the arc
-						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
-						
-					elsif on_arc (to_point (vi.intersection_1.point), arc) then
-						-- only intersection 1 is on the arc
-						return (ONE_EXISTS, vi.intersection_1, SECANT);
-						
-					elsif on_arc (to_point (vi.intersection_2.point), arc) then
-						-- only intersection 2 is on the arc
-						return (ONE_EXISTS, vi.intersection_2, SECANT);
-						
-					else
-						-- none intersection is on the arc
-						return (status => NONE_EXIST);
-					end if;					
+					declare
+						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.point), arc);
+						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.point), arc);
+					begin					
+						if oa_1 and oa_2 then
+							-- both intersections are on the arc
+							return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
+							
+						elsif oa_1 then
+							-- only intersection 1 is on the arc
+							return (ONE_EXISTS, vi.intersection_1, SECANT);
+							
+						elsif oa_2 then
+							-- only intersection 2 is on the arc
+							return (ONE_EXISTS, vi.intersection_2, SECANT);
+							
+						else
+							-- none intersection is on the arc
+							return (status => NONE_EXIST);
+						end if;
+					end;
 			end case;
 			
 		end get_intersection;
