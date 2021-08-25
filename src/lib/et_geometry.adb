@@ -1978,6 +1978,8 @@ package body et_geometry is
 					end if;
 
 					i.angle := get_angle_of_itersection (line_1, line_2);
+
+					round (i.point);
 					
 					return (status => EXISTS, intersection => i);
 				else
@@ -2175,6 +2177,8 @@ package body et_geometry is
 			case i.status is
 				when EXISTS =>
 					--put_line ("exists");
+					--put_line (to_string (probe_line));
+					--put_line (to_string (candidate_line));
 					--put_line (to_string (i.intersection.point));
 					
 					-- The intersection must be between start and end point of
@@ -3694,6 +3698,9 @@ package body et_geometry is
 						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.point), arc);
 						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.point), arc);
 					begin					
+						--put_line (boolean'image (oa_1));
+						--put_line (boolean'image (oa_2));
+						
 						if oa_1 and oa_2 then
 							-- both intersections are on the arc
 							return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
@@ -4515,6 +4522,9 @@ package body et_geometry is
 				move_by (intersection_2, offset);				
 
 
+				round (intersection_1);
+				round (intersection_2);
+				
 				
 				return (TWO_EXIST, 
 						(point => to_vector (intersection_1), angle => intersection_angle_1),
