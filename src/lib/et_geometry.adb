@@ -246,7 +246,8 @@ package body et_geometry is
 					null;
 					
 				when BANKERS_RULE =>
-					if d_delta >= 500_000.0 * type_distance'small then
+					--if d_delta >= 500_000.0 * type_distance'small then
+					if d_delta >= 0.5 * type_distance (type_distance_coarse'small) then
 						do_it;
 					end if;
 			end case;
@@ -1601,6 +1602,14 @@ package body et_geometry is
 			return r;
 		end round;
 		
+
+		procedure round (
+			vector : in out type_vector)
+		is begin
+			vector.x := type_distance (round (vector.x));
+			vector.y := type_distance (round (vector.y));
+		end round;
+
 		
 		function to_point (
 			v	: in type_vector)
@@ -1833,6 +1842,23 @@ package body et_geometry is
 			return to_string (to_point (intersection.point)) 
 				& " angle" & to_string (intersection.angle);
 		end to_string;
+
+
+		function round (ill : in type_intersection_of_two_lines)
+			return type_intersection_of_two_lines
+		is
+			result : type_intersection_of_two_lines := ill;
+		begin
+			case result.status is
+				when EXISTS =>
+					round (result.intersection.point);
+
+				when others => 
+					null;
+			end case;
+
+			return result;
+		end round;
 
 		
 		function get_intersection (
@@ -2133,9 +2159,16 @@ package body et_geometry is
 			i : constant type_intersection_of_two_lines := get_intersection (
 					line_1	=> probe_line,
 					line_2	=> to_line_vector (candidate_line));
+			
+			--i : constant type_intersection_of_two_lines := round (get_intersection (
+					--line_1	=> probe_line,
+					--line_2	=> to_line_vector (candidate_line)));
 		begin
 			case i.status is
 				when EXISTS =>
+					--put_line ("exists");
+					--put_line (to_string (i.intersection.point));
+					
 					-- The intersection must be between start and end point of
 					-- the candidate line (start and end point itself included).
 					-- If the intersection is between start and end point
@@ -2636,6 +2669,8 @@ package body et_geometry is
 		is
 			result : type_distance_point_line;
 
+			-- CS probably not good to round the result by this function ?
+			-- should not be rounded at all
 			function round (dp : in type_distance_point_line) 
 				return type_distance_point_line 
 			is
@@ -2842,7 +2877,8 @@ package body et_geometry is
 		begin
 			distance := get_distance (point, line, WITH_END_POINTS);
 
-			--if not distance.out_of_range and distance.distance <= catch_zone then
+			-- CS round distance here ?
+			
 			if not distance.out_of_range and distance.distance = zero then
 				return true;
 			else
@@ -2865,7 +2901,7 @@ package body et_geometry is
 
 			d_to_start, d_to_end : type_distance_polar;
 		begin
-			--put_line ("point" & to_string (point) & " line " & to_string (line));
+			--put_line ("point" & to_string (point) & " " & to_string (line));
 			
 			if on_start_point (d) or on_end_point (d) then
 				-- Point is on top of start or end point of line.
@@ -2898,6 +2934,8 @@ package body et_geometry is
 				end if;
 
 			end if;
+
+			--put_line (to_string (result));
 			
 			return result;
 		end get_shortest_distance;
@@ -2991,12 +3029,13 @@ package body et_geometry is
 
 				-- Get the intersection(s) of the line with the arc:
 				ILC : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
+				--ILC : constant type_intersection_of_line_and_circle := round (get_intersection (line, arc));
 
 				DPC : constant type_distance_polar := get_distance (point, arc.center);
 				radius : constant type_distance_positive := get_radius_start (arc);
 
 				-- Assigns to the result either the start or the end point of
-				-- the arc, depending on which is closer.
+				-- the arc, depending on which one is closer.
 				procedure compare_start_and_end_point is 
 					d_to_start, d_to_end : type_distance_polar;
 				begin
@@ -3043,6 +3082,7 @@ package body et_geometry is
 				if get_absolute (DPC) >= radius then
 					-- point outside or on virtual circle
 					--put_line ("outside");
+					log (text => "outside");
 					
 					case ILC.status is
 						when NONE_EXIST =>
@@ -3081,6 +3121,7 @@ package body et_geometry is
 
 				else -- point is inside the virtual circle
 					--put_line ("inside");
+					log (text => "inside");
 					
 					case ILC.status is
 						when NONE_EXIST =>
@@ -3124,6 +3165,8 @@ package body et_geometry is
 			end do_it;
 			
 		begin -- get_shortest_distance
+			--put_line ("point" & to_string (point) & " " & to_string (arc));
+			
 			if point = arc.center then
 				-- If the given point is right on the center of the arc,
 				-- then return zero distance and zero angle:
@@ -3133,7 +3176,9 @@ package body et_geometry is
 			else
 				do_it;
 			end if;
-		
+
+			--put_line (to_string (result));
+			
 			return result;
 		end get_shortest_distance;
 
@@ -3558,6 +3603,27 @@ package body et_geometry is
 		end on_arc;
 
 
+		function round (ilc : in type_intersection_of_line_and_circle)
+			return type_intersection_of_line_and_circle
+		is 
+			result : type_intersection_of_line_and_circle := ilc;
+		begin
+			case result.status is
+				when NONE_EXIST =>
+					return result;
+					
+				when ONE_EXISTS =>
+					round (result.intersection.point);
+
+				when TWO_EXIST =>
+					round (result.intersection_1.point);
+					round (result.intersection_2.point);
+			end case;
+
+			return result;
+		end round;
+
+		
 		function get_intersection (
 			line	: in type_line_vector;
 			arc		: in type_arc)
@@ -3571,10 +3637,13 @@ package body et_geometry is
 					center => arc.center, 
 					radius => get_radius_start (arc));
 
-			-- Compute the virtual intersections of line with circle:
+			-- Compute the intersections of the line with the virtual circle:
+			--vi : constant type_intersection_of_line_and_circle := 
+				--round (get_intersection (line, vc));
 			vi : constant type_intersection_of_line_and_circle := 
 				get_intersection (line, vc);
 			
+
 		begin
 			--new_line;
 			--put_line ("---");
@@ -4360,7 +4429,7 @@ package body et_geometry is
 			
 			d := a * b - c; -- incidence of line and circle
 
-			put_line ("d  " & float'image (d));
+			--put_line ("d  " & float'image (d));
 
 			d1 := type_distance (round (type_distance (d)));
 
@@ -5793,9 +5862,15 @@ package body et_geometry is
 			procedure query_line (l : in type_line) is 
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate line of the polygon.
-				i : constant type_intersection_of_two_lines := get_intersection (probe_line, l);
+				i : constant type_intersection_of_two_lines := 
+					get_intersection (probe_line, l);
+				
 			begin
+				--put_line ("##");			
+				--put_line (to_string (l));
+				
 				if i.status = EXISTS then
+					--put_line ("exists");
 
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
@@ -5854,7 +5929,11 @@ package body et_geometry is
 							when TANGENT => null; -- not counted
 							
 							when SECANT =>
+								--put_line ("secant");
+								
 								if crosses_threshold (a, y_threshold) then
+									--put_line ("ct");
+									
 									-- The line intersects the arc at one point.
 									-- Start and end point of the arc are opposide 
 									-- of each other with the probe line betweeen them:

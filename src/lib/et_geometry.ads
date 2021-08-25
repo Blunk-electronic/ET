@@ -863,9 +863,13 @@ package et_geometry is
 			point	: in type_point)
 			return type_vector;
 
+		
 		function round (
 			vector : in type_vector)
 			return type_vector;
+
+		procedure round (
+			vector : in out type_vector);
 
 		
 		function to_point (
@@ -986,11 +990,18 @@ package et_geometry is
 			status : type_intersection_status_of_two_lines) 
 		is record
 			case status is
-				when EXISTS => intersection : type_intersection;
-				when NOT_EXISTENT | OVERLAP => null;
+				when EXISTS => 
+					intersection : type_intersection;
+					
+				when NOT_EXISTENT | OVERLAP => 
+					null;
 			end case;
 		end record;
 
+
+		function round (ill : in type_intersection_of_two_lines)
+			return type_intersection_of_two_lines;
+		
 
 		-- Tests whether the given two lines intersect.
 		-- If there is an intersection, returns the location vector.
@@ -1397,6 +1408,9 @@ package et_geometry is
 			end case;
 		end record;
 
+		
+		function round (ilc : in type_intersection_of_line_and_circle)
+			return type_intersection_of_line_and_circle;
 
 		-- Computes the intersections of a line with an arc:
 
