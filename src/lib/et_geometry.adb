@@ -215,6 +215,18 @@ package body et_geometry is
 			-- CS suppress trailing zeros
 		end to_string;
 
+
+		function to_distance (f : in float)
+			return type_distance 
+		is
+			use float_io;
+			ds : string (1 .. type_distance'digits + 1);
+		begin
+			-- CS: IMPROVEMENT REQUIRED !!!
+			put (to => ds, item => f, aft => type_distance'scale, exp => 0);
+			--put_line ("ds" & ds);
+			return type_distance'value (ds);
+		end to_distance;
 		
 		
 		function round (
@@ -974,9 +986,7 @@ package body et_geometry is
 				delta_x := float (get_x (point_one) - get_x (point_two));
 				delta_y := float (get_y (point_one) - get_y (point_two));
 
-				--log (text => float'image (delta_x) & " " & float'image (delta_y));
-				
-				distance := type_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
+				distance := to_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
 			end if;
 				
 			return distance;
@@ -1655,17 +1665,22 @@ package body et_geometry is
 				);
 		end absolute;
 
+		
 		function scale (
 			v	: in type_vector;
-			s	: in float)
+			s	: in type_distance)
 			return type_vector
 		is begin
 			return (
-				x => type_distance (s * float (v.x)),
-				y => type_distance (s * float (v.y)),
-				z => type_distance (s * float (v.z))
+				--x => type_distance (s * float (v.x)),
+				--y => type_distance (s * float (v.y)),
+				--z => type_distance (s * float (v.z))
+				--);
+				x => s * v.x,
+				y => s * v.y,
+				z => s * v.z
 				);
-		end scale;
+	   end scale;
 
 		
 		function add (
@@ -1962,7 +1977,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_2.v_start, scale (line_2.v_direction, lambda));
+						i.point := add (line_2.v_start, scale (line_2.v_direction, to_distance (lambda)));
 					else
 						a := float (line_2.v_start.y);
 						b := float (line_1.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
@@ -1974,13 +1989,11 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
+						i.point := add (line_1.v_start, scale (line_1.v_direction, to_distance (lambda)));
 					end if;
 
 					i.angle := get_angle_of_itersection (line_1, line_2);
 
-					round (i.point);
-					
 					return (status => EXISTS, intersection => i);
 				else
 
@@ -2124,6 +2137,7 @@ package body et_geometry is
 
 			return result;
 		end get_tangent_direction;
+
 		
 		function crosses_threshold (
 			line		: in type_line;	
@@ -2393,7 +2407,7 @@ package body et_geometry is
 
 					lambda_2 := (a + b - c - d) * g;
 
-					I := add (S2, scale (R2, float (lambda_2)));
+					I := add (S2, scale (R2, lambda_2));
 				else
 					a := S2.y;
 					b := type_distance (S1.x * R2.y) / R2.x;
@@ -2405,7 +2419,7 @@ package body et_geometry is
 
 					lambda_1 := (a + b - c - d) * g;
 
-					I := add (S1, scale (R1, float (lambda_1)));
+					I := add (S1, scale (R1, lambda_1));
 				end if;
 				
 				bend_point := to_point (I);
@@ -3041,7 +3055,6 @@ package body et_geometry is
 
 				-- Get the intersection(s) of the line with the arc:
 				ILC : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
-				--ILC : constant type_intersection_of_line_and_circle := round (get_intersection (line, arc));
 
 				DPC : constant type_distance_polar := get_distance (point, arc.center);
 				radius : constant type_distance_positive := get_radius_start (arc);
@@ -3091,6 +3104,8 @@ package body et_geometry is
 				end after_center;
 				
 			begin -- do_it
+				--log (text => "DPC" & to_string (get_absolute (DPC)));
+				
 				if get_absolute (DPC) >= radius then
 					-- point outside or on virtual circle
 					--put_line ("outside");
@@ -3102,14 +3117,18 @@ package body et_geometry is
 							compare_start_and_end_point;
 
 						when ONE_EXISTS =>
+							--log (text => "one exists");
+							
 							if ILC.tangent_status = SECANT then
 							-- line intersects the arc only once
 
-								--put_line ("i: " & to_string (i.intersection.point));
+								--log (text => "a: " & to_string (arc));
+								--log (text => "l: " & to_string (line));
+								--log (text => "i: " & to_string (ILC.intersection.point));
 								
 								if after_center (ILC.intersection.point) then
 									-- intersection after center of arc
-									--put_line ("i after center");
+									--log (text => "i after center");
 									compare_start_and_end_point;
 								else
 									-- intersection on circumfence between point and center of arc
@@ -3558,12 +3577,13 @@ package body et_geometry is
 			
 			--if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
+			--if type_distance (abs (distance_center_to_point - arc_angles.radius)) = zero then
 			
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
 
-				--log (text => "start" & to_string (S));
-				--log (text => "end  " & to_string (E));
+				--log (text => "S" & to_string (S));
+				--log (text => "E" & to_string (E));
 				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
@@ -3639,6 +3659,8 @@ package body et_geometry is
 		function get_intersection (
 			line	: in type_line_vector;
 			arc		: in type_arc)
+			-- CS optional argument for radius should improve performance
+			-- default radius = zero ?
 			return type_intersection_of_line_and_circle
 		is
 			-- We assume the arc is a virtual circle and compute the
@@ -3652,6 +3674,7 @@ package body et_geometry is
 			-- Compute the intersections of the line with the virtual circle:
 			--vi : constant type_intersection_of_line_and_circle := 
 				--round (get_intersection (line, vc));
+			
 			vi : constant type_intersection_of_line_and_circle := 
 				get_intersection (line, vc);
 			
@@ -3660,6 +3683,7 @@ package body et_geometry is
 			--new_line;
 			--put_line ("---");
 			--put_line (to_string (line));
+			--put_line (to_string (vc));
 			--put_line (to_string (arc));
 			
 			case vi.status is
@@ -3691,15 +3715,15 @@ package body et_geometry is
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
 
-					--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
-					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
+					--log (text => "p1" & to_string (to_point ((vi.intersection_1.point))));
+					--log (text => "p2" & to_string (to_point ((vi.intersection_2.point))));
 
 					declare
 						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.point), arc);
 						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.point), arc);
 					begin					
-						--put_line (boolean'image (oa_1));
-						--put_line (boolean'image (oa_2));
+						--log (text => boolean'image (oa_1));
+						--log (text => boolean'image (oa_2));
 						
 						if oa_1 and oa_2 then
 							-- both intersections are on the arc
@@ -4349,7 +4373,7 @@ package body et_geometry is
 			-- the given center of the circle. The intersections,
 			-- if any exist, must in the end be moved back by this offset:
 			offset : constant type_distance_relative := to_distance_relative (circle.center);
-			
+
 			-- The circle radius is:
 			r : constant float := float (circle.radius);
 			
@@ -4366,9 +4390,9 @@ package body et_geometry is
 			v_end : type_vector;
 			a, b, c, d : float;
 
-			d1 : type_distance;
+			--d1 : type_distance;
 			
-			--zero : constant float := 0.0;
+			zero : constant float := 0.0;
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
@@ -4410,7 +4434,6 @@ package body et_geometry is
 				
 				return result;
 			end compute_intersection_angle;
-
 			
 		begin -- get_intersection
 			--new_line;
@@ -4418,7 +4441,7 @@ package body et_geometry is
 			--put_line (to_string (line));
 			--put_line (to_string (circle));
 			
-			-- Move the line by an offset (which is the center of the given circle):
+			-- Move the line by the offset (which is the center of the given circle):
 			line_moved := move_by (line, invert (offset));
 			--put_line ("lm " & to_string (line_moved));
 			v_end := add (line_moved.v_start, line_moved.v_direction);
@@ -4426,10 +4449,12 @@ package body et_geometry is
 			-- compute start and end point of line:
 			x1 := float (get_x (line_moved.v_start));
 			y1 := float (get_y (line_moved.v_start));
+			--put_line ("x1 " & float'image (x1) & " y1 " & float'image (y1));
 			
 			x2 := float (get_x (v_end));
 			y2 := float (get_y (v_end));
-
+			--put_line ("x2 " & float'image (x2) & " y2 " & float'image (y2));
+			
 			dx := x2 - x1; -- the delta in x
 			dy := y2 - y1; -- the delta in y
 			--put_line ("dx " & float'image (dx) & " dy " & float'image (dy));
@@ -4438,44 +4463,65 @@ package body et_geometry is
 			--put_line ("dr" & float'image (dr));
 			
 			DI := x1 * y2 - x2 * y1;
-			--put_line ("DI" & float'image (DI));
+			--put ("DI"); float_io.put (item => DI, fore => 4, aft => 25, exp => 0); new_line;
+			--float_io.put (
+								--item => DI,
+								--fore => 4,
+								--aft => 10,
+								--exp => 0);
+			--new_line;
+
+			--put_line ("r  " & float'image (r));
 			
 			b := dr ** 2;
+			--put_line ("b  " & float'image (b));
+			
 			a := r ** 2;
+			--put_line ("a  " & float'image (a));
+			
 			c := DI ** 2;
+			--put ("c "); float_io.put (item => c, fore => 4, aft => 25, exp => 0); new_line;
 			
 			d := a * b - c; -- incidence of line and circle
 
 			--put_line ("d  " & float'image (d));
 
-			d1 := type_distance (round (type_distance (d)));
+			--d1 := type_distance (round (type_distance (d)));
 
 			--put_line ("d1" & to_string (d1));
 			
-			if d1 < zero then 
+			if d < zero then 
 				--put_line ("none" & float'image (d));
 				
 				s := NONE_EXIST;
 				
 				return (status => NONE_EXIST);
 				
-			elsif d1 = zero then
-				--put_line ("one");
+			elsif d = zero then
+				--put_line ("one" & float'image (d));
 				
 				s := ONE_EXISTS; -- tangent
 
 				x := (DI * dy) / b;
 				y := (-DI * dx) / b;
 
-				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				--put_line ("x " & float'image (x) & " y " & float'image (y));
+
+				--float_io.put (item => y, fore => 4, aft => 5, exp => 0); new_line;
+
+				--put_line ("x " & to_string (type_distance (x)) & " y " & to_string (type_distance (y)));
+				--put_line ("R " & to_string (to_distance (y)));
+				
+				--intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				intersection_1 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
+
+				--put_line ("int" & to_string (intersection_1));
 				
 				-- Move computed intersection back by offset
 				-- (Which is the center of the given circle):
 				move_by (intersection_1, offset);
-
-				round (intersection_1);
 				
 				return (ONE_EXISTS, 
 						(point => to_vector (intersection_1), angle => line_angle),
@@ -4494,7 +4540,8 @@ package body et_geometry is
 				y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 				-- Compose the point of intersection 1:
-				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				--intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				intersection_1 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
 				
@@ -4511,20 +4558,22 @@ package body et_geometry is
 				y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					  
 				-- Compose the point of intersection 2:
-				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
+				--intersection_2 := type_point (set (type_distance (x), type_distance (y)));
+				intersection_2 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
 
 				intersection_angle_2 := compute_intersection_angle (intersection_2);
+
+				--put_line ("i2 a " & to_string (intersection_2));
+				--put_line ("x " & float'image (x) & " y " & float'image (y));
 				
 				-- Move computed intersection 2 back by offset
 				-- (Which is the center of the given circle):
 				move_by (intersection_2, offset);				
 
-
-				round (intersection_1);
-				round (intersection_2);
-				
+				--put_line ("i1 " & to_string (intersection_1));
+				--put_line ("i2 b" & to_string (intersection_2));
 				
 				return (TWO_EXIST, 
 						(point => to_vector (intersection_1), angle => intersection_angle_1),
@@ -5888,15 +5937,19 @@ package body et_geometry is
 					get_intersection (probe_line, l);
 				
 			begin
-				--put_line ("##");			
+				--put_line ("##");		
 				--put_line (to_string (l));
 				
 				if i.status = EXISTS then
 					--put_line ("exists");
+					--put_line (to_string (l));
+					--put_line (to_string (y_threshold));
+					--put_line (to_string (i.intersection.point));
 
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
 					if crosses_threshold (l, y_threshold) then
+						--put_line ("crosses threshold");
 						
 						-- Add the intersection to the result:
 						collect_intersection (i.intersection, (LINE, l));
@@ -5905,13 +5958,15 @@ package body et_geometry is
 			end query_line;
 
 			procedure query_arc (a : in type_arc) is
+				a_norm : constant type_arc := type_arc (normalize_arc (a));
+				
 				-- the radius of the arc:
-				radius : constant type_distance_positive := get_radius_start (a);
+				radius : constant type_distance_positive := get_radius_start (a_norm);
 				
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate arc of the polygon.
 				i : constant type_intersection_of_line_and_circle := 
-					get_intersection (probe_line, a);
+					get_intersection (probe_line, a_norm);
 
 				-- In case we get two intersections (which speaks for a secant)
 				-- then they need to be ordered according to their distance to
@@ -5922,23 +5977,23 @@ package body et_geometry is
 					-- Add the two intersections to the result:
 					collect_intersection (
 						intersection=> ordered_intersections.entry_point,
-						segment		=> (ARC, a),					 
+						segment		=> (ARC, a_norm),					 
 						curvature	=> CONVEX, -- entry point is always convex
-						center		=> a.center,
+						center		=> a_norm.center,
 						radius		=> radius);
 
 					collect_intersection (
 						intersection=> ordered_intersections.exit_point,	
-						segment		=> (ARC, a),
+						segment		=> (ARC, a_norm),
 						curvature	=> CONCAVE, -- exit point is always concave
-						center		=> a.center,
+						center		=> a_norm.center,
 						radius		=> radius);
 
 				end count_two;
 				
 			begin -- query_arc
 				--put_line ("##");
-				--put_line (to_string (a));
+				--put_line (to_string (a_norm));
 				
 				case i.status is
 					when NONE_EXIST => null;
@@ -5953,7 +6008,7 @@ package body et_geometry is
 							when SECANT =>
 								--put_line ("secant");
 								
-								if crosses_threshold (a, y_threshold) then
+								if crosses_threshold (a_norm, y_threshold) then
 									--put_line ("ct");
 									
 									-- The line intersects the arc at one point.
@@ -5962,13 +6017,13 @@ package body et_geometry is
 
 									collect_intersection (
 										intersection	=> i.intersection,	
-										segment			=> (ARC, a),
+										segment			=> (ARC, a_norm),
 										
 										-- If there is only one intersection, deduce
 										-- the curvature at the point of intersection:
-										curvature		=> get_curvature (a), -- depends on CW/CCW
+										curvature		=> get_curvature (a_norm), -- depends on CW/CCW
 										
-										center			=> a.center,
+										center			=> a_norm.center,
 										radius			=> radius);
 									
 								end if;
@@ -5984,99 +6039,103 @@ package body et_geometry is
 						ordered_intersections := order_intersections (
 							start_point		=> point,
 							intersections	=> i);
+
+						count_two;
 						
-						if get_y (a.start_point) /= y_threshold then
-							-- Since we have TWO intersections, the end point of the arc
-							-- must be in the same half as the start point of the arc.
-							-- The arc crosses the threshold line twice:
-							count_two;
+						
+						--if get_y (a.start_point) /= y_threshold then
+							---- Since we have TWO intersections, the end point of the arc
+							---- must be in the same half as the start point of the arc.
+							---- So the arc crosses the threshold line twice:
+							--count_two;
 							
-						else
-							-- Special case: Start or end point of arc is ON the probe line.
+						--else
+							---- Special case: Start or end point of arc is ON the probe line.
 							
-							-- If start and end point of the candidate arc is ABOVE-OR-ON the 
-							-- threshold then we consider the arc to be threshold-crossing.
-							-- The remaining question is: How often does the arc intersect
-							-- the probe line ?
+							---- If start and end point of the candidate arc is ABOVE-OR-ON the 
+							---- threshold then we consider the arc to be threshold-crossing.
+							---- The remaining question is: How often does the arc intersect
+							---- the probe line ?
 
-							-- If start point at probe line:
-							if get_y (a.start_point) = y_threshold then
+							---- If start point in exactly on the probe line:
+							--if get_y (a.start_point) = y_threshold then
 
-								-- If the arc starts ON the probe line and ends ABOVE
-								-- the probe line, then it runs first downwards through the lower half,
-								-- goes up, crosses the threshold at point P and ends somewhere 
-								-- in the upper half:
-								if get_y (a.end_point) > y_threshold then
+								---- If the arc starts ON the probe line and ends ABOVE
+								---- the probe line, then it runs first downwards through the lower half,
+								---- goes up, crosses the threshold at point P and ends somewhere 
+								---- in the upper half:
+								--if get_y (a.end_point) > y_threshold then
+									
+									---- Count the point P as intersection:
+									--case a.direction is
+										--when CCW => 
+											--collect_intersection (
+												--intersection=> ordered_intersections.exit_point,
+												--segment		=> (ARC, a),
+												--curvature	=> CONCAVE, -- exit point is always concave
+												--center		=> a.center,
+												--radius		=> radius);
 
-									-- Count the point P as intersection:
-									case a.direction is
-										when CCW => 
-											collect_intersection (
-												intersection=> ordered_intersections.exit_point,
-												segment		=> (ARC, a),
-												curvature	=> CONCAVE, -- exit point is always concave
-												center		=> a.center,
-												radius		=> radius);
-
-										when CW => 
-											collect_intersection (
-												intersection=> ordered_intersections.entry_point,
-												segment		=> (ARC, a),																	 
-												curvature	=> CONVEX, -- entry point is always convex
-												center		=> a.center,
-												radius		=> radius);
-									end case;
+										--when CW => 
+											--put_line ("SE");
+											--collect_intersection (
+												--intersection=> ordered_intersections.entry_point,
+												--segment		=> (ARC, a),																	 
+												--curvature	=> CONVEX, -- entry point is always convex
+												--center		=> a.center,
+												--radius		=> radius);
+									--end case;
 											
-								-- If the arc starts ON the probe line and ends BELOW
-								-- the probe line, then it runs first upwards through the upper half,
-								-- goes down, crosses the threshold at point P and ends somewhere 
-								-- in the lower half.
-								elsif get_y (a.end_point) < y_threshold then
+								---- If the arc starts ON the probe line and ends BELOW
+								---- the probe line, then it runs first upwards through the upper half,
+								---- goes down, crosses the threshold at point P and ends somewhere 
+								---- in the lower half.
+								--elsif get_y (a.end_point) < y_threshold then
 
-									-- Count the start point and point P as intersections:
-									count_two;
-								end if;
+									---- Count the start point and point P as intersections:
+									--count_two;
+								--end if;
 
 								
-							-- If end point at probe line:
-							elsif get_y (a.end_point) = y_threshold then
+							---- If end point on probe line:
+							--elsif get_y (a.end_point) = y_threshold then
 
-								-- If the arc starts somewhere in the upper half, then it runs
-								-- down, crosses the threshold at point P, runs through the 
-								-- lower half, goes up and ends ON the threshold line:
-								if get_y (a.start_point) > y_threshold then
+								---- If the arc starts somewhere in the upper half, then it runs
+								---- down, crosses the threshold at point P, runs through the 
+								---- lower half, goes up and ends ON the threshold line:
+								--if get_y (a.start_point) > y_threshold then
 
-									-- Count the point P as intersection:
-									case a.direction is
-										when CCW => 
-											collect_intersection (
-												intersection=> ordered_intersections.entry_point,
-												segment		=> (ARC, a),					 
-												curvature	=> CONVEX, -- entry point is always convex
-												center		=> a.center,
-												radius		=> radius);
+									---- Count the point P as intersection:
+									--case a.direction is
+										--when CCW => 
+											--collect_intersection (
+												--intersection=> ordered_intersections.entry_point,
+												--segment		=> (ARC, a),					 
+												--curvature	=> CONVEX, -- entry point is always convex
+												--center		=> a.center,
+												--radius		=> radius);
 
-										when CW => 
-											collect_intersection (
-												intersection=> ordered_intersections.exit_point,	
-												segment		=> (ARC, a),
-												curvature	=> CONCAVE, -- exit point is always concave
-												center		=> a.center,
-												radius		=> radius);
-									end case;
+										--when CW => 
+											--collect_intersection (
+												--intersection=> ordered_intersections.exit_point,	
+												--segment		=> (ARC, a),
+												--curvature	=> CONCAVE, -- exit point is always concave
+												--center		=> a.center,
+												--radius		=> radius);
+									--end case;
 								
 
-								-- If the arc starts somewhere in the lower half, then it runs
-								-- up, crosses the threshold at point P, runs through the
-								-- upper half, goes down and ends ON the threshold line:
-								elsif get_y (a.start_point) < y_threshold then
+								---- If the arc starts somewhere in the lower half, then it runs
+								---- up, crosses the threshold at point P, runs through the
+								---- upper half, goes down and ends ON the threshold line:
+								--elsif get_y (a.start_point) < y_threshold then
 
-									-- Count the end point and point P as intersections:
-									count_two;
-								end if;
+									---- Count the end point and point P as intersections:
+									--count_two;
+								--end if;
 								
-							end if;
-						end if;
+							--end if;
+						--end if;
 					
 				end case;
 			end query_arc;
@@ -6139,6 +6198,14 @@ package body et_geometry is
 			begin
 				sort (result.intersections);
 
+				-- for testing/verifying only:				
+				--c := result.intersections.first;				
+				--while c /= pac_probe_line_intersections.no_element loop
+					--put_line (to_string (element (c).x_position));
+					--next (c);
+				--end loop;
+
+				
 				-- If x-positions differ by type_distance'small then we
 				-- treat them as redundant.
 				-- Remove redundant x-positions:

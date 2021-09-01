@@ -34,6 +34,8 @@
 --
 --   history of changes:
 --
+
+with ada.text_io;				use ada.text_io;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -49,9 +51,13 @@ with et_string_processing;		use et_string_processing;
 
 package et_geometry is
 
+	type float is digits 12;
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 
+	package float_io is new ada.text_io.float_io (float);
+	
+	
 	-- Returns 1.0 if given x is greater or equal zero.
 	-- Returns -1.0 if x less than zero.
 	function sgn (x : float) return float;
@@ -189,6 +195,11 @@ package et_geometry is
 			range axis_min .. axis_max;
 
 
+
+		function to_distance (f : in float)
+			return type_distance;
+
+		
 		
 		type type_rounding_mode is (
 			DOWN,			-- down to nearest multiple of type_distance_coarse'small
@@ -884,7 +895,8 @@ package et_geometry is
 
 		function scale (
 			v	: in type_vector;
-			s	: in float)
+			--s	: in float) -- CS should be type_distance ?
+			s	: in type_distance) -- CS should be type_distance ?
 			return type_vector;
 		
 		function add (
@@ -1313,6 +1325,7 @@ package et_geometry is
 		-- Returns the shortest distance between a point and an arc.
 		-- If the point is on the center of the arc, then the return is
 		-- absolute zero and angle zero degree:
+		-- CS: wrong, should be absolute distance to start and angle of start point.
 		function get_shortest_distance (
 			point	: in type_point;
 			arc		: in type_arc)

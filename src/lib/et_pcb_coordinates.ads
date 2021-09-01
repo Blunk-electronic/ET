@@ -72,8 +72,10 @@ package et_pcb_coordinates is
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 
-	distance_digits_left  : constant := 28; --16;
+	--distance_digits_left  : constant := 16;
+	distance_digits_left  : constant := 28;
 	distance_digits_right : constant := 10; -- 0.1pm
+	--distance_digits_right : constant := 20; -- 0.1pm
 	
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
 	
@@ -105,6 +107,10 @@ package et_pcb_coordinates is
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
 	
+
+	--type type_distance_float is digits 7;
+			--package my_functions is new ada.numerics.generic_elementary_functions (my_float);
+			--use my_functions;
 
 
 	
