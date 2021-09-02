@@ -51,16 +51,16 @@ with et_string_processing;		use et_string_processing;
 
 package et_geometry is
 
-	type float is digits 12;
-	package functions_float is new ada.numerics.generic_elementary_functions (float);
-	use functions_float;
+	--type float is digits 12;
+	--package functions_float is new ada.numerics.generic_elementary_functions (float);
+	--use functions_float;
 
-	package float_io is new ada.text_io.float_io (float);
+	--package float_io is new ada.text_io.float_io (float);
 	
 	
-	-- Returns 1.0 if given x is greater or equal zero.
-	-- Returns -1.0 if x less than zero.
-	function sgn (x : float) return float;
+	---- Returns 1.0 if given x is greater or equal zero.
+	---- Returns -1.0 if x less than zero.
+	--function sgn (x : float) return float;
 
 	
 	
@@ -161,7 +161,8 @@ package et_geometry is
 	generic
 		type type_distance is delta <> digits <>;
 		type type_distance_coarse is delta <> digits <>;
-
+		type type_distance_float is digits <>;
+		
 		axis_min, axis_max : type_distance;
 
 		type type_rotation is delta <> digits <>;
@@ -173,11 +174,24 @@ package et_geometry is
 		far_left	: constant type_distance := axis_min;
 		far_right	: constant type_distance := axis_max;
 
+
+		package pac_functions_distance is new 
+			ada.numerics.generic_elementary_functions (type_distance_float);
+		use pac_functions_distance;
+
+		package pac_distance_io is new ada.text_io.float_io (type_distance_float);
+
+		
 		
 		function get_info (editor: in string)
 			return string;
 
 
+		-- Returns 1.0 if given x is greater or equal zero.
+		-- Returns -1.0 if x less than zero.
+		function sgn (x : type_distance_float) return type_distance_float;
+
+		
 		
 		function to_distance (distance : in string) 
 			return type_distance;		
@@ -196,7 +210,7 @@ package et_geometry is
 
 
 
-		function to_distance (f : in float)
+		function to_distance (f : in type_distance_float)
 			return type_distance;
 
 		
@@ -789,7 +803,7 @@ package et_geometry is
 		
 	package generic_pac_shapes is
 		use pac_geometry;
-
+		use pac_functions_distance;
 
 		type type_point_status is (
 			OUTSIDE,	-- point is outside a certain area

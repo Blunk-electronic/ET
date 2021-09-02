@@ -93,6 +93,8 @@ package et_pcb_coordinates is
 		range type_distance'first .. type_distance'last;
 
 
+	type type_distance_float is digits 12;
+		
 		
 	-- Angle or rotation is in mathematical sense, means:
 	-- positive rotation -> counter clock wise
@@ -106,11 +108,6 @@ package et_pcb_coordinates is
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
-	
-
-	--type type_distance_float is digits 7;
-			--package my_functions is new ada.numerics.generic_elementary_functions (my_float);
-			--use my_functions;
 
 
 	
@@ -118,6 +115,7 @@ package et_pcb_coordinates is
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
 		type_distance			=> type_distance,
 		type_distance_coarse	=> type_distance_coarse,
+		type_distance_float		=> type_distance_float,
 		axis_max				=> +10_000_000_000.0,
 		axis_min				=> -10_000_000_000.0,
 		type_rotation 			=> type_rotation);

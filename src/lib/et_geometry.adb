@@ -48,13 +48,13 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
 
-	function sgn (x : float) return float is begin
-		if x >= 0.0 then
-			return 1.0;
-		else
-			return -1.0;
-		end if;
-	end sgn;
+	--function sgn (x : float) return float is begin
+		--if x >= 0.0 then
+			--return 1.0;
+		--else
+			--return -1.0;
+		--end if;
+	--end sgn;
 
 
 	
@@ -178,6 +178,15 @@ package body et_geometry is
 			
 		end get_info;
 
+
+		function sgn (x : type_distance_float) return type_distance_float is begin
+			if x >= 0.0 then
+				return 1.0;
+			else
+				return -1.0;
+			end if;
+		end sgn;
+
 		
 
 		function to_distance (distance : in string) 
@@ -216,10 +225,10 @@ package body et_geometry is
 		end to_string;
 
 
-		function to_distance (f : in float)
+		function to_distance (f : in type_distance_float)
 			return type_distance 
 		is
-			use float_io;
+			use pac_distance_io;
 			ds : string (1 .. type_distance'digits + 1);
 		begin
 			-- CS: IMPROVEMENT REQUIRED !!!
@@ -451,15 +460,15 @@ package body et_geometry is
 		end;
 
 		function get_rotation (point : in type_point) return type_rotation is
-			x : constant float := float (point.x);
-			y : constant float := float (point.y);
+			x : constant type_distance_float := type_distance_float (point.x);
+			y : constant type_distance_float := type_distance_float (point.y);
 		begin
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
 			-- In this case we assume the resulting angle is zero.
 			if x = 0.0 and y = 0.0 then
 				return zero_rotation;
 			else
-				return type_rotation (arctan (y, x, float (units_per_cycle)));
+				return type_rotation (arctan (y, x, type_distance_float (units_per_cycle)));
 			end if;
 		end get_rotation;
 
@@ -714,7 +723,7 @@ package body et_geometry is
 			-- CS: refine range and delta if required
 
 			-- d_in : type_distance_intermediate;
-			distance_mil : float := float'value (mil);
+			distance_mil : type_distance_float := type_distance_float'value (mil);
 		begin
 			-- d_in := type_distance_intermediate'value (mil);
 			return type_distance (distance_mil * (25.4 * 0.001));
@@ -741,14 +750,14 @@ package body et_geometry is
 			-- CS: increase digits if accuracy not sufficient
 		
 			--scratch : type_distance_mm;
-			scratch : float;
+			scratch : type_distance_float;
 
 			-- This is the output type:
 			-- type type_distance_mil is delta 0.1 range -400_000_000.0 .. 400_000_000.0;
 			-- type type_distance_mil is range -400_000_000 .. 400_000_000;
 		begin
 			--scratch := type_distance_mm (distance) * 1000.00 / 25.4;
-			scratch := float (distance) * 1000.00 / 25.4;
+			scratch := type_distance_float (distance) * 1000.00 / 25.4;
 
 			--return trim (type_distance_mil'image (type_distance_mil (scratch)), left);
 			return to_string (type_distance (scratch));
@@ -857,7 +866,7 @@ package body et_geometry is
 			clip		: in boolean := false)
 			return type_point'class 
 		is 			
-			delta_x, delta_y : float := 0.0;
+			delta_x, delta_y : type_distance_float := 0.0;
 			-- CS could be useful to use a constrained float type
 
 			rx, ry : type_distance;			
@@ -866,8 +875,8 @@ package body et_geometry is
 			-- sin (direction) * distance = delta y
 			-- cos (direction) * distance = delty x
 
-			delta_y := sin (float (direction), float (units_per_cycle)) * float (distance);
-			delta_x := cos (float (direction), float (units_per_cycle)) * float (distance);
+			delta_y := sin (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
+			delta_x := cos (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
 
 			rx := point.x + type_distance (delta_x);
 			ry := point.y + type_distance (delta_y);
@@ -971,7 +980,7 @@ package body et_geometry is
 			return type_distance_positive 
 		is
 			distance : type_distance_positive; -- to be returned
-			delta_x, delta_y : float := 0.0;
+			delta_x, delta_y : type_distance_float := 0.0;
 		begin
 			if point_one = point_two then
 				distance := zero;
@@ -983,8 +992,8 @@ package body et_geometry is
 				distance := abs (get_x (point_two) - get_x (point_one));
 				
 			else
-				delta_x := float (get_x (point_one) - get_x (point_two));
-				delta_y := float (get_y (point_one) - get_y (point_two));
+				delta_x := type_distance_float (get_x (point_one) - get_x (point_two));
+				delta_y := type_distance_float (get_y (point_one) - get_y (point_two));
 
 				distance := to_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
 			end if;
@@ -1079,7 +1088,7 @@ package body et_geometry is
 		is
 			result : type_distance_polar;
 
-			delta_x, delta_y : float := 0.0;
+			delta_x, delta_y : type_distance_float := 0.0;
 		begin
 			result.absolute := get_distance_total (point_one, point_two);
 
@@ -1089,13 +1098,13 @@ package body et_geometry is
 			-- So we do the angle computation only if there is a distance between the points:
 			if result.absolute /= zero then
 				
-				delta_x := float (get_x (point_two) - get_x (point_one));
-				delta_y := float (get_y (point_two) - get_y (point_one));
+				delta_x := type_distance_float (get_x (point_two) - get_x (point_one));
+				delta_y := type_distance_float (get_y (point_two) - get_y (point_one));
 
 				result.angle := type_rotation (arctan (
 						x 		=> delta_x,
 						y		=> delta_y,
-						cycle	=> float (units_per_cycle)));
+						cycle	=> type_distance_float (units_per_cycle)));
 			else
 				-- distance is zero
 				result.angle := zero_rotation;
@@ -1232,27 +1241,27 @@ package body et_geometry is
 			rotation	: in type_rotation) 
 		is			
 			angle_out			: float; -- unit is degrees
-			distance_to_origin	: float; -- unit is mm
-			scratch				: float;
+			distance_to_origin	: type_distance_float; -- unit is mm
+			scratch				: type_distance_float;
 		begin
 			-- Do nothing if the given rotation is zero.
 			if rotation /= 0.0 then
 
 				-- compute distance of given point to origin
 				if get_x (point) = zero and get_y (point) = zero then
-					distance_to_origin := float (zero);
+					distance_to_origin := type_distance_float (zero);
 					
 				elsif get_x (point) = zero then
-					distance_to_origin := float (abs (get_y (point)));
+					distance_to_origin := type_distance_float (abs (get_y (point)));
 					
 				elsif get_y (point) = zero then
-					distance_to_origin := float (abs (get_x (point)));
+					distance_to_origin := type_distance_float (abs (get_x (point)));
 					
 				else
 					distance_to_origin := sqrt (
-						float (abs (get_x (point))) ** float (2) 
+						type_distance_float (abs (get_x (point))) ** type_distance_float (2) 
 						+
-						float (abs (get_y (point))) ** float (2)
+						type_distance_float (abs (get_y (point))) ** type_distance_float (2)
 						);
 				end if;
 				
@@ -1282,17 +1291,17 @@ package body et_geometry is
 
 				else
 					-- neither x nor y of point is zero
-					angle_out := arctan (
-						x		=> float (get_x (point)),
-						y		=> float (get_y (point)),
-						cycle	=> float (units_per_cycle));
+					angle_out := float (arctan (
+						x		=> type_distance_float (get_x (point)),
+						y		=> type_distance_float (get_y (point)),
+						cycle	=> type_distance_float (units_per_cycle)));
 				end if;
 
 				-- Compute new angle by adding current angle and given angle.
 				angle_out := angle_out + float (rotation);
 
 				-- compute new x   -- (cos angle_out) * distance_to_origin
-				scratch := cos (angle_out, float (units_per_cycle));
+				scratch := cos (type_distance_float (angle_out), type_distance_float (units_per_cycle));
 				--set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
 				set (
 					axis	=> X, 
@@ -1301,7 +1310,7 @@ package body et_geometry is
 					);
 
 				-- compute new y   -- (sin angle_out) * distance_to_origin
-				scratch := sin (angle_out, float (units_per_cycle));
+				scratch := sin (type_distance_float (angle_out), type_distance_float (units_per_cycle));
 				--set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
 				set (
 					axis	=> Y,
@@ -1318,24 +1327,24 @@ package body et_geometry is
 			rotation	: in type_rotation) 
 		is
 			angle_out			: float; -- unit is degrees
-			distance_to_origin	: float; -- unit is mm
-			scratch				: float;
+			distance_to_origin	: type_distance_float; -- unit is mm
+			scratch				: type_distance_float;
 		begin
 			-- compute distance of given point to origin
 			if get_x (point) = zero and get_y (point) = zero then
-				distance_to_origin := float (zero);
+				distance_to_origin := type_distance_float (zero);
 				
 			elsif get_x (point) = zero then
-				distance_to_origin := float (abs (get_y (point)));
+				distance_to_origin := type_distance_float (abs (get_y (point)));
 				
 			elsif get_y (point) = zero then
-				distance_to_origin := float (abs (get_x (point)));
+				distance_to_origin := type_distance_float (abs (get_x (point)));
 				
 			else
 				distance_to_origin := sqrt (
-					float (abs (get_x (point))) ** float (2) 
+					type_distance_float (abs (get_x (point))) ** type_distance_float (2) 
 					+
-					float (abs (get_y (point))) ** float (2)
+					type_distance_float (abs (get_y (point))) ** type_distance_float (2)
 					);
 			end if;
 
@@ -1343,7 +1352,7 @@ package body et_geometry is
 			angle_out := float (rotation);
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (angle_out, float (units_per_cycle));
+			scratch := cos (type_distance_float (angle_out), type_distance_float (units_per_cycle));
 			set (
 				axis	=> X,
 				point	=> point,
@@ -1351,7 +1360,7 @@ package body et_geometry is
 				);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (angle_out, float (units_per_cycle));
+			scratch := sin (type_distance_float (angle_out), type_distance_float (units_per_cycle));
 			set (
 				axis 	=> Y,
 				point	=> point,
@@ -1533,16 +1542,16 @@ package body et_geometry is
 		is
 			result : type_distance_polar;
 
-			dx : constant float := float (vector_two.x - vector_one.x);
-			dy : constant float := float (vector_two.y - vector_one.y);
+			dx : constant type_distance_float := type_distance_float (vector_two.x - vector_one.x);
+			dy : constant type_distance_float := type_distance_float (vector_two.y - vector_one.y);
 
-			abs_dx : constant float := abs (dx);
-			abs_dy : constant float := abs (dy);
+			abs_dx : constant type_distance_float := abs (dx);
+			abs_dy : constant type_distance_float := abs (dy);
 		begin
 			--put_line ("dx " & float'image (abs_dx));
 			--put_line ("dy " & float'image (abs_dy));
 			
-			set_absolute (result, type_distance (sqrt (abs_dx ** 2.0 + abs_dy ** 2.0)));
+			set_absolute (result, type_distance (sqrt (abs_dx ** 2 + abs_dy ** 2)));
 			
 			-- NOTE: If the total distance between the location vectors is zero then
 			-- the arctan operation is not possible. In this case we assume
@@ -1553,7 +1562,7 @@ package body et_geometry is
 				set_angle (result, type_rotation (arctan (
 						x 		=> dx,
 						y		=> dy,
-						cycle	=> float (units_per_cycle))));
+						cycle	=> type_distance_float (units_per_cycle))));
 			else
 				-- distance is zero
 				set_angle (result, zero_rotation);
@@ -1582,13 +1591,13 @@ package body et_geometry is
 			direction	: in type_rotation;
 			distance	: in type_distance)
 		is
-			delta_x, delta_y : float := 0.0;
+			delta_x, delta_y : type_distance_float := 0.0;
 		begin
 			-- sin (direction) * distance = delta y
 			-- cos (direction) * distance = delty x
 
-			delta_y := sin (float (direction), float (units_per_cycle)) * float (distance);
-			delta_x := cos (float (direction), float (units_per_cycle)) * float (distance);
+			delta_y := sin (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
+			delta_x := cos (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
 
 			v.x := v.x + type_distance (delta_x);
 			v.y := v.y + type_distance (delta_y);
@@ -1655,14 +1664,12 @@ package body et_geometry is
 		function absolute (
 			vector	: in type_vector)
 			return type_distance_positive
-		is
-		begin
-			return type_distance_positive (
-				sqrt (
-					float (vector.x) ** 2 + 
-					float (vector.y) ** 2 +
-					float (vector.z) ** 2)
-				);
+		is begin
+			return
+				to_distance (sqrt (
+					type_distance_float (vector.x) ** 2 + 
+					type_distance_float (vector.y) ** 2 +
+					type_distance_float (vector.z) ** 2));
 		end absolute;
 
 		
@@ -1777,10 +1784,10 @@ package body et_geometry is
 			v : type_vector;
 		begin
 			-- x = cos (direction) * 1
-			v.x := type_distance (cos (float (ray.direction), float (units_per_cycle)));
+			v.x := type_distance (cos (type_distance_float (ray.direction), type_distance_float (units_per_cycle)));
 
 			-- y = sin (direction) * 1
-			v.y := type_distance (sin (float (ray.direction), float (units_per_cycle)));
+			v.y := type_distance (sin (type_distance_float (ray.direction), type_distance_float (units_per_cycle)));
 
 			v.z := zero; -- we are in a 2D world
 			
@@ -1820,9 +1827,9 @@ package body et_geometry is
 		begin
 
 			a := type_rotation (arctan (
-					y		=> float (line.v_direction.y), 
-					x		=> float (line.v_direction.x), 
-					cycle	=> float (units_per_cycle)));
+					y		=> type_distance_float (line.v_direction.y), 
+					x		=> type_distance_float (line.v_direction.x), 
+					cycle	=> type_distance_float (units_per_cycle)));
 
 			-- dz ignored. we are in a 2D world
 			
@@ -1889,8 +1896,8 @@ package body et_geometry is
 			return type_intersection_of_two_lines
 		is 
 			-- scratch variables:
-			a, b, c, d, e, f, g : float;
-			lambda : float;
+			a, b, c, d, e, f, g : type_distance_float;
+			lambda : type_distance_float;
 
 			-- location vector and angle of intersection to be returned:			
 			i : type_intersection;
@@ -1967,24 +1974,24 @@ package body et_geometry is
 					-- In order to avoid division by zero we must switch between
 					-- two ways to find the intersection:
 					if line_1.v_direction.x /= zero then
-						a := float (line_1.v_start.y);
-						b := float (line_2.v_start.x * line_1.v_direction.y) / float (line_1.v_direction.x);
-						c := float (line_1.v_start.x * line_1.v_direction.y) / float (line_1.v_direction.x);
-						d := float (line_2.v_start.y);
-						e := float (line_2.v_direction.y);
-						f := float (line_2.v_direction.x * line_1.v_direction.y) / float (line_1.v_direction.x);
+						a := type_distance_float (line_1.v_start.y);
+						b := type_distance_float (line_2.v_start.x * line_1.v_direction.y) / type_distance_float (line_1.v_direction.x);
+						c := type_distance_float (line_1.v_start.x * line_1.v_direction.y) / type_distance_float (line_1.v_direction.x);
+						d := type_distance_float (line_2.v_start.y);
+						e := type_distance_float (line_2.v_direction.y);
+						f := type_distance_float (line_2.v_direction.x * line_1.v_direction.y) / type_distance_float (line_1.v_direction.x);
 						g := 1.0 / (e - f);
 
 						lambda := (a + b - c - d) * g;
 
 						i.point := add (line_2.v_start, scale (line_2.v_direction, to_distance (lambda)));
 					else
-						a := float (line_2.v_start.y);
-						b := float (line_1.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
-						c := float (line_2.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
-						d := float (line_1.v_start.y);
-						e := float (line_1.v_direction.y);
-						f := float (line_1.v_direction.x * line_2.v_direction.y) / float (line_2.v_direction.x);
+						a := type_distance_float (line_2.v_start.y);
+						b := type_distance_float (line_1.v_start.x * line_2.v_direction.y) / type_distance_float (line_2.v_direction.x);
+						c := type_distance_float (line_2.v_start.x * line_2.v_direction.y) / type_distance_float (line_2.v_direction.x);
+						d := type_distance_float (line_1.v_start.y);
+						e := type_distance_float (line_1.v_direction.y);
+						f := type_distance_float (line_1.v_direction.x * line_2.v_direction.y) / type_distance_float (line_2.v_direction.x);
 						g := 1.0 / (e - f);
 
 						lambda := (a + b - c - d) * g;
@@ -2008,14 +2015,14 @@ package body et_geometry is
 			line_1, line_2	: in type_line_vector)
 			return type_rotation
 		is 
-			a, b, c : float;
+			a, b, c : type_distance_float;
 			r : type_rotation;
 		begin
-			a := float (dot_product (line_1.v_direction, line_2.v_direction));
-			b := float (absolute (line_1.v_direction) * absolute (line_2.v_direction));
+			a := type_distance_float (dot_product (line_1.v_direction, line_2.v_direction));
+			b := type_distance_float (absolute (line_1.v_direction) * absolute (line_2.v_direction));
 			c := a / b;
 			
-			r := type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
+			r := type_rotation (arccos (X => a / b, cycle => type_distance_float (units_per_cycle)));
 
 			return r;
 		end get_angle_of_itersection;
@@ -2300,8 +2307,8 @@ package body et_geometry is
 			line	: in type_line)
 			return type_rotation is
 
-			dx : constant float := float (get_x (line.end_point) - get_x (line.start_point));
-			dy : constant float := float (get_y (line.end_point) - get_y (line.start_point));
+			dx : constant type_distance_float := type_distance_float (get_x (line.end_point) - get_x (line.start_point));
+			dy : constant type_distance_float := type_distance_float (get_y (line.end_point) - get_y (line.start_point));
 
 			--package pac_functions is new ada.numerics.generic_elementary_functions (float);
 			--use pac_functions;
@@ -2311,7 +2318,7 @@ package body et_geometry is
 			if dx = 0.0 and dy = 0.0 then
 				return zero_rotation;
 			else
-				return type_rotation (arctan (dy, dx, float (units_per_cycle)));
+				return type_rotation (arctan (dy, dx, type_distance_float (units_per_cycle)));
 			end if;
 		end get_direction;
 
@@ -3322,17 +3329,17 @@ package body et_geometry is
 			if get_x (arc_tmp.start_point) = zero and get_y (arc_tmp.start_point) = zero then
 				result.angle_start := zero_rotation;
 			else
-				result.angle_start := to_degrees (arctan (
-						y => float (get_y (arc_tmp.start_point)),
-						x => float (get_x (arc_tmp.start_point))));
+				result.angle_start := to_degrees (float (arctan (
+						y => type_distance_float (get_y (arc_tmp.start_point)),
+						x => type_distance_float (get_x (arc_tmp.start_point)))));
 			end if;
 
 			if get_x (arc_tmp.end_point) = zero and get_y (arc_tmp.end_point) = zero then
 				result.angle_end := zero_rotation;
 			else
-				result.angle_end := to_degrees (arctan (
-						y => float (get_y (arc_tmp.end_point)),
-						x => float (get_x (arc_tmp.end_point))));
+				result.angle_end := to_degrees (float (arctan (
+						y => type_distance_float (get_y (arc_tmp.end_point)),
+						x => type_distance_float (get_x (arc_tmp.end_point)))));
 			end if;
 	
 			-- make sure start and end angle are not equal
@@ -3349,21 +3356,21 @@ package body et_geometry is
 
 		function to_arc (arc : in type_arc_angles) return type_arc'class is
 			result : type_arc;
-			x, y : float;
+			x, y : type_distance_float;
 			offset : constant type_distance_relative := (get_x (arc.center), get_y (arc.center));
 		begin
 			result.center := arc.center;
 			result.direction := arc.direction;
 
 			-- start point:
-			x := float (arc.radius) * cos (float (arc.angle_start), float (units_per_cycle));
-			y := float (arc.radius) * sin (float (arc.angle_start), float (units_per_cycle));
+			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_start), type_distance_float (units_per_cycle));
+			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_start), type_distance_float (units_per_cycle));
 			result.start_point := type_point (set (type_distance (x), type_distance (y)));
 			move_by (result.start_point, offset);
 			
 			-- end point:
-			x := float (arc.radius) * cos (float (arc.angle_end), float (units_per_cycle));
-			y := float (arc.radius) * sin (float (arc.angle_end), float (units_per_cycle));
+			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_end), type_distance_float (units_per_cycle));
+			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_end), type_distance_float (units_per_cycle));
 			result.end_point := type_point (set (type_distance (x), type_distance (y)));
 			move_by (result.end_point, offset);
 			
@@ -3755,9 +3762,9 @@ package body et_geometry is
 		is						
 			arc : type_arc;
 
-			radius : float;
+			radius : type_distance_float;
 			angle_start, angle_end : float; -- unit is radians
-			end_x, end_y : float;
+			end_x, end_y : type_distance_float;
 			
 		begin -- arc_end_point
 			
@@ -3773,7 +3780,7 @@ package body et_geometry is
 			move_to (arc, origin);
 
 			-- calculate the radius of the arc
-			radius := float (get_distance_total (arc.center, arc.start_point));
+			radius := type_distance_float (get_distance_total (arc.center, arc.start_point));
 
 			-- calculate the angle where the arc begins:
 
@@ -3782,17 +3789,17 @@ package body et_geometry is
 			if get_x (arc.start_point) = zero and get_y (arc.start_point) = zero then
 				angle_start := 0.0;
 			else
-				angle_start := arctan (
-						y => float (get_y (arc.start_point)),
-						x => float (get_x (arc.start_point)));
+				angle_start := float (arctan (
+						y => type_distance_float (get_y (arc.start_point)),
+						x => type_distance_float (get_x (arc.start_point))));
 			end if;
 			
 			-- the angle where the arc ends:
 			angle_end := angle_start + to_radians (angle);
 
 			-- The end point of the arc:
-			end_y := sin (angle_end) * radius;
-			end_x := cos (angle_end) * radius;
+			end_y := sin (type_distance_float (angle_end)) * radius;
+			end_x := cos (type_distance_float (angle_end)) * radius;
 
 			return set (
 				x	=> type_distance (end_x),
@@ -4375,24 +4382,24 @@ package body et_geometry is
 			offset : constant type_distance_relative := to_distance_relative (circle.center);
 
 			-- The circle radius is:
-			r : constant float := float (circle.radius);
+			r : constant type_distance_float := type_distance_float (circle.radius);
 			
 			-- The line starts here:
-			x1, y1 : float;
+			x1, y1 : type_distance_float;
 
 			-- The line ends here:
-			x2, y2 : float;
+			x2, y2 : type_distance_float;
 			
-			x, y, dx, dy, dr, DI : float;
+			x, y, dx, dy, dr, DI : type_distance_float;
 
 			-- scratch variables:
 			line_moved : type_line_vector;
 			v_end : type_vector;
-			a, b, c, d : float;
+			a, b, c, d : type_distance_float;
 
 			--d1 : type_distance;
 			
-			zero : constant float := 0.0;
+			zero : constant type_distance_float := 0.0;
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
@@ -4447,12 +4454,12 @@ package body et_geometry is
 			v_end := add (line_moved.v_start, line_moved.v_direction);
 			
 			-- compute start and end point of line:
-			x1 := float (get_x (line_moved.v_start));
-			y1 := float (get_y (line_moved.v_start));
+			x1 := type_distance_float (get_x (line_moved.v_start));
+			y1 := type_distance_float (get_y (line_moved.v_start));
 			--put_line ("x1 " & float'image (x1) & " y1 " & float'image (y1));
 			
-			x2 := float (get_x (v_end));
-			y2 := float (get_y (v_end));
+			x2 := type_distance_float (get_x (v_end));
+			y2 := type_distance_float (get_y (v_end));
 			--put_line ("x2 " & float'image (x2) & " y2 " & float'image (y2));
 			
 			dx := x2 - x1; -- the delta in x
