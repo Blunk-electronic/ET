@@ -162,10 +162,10 @@ package et_geometry is
 		type type_distance is delta <> digits <>;
 		type type_distance_coarse is delta <> digits <>;
 		type type_distance_float is digits <>;
-		
 		axis_min, axis_max : type_distance;
 
 		type type_rotation is delta <> digits <>;
+		--type type_rotation_float is digits <>;
 
 		
 	package generic_pac_geometry is
@@ -212,6 +212,9 @@ package et_geometry is
 
 		function to_distance (f : in type_distance_float)
 			return type_distance;
+
+		function to_rotation (f : in type_distance_float)
+			return type_rotation;
 
 		
 		
@@ -674,18 +677,18 @@ package et_geometry is
 		-- x and y from the origin:
 		far_upper_right_zero_rotation : constant type_position;
 		
-		units_per_cycle : constant float := 360.0;
+		units_per_cycle : constant type_distance_float := 360.0;
 
 		zero_rotation : constant type_rotation := 0.0;
 
-		radians_max : constant float := - 2.0 * ada.numerics.pi;
+		radians_max : constant type_distance_float := - 2.0 * ada.numerics.pi;
 		
-		subtype type_radians is float range (- radians_max) .. radians_max;
+		subtype type_radians is type_distance_float range (- radians_max) .. radians_max;
 		
-		function to_radians (degrees : in type_rotation) return float;
+		function to_radians (degrees : in type_rotation) return type_distance_float;
 		-- Converts degrees to radians.
 
-		function to_degrees (radians : in float) return type_rotation;
+		function to_degrees (radians : in type_distance_float) return type_rotation;
 		-- Converts radians to degrees.
 
 

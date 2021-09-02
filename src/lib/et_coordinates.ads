@@ -88,6 +88,9 @@ package et_coordinates is
 		range -360.0 .. 360.0;
 		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
 
+	--type type_rotation_float is digits 7; -- CS reduce digits
+	-- CS range ?
+	
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry.generic_pac_geometry (
@@ -96,7 +99,9 @@ package et_coordinates is
 		type_distance_float		=> type_distance_float,
 		axis_max				=> 2_000.0,
 		axis_min				=>  -100.0,
-		type_rotation			=> type_rotation);
+		type_rotation			=> type_rotation
+		--type_rotation_float		=> type_rotation_float		
+		);
 	
 	use pac_geometry_sch;
 
