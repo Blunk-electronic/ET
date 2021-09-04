@@ -225,7 +225,6 @@ package et_geometry is
 
 		rounding_mode_default : constant type_rounding_mode := BANKERS_RULE;
 
-		--type type_rounding_digit is range 1 .. type_distance'digits;
 			
 		-- Rounds the given distance to the nearest multiple of 
 		-- type_distance_coarse'small.
@@ -894,12 +893,12 @@ package et_geometry is
 			return type_vector;
 
 		
-		function round (
-			vector : in type_vector)
-			return type_vector;
+		--function round (
+			--vector : in type_vector)
+			--return type_vector;
 
-		procedure round (
-			vector : in out type_vector);
+		--procedure round (
+			--vector : in out type_vector);
 
 		
 		function to_point (
@@ -1030,8 +1029,8 @@ package et_geometry is
 		end record;
 
 
-		function round (ill : in type_intersection_of_two_lines)
-			return type_intersection_of_two_lines;
+		--function round (ill : in type_intersection_of_two_lines)
+			--return type_intersection_of_two_lines;
 		
 
 		-- Tests whether the given two lines intersect.
@@ -1441,8 +1440,8 @@ package et_geometry is
 		end record;
 
 		
-		function round (ilc : in type_intersection_of_line_and_circle)
-			return type_intersection_of_line_and_circle;
+		--function round (ilc : in type_intersection_of_line_and_circle)
+			--return type_intersection_of_line_and_circle;
 
 		-- Computes the intersections of a line with an arc:
 

@@ -275,25 +275,25 @@ package body et_packages is
 		--log (text => "cond line" & to_string (line) & " width" & to_string (line.width));
 		result.left_edge := type_line (line);
 		move_by (result.left_edge, add (direction, +90.0), distance);
-		round (result.left_edge);
+		--round (result.left_edge);
 
 		result.right_edge := type_line (line);
 		move_by (result.right_edge, add (direction, -90.0), distance);
-		round (result.right_edge);
+		--round (result.right_edge);
 		
 		-- cap on the start of segment
 		result.cap_start.center := line.start_point;
 		result.cap_start.start_point := result.left_edge.start_point;
 		result.cap_start.end_point := result.right_edge.start_point;
 		result.cap_start.direction := CCW;
-		round (result.cap_start);
+		--round (result.cap_start);
 		
 		-- cap on the end of the segment
 		result.cap_end.center := line.end_point;
 		result.cap_end.start_point := result.left_edge.end_point;
 		result.cap_end.end_point := result.right_edge.end_point;
 		result.cap_end.direction := CW;
-		round (result.cap_end);
+		--round (result.cap_end);
 		
 		return result;
 	end to_line_segment;

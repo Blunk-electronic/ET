@@ -2739,15 +2739,15 @@ package body et_geometry is
 
 			-- CS probably not good to round the result by this function ?
 			-- should not be rounded at all
-			function round (dp : in type_distance_point_line) 
-				return type_distance_point_line 
-			is
-				r : type_distance_point_line := dp;
-			begin
-				r.distance := type_distance (round (dp.distance));
-				-- CS round dp.direction and dp.intersection ?
-				return r;
-			end round;
+			--function round (dp : in type_distance_point_line) 
+				--return type_distance_point_line 
+			--is
+				--r : type_distance_point_line := dp;
+			--begin
+				--r.distance := type_distance (round (dp.distance));
+				---- CS round dp.direction and dp.intersection ?
+				--return r;
+			--end round;
 		
 			-- Imagine a line that starts on the given point, travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
@@ -2766,14 +2766,15 @@ package body et_geometry is
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
-				-- At this stage we do not know in which direction to go. So we just try
+				-- For the moment we do not know which direction to go. So we just try
 				-- to go in 90 degree direction. If the distance from iv to the line
 				-- is not zero, then we try in -90 degree direction.
 
 				iv := to_vector (point);
 				move_by (iv, line_direction + 90.0, result.distance);
 
-				distance := type_distance (round (get_distance (line, iv)));
+				--distance := type_distance (round (get_distance (line, iv)));
+				distance := get_distance (line, iv);
 				--put_line ("delta  :" & to_string (distance));
 				
 				if distance > zero then
@@ -2887,7 +2888,8 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				return round (result); -- no more computations required
+				--return round (result); -- no more computations required
+				return result; -- no more computations required
 			end if;
 			
 			if lambda_forward = zero then -- iv points TO start point of line
@@ -2897,7 +2899,8 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				return round (result); -- no more computations required
+				--return round (result); -- no more computations required
+				return result; -- no more computations required
 			end if;
 
 			--put_line ("after start point");
@@ -2915,7 +2918,8 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				return round (result); -- no more computations required
+				--return round (result); -- no more computations required
+				return result; -- no more computations required
 			end if;
 
 			if lambda_backward = zero then -- iv points TO end point of line
@@ -2925,14 +2929,16 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				return round (result); -- no more computations required
+				--return round (result); -- no more computations required
+				return result; -- no more computations required
 			end if;
 
 			--put_line ("before end point");
 
 			result.out_of_range := false;
 			
-			return round (result);
+			--return round (result);
+			return result;
 		end get_distance;
 
 		
@@ -3618,8 +3624,8 @@ package body et_geometry is
 			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
 			--if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
-			if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
-			--if type_distance (abs (distance_center_to_point - arc_angles.radius)) = zero then
+			--if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
+			if distance_center_to_point - arc_angles.radius = zero then
 			
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
@@ -4128,7 +4134,8 @@ package body et_geometry is
 			--result := get_distance (point, circle.center);
 			--set_absolute (result, get_absolute (result) - circle.radius);
 
-			dd := type_distance (round (get_absolute (d_pc) - circle.radius));
+			--dd := type_distance (round (get_absolute (d_pc) - circle.radius));
+			dd := get_absolute (d_pc) - circle.radius;
 			
 			if dd > zero then -- point outside of circle
 
@@ -4211,8 +4218,8 @@ package body et_geometry is
 			DCP: constant type_distance_positive := 
 				get_distance_total (point, circle.center);
 		begin
-			--if get_distance_total (point, circle.center) - circle.radius <= catch_zone then
-			if type_distance (round (abs (DCP - circle.radius))) = zero then
+			--if type_distance (round (abs (DCP - circle.radius))) = zero then
+			if DCP - circle.radius = zero then
 
 				-- Point is on circumfence of circle.
 				return true;
@@ -4526,7 +4533,7 @@ package body et_geometry is
 			
 			d := a * b - c; -- incidence of line and circle
 
-			--put_line ("d  " & float'image (d));
+			--put_line ("d  " & type_distance_float'image (d));
 
 			--d1 := type_distance (round (type_distance (d)));
 
@@ -4666,6 +4673,8 @@ package body et_geometry is
 				result.exit_point  := i.intersection_1;
 
 			else -- point ip1 has same distance to start point as ip2
+				--put_line (to_string (d1)); put_line (to_string (d2));
+				put_line (to_string (ip1)); put_line (to_string (ip2));
 				raise constraint_error;
 			end if;
 				
