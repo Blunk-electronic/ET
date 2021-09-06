@@ -831,7 +831,7 @@ package et_geometry is
 		-- A ray has a fixed starting point, a direction and
 		-- no end point:
 		type type_ray is record
-			start_point	: type_point;
+			start_point	: type_point; -- CS change to type_vector
 			direction	: type_rotation;
 		end record;
 
@@ -851,15 +851,15 @@ package et_geometry is
 		
 		function get_x (
 			v	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 
 		function get_y (
 			v	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 
 		function get_z (
 			v	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 
 		-- Returns the distance of location vector_one to vector_two.	
 		-- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
@@ -887,7 +887,7 @@ package et_geometry is
 			v			: in out type_vector;
 			direction	: in type_rotation;
 			distance	: in type_distance);
-							 		
+										
 		function to_vector (
 			point	: in type_point)
 			return type_vector;
@@ -911,8 +911,7 @@ package et_geometry is
 
 		function scale (
 			v	: in type_vector;
-			--s	: in float) -- CS should be type_distance ?
-			s	: in type_distance) -- CS should be type_distance ?
+			s	: in type_distance_float)
 			return type_vector;
 		
 		function add (
@@ -931,11 +930,11 @@ package et_geometry is
 		
 		function dot_product ( -- german: Skalarprodukt
 			a, b	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 
 		function mixed_product ( -- german: Spatprodukt
 			a, b, c	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 		-- NOTE: Also called scalar triple product or box product.
 
 								   
@@ -945,7 +944,7 @@ package et_geometry is
 		-- must not be zero.
 		function divide (
 			a, b	: in type_vector)
-			return type_distance;
+			return type_distance_float;
 
 
 
@@ -1056,10 +1055,10 @@ package et_geometry is
 		-- CS use this type wherever a type_line is declared unnessecarily.
 
 		
-		function round (line : in type_line)
-			return type_line'class;
+		--function round (line : in type_line)
+			--return type_line'class;
 
-		procedure round (line : in out type_line);
+		--procedure round (line : in out type_line);
 		
 		
 		-- Returns the length of a line:
@@ -2086,10 +2085,11 @@ package et_geometry is
 		
 	private
 		type type_vector is	record
-			x, y, z : type_distance := zero;
+			--x, y, z : type_distance := zero;
+			x, y, z : type_distance_float := 0.0;
 		end record;
 
-		null_vector		: constant type_vector := (others => zero);
+		null_vector		: constant type_vector := (others => 0.0);
 		unity_vector	: constant type_vector := (others => 1.0);
 		
 		type type_distance_point_line is record

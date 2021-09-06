@@ -1530,28 +1530,31 @@ package body et_geometry is
 			v	: in type_vector)
 			return string
 		is begin
-			return " x" & to_string (v.x) & " y" & to_string (v.y);
+			--return " x" & to_string (v.x) & " y" & to_string (v.y);
+			return 
+				" x" & type_distance_float'image (v.x) &
+				" y" & type_distance_float'image (v.y);
 			--& " z" & to_string (v.z);
 		end to_string;
 
 		
 		function get_x (
 			v	: in type_vector)
-			return type_distance is
+			return type_distance_float is
 		begin
 			return v.x;
 		end get_x;
 		
 		function get_y (
 			v	: in type_vector)
-			return type_distance is
+			return type_distance_float is
 		begin
 			return v.y;
 		end get_y;
 
 		function get_z (
 			v	: in type_vector)
-			return type_distance is
+			return type_distance_float is
 		begin
 			return v.z;
 		end get_z;
@@ -1601,8 +1604,8 @@ package body et_geometry is
 		is
 			result : type_vector := v;
 		begin
-			result.x := result.x + offset.x;
-			result.y := result.y + offset.y;
+			result.x := result.x + type_distance_float (offset.x); -- CS good idea ?
+			result.y := result.y + type_distance_float (offset.y);
 			return result;
 		end move_by;
 
@@ -1620,8 +1623,8 @@ package body et_geometry is
 			delta_y := sin (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
 			delta_x := cos (type_distance_float (direction), type_distance_float (units_per_cycle)) * type_distance_float (distance);
 
-			v.x := v.x + to_distance (delta_x);
-			v.y := v.y + to_distance (delta_y);
+			v.x := v.x + delta_x;
+			v.y := v.y + delta_y;
 		end move_by;
 
 		
@@ -1630,33 +1633,33 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => get_x (point),
-				y => get_y (point),
-				z => zero
+				x => type_distance_float (get_x (point)),
+				y => type_distance_float (get_y (point)),
+				z => 0.0
 				);
 		end to_vector;
 
 
-		function round (
-			vector : in type_vector)
-			return type_vector
-		is
-			r : type_vector;
-		begin
-			r.x := type_distance (round (vector.x));
-			r.y := type_distance (round (vector.y));
-			r.z := zero;
+		--function round (
+			--vector : in type_vector)
+			--return type_vector
+		--is
+			--r : type_vector;
+		--begin
+			--r.x := type_distance (round (vector.x));
+			--r.y := type_distance (round (vector.y));
+			--r.z := zero;
 
-			return r;
-		end round;
+			--return r;
+		--end round;
 		
 
-		procedure round (
-			vector : in out type_vector)
-		is begin
-			vector.x := type_distance (round (vector.x));
-			vector.y := type_distance (round (vector.y));
-		end round;
+		--procedure round (
+			--vector : in out type_vector)
+		--is begin
+			--vector.x := type_distance (round (vector.x));
+			--vector.y := type_distance (round (vector.y));
+		--end round;
 
 		
 		function to_point (
@@ -1667,13 +1670,13 @@ package body et_geometry is
 			
 			-- Since the return is a 2D point,
 			-- the z component of v must be zero:
-			if v.z /= zero then
+			if v.z /= 0.0 then
 				raise constraint_error;
 			end if;
 						
 			return type_point (set (
-				x => v.x,
-				y => v.y));
+				x => to_distance (v.x),
+				y => to_distance (v.y)));
 
 			exception
 				when constraint_error =>
@@ -1697,7 +1700,7 @@ package body et_geometry is
 		
 		function scale (
 			v	: in type_vector;
-			s	: in type_distance)
+			s	: in type_distance_float)
 			return type_vector
 		is begin
 			return (
@@ -1747,7 +1750,7 @@ package body et_geometry is
 		
 		function dot_product (
 			a, b	: in type_vector)
-			return type_distance
+			return type_distance_float
 		is begin
 			return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
 		end dot_product;
@@ -1755,7 +1758,7 @@ package body et_geometry is
 		
 		function mixed_product (
 			a, b, c	: in type_vector)
-			return type_distance
+			return type_distance_float
 		is
 			cp : type_vector;
 		begin
@@ -1766,19 +1769,19 @@ package body et_geometry is
 		
 		function divide (
 			a, b	: in type_vector)
-			return type_distance
+			return type_distance_float
 		is
-			lambda : type_distance;
+			lambda : type_distance_float;
 		begin
 			-- It does not matter if we use
 			-- the x,y or z component for this calculation.
 			-- But we must skip the case when
 			-- a division by zero is ahead.
-			if b.x /= zero then
+			if b.x /= 0.0 then
 				lambda := a.x / b.x;
-			elsif b.y /= zero then
+			elsif b.y /= 0.0 then
 				lambda := a.y / b.y;
-			elsif b.z /= zero then
+			elsif b.z /= 0.0 then
 				lambda := a.z / b.z;
 			else
 				put_line ("ERROR while vector division ");
@@ -1794,9 +1797,9 @@ package body et_geometry is
 		is
 			v : type_vector;
 		begin
-			v.x := get_x (ray.start_point);
-			v.y := get_y (ray.start_point);
-			v.z := zero;
+			v.x := type_distance_float (get_x (ray.start_point));
+			v.y := type_distance_float (get_y (ray.start_point));
+			v.z := 0.0;
 
 			return v;
 		end start_vector;
@@ -1808,12 +1811,12 @@ package body et_geometry is
 			v : type_vector;
 		begin
 			-- x = cos (direction) * 1
-			v.x := to_distance (cos (type_distance_float (ray.direction), type_distance_float (units_per_cycle)));
+			v.x := cos (type_distance_float (ray.direction), type_distance_float (units_per_cycle));
 
 			-- y = sin (direction) * 1
-			v.y := to_distance (sin (type_distance_float (ray.direction), type_distance_float (units_per_cycle)));
+			v.y := sin (type_distance_float (ray.direction), type_distance_float (units_per_cycle));
 
-			v.z := zero; -- we are in a 2D world
+			v.z := 0.0; -- we are in a 2D world
 			
 			return v;
 		end direction_vector;
@@ -1836,8 +1839,8 @@ package body et_geometry is
 		is 
 			result : type_line_vector := lv;
 		begin
-			result.v_start.x := result.v_start.x + offset.x;
-			result.v_start.y := result.v_start.y + offset.y;
+			result.v_start.x := result.v_start.x + type_distance_float (offset.x);
+			result.v_start.y := result.v_start.y + type_distance_float (offset.y);
 
 			return result;
 		end move_by;
@@ -1899,21 +1902,21 @@ package body et_geometry is
 		end to_string;
 
 
-		function round (ill : in type_intersection_of_two_lines)
-			return type_intersection_of_two_lines
-		is
-			result : type_intersection_of_two_lines := ill;
-		begin
-			case result.status is
-				when EXISTS =>
-					round (result.intersection.point);
+		--function round (ill : in type_intersection_of_two_lines)
+			--return type_intersection_of_two_lines
+		--is
+			--result : type_intersection_of_two_lines := ill;
+		--begin
+			--case result.status is
+				--when EXISTS =>
+					--round (result.intersection.point);
 
-				when others => 
-					null;
-			end case;
+				--when others => 
+					--null;
+			--end case;
 
-			return result;
-		end round;
+			--return result;
+		--end round;
 
 		
 		function get_intersection (
@@ -1942,7 +1945,7 @@ package body et_geometry is
 					
 					v2 := subtract (line_2.v_start, line_1.v_start);
 
-					if mixed_product (line_1.v_direction, line_2.v_direction, v2) = zero then
+					if mixed_product (line_1.v_direction, line_2.v_direction, v2) = 0.0 then
 						return true; -- there is an intersection
 					else
 						return false;  -- no intersection exists
@@ -1998,7 +2001,7 @@ package body et_geometry is
 					-- The direction vector of the first line can be zero in x.
 					-- In order to avoid division by zero we must switch between
 					-- two ways to find the intersection:
-					if line_1.v_direction.x /= zero then
+					if line_1.v_direction.x /= 0.0 then
 						a := type_distance_float (line_1.v_start.y);
 						b := type_distance_float (line_2.v_start.x * line_1.v_direction.y) / type_distance_float (line_1.v_direction.x);
 						c := type_distance_float (line_1.v_start.x * line_1.v_direction.y) / type_distance_float (line_1.v_direction.x);
@@ -2009,7 +2012,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_2.v_start, scale (line_2.v_direction, to_distance (lambda)));
+						i.point := add (line_2.v_start, scale (line_2.v_direction, lambda));
 					else
 						a := type_distance_float (line_2.v_start.y);
 						b := type_distance_float (line_1.v_start.x * line_2.v_direction.y) / type_distance_float (line_2.v_direction.x);
@@ -2021,7 +2024,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_1.v_start, scale (line_1.v_direction, to_distance (lambda)));
+						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
 					i.angle := get_angle_of_itersection (line_1, line_2);
@@ -2053,23 +2056,23 @@ package body et_geometry is
 		end get_angle_of_itersection;
 
 
-		function round (line : in type_line)
-			return type_line'class
-		is 
-			r : type_line;
-		begin
-			r := (
-				start_point	=> type_point (round (line.start_point)),
-				end_point	=> type_point (round (line.end_point)));
+		--function round (line : in type_line)
+			--return type_line'class
+		--is 
+			--r : type_line;
+		--begin
+			--r := (
+				--start_point	=> type_point (round (line.start_point)),
+				--end_point	=> type_point (round (line.end_point)));
 
-			return r;
-		end round;
+			--return r;
+		--end round;
 
-		procedure round (line : in out type_line) 
-		is begin
-			line.start_point := type_point (round (line.start_point));
-			line.end_point := type_point (round (line.end_point));
-		end round;
+		--procedure round (line : in out type_line) 
+		--is begin
+			--line.start_point := type_point (round (line.start_point));
+			--line.end_point := type_point (round (line.end_point));
+		--end round;
 
 
 		
@@ -2253,9 +2256,9 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => get_x (line.start_point),
-				y => get_y (line.start_point),
-				z => zero
+				x => type_distance_float (get_x (line.start_point)),
+				y => type_distance_float (get_y (line.start_point)),
+				z => 0.0
 				);
 		end start_vector;
 
@@ -2265,9 +2268,9 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => get_x (line.end_point),
-				y => get_y (line.end_point),
-				z => zero
+				x => type_distance_float (get_x (line.end_point)),
+				y => type_distance_float (get_y (line.end_point)),
+				z => 0.0
 				);
 		end end_vector;
 
@@ -2277,9 +2280,9 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => get_x (line.end_point) - get_x (line.start_point),
-				y => get_y (line.end_point) - get_y (line.start_point),
-				z => zero
+				x => type_distance_float (get_x (line.end_point) - get_x (line.start_point)),
+				y => type_distance_float (get_y (line.end_point) - get_y (line.start_point)),
+				z => 0.0
 				);
 		end direction_vector;
 
@@ -2426,8 +2429,8 @@ package body et_geometry is
 				R2 : constant type_vector := direction_vector (second_line);
 
 				-- scratch variables:
-				a, b, c, d, e, f, g : type_distance;
-				lambda_1, lambda_2 : type_distance;
+				a, b, c, d, e, f, g : type_distance_float;
+				lambda_1, lambda_2 : type_distance_float;
 
 				-- location vector of intersection
 				I : type_vector;
@@ -2435,13 +2438,13 @@ package body et_geometry is
 				-- The direction vector of the first line can be zero in x (R1.x).
 				-- In order to avoid division by zero we must switch between
 				-- two ways to find the intersection:
-				if R1.x /= zero then
+				if R1.x /= 0.0 then
 					a := S1.y;
-					b := type_distance (S2.x * R1.y) / R1.x;
-					c := type_distance (S1.x * R1.y) / R1.x;
+					b := S2.x * R1.y / R1.x;
+					c := S1.x * R1.y / R1.x;
 					d := S2.y;
 					e := R2.y;
-					f := type_distance (R2.x * R1.y) / R1.x;
+					f := R2.x * R1.y / R1.x;
 					g := 1.0 / (e - f);
 
 					lambda_2 := (a + b - c - d) * g;
@@ -2449,11 +2452,11 @@ package body et_geometry is
 					I := add (S2, scale (R2, lambda_2));
 				else
 					a := S2.y;
-					b := type_distance (S1.x * R2.y) / R2.x;
-					c := type_distance (S2.x * R2.y) / R2.x;
+					b := S1.x * R2.y / R2.x;
+					c := S2.x * R2.y / R2.x;
 					d := S1.y;
 					e := R1.y;
-					f := type_distance (R1.x * R2.y) / R2.x;
+					f := R1.x * R2.y / R2.x;
 					g := 1.0 / (e - f);
 
 					lambda_1 := (a + b - c - d) * g;
@@ -2797,7 +2800,7 @@ package body et_geometry is
 				result.intersection := to_point (iv);
 			end compute_intersection;
 			
-			lambda_forward, lambda_backward : type_distance;
+			lambda_forward, lambda_backward : type_distance_float;
 		begin
 			--put_line ("line direction vector: " & to_string (line_direction_vector));
 			--put_line ("line direction angle : " & to_string (line_direction));
@@ -2881,7 +2884,7 @@ package body et_geometry is
 
 			--put_line ("lambda forward:" & to_string (lambda_forward));
 			
-			if lambda_forward < zero then -- iv points BEFORE start of line
+			if lambda_forward < 0.0 then -- iv points BEFORE start of line
 				--put_line ("before start point");
 				case line_range is
 					when BEYOND_END_POINTS => result.out_of_range := false;
@@ -2892,7 +2895,7 @@ package body et_geometry is
 				return result; -- no more computations required
 			end if;
 			
-			if lambda_forward = zero then -- iv points TO start point of line
+			if lambda_forward = 0.0 then -- iv points TO start point of line
 				--put_line ("on start point");
 				case line_range is
 					when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -2911,7 +2914,7 @@ package body et_geometry is
 
 			--put_line ("lambda backward:" & to_string (lambda_backward));
 			
-			if lambda_backward > zero then -- iv points AFTER end of line
+			if lambda_backward > 0.0 then -- iv points AFTER end of line
 				--put_line ("after end point");
 				case line_range is
 					when BEYOND_END_POINTS => result.out_of_range := false;
@@ -2922,7 +2925,7 @@ package body et_geometry is
 				return result; -- no more computations required
 			end if;
 
-			if lambda_backward = zero then -- iv points TO end point of line
+			if lambda_backward = 0.0 then -- iv points TO end point of line
 				--put_line ("on end point");
 				case line_range is
 					when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -3137,7 +3140,7 @@ package body et_geometry is
 				-- 2. It bases on the assumption that the direction_vector of line is
 				--    already properly set (see comment above):
 				function after_center (i : in type_vector) return boolean is
-					lambda : type_distance;
+					lambda : type_distance_float;
 				begin
 					-- the start_vector is where "line" starts: the given point
 					-- the direction vector is the direction of "line": towards the 
@@ -3626,9 +3629,7 @@ package body et_geometry is
 			-- a virtual circle. The circle has the same radius as the arc:
 			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
-			--if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
-			--if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
-			if distance_center_to_point - arc_angles.radius = zero then
+			if abs (distance_center_to_point - arc_angles.radius) <= type_distance'small then
 			
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
@@ -3686,25 +3687,25 @@ package body et_geometry is
 		end on_arc;
 
 
-		function round (ilc : in type_intersection_of_line_and_circle)
-			return type_intersection_of_line_and_circle
-		is 
-			result : type_intersection_of_line_and_circle := ilc;
-		begin
-			case result.status is
-				when NONE_EXIST =>
-					return result;
+		--function round (ilc : in type_intersection_of_line_and_circle)
+			--return type_intersection_of_line_and_circle
+		--is 
+			--result : type_intersection_of_line_and_circle := ilc;
+		--begin
+			--case result.status is
+				--when NONE_EXIST =>
+					--return result;
 					
-				when ONE_EXISTS =>
-					round (result.intersection.point);
+				--when ONE_EXISTS =>
+					--round (result.intersection.point);
 
-				when TWO_EXIST =>
-					round (result.intersection_1.point);
-					round (result.intersection_2.point);
-			end case;
+				--when TWO_EXIST =>
+					--round (result.intersection_1.point);
+					--round (result.intersection_2.point);
+			--end case;
 
-			return result;
-		end round;
+			--return result;
+		--end round;
 
 		
 		function get_intersection (
@@ -4539,7 +4540,9 @@ package body et_geometry is
 			--put_line ("d  " & type_distance_float'image (d));
 
 			
-			th := 1.0E-15;
+			--th := 1.0E-15;
+			th := 1.0E-17;
+			--th := 0.0;
 
 			--put_line ("th " & type_distance_float'image (th));
 			

@@ -885,10 +885,10 @@ package body et_routing is
 			-- left or right by the spacing:
 			case place is
 				when BEFORE =>
-					bp := type_point (set (get_x (i_center.intersection.point) - spacing, zero));
+					bp := type_point (set (to_distance (get_x (i_center.intersection.point)) - spacing, zero));
 					
 				when AFTER =>
-					bp := type_point (set (get_x (i_center.intersection.point) + spacing, zero));
+					bp := type_point (set (to_distance (get_x (i_center.intersection.point)) + spacing, zero));
 			end case;
 			
 			log_indentation_down;
@@ -990,12 +990,12 @@ package body et_routing is
 			case i.status is
 				when ONE_EXISTS =>
 					if i.tangent_status = SECANT then
-						result.append (get_x (i.intersection.point));
+						result.append (to_distance (get_x (i.intersection.point)));
 					end if;
 
 				when TWO_EXIST =>
-					result.append (get_x (i.intersection_1.point));
-					result.append (get_x (i.intersection_2.point));
+					result.append (to_distance (get_x (i.intersection_1.point)));
+					result.append (to_distance (get_x (i.intersection_2.point)));
 					
 				when NONE_EXIST => null;
 			end case;
