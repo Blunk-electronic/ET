@@ -3161,11 +3161,12 @@ package body et_geometry is
 					
 					case ILC.status is
 						when NONE_EXIST =>
+							--put_line ("none");
 							-- line travels past the arc. no intersections
 							compare_start_and_end_point;
 
 						when ONE_EXISTS =>
-							--log (text => "one exists");
+							--put_line ("one");
 							
 							if ILC.tangent_status = SECANT then
 							-- line intersects the arc only once
@@ -3191,6 +3192,8 @@ package body et_geometry is
 							end if;
 
 						when TWO_EXIST =>
+							--put_line ("two");
+							
 							-- line intersects the virtual circle twice on
 							-- its circumfence. But the intersection nearest
 							-- to point is relevant:
@@ -3621,7 +3624,7 @@ package body et_geometry is
 
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc:
-			--log (text => "delta:" & to_string (distance_center_to_point - arc_angles.radius));
+			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
 			--if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 			--if type_distance (round (abs (distance_center_to_point - arc_angles.radius))) = zero then
@@ -3763,15 +3766,15 @@ package body et_geometry is
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
 
-					--log (text => "p1" & to_string (to_point ((vi.intersection_1.point))));
-					--log (text => "p2" & to_string (to_point ((vi.intersection_2.point))));
+					--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
+					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 
 					declare
 						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.point), arc);
 						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.point), arc);
 					begin					
-						--log (text => boolean'image (oa_1));
-						--log (text => boolean'image (oa_2));
+						--put_line (boolean'image (oa_1));
+						--put_line (boolean'image (oa_2));
 						
 						if oa_1 and oa_2 then
 							-- both intersections are on the arc
@@ -4439,7 +4442,7 @@ package body et_geometry is
 			v_end : type_vector;
 			a, b, c, d : type_distance_float;
 
-			--d1 : type_distance;
+			th : type_distance_float;
 			
 			zero : constant type_distance_float := 0.0;
 
@@ -4535,19 +4538,25 @@ package body et_geometry is
 
 			--put_line ("d  " & type_distance_float'image (d));
 
-			--d1 := type_distance (round (type_distance (d)));
-
-			--put_line ("d1" & to_string (d1));
 			
-			if d < zero then 
-				--put_line ("none" & float'image (d));
+			th := 1.0E-15;
+
+			--put_line ("th " & type_distance_float'image (th));
+			
+			--if d < zero then 
+			--if d < - type_distance'small then
+			if d < - th then
+				
+				--put_line ("none");
 				
 				s := NONE_EXIST;
 				
 				return (status => NONE_EXIST);
 				
-			elsif d = zero then
-				--put_line ("one" & float'image (d));
+			--elsif d = zero then
+			--elsif abs (d) < type_distance'small then	
+			elsif abs (d) < th then	
+				--put_line ("one");
 				
 				s := ONE_EXISTS; -- tangent
 
@@ -4580,7 +4589,7 @@ package body et_geometry is
 				-- is now the angle of the tangent at this single intersection point.
 				
 			else -- d > zero
-				--put_line ("two" & float'image (d));
+				--put_line ("two");
 				
 				s := TWO_EXIST; -- two intersections
 
@@ -4674,7 +4683,7 @@ package body et_geometry is
 
 			else -- point ip1 has same distance to start point as ip2
 				--put_line (to_string (d1)); put_line (to_string (d2));
-				put_line (to_string (ip1)); put_line (to_string (ip2));
+				--put_line (to_string (ip1)); put_line (to_string (ip2));
 				raise constraint_error;
 			end if;
 				
@@ -4819,6 +4828,7 @@ package body et_geometry is
 			result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
 			
 			procedure update (d : in type_distance_polar) is begin
+				--put_line (to_string (d));
 				if get_absolute (d) < get_absolute (result) then
 					result := d;
 				end if;
@@ -4830,9 +4840,11 @@ package body et_geometry is
 			begin
 				case s.shape is
 					when LINE =>
+						--put_line (to_string (s.segment_line));
 						update (get_shortest_distance (point, s.segment_line));
 
 					when ARC =>
+						--put_line (to_string (s.segment_arc));
 						update (get_shortest_distance (point, s.segment_arc));
 						
 				end case;
