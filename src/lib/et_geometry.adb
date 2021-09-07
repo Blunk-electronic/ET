@@ -4219,11 +4219,11 @@ package body et_geometry is
 			circle		: in type_circle)
 			return boolean 
 		is
+			-- the distance from center to point:
 			DCP: constant type_distance_positive := 
 				get_distance_total (point, circle.center);
 		begin
-			--if type_distance (round (abs (DCP - circle.radius))) = zero then
-			if DCP - circle.radius = zero then
+			if abs (DCP - circle.radius) <= type_distance'small then
 
 				-- Point is on circumfence of circle.
 				return true;
