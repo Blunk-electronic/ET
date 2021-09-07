@@ -828,12 +828,6 @@ package et_geometry is
 
 		
 		
-		-- A ray has a fixed starting point, a direction and
-		-- no end point:
-		type type_ray is record
-			start_point	: type_point; -- CS change to type_vector
-			direction	: type_rotation;
-		end record;
 
 
 		
@@ -946,7 +940,14 @@ package et_geometry is
 			a, b	: in type_vector)
 			return type_distance_float;
 
+		
 
+		-- A ray has a fixed starting point, a direction and
+		-- no end point:
+		type type_ray is record
+			start_point	: type_vector;
+			direction	: type_rotation;
+		end record;
 
 		
 		-- Returns the location vector of the start point of a ray:

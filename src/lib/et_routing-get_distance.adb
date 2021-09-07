@@ -52,7 +52,7 @@ function get_distance (
 	lth				: in type_log_level)
 	return type_route_distance
 is
-	probe_ray : constant type_ray := (start_point, direction);
+	probe_ray : constant type_ray := (to_vector (start_point), direction);
 	probe_line : constant type_line_vector := to_line_vector (probe_ray);
 
 	-- get the design rules of the module:

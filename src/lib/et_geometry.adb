@@ -1797,8 +1797,8 @@ package body et_geometry is
 		is
 			v : type_vector;
 		begin
-			v.x := type_distance_float (get_x (ray.start_point));
-			v.y := type_distance_float (get_y (ray.start_point));
+			v.x := ray.start_point.x;
+			v.y := ray.start_point.y;
 			v.z := 0.0;
 
 			return v;
@@ -1887,7 +1887,7 @@ package body et_geometry is
 
 			-- Build a ray that starts at point and travels
 			-- in direction ap:
-			r := (to_point (point), ap);
+			r := (point, ap);
 
 			-- Convert the ray to a line vector:
 			return to_line_vector (r);
