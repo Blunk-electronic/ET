@@ -50,19 +50,6 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 
 package et_geometry is
-
-	--type float is digits 12;
-	--package functions_float is new ada.numerics.generic_elementary_functions (float);
-	--use functions_float;
-
-	--package float_io is new ada.text_io.float_io (float);
-	
-	
-	---- Returns 1.0 if given x is greater or equal zero.
-	---- Returns -1.0 if x less than zero.
-	--function sgn (x : float) return float;
-
-	
 	
 	keyword_position	: constant string := "position";
 	keyword_x 			: constant string := "x";
@@ -163,9 +150,8 @@ package et_geometry is
 		type type_distance_coarse is delta <> digits <>;
 		type type_distance_float is digits <>;
 		axis_min, axis_max : type_distance;
-
 		type type_rotation is delta <> digits <>;
-		--type type_rotation_float is digits <>;
+
 
 		
 	package generic_pac_geometry is

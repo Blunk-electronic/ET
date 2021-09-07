@@ -107,9 +107,8 @@ package et_pcb_coordinates is
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
-	--type type_rotation_float is digits 10; -- CS digits ?
-	-- CS range ?
-	
+
+		
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
 		type_distance			=> type_distance,
@@ -118,7 +117,6 @@ package et_pcb_coordinates is
 		axis_max				=> +10_000_000_000.0,
 		axis_min				=> -10_000_000_000.0,
 		type_rotation 			=> type_rotation
-		--type_rotation_float		=> type_rotation_float
 		);
 
 	use pac_geometry_brd;

@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
@@ -43,20 +43,9 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
-
-	--function sgn (x : float) return float is begin
-		--if x >= 0.0 then
-			--return 1.0;
-		--else
-			--return -1.0;
-		--end if;
-	--end sgn;
-
-
 	
 	function to_string (axis : in type_axis) return string is begin
 		return to_lower (type_axis'image (axis));
@@ -3724,9 +3713,6 @@ package body et_geometry is
 					radius => get_radius_start (arc));
 
 			-- Compute the intersections of the line with the virtual circle:
-			--vi : constant type_intersection_of_line_and_circle := 
-				--round (get_intersection (line, vc));
-			
 			vi : constant type_intersection_of_line_and_circle := 
 				get_intersection (line, vc);
 			
@@ -4443,9 +4429,9 @@ package body et_geometry is
 			v_end : type_vector;
 			a, b, c, d : type_distance_float;
 
-			th : type_distance_float;
-			
-			zero : constant type_distance_float := 0.0;
+			-- Due to unavoidable errors this threshold is used
+			-- instead of 0.0 when detecting the distance to the circle:
+			th : constant type_distance_float := 1.0E-17;
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
@@ -4496,58 +4482,29 @@ package body et_geometry is
 			
 			-- Move the line by the offset (which is the center of the given circle):
 			line_moved := move_by (line, invert (offset));
-			--put_line ("lm " & to_string (line_moved));
 			v_end := add (line_moved.v_start, line_moved.v_direction);
 			
 			-- compute start and end point of line:
 			x1 := type_distance_float (get_x (line_moved.v_start));
 			y1 := type_distance_float (get_y (line_moved.v_start));
-			--put_line ("x1 " & float'image (x1) & " y1 " & float'image (y1));
 			
 			x2 := type_distance_float (get_x (v_end));
 			y2 := type_distance_float (get_y (v_end));
-			--put_line ("x2 " & float'image (x2) & " y2 " & float'image (y2));
 			
 			dx := x2 - x1; -- the delta in x
 			dy := y2 - y1; -- the delta in y
-			--put_line ("dx " & float'image (dx) & " dy " & float'image (dy));
 
 			dr := sqrt (dx ** 2 + dy ** 2);
-			--put_line ("dr" & float'image (dr));
 			
 			DI := x1 * y2 - x2 * y1;
-			--put ("DI"); float_io.put (item => DI, fore => 4, aft => 25, exp => 0); new_line;
-			--float_io.put (
-								--item => DI,
-								--fore => 4,
-								--aft => 10,
-								--exp => 0);
-			--new_line;
-
-			--put_line ("r  " & float'image (r));
 			
 			b := dr ** 2;
-			--put_line ("b  " & float'image (b));
-			
 			a := r ** 2;
-			--put_line ("a  " & float'image (a));
-			
 			c := DI ** 2;
-			--put ("c "); float_io.put (item => c, fore => 4, aft => 25, exp => 0); new_line;
-			
 			d := a * b - c; -- incidence of line and circle
 
-			--put_line ("d  " & type_distance_float'image (d));
-
-			
-			--th := 1.0E-15;
-			th := 1.0E-17;
-			--th := 0.0;
-
-			--put_line ("th " & type_distance_float'image (th));
-			
-			--if d < zero then 
-			--if d < - type_distance'small then
+			-- Theoretically the comparison should be against 0.0. 
+			-- See comments on th above.
 			if d < - th then
 				
 				--put_line ("none");
@@ -4556,8 +4513,6 @@ package body et_geometry is
 				
 				return (status => NONE_EXIST);
 				
-			--elsif d = zero then
-			--elsif abs (d) < type_distance'small then	
 			elsif abs (d) < th then	
 				--put_line ("one");
 				
@@ -4566,20 +4521,10 @@ package body et_geometry is
 				x := (DI * dy) / b;
 				y := (-DI * dx) / b;
 
-				--put_line ("x " & float'image (x) & " y " & float'image (y));
-
-				--float_io.put (item => y, fore => 4, aft => 5, exp => 0); new_line;
-
-				--put_line ("x " & to_string (type_distance (x)) & " y " & to_string (type_distance (y)));
-				--put_line ("R " & to_string (to_distance (y)));
-				
-				--intersection_1 := type_point (set (type_distance (x), type_distance (y)));
 				intersection_1 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
 
-				--put_line ("int" & to_string (intersection_1));
-				
 				-- Move computed intersection back by offset
 				-- (Which is the center of the given circle):
 				move_by (intersection_1, offset);
@@ -4591,7 +4536,7 @@ package body et_geometry is
 				-- NOTE: The angle of the travel direction of the given line
 				-- is now the angle of the tangent at this single intersection point.
 				
-			else -- d > zero
+			else
 				--put_line ("two");
 				
 				s := TWO_EXIST; -- two intersections
@@ -4601,7 +4546,6 @@ package body et_geometry is
 				y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 				-- Compose the point of intersection 1:
-				--intersection_1 := type_point (set (type_distance (x), type_distance (y)));
 				intersection_1 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
@@ -4619,22 +4563,15 @@ package body et_geometry is
 				y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					  
 				-- Compose the point of intersection 2:
-				--intersection_2 := type_point (set (type_distance (x), type_distance (y)));
 				intersection_2 := type_point (set (to_distance (x), to_distance (y)));
 				-- NOTE: A constraint error is raised here if x or y is not in range 
 				-- of type_position_axis !
 
 				intersection_angle_2 := compute_intersection_angle (intersection_2);
-
-				--put_line ("i2 a " & to_string (intersection_2));
-				--put_line ("x " & float'image (x) & " y " & float'image (y));
 				
 				-- Move computed intersection 2 back by offset
 				-- (Which is the center of the given circle):
 				move_by (intersection_2, offset);				
-
-				--put_line ("i1 " & to_string (intersection_1));
-				--put_line ("i2 b" & to_string (intersection_2));
 				
 				return (TWO_EXIST, 
 						(point => to_vector (intersection_1), angle => intersection_angle_1),
