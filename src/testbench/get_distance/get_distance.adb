@@ -36,11 +36,13 @@
 --
 -- DESCRIPTION:
 -- 
+-- This program computes the distance of a point P to a conductor segment.
+-- The conductor segment is a line of width W. It has a start point S and
+-- an end point E.
+
+
 
 with ada.text_io;				use ada.text_io;
-with ada.strings.unbounded;
-
---with ada.numerics.generic_elementary_functions;
 
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -49,79 +51,168 @@ with et_board_shapes_and_text;
 use et_pcb_coordinates.pac_geometry_brd;
 use et_board_shapes_and_text.pac_shapes;
 
+with et_design_rules;			use et_design_rules;
 with et_packages;				use et_packages;
 with et_routing;				use et_routing;
 
 procedure get_distance is
 
-	use functions_float;
+	use pac_functions_distance;
 
-
-	--P : type_point := type_point (set (24.8887514, 29.7050000));
-	--S : type_point := type_point (set (24.9999996, 32.2500000));
-	--E : type_point := type_point (set (24.9999999, 30.7950000));
-	-- D: 0.3112487274
-	-- out of range: TRU
-	
-	--P : type_point := type_point (set (160.9, 0.0));
-	--S : type_point := type_point (set (160.25, -19.705));
-	--E : type_point := type_point (set (159.25, 0.2950));
-	--D: 1.4334592930
-	--out of range: FALSE
-
-	
-	--P : type_point := type_point (set (10.7999999, 0.0));
-	--S : type_point := type_point (set (10.2499989, 0.3949991));
-	--E : type_point := type_point (set (10.2499999, 1.8500000));
-	-- D: 0.3500012535
-	-- out of range: TRUE
-	
-	P : type_point := type_point (set ( 0.7118000000, 25.0000000000));
-	S : type_point := type_point (set (14.1975000000, 24.9250000000));
-	E : type_point := type_point (set (10.8025000000, 24.9250000000));
-	--D: 2.9336481243
-	--out of range: FALSE
+	P, p_init : type_point := type_point (set ( 10.000000, -1.0000000));
+	--P, p_init : type_point := type_point (set ( 10.00000000, -0.996));
+	S, s_init : type_point := type_point (set (  0.000000, 0.00000000));
+	E, e_init : type_point := type_point (set (  5.000000, 5.00000000));
+	--E, e_init : type_point := type_point (set (  5.000000, 0.00000000));
 
 	
 	L : type_line := (S, E);
 	
-	d : type_distance_point_line;
+	d : type_rotation;
 
-	cl : et_packages.type_conductor_line;
+	-- the center line of the conductor segment:
+	cl, cl_init : et_packages.type_conductor_line;
+
+	-- the width of the conductor segment:
+	W : type_track_width := 0.15;
 	
 	segment : type_conductor_line_segment;
 	distance : type_distance;
+
+	test_no : natural := 0;
+	errors : natural := 0;
+
+	procedure next_test is begin
+		test_no := test_no + 1;
+		new_line;
+		put_line ("TEST No:" & natural'image (test_no));
+	end next_test;
+		
+	
+	function inside_segment (d : in type_distance)
+		return boolean
+	is begin
+		if d <= zero then
+			put_line ("ERROR: P" & to_string (P) & " is inside segment !");
+			errors := errors + 1;
+			return true;
+		else
+			return false;
+		end if;
+	end inside_segment;
+		
 begin
 
-	cl := (S, E, 0.15);
-	put_line (to_string (cl));
-	--new_line;
-	
-	segment := to_line_segment (cl);
+	cl_init := (S, E, W);
 
-		
+	
+	put_line ("line width" & to_string (W));
+
+	
 	--put_line ("segment " & to_string (segment));
+	
+	--distance := get_shortest_distance (P,segment);
 	--new_line;
 	
-	distance := get_shortest_distance (P,segment);
+	--put_line ("P:" & to_string (P) & " / D:" & to_string (distance));
 
-	put_line ("distance" & to_string (distance));
 	
-	--P := type_point (round (P));
-	--L := type_line (round (L));
-	--put_line (to_string (L));
-
-	--for i in 1 .. 1 loop
-		--new_line;
-		--P := type_point (move (P, 180.0, 0.2));
-		--put_line ("P:" & to_string (P));
+	next_test;
+	put_line ("P MOVES UPWARDS");
+	P := p_init;
+	cl := cl_init;
+	segment := to_line_segment (cl);
+	put_line (to_string (segment));
+	for i in 1 .. 7_000 loop
+		P := type_point (move (P, 90.0, 0.001));
 		
-		--d := get_distance (P, L, WITH_END_POINTS);
-		--put_line ("D:" & to_string (get_distance (d)));
-		--put_line ("out of range: " & boolean'image (out_of_range (d)));
-	--end loop;
+		distance := get_shortest_distance (P,segment);
+		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
+		--put_line ("P:" & to_string (P) & " / D:" & to_string (distance));
 
+		if inside_segment (distance) then
+			exit;
+		end if;
+	end loop;
+	-- 6000: P: (x/y)  10.00000000/ 5.00000000 / D: 4.92500000
+	
+	next_test;
+	d := 125.0;
+	put_line ("P MOVES IN DIRECTION " & to_string (d) & " DEG");
+	P := p_init;
+	cl := cl_init;
+	put_line ("CL: " & to_string (cl));
+	segment := to_line_segment (cl);
+	for i in 1 .. 10_000 loop
+		P := type_point (move (P, d, 0.001));
+		
+		distance := get_shortest_distance (P,segment);
+		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
 
+		if inside_segment (distance) then
+			exit;
+		end if;
+	end loop;
+	-- 7783: P: (x/y)  5.53582686/ 5.37544445 / D: 0.57926979
+
+	
+	next_test;
+	put_line ("P ROTATES ABOUT THE ORIGIN");
+	P := type_point (set ( 10.000000, -0.0000000));
+	cl := cl_init;
+	segment := to_line_segment (cl);	
+	for i in 1 .. 360 loop
+		rotate_by (P, 1.0);
+		
+		distance := get_shortest_distance (P,segment);
+
+		put_line (positive'image (i) & ": P:" & to_string (P) 
+		--& " A:" & to_string (get_angle (get_distance (origin, P)))
+			& " A:" & to_string (get_rotation (P)) 
+			& " / D:" & to_string (distance));
+
+		if distance <= zero then
+			put_line ("ERROR");
+			exit;
+		end if;
+	end loop;
+	-- 45: P: (x/y)  7.07106780/ 7.07106780 A: 45.0000 / D: 2.85393217
+	-- 225: P: (x/y)  -7.07106779/ -7.07106779 A: -135.0000 / D: 9.92499997
+	
+	-- The segment rotates about the origin.
+	-- The start point is fixed to the origin.
+	-- The end point rotates.
+	next_test;
+	put_line ("END POINT OF SEGMENT ROTATES ABOUT THE ORIGIN");
+	P := type_point (set ( 10.000000, -0.0000000));
+	S := s_init;
+	E := e_init;
+	for i in 1 .. 360 loop
+
+		rotate_by (E, 1.0);
+
+		cl := (S, E, W);
+		segment := to_line_segment (cl);
+		
+		distance := get_shortest_distance (P,segment);
+
+		put_line (positive'image (i) & ": CL: " & to_string (cl)
+			& " / D:" & to_string (distance));
+
+		if distance <= zero then
+			put_line ("ERROR");
+			exit;
+		end if;
+	end loop;
+	-- 135: CL: line: S: (x/y)  0.00000000/ 0.00000000 / E: (x/y)  -7.07106774/ 0.00000000 / D: 9.92000000
+
+	new_line;
+	if errors = 0 then
+		put_line ("PASS");
+	else
+		put_line ("FAIL ! errors:" & natural'image (errors));
+	end if;
+	
 end get_distance;
 
 -- Soli Deo Gloria
