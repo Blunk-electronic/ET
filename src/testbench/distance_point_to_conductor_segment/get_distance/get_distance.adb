@@ -123,8 +123,9 @@ begin
 	cl := cl_init;
 	segment := to_line_segment (cl);
 	put_line (to_string (segment));
-	for i in 1 .. 7_000 loop
-		P := type_point (move (P, 90.0, 0.001));
+	--for i in 1 .. 7_000 loop
+	for i in 1 .. 70_000 loop
+		P := type_point (move (P, 90.0, 0.0001));
 		
 		distance := get_shortest_distance (P,segment);
 		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
@@ -143,8 +144,9 @@ begin
 	cl := cl_init;
 	put_line ("CL: " & to_string (cl));
 	segment := to_line_segment (cl);
-	for i in 1 .. 10_000 loop
-		P := type_point (move (P, d, 0.001));
+	--for i in 1 .. 10_000 loop
+	for i in 1 .. 100_000 loop
+		P := type_point (move (P, d, 0.0001));
 		
 		distance := get_shortest_distance (P,segment);
 		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
@@ -161,8 +163,9 @@ begin
 	P := type_point (set ( 10.000000, -0.0000000));
 	cl := cl_init;
 	segment := to_line_segment (cl);	
-	for i in 1 .. 360 loop
-		rotate_by (P, 1.0);
+	--for i in 1 .. 360 loop
+	for i in 1 .. 3600 loop
+		rotate_by (P, 0.1);
 		
 		distance := get_shortest_distance (P,segment);
 
@@ -178,6 +181,7 @@ begin
 	end loop;
 	-- 45: P: (x/y)  7.07106780/ 7.07106780 A: 45.0000 / D: 2.85393217
 	-- 225: P: (x/y)  -7.07106779/ -7.07106779 A: -135.0000 / D: 9.92499997
+	-- ? 1800: P: (x/y)  -9.99999999/ 0.00000000 A: 180.0000 / D: 9.92499999 
 	
 	-- The segment rotates about the origin.
 	-- The start point is fixed to the origin.
@@ -187,9 +191,10 @@ begin
 	P := type_point (set ( 10.000000, -0.0000000));
 	S := s_init;
 	E := e_init;
-	for i in 1 .. 360 loop
+	--for i in 1 .. 360 loop
+	for i in 1 .. 3600 loop
 
-		rotate_by (E, 1.0);
+		rotate_by (E, 0.01);
 
 		cl := (S, E, W);
 		segment := to_line_segment (cl);

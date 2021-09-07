@@ -5,7 +5,7 @@ project get_distance is
 	--for exec_dir use external ("HOME") & "/bin";
 	for exec_dir use ".";
 	for object_dir use "obj";
- 	for source_dirs use ("." , "../../lib");
+ 	for source_dirs use ("." , "../../../lib");
  	for main use ("get_distance");
 
 end get_distance;
