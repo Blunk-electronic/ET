@@ -310,7 +310,7 @@ package et_geometry is
 		function round (point : in type_point)
 			return type_point'class;
 
-		--procedure round (point : in out type_point'class);
+		procedure round (point : in out type_point'class);
 		
 		
 		type type_distance_relative is record
@@ -887,7 +887,7 @@ package et_geometry is
 		
 		function absolute (
 			vector	: in type_vector)
-			return type_distance_positive;
+			return type_distance_float;
 
 		function scale (
 			v	: in type_vector;
@@ -1153,7 +1153,7 @@ package et_geometry is
 		function get_distance (
 			line	: in type_line;
 			vector	: in type_vector)
-			return type_distance_positive;
+			return type_distance_float;
 
 		
 		-- Returns the direction in degrees of a line.

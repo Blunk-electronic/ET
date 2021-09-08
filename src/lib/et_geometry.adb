@@ -417,10 +417,10 @@ package body et_geometry is
 		end round;
 
 
-		--procedure round (point : in out type_point'class) is begin
-			--point.x := type_distance (round (point.x));
-			--point.y := type_distance (round (point.y));
-		--end round;
+		procedure round (point : in out type_point'class) is begin
+			point.x := type_distance (round (point.x));
+			point.y := type_distance (round (point.y));
+		end round;
 
 		
 		
@@ -1678,13 +1678,17 @@ package body et_geometry is
 		
 		function absolute (
 			vector	: in type_vector)
-			return type_distance_positive
+			return type_distance_float
 		is begin
 			return
-				to_distance (sqrt (
-					type_distance_float (vector.x) ** 2 + 
-					type_distance_float (vector.y) ** 2 +
-					type_distance_float (vector.z) ** 2));
+				sqrt (
+					--vector.x ** 2.0 + 
+					--vector.y ** 2.0 +
+						 --vector.z ** 2.0);
+					vector.x * vector.x + 
+					vector.y * vector.y +
+					vector.z * vector.z);
+
 		end absolute;
 
 		
@@ -1947,8 +1951,10 @@ package body et_geometry is
 			end exists_intersection;
 
 			function lines_overlap return boolean is
-				a, b, distance : type_distance_positive;
+				a, b, distance : type_distance_float;
 				v1 : type_vector;
+
+				th : constant type_distance_float := 1.0E-17;
 			begin
 				-- The first condition to be fulfilled is that the lines
 				-- must run parallel to each other. In this case the cross
@@ -1965,7 +1971,8 @@ package body et_geometry is
 
 					distance := a / b;
 
-					if distance = zero then
+					--if distance = 0.0 then -- CS use a threshold ?
+					if abs (distance) <= th then						
 						return true; -- lines overlap each other
 					else
 						return false; -- distance greater zero -> hence no overlap
@@ -2307,25 +2314,25 @@ package body et_geometry is
 			pv : constant type_vector := to_vector (point);
 			
 			d1 : constant type_vector := subtract (pv, sv);
-			m, n : type_distance_positive;
+			m, n : type_distance_float;
 		begin
 			m := absolute (cross_product (dv, d1));
 			n := absolute (dv);
 			
-			return (m / n);
+			return to_distance (m / n);
 		end get_distance;
 
 		
 		function get_distance (
 			line	: in type_line;
 			vector	: in type_vector)
-			return type_distance_positive
+			return type_distance_float
 		is
 			dv : constant type_vector := direction_vector (line);
 			sv : constant type_vector := start_vector (line);
 			
 			d1 : constant type_vector := subtract (vector, sv);
-			m, n : type_distance_positive;
+			m, n : type_distance_float;
 		begin
 			m := absolute (cross_product (dv, d1));
 			n := absolute (dv);
@@ -2755,7 +2762,8 @@ package body et_geometry is
 			iv : type_vector;
 
 			procedure compute_intersection is 
-				distance : type_distance_positive;
+				distance : type_distance_float;
+				th : constant type_distance_float := 1.0E-10; -- CS refine or set dynamically ?
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
@@ -2766,11 +2774,10 @@ package body et_geometry is
 				iv := to_vector (point);
 				move_by (iv, line_direction + 90.0, result.distance);
 
-				--distance := type_distance (round (get_distance (line, iv)));
 				distance := get_distance (line, iv);
-				--put_line ("delta  :" & to_string (distance));
+				--log (text => "delta  :" & type_distance_float'image (distance));
 				
-				if distance > zero then
+				if distance > th then
 					--put_line ("wrong direction");
 					
 					-- we went the wrong direction
