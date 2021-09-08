@@ -310,7 +310,7 @@ package et_geometry is
 		function round (point : in type_point)
 			return type_point'class;
 
-		procedure round (point : in out type_point'class);
+		--procedure round (point : in out type_point'class);
 		
 		
 		type type_distance_relative is record
@@ -785,7 +785,7 @@ package et_geometry is
 
 ----- SHAPES ---------------------------------------------------
 	
-
+	
 	generic
 		with package pac_geometry is new generic_pac_geometry (<>);
 		
@@ -1045,7 +1045,7 @@ package et_geometry is
 		--function round (line : in type_line)
 			--return type_line'class;
 
-		--procedure round (line : in out type_line);
+		procedure round (line : in out type_line);
 		
 		
 		-- Returns the length of a line:
@@ -1305,10 +1305,10 @@ package et_geometry is
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
 		
-		function round (arc : in type_arc)
-			return type_arc'class;
+		--function round (arc : in type_arc)
+			--return type_arc'class;
 
-		procedure round (arc : in out type_arc);
+		--procedure round (arc : in out type_arc);
 		
 
 		

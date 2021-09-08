@@ -164,7 +164,8 @@ package body et_geometry is
 			& lf & "right:      " & positive'image (rotation_digits_right)
 			& lf & "total:      " & positive'image (type_rotation'digits)
 			& lf;
-			
+
+			-- CS type_distance_float ?
 		end get_info;
 
 
@@ -416,10 +417,10 @@ package body et_geometry is
 		end round;
 
 
-		procedure round (point : in out type_point'class) is begin
-			point.x := type_distance (round (point.x));
-			point.y := type_distance (round (point.y));
-		end round;
+		--procedure round (point : in out type_point'class) is begin
+			--point.x := type_distance (round (point.x));
+			--point.y := type_distance (round (point.y));
+		--end round;
 
 		
 		
@@ -1047,7 +1048,7 @@ package body et_geometry is
 				scratch := scratch + 360.0;
 			end if;
 
-			result := type_rotation (scratch);
+			result := to_rotation (scratch);
 			return result;
 		end;
 
@@ -1205,7 +1206,7 @@ package body et_geometry is
 		function to_degrees (radians : in type_distance_float) return type_rotation is
 			use ada.numerics;
 		begin
-			return type_rotation ((units_per_cycle * 0.5 * radians) / pi);
+			return to_rotation ((units_per_cycle * 0.5 * radians) / pi);
 		end to_degrees;
 
 		
@@ -2038,8 +2039,18 @@ package body et_geometry is
 			a := type_distance_float (dot_product (line_1.v_direction, line_2.v_direction));
 			b := type_distance_float (absolute (line_1.v_direction) * absolute (line_2.v_direction));
 			c := a / b;
-			
-			r := to_rotation (arccos (X => a / b, cycle => type_distance_float (units_per_cycle)));
+
+			-- c may be slightly greater than 1.0 or smaller than -1.0. In these cases
+			-- the rotation can be set without any calculation:
+			if c > 1.0 then
+				r := 0.0;
+
+			elsif c < -1.0 then
+				r := 180.0;
+
+			else
+				r := to_rotation (arccos (X => a / b, cycle => units_per_cycle));				
+			end if;
 
 			return r;
 		end get_angle_of_itersection;
@@ -2057,11 +2068,11 @@ package body et_geometry is
 			--return r;
 		--end round;
 
-		--procedure round (line : in out type_line) 
-		--is begin
-			--line.start_point := type_point (round (line.start_point));
-			--line.end_point := type_point (round (line.end_point));
-		--end round;
+		procedure round (line : in out type_line) 
+		is begin
+			line.start_point := type_point (round (line.start_point));
+			line.end_point := type_point (round (line.end_point));
+		end round;
 
 
 		
@@ -2638,7 +2649,8 @@ package body et_geometry is
 				-- calculate the zone border. This depends on the line length in X direction.
 				line_length := get_distance_abs (line.start_point, line.end_point, X);
 				zone_border := line_length / type_distance (line_zone_division_factor);
-
+				-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+			   
 				if get_x (line.start_point) < get_x (line.end_point) then 
 				-- DRAWN FROM LEFT TO THE RIGHT
 					if get_x (point) < get_x (line.start_point) + zone_border then
@@ -2668,7 +2680,8 @@ package body et_geometry is
 				-- calculate the zone border. This depends on the line length in Y direction.
 				line_length := get_distance_abs (line.start_point, line.end_point, Y);
 				zone_border := line_length / type_distance (line_zone_division_factor);
-
+				-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+				
 				if get_y (line.start_point) < get_y (line.end_point) then 
 				-- DRAWN UPWARDS
 					if get_y (point) < get_y (line.start_point) + zone_border then
@@ -2728,18 +2741,6 @@ package body et_geometry is
 			return type_distance_point_line 
 		is
 			result : type_distance_point_line;
-
-			-- CS probably not good to round the result by this function ?
-			-- should not be rounded at all
-			--function round (dp : in type_distance_point_line) 
-				--return type_distance_point_line 
-			--is
-				--r : type_distance_point_line := dp;
-			--begin
-				--r.distance := type_distance (round (dp.distance));
-				---- CS round dp.direction and dp.intersection ?
-				--return r;
-			--end round;
 		
 			-- Imagine a line that starts on the given point, travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
@@ -3007,26 +3008,26 @@ package body et_geometry is
 		end get_shortest_distance;
 
 
-		function round (arc : in type_arc)
-			return type_arc'class
-		is 
-			r : type_arc;
-		begin
-			r := (
-				center		=> type_point (round (arc.center)),
-				start_point	=> type_point (round (arc.start_point)),
-				end_point	=> type_point (round (arc.end_point)),
-				direction	=> arc.direction);
+		--function round (arc : in type_arc)
+			--return type_arc'class
+		--is 
+			--r : type_arc;
+		--begin
+			--r := (
+				--center		=> type_point (round (arc.center)),
+				--start_point	=> type_point (round (arc.start_point)),
+				--end_point	=> type_point (round (arc.end_point)),
+				--direction	=> arc.direction);
 
-			return r;
-		end round;
+			--return r;
+		--end round;
 
-		procedure round (arc : in out type_arc) 
-		is begin
-			arc.center		:= type_point (round (arc.center));
-			arc.start_point	:= type_point (round (arc.start_point));
-			arc.end_point	:= type_point (round (arc.end_point));
-		end round;
+		--procedure round (arc : in out type_arc) 
+		--is begin
+			--arc.center		:= type_point (round (arc.center));
+			--arc.start_point	:= type_point (round (arc.start_point));
+			--arc.end_point	:= type_point (round (arc.end_point));
+		--end round;
 
 
 		
@@ -3399,15 +3400,17 @@ package body et_geometry is
 			result.direction := arc.direction;
 
 			-- start point:
-			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_start), type_distance_float (units_per_cycle));
-			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_start), type_distance_float (units_per_cycle));
-			result.start_point := type_point (set (type_distance (x), type_distance (y)));
+			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_start), units_per_cycle);
+			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_start), units_per_cycle);
+			--result.start_point := type_point (set (type_distance (x), type_distance (y)));
+			result.start_point := type_point (set (to_distance (x), to_distance (y)));
 			move_by (result.start_point, offset);
 			
 			-- end point:
-			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_end), type_distance_float (units_per_cycle));
-			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_end), type_distance_float (units_per_cycle));
-			result.end_point := type_point (set (type_distance (x), type_distance (y)));
+			x := type_distance_float (arc.radius) * cos (type_distance_float (arc.angle_end), units_per_cycle);
+			y := type_distance_float (arc.radius) * sin (type_distance_float (arc.angle_end), units_per_cycle);
+			--result.end_point := type_point (set (type_distance (x), type_distance (y)));
+			result.end_point := type_point (set (to_distance (x), to_distance (y)));
 			move_by (result.end_point, offset);
 			
 			return result;
@@ -3833,9 +3836,11 @@ package body et_geometry is
 			end_x := cos (type_distance_float (angle_end)) * radius;
 
 			return set (
-				x	=> type_distance (end_x),
-				y	=> type_distance (end_y));
-			
+				--x	=> type_distance (end_x),
+				--y	=> type_distance (end_y));
+				x	=> to_distance (end_x),
+				y	=> to_distance (end_y));
+						   
 		end arc_end_point;
 
 		
@@ -5630,6 +5635,7 @@ package body et_geometry is
 		function to_scale (scale : in string) return type_polygon_scale is begin
 			return type_polygon_scale'value (scale);
 		end to_scale;
+
 		
 		procedure offset_polygon (
 			polygon		: in out type_polygon_base;
