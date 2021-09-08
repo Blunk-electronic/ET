@@ -68,15 +68,15 @@ package et_routing is
 	-- fill line to its imaginary intersection with the edge of 
 	-- another object (board contour, side of a polygon, track,
 	-- pad, vector text).
-	function compute_clearance (
-		status			: in type_point_status; -- transition to inside/outside area
-		y_position		: in type_position_axis; -- the y-position of the fill line
-		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
-		line_width		: in type_track_width;  -- the width of the fill line
-		extra_clearance	: in boolean := false;
-		clearance		: in type_distance_positive := zero;
-		log_threshold	: in type_log_level)
-		return type_distance_positive;
+	--function compute_clearance (
+		--status			: in type_point_status; -- transition to inside/outside area
+		--y_position		: in type_position_axis; -- the y-position of the fill line
+		--intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
+		--line_width		: in type_track_width;  -- the width of the fill line
+		--extra_clearance	: in boolean := false;
+		--clearance		: in type_distance_positive := zero;
+		--log_threshold	: in type_log_level)
+		--return type_distance_positive;
 
 
 	-- Returns the distance to the nearest point
