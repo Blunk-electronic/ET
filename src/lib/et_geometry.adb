@@ -1633,27 +1633,6 @@ package body et_geometry is
 		end to_vector;
 
 
-		--function round (
-			--vector : in type_vector)
-			--return type_vector
-		--is
-			--r : type_vector;
-		--begin
-			--r.x := type_distance (round (vector.x));
-			--r.y := type_distance (round (vector.y));
-			--r.z := zero;
-
-			--return r;
-		--end round;
-		
-
-		--procedure round (
-			--vector : in out type_vector)
-		--is begin
-			--vector.x := type_distance (round (vector.x));
-			--vector.y := type_distance (round (vector.y));
-		--end round;
-
 		
 		function to_point (
 			v	: in type_vector)
@@ -1899,21 +1878,6 @@ package body et_geometry is
 		end to_string;
 
 
-		--function round (ill : in type_intersection_of_two_lines)
-			--return type_intersection_of_two_lines
-		--is
-			--result : type_intersection_of_two_lines := ill;
-		--begin
-			--case result.status is
-				--when EXISTS =>
-					--round (result.intersection.point);
-
-				--when others => 
-					--null;
-			--end case;
-
-			--return result;
-		--end round;
 
 		
 		function get_intersection (

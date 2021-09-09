@@ -873,13 +873,6 @@ package et_geometry is
 			return type_vector;
 
 		
-		--function round (
-			--vector : in type_vector)
-			--return type_vector;
-
-		--procedure round (
-			--vector : in out type_vector);
-
 		
 		function to_point (
 			v	: in type_vector)
@@ -1015,8 +1008,6 @@ package et_geometry is
 		end record;
 
 
-		--function round (ill : in type_intersection_of_two_lines)
-			--return type_intersection_of_two_lines;
 		
 
 		-- Tests whether the given two lines intersect.
