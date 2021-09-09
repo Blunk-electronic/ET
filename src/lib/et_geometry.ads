@@ -984,10 +984,11 @@ package et_geometry is
 			EXISTS,
 			OVERLAP);
 
-		-- In general an intersection is composed of a point, where 
-		-- the two objects meet, and and the angle at which they intersect:
+		-- In general an intersection is composed of a 
+		-- location vector, where the two objects meet,
+		-- and and the angle at which they intersect:
 		type type_intersection is record
-			point	: type_vector; -- location vector -- CS rename to vector
+			vector	: type_vector; -- location vector
 			angle	: type_rotation := zero_rotation;
 		end record;
 		

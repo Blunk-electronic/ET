@@ -1873,7 +1873,7 @@ package body et_geometry is
 		function to_string (intersection : in type_intersection)
 			return string
 		is begin
-			return to_string (to_point (intersection.point)) 
+			return to_string (intersection.vector) 
 				& " angle" & to_string (intersection.angle);
 		end to_string;
 
@@ -1976,7 +1976,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_2.v_start, scale (line_2.v_direction, lambda));
+						i.vector := add (line_2.v_start, scale (line_2.v_direction, lambda));
 					else
 						a := type_float_internal (line_2.v_start.y);
 						b := type_float_internal (line_1.v_start.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
@@ -1988,7 +1988,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
+						i.vector := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
 					i.angle := get_angle_of_itersection (line_1, line_2);
@@ -2212,7 +2212,7 @@ package body et_geometry is
 					-- of candidate line, then return the intersection as it is.
 					-- If the intersection is before start point or
 					-- beyond end point, then return NOT_EXISTENT.
-					if on_line (to_point (i.intersection.point), candidate_line) then
+					if on_line (to_point (i.intersection.vector), candidate_line) then
 						return i;
 					else
 						return (status => NOT_EXISTENT);
@@ -3142,7 +3142,7 @@ package body et_geometry is
 								--log (text => "l: " & to_string (line));
 								--log (text => "i: " & to_string (ILC.intersection.point));
 								
-								if after_center (ILC.intersection.point) then
+								if after_center (ILC.intersection.vector) then
 									-- intersection after center of arc
 									--log (text => "i after center");
 									compare_start_and_end_point;
@@ -3186,7 +3186,7 @@ package body et_geometry is
 
 								--put_line ("i: " & to_string (ILC.intersection.point));
 								
-								if after_center (ILC.intersection.point) then
+								if after_center (ILC.intersection.vector) then
 									-- intersection after center of arc
 									--put_line ("i after center");
 									compare_start_and_end_point;
@@ -3663,7 +3663,7 @@ package body et_geometry is
 					--return result;
 					
 				--when ONE_EXISTS =>
-					--round (result.intersection.point);
+					--round (result.intersection.vector);
 
 				--when TWO_EXIST =>
 					--round (result.intersection_1.point);
@@ -3716,7 +3716,7 @@ package body et_geometry is
 
 					-- Test whether the point where the tangent meets the
 					-- circle is on the given arc:
-					if on_arc (to_point (vi.intersection.point), arc) then
+					if on_arc (to_point (vi.intersection.vector), arc) then
 						return (ONE_EXISTS, vi.intersection, TANGENT);
 					else
 						return (status => NONE_EXIST);
@@ -3734,8 +3734,8 @@ package body et_geometry is
 					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 
 					declare
-						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.point), arc);
-						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.point), arc);
+						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.vector), arc);
+						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.vector), arc);
 					begin					
 						--put_line (boolean'image (oa_1));
 						--put_line (boolean'image (oa_2));
@@ -4225,16 +4225,16 @@ package body et_geometry is
 				when NONE_EXIST => null;
 				
 				when ONE_EXISTS => 
-					if on_line (to_point (i.intersection.point), line) then
+					if on_line (to_point (i.intersection.vector), line) then
 						result := true;
 					end if;		
 
 				when TWO_EXIST =>
-					if on_line (to_point (i.intersection_1.point), line) then
+					if on_line (to_point (i.intersection_1.vector), line) then
 						result := true;
 					end if;
 					
-					if on_line (to_point (i.intersection_2.point), line) then
+					if on_line (to_point (i.intersection_2.vector), line) then
 						result := true;
 					end if;
 					
@@ -4509,7 +4509,7 @@ package body et_geometry is
 				move_by (intersection_1, offset);
 				
 				return (ONE_EXISTS, 
-						(point => to_vector (intersection_1), angle => line_angle),
+						(vector => to_vector (intersection_1), angle => line_angle),
 						TANGENT);
 
 				-- NOTE: The angle of the travel direction of the given line
@@ -4553,8 +4553,8 @@ package body et_geometry is
 				move_by (intersection_2, offset);				
 				
 				return (TWO_EXIST, 
-						(point => to_vector (intersection_1), angle => intersection_angle_1),
-						(point => to_vector (intersection_2), angle => intersection_angle_2)
+						(vector => to_vector (intersection_1), angle => intersection_angle_1),
+						(vector => to_vector (intersection_2), angle => intersection_angle_2)
 					   );
 
 				
@@ -4583,8 +4583,8 @@ package body et_geometry is
 
 		begin
 			-- get intersection point 1 and 2:
-			ip1 := to_point (i.intersection_1.point);
-			ip2 := to_point (i.intersection_2.point);
+			ip1 := to_point (i.intersection_1.vector);
+			ip2 := to_point (i.intersection_2.vector);
 			
 			-- the distance from start point to intersection point 1:
 			d1 := get_distance_total (start_point, ip1);
@@ -5876,13 +5876,13 @@ package body et_geometry is
 				-- The intersection will be collected if it is ON or
 				-- AFTER the given start point. If it is before the start
 				-- point then we ignore it:
-				if get_x (to_point (intersection.point)) >= get_x (point) then
+				if get_x (to_point (intersection.vector)) >= get_x (point) then
 					
 					case curvature is
 						when STRAIGHT =>
 							
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.point)),
+								x_position	=> get_x (to_point (intersection.vector)),
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> STRAIGHT
@@ -5891,7 +5891,7 @@ package body et_geometry is
 						when CONVEX =>
 
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.point)),
+								x_position	=> get_x (to_point (intersection.vector)),
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> CONVEX,
@@ -5902,7 +5902,7 @@ package body et_geometry is
 						when CONCAVE =>
 
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.point)),
+								x_position	=> get_x (to_point (intersection.vector)),
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> CONCAVE,
@@ -5927,7 +5927,7 @@ package body et_geometry is
 					--put_line ("exists");
 					--put_line (to_string (l));
 					--put_line (to_string (y_threshold));
-					--put_line (to_string (i.intersection.point));
+					--put_line (to_string (i.intersection.vector));
 
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
