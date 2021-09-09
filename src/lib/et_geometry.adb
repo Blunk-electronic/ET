@@ -163,9 +163,12 @@ package body et_geometry is
 			& lf & "left:       " & positive'image (rotation_digits_total - rotation_digits_right)
 			& lf & "right:      " & positive'image (rotation_digits_right)
 			& lf & "total:      " & positive'image (type_rotation'digits)
+			& lf
+			& lf & "internal float"
+			& lf & "min:        " & type_distance_float'image (type_distance_float'first)
+			& lf & "max:        " & type_distance_float'image (type_distance_float'last)
+			& lf & "digits:     " & positive'image (type_distance_float'digits)
 			& lf;
-
-			-- CS type_distance_float ?
 		end get_info;
 
 

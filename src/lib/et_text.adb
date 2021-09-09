@@ -575,6 +575,11 @@ package body et_text is
 						line	=> pac_shapes.type_line (l),
 						offset	=> to_distance_relative (position));
 
+					round (l); 
+					-- CS: not sure whether this is reasonable
+					-- However, it irons out errors caused by previous
+					-- rotating operations.
+					
 					append (scratch, l);
 				end query_line;
 			
