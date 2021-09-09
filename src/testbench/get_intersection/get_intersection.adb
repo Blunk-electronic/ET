@@ -52,12 +52,12 @@ use et_board_shapes_and_text.pac_shapes;
 with et_packages;				use et_packages;
 with et_routing;				use et_routing;
 
+
 procedure get_intersection is
 
-	use functions_float;
-
-	S : type_point := type_point (set (0.7118000000, 25.0000000000));
-	D : type_point := type_point (set (1.0, 0.0));
+	
+	S : type_point := type_point (set (10.0, -0.075));
+	D : type_point := type_point (set (-1.0, 0.0));
 
 	L : type_line_vector := (
 		v_start => to_vector (S),
@@ -65,14 +65,42 @@ procedure get_intersection is
 
 	
 	C : type_circle := (
-		center => type_point (set (10.8025000000, 24.9250000000)),
+		center => type_point (set (0.0, 0.0)),
 		radius => 0.075);
 
-	I : type_intersection_of_line_and_circle := get_intersection (L, C);
-	
+	--I : type_intersection_of_line_and_circle := get_intersection (L, C);
+
 begin
 
-	put_line (type_intersection_status_of_line_and_circle'image (I.status));
+
+	declare
+		I : type_intersection_of_line_and_circle := get_intersection (L, C);
+	begin
+		put_line (type_intersection_status_of_line_and_circle'image (I.status));
+
+		case I.status is
+			when ONE_EXISTS =>
+				put_line (to_string (I.intersection.point));
+
+				--put_line (float'image (float (get_y ((I.intersection.point)))));
+
+				--et_geometry.float_io.put (
+					--item => et_geometry.float (get_y ((I.intersection.point))),
+					--fore => 4,
+					--aft => 25,
+					--exp => 0);
+
+
+				
+			when TWO_EXIST =>
+				put_line (to_string (I.intersection_1.point));
+				put_line (to_string (I.intersection_2.point));
+
+			when NONE_EXIST =>
+				null;
+		end case;
+	end;
+	
 	--cl := (S, E, 0.15);
 	--put_line (to_string (cl));
 	--new_line;
