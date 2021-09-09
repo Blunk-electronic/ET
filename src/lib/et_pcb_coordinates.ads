@@ -91,7 +91,7 @@ package et_pcb_coordinates is
 		range type_distance'first .. type_distance'last;
 
 
-	type type_distance_float is digits 18;
+	type type_float_internal is digits 18;
 		
 		
 	-- Angle or rotation is in mathematical sense, means:
@@ -112,7 +112,7 @@ package et_pcb_coordinates is
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
 		type_distance			=> type_distance,
 		type_distance_coarse	=> type_distance_coarse,
-		type_distance_float		=> type_distance_float,
+		type_float_internal		=> type_float_internal,
 		axis_max				=> +10_000_000_000.0,
 		axis_min				=> -10_000_000_000.0,
 		type_rotation 			=> type_rotation

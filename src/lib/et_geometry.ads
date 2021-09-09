@@ -148,7 +148,7 @@ package et_geometry is
 	generic
 		type type_distance is delta <> digits <>;
 		type type_distance_coarse is delta <> digits <>;
-		type type_distance_float is digits <>;
+		type type_float_internal is digits <>;
 		axis_min, axis_max : type_distance;
 		type type_rotation is delta <> digits <>;
 
@@ -162,10 +162,10 @@ package et_geometry is
 
 
 		package pac_functions_distance is new 
-			ada.numerics.generic_elementary_functions (type_distance_float);
+			ada.numerics.generic_elementary_functions (type_float_internal);
 		use pac_functions_distance;
 
-		package pac_distance_io is new ada.text_io.float_io (type_distance_float);
+		package pac_distance_io is new ada.text_io.float_io (type_float_internal);
 
 		
 		
@@ -175,7 +175,7 @@ package et_geometry is
 
 		-- Returns 1.0 if given x is greater or equal zero.
 		-- Returns -1.0 if x less than zero.
-		function sgn (x : type_distance_float) return type_distance_float;
+		function sgn (x : type_float_internal) return type_float_internal;
 
 		
 		
@@ -196,10 +196,10 @@ package et_geometry is
 
 
 
-		function to_distance (f : in type_distance_float)
+		function to_distance (f : in type_float_internal)
 			return type_distance;
 
-		function to_rotation (f : in type_distance_float)
+		function to_rotation (f : in type_float_internal)
 			return type_rotation;
 
 		
@@ -662,18 +662,18 @@ package et_geometry is
 		-- x and y from the origin:
 		far_upper_right_zero_rotation : constant type_position;
 		
-		units_per_cycle : constant type_distance_float := 360.0;
+		units_per_cycle : constant type_float_internal := 360.0;
 
 		zero_rotation : constant type_rotation := 0.0;
 
-		radians_max : constant type_distance_float := - 2.0 * ada.numerics.pi;
+		radians_max : constant type_float_internal := - 2.0 * ada.numerics.pi;
 		
-		subtype type_radians is type_distance_float range (- radians_max) .. radians_max;
+		subtype type_radians is type_float_internal range (- radians_max) .. radians_max;
 		
-		function to_radians (degrees : in type_rotation) return type_distance_float;
+		function to_radians (degrees : in type_rotation) return type_float_internal;
 		-- Converts degrees to radians.
 
-		function to_degrees (radians : in type_distance_float) return type_rotation;
+		function to_degrees (radians : in type_float_internal) return type_rotation;
 		-- Converts radians to degrees.
 
 
@@ -831,15 +831,15 @@ package et_geometry is
 		
 		function get_x (
 			v	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		function get_y (
 			v	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		function get_z (
 			v	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		-- Returns the distance of location vector_one to vector_two.	
 		-- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
@@ -887,11 +887,11 @@ package et_geometry is
 		
 		function absolute (
 			vector	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		function scale (
 			v	: in type_vector;
-			s	: in type_distance_float)
+			s	: in type_float_internal)
 			return type_vector;
 		
 		function add (
@@ -910,11 +910,11 @@ package et_geometry is
 		
 		function dot_product ( -- german: Skalarprodukt
 			a, b	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		function mixed_product ( -- german: Spatprodukt
 			a, b, c	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 		-- NOTE: Also called scalar triple product or box product.
 
 								   
@@ -924,7 +924,7 @@ package et_geometry is
 		-- must not be zero.
 		function divide (
 			a, b	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		
 
@@ -1153,7 +1153,7 @@ package et_geometry is
 		function get_distance (
 			line	: in type_line;
 			vector	: in type_vector)
-			return type_distance_float;
+			return type_float_internal;
 
 		
 		-- Returns the direction in degrees of a line.
@@ -2073,7 +2073,7 @@ package et_geometry is
 	private
 		type type_vector is	record
 			--x, y, z : type_distance := zero;
-			x, y, z : type_distance_float := 0.0;
+			x, y, z : type_float_internal := 0.0;
 		end record;
 
 		null_vector		: constant type_vector := (others => 0.0);

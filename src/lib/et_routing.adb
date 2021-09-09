@@ -858,7 +858,7 @@ package body et_routing is
 			spacing : type_distance_positive;
 
 			-- The angle between clearance and spacing:
-			angle : constant type_distance_float := type_distance_float (90.0 - i_center.intersection.angle);
+			angle : constant type_float_internal := type_float_internal (90.0 - i_center.intersection.angle);
 
 			use pac_functions_distance;
 		begin
@@ -875,10 +875,10 @@ package body et_routing is
 				--mode	=> UP));
 
 			spacing := type_distance (round (
-				d_fine	=> to_distance (type_distance_float (clearance) / cos (angle, units_per_cycle)),
+				d_fine	=> to_distance (type_float_internal (clearance) / cos (angle, units_per_cycle)),
 				mode	=> UP));
 			
-			--spacing := to_distance (type_distance_float (clearance) / cos (angle, units_per_cycle));
+			--spacing := to_distance (type_float_internal (clearance) / cos (angle, units_per_cycle));
 			
 			--log (text => "spacing float " & float'image (float (clearance) / cos (angle, float (units_per_cycle))));
 			--log (text => "spacing       " & to_string (spacing));
