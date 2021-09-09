@@ -1034,8 +1034,8 @@ package et_geometry is
 		-- CS use this type wherever a type_line is declared unnessecarily.
 
 		
-		--function round (line : in type_line)
-			--return type_line'class;
+		function round (line : in type_line)
+			return type_line'class;
 
 		procedure round (line : in out type_line);
 		
@@ -1297,10 +1297,10 @@ package et_geometry is
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
 		
-		--function round (arc : in type_arc)
-			--return type_arc'class;
+		function round (arc : in type_arc)
+			return type_arc'class;
 
-		--procedure round (arc : in out type_arc);
+		procedure round (arc : in out type_arc);
 		
 
 		
@@ -1418,8 +1418,6 @@ package et_geometry is
 		end record;
 
 		
-		--function round (ilc : in type_intersection_of_line_and_circle)
-			--return type_intersection_of_line_and_circle;
 
 		-- Computes the intersections of a line with an arc:
 

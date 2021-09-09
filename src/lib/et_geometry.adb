@@ -2030,17 +2030,17 @@ package body et_geometry is
 		end get_angle_of_itersection;
 
 
-		--function round (line : in type_line)
-			--return type_line'class
-		--is 
-			--r : type_line;
-		--begin
-			--r := (
-				--start_point	=> type_point (round (line.start_point)),
-				--end_point	=> type_point (round (line.end_point)));
+		function round (line : in type_line)
+			return type_line'class
+		is 
+			r : type_line;
+		begin
+			r := (
+				start_point	=> type_point (round (line.start_point)),
+				end_point	=> type_point (round (line.end_point)));
 
-			--return r;
-		--end round;
+			return r;
+		end round;
 
 		procedure round (line : in out type_line) 
 		is begin
@@ -2982,26 +2982,26 @@ package body et_geometry is
 		end get_shortest_distance;
 
 
-		--function round (arc : in type_arc)
-			--return type_arc'class
-		--is 
-			--r : type_arc;
-		--begin
-			--r := (
-				--center		=> type_point (round (arc.center)),
-				--start_point	=> type_point (round (arc.start_point)),
-				--end_point	=> type_point (round (arc.end_point)),
-				--direction	=> arc.direction);
+		function round (arc : in type_arc)
+			return type_arc'class
+		is 
+			r : type_arc;
+		begin
+			r := (
+				center		=> type_point (round (arc.center)),
+				start_point	=> type_point (round (arc.start_point)),
+				end_point	=> type_point (round (arc.end_point)),
+				direction	=> arc.direction);
 
-			--return r;
-		--end round;
+			return r;
+		end round;
 
-		--procedure round (arc : in out type_arc) 
-		--is begin
-			--arc.center		:= type_point (round (arc.center));
-			--arc.start_point	:= type_point (round (arc.start_point));
-			--arc.end_point	:= type_point (round (arc.end_point));
-		--end round;
+		procedure round (arc : in out type_arc) 
+		is begin
+			arc.center		:= type_point (round (arc.center));
+			arc.start_point	:= type_point (round (arc.start_point));
+			arc.end_point	:= type_point (round (arc.end_point));
+		end round;
 
 
 		
@@ -3652,26 +3652,6 @@ package body et_geometry is
 
 		end on_arc;
 
-
-		--function round (ilc : in type_intersection_of_line_and_circle)
-			--return type_intersection_of_line_and_circle
-		--is 
-			--result : type_intersection_of_line_and_circle := ilc;
-		--begin
-			--case result.status is
-				--when NONE_EXIST =>
-					--return result;
-					
-				--when ONE_EXISTS =>
-					--round (result.intersection.vector);
-
-				--when TWO_EXIST =>
-					--round (result.intersection_1.point);
-					--round (result.intersection_2.point);
-			--end case;
-
-			--return result;
-		--end round;
 
 		
 		function get_intersection (
