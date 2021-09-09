@@ -4446,7 +4446,7 @@ package body et_geometry is
 
 			-- Due to unavoidable errors this threshold is used
 			-- instead of 0.0 when detecting the distance to the circle:
-			th : constant type_distance_float := 1.0E-17;
+			th : constant type_distance_float := 1.0E-17; -- CS refine
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
