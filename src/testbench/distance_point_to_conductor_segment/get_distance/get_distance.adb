@@ -59,10 +59,10 @@ procedure get_distance is
 
 	use pac_functions_distance;
 
-	P, p_init : type_point := type_point (set ( 10.000000, -1.0000000));
+	P, p_init : type_point := type_point (set ( 2.000000, -0.5000000));
 	--P, p_init : type_point := type_point (set ( 10.00000000, -0.996));
 	S, s_init : type_point := type_point (set (  0.000000, 0.00000000));
-	E, e_init : type_point := type_point (set (  5.000000, 5.00000000));
+	E, e_init : type_point := type_point (set (  1.000000, 1.00000000));
 	--E, e_init : type_point := type_point (set (  5.000000, 0.00000000));
 
 	
@@ -123,94 +123,91 @@ begin
 	cl := cl_init;
 	segment := to_line_segment (cl);
 	put_line (to_string (segment));
-	--for i in 1 .. 7_000 loop
-	for i in 1 .. 70_000 loop
+	for i in 1 .. 20_000 loop
 		P := type_point (move (P, 90.0, 0.0001));
 		
 		distance := get_shortest_distance (P,segment);
-		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
-		--put_line ("P:" & to_string (P) & " / D:" & to_string (distance));
+		put_line (positive'image (i) & ": P:" & to_string (round (P))
+			& " / D:" & to_string (round (distance)));
 
 		if inside_segment (distance) then
 			exit;
 		end if;
 	end loop;
-	-- 6000: P: (x/y)  10.00000000/ 5.00000000 / D: 4.92500000
+	-- 15000: P: (x/y)  2.0000000000/ 1.0000000000 / D: 0.9250000000
 	
 	next_test;
-	d := 125.0;
+	d := 120.0;
 	put_line ("P MOVES IN DIRECTION " & to_string (d) & " DEG");
 	P := p_init;
 	cl := cl_init;
 	put_line ("CL: " & to_string (cl));
 	segment := to_line_segment (cl);
-	--for i in 1 .. 10_000 loop
-	for i in 1 .. 100_000 loop
+	for i in 1 .. 40_000 loop
 		P := type_point (move (P, d, 0.0001));
 		
 		distance := get_shortest_distance (P,segment);
-		put_line (positive'image (i) & ": P:" & to_string (P) & " / D:" & to_string (distance));
+		put_line (positive'image (i) & ": P:" & to_string (round (P))
+			& " / D:" & to_string (round (distance)));
 
 		if inside_segment (distance) then
 			exit;
 		end if;
 	end loop;
-	-- 7783: P: (x/y)  5.53582686/ 5.37544445 / D: 0.57926979
+	-- 17990: P: (x/y)  1.1005000000/ 1.0579790000 / D: 0.0410250
 
 	
 	next_test;
 	put_line ("P ROTATES ABOUT THE ORIGIN");
-	P := type_point (set ( 10.000000, -0.0000000));
+	P := type_point (set ( 1.49, -0.0000000));
 	cl := cl_init;
 	segment := to_line_segment (cl);	
-	--for i in 1 .. 360 loop
 	for i in 1 .. 3600 loop
 		rotate_by (P, 0.1);
-		
+
 		distance := get_shortest_distance (P,segment);
 
-		put_line (positive'image (i) & ": P:" & to_string (P) 
-		--& " A:" & to_string (get_angle (get_distance (origin, P)))
+		put_line (positive'image (i) & ": P:" & to_string (round (P)) 
 			& " A:" & to_string (get_rotation (P)) 
-			& " / D:" & to_string (distance));
+			& " / D:" & to_string (round (distance)));
 
-		if distance <= zero then
-			put_line ("ERROR");
+		if inside_segment (distance) then
 			exit;
 		end if;
 	end loop;
-	-- 45: P: (x/y)  7.07106780/ 7.07106780 A: 45.0000 / D: 2.85393217
-	-- 225: P: (x/y)  -7.07106779/ -7.07106779 A: -135.0000 / D: 9.92499997
-	-- ? 1800: P: (x/y)  -9.99999999/ 0.00000000 A: 180.0000 / D: 9.92499999 
+	--  450: P: (x/y)   1.0535891000/ 1.0535891000  A: 45.0000000   / D: 0.0007864
+	-- 2250: P: (x/y)  -1.0535891000/ -1.0535891000 A: -135.0000000 / D: 1.4150000
+
 	
 	-- The segment rotates about the origin.
 	-- The start point is fixed to the origin.
 	-- The end point rotates.
 	next_test;
 	put_line ("END POINT OF SEGMENT ROTATES ABOUT THE ORIGIN");
-	P := type_point (set ( 10.000000, -0.0000000));
-	S := s_init;
-	E := e_init;
-	--for i in 1 .. 360 loop
+	P := type_point (set ( 1.100000,  0.0000000));
+	S := type_point (set ( 0.000000,  0.0000000));
+	E := type_point (set ( 1.000000,  0.0000000));
 	for i in 1 .. 3600 loop
 
-		rotate_by (E, 0.01);
+		rotate_by (E, 0.1);
 
 		cl := (S, E, W);
+
+		--round (cl);
+		
 		segment := to_line_segment (cl);
 		
 		distance := get_shortest_distance (P,segment);
 
-		put_line (positive'image (i) & ": CL: " & to_string (cl)
-			& " / D:" & to_string (distance));
+		put_line (positive'image (i) & ": E: " & to_string (round (E))
+			& " / D:" & to_string (round (distance)));
 
-		if distance <= zero then
-			put_line ("ERROR");
+		if inside_segment (distance) then
 			exit;
 		end if;
 	end loop;
-	-- 135: CL: line: S: (x/y)  0.00000000/ 0.00000000 / E: (x/y)  -7.07106774/ 0.00000000 / D: 9.92000000
 
+	
 	new_line;
 	if errors = 0 then
 		put_line ("PASS");
