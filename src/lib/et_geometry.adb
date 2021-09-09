@@ -2195,9 +2195,6 @@ package body et_geometry is
 					line_1	=> probe_line,
 					line_2	=> to_line_vector (candidate_line));
 			
-			--i : constant type_intersection_of_two_lines := round (get_intersection (
-					--line_1	=> probe_line,
-					--line_2	=> to_line_vector (candidate_line)));
 		begin
 			case i.status is
 				when EXISTS =>
@@ -2855,7 +2852,6 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				--return round (result); -- no more computations required
 				return result; -- no more computations required
 			end if;
 			
@@ -2866,7 +2862,6 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				--return round (result); -- no more computations required
 				return result; -- no more computations required
 			end if;
 
@@ -2885,7 +2880,6 @@ package body et_geometry is
 					when others => result.out_of_range := true;
 				end case;
 
-				--return round (result); -- no more computations required
 				return result; -- no more computations required
 			end if;
 
@@ -2896,15 +2890,13 @@ package body et_geometry is
 					when others => result.out_of_range := false;
 				end case;
 
-				--return round (result); -- no more computations required
 				return result; -- no more computations required
 			end if;
 
 			--put_line ("before end point");
 
 			result.out_of_range := false;
-			
-			--return round (result);
+
 			return result;
 		end get_distance;
 
