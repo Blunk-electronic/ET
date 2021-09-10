@@ -841,6 +841,13 @@ package et_geometry is
 			v	: in type_vector)
 			return type_float_internal;
 
+		
+		function get_distance_total (
+			point	: in type_point;
+			vector	: in type_vector)
+			return type_float_internal;
+		
+		
 		-- Returns the distance of location vector_one to vector_two.	
 		-- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
 		-- returns	total := sqrt ((vector_two.x - vector_one.x)**2 + (vector_two.y - vector_one.y)**2)
@@ -1386,7 +1393,7 @@ package et_geometry is
 		-- expressed in terms of start and end angle:
 		type type_arc_angles is record -- CS should be private ?
 			center		: type_point;
-			radius		: type_distance_positive;
+			radius		: type_float_internal;
 			angle_start	: type_rotation;
 			angle_end	: type_rotation;
 			direction	: type_direction_of_rotation := CW;
@@ -1406,14 +1413,20 @@ package et_geometry is
 			arc			: in type_arc;
 			line_width	: in type_distance_positive) 
 			return type_boundaries;
+
 		
 		-- Returns true if the given point sits on the given arc.
+		function on_arc (
+			vector		: in type_vector;
+			arc			: in type_arc)
+			return boolean; 
+
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc)
 			return boolean; 
 
-
+		
 		type type_intersection_status_of_line_and_circle is (
 			NONE_EXIST, -- no intersection at all
 			ONE_EXISTS, -- tangent

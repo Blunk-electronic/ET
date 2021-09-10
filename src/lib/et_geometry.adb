@@ -1553,6 +1553,20 @@ package body et_geometry is
 		end get_z;
 
 
+		function get_distance_total (
+			point	: in type_point;
+			vector	: in type_vector)
+			return type_float_internal
+		is 
+			pv : constant type_vector := to_vector (point);
+			
+			dx : constant type_float_internal := abs (vector.x - pv.x);
+			dy : constant type_float_internal := abs (vector.y - pv.y);
+		begin
+			return sqrt (dx ** 2.0 + dy ** 2.0);
+		end get_distance_total;
+		
+		
 		function get_distance (
 			vector_one, vector_two : in type_vector)
 			return type_distance_polar
@@ -1589,6 +1603,16 @@ package body et_geometry is
 		end get_distance;
 
 
+		function get_distance (
+			point	: in type_point;
+			vector	: in type_vector)
+			return type_distance_polar
+		is
+			v : constant type_vector := to_vector (point);
+		begin
+			return get_distance (v, vector);
+		end get_distance;
+		
 		
 		function move_by (
 			v		: in type_vector;
@@ -3345,7 +3369,7 @@ package body et_geometry is
 			result.center := arc.center;
 			
 			-- calculate the radius of the arc
-			result.radius := get_distance_total (arc_tmp.center, arc_tmp.start_point);
+			result.radius := get_distance_total (arc_tmp.center, to_vector (arc_tmp.start_point));
 
 			-- calculate the angles where the arc begins and ends:
 
@@ -3560,8 +3584,8 @@ package body et_geometry is
 
 		
 		function on_arc (
-			point		: in type_point;
-			arc			: in type_arc)
+			vector	: in type_vector;
+			arc		: in type_arc)
 			return boolean 
 		is
 			-- The angle of the given point relative to the
@@ -3595,9 +3619,10 @@ package body et_geometry is
 				P := add (P, T);
 			end offset_cw;
 
-			distance_center_to_point : constant type_distance_positive :=
-				get_distance_total (point, arc.center);
+			distance_center_to_point : constant type_float_internal :=
+				get_distance_total (arc.center, vector);
 
+			th : constant type_float_internal := 1.0E-9; -- CS refine or set dynamically ?
 		begin
 			--put_line ("center" & to_string (arc.center) 
 				 --& " radius" & to_string (arc_angles.radius)
@@ -3610,7 +3635,7 @@ package body et_geometry is
 			-- a virtual circle. The circle has the same radius as the arc:
 			--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
 			
-			if abs (distance_center_to_point - arc_angles.radius) <= type_distance'small then
+			if abs (distance_center_to_point - arc_angles.radius) <= th then
 			
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
@@ -3620,7 +3645,7 @@ package body et_geometry is
 				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
-				P := to_positive_rotation (get_angle (get_distance (arc.center, point)));
+				P := to_positive_rotation (get_angle (get_distance (arc.center, vector)));
 				--log (text => "P" & to_string (P));
 				
 				-- The angle of the point must be between start and end point
@@ -3668,6 +3693,15 @@ package body et_geometry is
 		end on_arc;
 
 
+		function on_arc (
+			point	: in type_point;
+			arc		: in type_arc)
+			return boolean
+		is begin
+			return on_arc (to_vector (point), arc);
+		end on_arc;
+
+
 		
 		function get_intersection (
 			line	: in type_line_vector;
@@ -3711,7 +3745,7 @@ package body et_geometry is
 
 					-- Test whether the point where the tangent meets the
 					-- circle is on the given arc:
-					if on_arc (to_point (vi.intersection.vector), arc) then
+					if on_arc (vi.intersection.vector, arc) then
 						return (ONE_EXISTS, vi.intersection, TANGENT);
 					else
 						return (status => NONE_EXIST);
@@ -3729,8 +3763,8 @@ package body et_geometry is
 					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 
 					declare
-						oa_1 : constant boolean := on_arc (to_point (vi.intersection_1.vector), arc);
-						oa_2 : constant boolean := on_arc (to_point (vi.intersection_2.vector), arc);
+						oa_1 : constant boolean := on_arc (vi.intersection_1.vector, arc);
+						oa_2 : constant boolean := on_arc (vi.intersection_2.vector, arc);
 					begin					
 						--put_line (boolean'image (oa_1));
 						--put_line (boolean'image (oa_2));

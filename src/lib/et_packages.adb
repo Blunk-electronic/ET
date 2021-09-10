@@ -428,12 +428,12 @@ package body et_packages is
 
 		-- set outer edge:
 		arc_o := to_arc_angles (arc_n);
-		arc_o.radius := outer_radius;
+		arc_o.radius := type_float_internal (outer_radius);
 		result.outer_edge := type_arc (to_arc (arc_o));
 
 		-- set inner edge:
 		arc_i := to_arc_angles (reverse_arc (arc_n));
-		arc_i.radius := inner_radius;
+		arc_i.radius := type_float_internal (inner_radius);
 		result.inner_edge := type_arc (to_arc (arc_i));
 
 		-- set start and end points of caps:
