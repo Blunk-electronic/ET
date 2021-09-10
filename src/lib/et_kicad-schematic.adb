@@ -3356,7 +3356,7 @@ package body et_kicad.schematic is
 			line		=> line,
 			line_range	=> BETWEEN_END_POINTS);
 
-		if (not out_of_range (d)) and get_distance (d) = zero then
+		if (not out_of_range (d)) and to_distance (get_distance (d)) = zero then
 			sits_on_segment := true;
 		end if;
 
@@ -3747,7 +3747,7 @@ package body et_kicad.schematic is
 					line		=> line,
 					line_range	=> WITH_END_POINTS);
 
-				if (not out_of_range (distance_port_segment)) and get_distance (distance_port_segment) = zero then
+				if (not out_of_range (distance_port_segment)) and to_distance (get_distance (distance_port_segment)) = zero then
 
 					-- If point sits on either start or end point of given line
 					if on_start_point (distance_port_segment) or on_end_point (distance_port_segment) then
@@ -5361,7 +5361,7 @@ package body et_kicad.schematic is
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 								
-									if (not out_of_range (dist)) and get_distance (dist) = zero then
+									if (not out_of_range (dist)) and to_distance (get_distance (dist)) = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_start;
 										exit;
@@ -5375,7 +5375,7 @@ package body et_kicad.schematic is
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 
-									if (not out_of_range (dist)) and get_distance (dist) = zero then
+									if (not out_of_range (dist)) and to_distance (get_distance (dist)) = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_end;
 										exit;

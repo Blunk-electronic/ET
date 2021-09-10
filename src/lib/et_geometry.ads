@@ -866,7 +866,7 @@ package et_geometry is
 		procedure move_by (
 			v			: in out type_vector;
 			direction	: in type_rotation;
-			distance	: in type_distance);
+			distance	: in type_float_internal);
 										
 		function to_vector (
 			point	: in type_point)
@@ -1131,13 +1131,13 @@ package et_geometry is
 			line	: in type_line)
 			return type_line_vector;
 			
-		-- Computes the distance between a point and a line.
+		-- Computes the distance between a location vector and a line.
 		-- This computation does not care about end or start point of the line.
 		-- It assumes an indefinite long line without start or end point.
-		function get_distance (
-			line	: in type_line;
-			point	: in type_point)
-			return type_distance_positive;
+		--function get_distance (
+			--line	: in type_line;
+			--vector	: in type_vector)
+			--return type_distance_positive;
 
 		-- Computes the distance between a location vector and a line.
 		-- This computation does not care about end or start point of the line.
@@ -1251,8 +1251,13 @@ package et_geometry is
 
 		-- These functions return the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
-		function get_distance (d : in type_distance_point_line) return type_distance_positive;
-		function get_intersection (d : in type_distance_point_line) return type_point;
+		
+		function get_distance (d : in type_distance_point_line) 
+			return type_float_internal;
+		
+		function get_intersection (d : in type_distance_point_line) 
+			return type_vector;
+		
 		function get_direction (d : in type_distance_point_line) return type_rotation;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
@@ -1263,20 +1268,39 @@ package et_geometry is
 			BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
 			);
 		
-		-- Computes the shortest distance (perpendicular) of a point to a line. 
-		-- CS insufficiend ! More details !!! especially on the out_of_range flag
+		-- Computes the shortest distance (perpendicular) of a 
+		-- location vector to a line. 
+		-- CS insufficient ! More details !!! especially on the out_of_range flag
+		function get_distance (
+			vector		: in type_vector; 
+			line		: in type_line;
+			line_range	: in type_line_range)
+			return type_distance_point_line;
+
+		-- Computes the shortest distance (perpendicular) of a
+		-- point to a line. 		
 		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range)
 			return type_distance_point_line;
 
-		-- Returns true if the given point sits on the given line.
+		
+		-- Returns true if the given location vector points
+		-- on the given line.
 		function on_line (
-			point		: in type_point;
-			line		: in type_line)
+			vector	: in type_vector;
+			line	: in type_line)
 			return boolean; 
 
+		-- Returns true if the given point on on
+		-- on the given line.
+		function on_line (
+			point	: in type_point;
+			line	: in type_line)
+			return boolean;
+
+		
 		-- Returns the shortest distance from the given point to the
 		-- given line:
 		function get_shortest_distance (
@@ -2077,8 +2101,10 @@ package et_geometry is
 			-- A virtual line runs from the given point perpendicular
 			-- to the given line. This is where the virtual line intersects
 			-- the given line:
-			intersection	: type_point := origin;
-			distance		: type_distance_positive := zero;
+			--intersection	: type_point := origin; -- CS type_vector ?
+			intersection	: type_vector := null_vector;
+			--distance		: type_distance_positive := zero; -- CS type_float_internal ?
+			distance		: type_float_internal := 0.0;
 			direction		: type_rotation := zero_rotation;
 		end record;
 		

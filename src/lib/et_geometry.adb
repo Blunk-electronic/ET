@@ -1606,15 +1606,15 @@ package body et_geometry is
 		procedure move_by (
 			v			: in out type_vector;
 			direction	: in type_rotation;
-			distance	: in type_distance)
+			distance	: in type_float_internal)
 		is
 			delta_x, delta_y : type_float_internal := 0.0;
 		begin
 			-- sin (direction) * distance = delta y
 			-- cos (direction) * distance = delty x
 
-			delta_y := sin (type_float_internal (direction), type_float_internal (units_per_cycle)) * type_float_internal (distance);
-			delta_x := cos (type_float_internal (direction), type_float_internal (units_per_cycle)) * type_float_internal (distance);
+			delta_y := sin (type_float_internal (direction), units_per_cycle) * distance;
+			delta_x := cos (type_float_internal (direction), units_per_cycle) * distance;
 
 			v.x := v.x + delta_x;
 			v.y := v.y + delta_y;
@@ -2209,7 +2209,7 @@ package body et_geometry is
 					-- of candidate line, then return the intersection as it is.
 					-- If the intersection is before start point or
 					-- beyond end point, then return NOT_EXISTENT.
-					if on_line (to_point (i.intersection.vector), candidate_line) then
+					if on_line (i.intersection.vector, candidate_line) then
 						return i;
 					else
 						return (status => NOT_EXISTENT);
@@ -2268,23 +2268,22 @@ package body et_geometry is
 		end to_line_vector;
 
 		
-		function get_distance (
-			line	: in type_line;
-			point	: in type_point)
-			return type_distance_positive
-		is
-			dv : constant type_vector := direction_vector (line);
-			sv : constant type_vector := start_vector (line);
-			pv : constant type_vector := to_vector (point);
+		--function get_distance (
+			--line	: in type_line;
+			--vector	: in type_vector)
+			--return type_distance_positive
+		--is
+			--dv : constant type_vector := direction_vector (line);
+			--sv : constant type_vector := start_vector (line);
 			
-			d1 : constant type_vector := subtract (pv, sv);
-			m, n : type_float_internal;
-		begin
-			m := absolute (cross_product (dv, d1));
-			n := absolute (dv);
+			--d1 : constant type_vector := subtract (vector, sv);
+			--m, n : type_float_internal;
+		--begin
+			--m := absolute (cross_product (dv, d1));
+			--n := absolute (dv);
 			
-			return to_distance (m / n);
-		end get_distance;
+			--return to_distance (m / n);
+		--end get_distance;
 
 		
 		function get_distance (
@@ -2684,11 +2683,15 @@ package body et_geometry is
 			return d.out_of_range;
 		end out_of_range;
 
-		function get_distance (d : in type_distance_point_line) return type_distance_positive is begin
+		function get_distance (d : in type_distance_point_line) 
+			return type_float_internal
+		is begin
 			return d.distance;
 		end get_distance;
 
-		function get_intersection (d : in type_distance_point_line) return type_point is begin
+		function get_intersection (d : in type_distance_point_line) 
+			return type_vector 
+		is begin
 			return d.intersection;
 		end get_intersection;
 
@@ -2706,14 +2709,15 @@ package body et_geometry is
 
 		
 		function get_distance (
-			point		: in type_point;
+			vector		: in type_vector;
 			line		: in type_line;
 			line_range	: in type_line_range)
 			return type_distance_point_line 
 		is
 			result : type_distance_point_line;
 		
-			-- Imagine a line that starts on the given point, travels perpendicular towards
+			-- Imagine a line that starts on the given location vector,
+			-- travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
 			-- The intersection may be betweeen the start and end point of the given line.
 			-- The intersection may be virtual, before start or after end point 
@@ -2730,12 +2734,12 @@ package body et_geometry is
 				th : constant type_float_internal := 1.0E-10; -- CS refine or set dynamically ?
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
-				-- from the given point perpendicular to the given line.
+				-- from the given location vector perpendicular to the given line.
 				-- For the moment we do not know which direction to go. So we just try
 				-- to go in 90 degree direction. If the distance from iv to the line
 				-- is not zero, then we try in -90 degree direction.
 
-				iv := to_vector (point);
+				iv := vector;
 				move_by (iv, line_direction + 90.0, result.distance);
 
 				distance := get_distance (line, iv);
@@ -2745,7 +2749,7 @@ package body et_geometry is
 					--put_line ("wrong direction");
 					
 					-- we went the wrong direction
-					iv := to_vector (point); -- restore iv
+					iv := vector; -- restore iv
 
 					-- try opposite direction:
 					move_by (iv, line_direction - 90.0, result.distance);
@@ -2754,11 +2758,11 @@ package body et_geometry is
 				--put_line ("iv" & to_string (iv));
 				
 				-- Assign the direction (from point to intersection) to the result:
-				result.direction := get_angle (get_distance (to_vector (point), iv));
+				result.direction := get_angle (get_distance (vector, iv));
 				--put_line ("direction" & to_string (result.direction));
 
 				-- Assign the virtual point of intersection to the result:
-				result.intersection := to_point (iv);
+				result.intersection := iv;
 			end compute_intersection;
 			
 			lambda_forward, lambda_backward : type_float_internal;
@@ -2775,13 +2779,13 @@ package body et_geometry is
 			case line_range is
 				when WITH_END_POINTS | BEYOND_END_POINTS =>
 					
-					if point = line.start_point then
+					if to_point (vector) = line.start_point then
 						
 						result.sits_on_start := true;
 						result.out_of_range := false;
 						return result;
 
-					elsif point = line.end_point then
+					elsif to_point (vector) = line.end_point then
 						
 						result.sits_on_end := true;
 						result.out_of_range := false;
@@ -2824,7 +2828,7 @@ package body et_geometry is
 			-- Compute the distance from the given point to the given line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.
-			result.distance := get_distance (line, point);
+			result.distance := get_distance (line, vector);
 
 			--put_line ("distance " & to_string (result.distance));
 
@@ -2900,26 +2904,45 @@ package body et_geometry is
 			return result;
 		end get_distance;
 
+
+		function get_distance (
+			point		: in type_point; 
+			line		: in type_line;
+			line_range	: in type_line_range)
+			return type_distance_point_line
+		is begin
+			return get_distance (to_vector (point), line, line_range);
+		end get_distance;
+		
 		
 		function on_line (
-			point		: in type_point;
-			line		: in type_line)
+			vector	: in type_vector;
+			line	: in type_line)
 			return boolean
 		is
 			distance : type_distance_point_line;
+			th : constant type_float_internal := 1.0E-10; -- CS refine or set dynamically ?
 		begin
-			distance := get_distance (point, line, WITH_END_POINTS);
-
-			-- CS round distance here ?
+			distance := get_distance (vector, line, WITH_END_POINTS);
 			
-			if not distance.out_of_range and distance.distance = zero then
+			if not distance.out_of_range and distance.distance < th then
 				return true;
 			else
 				return false;
 			end if;
 		end on_line;
 
+		
+		function on_line (
+			point	: in type_point;
+			line	: in type_line)
+			return boolean
+		is begin
+			return on_line (to_vector (point), line);
+		end on_line;
 
+
+		
 		function get_shortest_distance (
 			point	: in type_point;
 			line	: in type_line)
@@ -2928,7 +2951,7 @@ package body et_geometry is
 			result : type_distance_polar;
 
 			d : constant type_distance_point_line := get_distance (
-				point		=> point,
+				vector		=> to_vector (point),
 				line		=> line,
 				line_range	=> WITH_END_POINTS);
 
@@ -2947,7 +2970,7 @@ package body et_geometry is
 					
 					-- An imaginary line can be drawn perpendicular from
 					-- point to line. Both intersect each other.
-					set_absolute (result, get_distance (d));
+					set_absolute (result, to_distance (get_distance (d)));
 					set_angle (result, get_direction (d));
 				else
 					
@@ -4197,16 +4220,16 @@ package body et_geometry is
 				when NONE_EXIST => null;
 				
 				when ONE_EXISTS => 
-					if on_line (to_point (i.intersection.vector), line) then
+					if on_line (i.intersection.vector, line) then
 						result := true;
 					end if;		
 
 				when TWO_EXIST =>
-					if on_line (to_point (i.intersection_1.vector), line) then
+					if on_line (i.intersection_1.vector, line) then
 						result := true;
 					end if;
 					
-					if on_line (to_point (i.intersection_2.vector), line) then
+					if on_line (i.intersection_2.vector, line) then
 						result := true;
 					end if;
 					
@@ -4223,7 +4246,7 @@ package body et_geometry is
 		is
 			result : type_distance := zero;
 
-			debug : constant boolean := false;
+			--debug : constant boolean := false;
 			--debug : constant boolean := true;
 			
 			-- the distance from circumfence to start of line:
@@ -4243,25 +4266,25 @@ package body et_geometry is
 			--new_line;			
 			--put_line ("circle: " & to_string (circle));
 			
-			dp := get_distance (circle.center, line, WITH_END_POINTS);
+			dp := get_distance (to_vector (circle.center), line, WITH_END_POINTS);
 			
-			if debug then
-				--put_line ("circle: " & to_string (circle));
-				put_line ( "is" & to_string (get_intersection (dp)));
-				put_line ( "dl" & to_string (get_distance (dp)));
-				put_line ( "ds" & to_string (get_distance_total (circle.center, line.start_point)));
-				put_line ( "de" & to_string (get_distance_total (circle.center, line.end_point)));
-			end if;
+			--if debug then
+				----put_line ("circle: " & to_string (circle));
+				--put_line ( "is" & to_string (get_intersection (dp)));
+				--put_line ( "dl" & to_string (get_distance (dp)));
+				--put_line ( "ds" & to_string (get_distance_total (circle.center, line.start_point)));
+				--put_line ( "de" & to_string (get_distance_total (circle.center, line.end_point)));
+			--end if;
 			
 			
 			--if on_line (get_intersection (dp), line) then
 			if not dp.out_of_range then -- line passes the circle
-				result := get_distance (dp);
+				result := to_distance (get_distance (dp));
 				--log (text => "line passes the circle");
 
-				if debug then
-					put_line ("line passes the circle");
-				end if;
+				--if debug then
+					--put_line ("line passes the circle");
+				--end if;
 				
 			else -- line does not pass the circle
 				ds := get_distance_total (circle.center, line.start_point);
