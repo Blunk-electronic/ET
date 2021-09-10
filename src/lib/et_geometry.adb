@@ -4606,20 +4606,13 @@ package body et_geometry is
 
 			i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
 
-			ip1, ip2 : type_point;
-			
-			d1, d2 : type_distance_positive;
-
+			d1, d2 : type_float_internal;
 		begin
-			-- get intersection point 1 and 2:
-			ip1 := to_point (i.intersection_1.vector);
-			ip2 := to_point (i.intersection_2.vector);
-			
 			-- the distance from start point to intersection point 1:
-			d1 := get_distance_total (start_point, ip1);
+			d1 := get_distance_total (start_point, i.intersection_1.vector);
 
 			-- the distance from start point to intersection point 2:
-			d2 := get_distance_total (start_point, ip2);
+			d2 := get_distance_total (start_point, i.intersection_2.vector);
 
 			if d1 < d2 then -- point ip1 is closer to start point that ip2
 				result.entry_point := i.intersection_1;
@@ -5816,7 +5809,7 @@ package body et_geometry is
 			result : unbounded_string;
 			
 			procedure query_intersection (c : pac_probe_line_intersections.cursor) is begin
-				result := result & to_string (element (c).x_position) 
+				result := result & type_float_internal'image (element (c).x_position) 
 						  & "/" & trim (to_string (element (c).angle), left);
 			end query_intersection;
 
@@ -5901,17 +5894,19 @@ package body et_geometry is
 				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
 				radius		: in type_distance_positive := zero)
-			is begin
+			is 
+				xi : constant type_float_internal := get_x (intersection.vector);
+			begin
 				-- The intersection will be collected if it is ON or
 				-- AFTER the given start point. If it is before the start
 				-- point then we ignore it:
-				if get_x (to_point (intersection.vector)) >= get_x (point) then
+				if xi >= type_float_internal (get_x (point)) then
 					
 					case curvature is
 						when STRAIGHT =>
 							
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.vector)),
+								x_position	=> xi,
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> STRAIGHT
@@ -5920,7 +5915,7 @@ package body et_geometry is
 						when CONVEX =>
 
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.vector)),
+								x_position	=> xi,
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> CONVEX,
@@ -5931,7 +5926,7 @@ package body et_geometry is
 						when CONCAVE =>
 
 							append (result.intersections, (
-								x_position	=> get_x (to_point (intersection.vector)),
+								x_position	=> xi,
 								angle		=> intersection.angle,
 								segment		=> segment,
 								curvature	=> CONCAVE,

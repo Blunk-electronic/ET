@@ -1982,7 +1982,7 @@ package et_geometry is
 			curvature : type_curvature)
 		is record
 			
-			x_position	: type_distance;
+			x_position	: type_float_internal;
 			angle		: type_rotation := zero_rotation;
 
 			segment : type_intersected_segment;
