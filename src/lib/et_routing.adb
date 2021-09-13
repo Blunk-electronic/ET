@@ -38,9 +38,7 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
-with ada.strings.unbounded;
-
---with ada.numerics.generic_elementary_functions;
+--with ada.strings.unbounded;
 
 
 
@@ -704,8 +702,7 @@ package body et_routing is
 		
 		-- There is a maximum of iterations. If maximum reached
 		-- a constraint_error is raised.
-		max_iterations : constant positive := 1500; -- CS increase if necessary
-		--max_iterations : constant positive := 20; -- CS increase if necessary
+		max_iterations : constant positive := 500; -- CS increase if necessary
 
 	begin		
 		log (text => "starting numerical search ...", level => lth);
@@ -757,7 +754,7 @@ package body et_routing is
 			
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
-			if d_cap_to_obstacle_abs < fab_tolerance then -- type_distance_coarse'small then
+			if d_cap_to_obstacle_abs < fab_tolerance then
 				log (text => " break point found after" & positive'image (i) & " iterations",
 					level => lth + 1);
 				exit;
