@@ -231,7 +231,7 @@ package et_geometry is
 
 		
 		subtype type_catch_zone is type_distance_positive
-			range zero .. type_distance_positive'last/1000.0;
+			range zero .. type_distance_positive'last/100.0;
 
 		
 		subtype type_rotation_positive is type_rotation
@@ -280,7 +280,7 @@ package et_geometry is
 			return type_distance_positive;
 		
 		
-		grid_max : constant type_distance_positive := type_distance_positive'last/1000.0;
+		grid_max : constant type_distance_positive := axis_max * 0.1;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
 		grid_default : constant type_distance_grid := 2.5;
 		

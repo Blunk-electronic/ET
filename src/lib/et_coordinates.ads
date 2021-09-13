@@ -53,7 +53,7 @@ package et_coordinates is
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 
-	distance_digits_left  : constant := 6;
+	distance_digits_left  : constant := 5;
 	distance_digits_right : constant := 2; -- 0.01mm
 	
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
@@ -95,7 +95,7 @@ package et_coordinates is
 		type_distance			=> type_distance,
 		type_distance_coarse	=> type_distance_coarse,
 		type_float_internal		=> type_float_internal,
-		axis_max				=> 2_000.0,
+		axis_max				=> 1_000.0,
 		axis_min				=>  -100.0,
 		type_rotation			=> type_rotation
 		);

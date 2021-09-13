@@ -235,6 +235,7 @@ package body et_geometry is
 				declare
 					r : string (1 .. type_distance'digits + 1); -- point
 				begin
+					--put_line (type_float_internal'image (f) & " " & natural'image (r'length));
 					-- CS: IMPROVEMENT REQUIRED !!!
 					put (to => r, item => f, aft => type_distance'scale, exp => 0);
 					return type_distance'value (r);
@@ -1396,9 +1397,17 @@ package body et_geometry is
 		function round (
 			distance	: in type_position_axis;
 			grid		: in type_distance_grid)
-			return type_position_axis is
+			return type_position_axis 
+		is 
+			i : integer;
+			f : type_float_internal;
 		begin
-			return type_position_axis (integer (distance / grid)) * grid;
+			--put_line (type_distance'image (distance) & " " & type_distance_grid'image (grid));
+			i := integer (distance / grid);
+			--put_line (integer'image (i));
+			--put_line ("dl " & type_distance'image (type_distance'last));
+			f := type_float_internal (i) * type_float_internal (grid);
+			return to_distance (f);
 		end round;
 
 		
@@ -2803,13 +2812,13 @@ package body et_geometry is
 			case line_range is
 				when WITH_END_POINTS | BEYOND_END_POINTS =>
 					
-					if to_point (vector) = line.start_point then
+					if vector = to_vector (line.start_point) then
 						
 						result.sits_on_start := true;
 						result.out_of_range := false;
 						return result;
 
-					elsif to_point (vector) = line.end_point then
+					elsif vector = to_vector (line.end_point) then
 						
 						result.sits_on_end := true;
 						result.out_of_range := false;
