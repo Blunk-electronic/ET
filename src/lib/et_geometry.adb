@@ -500,7 +500,7 @@ package body et_geometry is
 			if x = 0.0 and y = 0.0 then
 				return zero_rotation;
 			else
-				return to_rotation (arctan (y, x, type_float_internal (units_per_cycle)));
+				return to_rotation (arctan (y, x, units_per_cycle));
 			end if;
 		end get_rotation;
 
@@ -887,7 +887,6 @@ package body et_geometry is
 			return type_point'class 
 		is 			
 			delta_x, delta_y : type_float_internal := 0.0;
-			-- CS could be useful to use a constrained float type
 
 			rx, ry : type_distance;			
 			result : type_point;			
@@ -895,8 +894,8 @@ package body et_geometry is
 			-- sin (direction) * distance = delta y
 			-- cos (direction) * distance = delty x
 
-			delta_y := sin (type_float_internal (direction), type_float_internal (units_per_cycle)) * type_float_internal (distance);
-			delta_x := cos (type_float_internal (direction), type_float_internal (units_per_cycle)) * type_float_internal (distance);
+			delta_y := sin (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
+			delta_x := cos (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
 
 			rx := point.x + to_distance (delta_x);
 			ry := point.y + to_distance (delta_y);
@@ -1121,7 +1120,7 @@ package body et_geometry is
 				result.angle := to_rotation (arctan (
 						x 		=> delta_x,
 						y		=> delta_y,
-						cycle	=> type_float_internal (units_per_cycle)));
+						cycle	=> units_per_cycle));
 			else
 				-- distance is zero
 				result.angle := zero_rotation;
@@ -1307,7 +1306,7 @@ package body et_geometry is
 					angle_out := to_rotation (arctan (
 						x		=> type_float_internal (get_x (point)),
 						y		=> type_float_internal (get_y (point)),
-						cycle	=> type_float_internal (units_per_cycle)));
+						cycle	=> units_per_cycle));
 					
 				end if;
 
@@ -1316,7 +1315,7 @@ package body et_geometry is
 				--angle_out := add (angle_out, rotation);
 
 				-- compute new x   -- (cos angle_out) * distance_to_origin
-				scratch := cos (type_float_internal (angle_out), type_float_internal (units_per_cycle));
+				scratch := cos (type_float_internal (angle_out), units_per_cycle);
 				
 				set (
 					axis	=> X, 
@@ -1325,7 +1324,7 @@ package body et_geometry is
 					);
 
 				-- compute new y   -- (sin angle_out) * distance_to_origin
-				scratch := sin (type_float_internal (angle_out), type_float_internal (units_per_cycle));
+				scratch := sin (type_float_internal (angle_out), units_per_cycle);
 				
 				set (
 					axis	=> Y,
@@ -1365,7 +1364,7 @@ package body et_geometry is
 			-- The new angle is the given rotation.
 
 			-- compute new x   -- (cos rotation) * distance_to_origin
-			scratch := cos (type_float_internal (rotation), type_float_internal (units_per_cycle));
+			scratch := cos (type_float_internal (rotation), units_per_cycle);
 			set (
 				axis	=> X,
 				point	=> point,
@@ -1373,7 +1372,7 @@ package body et_geometry is
 				);
 
 			-- compute new y   -- (sin rotation) * distance_to_origin
-			scratch := sin (type_float_internal (rotation), type_float_internal (units_per_cycle));
+			scratch := sin (type_float_internal (rotation), units_per_cycle);
 			set (
 				axis 	=> Y,
 				point	=> point,
@@ -1602,7 +1601,7 @@ package body et_geometry is
 				set_angle (result, to_rotation (arctan (
 						x 		=> dx,
 						y		=> dy,
-						cycle	=> type_float_internal (units_per_cycle))));
+						cycle	=> units_per_cycle)));
 			else
 				-- distance is zero
 				set_angle (result, zero_rotation);
@@ -1697,9 +1696,6 @@ package body et_geometry is
 		is begin
 			return
 				sqrt (
-					--vector.x ** 2.0 + 
-					--vector.y ** 2.0 +
-						 --vector.z ** 2.0);
 					vector.x * vector.x + 
 					vector.y * vector.y +
 					vector.z * vector.z);
@@ -1713,10 +1709,6 @@ package body et_geometry is
 			return type_vector
 		is begin
 			return (
-				--x => type_distance (s * float (v.x)),
-				--y => type_distance (s * float (v.y)),
-				--z => type_distance (s * float (v.z))
-				--);
 				x => s * v.x,
 				y => s * v.y,
 				z => s * v.z
@@ -1820,10 +1812,10 @@ package body et_geometry is
 			v : type_vector;
 		begin
 			-- x = cos (direction) * 1
-			v.x := cos (type_float_internal (ray.direction), type_float_internal (units_per_cycle));
+			v.x := cos (type_float_internal (ray.direction), units_per_cycle);
 
 			-- y = sin (direction) * 1
-			v.y := sin (type_float_internal (ray.direction), type_float_internal (units_per_cycle));
+			v.y := sin (type_float_internal (ray.direction), units_per_cycle);
 
 			v.z := 0.0; -- we are in a 2D world
 			
@@ -1865,7 +1857,7 @@ package body et_geometry is
 			a := to_rotation (arctan (
 					y		=> type_float_internal (line.v_direction.y), 
 					x		=> type_float_internal (line.v_direction.x), 
-					cycle	=> type_float_internal (units_per_cycle)));
+					cycle	=> units_per_cycle));
 
 			-- dz ignored. we are in a 2D world
 			
@@ -2351,7 +2343,7 @@ package body et_geometry is
 			if dx = 0.0 and dy = 0.0 then
 				return zero_rotation;
 			else
-				return to_rotation (arctan (dy, dx, type_float_internal (units_per_cycle)));
+				return to_rotation (arctan (dy, dx, units_per_cycle));
 			end if;
 		end get_direction;
 

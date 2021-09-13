@@ -2099,7 +2099,6 @@ package et_geometry is
 		
 	private
 		type type_vector is	record
-			--x, y, z : type_distance := zero;
 			x, y, z : type_float_internal := 0.0;
 		end record;
 
@@ -2116,7 +2115,6 @@ package et_geometry is
 			-- the given line:
 			--intersection	: type_point := origin; -- CS type_vector ?
 			intersection	: type_vector := null_vector;
-			--distance		: type_distance_positive := zero; -- CS type_float_internal ?
 			distance		: type_float_internal := 0.0;
 			direction		: type_rotation := zero_rotation;
 		end record;

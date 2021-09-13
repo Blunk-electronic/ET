@@ -160,8 +160,8 @@ package et_pcb_coordinates is
 	function get_face (packge : in type_package_position)
 		return type_face;
 	
-	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
+	function to_terminal_position (
 		point		: in type_point;
 		rotation	: in type_rotation)
 		return type_position'class;

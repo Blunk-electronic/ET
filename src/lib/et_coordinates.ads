@@ -46,7 +46,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
-with et_geometry;				use et_geometry;
+with et_geometry;
 
 package et_coordinates is
 -- 	pragma assertion_policy (check);
