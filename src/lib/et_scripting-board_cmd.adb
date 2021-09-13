@@ -2959,7 +2959,9 @@ is
 				case noun is
 					when NOUN_POLYGON =>
 						fill_conductor_polygons (module_cursor, log_threshold + 1);
-						set_status ("conductor polygons filled");
+						if runmode /= MODE_HEADLESS then
+							set_status ("conductor polygons filled");
+						end if;
 						
 					when others => 
 						invalid_noun (to_string (noun));
