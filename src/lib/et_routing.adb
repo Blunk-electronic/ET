@@ -702,7 +702,7 @@ package body et_routing is
 		
 		-- There is a maximum of iterations. If maximum reached
 		-- a constraint_error is raised.
-		max_iterations : constant positive := 500; -- CS increase if necessary
+		max_iterations : constant positive := 2000; -- CS increase if necessary
 
 	begin		
 		log (text => "starting numerical search ...", level => lth);
