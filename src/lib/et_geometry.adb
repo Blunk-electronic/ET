@@ -140,6 +140,8 @@ package body et_geometry is
 			& lf & "distance fine [mm]"
 			& lf & "min:        " & type_distance'image (type_distance'first)
 			& lf & "max:        " & type_distance'image (type_distance'last)
+			& lf & "axis min:   " & type_distance'image (axis_min)
+			& lf & "axis max:   " & type_distance'image (axis_max)
 			& lf & "resolution: " & type_distance'image (type_distance'small)
 			& lf & "digits"
 			& lf & "left:       " & positive'image (distance_digits_total - distance_digits_right)
