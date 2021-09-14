@@ -417,7 +417,6 @@ is
 			procedure query_text (c : in pac_conductor_texts.cursor) is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
-				vector_text : pac_vector_text_lines.list;
 
 				procedure query_line (l : in pac_vector_text_lines.cursor) is
 					-- Convert the line of the vector text to a 
@@ -451,23 +450,7 @@ is
 					 level => lth + 2);
 
 				if element (c).layer = layer then
-					
-					-- Vectorize the text:
-					vector_text := vectorize_text (
-						content		=> element (c).content,
-						size		=> element (c).size,
-						rotation	=> rot (element (c).position),
-						position	=> type_point (element (c).position),
-
-						-- Mirror the text only if it is in the bottom layer:
-						mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
-						
-						line_width	=> element (c).line_width,
-						alignment	=> element (c).alignment -- right, bottom
-						);
-
-					vector_text.iterate (query_line'access);
-
+					element (c).vectors.iterate (query_line'access);
 				end if;
 			end query_text;
 

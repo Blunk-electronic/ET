@@ -293,11 +293,12 @@ is
 		end if;
 	end query_cutout;
 
+	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 	begin
-		-- Draw the placeholder if it is in theh current layer:
+		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
 
 			draw_text_origin (self, element (c).position, in_area, context);
@@ -326,11 +327,10 @@ is
 		end if;
 	end query_placeholder;
 
+	
 	procedure query_text (c : in et_packages.pac_conductor_texts.cursor) is 
-		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
 	begin
-		-- Draw the text if it is in theh current layer:
+		-- Draw the text if it is in the current layer:
 		if element (c).layer = current_layer then
 
 			draw_text_origin (self, element (c).position, in_area, context);
@@ -338,27 +338,14 @@ is
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 			
-			-- Vectorize the text:
-			vector_text := vectorize_text (
-				content		=> element (c).content,
-				size		=> element (c).size,
-				rotation	=> rot (element (c).position),
-				position	=> type_point (element (c).position),
-
-				-- Mirror the text only if it is in the bottom layer:
-				mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
-				
-				line_width	=> element (c).line_width,
-				alignment	=> element (c).alignment -- right, bottom
-				);
-
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text,
+			draw_vector_text (in_area, context, element (c).vectors,
 				element (c).line_width, self.frame_height);
 
 		end if;
 	end query_text;
 
+	
 	procedure query_net_track (n : in pac_nets.cursor) is begin
 		is_signal := true;
 		net_name := key (n);

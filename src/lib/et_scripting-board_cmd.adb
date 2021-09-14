@@ -1359,12 +1359,18 @@ is
 		end case;
 	end draw_stencil;
 
+	
 	procedure place_text is
 		text			: type_text_with_content;
 		pos_xy			: type_point;
 		rotation		: type_rotation;
 		layer_category	: type_layer_category;
 		signal_layer	: type_signal_layer;
+
+		use et_board_shapes_and_text.pac_text_fab;
+		use pac_vector_text_lines;
+		vector_text : pac_vector_text_lines.list;
+
 	begin
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
@@ -1422,6 +1428,7 @@ is
 				
 				text.content := to_content (f (12));
 				-- CS check length
+				
 				if characters_valid (text.content) then
 
 					if layer_category in type_layer_category_non_conductor then
@@ -1433,13 +1440,29 @@ is
 							text			=> text,
 							log_threshold	=> log_threshold + 1);
 
+						
 					elsif layer_category in type_layer_category_conductor then
 						signal_layer := to_signal_layer (f (6));  -- 5 
+
+						vector_text := vectorize_text (
+							content		=> text.content,
+							size		=> text.size,
+							rotation	=> rotation,
+							position	=> pos_xy,
+
+							-- Mirror the text only if it is in the bottom layer:
+							mirror		=> signal_layer_to_mirror (
+												signal_layer, deepest_conductor_layer (module_cursor)),
+							
+							line_width	=> text.line_width
+							-- CS alignment
+							); 
+							
 						
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> ((text with signal_layer)),
+							text			=> ((text with vector_text, signal_layer)),
 							log_threshold	=> log_threshold + 1);
 
 					else

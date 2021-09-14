@@ -1152,13 +1152,16 @@ package body et_canvas_board is
 					layer_category	=> text_place.category,
 					text			=> text_place.text,
 					log_threshold	=> log_threshold + 1);
+
 				
 			elsif text_place.category in type_layer_category_conductor then
 				
 				place_text_in_conductor_layer (
 					module_cursor 	=> current_active_module,
 					layer_category	=> text_place.category,
-					text			=> ((text_place.text with text_place.signal_layer)),
+					text			=> ((text_place.text with 
+										 vectors	=> text_place.vectors,
+										 layer		=> text_place.signal_layer)),
 					log_threshold	=> log_threshold + 1);
 
 			else

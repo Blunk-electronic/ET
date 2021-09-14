@@ -69,7 +69,7 @@ package et_packages is
 	use pac_geometry_brd;
 
 	use et_board_shapes_and_text.pac_shapes;
-
+	use et_board_shapes_and_text.pac_text_fab;
 
 
 -- LAYER CATEGORY
@@ -748,6 +748,8 @@ package et_packages is
 
 
 	type type_conductor_text is new type_text_with_content with record
+		vectors	: pac_vector_text_lines.list;
+		-- CS segments
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 

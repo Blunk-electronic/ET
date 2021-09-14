@@ -3574,7 +3574,8 @@ package body et_kicad.pcb is
 							board.copper.texts.append ((
 								et_packages.type_text (board_text) with
 									content	=> board_text.content,
-									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1)
+									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1),
+									others	=> <> -- CS vector text, conductor segments
 								));
 							text_conductor_properties (board.copper.texts.last, log_threshold + 1);
 						else

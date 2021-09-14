@@ -384,15 +384,14 @@ is
 				log_indentation_down;
 			end test_distance;
 
-			use et_board_shapes_and_text.pac_text_fab;
-			use pac_vector_text_lines;
-			vector_text : pac_vector_text_lines.list;
+			
+			procedure query_vectors (text : in type_conductor_text) is
+				use et_board_shapes_and_text.pac_text_fab;
+				use pac_vector_text_lines;
 
-			procedure query_lines is
-				vl : pac_vector_text_lines.cursor := vector_text.first;
+				vl : pac_vector_text_lines.cursor := text.vectors.first;
 				cl : et_packages.type_conductor_line;
 				segment : type_conductor_line_segment;
-
 			begin
 				while vl /= pac_vector_text_lines.no_element and result = true loop
 					
@@ -417,7 +416,8 @@ is
 					
 					next (vl);
 				end loop;
-			end query_lines;
+			end query_vectors;
+				
 			
 		begin -- query_texts
 			log (text => "probing texts ...", level => lth + 1);
@@ -435,25 +435,11 @@ is
 				-- CS log text properties
 				
 				if element (t).layer = layer then
-					--log_indentation_up;
 
-					-- Vectorize the text:
-					vector_text := vectorize_text (
-						content		=> element (t).content,
-						size		=> element (t).size,
-						rotation	=> rot (element (t).position),
-						position	=> type_point (element (t).position),
+					query_element (
+						position	=> t,
+						process		=> query_vectors'access);
 
-						-- Mirror the text only if it is in the bottom layer:
-						mirror		=> signal_layer_to_mirror (element (t).layer, bottom_layer),
-						
-						line_width	=> element (t).line_width,
-						alignment	=> element (t).alignment -- right, bottom
-						);
-
-					query_lines;
-
-					--log_indentation_down;
 				end if;
 				
 				next (t);

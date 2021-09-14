@@ -109,8 +109,12 @@ package et_canvas_board_texts is
 							position	=> origin_zero_rotation,
 							alignment	=> text_alignment_default,
 							content		=> empty_text_content); 
-		-- NOTE: The content will be extracted from selector entry_content.
 
+		vectors : pac_vector_text_lines.list;
+
+		-- CS segments
+		
+		-- NOTE: The content will be extracted from selector entry_content.
 		entry_content	: gtk.text_view.gtk_text_view;
 	end record;
 
