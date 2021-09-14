@@ -62,6 +62,7 @@ with et_drills;					use et_drills;
 with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules;			use et_design_rules;
+with et_conductor_segment;		use et_conductor_segment;
 
 with cairo;
 
@@ -240,16 +241,6 @@ package et_packages is
 
 
 	
-
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-	keyword_fill_style : constant string := "fill_style";	
-	type type_fill_style is (SOLID, HATCHED);
-	fill_style_default : constant type_fill_style := SOLID;
-	
-	function to_string (fill_style : in type_fill_style) return string;
-	function to_fill_style (fill_style : in string) return type_fill_style;
-
-
 	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
 	keyword_hatching_line_width		: constant string := "hatching_line_width";
 	keyword_hatching_border_width	: constant string := "hatching_border_width";	
@@ -270,16 +261,6 @@ package et_packages is
 		spacing	: type_distance_positive := hatching_spacing_default;
 	end record;
 
-	type type_conductor_hatching is record
-		-- the width of the border line
-		border_width : type_track_width := type_track_width'first;
-		
-		-- the with of the lines inside the area:
-		line_width : type_track_width := type_track_width'first;
-
-		-- the space between the lines inside the area:
-		spacing	: type_track_clearance := type_track_clearance'first;
-	end record;
 
 	
 	-- EASING
@@ -333,107 +314,9 @@ package et_packages is
 
 	
 
-	type type_conductor_line is new type_line with record
-		width	: type_track_width;
-	end record;
 
-	type type_conductor_line_segment is private;
-
-	function to_string (segment : in type_conductor_line_segment)
-		return string;
-	
-	function to_line_segment (line : in type_conductor_line)
-		return type_conductor_line_segment;
-
-	function get_left_edge (segment : in type_conductor_line_segment)
-		return type_line;
-
-	function get_right_edge (segment : in type_conductor_line_segment)
-		return type_line;
-
-	function get_start_cap (segment : in type_conductor_line_segment)
-		return type_arc;
-
-	function get_end_cap (segment : in type_conductor_line_segment)
-		return type_arc;
-
-
-	-- Computes the shortest distance from a point to
-	-- a conductor line segment. If the return is negative,
-	-- then the point is inside the segment.
-	-- If the segment contour is not closed, then an exception
-	-- is raised:
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_line_segment)
-		return type_distance;
-	
-	
-	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
-
-	
-	
-	
-	type type_conductor_arc is new type_arc with record
-		width	: type_track_width;
-	end record;
-
-	type type_conductor_arc_segment is private;
-
-	function to_string (segment : in type_conductor_arc_segment)
-		return string;
-	
-	function to_arc_segment (arc : in type_conductor_arc)
-		return type_conductor_arc_segment;
-
-	function get_inner_edge (segment : in type_conductor_arc_segment)
-		return type_arc;
-
-	function get_outer_edge (segment : in type_conductor_arc_segment)
-		return type_arc;
-
-	function get_start_cap (segment : in type_conductor_arc_segment)
-		return type_arc;
-
-	function get_end_cap (segment : in type_conductor_arc_segment)
-		return type_arc;
-
-
-	-- Computes the shortest distance from a point to
-	-- a conductor arc segment. If the return is negative,
-	-- then the point is inside the segment:
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_arc_segment)
-		return type_distance;
-
-	
-	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
-
-	
-	type type_conductor_circle (
-		filled		: type_filled;
-		fill_style	: type_fill_style -- don't care if filled is NO
-		)
-		is new type_circle with record
-		case filled is
-			when NO => 
-				-- the line width of the circumfence:
-				border_width : type_track_width := type_track_width'first;
-
-			when YES =>
-				case fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						hatching : type_conductor_hatching;
-				end case;
-				
-		end case;
-	end record;
-
-	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
 
 	 
@@ -746,10 +629,13 @@ package et_packages is
 	end record;
 	
 
+	--package pac_conductor_line_segments is new
+		--indefinite_doubly_linked_lists (type_conductor_line_segment);
 
+	
 	type type_conductor_text is new type_text_with_content with record
 		vectors	: pac_vector_text_lines.list;
-		-- CS segments
+		--segments: pac_conductor_line_segments.list;
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
@@ -1189,6 +1075,7 @@ package et_packages is
 	---- Logs the properties of the given circle of pcb contour
 		--cursor			: in pac_pcb_contour_circles.cursor;
 		--log_threshold 	: in et_string_processing.type_log_level);
+
 	
 private
 
@@ -1196,7 +1083,7 @@ private
 		left_edge, right_edge : type_line;
 		cap_start, cap_end : type_arc;
 	end record;
-
+	
 	type type_conductor_arc_segment is record
 		inner_edge, outer_edge : type_arc;
 		cap_start, cap_end : type_arc;

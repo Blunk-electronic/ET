@@ -103,6 +103,7 @@ package body et_pcb_rw.device_packages is
 		-- This is about conductor objects in either top or bottom.
 		-- These objects have no connection to any pad or signal.
 
+			use et_conductor_segment;
 			use pac_conductor_lines;
 			procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
 				line_begin;
@@ -1550,7 +1551,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										pac_conductor_lines.append (
+										et_conductor_segment.pac_conductor_lines.append (
 											container	=> packge.conductors.top.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
@@ -1613,7 +1614,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										pac_conductor_lines.append (
+										et_conductor_segment.pac_conductor_lines.append (
 											container	=> packge.conductors.bottom.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
@@ -1718,7 +1719,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										pac_conductor_arcs.append (
+										et_conductor_segment.pac_conductor_arcs.append (
 											container	=> packge.conductors.top.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
@@ -1781,7 +1782,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										pac_conductor_arcs.append (
+										et_conductor_segment.pac_conductor_arcs.append (
 											container	=> packge.conductors.bottom.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
@@ -1882,7 +1883,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										et_packages.pac_conductor_circles.append (
+										et_conductor_segment.pac_conductor_circles.append (
 											container	=> packge.conductors.top.circles, 
 											new_item	=> board_make_conductor_circle);
 
@@ -1932,7 +1933,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
-										et_packages.pac_conductor_circles.append (
+										et_conductor_segment.pac_conductor_circles.append (
 											container	=> packge.conductors.bottom.circles, 
 											new_item	=> board_make_conductor_circle);
 

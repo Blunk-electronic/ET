@@ -213,7 +213,7 @@ is
 					procedure query_lines is 
 						use et_pcb.pac_conductor_lines;
 						l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-						segment_line : et_packages.type_conductor_line_segment;
+						segment_line : et_conductor_segment.type_conductor_line_segment;
 						use et_packages;
 					begin
 						while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
@@ -228,7 +228,7 @@ is
 					procedure query_arcs is 
 						use et_pcb.pac_conductor_arcs;
 						a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
-						segment_arc : et_packages.type_conductor_arc_segment;
+						segment_arc : et_conductor_segment.type_conductor_arc_segment;
 						use et_packages;
 					begin
 						while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
@@ -390,7 +390,7 @@ is
 				use pac_vector_text_lines;
 
 				vl : pac_vector_text_lines.cursor := text.vectors.first;
-				cl : et_packages.type_conductor_line;
+				cl : et_conductor_segment.type_conductor_line;
 				segment : type_conductor_line_segment;
 			begin
 				while vl /= pac_vector_text_lines.no_element and result = true loop

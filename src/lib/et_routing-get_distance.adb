@@ -280,8 +280,6 @@ is
 				use pac_distances_sorting;
 				clearances : pac_distances_positive.list;
 
-				use et_packages;				
-				
 				procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
 					segment : type_conductor_line_segment;
 				begin
@@ -413,7 +411,7 @@ is
 			use et_packages;
 			use pac_conductor_texts;
 			use et_text;
-				
+			
 			procedure query_text (c : in pac_conductor_texts.cursor) is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
@@ -421,7 +419,7 @@ is
 				procedure query_line (l : in pac_vector_text_lines.cursor) is
 					-- Convert the line of the vector text to a 
 					-- conductor line.
-					cl : constant et_packages.type_conductor_line := 
+					cl : constant et_conductor_segment.type_conductor_line := 
 						(type_line (element (l)) with element (c).line_width);
 					
 					-- Now we treat the line of the vector text like a regular

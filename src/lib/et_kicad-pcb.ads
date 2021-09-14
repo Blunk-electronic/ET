@@ -50,6 +50,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;		use et_string_processing;
+with et_geometry;
 with et_schematic;				use et_schematic;
 with et_general;
 with et_nets;					use et_nets;
@@ -67,6 +68,7 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_segment;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -548,7 +550,7 @@ package et_kicad.pcb is
 
 	-- CS function to_segment_status and to_string
 	
-	type type_segment is new et_packages.type_conductor_line with record
+	type type_segment is new et_conductor_segment.type_conductor_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: type_timestamp;
@@ -624,7 +626,7 @@ package et_kicad.pcb is
 		priority_level		: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		corners				: type_polygon_points.list;
-		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
+		fill_style			: et_geometry.type_fill_style := et_geometry.SOLID; -- a polygon is always filled
 		hatching			: et_packages.type_hatching;
 		easing				: et_packages.type_easing;
 	end record;

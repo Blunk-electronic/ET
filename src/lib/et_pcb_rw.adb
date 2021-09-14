@@ -140,8 +140,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
 
-	procedure write_hatching (hatching : in et_packages.type_conductor_hatching) is
-		use et_packages;
+	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching) is
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
@@ -185,8 +184,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_layer, parameters => to_string (layer));
 	end;
 
-	procedure write_fill_style (fill_style : in et_packages.type_fill_style) is
-		use et_packages;
+	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
@@ -236,7 +234,7 @@ package body et_pcb_rw is
 	end write_circle_fillable;
 
 	-- CS unify the follwing two procedures write_circle_conductor:
-	procedure write_circle_conductor (circle : in type_conductor_circle) is begin
+	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
@@ -820,12 +818,9 @@ package body et_pcb_rw is
 	end;
 
 	function to_fillable_circle (
-	-- Composes a fillable circle from the given parameters. 
-	-- Filled and fill_style are discriminants. Depending on them some parameters
-	-- matter or not. See spec for type_fillable_circle.
 		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
-		fill_style			: in et_packages.type_fill_style;
+		fill_style			: in type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)
 		return type_fillable_circle is
@@ -868,7 +863,7 @@ package body et_pcb_rw is
 		return (pac_shapes.type_circle (board_circle) with board_filled);
 	end;
 
-	function board_make_conductor_circle return type_conductor_circle is begin
+	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle is begin
 		case board_filled is
 			when NO =>
 				return (pac_shapes.type_circle (board_circle) with 

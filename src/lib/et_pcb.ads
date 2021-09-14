@@ -58,7 +58,7 @@ with et_general;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
+with et_geometry;				--use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_nets;					use et_nets;
@@ -69,6 +69,7 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_segment;		--use et_conductor_segment;
 
 package et_pcb is
 	
@@ -198,7 +199,7 @@ package et_pcb is
 	-- In a pcb drawing objects in conductor layers can be placed 
 	-- in various layers.
 	-- This requires a layer id for the object.
-	type type_conductor_line is new et_packages.type_conductor_line with record
+	type type_conductor_line is new et_conductor_segment.type_conductor_line with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
@@ -210,7 +211,7 @@ package et_pcb is
 		line		: in pac_conductor_lines.cursor)
 		return boolean;
 	
-	type type_conductor_arc is new et_packages.type_conductor_arc with record
+	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
@@ -222,7 +223,7 @@ package et_pcb is
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean;
 	
-	type type_conductor_circle is new et_packages.type_conductor_circle with record
+	type type_conductor_circle is new et_conductor_segment.type_conductor_circle with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);

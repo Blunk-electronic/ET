@@ -2170,6 +2170,7 @@ is
 		
 		-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
 		procedure draw_conductors is 
+			use et_conductor_segment;
 			
 			-- LINES
 			use pac_conductor_lines;

@@ -4847,7 +4847,7 @@ package body et_kicad.pcb is
 						if element (segment_cursor).net_id = net_id then
 
 							-- copy start/end point and line width (by a conversion to the base type)
-							line := (et_packages.type_conductor_line (element (segment_cursor)) with 
+							line := (et_conductor_segment.type_conductor_line (element (segment_cursor)) with 
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.

@@ -4537,8 +4537,8 @@ is
 
 			begin -- build_route_polygon
 				case board_fill_style is
-					when et_packages.SOLID		=> solid_polygon;
-					when et_packages.HATCHED	=> hatched_polygon;
+					when SOLID		=> solid_polygon;
+					when HATCHED	=> hatched_polygon;
 				end case;
 
 				board_reset_polygon; -- clean up for next polygon

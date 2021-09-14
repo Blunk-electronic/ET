@@ -598,7 +598,7 @@ is
 				write_priority (element (polygon_solid_cursor).properties.priority_level);
 				write_signal_layer (element (polygon_solid_cursor).properties.layer);
 
-				write_fill_style (et_packages.SOLID);
+				write_fill_style (SOLID);
 
 				case element (polygon_solid_cursor).connection is
 					when et_conductor_polygons.THERMAL => 
@@ -630,7 +630,7 @@ is
 				write_priority (element (polygon_hatched_cursor).properties.priority_level);
 				write_signal_layer (element (polygon_hatched_cursor).properties.layer);
 
-				write_fill_style (et_packages.HATCHED);
+				write_fill_style (HATCHED);
 				
 				write_hatching (element (polygon_hatched_cursor).hatching);
 

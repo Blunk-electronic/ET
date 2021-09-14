@@ -49,6 +49,7 @@ with et_pcb;
 with et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_segment;		--use et_conductor_segment;
 
 package et_pcb_rw is
 
@@ -114,20 +115,20 @@ package et_pcb_rw is
 
 	
 	procedure write_hatching (hatching : in et_packages.type_hatching);
-	procedure write_hatching (hatching : in et_packages.type_conductor_hatching);
+	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching);
 	procedure write_easing (easing: in et_packages.type_easing);
 	procedure write_thermal (thermal : in type_thermal);
 	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
-	procedure write_fill_style (fill_style : in et_packages.type_fill_style);
+	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in type_polygon_pad_connection);
 	procedure write_pad_technology (techno : in type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
 	procedure write_circle_fillable (circle : in type_fillable_circle);
-	procedure write_circle_conductor (circle : in type_conductor_circle);
+	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle);
 
 	-- Writes the properties of a circle in conductor as used in a freetrack:
 	procedure write_circle_conductor (circle : in et_pcb.type_conductor_circle);	
@@ -219,11 +220,11 @@ package et_pcb_rw is
 	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean;
 	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
 	
-	board_fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
+	board_fill_style : type_fill_style := fill_style_default;
 	board_filled : type_filled := filled_default;
 
 	board_hatching : et_packages.type_hatching;
-	board_hatching_conductor : et_packages.type_conductor_hatching;
+	board_hatching_conductor : et_conductor_segment.type_conductor_hatching;
 	board_easing : et_packages.type_easing;
 
 	
@@ -262,13 +263,13 @@ package et_pcb_rw is
 	-- package and board relevant:	
 	procedure board_reset_circle_fillable;
 
-	function to_fillable_circle (
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
+	function to_fillable_circle (
 		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
-		fill_style			: in et_packages.type_fill_style;
+		fill_style			: in type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)
 		return type_fillable_circle;
@@ -278,7 +279,7 @@ package et_pcb_rw is
 
 	function board_make_fillable_circle_solid return type_fillable_circle_solid;
 
-	function board_make_conductor_circle return type_conductor_circle;
+	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle;
 			
 
 	

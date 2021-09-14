@@ -135,8 +135,8 @@ package body et_scripting is
 		raise constraint_error;
 	end;
 
-	procedure expect_fill_style (style : in et_packages.type_fill_style; field : in count_type) is begin
-		log (ERROR, "fill style " & enclose_in_quotes (et_packages.to_string (style)) &
+	procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
+		log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
 			 " expected in field no. " & count_type'image (field) & " !" , console => true);
 		raise constraint_error;
 	end;
