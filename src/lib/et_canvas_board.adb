@@ -1131,6 +1131,8 @@ package body et_canvas_board is
 
 	procedure place_text (destination : in type_point) is
 		use et_packages;
+		use et_board_shapes_and_text;
+		use pac_text_fab;
 		use et_canvas_schematic;
 	begin
 		if text_place.being_moved then
@@ -1159,9 +1161,10 @@ package body et_canvas_board is
 				place_text_in_conductor_layer (
 					module_cursor 	=> current_active_module,
 					layer_category	=> text_place.category,
-					text			=> ((text_place.text with 
-										 vectors	=> text_place.vectors,
-										 layer		=> text_place.signal_layer)),
+					text			=> (type_text_fab (text_place.text) with 
+										content		=> text_place.text.content,
+										vectors		=> text_place.vectors,
+										layer		=> text_place.signal_layer),
 					log_threshold	=> log_threshold + 1);
 
 			else

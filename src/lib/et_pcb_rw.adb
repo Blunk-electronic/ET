@@ -56,8 +56,29 @@ with et_exceptions;				use et_exceptions;
 
 package body et_pcb_rw is
 
-	procedure write_text_properties (t : in et_packages.type_text'class) is
-		use et_packages;
+	--procedure write_text_properties (t : in et_packages.type_text'class) is
+		--use et_packages;
+	--begin
+---- 		write (keyword => keyword_position, parameters => position (text.position) & 
+---- 			space & keyword_rotation & to_string (get_angle (text.position))
+---- 			  ); -- position x 0.000 y 5.555 rotation 0.00
+
+		--write (keyword => keyword_position, parameters => position (t.position));
+			---- position x 0.000 y 5.555 rotation 0.00
+		
+		--write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
+		
+		--write (keyword => keyword_line_width, parameters => to_string (t.line_width));
+		--write (keyword => keyword_alignment, parameters =>
+			--keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
+			--keyword_vertical   & space & to_string (t.alignment.vertical));
+		
+		---- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	--end write_text_properties;
+
+	
+	procedure write_text_properties (t : in pac_text_fab.type_text_fab'class) is
+		--use et_packages;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
@@ -72,10 +93,10 @@ package body et_pcb_rw is
 		write (keyword => keyword_alignment, parameters =>
 			keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 			keyword_vertical   & space & to_string (t.alignment.vertical));
-		
-		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	
 	end write_text_properties;
 
+	
 	procedure write_text_properties_with_face (
 		t		: in et_packages.type_text'class;
 		face	: in et_pcb_coordinates.type_face) 
@@ -100,6 +121,7 @@ package body et_pcb_rw is
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 
+	
 	procedure write_text (cursor : in et_packages.pac_texts_with_content.cursor) is
 		use et_packages.pac_texts_with_content;
 	begin
@@ -109,6 +131,17 @@ package body et_pcb_rw is
 		write_text_properties (element (cursor));
 		text_end;
 	end write_text;
+
+	procedure write_text (cursor : in pac_conductor_texts_package.cursor) is
+		use pac_conductor_texts_package;
+	begin
+		text_begin;
+		write (keyword => keyword_content, wrap => true,
+			parameters => to_string (element (cursor).content));
+		-- CS write_text_properties (element (cursor));
+		text_end;
+	end write_text;
+
 	
 	procedure write_width (width : in type_track_width) is begin
 		write (keyword => keyword_width, parameters => to_string (width));

@@ -1733,7 +1733,9 @@ is
 
 	-- This variable is used for texts in conductor layers
 	-- and for texts in restrict layers:
-	board_text_conductor : et_packages.type_conductor_text;
+	use et_conductor_text;
+	--board_text_conductor : et_packages.type_conductor_text;
+	board_text_conductor : type_conductor_text_board;
 
 	-- This variable is used for text placeholders in conductor layers:
 	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
@@ -4086,7 +4088,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is
-					use pac_conductor_texts;
+					use pac_conductor_texts_board;
 				begin
 					case layer_cat is
 						when LAYER_CAT_CONDUCTOR =>

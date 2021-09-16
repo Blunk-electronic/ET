@@ -63,6 +63,7 @@ with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules;			use et_design_rules;
 with et_conductor_segment;		use et_conductor_segment;
+with et_conductor_text;			use et_conductor_text;
 
 with cairo;
 
@@ -177,11 +178,12 @@ package et_packages is
 	
 	
 -- TEXT
-	type type_text is new pac_text_fab.type_text with record
-		position	: type_position; -- x/y/rotation
-		line_width	: pac_text_fab.type_text_line_width := pac_text_fab.type_text_line_width'first;
-		-- CS locked : type_locked;		
-	end record;
+	--type type_text is new pac_text_fab.type_text with record
+		----position	: type_position; -- x/y/rotation
+		--line_width	: pac_text_fab.type_text_line_width := pac_text_fab.type_text_line_width'first;
+		---- CS locked : type_locked;		
+	--end record;
+	type type_text is new pac_text_fab.type_text_fab with null record;
 
 	function text_properties (text : in type_text) return string;
 	-- Returns the properties of the given text in a long single string.	
@@ -231,6 +233,7 @@ package et_packages is
 	-- TEXTS WITH CONTENT
 	type type_text_with_content is new type_text with record
 		content : et_text.pac_text_content.bounded_string;
+		-- CS vectors
 	end record;
 
 	package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
@@ -365,7 +368,8 @@ package et_packages is
 		circles		: pac_conductor_circles.list;
 		polygons	: type_conductor_polygons;
 		cutouts		: pac_conductor_cutouts.list;
-		texts		: pac_texts_with_content.list;
+		--texts		: pac_texts_with_content.list;
+		texts		: pac_conductor_texts_package.list;
 	end record;
 	
 	-- Since NON ELECTRIC conductor objects of a package can be on both sides 
@@ -630,19 +634,19 @@ package et_packages is
 	
 
 	--package pac_conductor_line_segments is new
-		--indefinite_doubly_linked_lists (type_conductor_line_segment);
+		--doubly_linked_lists (type_conductor_line_segment);
 
 	
-	type type_conductor_text is new type_text_with_content with record
-		vectors	: pac_vector_text_lines.list;
-		--segments: pac_conductor_line_segments.list;
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
+	--type type_conductor_text is new type_text_with_content with record
+		--vectors	: pac_vector_text_lines.list;
+		----segments: pac_conductor_line_segments.list;
+		--layer	: type_signal_layer := type_signal_layer'first;
+	--end record;
 
-	--function to_string (text : in type_conductor_text)
-		--return string;
+	----function to_string (text : in type_conductor_text)
+		----return string;
 	
-	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+	--package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
 
 
@@ -692,7 +696,9 @@ package et_packages is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_conductor_texts.list; -- for notes on routing
+		--texts		: pac_conductor_texts.list; -- for notes on routing
+		texts		: pac_conductor_texts_board.list; -- for notes on routing
+		-- CS texts should use a list of texts with type_signal_layers
 	end record;
 
 
@@ -747,7 +753,9 @@ package et_packages is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		texts		: pac_conductor_texts.list; -- for notes on via restrict
+		--texts		: pac_conductor_texts_package.list; -- for notes on via restrict
+		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
+		-- CS texts should use a list of texts with type_signal_layers
 	end record;
 
 
@@ -1077,17 +1085,6 @@ package et_packages is
 		--log_threshold 	: in et_string_processing.type_log_level);
 
 	
-private
-
-	type type_conductor_line_segment is record
-		left_edge, right_edge : type_line;
-		cap_start, cap_end : type_arc;
-	end record;
-	
-	type type_conductor_arc_segment is record
-		inner_edge, outer_edge : type_arc;
-		cap_start, cap_end : type_arc;
-	end record;
 
 	
 end et_packages;

@@ -48,6 +48,7 @@ with et_geometry;				use et_geometry;
 with et_vias;
 with et_pcb_stack;
 with et_symbols;
+with et_conductor_text;
 
 package body et_kicad.pcb is
 
@@ -3531,7 +3532,7 @@ package body et_kicad.pcb is
 			end insert_board_line;
 
 			procedure insert_board_text is 
-				use et_packages;
+				use et_conductor_text;
 			begin
 			-- Inserts the board_text in the board. 
 			-- According to the kicad layer, the text is appended to the silk_screen, assy_doc, copper ...
@@ -3572,7 +3573,7 @@ package body et_kicad.pcb is
 						-- If text is placed in other (non-signal) layers -> error
 						if board_text.layer in type_signal_layer_id then
 							board.copper.texts.append ((
-								et_packages.type_text (board_text) with
+								pac_text_fab.type_text_fab (board_text) with
 									content	=> board_text.content,
 									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1),
 									others	=> <> -- CS vector text, conductor segments

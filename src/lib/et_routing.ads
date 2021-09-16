@@ -57,6 +57,7 @@ with et_string_processing;		use et_string_processing;
 with et_project.modules;		use et_project.modules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;		use et_conductor_segment;
+with et_conductor_text;			use et_conductor_text;
 
 package et_routing is
 	

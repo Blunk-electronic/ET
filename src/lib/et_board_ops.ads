@@ -70,6 +70,7 @@ with et_pick_and_place;
 with et_devices;				use et_devices;
 with et_conventions;
 with et_design_rules;			use et_design_rules;
+with et_conductor_text;			use et_conductor_text;
 
 package et_board_ops is
 
@@ -602,7 +603,7 @@ package et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in type_conductor_text;
+		text			: in type_conductor_text_board;
 		log_threshold	: in type_log_level);
 
 

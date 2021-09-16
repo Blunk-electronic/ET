@@ -197,22 +197,6 @@ package body et_pcb is
 
 	
 
-	procedure text_conductor_properties (
-		cursor			: in pac_conductor_texts.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_conductor_texts;
-		text : type_conductor_text;
-	begin
-		text := element (cursor);
-		log (text => "conductor text signal layer" & to_string (text.layer) & latin_1.space
-			& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
-			);
-
-		log_indentation_up;
-		log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_conductor_properties;
 
 	
 

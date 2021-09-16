@@ -70,6 +70,7 @@ with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;		--use et_conductor_segment;
+with et_conductor_text;			use et_conductor_text;
 
 package et_pcb is
 	
@@ -246,7 +247,7 @@ package et_pcb is
 		-- global cutout areas for conductor polygons:
 		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;
 		
-		texts			: pac_conductor_texts.list;
+		texts			: pac_conductor_texts_board.list;
 		placeholders	: pac_text_placeholders_conductors.list;
 	end record;
 
@@ -360,11 +361,8 @@ package et_pcb is
 -- LOGGING PROPERTIES OF OBJECTS
 
 	
-	procedure text_conductor_properties (
-	-- Logs the properties of the given text.
-		cursor			: in pac_conductor_texts.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
+	
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
 		cursor			: in pac_conductor_lines.cursor;

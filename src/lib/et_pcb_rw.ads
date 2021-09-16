@@ -50,6 +50,7 @@ with et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;		--use et_conductor_segment;
+with et_conductor_text;			use et_conductor_text;
 
 package et_pcb_rw is
 
@@ -92,13 +93,16 @@ package et_pcb_rw is
 	keyword_via_restring_inner	: constant string := "restring_inner";
 	keyword_via_restring_outer	: constant string := "restring_outer";
 	
-	procedure write_text_properties (t : in et_packages.type_text'class);
+	--procedure write_text_properties (t : in et_packages.type_text'class);
+	procedure write_text_properties (t : in pac_text_fab.type_text_fab'class);
+
 	
 	procedure write_text_properties_with_face (
 		t		: in et_packages.type_text'class;
 		face	: in et_pcb_coordinates.type_face);
 
 	procedure write_text (cursor : in et_packages.pac_texts_with_content.cursor);
+	procedure write_text (cursor : in pac_conductor_texts_package.cursor);
 	
 	keyword_locked : constant string := "locked"; -- layout related
 	

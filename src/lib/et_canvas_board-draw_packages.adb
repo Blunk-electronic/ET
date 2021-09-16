@@ -50,6 +50,7 @@ with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 with et_design_rules;			use et_design_rules;
 with et_text;
+with et_conductor_text;			use et_conductor_text;
 
 with et_canvas_primitive_draw_ops;
 
@@ -2170,6 +2171,7 @@ is
 		
 		-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
 		procedure draw_conductors is 
+			use pac_conductor_texts_package;
 			use et_conductor_segment;
 			
 			-- LINES
@@ -2440,32 +2442,75 @@ is
 
 
 			-- TEXTS
+
+			procedure draw_conductor_text_with_content (
+				t : in out type_conductor_text_package;
+				f : in type_face)
+			is
+				use pac_text_fab.pac_vector_text_lines;
+				vector_text : pac_text_fab.pac_vector_text_lines.list;
+			begin
+
+				-- Rotate the position of the text by the rotation of the package.
+				-- NOTE: This does not affect the rotation of the text itself.
+				rotate_by (t.position, rot (package_position));
+				
+				if flipped then mirror (t.position, Y); end if;
+
+				-- Move the text by the package position to 
+				-- its final position:
+				move_by (t.position, to_distance_relative (package_position));
+
+				draw_text_origin (type_point (t.position), f);
+
+				-- Set the line width of the vector text:
+				set_line_width (context.cr, type_view_coordinate (t.line_width));
+
+				-- Vectorize the content of the text:
+				vector_text := pac_text_fab.vectorize_text (
+					content		=> t.content,
+					size		=> t.size,
+					rotation	=> add (rot (t.position), rot (package_position)),
+					position	=> type_point (t.position),
+					mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+					line_width	=> t.line_width,
+					alignment	=> t.alignment -- right, bottom
+					);
+
+				-- Draw the content of the placeholder:
+				draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
+				
+			end draw_conductor_text_with_content;
+
+
+			
 			use pac_texts_with_content;
 			
 			procedure draw_text (
-				t	: in out type_text_with_content;
-				f	: in type_face) is
+				t	: in out type_conductor_text_package;
+				f	: in type_face)
+			is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
 	
 					if f = face then
 						set_color_conductor (context.cr, ly);
-						draw_text_with_content (t, f);
+						draw_conductor_text_with_content (t, f);
 					end if;
 
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_top (c : in pac_conductor_texts_package.cursor) is
+				t : type_conductor_text_package := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_bottom (c : in pac_conductor_texts_package.cursor) is
+				t : type_conductor_text_package := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_text (t, destination);

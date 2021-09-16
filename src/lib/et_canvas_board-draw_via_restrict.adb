@@ -38,7 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with et_schematic;
 with et_display.board;			use et_display.board;
-
+with et_conductor_text;			use et_conductor_text;
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -59,7 +59,7 @@ is
 	use pac_via_restrict_circles;
 	use pac_via_restrict_polygons;
 	use pac_via_restrict_cutouts;
-	use pac_conductor_texts;
+	use pac_conductor_texts_board;
 	
 	procedure query_line (c : in pac_via_restrict_lines.cursor) is begin
 
@@ -161,7 +161,7 @@ is
 		end if;
 	end query_cutout;
 
-	procedure query_text (c : in pac_conductor_texts.cursor) is 
+	procedure query_text (c : in pac_conductor_texts_board.cursor) is 
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 	begin

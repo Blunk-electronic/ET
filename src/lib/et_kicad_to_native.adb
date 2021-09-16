@@ -72,6 +72,7 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_text;			use et_conductor_text;
 
 package body et_kicad_to_native is
 
@@ -1789,8 +1790,8 @@ package body et_kicad_to_native is
 				use pac_conductor_polygons_floating_hatched;
 				polygons_hatched_cursor : pac_conductor_polygons_floating_hatched.cursor;
 				
-				use pac_conductor_texts;
-				texts_cursor : pac_conductor_texts.cursor;
+				use pac_conductor_texts_board;
+				texts_cursor : pac_conductor_texts_board.cursor;
 
 				use et_pcb.pac_text_placeholders_conductors;
 				placeholders_cursor : et_pcb.pac_text_placeholders_conductors.cursor;
@@ -1855,7 +1856,7 @@ package body et_kicad_to_native is
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 				
-				procedure move_text (text : in out type_conductor_text) is
+				procedure move_text (text : in out type_conductor_text_board) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1947,8 +1948,8 @@ package body et_kicad_to_native is
 				
 				-- TEXTS
 				texts_cursor := module.board.conductors.texts.first;
-				while texts_cursor /= pac_conductor_texts.no_element loop
-					pac_conductor_texts.update_element (
+				while texts_cursor /= pac_conductor_texts_board.no_element loop
+					update_element (
 						container	=> module.board.conductors.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);

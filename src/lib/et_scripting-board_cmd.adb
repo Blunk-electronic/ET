@@ -43,8 +43,9 @@ with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
-with et_design_rules;				use et_design_rules;
-with et_conductor_polygons;			use et_conductor_polygons;
+with et_design_rules;			use et_design_rules;
+with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_text;			use et_conductor_text;
 
 separate (et_scripting)
 	
@@ -1361,13 +1362,14 @@ is
 
 	
 	procedure place_text is
-		text			: type_text_with_content;
+		use et_board_shapes_and_text.pac_text_fab;
+		text			: type_text_fab;
 		pos_xy			: type_point;
 		rotation		: type_rotation;
+		content			: pac_text_content.bounded_string;
 		layer_category	: type_layer_category;
 		signal_layer	: type_signal_layer;
 
-		use et_board_shapes_and_text.pac_text_fab;
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 
@@ -1389,16 +1391,16 @@ is
 				rotation := to_rotation (f (10)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
 				
-				text.content := to_content (f (11));
+				content := to_content (f (11));
 				-- CS check length
-				if characters_valid (text.content) then
+				if characters_valid (content) then
 
 					if layer_category in type_layer_category_outline then
 
 						place_text_in_outline_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> text,
+							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);
 
 					else
@@ -1426,10 +1428,10 @@ is
 				rotation := to_rotation (f (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
 				
-				text.content := to_content (f (12));
+				content := to_content (f (12));
 				-- CS check length
 				
-				if characters_valid (text.content) then
+				if characters_valid (content) then
 
 					if layer_category in type_layer_category_non_conductor then
 
@@ -1437,7 +1439,7 @@ is
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
 							face			=> to_face (f (6)),
-							text			=> text,
+							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);
 
 						
@@ -1445,7 +1447,7 @@ is
 						signal_layer := to_signal_layer (f (6));  -- 5 
 
 						vector_text := vectorize_text (
-							content		=> text.content,
+							content		=> content,
 							size		=> text.size,
 							rotation	=> rotation,
 							position	=> pos_xy,
@@ -1462,7 +1464,7 @@ is
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> ((text with vector_text, signal_layer)),
+							text			=> ((text with content, vector_text, signal_layer)),
 							log_threshold	=> log_threshold + 1);
 
 					else

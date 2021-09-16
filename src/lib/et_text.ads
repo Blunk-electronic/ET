@@ -189,10 +189,16 @@ package et_text is
 			size		: type_text_size := size_default;
 			alignment	: type_text_alignment;
 		end record;
-
-		function text_properties (text : in type_text) return string;
+		
 		-- Returns the properties of the given text in a long single string.	
+		function text_properties (text : in type_text) return string;
 
+		type type_text_fab is new type_text with record
+			position	: type_position; -- x/y/rotation
+			line_width	: type_text_line_width := type_text_line_width'first;
+		end record;
+
+		
 		origin_half_size : constant type_distance_positive := 0.5;
 		origin_line_width : constant type_distance_positive := 0.01;
 		

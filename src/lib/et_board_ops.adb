@@ -4312,14 +4312,14 @@ package body et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in type_conductor_text;
+		text			: in type_conductor_text_board;
 		log_threshold	: in type_log_level)
 	is
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_conductor_texts;
+			use pac_conductor_texts_board;
 		begin
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
