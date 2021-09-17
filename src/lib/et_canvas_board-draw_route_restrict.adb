@@ -158,7 +158,6 @@ is
 
 	procedure query_text (c : in pac_conductor_texts_board.cursor) is 
 		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
 	begin
 		-- Draw the text if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layer) then
@@ -168,21 +167,8 @@ is
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
-			-- Vectorize the text:
-			vector_text := vectorize_text (
-				content		=> element (c).content,
-				size		=> element (c).size,
-				rotation	=> rot (element (c).position),
-				position	=> type_point (element (c).position),
-				line_width	=> element (c).line_width,
-				alignment	=> element (c).alignment -- right, bottom
-				);
-
-			-- NOTE: Texts in route restrict are never mirrored.
-			-- Even in the deepest (bottom) signal layer the text is not mirrored.
-			
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text,
+			draw_vector_text (in_area, context, element (c).vectors,
 				element (c).line_width, self.frame_height);
 			
 		end if;

@@ -363,7 +363,6 @@ is
 	end query_net_track;
 
 	procedure query_via (v : in pac_vias.cursor) is 
-		type type_circle is new pac_shapes.type_circle with null record;
 		circle : type_circle;
 
 		radius_base : type_distance_positive;

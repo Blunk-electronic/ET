@@ -98,8 +98,8 @@ package et_packages is
 		
 		-- NOTE: Restrict layers do not contain any conducting
 		-- objects. They are irrelevant for manufacturing.
-		-- Since they are of mere supportive nature the are here
-		-- regarded as conducor layers.
+		-- Since they are of mere supportive nature for routing
+		-- we regarded them as conductor layers.
 		-- These layers are numbered:
 		LAYER_CAT_ROUTE_RESTRICT,
 		LAYER_CAT_VIA_RESTRICT);
@@ -112,10 +112,19 @@ package et_packages is
 
 	subtype type_layer_category_conductor is type_layer_category
 		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_VIA_RESTRICT;
+
+	subtype type_layer_category_restrict is type_layer_category
+		range LAYER_CAT_ROUTE_RESTRICT .. LAYER_CAT_VIA_RESTRICT;
+	
 	
 	function to_layer_category (cat : in string) return type_layer_category;
 	function to_string (cat : in type_layer_category) return string;
 
+	
+	-- Maps from face to mirror status of a vectorized text.
+	-- Use it for non-device related texts and placeholders.
+	function face_to_mirror (f : in type_face) 
+		return et_text.type_vector_text_mirrored;
 
 
 	

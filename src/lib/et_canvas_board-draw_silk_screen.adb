@@ -45,7 +45,7 @@ procedure draw_silk_screen (
 	context : in type_draw_context;
 	face	: in type_face)
 is
-	--use pac_draw_fab;
+
 	use et_board_shapes_and_text;
 	use pac_shapes;	
 	use pac_text_fab;
@@ -58,7 +58,7 @@ is
 	use pac_silk_polygons;
 	use pac_silk_cutouts;
 	use et_pcb.pac_text_placeholders;
-	--use pac_texts_with_content;
+
 	
 	procedure query_line (c : in pac_silk_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -190,26 +190,14 @@ is
 	
 	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
 		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
-		-- Vectorize the text:
-		vector_text := vectorize_text (
-			content		=> element (c).content,
-			size		=> element (c).size,
-			rotation	=> rot (element (c).position),
-			position	=> type_point (element (c).position),
-			mirror		=> face_to_mirror (face),
-			line_width	=> element (c).line_width,
-			alignment	=> element (c).alignment -- right, bottom
-			);
-
 		-- Draw the text:
-		pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+		pac_draw_fab.draw_vector_text (in_area, context, element (c).vectors,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;

@@ -451,6 +451,7 @@ package body et_canvas_board is
 		init (self);
 	end;
 
+	
 	-- Draw the origin (a small +) of a text or a text placeholder.
 	-- NOTE: This text or text placeholder is not related to the package of a device.
 	-- It is a general text like "L2", "TOP", "BOTTOM", "REV 123", "ABC-Systems", ...
@@ -482,16 +483,6 @@ package body et_canvas_board is
 		--end if;
 	end draw_text_origin;
 
-	-- Maps from face to mirror status of a vectorized text.
-	-- Use it for drawing non-device related texts and placeholders.
-	function face_to_mirror (f : in type_face) return et_text.type_vector_text_mirrored is 
-		use et_text;
-	begin
-		case f is
-			when TOP	=> return NO;
-			when BOTTOM	=> return YES;
-		end case;
-	end face_to_mirror;
 
 	
 	-- Maps from the meaning of a text to its actutal content.

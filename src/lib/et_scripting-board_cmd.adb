@@ -1373,6 +1373,8 @@ is
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 
+		face : type_face;
+		mirror : type_vector_text_mirrored;
 	begin
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
@@ -1393,6 +1395,7 @@ is
 				
 				content := to_content (f (11));
 				-- CS check length
+				
 				if characters_valid (content) then
 
 					if layer_category in type_layer_category_outline then
@@ -1427,7 +1430,6 @@ is
 				
 			when 12 =>
 				layer_category := to_layer_category (f (5));
-				
 				text.line_width := to_distance (f (7)); -- 0.15
 				text.size := to_distance (f (8)); -- 1
 				
@@ -1445,14 +1447,21 @@ is
 
 					if layer_category in type_layer_category_non_conductor then
 
+						face := to_face (f (6)); -- top/bottom
+
+						-- NOTE: Texts in bottom keepout are never mirrored:
+						if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
+							mirror := NO;
+						else
+							mirror := face_to_mirror (face);
+						end if;
+						
 						vector_text := vectorize_text (
 							content		=> content,
 							size		=> text.size,
 							rotation	=> rotation,
 							position	=> pos_xy,
-
-							-- CS mirror ?? silk top/bottom ...
-							
+							mirror		=> mirror,
 							line_width	=> text.line_width
 							-- CS alignment
 							); 
@@ -1466,22 +1475,29 @@ is
 
 						
 					elsif layer_category in type_layer_category_conductor then
+						-- This includes restrict layers.
+						
 						signal_layer := to_signal_layer (f (6));  -- 5 
 
+						-- NOTE: Texts in restrict layers are never mirrored.
+						-- Even in the deepest (bottom) signal layer the text is not mirrored.
+						if layer_category in type_layer_category_restrict then
+							mirror := NO;
+						else
+							mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+						end if;
+
+						
 						vector_text := vectorize_text (
 							content		=> content,
 							size		=> text.size,
 							rotation	=> rotation,
 							position	=> pos_xy,
-
-							-- Mirror the text only if it is in the bottom layer:
-							mirror		=> signal_layer_to_mirror (
-												signal_layer, deepest_conductor_layer (module_cursor)),
-							
+							mirror		=> mirror,
 							line_width	=> text.line_width
 							-- CS alignment
 							); 
-							
+
 						
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,

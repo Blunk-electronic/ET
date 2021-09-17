@@ -53,6 +53,18 @@ package body et_packages is
 	end to_string;
 
 
+	function face_to_mirror (f : in type_face) 
+		return et_text.type_vector_text_mirrored 
+	is 
+		use et_text;
+	begin
+		case f is
+			when TOP	=> return NO;
+			when BOTTOM	=> return YES;
+		end case;
+	end face_to_mirror;
+
+	
 	
 	function to_string (packge : in pac_package_name.bounded_string) return string is
 	-- Returns the given package name as string.
