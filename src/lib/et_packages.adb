@@ -460,20 +460,19 @@ package body et_packages is
 	end placeholder_silk_screen_properties;
 	
 	procedure text_silk_screen_properties (
-	-- Logs the properties of the given silk screen text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		cursor			: in pac_texts_fab_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use et_text.pac_text_content;
-		use pac_texts_with_content;
-		text : type_text_with_content;
+		text : type_text_fab_with_content;
 	begin
 		text := element (cursor);
 		log (text => "silk screen text face" & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_silk_screen_properties;
 
@@ -540,18 +539,18 @@ package body et_packages is
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		cursor			: in pac_texts_fab_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use et_text.pac_text_content;
-		use pac_texts_with_content;
-		text : type_text_with_content;
+		text : type_text_fab_with_content;
 	begin
 		text := element (cursor);
 		log (text => "assembly doc text face" & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_assy_doc_properties;
 
@@ -626,6 +625,7 @@ package body et_packages is
 			level => log_threshold);
 	end;
 
+	
 	procedure line_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
@@ -641,22 +641,21 @@ package body et_packages is
 			 level => log_threshold);
 	end line_stop_mask_properties;
 
+	
 	procedure text_stop_mask_properties (
-	-- Logs the properties of the given stop mask text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
+		cursor			: in pac_texts_fab_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
 	is
 		use et_text.pac_text_content;
-		use pac_texts_with_content;
-		text : type_text_with_content;
+		text : type_text_fab_with_content;
 	begin
 		text := element (cursor);
 		log (text => "stop mask text face" & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		--log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_stop_mask_properties;
 

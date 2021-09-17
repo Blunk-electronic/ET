@@ -3539,29 +3539,36 @@ package body et_kicad.pcb is
 			-- of the board.
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
-						board.silk_screen.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						--board.silk_screen.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.silk_screen.top.texts.append ((type_text_fab (board_text) with 
+							content => board_text.content, vectors => <>));
 						text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_silk_screen_id =>
-						board.silk_screen.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.silk_screen.bottom.texts.append ((type_text_fab (board_text) with
+							content => board_text.content, vectors => <>));
 						text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_assy_doc_id =>
-						board.assy_doc.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.assy_doc.top.texts.append ((type_text_fab (board_text) with
+							content => board_text.content, vectors => <>));
 						text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_assy_doc_id =>
-						board.assy_doc.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.assy_doc.bottom.texts.append ((type_text_fab (board_text) with
+							content => board_text.content, vectors => <>));
 						text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_stop_mask_id =>
-						board.stop_mask.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.stop_mask.top.texts.append ((type_text_fab (board_text) with
+							content => board_text.content, vectors => <>));
 						text_stop_mask_properties (TOP, board.stop_mask.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_stop_mask_id =>
-						board.stop_mask.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
+						board.stop_mask.bottom.texts.append ((type_text_fab (board_text) with
+							content => board_text.content, vectors => <>));
 						text_stop_mask_properties (BOTTOM, board.stop_mask.bottom.texts.last, log_threshold + 1);
 
 					when others =>
@@ -4165,12 +4172,12 @@ package body et_kicad.pcb is
 						case package_text.layer is
 							when TOP_SILK =>
 								package_silk_screen.top.placeholders.append (
-									(et_packages.type_text (package_text) with meaning => NAME));
+									(type_text_fab (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								package_silk_screen.bottom.placeholders.append (
-									(et_packages.type_text (package_text) with meaning => NAME));
+									(type_text_fab (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
 
 							when others => -- should never happen
@@ -4187,12 +4194,12 @@ package body et_kicad.pcb is
 						case package_text.layer is
 							when TOP_ASSY =>
 								package_assy_doc.top.placeholders.append (
-									(et_packages.type_text (package_text) with meaning => VALUE));
+									(type_text_fab (package_text) with meaning => VALUE));
 								placeholder_assy_doc_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
 								package_assy_doc.bottom.placeholders.append (
-									(et_packages.type_text (package_text) with meaning => VALUE));
+									(type_text_fab (package_text) with meaning => VALUE));
 								placeholder_assy_doc_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
@@ -4211,23 +4218,23 @@ package body et_kicad.pcb is
 						-- of texts (of silk screen or assembly documentation):
 						case package_text.layer is
 							when TOP_SILK => 
-								package_silk_screen.top.texts.append (
-									(et_packages.type_text (package_text) with content => package_text.content));
+								package_silk_screen.top.texts.append ((type_text_fab (package_text) with
+									content => package_text.content, vectors => <>));
 								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
-								package_silk_screen.bottom.texts.append (
-									(et_packages.type_text (package_text) with content => package_text.content));
+								package_silk_screen.bottom.texts.append ((type_text_fab (package_text) with
+									content => package_text.content, vectors => <>));
 								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 
-								package_assy_doc.top.texts.append (
-									(et_packages.type_text (package_text) with content => package_text.content));
+								package_assy_doc.top.texts.append ((type_text_fab (package_text) with 
+									content => package_text.content, vectors => <>));
 								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
-								package_assy_doc.bottom.texts.append (
-									(et_packages.type_text (package_text) with content => package_text.content));
+								package_assy_doc.bottom.texts.append ((type_text_fab (package_text) with
+									content => package_text.content, vectors => <>));
 								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 

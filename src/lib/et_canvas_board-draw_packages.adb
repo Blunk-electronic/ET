@@ -80,10 +80,9 @@ is
 		-- package_offset : constant type_distance_relative := to_distance_relative (package_position)
 		-- use package_offset instead of many calls of to_distance_relative (package_position)
 		
-		use pac_draw_fab;
 		use et_board_shapes_and_text;
-		use et_board_shapes_and_text.pac_text_fab;
-		use et_board_shapes_and_text.pac_shapes;	
+		use pac_text_fab;
+		use pac_shapes;	
 
 		use pac_packages_lib;
 
@@ -128,7 +127,8 @@ is
 
 		-- Maps from meaning of given placeholder to text content:
 		function to_placeholder_content (ph : in type_text_placeholder)
-			return et_text.pac_text_content.bounded_string is
+			return et_text.pac_text_content.bounded_string 
+		is
 			use et_devices;
 			use et_text;
 			result : pac_text_content.bounded_string;
@@ -141,9 +141,10 @@ is
 			
 			return result;
 		end to_placeholder_content;
-			
+
+		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			type type_line is new pac_shapes.type_line with null record;
+			--type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
@@ -162,14 +163,15 @@ is
 				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
-				draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
-				draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
+				pac_draw_fab.draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
+				pac_draw_fab.draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
 			end if;
 		end draw_text_origin;
 
+		
 		-- Maps from flip status to mirror status of a vector text:
 		function to_mirror (f : in et_pcb.type_flipped) return et_text.type_vector_text_mirrored is
 			use et_pcb;
@@ -181,11 +183,12 @@ is
 			end case;
 		end to_mirror;
 
+		
 		procedure draw_text_with_content (
-			t : in out type_text_with_content;
+			t : in out type_text_fab_with_content;
 			f : in type_face)
 		is
-			use pac_text_fab.pac_vector_text_lines;
+			use pac_vector_text_lines;
 			vector_text : pac_text_fab.pac_vector_text_lines.list;
 		begin
 
@@ -216,9 +219,10 @@ is
 				);
 
 			-- Draw the content of the placeholder:
-			draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
+			pac_draw_fab.draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
 			
 		end draw_text_with_content;
+
 		
 		-- SILKSCREEN
 		procedure draw_silkscreen is 
@@ -239,7 +243,7 @@ is
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -274,7 +278,7 @@ is
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -314,13 +318,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								draw_circle (in_area, context, circle,
+								pac_draw_fab.draw_circle (in_area, context, circle,
 										circle.filled, circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										draw_circle (in_area, context, circle,
+										pac_draw_fab.draw_circle (in_area, context, circle,
 											circle.filled, zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -331,6 +335,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
@@ -367,14 +372,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 									zero, self.frame_height);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height);
 								-- CS hatching ?
 						end case;
@@ -384,6 +389,7 @@ is
 				end if;
 				
 			end draw_polygon;
+
 			
 			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
 				polygon : type_polygon_non_conductor := element (c);
@@ -418,13 +424,14 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 					end if;
 
 				end if;
 				
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
 				cutout : type_polygon := element (c);
@@ -488,14 +495,15 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						draw_vector_text (in_area, context, vector_text,
+						pac_draw_fab.draw_vector_text (in_area, context, vector_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
 
 				end if;
 			end draw_placeholder;
-				
+
+			
 			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
@@ -518,10 +526,10 @@ is
 
 			
 			-- TEXTS
-			use pac_texts_with_content;
+			use pac_texts_fab_with_content;
 			
 			procedure draw_text (
-				t	: in out type_text_with_content;
+				t	: in out type_text_fab_with_content;
 				f	: in type_face) is
 			begin
 				if silkscreen_enabled (f) then
@@ -534,8 +542,8 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				-- Draw the text only if it has content:
 				if not et_text.is_empty (t.content) then
@@ -544,8 +552,8 @@ is
 				end if;
 			end query_text_top;
 
-			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				-- Draw the text only if it has content:
 				if not et_text.is_empty (t.content) then
@@ -553,6 +561,7 @@ is
 					draw_text (t, destination);
 				end if;
 			end query_text_bottom;
+
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -605,7 +614,7 @@ is
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -640,7 +649,7 @@ is
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -680,13 +689,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								draw_circle (in_area, context, circle, circle.filled, 
+								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										draw_circle (in_area, context, circle, circle.filled,
+										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -733,14 +742,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 									zero, self.frame_height);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height);
 								
 								-- CS hatching ?
@@ -785,7 +794,7 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -856,7 +865,7 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						draw_vector_text (in_area, context, vector_text,
+						pac_draw_fab.draw_vector_text (in_area, context, vector_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
@@ -886,10 +895,10 @@ is
 
 
 			-- TEXTS
-			use pac_texts_with_content;
+			use pac_texts_fab_with_content;
 			
 			procedure draw_text (
-				t	: in out type_text_with_content;
+				t	: in out type_text_fab_with_content;
 				f	: in type_face) is
 			begin
 				if assy_doc_enabled (f) then
@@ -902,15 +911,15 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_text (t, destination);
@@ -966,7 +975,7 @@ is
 						move_by (line, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
-						draw_line (in_area, context, line, keepout_line_width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, keepout_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -1000,7 +1009,7 @@ is
 						move_by (arc, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
-						draw_arc (in_area, context, arc, keepout_line_width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, keepout_line_width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1037,7 +1046,7 @@ is
 
 						set_color_keepout (context.cr, f);
 
-						draw_circle (in_area, context, circle, circle.filled,
+						pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 							keepout_line_width, self.frame_height);
 						
 					end if;
@@ -1078,7 +1087,7 @@ is
 
 						set_color_keepout (context.cr, f);
 
-						draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -1119,7 +1128,7 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -1187,7 +1196,7 @@ is
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1222,7 +1231,7 @@ is
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1262,13 +1271,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								draw_circle (in_area, context, circle, circle.filled,
+								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										draw_circle (in_area, context, circle, circle.filled,
+										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -1315,14 +1324,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 									zero, self.frame_height);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height);
 								
 								-- CS hatching ?
@@ -1366,7 +1375,7 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -1391,10 +1400,10 @@ is
 
 
 			-- TEXTS
-			use pac_texts_with_content;
+			use pac_texts_fab_with_content;
 			
 			procedure draw_text (
-				t	: in out type_text_with_content;
+				t	: in out type_text_fab_with_content;
 				f	: in type_face) is
 			begin
 				if stop_mask_enabled (f) then
@@ -1407,15 +1416,15 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
-				t : type_text_with_content := element (c);
+			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
+				t : type_text_fab_with_content := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_text (t, destination);
@@ -1469,7 +1478,7 @@ is
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1504,7 +1513,7 @@ is
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1545,13 +1554,13 @@ is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
 								
-								draw_circle (in_area, context, circle, circle.filled, 
+								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										draw_circle (in_area, context, circle, circle.filled, 
+										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -1598,14 +1607,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 									zero, self.frame_height);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 
-								draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height);
 								
 								-- CS hatching ?
@@ -1649,7 +1658,7 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -1720,7 +1729,7 @@ is
 					
 					move_by (line, to_distance_relative (package_position));
 
-					draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
+					pac_draw_fab.draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
 				end if;
 			end query_line;
 
@@ -1745,7 +1754,7 @@ is
 
 					move_by (arc, to_distance_relative (package_position));
 
-					draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
+					pac_draw_fab.draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
 				end if;
 			end query_arc;
 
@@ -1770,7 +1779,7 @@ is
 					
 					move_by (circle, to_distance_relative (package_position));
 
-					draw_circle (in_area, context, circle, circle.filled,
+					pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 						route_restrict_line_width, self.frame_height);
 				end if;
 
@@ -1797,7 +1806,7 @@ is
 
 					move_by (polygon, to_distance_relative (package_position));
 
-					draw_polygon (in_area, context, polygon, YES,
+					pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 						zero, self.frame_height);
 				end if;
 
@@ -1826,7 +1835,7 @@ is
 
 					set_color_background (context.cr);
 
-					draw_polygon (in_area, context, cutout, YES,
+					pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 						zero, self.frame_height);
 				end if;
 
@@ -1877,7 +1886,7 @@ is
 
 					move_by (line, to_distance_relative (package_position));
 
-					draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
+					pac_draw_fab.draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
 				end if;
 			end query_line;
 
@@ -1902,7 +1911,7 @@ is
 
 					move_by (arc, to_distance_relative (package_position));
 
-					draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
+					pac_draw_fab.draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
 				end if;
 			end query_arc;
 
@@ -1927,7 +1936,7 @@ is
 
 					move_by (circle, to_distance_relative (package_position));
 
-					draw_circle (in_area, context, circle, circle.filled,
+					pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 						via_restrict_line_width, self.frame_height);
 				end if;
 
@@ -1954,7 +1963,7 @@ is
 
 					move_by (polygon, to_distance_relative (package_position));
 
-					draw_polygon (in_area, context, polygon, YES,
+					pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 						zero, self.frame_height);
 				end if;
 
@@ -1983,7 +1992,7 @@ is
 
 					set_color_background (context.cr);
 
-					draw_polygon (in_area, context, cutout, YES,
+					pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 						zero, self.frame_height);
 				end if;
 
@@ -2088,7 +2097,7 @@ is
 					
 				move_by (circle, to_distance_relative (package_position));
 
-				draw_circle (in_area, context, circle, NO,
+				pac_draw_fab.draw_circle (in_area, context, circle, NO,
 					pcb_contour_line_width, self.frame_height);
 
 			end draw_circle;
@@ -2107,7 +2116,7 @@ is
 						
 						move_by (l, to_distance_relative (package_position));
 
-						draw_line (in_area, context, l,
+						pac_draw_fab.draw_line (in_area, context, l,
 							pcb_contour_line_width, self.frame_height);
 
 					when ARC =>
@@ -2119,7 +2128,7 @@ is
 						
 						move_by (a, to_distance_relative (package_position));
 
-						draw_arc (in_area, context, a, 
+						pac_draw_fab.draw_arc (in_area, context, a, 
 							pcb_contour_line_width, self.frame_height);
 						
 				end case;
@@ -2192,7 +2201,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -2229,7 +2238,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -2270,13 +2279,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								draw_circle (in_area, context, circle, circle.filled,
+								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										draw_circle (in_area, context, circle, circle.filled,
+										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -2324,7 +2333,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 
-						draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
 							zero, self.frame_height);
 -- CS
 -- 		easing : type_easing;
@@ -2418,7 +2427,7 @@ is
 
 						set_color_background (context.cr);
 
-						draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
 							zero, self.frame_height);
 						
 					end if;
@@ -2478,13 +2487,13 @@ is
 					);
 
 				-- Draw the content of the placeholder:
-				draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
+				pac_draw_fab.draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
 				
 			end draw_conductor_text_with_content;
 
 
 			
-			use pac_texts_with_content;
+			use pac_texts_fab_with_content;
 			
 			procedure draw_text (
 				t	: in out type_conductor_text_package;
@@ -2606,12 +2615,11 @@ is
 				drill_position	: in type_point;
 				drill_size		: in type_drill_size)
 			is 
-				type t_c is new type_circle with null record;
-				ib : constant t_c := (center => drill_position, radius => drill_size * 0.5);
+				ib : constant type_circle := (center => drill_position, radius => drill_size * 0.5);
 			begin
 				set_color_tht_pad (context.cr);
 
-				draw_polygon_with_circular_cutout (
+				pac_draw_fab.draw_polygon_with_circular_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2626,7 +2634,7 @@ is
 			is begin
 				set_color_tht_pad (context.cr);
 
-				draw_polygon_with_arbitrary_cutout (
+				pac_draw_fab.draw_polygon_with_arbitrary_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2649,7 +2657,7 @@ is
 				begin
 					set_color_terminal_name (context.cr);
 					
-					draw_text (
+					pac_draw_fab.draw_text (
 						area		=> in_area,
 						context		=> context,
 						content		=> to_content (name),
@@ -2694,7 +2702,7 @@ is
 							
 							set_color_terminal_name (context.cr);
 							
-							draw_text (
+							pac_draw_fab.draw_text (
 								area		=> in_area,
 								context		=> context,
 								content		=> to_content (name),
@@ -2746,7 +2754,7 @@ is
 
 								set_color_conductor (context.cr, ly);
 								
-								draw_polygon (in_area, context, pad_outline, YES,
+								pac_draw_fab.draw_polygon (in_area, context, pad_outline, YES,
 									zero, self.frame_height);
 
 								-- draw the terminal name
@@ -2785,7 +2793,7 @@ is
 
 								set_color_stop_mask (context.cr, f, self.scale);
 								
-								draw_polygon (in_area, context, stop_mask_contours, YES,
+								pac_draw_fab.draw_polygon (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height);
 							end if;
 							
@@ -2820,7 +2828,7 @@ is
 
 								set_color_stencil (context.cr, f, self.scale);
 								
-								draw_polygon (in_area, context, stencil_contours, YES,
+								pac_draw_fab.draw_polygon (in_area, context, stencil_contours, YES,
 									zero, self.frame_height);
 							end if;
 
@@ -2916,7 +2924,7 @@ is
 								set_color_stop_mask (context.cr, f, self.scale);
 
 								-- draw the outer contour of the stop mask opening
-								draw_polygon (
+								pac_draw_fab.draw_polygon (
 									area		=> in_area,
 									context		=> context,
 									polygon		=> stop_mask_contours,
@@ -3005,14 +3013,14 @@ is
 						circle.radius := drill_size * 0.5 + restring;
 						
 						--draw_circle (in_area, context, circle, NO, self.frame_height);
-						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						pac_draw_fab.draw_circle (in_area, context, circle, YES, zero, self.frame_height);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := drill_size * 0.5;
-						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						pac_draw_fab.draw_circle (in_area, context, circle, YES, zero, self.frame_height);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -3124,8 +3132,8 @@ is
 
 					set_color_origin (context.cr);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
-					draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
-					draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
+					pac_draw_fab.draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
+					pac_draw_fab.draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
 
 				end if;
 			end if;

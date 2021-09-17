@@ -45,10 +45,9 @@ procedure draw_keepout (
 	context : in type_draw_context;
 	face	: in type_face) 
 is
-	use pac_draw_fab;
 	use et_board_shapes_and_text;
-	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_shapes;	
+	use pac_text_fab;
+	use pac_shapes;	
 
 	use et_packages;
 	use pac_keepout_lines;
@@ -57,11 +56,11 @@ is
 	use pac_keepout_polygons;
 	use pac_keepout_cutouts;
 
-	use et_packages.pac_texts_with_content;
+	use pac_texts_fab_with_content;
 	
 	procedure query_line (c : in pac_keepout_lines.cursor) is begin
 		
-		draw_line (
+		pac_draw_fab.draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -70,9 +69,10 @@ is
 
 	end query_line;
 
+	
 	procedure query_arc (c : in pac_keepout_arcs.cursor) is begin
 		
-		draw_arc (
+		pac_draw_fab.draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -81,11 +81,12 @@ is
 
 	end query_arc;
 
+	
 	procedure query_circle (c : in pac_keepout_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal not-filled circle:
-				draw_circle (
+				pac_draw_fab.draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -95,7 +96,7 @@ is
 				
 			when YES =>
 				-- We draw a solid filled circle:
-				draw_circle (
+				pac_draw_fab.draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -107,8 +108,9 @@ is
 
 	end query_circle;
 
+	
 	procedure query_polygon (c : in pac_keepout_polygons.cursor) is begin
-		draw_polygon (
+		pac_draw_fab.draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -118,10 +120,11 @@ is
 
 	end query_polygon;
 
+	
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is begin
 		set_color_background (context.cr);
 		
-		draw_polygon (
+		pac_draw_fab.draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -131,7 +134,8 @@ is
 
 	end query_cutout;
 
-	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
+	
+	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 	begin
@@ -153,7 +157,7 @@ is
 		-- NOTE: Keepout text at bottom is never mirrored.
 		
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text,
+		pac_draw_fab.draw_vector_text (in_area, context, vector_text,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -161,8 +165,8 @@ is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) is
-	begin
+		module		: in et_schematic.type_module) 
+	is begin
 		-- All keepout segments will be drawn with the same color:
 		set_color_keepout (context.cr, face);
 

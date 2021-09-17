@@ -78,6 +78,8 @@ package et_board_ops is
 	-- is used instead the module_name.
 
 	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text;
+	use pac_text_fab;
 	use pac_net_name;
 	
 	procedure move_board (
@@ -589,14 +591,14 @@ package et_board_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_non_conductor;
 		face			: in type_face; -- top/bottom
-		text			: in type_text_with_content;
+		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level);
 
-	-- Places a text in a outliner layer:
+	-- Places a text in the outline layer:
 	procedure place_text_in_outline_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_outline;
-		text			: in type_text_with_content;
+		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level);
 	
 	-- Places a text in a conductor layer:

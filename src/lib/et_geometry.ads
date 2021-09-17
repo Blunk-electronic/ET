@@ -1546,7 +1546,7 @@ package et_geometry is
 		end record;
 
 		type type_circle is new type_circle_base with null record;
-		-- CS use this type wherever a type_arc is declared unnessecarily.
+		-- CS use this type wherever a type_circle is declared unnessecarily.
 
 		-- Splits a circle in 2 arcs.
 		-- The circle will be split by a vertical line that crosses the center.

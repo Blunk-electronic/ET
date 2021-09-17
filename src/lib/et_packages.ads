@@ -231,13 +231,13 @@ package et_packages is
 
 
 	-- TEXTS WITH CONTENT
-	type type_text_with_content is new type_text with record
-		content : et_text.pac_text_content.bounded_string;
-		-- CS vectors
-	end record;
-
-	package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
+	--type type_text_with_content is new type_text with record
+		--content : et_text.pac_text_content.bounded_string;
+		---- CS vectors
+	--end record;
 	
+	--package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
+	use pac_texts_fab_with_content;
 
 
 	
@@ -449,7 +449,7 @@ package et_packages is
 		cutouts		: pac_stop_cutouts.list;
 
 		-- for texts in conductor layer to be exposed:
-		texts		: pac_texts_with_content.list;
+		texts		: pac_texts_fab_with_content.list;
 	end record;
 
 	-- Stop mask of packages:
@@ -493,7 +493,7 @@ package et_packages is
 		polygons	: pac_stencil_polygons.list;
 		cutouts		: pac_stencil_cutouts.list;
 		
-		texts		: pac_texts_with_content.list;
+		texts		: pac_texts_fab_with_content.list;
 		-- NOTE: Probably not reasonable and a waste of resources.
 		-- DRC should output warning if texts in stencil detected.
 	end record;
@@ -537,7 +537,7 @@ package et_packages is
 		circles		: pac_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
 		cutouts 	: pac_silk_cutouts.list;
-		texts		: pac_texts_with_content.list;
+		texts		: pac_texts_fab_with_content.list;
 	end record;
 
 	-- Silk screen objects of a package (in the library) include placeholders:
@@ -582,7 +582,7 @@ package et_packages is
 		circles		: pac_doc_circles.list;
 		polygons	: pac_doc_polygons.list;
 		cutouts		: pac_doc_cutouts.list;
-		texts		: pac_texts_with_content.list;
+		texts		: pac_texts_fab_with_content.list;
 	end record;
 
 	-- Assembly documentation objects of a package include placeholders:
@@ -624,7 +624,7 @@ package et_packages is
 		circles		: pac_keepout_circles.list;
 		polygons	: pac_keepout_polygons.list;
 		cutouts 	: pac_keepout_cutouts.list;
-		texts		: pac_texts_with_content.list; -- for notes on placement
+		texts		: pac_texts_fab_with_content.list; -- for notes on placement
 	end record;
 
 	type type_keepout_both_sides is record
@@ -927,7 +927,7 @@ package et_packages is
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
+		cursor			: in pac_texts_fab_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -960,7 +960,7 @@ package et_packages is
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
+		cursor			: in pac_texts_fab_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -1009,7 +1009,7 @@ package et_packages is
 	procedure text_stop_mask_properties (
 	-- Logs the properties of the given stop mask text
 		face			: in type_face;
-		cursor			: in pac_texts_with_content.cursor;
+		cursor			: in pac_texts_fab_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	

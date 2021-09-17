@@ -2173,7 +2173,8 @@ package body et_kicad_packages is
 
 				case text.meaning is
 					when REFERENCE =>
-						placeholder := (et_packages.type_text (text) with meaning => NAME);
+						--placeholder := (et_packages.type_text (text) with meaning => NAME);
+						placeholder := (type_text_fab (text) with meaning => NAME);
 						
 						case text.layer is
 							when TOP_SILK =>
@@ -2189,7 +2190,8 @@ package body et_kicad_packages is
 						end case;
 
 					when VALUE =>
-						placeholder := (et_packages.type_text (text) with meaning => VALUE);
+						--placeholder := (et_packages.type_text (text) with meaning => VALUE);
+						placeholder := (type_text_fab (text) with meaning => VALUE);
 						
 						case text.layer is
 							when TOP_ASSY =>
@@ -2211,19 +2213,24 @@ package body et_kicad_packages is
 						
 						case text.layer is
 							when TOP_SILK => 
-								silk_screen.top.texts.append ((et_packages.type_text (text) with content => text.content));
+								--silk_screen.top.texts.append ((et_packages.type_text (text) with content => text.content));
+								silk_screen.top.texts.append ((type_text_fab (text) with 
+									content => text.content, vectors => <>));
 								text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
-								silk_screen.bottom.texts.append ((et_packages.type_text (text) with content => text.content));
+								silk_screen.bottom.texts.append ((type_text_fab (text) with 
+									content => text.content, vectors => <>));
 								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 
-								assy_doc.top.texts.append ((et_packages.type_text (text) with content => text.content));
+								assy_doc.top.texts.append ((type_text_fab (text) with 
+									content => text.content, vectors => <>));
 								text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
-								assy_doc.bottom.texts.append ((et_packages.type_text (text) with content => text.content));
+								assy_doc.bottom.texts.append ((type_text_fab (text) with
+									content => text.content, vectors => <>));
 								text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 

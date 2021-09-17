@@ -1397,10 +1397,19 @@ is
 
 					if layer_category in type_layer_category_outline then
 
+						vector_text := vectorize_text (
+							content		=> content,
+							size		=> text.size,
+							rotation	=> rotation,
+							position	=> pos_xy,
+							line_width	=> text.line_width
+							-- CS alignment
+							); 
+						
 						place_text_in_outline_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> (text with content),
+							text			=> (text with content, vector_text),
 							log_threshold	=> log_threshold + 1);
 
 					else
@@ -1414,6 +1423,7 @@ is
 						"ERROR: Invalid character in text !";
 					-- CS show invalid character and its position
 				end if;
+
 				
 			when 12 =>
 				layer_category := to_layer_category (f (5));
@@ -1435,11 +1445,23 @@ is
 
 					if layer_category in type_layer_category_non_conductor then
 
+						vector_text := vectorize_text (
+							content		=> content,
+							size		=> text.size,
+							rotation	=> rotation,
+							position	=> pos_xy,
+
+							-- CS mirror ?? silk top/bottom ...
+							
+							line_width	=> text.line_width
+							-- CS alignment
+							); 
+						
 						place_text_in_non_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
 							face			=> to_face (f (6)),
-							text			=> (text with content),
+							text			=> (text with content, vector_text),
 							log_threshold	=> log_threshold + 1);
 
 						

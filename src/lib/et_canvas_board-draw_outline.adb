@@ -35,9 +35,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with et_general;				use et_general;
-with et_pcb;					use et_pcb;
+--with ada.text_io;				use ada.text_io;
 
 separate (et_canvas_board)
 
@@ -46,13 +44,16 @@ procedure draw_outline (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) 
 is	
-	use pac_draw_fab;	
-	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text;
+	use pac_shapes;
 	use pac_polygon_segments;
 	
-	use et_packages.pac_texts_with_content;
+	use pac_text_fab;
+	use pac_texts_fab_with_content;
 	
-	procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+	procedure query_segment (c : in pac_polygon_segments.cursor) is 
+		use pac_draw_fab;
+	begin
 		case element (c).shape is
 			when LINE =>
 				draw_line (
@@ -71,9 +72,9 @@ is
 					height		=> self.frame_height);
 		end case;
 	end query_segment;
-				
-	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
-		use et_board_shapes_and_text;
+
+	
+	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
 		use pac_text_fab.pac_vector_text_lines;
 		vector_text : pac_text_fab.pac_vector_text_lines.list;
 	begin
@@ -93,10 +94,11 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text,
+		pac_draw_fab.draw_vector_text (in_area, context, vector_text,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
+
 	
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
@@ -104,7 +106,7 @@ is
 	is begin
 		if module.board.contours.outline.contours.circular then
 
-			draw_circle (
+			pac_draw_fab.draw_circle (
 				area		=> in_area,
 				context		=> context,
 				circle		=> module.board.contours.outline.contours.circle,
@@ -130,7 +132,7 @@ is
 		procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
 			if element (c).contours.circular then
 
-				draw_circle (
+				pac_draw_fab.draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c).contours.circle,

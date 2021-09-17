@@ -330,6 +330,7 @@ is
 	end query_layer_stack;
 		
 	procedure query_nets is
+		use et_symbols.pac_text;
 		use type et_schematic.type_net;
 		use et_schematic.pac_nets;
 		use et_pcb;
@@ -1078,7 +1079,8 @@ is
 		section_mark (section_submodules, FOOTER);
 	end query_submodules;
 
-	procedure query_texts is		
+	procedure query_texts is	
+		use et_symbols.pac_text;
 		use et_coordinates;
 		use et_coordinates.pac_geometry_sch;
 		use et_schematic;
@@ -1116,6 +1118,7 @@ is
 		section_mark (section_texts, FOOTER);
 	end query_texts;
 
+	
 	procedure query_board is
 		--use et_packages;
 		--use et_terminals;
@@ -1124,7 +1127,10 @@ is
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
 
-		use et_packages.pac_texts_with_content;
+		--use et_packages.pac_texts_with_content;
+		use pac_text_fab;
+		use pac_texts_fab_with_content;
+		
 		use et_pcb.pac_text_placeholders;
 
 		use et_packages.pac_silk_lines;
@@ -1419,6 +1425,7 @@ is
 				section_mark (section_hole, FOOTER);		
 			end write_hole;
 
+			use pac_text_fab.pac_texts_fab_with_content;
 		begin
 			section_mark (section_pcb_contours, HEADER);
 

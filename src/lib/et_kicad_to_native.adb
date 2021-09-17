@@ -76,7 +76,7 @@ with et_conductor_text;			use et_conductor_text;
 
 package body et_kicad_to_native is
 
-	use et_symbols.pac_text;
+	--use et_symbols.pac_text;
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
@@ -747,8 +747,10 @@ package body et_kicad_to_native is
 		procedure move_general_board_stuff (
 		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
-
+			module		: in out et_kicad.pcb.type_module) 
+		is
+			use et_board_shapes_and_text.pac_text_fab;
+			
 			log_threshold_add : type_log_level := 2;
 
 			use et_packages;
@@ -766,8 +768,8 @@ package body et_kicad_to_native is
 				use pac_silk_polygons;
 				polygons_cursor : pac_silk_polygons.cursor;
 
-				use pac_texts_with_content;
-				texts_cursor : pac_texts_with_content.cursor;
+				use pac_texts_fab_with_content;
+				texts_cursor : pac_texts_fab_with_content.cursor;
 				
 				board_silk_screen : constant string := "board silk screen ";
 				
@@ -820,7 +822,7 @@ package body et_kicad_to_native is
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
-				procedure move_text (text : in out type_text_with_content) is
+				procedure move_text (text : in out type_text_fab_with_content) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
@@ -927,8 +929,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.silk_screen.top.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.silk_screen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -938,8 +940,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.silk_screen.bottom.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.silk_screen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -962,8 +964,8 @@ package body et_kicad_to_native is
 				use pac_doc_polygons;
 				polygons_cursor : pac_doc_polygons.cursor;
 
-				use pac_texts_with_content;
-				texts_cursor : pac_texts_with_content.cursor;
+				use pac_texts_fab_with_content;
+				texts_cursor : pac_texts_fab_with_content.cursor;
 				
 				doc : constant string := "board assembly documentation ";
 				
@@ -1016,7 +1018,7 @@ package body et_kicad_to_native is
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
-				procedure move_text (text : in out type_text_with_content) is
+				procedure move_text (text : in out type_text_fab_with_content) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1124,8 +1126,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.assy_doc.top.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.assy_doc.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1135,8 +1137,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.assy_doc.bottom.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.assy_doc.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1320,8 +1322,8 @@ package body et_kicad_to_native is
 				use pac_stop_polygons;
 				polygons_cursor : pac_stop_polygons.cursor;
 
-				use pac_texts_with_content;
-				texts_cursor : pac_texts_with_content.cursor;
+				use pac_texts_fab_with_content;
+				texts_cursor : pac_texts_fab_with_content.cursor;
 				
 				stop : constant string := "board stop mask ";
 				
@@ -1378,7 +1380,7 @@ package body et_kicad_to_native is
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
-				procedure move_text (text : in out type_text_with_content) is
+				procedure move_text (text : in out type_text_fab_with_content) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1486,8 +1488,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.stop_mask.top.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.stop_mask.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1497,8 +1499,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.stop_mask.bottom.texts.first;
-				while texts_cursor /= pac_texts_with_content.no_element loop
-					pac_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_fab_with_content.no_element loop
+					pac_texts_fab_with_content.update_element (
 						container	=> module.board.stop_mask.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -2363,8 +2365,11 @@ package body et_kicad_to_native is
 		-- This is a single native target module used as scratch.
 		module : et_schematic.type_module; 
 
-		function to_texts (texts_in : et_kicad.schematic.type_texts.list) return et_schematic.pac_texts.list is
-		-- Converts kicad texts to native texts.
+		-- Converts kicad texts to native texts:
+		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
+			return et_schematic.pac_texts.list 
+		is
+			use et_symbols.pac_text;
 			texts_out : et_schematic.pac_texts.list;
 
 			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
@@ -2686,7 +2691,10 @@ package body et_kicad_to_native is
 				-- them in a single list.
 				-- CS: Labels placed at 180 or 270 degree are rotated to 0 or 90 degree. This might
 				-- cause the labels to shift to the right or up.
-					return et_schematic.pac_net_labels.list is
+					return et_schematic.pac_net_labels.list 
+				is
+					use et_symbols.pac_text;
+					
 					labels : et_schematic.pac_net_labels.list; -- to be returned
 
 					use et_kicad.schematic.type_simple_labels;

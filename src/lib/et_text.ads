@@ -824,7 +824,15 @@ package et_text is
 		-- Converts a character to a list of lines:
 		function to_lines (char : in type_character) return pac_vector_text_lines.list;
 
-	
+
+		type type_text_fab_with_content is new type_text_fab with record
+			content	: pac_text_content.bounded_string;
+			vectors	: pac_vector_text_lines.list;
+		end record;
+
+		package pac_texts_fab_with_content is new
+			doubly_linked_lists (type_text_fab_with_content);
+		
 
 		-- Renders the given text content to a list of lines.
 		-- IMPORTANT: Argument "content" MUST contain something ! If empty

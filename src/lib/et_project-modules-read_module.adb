@@ -1196,7 +1196,9 @@ is
 	
 	
 	-- general board stuff
-	board_text : et_packages.type_text_with_content;
+	--board_text : et_packages.type_text_with_content;
+	use et_board_shapes_and_text.pac_text_fab;
+	board_text : type_text_fab_with_content;
 	board_text_placeholder : et_pcb.type_text_placeholder;
 
 	procedure read_board_text_placeholder is
@@ -3638,11 +3640,8 @@ is
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
-				is
-					use et_packages;
-					use et_pcb;
-				begin
-					pac_texts_with_content.append (
+				is begin
+					pac_texts_fab_with_content.append (
 						container	=> module.board.contours.texts,
 						new_item	=> board_text);
 
@@ -4650,27 +4649,27 @@ is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.silk_screen.top.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_ASSY =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_KEEPOUT =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.keepout.top.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_STENCIL =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.stencil.top.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_STOP =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.stop_mask.top.texts,
 											new_item	=> board_text);
 
@@ -4680,27 +4679,27 @@ is
 							when BOTTOM => null;
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.silk_screen.bottom.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_ASSY =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.assy_doc.bottom.texts,
 											new_item	=> board_text);
 										
 									when LAYER_CAT_KEEPOUT =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.keepout.bottom.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_STENCIL =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.stencil.bottom.texts,
 											new_item	=> board_text);
 
 									when LAYER_CAT_STOP =>
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> module.board.stop_mask.bottom.texts,
 											new_item	=> board_text);
 
@@ -4740,7 +4739,54 @@ is
 					when others => invalid_section;
 				end case;
 			end build_non_conductor_text;
+
 			
+			procedure build_net_label is
+				use et_symbols.pac_text;
+			begin
+				case stack.parent is
+					when SEC_LABELS =>
+
+						-- insert label in label collection
+						case net_label_appearance is
+							when et_schematic.SIMPLE =>
+
+								-- insert a simple label
+								et_schematic.pac_net_labels.append (
+									container	=> net_labels,
+									new_item	=> (
+										net_label with
+										appearance		=> et_schematic.SIMPLE,
+										rotation_simple	=> snap (net_label_rotation)
+										));
+
+								-- CS warn about parameter "direction" being ignored
+								
+							when et_schematic.TAG =>
+
+								-- insert a tag label
+								et_schematic.pac_net_labels.append (
+									container	=> net_labels,
+									new_item	=> (
+										net_label with 
+										appearance		=> et_schematic.TAG,
+										direction		=> net_label_direction,
+										rotation_tag	=> net_label_rotation
+										));
+
+						end case;
+
+						-- clean up for next label
+						net_label := (others => <>);
+						net_label_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
+						net_label_appearance := et_schematic.type_net_label_appearance'first;
+						net_label_direction := et_schematic.type_net_label_direction'first;
+
+					when others => invalid_section;
+				end case;
+			end build_net_label;
+				
+				
 		begin -- execute_section
 			case stack.current is
 
@@ -4956,47 +5002,8 @@ is
 						when others => invalid_section;
 					end case;
 							
-				when SEC_LABEL => -- CS clean up. separate procedures required
-					case stack.parent is
-						when SEC_LABELS =>
-
-							-- insert label in label collection
-							case net_label_appearance is
-								when et_schematic.SIMPLE =>
-
-									-- insert a simple label
-									et_schematic.pac_net_labels.append (
-										container	=> net_labels,
-										new_item	=> (
-											net_label with
-											appearance		=> et_schematic.SIMPLE,
-											rotation_simple	=> snap (net_label_rotation)
-											));
-
-									-- CS warn about parameter "direction" being ignored
-									
-								when et_schematic.TAG =>
-
-									-- insert a tag label
-									et_schematic.pac_net_labels.append (
-										container	=> net_labels,
-										new_item	=> (
-											net_label with 
-											appearance		=> et_schematic.TAG,
-											direction		=> net_label_direction,
-											rotation_tag	=> net_label_rotation
-											));
-
-							end case;
-
-							-- clean up for next label
-							net_label := (others => <>);
-							net_label_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
-							net_label_appearance := et_schematic.type_net_label_appearance'first;
-							net_label_direction := et_schematic.type_net_label_direction'first;
-
-						when others => invalid_section;
-					end case;
+				when SEC_LABEL =>
+					build_net_label;
 					
 				when SEC_LINE => -- CS clean up. separate procedures required
 					case stack.parent is

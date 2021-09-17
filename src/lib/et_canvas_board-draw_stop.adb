@@ -45,10 +45,9 @@ procedure draw_stop (
 	context : in type_draw_context;
 	face	: in type_face)
 is
-	use pac_draw_fab;
 	use et_board_shapes_and_text;
-	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_shapes;	
+	use pac_text_fab;
+	use pac_shapes;	
 
 	use et_packages;
 	use pac_stop_lines;
@@ -57,12 +56,12 @@ is
 	use pac_stop_polygons;
 	use pac_stop_cutouts;
 	use et_pcb.pac_text_placeholders;
-	use pac_texts_with_content;
+	use pac_texts_fab_with_content;
 	
 	procedure query_line (c : in pac_stop_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		draw_line (
+		pac_draw_fab.draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -71,10 +70,11 @@ is
 
 	end query_line;
 
+	
 	procedure query_arc (c : in pac_stop_arcs.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		draw_arc (
+		pac_draw_fab.draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -83,13 +83,14 @@ is
 
 	end query_arc;
 
+	
 	procedure query_circle (c : in pac_stop_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
-				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+				set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
-				draw_circle (
+				pac_draw_fab.draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -101,7 +102,7 @@ is
 				-- We draw a filled circle with a certain fill style:
 				case element (c).fill_style is
 					when SOLID =>
-						draw_circle (
+						pac_draw_fab.draw_circle (
 							area		=> in_area,
 							context		=> context,
 							circle		=> element (c),
@@ -115,10 +116,11 @@ is
 
 	end query_circle;
 
+	
 	procedure query_polygon (c : in pac_stop_polygons.cursor) is begin
 		case element (c).fill_style is
 			when SOLID =>
-				draw_polygon (
+				pac_draw_fab.draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -129,7 +131,7 @@ is
 			when HATCHED =>
 				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
 
-				draw_polygon (
+				pac_draw_fab.draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -142,11 +144,12 @@ is
 
 	end query_polygon;
 
+	
 	procedure query_cutout (c : in pac_stop_cutouts.cursor) is begin
 		save (context.cr);		
 		set_color_background (context.cr);
 
-		draw_polygon (
+		pac_draw_fab.draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -157,6 +160,7 @@ is
 		restore (context.cr);
 	end query_cutout;
 
+	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
@@ -178,12 +182,13 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text, 
+		pac_draw_fab.draw_vector_text (in_area, context, vector_text, 
 			element (c).line_width, self.frame_height);
 
 	end query_placeholder;
 
-	procedure query_text (c : in pac_texts_with_content.cursor) is 
+	
+	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
 		use pac_vector_text_lines;
 		vector_text : pac_vector_text_lines.list;
 	begin
@@ -204,7 +209,7 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text,
+		pac_draw_fab.draw_vector_text (in_area, context, vector_text,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -213,8 +218,8 @@ is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) is
-	begin
+		module		: in et_schematic.type_module) 
+	is begin
 		-- All stop mask segments will be drawn with the same color:
 		set_color_stop_mask (context.cr, face, self.scale);
 

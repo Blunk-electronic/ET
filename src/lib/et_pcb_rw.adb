@@ -122,8 +122,9 @@ package body et_pcb_rw is
 	end write_text_properties_with_face;
 
 	
-	procedure write_text (cursor : in et_packages.pac_texts_with_content.cursor) is
-		use et_packages.pac_texts_with_content;
+	procedure write_text (cursor : in pac_text_fab.pac_texts_fab_with_content.cursor) is
+		use pac_text_fab;
+		use pac_texts_fab_with_content;
 	begin
 		text_begin;
 		write (keyword => keyword_content, wrap => true,

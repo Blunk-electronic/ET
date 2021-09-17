@@ -1163,7 +1163,7 @@ package body et_canvas_board is
 					layer_category	=> text_place.category,
 					text			=> (type_text_fab (text_place.text) with 
 										content		=> text_place.text.content,
-										vectors		=> text_place.vectors,
+										vectors		=> text_place.text.vectors,
 										layer		=> text_place.signal_layer),
 					log_threshold	=> log_threshold + 1);
 

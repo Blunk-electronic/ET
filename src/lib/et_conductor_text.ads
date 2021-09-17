@@ -60,11 +60,9 @@ package et_conductor_text is
 		doubly_linked_lists (type_conductor_line_segment);
 
 
-	type type_conductor_text_package is new pac_text_fab.type_text_fab with record
-		content : et_text.pac_text_content.bounded_string;
-		vectors	: pac_vector_text_lines.list;
-		--segments: pac_conductor_line_segments.list;
-	end record;
+	type type_conductor_text_package is new pac_text_fab.type_text_fab_with_content with null record;
+		-- CS segments: pac_conductor_line_segments.list;
+	--end record;
 
 
 	

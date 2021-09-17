@@ -53,8 +53,10 @@ with et_conductor_text;			use et_conductor_text;
 
 package body et_pcb_rw.device_packages is
 
+	use pac_text_fab;
+	use pac_texts_fab_with_content;
+	
 	use pac_conductor_texts_package;
-
 	
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
@@ -101,8 +103,6 @@ package body et_pcb_rw.device_packages is
 		use pac_package_model_file_name;
 		
 		file_handle : ada.text_io.file_type;
-		
-		use pac_texts_with_content;
 		
 		procedure write_conductor is
 		-- This is about conductor objects in either top or bottom.
@@ -759,8 +759,9 @@ package body et_pcb_rw.device_packages is
 		signal_layers			: et_pcb_stack.type_signal_layers.set;
 	
 		--pac_text				: et_packages.type_text_with_content;
-		pac_text				: pac_text_fab.type_text_fab;
-		content					: et_text.pac_text_content.bounded_string;
+		--pac_text				: pac_text_fab.type_text_fab;
+		pac_text				: type_text_fab_with_content;
+		--content					: et_text.pac_text_content.bounded_string;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
 	
 		terminal_position		: type_position := origin_zero_rotation;
@@ -819,7 +820,7 @@ package body et_pcb_rw.device_packages is
 				
 			elsif kw = keyword_content then -- content "keep clear"
 				expect_field_count (line, 2); -- actual content in quotes !
-				content := et_text.to_content (f (line, 2));
+				pac_text.content := et_text.to_content (f (line, 2));
 				
 			else
 				invalid_keyword (kw);
@@ -2150,26 +2151,26 @@ package body et_pcb_rw.device_packages is
 										
 										append (
 											container	=> packge.conductors.top.texts,
-											new_item	=> (pac_text with content, others => <>));
+											new_item	=> (pac_text with others => <>));
 
 									when SEC_SILK_SCREEN =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.silk_screen.top.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.assembly_documentation.top.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 										
 									when SEC_STOP_MASK =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.stop_mask.top.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 										
 									-- CS SEC_KEEPOUT
 										
@@ -2185,26 +2186,26 @@ package body et_pcb_rw.device_packages is
 										
 										append (
 											container	=> packge.conductors.bottom.texts,
-											new_item	=> (pac_text with content, others => <>));
+											new_item	=> (pac_text with others => <>));
 
 									when SEC_SILK_SCREEN =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.silk_screen.bottom.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.assembly_documentation.bottom.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 										
 									when SEC_STOP_MASK =>
 
-										pac_texts_with_content.append (
+										pac_texts_fab_with_content.append (
 											container	=> packge.stop_mask.bottom.texts,
-											new_item	=> (pac_text with content));
+											new_item	=> pac_text);
 										
 									-- CS SEC_KEEPOUT
 										

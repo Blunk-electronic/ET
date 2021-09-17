@@ -103,14 +103,13 @@ package et_canvas_board_texts is
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
-		text			: type_text_with_content := (
-							size		=> 10.0,
-							line_width	=> 1.0,
-							position	=> origin_zero_rotation,
-							alignment	=> text_alignment_default,
-							content		=> empty_text_content); 
-
-		vectors : pac_vector_text_lines.list;
+		text			: type_text_fab_with_content := (
+					size		=> 10.0,
+					line_width	=> 1.0,
+					position	=> origin_zero_rotation,
+					alignment	=> text_alignment_default,
+					content		=> empty_text_content, 
+					others		=> <>); -- vectors
 
 		-- CS segments
 		
