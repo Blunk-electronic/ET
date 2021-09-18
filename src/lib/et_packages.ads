@@ -377,7 +377,6 @@ package et_packages is
 		circles		: pac_conductor_circles.list;
 		polygons	: type_conductor_polygons;
 		cutouts		: pac_conductor_cutouts.list;
-		--texts		: pac_texts_with_content.list;
 		texts		: pac_conductor_texts_package.list;
 	end record;
 	
@@ -705,7 +704,6 @@ package et_packages is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		--texts		: pac_conductor_texts.list; -- for notes on routing
 		texts		: pac_conductor_texts_board.list; -- for notes on routing
 		-- CS texts should use a list of texts with type_signal_layers
 	end record;
@@ -762,7 +760,6 @@ package et_packages is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		--texts		: pac_conductor_texts_package.list; -- for notes on via restrict
 		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
 		-- CS texts should use a list of texts with type_signal_layers
 	end record;

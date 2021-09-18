@@ -144,8 +144,6 @@ is
 
 		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			--type type_line is new pac_shapes.type_line with null record;
-			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
 				end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
