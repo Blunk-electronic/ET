@@ -2986,8 +2986,7 @@ is
 				is
 					pad_pos : type_position := pad_pos_in;
 
-					type type_circle is new pac_shapes.type_circle with null record;
-					circle : type_circle; --
+					circle : type_circle;
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 						
@@ -3114,10 +3113,9 @@ is
 		begin -- draw_terminals
 			element (package_cursor).terminals.iterate (query_terminal'access);
 		end draw_terminals;
+
 		
 		procedure draw_package_origin is
-			type type_line is new pac_shapes.type_line with null record;
-			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => get_x (package_position) - et_packages.origin_half_size, y => get_y (package_position))),
 				end_point		=> type_point (set (x => get_x (package_position) + et_packages.origin_half_size, y => get_y (package_position))));
