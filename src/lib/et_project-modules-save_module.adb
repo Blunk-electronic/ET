@@ -36,7 +36,6 @@
 --
 
 
-
 separate (et_project.modules)
 
 procedure save_module (
@@ -1158,10 +1157,11 @@ is
 		use et_packages.pac_keepout_circles;
 		use et_packages.pac_keepout_polygons;
 
-		use et_packages.pac_route_restrict_lines;
-		use et_packages.pac_route_restrict_arcs;
-		use et_packages.pac_route_restrict_circles;
-		use et_packages.pac_route_restrict_polygons;
+		use et_route_restrict;
+		use pac_route_restrict_lines;
+		use pac_route_restrict_arcs;
+		use pac_route_restrict_circles;
+		use pac_route_restrict_polygons;
 
 		use et_packages.pac_via_restrict_lines;
 		use et_packages.pac_via_restrict_arcs;
@@ -1283,7 +1283,8 @@ is
 		use et_packages.pac_stencil_cutouts;
 		use et_packages.pac_stop_cutouts;
 		use et_packages.pac_keepout_cutouts;
-		use et_packages.pac_route_restrict_cutouts;
+
+		use pac_route_restrict_cutouts;
 		use et_packages.pac_via_restrict_cutouts;
 		use et_schematic.pac_devices_non_electric;
 		

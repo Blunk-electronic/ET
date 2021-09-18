@@ -64,6 +64,7 @@ with et_text;
 with et_design_rules;			use et_design_rules;
 with et_conductor_segment;		use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
+with et_route_restrict;			use et_route_restrict;
 
 with cairo;
 
@@ -177,12 +178,6 @@ package et_packages is
 	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
 	
 	
-	subtype type_general_line_width is type_distance_positive
-		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
-	
-	-- Checks whether given line width is in range of type_general_line_width
-	procedure validate_general_line_width (width : in type_distance);
-
 
 	
 	
@@ -251,46 +246,6 @@ package et_packages is
 
 	
 
-
-	
-	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
-	keyword_hatching_line_width		: constant string := "hatching_line_width";
-	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
-
-	hatching_line_width_default : constant type_distance_positive := 0.2;
-	hatching_spacing_default	: constant type_distance_positive := 1.0;
-	
-	
-	type type_hatching is record
-		-- the width of the border line
-		border_width : type_distance_positive := 1.0;
-		
-		-- the with of the lines inside the area:
-		line_width : type_distance_positive := hatching_line_width_default;
-
-		-- the space between the lines inside the area:
-		spacing	: type_distance_positive := hatching_spacing_default;
-	end record;
-
-
-	
-	-- EASING
-	keyword_easing_style : constant string := "easing_style";
-	keyword_easing_radius : constant string := "easing_radius";	
-
-	type type_easing_style is (NONE, CHAMFER, FILLET);
-
-	function to_easing_style (easing : in string) return type_easing_style;
-	function to_string (easing : in type_easing_style) return string;
-	
-	easing_radius_max : constant type_distance_positive := 100.0;
-	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
-
-	type type_easing is record
-		style	: type_easing_style := NONE;
-		radius	: type_easing_radius := zero; -- center of circle at corner point
-	end record;
 
 	
 	-- POLYGON
@@ -389,40 +344,6 @@ package et_packages is
 	end record;
 
 
-
-
-
-	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
-	type type_fillable_circle (
-		filled		: type_filled;
-		fill_style	: type_fill_style -- don't care if filled is NO
-		)
-		is new type_circle with record
-		case filled is
-			when NO => 
-				-- the line width of the circumfence:
-				border_width : type_general_line_width := type_general_line_width'first;
-
-			when YES =>
-				case fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						hatching : type_hatching;
-				end case;
-				
-		end case;
-	end record;
-
-	-- CS type_circle_cutout ?
-	
-	function to_string (circle : in type_fillable_circle) return string;
-
-	-- This circle type is used by keepout, route restrict, via restrict.
-	-- The fill style is always solid, hence no discrimintant for fiil style.
-	-- When drawing, for the width of the border a fixed value will be applied.
-	type type_fillable_circle_solid is new type_circle with record
-		filled : type_filled;
-	end record;
 
 
 
@@ -657,58 +578,7 @@ package et_packages is
 	--package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
 
-
 	
-	
--- ROUTE RESTRICT
-
-	-- GUI relevant only: The line width of route restrict:
-	route_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-	
-	type type_route_restrict_line is new type_line with record
-		layers 	: type_signal_layers.set;
-	end record;
-	
-	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
-
-	type type_route_restrict_arc is new type_arc with record
-		layers 	: type_signal_layers.set;
-	end record;
-	
-	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
-	
-	type type_route_restrict_circle is new type_fillable_circle_solid with record
-		layers 	: type_signal_layers.set;
-	end record;
-
-	
-	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
-
-	type type_route_restrict_polygon is new type_polygon_base with record
-		layers 	: type_signal_layers.set;
-	end record;
-
-	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
-
-	
-	type type_route_restrict_cutout is new type_polygon with record
-		layers 	: type_signal_layers.set;
-	end record;
-		
-	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
-	
-	-- this is the base type for route restrict objects
-	type type_route_restrict is tagged record
-		lines 		: pac_route_restrict_lines.list;
-		arcs		: pac_route_restrict_arcs.list;
-		circles		: pac_route_restrict_circles.list;
-		polygons	: pac_route_restrict_polygons.list;
-		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on routing
-		-- CS texts should use a list of texts with type_signal_layers
-	end record;
-
-
 
 	
 	

@@ -40,6 +40,7 @@
 with et_text;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
+with et_string_processing;		use et_string_processing;
 
 package et_board_shapes_and_text is
 	use pac_geometry_brd;
@@ -48,6 +49,10 @@ package et_board_shapes_and_text is
 	package pac_shapes is new 
 		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
 
+	use pac_shapes;
+		
+
+		
 
 	type type_text_parameters is record
 		size_min 		: type_distance_positive;
@@ -79,7 +84,16 @@ package et_board_shapes_and_text is
 		line_width_max		=> text_parameters_fab.width_max,
 		line_width_default	=> text_parameters_fab.width_default);
 
+	
+	subtype type_general_line_width is type_distance_positive
+		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
+	
+	-- Checks whether given line width is in range 
+	-- of type_general_line_width:
+	procedure validate_general_line_width (width : in type_distance);
 
+
+	
 	
 
 -- DOCUMENTATION RELEVANT (NON-FAB)
@@ -99,6 +113,87 @@ package et_board_shapes_and_text is
 		line_width_min		=> text_parameters_doc.width_min,
 		line_width_max		=> text_parameters_doc.width_max,
 		line_width_default	=> text_parameters_doc.width_default);
+
+
+
+
+-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_hatching_border_width	: constant string := "hatching_border_width";	
+	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+
+	hatching_line_width_default : constant type_distance_positive := 0.2;
+	hatching_spacing_default	: constant type_distance_positive := 1.0;
+	
+	
+	type type_hatching is record
+		-- the width of the border line
+		border_width : type_distance_positive := 1.0;
+		
+		-- the with of the lines inside the area:
+		line_width : type_distance_positive := hatching_line_width_default;
+
+		-- the space between the lines inside the area:
+		spacing	: type_distance_positive := hatching_spacing_default;
+	end record;
+
+
+	
+-- EASING
+	keyword_easing_style : constant string := "easing_style";
+	keyword_easing_radius : constant string := "easing_radius";	
+
+	type type_easing_style is (NONE, CHAMFER, FILLET);
+
+	function to_easing_style (easing : in string) return type_easing_style;
+	function to_string (easing : in type_easing_style) return string;
+	
+	easing_radius_max : constant type_distance_positive := 100.0;
+	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
+
+	type type_easing is record
+		style	: type_easing_style := NONE;
+		radius	: type_easing_radius := zero; -- center of circle at corner point
+	end record;
+
+
+	
+	
+	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
+	type type_fillable_circle (
+		filled		: type_filled;
+		fill_style	: type_fill_style -- don't care if filled is NO
+		)
+		is new type_circle with record
+		case filled is
+			when NO => 
+				-- the line width of the circumfence:
+				border_width : type_general_line_width := type_general_line_width'first;
+
+			when YES =>
+				case fill_style is
+					when SOLID => null;
+					when HATCHED =>
+						hatching : type_hatching;
+				end case;
+				
+		end case;
+	end record;
+
+	-- CS type_circle_cutout ?
+	
+	function to_string (circle : in type_fillable_circle) return string;
+
+	-- This circle type is used by keepout, route restrict, via restrict.
+	-- The fill style is always solid, hence no discrimintant for fiil style.
+	-- When drawing, for the width of the border a fixed value will be applied.
+	type type_fillable_circle_solid is new type_circle with record
+		filled : type_filled;
+	end record;
+
+
+
+
 	
 end et_board_shapes_and_text;
 

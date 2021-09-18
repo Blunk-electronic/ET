@@ -59,6 +59,7 @@ with et_design_rules;			use et_design_rules;
 with et_meta;
 with et_conductor_polygons;		--use et_conductor_polygons;
 with et_conductor_text;
+with et_route_restrict;
 
 package et_project.modules is
 

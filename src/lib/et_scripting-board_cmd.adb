@@ -46,6 +46,7 @@ with et_canvas_board_vias;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_text;			use et_conductor_text;
+--with et_route_restrict;			use et_route_restrict;
 
 separate (et_scripting)
 	
@@ -56,7 +57,8 @@ procedure board_cmd (
 is
 	use et_board_ops;
 	use et_packages;
-	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text;
+	use pac_shapes;
 	--use et_terminals.pac_shapes;
 	use et_drills;
 	use et_vias;

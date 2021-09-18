@@ -71,6 +71,7 @@ with et_devices;				use et_devices;
 with et_conventions;
 with et_design_rules;			use et_design_rules;
 with et_conductor_text;			use et_conductor_text;
+with et_route_restrict;			use et_route_restrict;
 
 package et_board_ops is
 

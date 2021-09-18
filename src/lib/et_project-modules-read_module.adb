@@ -1312,7 +1312,7 @@ is
 	
 	
 	procedure read_cutout_route is
-		use et_packages;
+		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb_stack;
 		kw : constant  string := f (line, 1);
@@ -1336,9 +1336,10 @@ is
 		end if;
 	end read_cutout_route;
 
+	
 	procedure read_cutout_non_conductor is
-		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;
+		use et_board_shapes_and_text;
+		use pac_shapes;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1356,6 +1357,7 @@ is
 		end if;
 	end read_cutout_non_conductor;
 
+	
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
 		use et_packages;
@@ -1375,12 +1377,13 @@ is
 		end if;
 	end read_cutout_restrict;
 
+	
 	-- Reads cutout zone in conductor layer.
 	-- NOTE: This is about floating conductor zones. Has nothing to
 	-- do with nets and routes.
 	procedure read_cutout_conductor_non_electric is
-		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;									
+		use et_board_shapes_and_text;
+		use pac_shapes;									
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
@@ -1404,9 +1407,11 @@ is
 		end if;
 	end read_cutout_conductor_non_electric;
 
+	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
 		use et_packages;
+		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_conductor_polygons;
 		use et_pcb_stack;
@@ -1475,9 +1480,11 @@ is
 		end if;
 	end read_fill_zone_route;
 
+	
 	procedure read_fill_zone_non_conductor is
+		use et_board_shapes_and_text;
+		use pac_shapes;
 		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1507,6 +1514,7 @@ is
 		end if;
 	end read_fill_zone_non_conductor;
 
+	
 	procedure read_fill_zone_keepout is
 		use et_board_shapes_and_text.pac_shapes;
 		kw : constant string := f (line, 1);
@@ -1521,6 +1529,7 @@ is
 		end if;
 	end read_fill_zone_keepout;
 
+	
 	procedure read_fill_zone_restrict is
 		use et_pcb_stack;
 		use et_packages;
@@ -1544,9 +1553,11 @@ is
 		end if;
 	end read_fill_zone_restrict;
 
+	
 	procedure read_fill_zone_conductor_non_electric is
 		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;									
+		use et_board_shapes_and_text;
+		use pac_shapes;									
 		use et_pcb_stack;
 		use et_conductor_polygons;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -1648,6 +1659,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_submodule;
+
 	
 	procedure read_submodule_port is
 		kw : constant string := f (line, 1);
@@ -1672,6 +1684,7 @@ is
 		end if;
 	end read_submodule_port;
 
+	
 	procedure insert_submodule_port is
 		cursor : et_submodules.pac_submodule_ports.cursor;
 		inserted : boolean;
@@ -1827,6 +1840,7 @@ is
 		end if;
 	end read_schematic_text;
 
+	
 	procedure read_board_text_non_conductor is 
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant  string := f (line, 1);
@@ -1870,6 +1884,7 @@ is
 		end case;
 	end read_board_text_non_conductor;
 
+	
 	procedure read_board_text_conductor is
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb_stack;
@@ -1911,6 +1926,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_board_text_conductor;
+
 	
 	procedure read_board_text_contours is 
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -1991,6 +2007,7 @@ is
 		end if;
 	end;
 
+	
 	procedure read_device is
 		use et_symbols;
 		use et_devices;
@@ -2051,6 +2068,7 @@ is
 		end if;
 	end read_device;
 
+	
 	procedure read_device_non_electric is
 		use et_packages;
 		kw : constant string := f (line, 1);
@@ -2146,6 +2164,7 @@ is
 		
 	end read_via;
 
+	
 	procedure build_via is 
 		use et_vias;
 		use pac_vias;
@@ -2200,6 +2219,7 @@ is
 
 	-- temporarily storage place for user settings
 	user_settings_board : et_pcb.type_user_settings;
+
 	
 	procedure read_user_settings_vias is
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -2249,7 +2269,9 @@ is
 		end if;
 	end read_user_settings_vias;
 
+	
 	procedure read_user_settings_fill_zones_conductor is
+		use et_board_shapes_and_text;
 		use et_conductor_polygons;		
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -3583,7 +3605,7 @@ is
 
 			procedure insert_cutout_route_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_route_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3609,6 +3631,7 @@ is
 				clear (signal_layers);
 			end insert_cutout_route_restrict;
 
+			
 			procedure insert_cutout_conductor is
 			-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
@@ -3634,6 +3657,7 @@ is
 				-- clean up for next floating board polygon
 				board_reset_polygon;
 			end insert_cutout_conductor;
+
 			
 			procedure build_contour_text is
 
@@ -3743,7 +3767,7 @@ is
 
 			procedure insert_line_route_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_route_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3770,7 +3794,7 @@ is
 			
 			procedure insert_arc_route_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_route_restrict;
 				use et_pcb_stack;					
 				use type_signal_layers;
 				
@@ -3797,7 +3821,7 @@ is
 			end insert_arc_route_restrict;
 
 			procedure insert_circle_route_restrict is
-				use et_packages;
+				use et_route_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3823,7 +3847,9 @@ is
 
 			procedure insert_polygon_route_restrict is
 				use et_board_shapes_and_text.pac_shapes;
-				use et_packages.pac_route_restrict_polygons;
+				use et_route_restrict;
+				use pac_route_restrict_polygons;
+				
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -6106,8 +6132,8 @@ is
 									if not read_board_circle (line) then
 									
 										declare
-											use et_packages;
-											use et_board_shapes_and_text.pac_shapes;
+											use et_board_shapes_and_text;
+											use pac_shapes;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -6189,8 +6215,8 @@ is
 						when SEC_CONDUCTOR =>
 							if not read_board_circle (line) then
 								declare
-									use et_packages;
-									use et_board_shapes_and_text.pac_shapes;
+									use et_board_shapes_and_text;
+									use pac_shapes;
 									use et_pcb_stack;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);

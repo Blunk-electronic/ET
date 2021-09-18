@@ -166,28 +166,29 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_hatching (hatching : in et_packages.type_hatching) is
-		use et_packages;
+	procedure write_hatching (hatching : in type_hatching) is
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
 
+	
 	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching) is
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
+
 	
-	procedure write_easing (easing: in et_packages.type_easing) is
-		use et_packages;
+	procedure write_easing (easing: in type_easing) is
 	begin
 		write (keyword => keyword_easing_style, parameters => to_string (easing.style));
 		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
 	end;
 
+	
 	procedure write_thermal (thermal : in type_thermal) is
 		use et_pcb;
 	begin
@@ -855,8 +856,8 @@ package body et_pcb_rw is
 		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
 		fill_style			: in type_fill_style;
-		circumfence_width	: in et_packages.type_general_line_width;
-		hatching			: in et_packages.type_hatching)
+		circumfence_width	: in type_general_line_width;
+		hatching			: in type_hatching)
 		return type_fillable_circle is
 
 	begin -- to_fillable_circle

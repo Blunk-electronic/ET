@@ -69,6 +69,7 @@ with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;
+with et_route_restrict;			use et_route_restrict;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -221,7 +222,7 @@ package et_kicad.pcb is
 	type type_plot_drill_shape is range 0..1; -- CS so far nothing more known.
 	
 	-- scaleselection
-	type type_plot_scale_selection is range 1..1; -- CS no far nothing more known
+	type type_plot_scale_selection is range 1..1; -- CS so far nothing more known
 
 	-- outputdirectory
 	plot_output_directory_length_max : constant positive := 200;
@@ -233,7 +234,7 @@ package et_kicad.pcb is
 		layer_selection			: type_plot_layer_selection_string.bounded_string;
 		user_gerber_extensions	: type_plot_user_gerber_extensions;
 		exclude_edge_layer		: type_plot_exclude_edge_layer;
-		line_width				: et_packages.type_general_line_width;	-- for lines without given width
+		line_width				: type_general_line_width;	-- for lines without given width
 		frame_ref				: type_plot_frame_ref;
 		vias_on_mask			: type_plot_vias_on_mask;
 		fill_mode				: type_plot_fill_mode;
@@ -316,7 +317,7 @@ package et_kicad.pcb is
 		pcb_text_width		: pac_text_fab.type_text_line_width;	-- all kinds of texts (no matter what layer)
 		pcb_text_size_x		: pac_text_fab.type_text_size;
 		pcb_text_size_y		: pac_text_fab.type_text_size;		
-		module_edge_width	: et_packages.type_general_line_width;
+		module_edge_width	: type_general_line_width;
 		module_text_size_x	: pac_text_fab.type_text_size;
 		module_text_size_y	: pac_text_fab.type_text_size;
 		module_text_width	: pac_text_fab.type_text_line_width; -- line width
@@ -627,8 +628,8 @@ package et_kicad.pcb is
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		corners				: type_polygon_points.list;
 		fill_style			: et_geometry.type_fill_style := et_geometry.SOLID; -- a polygon is always filled
-		hatching			: et_packages.type_hatching;
-		easing				: et_packages.type_easing;
+		hatching			: type_hatching;
+		easing				: type_easing;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);

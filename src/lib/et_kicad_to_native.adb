@@ -52,7 +52,7 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_project.modules;
 with et_vias;
-with et_board_shapes_and_text;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_packages;
 with et_kicad_general;
 with et_kicad_libraries;

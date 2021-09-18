@@ -38,6 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
 with et_conductor_text;			use et_conductor_text;
+with et_route_restrict;			use et_route_restrict;
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)

@@ -51,6 +51,7 @@ with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;		--use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
+with et_route_restrict;			use et_route_restrict;
 
 package et_pcb_rw is
 
@@ -118,9 +119,9 @@ package et_pcb_rw is
 	-- writes center and radius of a circle
 
 	
-	procedure write_hatching (hatching : in et_packages.type_hatching);
+	procedure write_hatching (hatching : in type_hatching);
 	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching);
-	procedure write_easing (easing: in et_packages.type_easing);
+	procedure write_easing (easing: in type_easing);
 	procedure write_thermal (thermal : in type_thermal);
 	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
@@ -227,9 +228,9 @@ package et_pcb_rw is
 	board_fill_style : type_fill_style := fill_style_default;
 	board_filled : type_filled := filled_default;
 
-	board_hatching : et_packages.type_hatching;
+	board_hatching : type_hatching;
 	board_hatching_conductor : et_conductor_segment.type_conductor_hatching;
-	board_easing : et_packages.type_easing;
+	board_easing : type_easing;
 
 	
 
@@ -260,7 +261,7 @@ package et_pcb_rw is
 
 	procedure board_reset_lock_status;
 	
-	board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
+	board_line_width : type_general_line_width := type_general_line_width'first;
 
 	procedure board_reset_line_width;
 
@@ -274,8 +275,8 @@ package et_pcb_rw is
 		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
 		fill_style			: in type_fill_style;
-		circumfence_width	: in et_packages.type_general_line_width;
-		hatching			: in et_packages.type_hatching)
+		circumfence_width	: in type_general_line_width;
+		hatching			: in type_hatching)
 		return type_fillable_circle;
 
 	
