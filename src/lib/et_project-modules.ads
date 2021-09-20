@@ -63,13 +63,12 @@ with et_route_restrict;
 with et_via_restrict;
 with et_stop_mask;
 with et_stencil;
+with et_silkscreen;
 
 package et_project.modules is
 
 	use pac_net_name;
-	
-	--use et_symbols.pac_text;
-	
+		
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
 	-- Module names are things like "motor_driver" or "temperature_controller".

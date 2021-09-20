@@ -68,6 +68,7 @@ with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
+with et_silkscreen;				use et_silkscreen;
 
 with cairo;
 
@@ -322,51 +323,6 @@ package et_packages is
 
 
 	
-
-
-	
-
-
-
-
-
-
-
-
-	
-	
-	
--- SILK SCREEN
-	
-	type type_silk_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
-
-
-	type type_silk_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
-	
-	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
-
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_silk_cutouts is new doubly_linked_lists (type_polygon);	
-	
-
-	-- This is the base type for silk screen objects in general:
-	type type_silk_screen_base is tagged record
-		lines 		: pac_silk_lines.list;
-		arcs		: pac_silk_arcs.list;
-		circles		: pac_silk_circles.list;
-		polygons	: pac_silk_polygons.list;
-		cutouts 	: pac_silk_cutouts.list;
-		texts		: pac_texts_fab_with_content.list;
-	end record;
-
 	-- Silk screen objects of a package (in the library) include placeholders:
 	type type_silk_screen is new type_silk_screen_base with record
 		placeholders : pac_text_placeholders.list;
@@ -377,6 +333,7 @@ package et_packages is
 		top		: type_silk_screen;
 		bottom	: type_silk_screen;
 	end record;
+
 
 	
 

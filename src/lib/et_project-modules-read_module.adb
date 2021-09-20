@@ -2706,9 +2706,11 @@ is
 				
 			end build_unit_placeholder;
 
+			
 			procedure insert_device (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
+				module		: in out et_schematic.type_module) 
+			is
 				use et_schematic;
 				use et_symbols;
 				use et_devices;
@@ -2956,6 +2958,7 @@ is
 				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
+				use et_silkscreen;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3036,6 +3039,7 @@ is
 				board_reset_line_width;
 			end insert_line;
 
+			
 			procedure insert_arc (
 				layer_cat	: in et_packages.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
@@ -3048,6 +3052,7 @@ is
 				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
+				use et_silkscreen;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3126,6 +3131,7 @@ is
 				board_reset_line_width;
 			end insert_arc;
 
+			
 			procedure insert_circle (
 				layer_cat	: in et_packages.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
@@ -3137,6 +3143,7 @@ is
 				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
+				use et_silkscreen;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3214,6 +3221,7 @@ is
 				board_reset_circle_fillable;
 			end insert_circle;
 
+			
 			procedure insert_polygon (
 				layer_cat	: in et_packages.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
@@ -3225,6 +3233,7 @@ is
 				use et_board_shapes_and_text.pac_shapes;
 				use et_stop_mask;
 				use et_stencil;
+				use et_silkscreen;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3470,6 +3479,7 @@ is
 					use et_packages;
 					use et_stop_mask;
 					use et_stencil;
+					use et_silkscreen;
 					
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (

@@ -52,6 +52,7 @@ use et_board_shapes_and_text.pac_text_fab;
 
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
+with et_silkscreen;				use et_silkscreen;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;

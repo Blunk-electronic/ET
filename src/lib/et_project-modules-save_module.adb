@@ -1131,10 +1131,11 @@ is
 		
 		use et_pcb.pac_text_placeholders;
 
-		use et_packages.pac_silk_lines;
-		use et_packages.pac_silk_arcs;
-		use et_packages.pac_silk_circles;
-		use et_packages.pac_silk_polygons;
+		use et_silkscreen;
+		use pac_silk_lines;
+		use pac_silk_arcs;
+		use pac_silk_circles;
+		use pac_silk_polygons;
 
 		use et_packages.pac_doc_lines;
 		use et_packages.pac_doc_arcs;
@@ -1280,7 +1281,7 @@ is
 			placeholder_end;
 		end write_placeholder;
 
-		use et_packages.pac_silk_cutouts;
+		use pac_silk_cutouts;
 		use et_packages.pac_doc_cutouts;
 		use pac_stencil_cutouts;
 		use pac_stop_cutouts;

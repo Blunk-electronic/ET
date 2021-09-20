@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with et_silkscreen;				use et_silkscreen;
 
 separate (et_canvas_board)
 

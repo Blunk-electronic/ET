@@ -70,6 +70,7 @@ with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;
 with et_stencil;				use et_stencil;
+with et_silkscreen;				use et_silkscreen;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
