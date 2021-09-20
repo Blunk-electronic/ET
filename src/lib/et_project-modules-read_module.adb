@@ -2959,6 +2959,7 @@ is
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
+				use et_assy_doc;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3053,6 +3054,7 @@ is
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
+				use et_assy_doc;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3144,6 +3146,7 @@ is
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
+				use et_assy_doc;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3234,6 +3237,7 @@ is
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
+				use et_assy_doc;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3474,12 +3478,12 @@ is
 					module		: in out et_schematic.type_module)
 				is
 					use et_pcb_coordinates;
-					--use et_terminals;
 					use et_board_shapes_and_text;
 					use et_packages;
 					use et_stop_mask;
 					use et_stencil;
 					use et_silkscreen;
+					use et_assy_doc;
 					
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (

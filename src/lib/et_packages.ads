@@ -69,6 +69,7 @@ with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
+with et_assy_doc;				use et_assy_doc;
 
 with cairo;
 
@@ -339,35 +340,6 @@ package et_packages is
 
 	
 
--- ASSEMBLY DOCUMENTATION
-	
-	type type_doc_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
-
-
-	type type_doc_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
-	
-	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_doc_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation_base is tagged record
-		lines 		: pac_doc_lines.list;
-		arcs		: pac_doc_arcs.list;
-		circles		: pac_doc_circles.list;
-		polygons	: pac_doc_polygons.list;
-		cutouts		: pac_doc_cutouts.list;
-		texts		: pac_texts_fab_with_content.list;
-	end record;
 
 	-- Assembly documentation objects of a package include placeholders:
 	type type_assembly_documentation is new type_assembly_documentation_base with record

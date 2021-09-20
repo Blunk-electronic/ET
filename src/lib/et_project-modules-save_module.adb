@@ -1137,10 +1137,11 @@ is
 		use pac_silk_circles;
 		use pac_silk_polygons;
 
-		use et_packages.pac_doc_lines;
-		use et_packages.pac_doc_arcs;
-		use et_packages.pac_doc_circles;
-		use et_packages.pac_doc_polygons;
+		use et_assy_doc;
+		use pac_doc_lines;
+		use pac_doc_arcs;
+		use pac_doc_circles;
+		use pac_doc_polygons;
 
 		use et_stencil;
 		use pac_stencil_lines;
@@ -1282,7 +1283,7 @@ is
 		end write_placeholder;
 
 		use pac_silk_cutouts;
-		use et_packages.pac_doc_cutouts;
+		use pac_doc_cutouts;
 		use pac_stencil_cutouts;
 		use pac_stop_cutouts;
 		use et_packages.pac_keepout_cutouts;
