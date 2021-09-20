@@ -41,10 +41,9 @@ separate (et_project.modules)
 procedure save_module (
 	module_cursor	: in pac_generic_modules.cursor;
 	save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
-	log_threshold	: in et_string_processing.type_log_level)
+	log_threshold	: in type_log_level)
 is
 	use et_conductor_text;
-	use et_string_processing;
 	use pac_generic_modules;
 
 	-- backup the previous output destination
@@ -1163,10 +1162,11 @@ is
 		use pac_route_restrict_circles;
 		use pac_route_restrict_polygons;
 
-		use et_packages.pac_via_restrict_lines;
-		use et_packages.pac_via_restrict_arcs;
-		use et_packages.pac_via_restrict_circles;
-		use et_packages.pac_via_restrict_polygons;
+		use et_via_restrict;
+		use pac_via_restrict_lines;
+		use pac_via_restrict_arcs;
+		use pac_via_restrict_circles;
+		use pac_via_restrict_polygons;
 
 		--use et_packages.pac_conductor_texts;
 		use et_conductor_text;
@@ -1285,7 +1285,7 @@ is
 		use et_packages.pac_keepout_cutouts;
 
 		use pac_route_restrict_cutouts;
-		use et_packages.pac_via_restrict_cutouts;
+		use pac_via_restrict_cutouts;
 		use et_schematic.pac_devices_non_electric;
 		
 		procedure query_devices_non_electric (

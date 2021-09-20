@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          ROUTE RESTRICT                                  --
+--                            VIA RESTRICT                                  --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -49,63 +49,67 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
 
-package et_route_restrict is
+package et_via_restrict is
 	use pac_geometry_brd;
 
 	use et_board_shapes_and_text.pac_shapes;
 	use et_board_shapes_and_text.pac_text_fab;
 
 
-	-- GUI relevant only: The line width of route restrict:
-	route_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+	-- GUI relevant only: The line width of via restrict:
+	via_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 	
-	type type_route_restrict_line is new type_line with record
+	type type_via_restrict_line is new type_line with record
+		layers	: type_signal_layers.set;
+	end record;
+	
+	package pac_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
+
+	
+	type type_via_restrict_arc is new type_arc with record
+		layers	: type_signal_layers.set;
+	end record;
+	
+	package pac_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
+
+	
+	type type_via_restrict_circle is new type_fillable_circle_solid with record
+		layers	: type_signal_layers.set;
+	end record;
+	
+	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
+
+	
+	type type_via_restrict_polygon is new type_polygon_base with record
 		layers 	: type_signal_layers.set;
 	end record;
 	
-	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
+	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
-	type type_route_restrict_arc is new type_arc with record
-		layers 	: type_signal_layers.set;
-	end record;
-	
-	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
-	
-	type type_route_restrict_circle is new type_fillable_circle_solid with record
-		layers 	: type_signal_layers.set;
-	end record;
 
-	
-	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
-
-	type type_route_restrict_polygon is new type_polygon_base with record
-		layers 	: type_signal_layers.set;
-	end record;
-
-	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
-
-	
-	type type_route_restrict_cutout is new type_polygon with record
+	type type_via_restrict_cutout is new type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
 		
-	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
+	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
 	
-	-- this is the base type for route restrict objects
-	type type_route_restrict is tagged record
-		lines 		: pac_route_restrict_lines.list;
-		arcs		: pac_route_restrict_arcs.list;
-		circles		: pac_route_restrict_circles.list;
-		polygons	: pac_route_restrict_polygons.list;
-		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on routing
+	
+	-- this is the base type for via restrict objects
+	type type_via_restrict is tagged record
+		lines 		: pac_via_restrict_lines.list;
+		arcs		: pac_via_restrict_arcs.list;
+		circles		: pac_via_restrict_circles.list;
+		polygons	: pac_via_restrict_polygons.list;
+		cutouts		: pac_via_restrict_cutouts.list;
+		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
 		-- CS texts should use a list of texts with type_signal_layers
 	end record;
 
+
 	
 
 	
-end et_route_restrict;
+end et_via_restrict;
 
 -- Soli Deo Gloria
 

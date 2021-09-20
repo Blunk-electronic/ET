@@ -52,6 +52,7 @@ with et_design_rules;			use et_design_rules;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
+with et_via_restrict;			use et_via_restrict;
 
 with et_canvas_primitive_draw_ops;
 
@@ -1946,7 +1947,7 @@ is
 			use pac_via_restrict_polygons;
 			
 			procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is
-				polygon : et_packages.type_via_restrict_polygon := element (c);
+				polygon : type_via_restrict_polygon := element (c);
 			begin
 				if flipped then 
 					mirror (polygon.layers, bottom_layer);
@@ -1973,7 +1974,7 @@ is
 			use pac_via_restrict_cutouts;
 		
 			procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
-				cutout : et_packages.type_via_restrict_cutout := element (c);
+				cutout : type_via_restrict_cutout := element (c);
 			begin
 				if flipped then 
 					mirror (cutout.layers, bottom_layer);

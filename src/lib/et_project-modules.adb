@@ -341,7 +341,7 @@ package body et_project.modules is
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is separate;
 
 	function to_string (section : in type_section) return string is
@@ -356,7 +356,7 @@ package body et_project.modules is
 	-- The file name may contain environment variables.
 	-- The file must exist, must be visible from the current working directory.
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 		is separate;
 
 	procedure create_module (
@@ -398,8 +398,8 @@ package body et_project.modules is
 
 	procedure save_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
 		use et_string_processing;

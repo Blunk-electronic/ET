@@ -42,11 +42,9 @@ separate (et_project.modules)
 
 procedure read_module (
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
-	log_threshold	: in et_string_processing.type_log_level) 
+	log_threshold	: in type_log_level) 
 is
 	previous_input : ada.text_io.file_type renames current_input;
-
-	use et_string_processing;
 	
 	-- Environment variables like $templates could be in file name.
 	-- In order to test whether the given module file exists, file name_name must be expanded
@@ -3577,7 +3575,7 @@ is
 
 			procedure insert_cutout_via_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_via_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3876,7 +3874,7 @@ is
 
 			procedure insert_line_via_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_via_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3904,7 +3902,7 @@ is
 
 			procedure insert_arc_via_restrict is
 				use et_board_shapes_and_text;
-				use et_packages;
+				use et_via_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3931,7 +3929,7 @@ is
 			end insert_arc_via_restrict;
 
 			procedure insert_circle_via_restrict is
-				use et_packages;
+				use et_via_restrict;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3958,7 +3956,8 @@ is
 
 			procedure insert_polygon_via_restrict is
 				use et_board_shapes_and_text.pac_shapes;
-				use et_packages.pac_via_restrict_polygons;
+				use et_via_restrict;
+				use pac_via_restrict_polygons;
 				use et_pcb_stack;
 				use type_signal_layers;
 				

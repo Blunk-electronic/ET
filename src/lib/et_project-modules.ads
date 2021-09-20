@@ -60,6 +60,7 @@ with et_meta;
 with et_conductor_polygons;		--use et_conductor_polygons;
 with et_conductor_text;
 with et_route_restrict;
+with et_via_restrict;
 
 package et_project.modules is
 
@@ -126,7 +127,7 @@ package et_project.modules is
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	
 
@@ -280,7 +281,7 @@ package et_project.modules is
 	-- The file name may contain environment variables.
 	-- The file must exist.
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Creates an empty generic module in container modules.
 	-- Does not create the actual module file if the module
