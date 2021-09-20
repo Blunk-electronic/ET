@@ -4,7 +4,7 @@
 --                                                                          --
 --                     STENCIL / SOLDER PASTE MASK                          --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,85 +36,54 @@
 --
 --   to do:
 
+with ada.strings;				use ada.strings;
 
-with ada.containers; 			use ada.containers;
+package body et_stencil is
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_stencil is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	type type_stencil_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
-
-
-	type type_stencil_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
-
-	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stencil_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	-- This is the type for solder paste stencil objects in general:
-	type type_stencil is record
-		lines 		: pac_stencil_lines.list;
-		arcs		: pac_stencil_arcs.list;
-		circles		: pac_stencil_circles.list;
-		polygons	: pac_stencil_polygons.list;
-		cutouts		: pac_stencil_cutouts.list;
-		
-		texts		: pac_texts_fab_with_content.list;
-		-- NOTE: Probably not reasonable and a waste of resources.
-		-- DRC should output warning if texts in stencil detected.
-	end record;
-
-	-- Because stencil is about two sides of the board this composite is required:
-	type type_stencil_both_sides is record
-		top		: type_stencil;
-		bottom	: type_stencil;
-	end record;
-
-
-
-	-- Logs the properties of the given arc of stencil
 	procedure arc_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_stencil_arcs;
+		arc : type_stencil_arc;
+	begin
+		arc := element (cursor);
+		log (text => "solder paste (stencil) arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc))
+			 & " width" & to_string (arc.width),
+			 level => log_threshold);
+	end arc_stencil_properties;
 
-	-- Logs the properties of the given circle of stencil
+	
 	procedure circle_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_stencil_circles;
+	begin
+		log (text => "solder paste (stencil) circle face" & to_string (face) & space 
+			& to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
-	-- Logs the properties of the given line of stencil
+	
 	procedure line_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_stencil_lines;
+		line : type_stencil_line;
+	begin
+		line := element (cursor);
+		log (text => "solder paste (stencil) line face" & to_string (face) & space
+			 & to_string (type_line (line))
+			 & " width" & to_string (line.width),
+			 level => log_threshold);
+	end line_stencil_properties;
 
-	
 	
 end et_stencil;
 

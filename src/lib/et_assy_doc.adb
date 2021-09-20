@@ -4,7 +4,7 @@
 --                                                                          --
 --                        ASSEMBLY DOCUMENTAION                             --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -37,79 +37,70 @@
 --   to do:
 
 
-with ada.containers; 			use ada.containers;
+with ada.strings;	 			use ada.strings;
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+package body et_assy_doc is
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_assy_doc is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-	
-	type type_doc_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
-
-
-	type type_doc_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
-	
-	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_doc_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation_base is tagged record
-		lines 		: pac_doc_lines.list;
-		arcs		: pac_doc_arcs.list;
-		circles		: pac_doc_circles.list;
-		polygons	: pac_doc_polygons.list;
-		cutouts		: pac_doc_cutouts.list;
-		texts		: pac_texts_fab_with_content.list;
-	end record;
-
-
-	-- Logs the properties of the given line of assembly documentation
 	procedure line_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_doc_lines;
+		line : type_doc_line;
+	begin
+		line := element (cursor);
+		log (text => "assembly doc line face" & to_string (face) & space
+			 & to_string (type_line (line))
+			 & " width" & to_string (line.width), level => log_threshold);
+	end line_assy_doc_properties;
 
-	-- Logs the properties of the given arc of assembly documentation
+	
 	procedure arc_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_doc_arcs;
+		arc : type_doc_arc;
+	begin
+		arc := element (cursor);
+		log (text => "assembly doc arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc))
+			 & " width" & to_string (arc.width), level => log_threshold);
+	end arc_assy_doc_properties;
 
-	-- Logs the properties of the given circle of assembly documentation
+	
 	procedure circle_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_doc_circles;
+	begin
+		log (text => "assembly doc circle face" & to_string (face) & space 
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 
-	-- Logs the properties of the given assembly documentation text
 	procedure text_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_texts_fab_with_content;
+		use et_text.pac_text_content;
+		text : type_text_fab_with_content;
+	begin
+		text := element (cursor);
+		log (text => "assembly doc text face" & to_string (face) & space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
+
+		log_indentation_up;
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		log_indentation_down;
+	end text_assy_doc_properties;
 
 	
 end et_assy_doc;

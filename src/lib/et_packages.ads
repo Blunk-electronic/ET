@@ -249,13 +249,6 @@ package et_packages is
 	--package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
 	use pac_texts_fab_with_content;
 
-
-	
-
-
-	
-
-
 	
 
 
@@ -265,11 +258,6 @@ package et_packages is
 
 	 
 	
-	-- the space between foreign pads and the polygon outline
-	keyword_isolation : constant string := "isolation";
-
-	-- the minimal width of a polygon
-	keyword_min_width : constant string := "min_width";
 
 
 	
@@ -325,24 +313,19 @@ package et_packages is
 
 
 	
-	-- Silk screen objects of a package (in the library) include placeholders:
+	-- Silk screen objects include placeholders:
 	type type_silk_screen is new type_silk_screen_base with record
 		placeholders : pac_text_placeholders.list;
 	end record;
 
-	-- Because silk screen is about two sides of the board this composite is required:
+	-- silk screen is about two sides of the board:
 	type type_silk_screen_both_sides is record
 		top		: type_silk_screen;
 		bottom	: type_silk_screen;
 	end record;
 
 
-	
-
-	
-
-
-	-- Assembly documentation objects of a package include placeholders:
+	-- Assembly documentation includes placeholders:
 	type type_assembly_documentation is new type_assembly_documentation_base with record
 		placeholders: pac_text_placeholders.list;
 	end record;
@@ -353,31 +336,6 @@ package et_packages is
 		bottom	: type_assembly_documentation;
 	end record;
 
-
-
-	
-	
-
-	--package pac_conductor_line_segments is new
-		--doubly_linked_lists (type_conductor_line_segment);
-
-	
-	--type type_conductor_text is new type_text_with_content with record
-		--vectors	: pac_vector_text_lines.list;
-		----segments: pac_conductor_line_segments.list;
-		--layer	: type_signal_layer := type_signal_layer'first;
-	--end record;
-
-	----function to_string (text : in type_conductor_text)
-		----return string;
-	
-	--package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
-
-
-	
-
-	
-	
 
 
 
@@ -519,174 +477,28 @@ package et_packages is
 
 
 	
--- PROPERTIES OF OBJECTS IN SILK SCREEN
-	
-	procedure line_silk_screen_properties (
-	-- Logs the properties of the given line:
-		face			: in type_face;
-		cursor			: in pac_silk_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure arc_silk_screen_properties (
-	-- Logs the properties of the given arc of silk screen
-		face			: in type_face;
-		cursor			: in pac_silk_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure circle_silk_screen_properties (
-	-- Logs the properties of the given circle of silk screen
-		face			: in type_face;
-		cursor			: in pac_silk_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
+	procedure placeholder_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	procedure text_silk_screen_properties (
-	-- Logs the properties of the given silk screen text
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
 	
 	
--- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION	
-	procedure line_assy_doc_properties (
-	-- Logs the properties of the given line of assembly documentation
-		face			: in type_face;
-		cursor			: in pac_doc_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure arc_assy_doc_properties (
-	-- Logs the properties of the given arc of assembly documentation
-		face			: in type_face;
-		cursor			: in pac_doc_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_assy_doc_properties (
-	-- Logs the properties of the given circle of assembly documentation
-		face			: in type_face;
-		cursor			: in pac_doc_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
+	procedure placeholder_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure text_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation text
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	
-
-	
--- PROPERTIES OF OBJECTS IN KEEPOUT	
-	procedure line_keepout_properties (
-	-- Logs the properties of the given line of keepout
-		face			: in type_face;
-		cursor			: in pac_keepout_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure arc_keepout_properties (
-	-- Logs the properties of the given arc of keepout
-		face			: in type_face;
-		cursor			: in pac_keepout_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_keepout_properties (
-	-- Logs the properties of the given circle of keepout
-		face			: in type_face;
-		cursor			: in pac_keepout_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-
-
--- PROPERTIES OF OBJECTS IN STOP MASK
-	procedure arc_stop_mask_properties (
-	-- Logs the properties of the given arc of stop mask
-		face			: in type_face;
-		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_stop_mask_properties (
-	-- Logs the properties of the given circle of stop mask
-		face			: in type_face;
-		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure line_stop_mask_properties (
-	-- Logs the properties of the given line of stop mask
-		face			: in type_face;
-		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure text_stop_mask_properties (
-	-- Logs the properties of the given stop mask text
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	
-
--- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
-	procedure arc_stencil_properties (
-	-- Logs the properties of the given arc of stencil
-		face			: in type_face;
-		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_stencil_properties (
-	-- Logs the properties of the given circle of stencil
-		face			: in type_face;
-		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure line_stencil_properties (
-	-- Logs the properties of the given line of stencil
-		face			: in type_face;
-		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-	
-
 	
 	
--- PROPERTIES OF OBJECTS IN ROUTE RESTRICT	
-	procedure line_route_restrict_properties (
-	-- Logs the properties of the given line of route restrict
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure arc_route_restrict_properties (
-	-- Logs the properties of the given arc of route restrict
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	-- CS procedure circle_route_restrict_properties
 	
 	
--- PROPERTIES OF OBJECTS IN VIA RESTRICT		
-	procedure line_via_restrict_properties (
-	-- Logs the properties of the given line of via restrict
-		face			: in type_face;
-		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure arc_via_restrict_properties (
-	-- Logs the properties of the given arc of via restrict
-		face			: in type_face;
-		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	-- CS procedure circle_via_restrict_properties
 	
 
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS

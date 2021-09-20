@@ -371,52 +371,12 @@ package body et_packages is
 	end circle_conductor_properties;
 
 	
--- PROPERTIES OF OBJECTS IN SILK SCREEN
-	procedure line_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_silk_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_silk_lines;
-		line : type_silk_line;
-	begin
-		line := element (cursor);
-		log (text => "silk screen line face" & to_string (face) & latin_1.space 
-			 & to_string (type_line (line))
-			 & " width" & to_string (line.width), level => log_threshold);
-	end line_silk_screen_properties;
-
-	procedure arc_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_silk_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_silk_arcs;
-		arc : type_silk_arc;
-	begin
-		arc := element (cursor);
-		log (text => "silk screen arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc))
-			 & " width" & to_string (arc.width), level => log_threshold);
-	end arc_silk_screen_properties;
-	
-	procedure circle_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_silk_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_silk_circles;
-	begin
-		log (text => "silk screen circle face" & to_string (face)
-			 & to_string (element (cursor)),
-			level => log_threshold);
-	end;
 
 	procedure placeholder_silk_screen_properties (
-	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use pac_text_placeholders;
 		placeholder : type_text_placeholder;
 	begin
@@ -429,68 +389,12 @@ package body et_packages is
 		log_indentation_down;
 	end placeholder_silk_screen_properties;
 	
-	procedure text_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use et_text.pac_text_content;
-		text : type_text_fab_with_content;
-	begin
-		text := element (cursor);
-		log (text => "silk screen text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_silk_screen_properties;
 
 
 	
--- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION
-	procedure line_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_doc_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_doc_lines;
-		line : type_doc_line;
-	begin
-		line := element (cursor);
-		log (text => "assembly doc line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line))
-			 & " width" & to_string (line.width), level => log_threshold);
-	end line_assy_doc_properties;
 
-	procedure arc_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_doc_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_doc_arcs;
-		arc : type_doc_arc;
-	begin
-		arc := element (cursor);
-		log (text => "assembly doc arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc))
-			 & " width" & to_string (arc.width), level => log_threshold);
-	end arc_assy_doc_properties;
-
-	procedure circle_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_doc_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_doc_circles;
-	begin
-		log (text => "assembly doc circle face" & to_string (face) & latin_1.space 
-			 & to_string (element (cursor)),
-			level => log_threshold);
-	end;
 
 	procedure placeholder_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation placeholder
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -506,234 +410,10 @@ package body et_packages is
 		log_indentation_down;
 	end placeholder_assy_doc_properties;
 
-	procedure text_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation text
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use et_text.pac_text_content;
-		text : type_text_fab_with_content;
-	begin
-		text := element (cursor);
-		log (text => "assembly doc text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_assy_doc_properties;
-
-
-	
-	
--- PROPERTIES OF OBJECTS IN KEEPOUT
-	procedure line_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_keepout_lines;
-		line : type_keepout_line;
-	begin
-		line := element (cursor);
-		log (text => "keepout (courtyard) line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_keepout_properties;
-
-	procedure arc_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_keepout_arcs;
-		arc : type_keepout_arc;
-	begin
-		arc := element (cursor);
-		log (text => "keepout (courtyard) arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_keepout_properties;
-
-	procedure circle_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_keepout_circles;
-	begin
-		log (text => "keepout circle face" & to_string (face) & latin_1.space 
-			 & to_string (element (cursor)),
-			level => log_threshold);
-	end;
-
-
--- PROPERTIES OF OBJECTS IN STOP MASK
-	procedure arc_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stop_arcs;
-		arc : type_stop_arc;
-	begin
-		arc := element (cursor);
-		log (text => "stop mask arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc))
-			 & " width" & to_string (arc.width),
-			 level => log_threshold);
-	end arc_stop_mask_properties;
-
-	procedure circle_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stop_circles;
-	begin
-		log (text => "stop mask circle face" & to_string (face) & latin_1.space 
-			& to_string (element (cursor)),
-			level => log_threshold);
-	end;
-
-	
-	procedure line_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stop_lines;
-		line : type_stop_line;
-	begin
-		line := element (cursor);
-		log (text => "stop mask line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line))
-			 & " width" & to_string (line.width),
-			 level => log_threshold);
-	end line_stop_mask_properties;
-
-	
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use et_text.pac_text_content;
-		text : type_text_fab_with_content;
-	begin
-		text := element (cursor);
-		log (text => "stop mask text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		--log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_stop_mask_properties;
-
-
--- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
-	procedure arc_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stencil_arcs;
-		arc : type_stencil_arc;
-	begin
-		arc := element (cursor);
-		log (text => "solder paste (stencil) arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc))
-			 & " width" & to_string (arc.width),
-			 level => log_threshold);
-	end arc_stencil_properties;
-
-	procedure circle_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stencil_circles;
-	begin
-		log (text => "solder paste (stencil) circle face" & to_string (face) & latin_1.space 
-			& to_string (element (cursor)),
-			level => log_threshold);
-	end;
-
-	procedure line_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_stencil_lines;
-		line : type_stencil_line;
-	begin
-		line := element (cursor);
-		log (text => "solder paste (stencil) line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line))
-			 & " width" & to_string (line.width),
-			 level => log_threshold);
-	end line_stencil_properties;
 	
 	
 	
--- PROPERTIES OF OBJECTS IN ROUTE RESTRICT
-	procedure line_route_restrict_properties (
-	-- Logs the properties of the given line of route restrict
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_route_restrict_lines;
-		line : type_route_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "route restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_route_restrict_properties;
 
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_route_restrict_arcs;
-		arc : type_route_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "route restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_route_restrict_properties;
-
-
-	-- CS procedure circle_route_restrict_properties
-	
-
--- PROPERTIES OF OBJECTS IN VIA RESTRICT	
-	procedure line_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		use pac_via_restrict_lines;
-		line : type_via_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "via restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_via_restrict_properties;
-
-	procedure arc_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
-	is
-		use pac_via_restrict_arcs;
-		arc : type_via_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "via restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_via_restrict_properties;
-
-	-- CS procedure circle_via_restrict_properties
 
 	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS

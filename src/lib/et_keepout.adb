@@ -4,7 +4,7 @@
 --                                                                          --
 --                              KEEPOUT                                     --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -37,74 +37,50 @@
 --   to do:
 
 
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_keepout is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-	
-	-- GUI relevant only: The line width of keepout:
-	keepout_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-
-	type type_keepout_line is new type_line with null record;
-	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);
-
-	type type_keepout_arc is new type_arc with null record;
-	package pac_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
-	
-	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
-
-	type type_keepout_polygon is new type_polygon_base with null record;
-	package pac_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
-	
-	package pac_keepout_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	type type_keepout is record
-		lines 		: pac_keepout_lines.list;
-		arcs		: pac_keepout_arcs.list;
-		circles		: pac_keepout_circles.list;
-		polygons	: pac_keepout_polygons.list;
-		cutouts 	: pac_keepout_cutouts.list;
-		texts		: pac_texts_fab_with_content.list; -- for notes on placement
-	end record;
-
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
+with ada.strings;	 			use ada.strings;
 
 
-	-- Logs the properties of the given line of keepout
+package body et_keepout is
+
 	procedure line_keepout_properties (
 		face			: in type_face;
 		cursor			: in pac_keepout_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_keepout_lines;
+		line : type_keepout_line;
+	begin
+		line := element (cursor);
+		log (text => "keepout (courtyard) line face" & to_string (face) & space
+			 & to_string (type_line (line)), level => log_threshold);
+	end line_keepout_properties;
 
-	-- Logs the properties of the given arc of keepout
+	
 	procedure arc_keepout_properties (
 		face			: in type_face;
 		cursor			: in pac_keepout_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_keepout_arcs;
+		arc : type_keepout_arc;
+	begin
+		arc := element (cursor);
+		log (text => "keepout (courtyard) arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc)), level => log_threshold);
+	end arc_keepout_properties;
 
-	-- Logs the properties of the given circle of keepout
+	
 	procedure circle_keepout_properties (
 		face			: in type_face;
 		cursor			: in pac_keepout_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_keepout_circles;
+	begin
+		log (text => "keepout circle face" & to_string (face) & space 
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 
 	

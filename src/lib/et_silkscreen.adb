@@ -4,7 +4,7 @@
 --                                                                          --
 --                            SILKSCREEN                                    --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,84 +36,70 @@
 --
 --   to do:
 
+with ada.strings;	 			use ada.strings;
 
-with ada.containers; 			use ada.containers;
+package body et_silkscreen is
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_silkscreen is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	
-	
-	type type_silk_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
-
-
-	type type_silk_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
-	
-	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
-
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_silk_cutouts is new doubly_linked_lists (type_polygon);	
-	
-
-	-- This is the base type for silk screen objects in general:
-	type type_silk_screen_base is tagged record
-		lines 		: pac_silk_lines.list;
-		arcs		: pac_silk_arcs.list;
-		circles		: pac_silk_circles.list;
-		polygons	: pac_silk_polygons.list;
-		cutouts 	: pac_silk_cutouts.list;
-		texts		: pac_texts_fab_with_content.list;
-	end record;
-
-
-
-	-- Logs the properties of the given line:
 	procedure line_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_silk_lines;
+		line : type_silk_line;
+	begin
+		line := element (cursor);
+		log (text => "silk screen line face" & to_string (face) & space 
+			 & to_string (type_line (line))
+			 & " width" & to_string (line.width), level => log_threshold);
+	end line_silk_screen_properties;
 
-	-- Logs the properties of the given arc of silk screen
+	
 	procedure arc_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_silk_arcs;
+		arc : type_silk_arc;
+	begin
+		arc := element (cursor);
+		log (text => "silk screen arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc))
+			 & " width" & to_string (arc.width), level => log_threshold);
+	end arc_silk_screen_properties;
 
-	-- Logs the properties of the given circle of silk screen
+	
 	procedure circle_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_circles.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_silk_circles;
+	begin
+		log (text => "silk screen circle face" & to_string (face)
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
-	
-	-- Logs the properties of the given silk screen text
+
 	procedure text_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_texts_fab_with_content;
+		use et_text.pac_text_content;
+		text : type_text_fab_with_content;
+	begin
+		text := element (cursor);
+		log (text => "silk screen text face" & to_string (face) & space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
+
+		log_indentation_up;
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		log_indentation_down;
+	end text_silk_screen_properties;
 
 	
 end et_silkscreen;

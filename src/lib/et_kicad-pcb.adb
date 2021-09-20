@@ -49,7 +49,7 @@ with et_vias;
 with et_pcb_stack;
 with et_symbols;
 with et_conductor_text;
-with et_stop_mask;
+
 
 package body et_kicad.pcb is
 

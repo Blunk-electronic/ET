@@ -48,6 +48,7 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
+with et_string_processing;		use et_string_processing;
 
 package et_route_restrict is
 	use pac_geometry_brd;
@@ -104,6 +105,22 @@ package et_route_restrict is
 
 	
 
+
+	-- Logs the properties of the given line of route restrict
+	procedure line_route_restrict_properties (
+		face			: in type_face;
+		cursor			: in pac_route_restrict_lines.cursor;
+		log_threshold 	: in type_log_level);
+
+	-- Logs the properties of the given arc of route restrict
+	procedure arc_route_restrict_properties (
+		face			: in type_face;
+		cursor			: in pac_route_restrict_arcs.cursor;
+		log_threshold 	: in type_log_level);
+
+	-- CS procedure circle_route_restrict_properties
+
+	
 	
 end et_route_restrict;
 

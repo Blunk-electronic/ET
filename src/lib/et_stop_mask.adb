@@ -4,7 +4,7 @@
 --                                                                          --
 --                             STOP MASK                                    --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,89 +36,72 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.strings;				use ada.strings;
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-
-with et_string_processing;		use et_string_processing;
-
-package et_stop_mask is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	type type_stop_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
-
-
-	type type_stop_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stop_arcs is new doubly_linked_lists (type_stop_arc);
-
-	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stop_cutouts is new doubly_linked_lists (type_polygon);
-	
-	-- This is the type for stop mask objects in general.
-	-- This has nothing to do with the stop mask of pads.
-	type type_stop_mask is tagged record
-		lines 		: pac_stop_lines.list;
-		arcs		: pac_stop_arcs.list;
-		circles		: pac_stop_circles.list;
-		polygons	: pac_stop_polygons.list;
-		cutouts		: pac_stop_cutouts.list;
-
-		-- for texts in conductor layer to be exposed:
-		texts		: pac_texts_fab_with_content.list;
-	end record;
-
-	-- Stop mask of packages:
-	type type_stop_mask_both_sides is record
-		top		: type_stop_mask;
-		bottom	: type_stop_mask;
-	end record;
-	
+package body et_stop_mask is
 
 
 	procedure arc_stop_mask_properties (
-	-- Logs the properties of the given arc of stop mask
 		face			: in type_face;
 		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_arcs;
+		arc : type_stop_arc;
+	begin
+		arc := element (cursor);
+		log (text => "stop mask arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc))
+			 & " width" & to_string (arc.width),
+			 level => log_threshold);
+	end arc_stop_mask_properties;
 
 	procedure circle_stop_mask_properties (
-	-- Logs the properties of the given circle of stop mask
 		face			: in type_face;
 		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_circles;
+	begin
+		log (text => "stop mask circle face" & to_string (face) & space 
+			& to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
+	
 	procedure line_stop_mask_properties (
-	-- Logs the properties of the given line of stop mask
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_lines;
+		line : type_stop_line;
+	begin
+		line := element (cursor);
+		log (text => "stop mask line face" & to_string (face) & space
+			 & to_string (type_line (line))
+			 & " width" & to_string (line.width),
+			 level => log_threshold);
+	end line_stop_mask_properties;
 
+	
 	procedure text_stop_mask_properties (
-	-- Logs the properties of the given stop mask text
 		face			: in type_face;
 		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_texts_fab_with_content;
+		use et_text.pac_text_content;
+		text : type_text_fab_with_content;
+	begin
+		text := element (cursor);
+		log (text => "stop mask text face" & to_string (face) & space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
+
+		log_indentation_up;
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		log_indentation_down;
+	end text_stop_mask_properties;
 
 	
 end et_stop_mask;

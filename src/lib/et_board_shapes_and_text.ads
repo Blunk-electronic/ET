@@ -184,6 +184,15 @@ package et_board_shapes_and_text is
 		end case;
 	end record;
 
+
+	
+	-- the space between foreign pads and the polygon outline
+	keyword_isolation : constant string := "isolation";
+
+	-- the minimal width of a polygon
+	keyword_min_width : constant string := "min_width";
+
+	
 	-- Polygons in conductor layers have a dedicated type for the hatching:
 	type type_polygon_conductor (fill_style : type_fill_style) 
 	is new type_polygon_base with record
