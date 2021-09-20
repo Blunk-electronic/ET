@@ -608,7 +608,7 @@ package body et_kicad_packages is
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
-		stencil : et_packages.type_stencil_both_sides;
+		stencil : type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)

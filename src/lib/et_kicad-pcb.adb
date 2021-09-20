@@ -511,7 +511,7 @@ package body et_kicad.pcb is
 		package_stop_mask		: et_stop_mask.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_stencil			: et_packages.type_stencil_both_sides;
+		package_stencil			: type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;

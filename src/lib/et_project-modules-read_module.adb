@@ -2955,6 +2955,7 @@ is
 				use et_board_shapes_and_text;
 				use et_packages;
 				use et_stop_mask;
+				use et_stencil;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3046,6 +3047,7 @@ is
 				use et_board_shapes_and_text;
 				use et_packages;
 				use et_stop_mask;
+				use et_stencil;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3134,6 +3136,7 @@ is
 
 				use et_packages;
 				use et_stop_mask;
+				use et_stencil;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3221,6 +3224,7 @@ is
 
 				use et_board_shapes_and_text.pac_shapes;
 				use et_stop_mask;
+				use et_stencil;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3465,6 +3469,7 @@ is
 					use et_board_shapes_and_text;
 					use et_packages;
 					use et_stop_mask;
+					use et_stencil;
 					
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (

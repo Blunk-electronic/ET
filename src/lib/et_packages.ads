@@ -67,6 +67,7 @@ with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
+with et_stencil;				use et_stencil;
 
 with cairo;
 
@@ -329,44 +330,6 @@ package et_packages is
 
 
 
--- STENCIL / SOLDER PASTE MASK
-	
-	type type_stencil_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
-
-
-	type type_stencil_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
-
-	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stencil_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	-- This is the type for solder paste stencil objects in general:
-	type type_stencil is record
-		lines 		: pac_stencil_lines.list;
-		arcs		: pac_stencil_arcs.list;
-		circles		: pac_stencil_circles.list;
-		polygons	: pac_stencil_polygons.list;
-		cutouts		: pac_stencil_cutouts.list;
-		
-		texts		: pac_texts_fab_with_content.list;
-		-- NOTE: Probably not reasonable and a waste of resources.
-		-- DRC should output warning if texts in stencil detected.
-	end record;
-
-	-- Because stencil is about two sides of the board this composite is required:
-	type type_stencil_both_sides is record
-		top		: type_stencil;
-		bottom	: type_stencil;
-	end record;
 
 
 

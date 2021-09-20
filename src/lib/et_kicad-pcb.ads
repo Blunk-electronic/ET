@@ -69,7 +69,7 @@ with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;
-with et_route_restrict;			use et_route_restrict;
+with et_stencil;				use et_stencil;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -658,7 +658,7 @@ package et_kicad.pcb is
 
 		silk_screen	: et_pcb.type_silk_screen_both_sides;
 		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
-		stencil		: et_packages.type_stencil_both_sides;
+		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_packages.type_keepout_both_sides;		
 		contours	: et_pcb.type_pcb_contours;

@@ -51,6 +51,7 @@ use et_board_shapes_and_text.pac_shapes;
 use et_board_shapes_and_text.pac_text_fab;
 
 with et_stop_mask;				use et_stop_mask;
+with et_stencil;				use et_stencil;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
@@ -59,6 +60,7 @@ use et_pcb_coordinates.pac_geometry_brd;
 
 with et_string_processing;		use et_string_processing;
 with et_text;					--use et_text;
+
 
 package et_kicad_packages is
 

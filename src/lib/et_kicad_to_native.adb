@@ -74,10 +74,10 @@ with et_frames;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_text;			use et_conductor_text;
 with et_stop_mask;				use et_stop_mask;
+with et_stencil;				use et_stencil;
 
 package body et_kicad_to_native is
 
-	--use et_symbols.pac_text;
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:

@@ -62,6 +62,7 @@ with et_conductor_text;
 with et_route_restrict;
 with et_via_restrict;
 with et_stop_mask;
+with et_stencil;
 
 package et_project.modules is
 

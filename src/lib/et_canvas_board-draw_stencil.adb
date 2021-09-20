@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with et_stencil;				use et_stencil;
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
