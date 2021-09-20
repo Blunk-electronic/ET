@@ -53,6 +53,7 @@ with et_conductor_segment;		--use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
+with et_stop_mask;				use et_stop_mask;
 
 package et_pcb_rw is
 
@@ -121,7 +122,7 @@ package et_pcb_rw is
 
 	
 	procedure write_hatching (hatching : in type_hatching);
-	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching);
+	procedure write_hatching (hatching : in type_conductor_hatching);
 	procedure write_easing (easing: in type_easing);
 	procedure write_thermal (thermal : in type_thermal);
 	procedure write_width_min (width : in type_track_width);
@@ -230,7 +231,7 @@ package et_pcb_rw is
 	board_filled : type_filled := filled_default;
 
 	board_hatching : type_hatching;
-	board_hatching_conductor : et_conductor_segment.type_conductor_hatching;
+	board_hatching_conductor : type_conductor_hatching;
 	board_easing : type_easing;
 
 	

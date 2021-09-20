@@ -66,6 +66,7 @@ with et_conductor_segment;		use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
+with et_stop_mask;				use et_stop_mask;
 
 with cairo;
 
@@ -249,36 +250,7 @@ package et_packages is
 
 
 	
-	-- POLYGON
 
-	-- Polygons in non-conducor layers such as silkscreen, stencil, ...
-	type type_polygon_non_conductor (fill_style : type_fill_style) 
-	is new type_polygon_base with record
-		easing : type_easing;
-		
-		case fill_style is
-			when SOLID		=> null;
-			when HATCHED	=> hatching : type_hatching;
-		end case;
-	end record;
-
-	-- Polygons in conductor layers have a dedicated type for the hatching:
-	type type_polygon_conductor (fill_style : type_fill_style) 
-	is new type_polygon_base with record
-
-		-- the minimum width:
-		width_min : type_track_width := type_track_width'first;
-
-		-- the space between the polygon and foreign conductor objects:
-		isolation : type_track_clearance := type_track_clearance'first; 
-	
-		easing : type_easing;
-		
-		case fill_style is
-			when SOLID		=> null;
-			when HATCHED	=> hatching : type_conductor_hatching;
-		end case;
-	end record;
 
 	
 
@@ -349,44 +321,6 @@ package et_packages is
 
 
 	
--- SOLDER STOP MASK
-	
-	type type_stop_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
-
-
-	type type_stop_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stop_arcs is new doubly_linked_lists (type_stop_arc);
-
-	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stop_cutouts is new doubly_linked_lists (type_polygon);
-	
-	-- This is the type for stop mask objects in general.
-	-- This has nothing to do with the stop mask of pads.
-	type type_stop_mask is tagged record
-		lines 		: pac_stop_lines.list;
-		arcs		: pac_stop_arcs.list;
-		circles		: pac_stop_circles.list;
-		polygons	: pac_stop_polygons.list;
-		cutouts		: pac_stop_cutouts.list;
-
-		-- for texts in conductor layer to be exposed:
-		texts		: pac_texts_fab_with_content.list;
-	end record;
-
-	-- Stop mask of packages:
-	type type_stop_mask_both_sides is record
-		top		: type_stop_mask;
-		bottom	: type_stop_mask;
-	end record;
 
 
 	

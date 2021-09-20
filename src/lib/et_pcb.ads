@@ -73,6 +73,7 @@ with et_conductor_segment;		--use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
+with et_stop_mask;				use et_stop_mask;
 
 package et_pcb is
 	
@@ -274,10 +275,11 @@ package et_pcb is
 	
 
 	-- Stop mask in board (may contain placeholders):
-	type type_stop_mask is new et_packages.type_stop_mask with record
+	type type_stop_mask is new et_stop_mask.type_stop_mask with record
 		-- for texts in conductor layers to be exposed
 		placeholders : pac_text_placeholders.list;
 	end record;
+	-- CS move to et_stop_mask
 
 	type type_stop_mask_both_sides is record
 		top		: type_stop_mask;

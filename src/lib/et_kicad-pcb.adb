@@ -49,6 +49,7 @@ with et_vias;
 with et_pcb_stack;
 with et_symbols;
 with et_conductor_text;
+with et_stop_mask;
 
 package body et_kicad.pcb is
 
@@ -507,7 +508,7 @@ package body et_kicad.pcb is
 		package_arc			: et_kicad_packages.type_arc;
 		package_circle 		: et_kicad_packages.type_circle;
 
-		package_stop_mask		: et_packages.type_stop_mask_both_sides;
+		package_stop_mask		: et_stop_mask.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_stencil			: et_packages.type_stencil_both_sides;

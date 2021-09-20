@@ -604,7 +604,7 @@ package body et_kicad_packages is
 		copper : et_packages.type_conductor_objects_both_sides;
 
 		-- STOP MASK OBJECTS
-		stop_mask : et_packages.type_stop_mask_both_sides;
+		stop_mask : type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS

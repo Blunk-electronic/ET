@@ -50,6 +50,7 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 use et_board_shapes_and_text.pac_shapes;
 use et_board_shapes_and_text.pac_text_fab;
 
+with et_stop_mask;				use et_stop_mask;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;

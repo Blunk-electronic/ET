@@ -73,6 +73,7 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_text;			use et_conductor_text;
+with et_stop_mask;				use et_stop_mask;
 
 package body et_kicad_to_native is
 
@@ -1310,6 +1311,7 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
+				use et_stop_mask;
 				use pac_stop_lines;
 				lines_cursor : pac_stop_lines.cursor;
 

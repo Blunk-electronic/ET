@@ -61,6 +61,7 @@ with et_conductor_polygons;		--use et_conductor_polygons;
 with et_conductor_text;
 with et_route_restrict;
 with et_via_restrict;
+with et_stop_mask;
 
 package et_project.modules is
 

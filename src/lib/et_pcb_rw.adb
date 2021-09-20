@@ -174,8 +174,7 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_hatching (hatching : in et_conductor_segment.type_conductor_hatching) is
-	begin
+	procedure write_hatching (hatching : in type_conductor_hatching) is begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));

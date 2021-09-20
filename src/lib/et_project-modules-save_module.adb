@@ -1146,10 +1146,11 @@ is
 		use et_packages.pac_stencil_circles;
 		use et_packages.pac_stencil_polygons;
 
-		use et_packages.pac_stop_lines;
-		use et_packages.pac_stop_arcs;
-		use et_packages.pac_stop_circles;
-		use et_packages.pac_stop_polygons;
+		use et_stop_mask;
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_polygons;
 
 		use et_packages.pac_keepout_lines;
 		use et_packages.pac_keepout_arcs;
@@ -1281,7 +1282,7 @@ is
 		use et_packages.pac_silk_cutouts;
 		use et_packages.pac_doc_cutouts;
 		use et_packages.pac_stencil_cutouts;
-		use et_packages.pac_stop_cutouts;
+		use pac_stop_cutouts;
 		use et_packages.pac_keepout_cutouts;
 
 		use pac_route_restrict_cutouts;

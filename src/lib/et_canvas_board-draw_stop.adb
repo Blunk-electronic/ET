@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with et_stop_mask;				use et_stop_mask;
 
 separate (et_canvas_board)
 
@@ -48,8 +49,8 @@ is
 	use et_board_shapes_and_text;
 	use pac_text_fab;
 	use pac_shapes;	
-
 	use et_packages;
+	
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;

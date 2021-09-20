@@ -52,7 +52,7 @@ with et_schematic;
 with et_pcb;					--use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_string_processing;		use et_string_processing;
 with et_project.modules;		use et_project.modules;
 with et_conductor_polygons;		use et_conductor_polygons;
@@ -262,7 +262,7 @@ package et_routing is
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is
 			when TRUE => 
-				outline : et_packages.type_polygon_conductor (SOLID);
+				outline : type_polygon_conductor (SOLID);
 				-- The fill style does not matter.
 
 			when FALSE => null;
