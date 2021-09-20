@@ -2960,6 +2960,7 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
+				use et_keepout;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3055,6 +3056,7 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
+				use et_keepout;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3147,6 +3149,7 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
+				use et_keepout;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3238,6 +3241,7 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
+				use et_keepout;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3484,6 +3488,7 @@ is
 					use et_stencil;
 					use et_silkscreen;
 					use et_assy_doc;
+					use et_keepout;
 					
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (

@@ -65,6 +65,7 @@ with et_stop_mask;
 with et_stencil;
 with et_silkscreen;
 with et_assy_doc;
+with et_keepout;
 
 package et_project.modules is
 

@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with et_keepout;				use et_keepout;
 
 separate (et_canvas_board)
 

@@ -70,6 +70,7 @@ with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;
+with et_keepout;				use et_keepout;
 
 with cairo;
 
@@ -355,38 +356,6 @@ package et_packages is
 
 
 	
-	
--- KEEPOUT
-
-	-- GUI relevant only: The line width of keepout:
-	keepout_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-
-	type type_keepout_line is new type_line with null record;
-	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);
-
-	type type_keepout_arc is new type_arc with null record;
-	package pac_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
-	
-	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
-
-	type type_keepout_polygon is new type_polygon_base with null record;
-	package pac_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
-	
-	package pac_keepout_cutouts is new doubly_linked_lists (type_polygon);	
-	
-	type type_keepout is record
-		lines 		: pac_keepout_lines.list;
-		arcs		: pac_keepout_arcs.list;
-		circles		: pac_keepout_circles.list;
-		polygons	: pac_keepout_polygons.list;
-		cutouts 	: pac_keepout_cutouts.list;
-		texts		: pac_texts_fab_with_content.list; -- for notes on placement
-	end record;
-
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
 	
 
 	--package pac_conductor_line_segments is new

@@ -516,7 +516,7 @@ package body et_kicad.pcb is
 		
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
-		package_keepout			: et_packages.type_keepout_both_sides;
+		package_keepout			: type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:

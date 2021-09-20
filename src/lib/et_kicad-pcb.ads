@@ -71,7 +71,7 @@ with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_segment;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
-
+with et_keepout;				use et_keepout;
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
@@ -661,7 +661,7 @@ package et_kicad.pcb is
 		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
-		keepout		: et_packages.type_keepout_both_sides;		
+		keepout		: type_keepout_both_sides;		
 		contours	: et_pcb.type_pcb_contours;
 
 		 -- non-electric. used for texts only

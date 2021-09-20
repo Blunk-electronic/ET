@@ -77,6 +77,7 @@ with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;
+with et_keepout;				use et_keepout;
 
 package body et_kicad_to_native is
 

@@ -618,7 +618,7 @@ package body et_kicad_packages is
 		assy_doc : et_packages.type_assembly_documentation_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
-		keepout : et_packages.type_keepout_both_sides;
+		keepout : type_keepout_both_sides;
 
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.

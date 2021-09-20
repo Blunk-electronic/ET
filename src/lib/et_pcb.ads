@@ -77,6 +77,7 @@ with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;
+with et_keepout;				use et_keepout;
 
 package et_pcb is
 	
@@ -419,7 +420,7 @@ package et_pcb is
 		assy_doc		: type_assembly_documentation_both_sides;
 		stencil			: type_stencil_both_sides;
 		stop_mask		: type_stop_mask_both_sides;
-		keepout			: et_packages.type_keepout_both_sides;
+		keepout			: type_keepout_both_sides;
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
 
