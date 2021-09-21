@@ -68,6 +68,7 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_segment;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;

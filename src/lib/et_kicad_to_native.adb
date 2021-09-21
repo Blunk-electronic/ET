@@ -72,6 +72,7 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_polygons.boards;
 with et_conductor_text;			use et_conductor_text;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
@@ -599,7 +600,8 @@ package body et_kicad_to_native is
 					
 					use et_vias;
 					use pac_vias;
-					
+
+					use et_conductor_polygons.boards;
 					use pac_signal_polygons_solid;
 					
 					line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
@@ -1791,6 +1793,7 @@ package body et_kicad_to_native is
 				use et_pcb.pac_conductor_circles;
 				circles_cursor : et_pcb.pac_conductor_circles.cursor;
 
+				use et_conductor_polygons.boards;
 				use pac_conductor_polygons_floating_solid;
 				polygons_solid_cursor : pac_conductor_polygons_floating_solid.cursor;
 

@@ -4014,9 +4014,9 @@ is
 
 			procedure insert_polygon_conductor is
 			-- This is about floating polygons in signal layers. No connection to any net.
-				use et_packages;
 				use et_board_shapes_and_text;
 				use et_conductor_polygons;
+				use et_conductor_polygons.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4491,10 +4491,10 @@ is
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_shapes;
 				use et_conductor_polygons;
-
+				use et_conductor_polygons.boards;
+				
 				procedure solid_polygon is
 					use pac_signal_polygons_solid;
-					use et_packages;
 
 					procedure connection_thermal is
 						p : type_polygon_conductor_route_solid (connection => et_conductor_polygons.THERMAL);

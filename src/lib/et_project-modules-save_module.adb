@@ -515,11 +515,11 @@ is
 
 			use et_conductor_polygons;
 			use et_conductor_polygons.boards;
-			use et_conductor_polygons.pac_signal_polygons_solid; 
-			use et_conductor_polygons.pac_signal_polygons_hatched;
+			use pac_signal_polygons_solid; 
+			use pac_signal_polygons_hatched;
 			use boards.pac_conductor_cutouts;
-			polygon_solid_cursor	: et_conductor_polygons.pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
-			polygon_hatched_cursor	: et_conductor_polygons.pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
+			polygon_solid_cursor	: pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+			polygon_hatched_cursor	: pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
 			cutout_zone_cursor		: pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
@@ -591,7 +591,7 @@ is
 			write_vias;
 			
 			-- solid fill zones
-			while polygon_solid_cursor /= et_conductor_polygons.pac_signal_polygons_solid.no_element loop
+			while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_solid_cursor).easing);
@@ -623,7 +623,7 @@ is
 			end loop;
 
 			-- hatched fill zones
-			while polygon_hatched_cursor /= et_conductor_polygons.pac_signal_polygons_hatched.no_element loop
+			while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_hatched_cursor).easing);
@@ -747,7 +747,8 @@ is
 
 		procedure query_placeholders (
 			device_name : in type_device_name;
-			device 		: in type_device_sch) is
+			device 		: in type_device_sch) 
+		is
 			use et_pcb_coordinates;
 			use et_packages;
 			use pac_text_placeholders;
@@ -1217,8 +1218,8 @@ is
 		end;
 
 		-- solid fill zones in conductor
-		use et_conductor_polygons.pac_conductor_polygons_floating_solid;
-		procedure write_polygon (cursor : in et_conductor_polygons.pac_conductor_polygons_floating_solid.cursor) is begin
+		use pac_conductor_polygons_floating_solid;
+		procedure write_polygon (cursor : in pac_conductor_polygons_floating_solid.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -1237,8 +1238,8 @@ is
 		end;
 
 		-- hatched fill zones in conductor
-		use et_conductor_polygons.pac_conductor_polygons_floating_hatched;
-		procedure write_polygon (cursor : in et_conductor_polygons.pac_conductor_polygons_floating_hatched.cursor) is begin
+		use pac_conductor_polygons_floating_hatched;
+		procedure write_polygon (cursor : in pac_conductor_polygons_floating_hatched.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);

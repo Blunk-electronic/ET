@@ -90,14 +90,16 @@ package et_conductor_polygons is
 	end record;
 
 
-	-- SOLID CONDUCTOR POLYGONS
+-- SOLID CONDUCTOR POLYGONS
 	type type_polygon_conductor_solid 
 		is new type_polygon_conductor (fill_style => SOLID) with null record;
 
 	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
 
+
 	
-	-- HATCHED CONDUCTOR POLYGONS
+	
+-- HATCHED CONDUCTOR POLYGONS
 	type type_polygon_conductor_hatched
 	is new type_polygon_conductor (fill_style => HATCHED) with null record;
 
@@ -133,41 +135,6 @@ package et_conductor_polygons is
 
 														 
 	
-	-- All fill zones in conductor layers have these common
-	-- properties:
-	type type_conductor_polygon_properties is record
-		layer 			: type_signal_layer := type_signal_layer'first;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		fill_lines		: pac_fill_lines.list;
-	end record;
-
-	
-	
-	-- A floating conductor polygon is not connected to any net:
-	type type_polygon_conductor_solid_floating is new 
-		type_polygon_conductor (fill_style => SOLID)
-	with record
-		properties	: type_conductor_polygon_properties;
-	end record;
-
-	package pac_conductor_polygons_floating_solid is new 
-		indefinite_doubly_linked_lists (type_polygon_conductor_solid_floating);
-
-		
-	type type_polygon_conductor_hatched_floating is new 
-		type_polygon_conductor (fill_style => HATCHED) 
-	with record
-		properties	: type_conductor_polygon_properties;
-	end record;
-
-	package pac_conductor_polygons_floating_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_hatched_floating);
-	
-	type type_conductor_polygons_floating is record
-		solid	: pac_conductor_polygons_floating_solid.list;
-		hatched	: pac_conductor_polygons_floating_hatched.list;
-	end record;
-
 	
 -- Types for ELECTRIC !! conductor objects:
 
@@ -230,64 +197,10 @@ package et_conductor_polygons is
 	end record;
 	
 	
-	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) 
-		is new type_polygon_conductor_solid
-	with record
-		properties	: type_conductor_polygon_properties;
-
-		case connection is
-			when THERMAL =>
-				thermal : type_thermal;
-
-			when SOLID =>
-				-- whether SMT, THT or both kinds of pads connect with the polygon
-				technology	: type_polygon_pad_technology;
-				-- no need for any kind of thermal parameters
-		end case;				
-	end record;
-
-	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) 
-		is new type_polygon_conductor_hatched 
-	with record
-		properties	: type_conductor_polygon_properties;
-				
-		case connection is
-			when THERMAL =>
-				thermal : type_thermal;
-
-			when SOLID =>
-				-- whether SMT, THT or both kinds of pads connect with the polygon
-				technology	: type_polygon_pad_technology;
-				-- no need for any kind of thermal parameters
-		end case;
-	end record;
-
-
 	
-	package pac_signal_polygons_solid is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_solid);
-	
-	package pac_signal_polygons_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_hatched);	
-
-
-		
-	type type_signal_polygons is record
-		solid	: pac_signal_polygons_solid.list;
-		hatched	: pac_signal_polygons_hatched.list;
-	end record;
-
 	
 -- LOGGING PROPERTIES OF OBJECTS
 
-	function conductor_polygon_properties_to_string (
-		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties;
-
-		-- Net name is relevant if polygon is part of a route.
-		-- The type of the given polygon is the cirteria:
-		net_name		: in pac_net_name.bounded_string := no_name)
-		return string;
 	
 	text_polygon_thermal_width : constant string := "thermal_width";	
 	text_polygon_thermal_gap : constant string := "thermal_gap";	
