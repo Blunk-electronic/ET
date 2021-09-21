@@ -51,7 +51,10 @@ with et_colors;					use et_colors;
 with et_design_rules;			use et_design_rules;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
+
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_polygons.packages;	use et_conductor_polygons.packages;
+
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
@@ -2425,7 +2428,7 @@ is
 
 			
 			-- CUTOUTS
-			use et_packages.pac_conductor_cutouts;
+			use packages.pac_conductor_cutouts;
 
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
@@ -2453,7 +2456,7 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (
-				c : in et_packages.pac_conductor_cutouts.cursor) 
+				c : in packages.pac_conductor_cutouts.cursor) 
 			is
 				cutout : type_polygon := element (c);
 			begin
@@ -2463,7 +2466,7 @@ is
 
 			
 			procedure query_cutout_bottom (
-				c : in et_packages.pac_conductor_cutouts.cursor) 
+				c : in packages.pac_conductor_cutouts.cursor) 
 			is
 				cutout : type_polygon := element (c);
 			begin

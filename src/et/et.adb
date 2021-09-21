@@ -426,7 +426,7 @@ procedure et is
 		if length (package_name_save_as) > 0 then
 			et_pcb_rw.device_packages.save_package (
 				file_name 		=> package_name_save_as,
-				packge			=> pac_packages_lib.last_element (et_packages.packages),
+				packge			=> pac_packages_lib.last_element (et_packages.packages_lib),
 				log_threshold	=> 0);
 		end if;
 	end;

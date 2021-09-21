@@ -513,12 +513,14 @@ is
 			use pac_conductor_arcs;
 			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
+			use et_conductor_polygons;
+			use et_conductor_polygons.boards;
 			use et_conductor_polygons.pac_signal_polygons_solid; 
 			use et_conductor_polygons.pac_signal_polygons_hatched;
-			use et_conductor_polygons.pac_conductor_cutouts;
+			use boards.pac_conductor_cutouts;
 			polygon_solid_cursor	: et_conductor_polygons.pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 			polygon_hatched_cursor	: et_conductor_polygons.pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
-			cutout_zone_cursor		: et_conductor_polygons.pac_conductor_cutouts.cursor := net.route.cutouts.first;
+			cutout_zone_cursor		: pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
 				use et_vias;
@@ -655,7 +657,7 @@ is
 			end loop;
 
 			-- cutout zones
-			while cutout_zone_cursor /= et_conductor_polygons.pac_conductor_cutouts.no_element loop
+			while cutout_zone_cursor /= pac_conductor_cutouts.no_element loop
 				cutout_zone_begin;
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
@@ -1178,6 +1180,8 @@ is
 		use pac_conductor_texts_board;
 		--use pac_conductor_texts_package;
 
+		use et_conductor_polygons.boards;
+
 		-- general stuff
 		use pac_text_placeholders_conductors;
 		procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
@@ -1254,8 +1258,8 @@ is
 		end;
 
 		-- cutout zones in any signal layers
-		use et_conductor_polygons.pac_conductor_cutouts;
-		procedure write_cutout (cursor : in et_conductor_polygons.pac_conductor_cutouts.cursor) is begin
+		use pac_conductor_cutouts;
+		procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
 			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));

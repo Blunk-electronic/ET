@@ -39,6 +39,7 @@ with ada.text_io;					use ada.text_io;
 
 with et_pcb;						use et_pcb;
 with et_conductor_polygons;			use et_conductor_polygons;
+with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_text;				use et_conductor_text;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;

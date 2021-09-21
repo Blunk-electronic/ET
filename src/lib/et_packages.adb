@@ -272,15 +272,16 @@ package body et_packages is
 	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_packages_lib.cursor 
 	is begin
-		return pac_packages_lib.find (packages, model_name);
+		return pac_packages_lib.find (packages_lib, model_name);
 	end;
+
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
 	-- Returns true if the given package is real (means it has a height).
 		use pac_packages_lib;
 		cursor : pac_packages_lib.cursor;
 	begin
-		cursor := find (packages, package_name);
+		cursor := find (packages_lib, package_name);
 
 		if element (cursor).appearance = REAL then
 			return true;
@@ -289,6 +290,7 @@ package body et_packages is
 		end if;
 	end is_real;
 
+	
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14

@@ -3664,15 +3664,16 @@ is
 				use et_board_shapes_and_text;
 				use et_packages;
 				use et_pcb;
+				use et_conductor_polygons.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					et_conductor_polygons.pac_conductor_cutouts.append (
+					pac_conductor_cutouts.append (
 						container	=> module.board.conductors.cutouts,
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
-								layer			=> signal_layer));
+								layer => signal_layer));
 				end do_it;
 									
 			begin -- insert_cutout_conductor
@@ -4601,8 +4602,9 @@ is
 
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
+				use et_conductor_polygons.boards;
 			begin
-				et_conductor_polygons.pac_conductor_cutouts.append (
+				pac_conductor_cutouts.append (
 					container	=> route.cutouts,
 					new_item	=> (pac_shapes.type_polygon_base (polygon) with
 									layer	=> signal_layer));

@@ -68,7 +68,10 @@ with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 with et_design_rules;			use et_design_rules;
+
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_polygons.boards;		use et_conductor_polygons.boards;
+
 with et_conductor_segment;		--use et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
@@ -252,7 +255,7 @@ package et_pcb is
 		-- CS: It is probably no good idea to allow floating conductor polygons.
 
 		-- global cutout areas for conductor polygons:
-		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;
+		cutouts			: boards.pac_conductor_cutouts.list;
 		
 		texts			: pac_conductor_texts_board.list;
 		placeholders	: pac_text_placeholders_conductors.list;
@@ -274,7 +277,7 @@ package et_pcb is
 		polygons	: type_signal_polygons;
 
 		-- route specific cutout areas:
-		cutouts		: et_conductor_polygons.pac_conductor_cutouts.list;
+		cutouts		: boards.pac_conductor_cutouts.list;
 	end record;
 	
 

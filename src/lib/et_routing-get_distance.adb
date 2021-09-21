@@ -242,9 +242,10 @@ is
 
 		-- GLOBAL CUTOUT AREAS
 		procedure query_global_cutouts is 
-			use et_conductor_polygons.pac_conductor_cutouts;
+			use boards;
+			use pac_conductor_cutouts;
 			
-			procedure query_cutout (c : in et_conductor_polygons.pac_conductor_cutouts.cursor) is begin
+			procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
 				if element (c).layer = layer then
 					log_indentation_up;
 						

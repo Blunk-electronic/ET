@@ -3106,7 +3106,7 @@ package body et_schematic_ops is
 		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
 
 		-- locate the package model in the package library:
-		package_cursor := pac_packages_lib.find (packages, package_model);
+		package_cursor := pac_packages_lib.find (packages_lib, package_model);
 
 		-- fetch the placeholders of silk screen top and bottom
 		placeholders.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;

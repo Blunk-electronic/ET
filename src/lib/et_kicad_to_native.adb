@@ -3620,7 +3620,7 @@ package body et_kicad_to_native is
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
 					et_packages.pac_packages_lib.insert (
-						container	=> et_packages.packages,
+						container	=> et_packages.packages_lib,
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
@@ -3748,7 +3748,7 @@ package body et_kicad_to_native is
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (et_packages.packages, save_package'access);
+			iterate (et_packages.packages_lib, save_package'access);
 			log_indentation_down;
 
 			log_indentation_down;			

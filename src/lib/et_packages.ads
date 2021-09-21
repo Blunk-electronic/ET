@@ -64,6 +64,7 @@ with et_text;
 with et_design_rules;			use et_design_rules;
 with et_conductor_segment;		use et_conductor_segment;
 with et_conductor_polygons;		use et_conductor_polygons;
+with et_conductor_polygons.packages;		use et_conductor_polygons.packages;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
@@ -257,21 +258,6 @@ package et_packages is
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
 
-	 
-	
-
-	
-	package pac_conductor_cutouts is new doubly_linked_lists (type_polygon);
-
-	
-
-	
-
-
-	type type_conductor_polygons is record
-		solid	: pac_conductor_polygons_solid.list;
-		hatched	: pac_conductor_polygons_hatched.list;
-	end record;
 
 		
 	
@@ -280,7 +266,7 @@ package et_packages is
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
 		polygons	: type_conductor_polygons;
-		cutouts		: pac_conductor_cutouts.list;
+		cutouts		: packages.pac_conductor_cutouts.list;
 		texts		: pac_conductor_texts_package.list;
 	end record;
 	
@@ -419,7 +405,7 @@ package et_packages is
 		element_type	=> type_package_lib);
 	
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	packages : pac_packages_lib.map;
+	packages_lib	 : pac_packages_lib.map;
 
 
 

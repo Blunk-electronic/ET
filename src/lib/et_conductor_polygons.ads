@@ -106,12 +106,6 @@ package et_conductor_polygons is
 
 	
 	
-	-- Cutout-areas in conductor layers:
-	type type_conductor_cutout is new type_polygon with record
-		layer 	: type_signal_layer := type_signal_layer'first;
-	end record;
-
-	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
 
 
 	

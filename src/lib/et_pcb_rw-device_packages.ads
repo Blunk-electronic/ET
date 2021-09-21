@@ -37,7 +37,9 @@
 
 --   do do:
 
-with et_packages;					use et_packages;
+with et_packages;						use et_packages;
+with et_conductor_polygons;				use et_conductor_polygons;
+with et_conductor_polygons.packages;	--use et_conductor_polygons.packages;
 
 
 package et_pcb_rw.device_packages is

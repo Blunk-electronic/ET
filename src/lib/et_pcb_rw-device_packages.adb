@@ -70,20 +70,20 @@ package body et_pcb_rw.device_packages is
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
 		
 		-- Test if package already exists. If already exists, issue warning and exit.
-		if pac_packages_lib.contains (packages, package_name) then
+		if pac_packages_lib.contains (packages_lib, package_name) then
 			log (WARNING, text => "package already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
 				when REAL =>
 					pac_packages_lib.insert (
-						container	=> packages,
+						container	=> packages_lib,
 						key			=> package_name,
 						new_item	=> (appearance => REAL, others => <>)
 						);
 
 				when VIRTUAL =>
 					pac_packages_lib.insert (
-						container	=> packages,
+						container	=> packages_lib,
 						key			=> package_name,
 						new_item	=> (appearance => VIRTUAL, others => <>)
 						);
@@ -166,8 +166,8 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
-			use et_packages.pac_conductor_cutouts;
-			procedure write_cutout (cursor : in et_packages.pac_conductor_cutouts.cursor) is begin
+			use packages.pac_conductor_cutouts;
+			procedure write_cutout (cursor : in packages.pac_conductor_cutouts.cursor) is begin
 				cutout_zone_begin;
 
 				contours_begin;
@@ -1456,7 +1456,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_top is begin
-					et_packages.pac_conductor_cutouts.append (
+					packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with null record));
 										
@@ -1465,7 +1465,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_bottom is begin
-					et_packages.pac_conductor_cutouts.append (
+					packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with null record));
 										
@@ -3031,7 +3031,7 @@ package body et_pcb_rw.device_packages is
 		
 		-- test if container et_pcb.packages already contains the package
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_packages_lib.contains (packages, file_name) then
+		if pac_packages_lib.contains (packages_lib, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -3076,7 +3076,7 @@ package body et_pcb_rw.device_packages is
 
 			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
 			pac_packages_lib.insert (
-				container	=> packages, 
+				container	=> packages_lib, 
 				key			=> file_name, -- libraries/packages/S_SO14.pac
 				new_item	=> packge.all);
 
