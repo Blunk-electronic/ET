@@ -605,11 +605,11 @@ is
 				write_fill_style (SOLID);
 
 				case element (polygon_solid_cursor).connection is
-					when et_conductor_polygons.THERMAL => 
+					when boards.THERMAL => 
 						write_pad_connection (element (polygon_solid_cursor).connection);
 						write_thermal (element (polygon_solid_cursor).thermal);
 		
-					when et_conductor_polygons.SOLID =>
+					when boards.SOLID =>
 						write_pad_technology (element (polygon_solid_cursor).technology);
 						
 				end case;
@@ -639,11 +639,11 @@ is
 				write_hatching (element (polygon_hatched_cursor).hatching);
 
 				case element (polygon_hatched_cursor).connection is
-					when et_conductor_polygons.THERMAL => 
+					when boards.THERMAL => 
 						write_pad_connection (element (polygon_hatched_cursor).connection);
 						write_thermal (element (polygon_hatched_cursor).thermal);
 		
-					when et_conductor_polygons.SOLID =>
+					when boards.SOLID =>
 						write_pad_technology (element (polygon_hatched_cursor).technology);
 
 				end case;

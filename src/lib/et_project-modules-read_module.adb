@@ -1408,10 +1408,9 @@ is
 	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
-		use et_packages;
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_brd;
-		use et_conductor_polygons;
+		use et_conductor_polygons.boards;
 		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
@@ -1553,11 +1552,10 @@ is
 
 	
 	procedure read_fill_zone_conductor_non_electric is
-		use et_packages;
 		use et_board_shapes_and_text;
 		use pac_shapes;									
 		use et_pcb_stack;
-		use et_conductor_polygons;
+		use et_conductor_polygons.boards;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1595,7 +1593,7 @@ is
 			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 			validate_signal_layer;
 			
-		elsif kw = et_conductor_polygons.keyword_priority then -- priority 2
+		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
 			polygon_priority := to_polygon_priority (f (line, 2));
 
@@ -2270,8 +2268,7 @@ is
 	
 	procedure read_user_settings_fill_zones_conductor is
 		use et_board_shapes_and_text;
-		use et_conductor_polygons;		
-		use et_packages;
+		use et_conductor_polygons.boards;		
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -4497,7 +4494,7 @@ is
 					use pac_signal_polygons_solid;
 
 					procedure connection_thermal is
-						p : type_polygon_conductor_route_solid (connection => et_conductor_polygons.THERMAL);
+						p : type_polygon_conductor_route_solid (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4516,7 +4513,7 @@ is
 					end;
 
 					procedure connection_solid is
-						p : type_polygon_conductor_route_solid (connection => et_conductor_polygons.SOLID);
+						p : type_polygon_conductor_route_solid (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4536,8 +4533,8 @@ is
 					
 				begin -- solid_polygon
 					case polygon_pad_connection is
-						when et_conductor_polygons.THERMAL	=> connection_thermal;
-						when et_conductor_polygons.SOLID	=> connection_solid;
+						when boards.THERMAL	=> connection_thermal;
+						when boards.SOLID	=> connection_solid;
 					end case;
 				end solid_polygon;
 
@@ -4546,7 +4543,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : type_polygon_conductor_route_hatched (connection => et_conductor_polygons.THERMAL);
+						p : type_polygon_conductor_route_hatched (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4565,7 +4562,7 @@ is
 					end;
 
 					procedure connection_solid is
-						p : type_polygon_conductor_route_hatched (connection => et_conductor_polygons.SOLID);
+						p : type_polygon_conductor_route_hatched (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4586,8 +4583,8 @@ is
 					
 				begin -- hatched_polygon
 					case polygon_pad_connection is
-						when et_conductor_polygons.THERMAL	=> connection_thermal;
-						when et_conductor_polygons.SOLID	=> connection_solid;
+						when boards.THERMAL	=> connection_thermal;
+						when boards.SOLID	=> connection_solid;
 					end case;
 				end hatched_polygon;
 

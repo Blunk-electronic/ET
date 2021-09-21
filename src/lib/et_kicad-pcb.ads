@@ -600,8 +600,8 @@ package et_kicad.pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is et_conductor_polygons.type_polygon_pad_technology 
-		range et_conductor_polygons.THT_ONLY .. et_conductor_polygons.SMT_AND_THT;
+	subtype type_polygon_pad_technology is boards.type_polygon_pad_technology 
+		range THT_ONLY .. SMT_AND_THT;
 
 -- POLYGON (or fill zone)
 

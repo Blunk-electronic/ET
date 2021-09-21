@@ -41,6 +41,37 @@ with ada.tags;
 
 package body et_conductor_polygons.boards is
 
+	function to_string (priority_level : in type_polygon_priority) return string is begin
+		return type_polygon_priority'image (priority_level);
+	end;
+
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
+		return type_polygon_priority'value (priority_level);
+	end;
+
+
+
+
+	
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
+		return to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	end;
+
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
+		return type_polygon_pad_connection'value (connection);
+	end;
+
+	
+	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
+		return to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
+	end;
+
+	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
+		return type_polygon_pad_technology'value (technology);
+	end to_pad_technology;
+
+	
+	
 	function conductor_polygon_properties_to_string (
 		polygon			: in type_polygon_conductor'class;
 		properties		: in type_conductor_polygon_properties;
