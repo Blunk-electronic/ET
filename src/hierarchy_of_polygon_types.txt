@@ -35,11 +35,12 @@ et_conductor_polygons:
  - type_polygon_conductor_hatched
 
 	
+et_conductor_polygons.board:
 - derived from type_polygon_conductor
  - type_polygon_conductor_solid_floating 
 	- fixed discriminiant: solid
 	- selectors: properties.layer, properties.priority, properties.filled_areas
-	
+
  - type_polygon_conductor_hatched_floating
 	- fixed discriminiant: hatched
 	- selectors: properties.layer, properties.priority, properties.filled_areas
