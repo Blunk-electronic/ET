@@ -51,6 +51,7 @@ with et_colors;					use et_colors;
 with et_design_rules;			use et_design_rules;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
+with et_conductor_polygons;		use et_conductor_polygons;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
@@ -2322,8 +2323,9 @@ is
 			use pac_conductor_polygons_solid;
 
 			procedure draw_polygon_solid (
-				polygon	: in out et_packages.type_polygon_conductor_solid;
-				f		: in type_face) is
+				polygon	: in out type_polygon_conductor_solid;
+				f		: in type_face) 
+			is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
@@ -2350,15 +2352,19 @@ is
 				
 			end draw_polygon_solid;
 			
-			procedure query_polygon_top_solid (c : in pac_conductor_polygons_solid.cursor) is
-				polygon : et_packages.type_polygon_conductor_solid := element (c);
+			procedure query_polygon_top_solid (
+				c : in pac_conductor_polygons_solid.cursor) 
+			is
+				polygon : type_polygon_conductor_solid := element (c);
 			begin
 				set_destination;
 				draw_polygon_solid (polygon, destination);
 			end query_polygon_top_solid;
 
-			procedure query_polygon_bottom_solid (c : in pac_conductor_polygons_solid.cursor) is
-				polygon : et_packages.type_polygon_conductor_solid := element (c);
+			procedure query_polygon_bottom_solid (
+				c : in pac_conductor_polygons_solid.cursor) 
+			is
+				polygon : type_polygon_conductor_solid := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);
@@ -2369,8 +2375,9 @@ is
 			use pac_conductor_polygons_hatched;
 
 			procedure draw_polygon_hatched (
-				polygon	: in out et_packages.type_polygon_conductor_hatched;
-				f		: in type_face) is
+				polygon	: in out type_polygon_conductor_hatched;
+				f		: in type_face) 
+			is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
@@ -2397,15 +2404,20 @@ is
 				
 			end draw_polygon_hatched;
 			
-			procedure query_polygon_top_hatched (c : in pac_conductor_polygons_hatched.cursor) is
-				polygon : et_packages.type_polygon_conductor_hatched := element (c);
+			procedure query_polygon_top_hatched (
+				c : in pac_conductor_polygons_hatched.cursor) 
+			is
+				polygon : type_polygon_conductor_hatched := element (c);
 			begin
 				set_destination;
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_top_hatched;
 
-			procedure query_polygon_bottom_hatched (c : in pac_conductor_polygons_hatched.cursor) is
-				polygon : et_packages.type_polygon_conductor_hatched := element (c);
+			
+			procedure query_polygon_bottom_hatched (
+				c : in pac_conductor_polygons_hatched.cursor) 
+			is
+				polygon : type_polygon_conductor_hatched := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);
@@ -2413,11 +2425,12 @@ is
 
 			
 			-- CUTOUTS
-			use pac_conductor_cutouts;
+			use et_packages.pac_conductor_cutouts;
 
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
-				f		: in type_face) is
+				f		: in type_face) 
+			is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
@@ -2439,14 +2452,19 @@ is
 				end if;
 			end draw_cutout;
 			
-			procedure query_cutout_top (c : in pac_conductor_cutouts.cursor) is
+			procedure query_cutout_top (
+				c : in et_packages.pac_conductor_cutouts.cursor) 
+			is
 				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
-			procedure query_cutout_bottom (c : in pac_conductor_cutouts.cursor) is
+			
+			procedure query_cutout_bottom (
+				c : in et_packages.pac_conductor_cutouts.cursor) 
+			is
 				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);

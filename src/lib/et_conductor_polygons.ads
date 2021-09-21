@@ -61,7 +61,6 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_nets;					use et_nets;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
-with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_conductor_segment;		use et_conductor_segment;
@@ -72,7 +71,40 @@ package et_conductor_polygons is
 	use et_board_shapes_and_text.pac_shapes;
 
 	
+	-- Polygons in conductor layers have a dedicated type for the hatching:
+	type type_polygon_conductor (fill_style : type_fill_style) 
+		is new type_polygon_base with record
 
+		-- the minimum width:
+		width_min : type_track_width := type_track_width'first;
+
+		-- the space between the polygon and foreign conductor objects:
+		isolation : type_track_clearance := type_track_clearance'first; 
+	
+		easing : type_easing;
+		
+		case fill_style is
+			when SOLID		=> null;
+			when HATCHED	=> hatching : type_conductor_hatching;
+		end case;
+	end record;
+
+
+	-- SOLID CONDUCTOR POLYGONS
+	type type_polygon_conductor_solid 
+		is new type_polygon_conductor (fill_style => SOLID) with null record;
+
+	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
+
+	
+	-- HATCHED CONDUCTOR POLYGONS
+	type type_polygon_conductor_hatched
+	is new type_polygon_conductor (fill_style => HATCHED) with null record;
+
+	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_polygon_conductor_hatched);
+
+
+	
 	
 	-- Cutout-areas in conductor layers:
 	type type_conductor_cutout is new type_polygon with record
@@ -204,8 +236,8 @@ package et_conductor_polygons is
 	end record;
 	
 	
-	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) is new
-		et_packages.type_polygon_conductor_solid
+	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) 
+		is new type_polygon_conductor_solid
 	with record
 		properties	: type_conductor_polygon_properties;
 
@@ -220,8 +252,8 @@ package et_conductor_polygons is
 		end case;				
 	end record;
 
-	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) is new
-		et_packages.type_polygon_conductor_hatched 
+	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) 
+		is new type_polygon_conductor_hatched 
 	with record
 		properties	: type_conductor_polygon_properties;
 				

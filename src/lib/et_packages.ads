@@ -63,6 +63,7 @@ with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules;			use et_design_rules;
 with et_conductor_segment;		use et_conductor_segment;
+with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;
@@ -259,24 +260,7 @@ package et_packages is
 	 
 	
 
-
 	
-	-- SOLID CONDUCTOR POLYGONS
-	type type_polygon_conductor_solid 
-	is new type_polygon_conductor (fill_style => SOLID) with null record;
-
-	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
-
-	
-	-- HATCHED CONDUCTOR POLYGONS
-	type type_polygon_conductor_hatched
-	is new type_polygon_conductor (fill_style => HATCHED) with null record;
-
-	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_polygon_conductor_hatched);
-
-
-	
-	-- A cutout-polygon used in conductor layers:
 	package pac_conductor_cutouts is new doubly_linked_lists (type_polygon);
 
 	

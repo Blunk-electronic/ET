@@ -193,23 +193,23 @@ package et_board_shapes_and_text is
 	keyword_min_width : constant string := "min_width";
 
 	
-	-- Polygons in conductor layers have a dedicated type for the hatching:
-	type type_polygon_conductor (fill_style : type_fill_style) 
-	is new type_polygon_base with record
+	---- Polygons in conductor layers have a dedicated type for the hatching:
+	--type type_polygon_conductor (fill_style : type_fill_style) 
+	--is new type_polygon_base with record
 
-		-- the minimum width:
-		width_min : type_track_width := type_track_width'first;
+		---- the minimum width:
+		--width_min : type_track_width := type_track_width'first;
 
-		-- the space between the polygon and foreign conductor objects:
-		isolation : type_track_clearance := type_track_clearance'first; 
+		---- the space between the polygon and foreign conductor objects:
+		--isolation : type_track_clearance := type_track_clearance'first; 
 	
-		easing : type_easing;
+		--easing : type_easing;
 		
-		case fill_style is
-			when SOLID		=> null;
-			when HATCHED	=> hatching : type_conductor_hatching;
-		end case;
-	end record;
+		--case fill_style is
+			--when SOLID		=> null;
+			--when HATCHED	=> hatching : type_conductor_hatching;
+		--end case;
+	--end record;
 	
 
 
