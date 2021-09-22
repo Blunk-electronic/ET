@@ -455,7 +455,7 @@ package et_kicad.pcb is
 	-- For the board, temporarily this type is required to handle texts in
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.	
-	type type_text_board is new et_packages.type_text with record
+	type type_text_board is new pac_text_fab.type_text_fab with record
 		content	: et_text.pac_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;

@@ -291,18 +291,28 @@ package body et_text is
 
 
 		
-		function text_properties (text : in type_text) return string is
-		-- Returns the properties of the given text in a long single string.
-		begin
+		function text_properties (
+			text : in type_text) 
+			return string 
+		is begin
 			return
-				"size" 
-				& to_string (text.size)
---				& " line width" & to_string (text.line_width)
--- 				& " rotation" & to_string (rot (text.position))
-				& to_string (text.alignment)
-				;
+				"size" & to_string (text.size)
+				& to_string (text.alignment);
 		end text_properties;
 
+		
+		function text_properties (
+			text : in type_text_fab)
+			return string 
+		is begin
+			return text_properties (type_text (text))
+				& " pos " & to_string (type_point (text.position))
+				& " line width" & to_string (text.line_width)
+				& " rotation" & to_string (rot (type_position (text.position)));
+		end text_properties;
+
+
+		
 		function to_rotation (rotation : in type_rotation_documentation) 
 			return pac_geometry.type_rotation is
 		begin

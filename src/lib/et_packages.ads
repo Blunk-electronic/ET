@@ -188,18 +188,6 @@ package et_packages is
 	
 
 	
-	
--- TEXT
-	--type type_text is new pac_text_fab.type_text with record
-		----position	: type_position; -- x/y/rotation
-		--line_width	: pac_text_fab.type_text_line_width := pac_text_fab.type_text_line_width'first;
-		---- CS locked : type_locked;		
-	--end record;
-	type type_text is new pac_text_fab.type_text_fab with null record;
-
-	function text_properties (text : in type_text) return string;
-	-- Returns the properties of the given text in a long single string.	
-	
 
 	
 -- PLACEHOLDERS FOR TEXTS
@@ -208,7 +196,7 @@ package et_packages is
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
-	type type_text_placeholder is new type_text with record
+	type type_text_placeholder is new pac_text_fab.type_text_fab with record
 		meaning : type_text_meaning_package := NAME;
 	end record;
 
@@ -241,14 +229,7 @@ package et_packages is
 		assy_doc	: type_text_placeholders_assembly_documentation;
 	end record;
 
-
-	-- TEXTS WITH CONTENT
-	--type type_text_with_content is new type_text with record
-		--content : et_text.pac_text_content.bounded_string;
-		---- CS vectors
-	--end record;
 	
-	--package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
 	use pac_texts_fab_with_content;
 
 	

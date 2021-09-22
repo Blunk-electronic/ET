@@ -177,20 +177,7 @@ package body et_packages is
 -- 		end if;
 -- 	end validate_restring_width;
 
-	
-	function text_properties (text : in type_text) return string is
-	-- Returns the properties of the given text in a long single string.
-	begin
-		-- CS use text_properties in generic package text
-		return to_string (text.position) & latin_1.space
-			& "size" 
-			& to_string (text.size)
-			& " line width" & to_string (text.line_width)
-			& " rotation" & to_string (rot (text.position))
-			& et_text.to_string (text.alignment)
-			-- CS & " hidden " & boolean'image (text.hidden)
-			;
-	end text_properties;
+
 	
 	function to_string (text_meaning : in type_text_meaning_package) return string is begin
 		return to_lower (type_text_meaning_package'image (text_meaning));

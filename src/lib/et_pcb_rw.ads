@@ -101,12 +101,12 @@ package et_pcb_rw is
 	keyword_via_restring_inner	: constant string := "restring_inner";
 	keyword_via_restring_outer	: constant string := "restring_outer";
 	
-	--procedure write_text_properties (t : in et_packages.type_text'class);
-	procedure write_text_properties (t : in pac_text_fab.type_text_fab'class);
 
+	procedure write_text_properties (
+		t : in pac_text_fab.type_text_fab'class);
 	
 	procedure write_text_properties_with_face (
-		t		: in et_packages.type_text'class;
+		t		: in pac_text_fab.type_text_fab'class;
 		face	: in et_pcb_coordinates.type_face);
 
 	procedure write_text (cursor : in pac_text_fab.pac_texts_fab_with_content.cursor);

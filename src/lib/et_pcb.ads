@@ -151,8 +151,11 @@ package et_pcb is
 
 	function to_string (meaning : in type_text_meaning_conductor) return string;
 	function to_meaning (meaning : in string) return type_text_meaning_conductor;
+
 	
-	type type_text_placeholder_conductors is new type_text with record
+	type type_text_placeholder_conductors is new 
+		pac_text_fab.type_text_fab with 
+	record
 		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
 
 		-- the conductor layer the placeholder is placed in:
@@ -170,7 +173,9 @@ package et_pcb is
 	subtype type_text_meaning is type_text_meaning_conductor 
 		range COMPANY .. REVISION;
 	
-	type type_text_placeholder is new type_text with record
+	type type_text_placeholder is new
+		pac_text_fab.type_text_fab with 
+	record
 		meaning : type_text_meaning := type_text_meaning'first;
 	end record;
 

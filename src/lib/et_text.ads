@@ -191,12 +191,20 @@ package et_text is
 		end record;
 		
 		-- Returns the properties of the given text in a long single string.	
-		function text_properties (text : in type_text) return string;
+		function text_properties (
+			text : in type_text)
+			return string;
 
+		
 		type type_text_fab is new type_text with record
 			position	: type_position; -- x/y/rotation
 			line_width	: type_text_line_width := type_text_line_width'first;
 		end record;
+
+		-- Returns the properties of the given text in a long single string.	
+		function text_properties (
+			text : in type_text_fab)
+			return string;
 
 		
 		origin_half_size : constant type_distance_positive := 0.5;

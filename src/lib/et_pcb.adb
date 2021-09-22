@@ -84,17 +84,7 @@ package body et_pcb is
 	end signal_layer_to_mirror;
 
 
-	
-	function text_properties (text : in et_packages.type_text) return string is
-	-- Returns the properties of the given text in a long single string.
-	begin
-		return to_string (text.position) & latin_1.space
-			& "size" 
-			& to_string (text.size)
-			& " line width" & to_string (text.line_width)
-			& " rotation" & to_string (rot (text.position))
-			& et_text.to_string (text.alignment);
-	end text_properties;
+
 	
 	function to_string (meaning : in type_text_meaning_conductor) return string is begin
 		return to_lower (type_text_meaning_conductor'image (meaning));
