@@ -43,6 +43,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
+with et_conductor_segment;		use et_conductor_segment;
 with et_conventions;
 
 package body et_kicad_packages is
@@ -1644,9 +1645,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_layer_user;
 
-			procedure insert_fp_arc is 
-				use et_packages;
-			begin
+			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
 				-- compute end point of arc from center, start_point and angle

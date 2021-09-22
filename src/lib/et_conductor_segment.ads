@@ -45,7 +45,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
-
+with et_string_processing;		use et_string_processing;
 
 package et_conductor_segment is
 	use pac_geometry_brd;
@@ -92,7 +92,15 @@ package et_conductor_segment is
 	
 
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
+	use pac_conductor_lines;
+	
+	-- Logs the properties of the given line:
+	procedure line_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_lines.cursor;
+		log_threshold 	: in type_log_level);
 
+	
 
 -- ARCS
 	type type_conductor_arc is new type_arc with record
@@ -130,7 +138,13 @@ package et_conductor_segment is
 
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
-
+	use pac_conductor_arcs;
+	
+	-- Logs the properties of the given arc:
+	procedure arc_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_arcs.cursor;
+		log_threshold 	: in type_log_level);
 
 
 
@@ -157,6 +171,14 @@ package et_conductor_segment is
 	end record;
 
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
+	use pac_conductor_circles;
+	
+	-- Logs the properties of the given circle:
+	procedure circle_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_circles.cursor;
+		log_threshold 	: in type_log_level);
+
 	
 	
 private

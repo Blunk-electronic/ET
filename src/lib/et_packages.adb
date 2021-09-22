@@ -41,47 +41,21 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 
 package body et_packages is
-
-	function to_layer_category (cat : in string) return type_layer_category is begin
-		return type_layer_category'value (layer_category_prefix & cat);
-	end to_layer_category;
-
-	function to_string (cat : in type_layer_category) return string is
-		s : string := type_layer_category'image (cat);
-	begin
-		return s (layer_category_prefix'length + 1 .. s'last);
-	end to_string;
-
-
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored 
-	is 
-		use et_text;
-	begin
-		case f is
-			when TOP	=> return NO;
-			when BOTTOM	=> return YES;
-		end case;
-	end face_to_mirror;
-
 	
 	
 	function to_string (packge : in pac_package_name.bounded_string) return string is
-	-- Returns the given package name as string.
 	-- CS: provide a parameter that turns the preamble on/off
 	begin
 		return pac_package_name.to_string (packge);
 	end to_string;
 
 	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
-	-- Converts a string to a pac_package_name.	
 	begin
 		return pac_package_name.to_bounded_string (package_name);
 	end to_package_name;
+
 	
 	procedure check_package_name_length (packge : in string) is
-	-- Tests if the given package is longer than allowed.
-		use et_string_processing;
 	begin
 		if packge'length > package_name_length_max then
 			log (WARNING, "package name too long. Max. length is" 
@@ -89,11 +63,11 @@ package body et_packages is
 		end if;
 	end check_package_name_length;
 
+	
 	procedure check_package_name_characters (
 		packge		: in pac_package_name.bounded_string;
 		characters	: in character_set := package_name_characters)
 	is
-		use et_string_processing;
 		use pac_package_name;
 		invalid_character_position : natural := 0;
 	begin
@@ -301,63 +275,8 @@ package body et_packages is
 		return terminal_cursor;
 	end terminal_properties;
 	
-	procedure line_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		line : type_conductor_line;
-	begin
-		line := element (cursor);
-		log (text => "conductor line face" & to_string (face) & latin_1.space 
-			 & to_string (type_line (line))
-			 & " width" & to_string (line.width), level => log_threshold);
-	end line_conductor_properties;
 
-	procedure arc_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is
-		arc : type_conductor_arc;
-	begin
-		arc := element (cursor);
-		log (text => "conductor arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc (arc))
-			 & " width" & to_string (arc.width), level => log_threshold);
-	end arc_conductor_properties;
 	
-	procedure circle_conductor_properties (
-		face			: in type_face;
-		cursor			: in pac_conductor_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
-	is begin
-		case element (cursor).filled is
-			when NO =>
-				log (text => "conductor circle face" & to_string (face) & latin_1.space 
-					& to_string (type_circle (element (cursor)))
-					& " filled" & to_string (element (cursor).filled)
-					& " border width" & to_string (element (cursor).border_width),
-					level => log_threshold);
-
-			when YES =>
-				case element (cursor).fill_style is
-					when SOLID =>
-						log (text => "conductor circle face" & to_string (face) & latin_1.space 
-							& to_string (type_circle (element (cursor)))
-							& " fill style" & to_string (element (cursor).fill_style),
-							level => log_threshold);
-
-					when HATCHED =>
-						log (text => "conductor circle face" & to_string (face) & latin_1.space 
-							& to_string (type_circle (element (cursor)))
-							& " fill style" & to_string (element (cursor).fill_style),
-							-- CS show hatching details
-							level => log_threshold);
-						
-				end case;
-		end case;		
-	end circle_conductor_properties;
 
 	
 

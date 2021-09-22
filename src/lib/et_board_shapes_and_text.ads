@@ -249,6 +249,61 @@ package et_board_shapes_and_text is
 
 
 
+
+-- LAYER CATEGORY
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	layer_category_prefix : constant string := "LAYER_CAT_";
+
+	type type_layer_category is (
+		LAYER_CAT_OUTLINE,
+		-- CS LAYER_CAT_OUTLINE_TEMPLATE -- CS
+									
+		-- NON CONDUCTOR LAYERS.
+		-- These layers are paired. Means there is a TOP and a BOTTOM:
+		LAYER_CAT_SILKSCREEN,
+		LAYER_CAT_ASSY,
+		LAYER_CAT_KEEPOUT,
+		LAYER_CAT_STENCIL,
+		LAYER_CAT_STOP,
+
+		-- CONDUCTOR LAYERS.
+		-- These layers are numbered:
+		LAYER_CAT_CONDUCTOR,
+		
+		-- NOTE: Restrict layers do not contain any conducting
+		-- objects. They are irrelevant for manufacturing.
+		-- Since they are of mere supportive nature for routing
+		-- we regarded them as conductor layers.
+		-- These layers are numbered:
+		LAYER_CAT_ROUTE_RESTRICT,
+		LAYER_CAT_VIA_RESTRICT);
+
+	subtype type_layer_category_outline is type_layer_category
+		range LAYER_CAT_OUTLINE .. LAYER_CAT_OUTLINE;
+	
+	subtype type_layer_category_non_conductor is type_layer_category
+		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
+
+	subtype type_layer_category_conductor is type_layer_category
+		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_VIA_RESTRICT;
+
+	subtype type_layer_category_restrict is type_layer_category
+		range LAYER_CAT_ROUTE_RESTRICT .. LAYER_CAT_VIA_RESTRICT;
+	
+	
+	function to_layer_category (cat : in string) return type_layer_category;
+	function to_string (cat : in type_layer_category) return string;
+
+
+
+	-- Maps from face to mirror status of a vectorized text.
+	-- Use it for non-device related texts and placeholders.
+	function face_to_mirror (f : in type_face) 
+		return et_text.type_vector_text_mirrored;
+
+	
 	
 end et_board_shapes_and_text;
 

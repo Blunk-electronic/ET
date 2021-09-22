@@ -146,7 +146,6 @@ is
 	end query_arc;
 
 	procedure query_circle (c : in et_pcb.pac_conductor_circles.cursor) is 
-		use et_packages;
 	begin
 		-- Draw the circle if it is in the current layer:
 		if element (c).layer = current_layer then
@@ -698,7 +697,7 @@ is
 
 				
 				draw_text_being_placed_in_conductors (
-					self, in_area, context, et_packages.LAYER_CAT_CONDUCTOR, ly);
+					self, in_area, context, LAYER_CAT_CONDUCTOR, ly);
 				
 			end if;
 		end loop;

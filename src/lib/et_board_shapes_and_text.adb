@@ -90,7 +90,31 @@ package body et_board_shapes_and_text is
 	end;
 
 
+
+
+	function to_layer_category (cat : in string) return type_layer_category is begin
+		return type_layer_category'value (layer_category_prefix & cat);
+	end to_layer_category;
+
+	function to_string (cat : in type_layer_category) return string is
+		s : string := type_layer_category'image (cat);
+	begin
+		return s (layer_category_prefix'length + 1 .. s'last);
+	end to_string;
+
 	
+
+	function face_to_mirror (f : in type_face) 
+		return et_text.type_vector_text_mirrored 
+	is 
+		use et_text;
+	begin
+		case f is
+			when TOP	=> return NO;
+			when BOTTOM	=> return YES;
+		end case;
+	end face_to_mirror;
+
 	
 end et_board_shapes_and_text;
 

@@ -83,58 +83,7 @@ package et_packages is
 	use et_board_shapes_and_text.pac_text_fab;
 
 
--- LAYER CATEGORY
-
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:	
-	layer_category_prefix : constant string := "LAYER_CAT_";
-
-	type type_layer_category is (
-		LAYER_CAT_OUTLINE,
-		-- CS LAYER_CAT_OUTLINE_TEMPLATE -- CS
-									
-		-- NON CONDUCTOR LAYERS.
-		-- These layers are paired. Means there is a TOP and a BOTTOM:
-		LAYER_CAT_SILKSCREEN,
-		LAYER_CAT_ASSY,
-		LAYER_CAT_KEEPOUT,
-		LAYER_CAT_STENCIL,
-		LAYER_CAT_STOP,
-
-		-- CONDUCTOR LAYERS.
-		-- These layers are numbered:
-		LAYER_CAT_CONDUCTOR,
-		
-		-- NOTE: Restrict layers do not contain any conducting
-		-- objects. They are irrelevant for manufacturing.
-		-- Since they are of mere supportive nature for routing
-		-- we regarded them as conductor layers.
-		-- These layers are numbered:
-		LAYER_CAT_ROUTE_RESTRICT,
-		LAYER_CAT_VIA_RESTRICT);
-
-	subtype type_layer_category_outline is type_layer_category
-		range LAYER_CAT_OUTLINE .. LAYER_CAT_OUTLINE;
 	
-	subtype type_layer_category_non_conductor is type_layer_category
-		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
-
-	subtype type_layer_category_conductor is type_layer_category
-		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_VIA_RESTRICT;
-
-	subtype type_layer_category_restrict is type_layer_category
-		range LAYER_CAT_ROUTE_RESTRICT .. LAYER_CAT_VIA_RESTRICT;
-	
-	
-	function to_layer_category (cat : in string) return type_layer_category;
-	function to_string (cat : in type_layer_category) return string;
-
-	
-	-- Maps from face to mirror status of a vectorized text.
-	-- Use it for non-device related texts and placeholders.
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored;
-
 
 	
 	-- A package (or a footprint) is something like "SOT32" or "NDIP14". 
@@ -230,18 +179,16 @@ package et_packages is
 	end record;
 
 	
-	use pac_texts_fab_with_content;
 
-	
 
+
+		
+-- NON ELECTRIC conductor objects
 
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
 
-
-		
-	
 	type type_conductor_objects is record 
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
@@ -275,6 +222,7 @@ package et_packages is
 		bottom	: type_silk_screen;
 	end record;
 
+	
 
 	-- Assembly documentation includes placeholders:
 	type type_assembly_documentation is new type_assembly_documentation_base with record
@@ -324,6 +272,7 @@ package et_packages is
 	function to_appearance (appearance : in string) return type_package_appearance;
 	
 
+	
 -- DESCRIPTION
 	
 	package_description_length_max : constant positive := 200;
@@ -355,7 +304,7 @@ package et_packages is
 		-- These structures are cutout areas inside the board area:
 		holes			: pac_pcb_cutouts.list;
 		
-		technology			: type_assembly_technology := SMT; -- set by majority of terminals
+		technology		: type_assembly_technology := SMT; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:
 		case appearance is
@@ -391,41 +340,22 @@ package et_packages is
 
 
 	
-	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.
+	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_packages_lib.cursor;
-	
-	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
-	-- Returns true if the given package is real (means it has a height).
 
+	
+	-- Returns true if the given package is real (means it has a height).
+	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
+
+	
+	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return type_terminals.cursor;
-	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 
 	
-	
--- PROPERTIES OF OBJECTS IN CONDUCTOR LAYERS (NON ELECTRIC OBJECTS !!)
-	
-	procedure line_conductor_properties (
-	-- Logs the properties of the given line:
-		face			: in type_face;
-		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure arc_conductor_properties (
-	-- Logs the properties of the given arc:
-		face			: in type_face;
-		cursor			: in pac_conductor_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_conductor_properties (
-	-- Logs the properties of the given circle:
-		face			: in type_face;
-		cursor			: in pac_conductor_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
 
 	
 

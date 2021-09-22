@@ -49,7 +49,7 @@ with et_vias;
 with et_pcb_stack;
 with et_symbols;
 with et_conductor_text;
-
+with et_conductor_segment;		use et_conductor_segment;
 
 package body et_kicad.pcb is
 
@@ -3013,6 +3013,7 @@ package body et_kicad.pcb is
 
 		end read_arg;
 
+		
 		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
@@ -3024,21 +3025,25 @@ package body et_kicad.pcb is
 				raise constraint_error;
 			end invalid_layer_reference;
 
+			
 			procedure invalid_layer_value is begin
 				log (WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
+			
 			procedure invalid_layer_user is begin
 				log (ERROR, "user text " & et_text.to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
+			
 			procedure invalid_layer is begin
 				log (ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
 
+			
 			procedure warn_on_missing_net is 
 				use pac_net_name;
 			begin
@@ -3215,6 +3220,7 @@ package body et_kicad.pcb is
 						
 			end insert_package;
 
+			
 			procedure insert_layer is
 			-- Inserts the layer (when reading section "layers") in the temporarily container "layers".
 				layer_cursor : type_layers.cursor; -- mandatory, never read
@@ -3241,6 +3247,7 @@ package body et_kicad.pcb is
 					
 			end insert_layer;
 
+			
 			procedure insert_net_class is
 			-- Inserts the net class in board
 				net_class_inserted	: boolean := false;
@@ -3276,6 +3283,7 @@ package body et_kicad.pcb is
 				end if;
 			end insert_net_class;
 
+			
 			procedure insert_net is
 			-- Inserts the net in the board
 				net_inserted	: boolean := false;
@@ -3304,8 +3312,8 @@ package body et_kicad.pcb is
 					
 			end insert_net;
 
+			
 			procedure insert_board_arc is 
-				use et_packages;
 				use pac_polygon_segments;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
@@ -3380,8 +3388,8 @@ package body et_kicad.pcb is
 				end case;
 			end insert_board_arc;
 
+			
 			procedure insert_board_circle is 
-				use et_packages;
 				use pac_polygon_segments;
 			begin
 				-- Compute the circle radius from its center and point at circle.
@@ -3463,8 +3471,8 @@ package body et_kicad.pcb is
 
 			end insert_board_circle;
 
+			
 			procedure insert_board_line is 
-				use et_packages;
 				use pac_polygon_segments;
 			begin
 				-- The board_line is converted back to its anchestor, and
@@ -3532,6 +3540,7 @@ package body et_kicad.pcb is
 					
 			end insert_board_line;
 
+			
 			procedure insert_board_text is 
 				use et_conductor_text;
 			begin
@@ -3599,9 +3608,7 @@ package body et_kicad.pcb is
 				end case;
 			end insert_board_text;
 			
-			procedure insert_fp_arc is 
-				use et_packages;
-			begin
+			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
@@ -3680,12 +3687,10 @@ package body et_kicad.pcb is
 
 					when others => invalid_layer;
 				end case;
-
 			end insert_fp_arc;
+
 			
-			procedure insert_fp_circle is 
-				use et_packages;
-			begin
+			procedure insert_fp_circle is begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 
 				-- Compute the circle radius from its center and point at circle:
@@ -3774,9 +3779,8 @@ package body et_kicad.pcb is
 
 			end insert_fp_circle;
 
-			procedure insert_fp_line is 
-				use et_packages;
-			begin
+			
+			procedure insert_fp_line is begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
@@ -3837,6 +3841,7 @@ package body et_kicad.pcb is
 
 			end insert_fp_line;
 
+			
 			procedure insert_terminal is 
 			-- Insert a terminal in the list "terminals".
 			-- This is layout related stuff.
@@ -4156,7 +4161,6 @@ package body et_kicad.pcb is
 			end insert_terminal;
 
 			procedure insert_fp_text is 
-				use et_packages;
 				use et_text;
 			begin
 				-- Since there is no alignment information provided, use default values:
@@ -4245,10 +4249,8 @@ package body et_kicad.pcb is
 		
 			end insert_fp_text;
 
-			procedure insert_segment is
+			procedure insert_segment is begin
 			-- inserts a segment in the list "segments"
-				use et_packages;
-			begin
 				type_segments.append (
 					container	=> board.segments,
 					new_item	=> segment);
@@ -4264,10 +4266,8 @@ package body et_kicad.pcb is
 				
 			end insert_segment;
 
-			procedure insert_via is
+			procedure insert_via is begin
 			-- inserts a via in the list "vias"
-				use et_packages;
-			begin
 				if via.layer_start > via.layer_end then
 					log (ERROR, "via start layer id must be less than end layer id !", console => true);
 					raise constraint_error;
@@ -4290,7 +4290,6 @@ package body et_kicad.pcb is
 
 			procedure add_polygon_corner_point is
 			-- adds the current polygon_point to the corner points of the current polygon
-				use et_packages;
 				use type_polygon_points;
 				point_cursor : type_polygon_points.cursor;
 			begin

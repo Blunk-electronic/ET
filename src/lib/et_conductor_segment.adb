@@ -36,6 +36,7 @@
 --
 --   to do:
 
+with ada.strings;			use ada.strings;
 
 
 package body et_conductor_segment is
@@ -183,6 +184,21 @@ package body et_conductor_segment is
 	end get_shortest_distance;
 
 
+	procedure line_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_lines.cursor;
+		log_threshold 	: in type_log_level) 
+	is
+		line : type_conductor_line;
+	begin
+		line := element (cursor);
+		log (text => "conductor line face" & to_string (face) & space 
+			 & to_string (type_line (line))
+			 & " width" & to_string (line.width), level => log_threshold);
+	end line_conductor_properties;
+
+
+	
 -- ARCS
 
 	function to_string (segment : in type_conductor_arc_segment)
@@ -309,7 +325,53 @@ package body et_conductor_segment is
 	end get_shortest_distance;
 	
 
+	procedure arc_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_arcs.cursor;
+		log_threshold 	: in type_log_level) 
+	is
+		arc : type_conductor_arc;
+	begin
+		arc := element (cursor);
+		log (text => "conductor arc face" & to_string (face) & space 
+			 & to_string (type_arc (arc))
+			 & " width" & to_string (arc.width), level => log_threshold);
+	end arc_conductor_properties;
+
 	
+
+	procedure circle_conductor_properties (
+		face			: in type_face;
+		cursor			: in pac_conductor_circles.cursor;
+		log_threshold 	: in type_log_level) 
+	is begin
+		case element (cursor).filled is
+			when NO =>
+				log (text => "conductor circle face" & to_string (face) & space 
+					& to_string (type_circle (element (cursor)))
+					& " filled" & to_string (element (cursor).filled)
+					& " border width" & to_string (element (cursor).border_width),
+					level => log_threshold);
+
+			when YES =>
+				case element (cursor).fill_style is
+					when SOLID =>
+						log (text => "conductor circle face" & to_string (face) & space 
+							& to_string (type_circle (element (cursor)))
+							& " fill style" & to_string (element (cursor).fill_style),
+							level => log_threshold);
+
+					when HATCHED =>
+						log (text => "conductor circle face" & to_string (face) & space 
+							& to_string (type_circle (element (cursor)))
+							& " fill style" & to_string (element (cursor).fill_style),
+							-- CS show hatching details
+							level => log_threshold);
+						
+				end case;
+		end case;		
+	end circle_conductor_properties;
+
 	
 end et_conductor_segment;
 

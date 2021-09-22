@@ -298,6 +298,7 @@ package body et_canvas_board is
 
 		log_indentation_down;
 	end execute_script;
+
 	
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;
@@ -516,17 +517,20 @@ package body et_canvas_board is
 		
 		return result;
 	end to_placeholder_content;
+
 	
 	procedure draw_grid (
 		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_rectangle) is separate;
 
+	
 	procedure draw_frame (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	-- This procedure draws the text that is being placed in a
 	-- paired layer. The properties
 	-- are taken from variable et_canvas_board_texts.text_place.
@@ -537,9 +541,8 @@ package body et_canvas_board is
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context;
 		face		: in type_face;
-		category	: in et_packages.type_layer_category_non_conductor)
+		category	: in type_layer_category_non_conductor)
 	is 
-		use et_packages;
 		use et_board_shapes_and_text;
 		use pac_text_fab;
 		use et_board_shapes_and_text.pac_text_fab;
@@ -585,6 +588,7 @@ package body et_canvas_board is
 		end if;
 	end draw_text_being_placed;
 
+	
 	-- This procedure draws the text that is being placed in outline/contours.
 	-- The properties are taken from variable et_canvas_board_texts.text_place.
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
@@ -595,7 +599,6 @@ package body et_canvas_board is
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context)
 	is 
-		use et_packages;
 		use et_text;
 		use et_board_shapes_and_text;
 		use et_board_shapes_and_text.pac_text_fab;
@@ -638,6 +641,7 @@ package body et_canvas_board is
 		end if;
 	end draw_text_being_placed_in_outline;
 
+	
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
 	-- The properties are taken from variable et_canvas_board_texts.text_place.
@@ -647,10 +651,9 @@ package body et_canvas_board is
 		self    	: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context;
-		category	: in et_packages.type_layer_category_conductor;
+		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
 	is 
-		use et_packages;
 		use et_pcb_stack;
 		use et_text;
 		use et_board_shapes_and_text;

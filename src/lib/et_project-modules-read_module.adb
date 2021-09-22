@@ -2944,7 +2944,7 @@ is
 			
 
 			procedure insert_line (
-				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The board_line and its board_line_width have been general things until now.
@@ -2952,7 +2952,6 @@ is
 			-- is now assigned to the board where it belongs to.
 
 				use et_board_shapes_and_text;
-				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -3040,7 +3039,7 @@ is
 
 			
 			procedure insert_arc (
-				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The board_arc and its board_line_width have been general things until now. 
@@ -3134,14 +3133,14 @@ is
 
 			
 			procedure insert_circle (
-				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The board_circle has been a general thing until now. 
 			-- Depending on the layer and the side of the board (face) the board_circle
 			-- is now assigned to the board where it belongs to.
 
-				use et_packages;
+				use et_board_shapes_and_text;
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -3183,7 +3182,7 @@ is
 										new_item	=> board_make_fillable_circle_solid);
 							end case;
 							
-						when BOTTOM => null;
+						when BOTTOM =>
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
@@ -3226,7 +3225,7 @@ is
 
 			
 			procedure insert_polygon (
-				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3467,7 +3466,7 @@ is
 			end insert_polygon;
 
 			procedure insert_cutout (
-				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3480,7 +3479,6 @@ is
 				is
 					use et_pcb_coordinates;
 					use et_board_shapes_and_text;
-					use et_packages;
 					use et_stop_mask;
 					use et_stencil;
 					use et_silkscreen;
@@ -3709,7 +3707,7 @@ is
 
 				
 			procedure insert_placeholder (
-				layer_cat	: in et_packages.type_layer_category;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category;
 				face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
 			is
 			-- The board_text_placeholder has been a general thing until now. 
@@ -3721,23 +3719,23 @@ is
 					module		: in out et_schematic.type_module) 
 				is
 					use et_pcb_coordinates;
-					--use et_packages;
 					use et_pcb;
+					use et_board_shapes_and_text;
 				begin
 					case face is
 						when TOP =>
 							case layer_cat is
-								when et_packages.LAYER_CAT_SILKSCREEN =>
+								when LAYER_CAT_SILKSCREEN =>
 									 pac_text_placeholders.append (
 										container	=> module.board.silk_screen.top.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when et_packages.LAYER_CAT_ASSY =>
+								when LAYER_CAT_ASSY =>
 									pac_text_placeholders.append (
 										container	=> module.board.assy_doc.top.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when et_packages.LAYER_CAT_STOP =>
+								when LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
 										container	=> module.board.stop_mask.top.placeholders,
 										new_item	=> board_text_placeholder);
@@ -3751,19 +3749,19 @@ is
 								when others => invalid_section;
 							end case;
 							
-						when BOTTOM => null;
+						when BOTTOM =>
 							case layer_cat is
-								when et_packages.LAYER_CAT_SILKSCREEN =>
+								when LAYER_CAT_SILKSCREEN =>
 									pac_text_placeholders.append (
 										container	=> module.board.silk_screen.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when et_packages.LAYER_CAT_ASSY =>
+								when LAYER_CAT_ASSY =>
 									pac_text_placeholders.append (
 										container	=> module.board.assy_doc.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 									
-								when et_packages.LAYER_CAT_STOP =>
+								when LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
 										container	=> module.board.stop_mask.bottom.placeholders,
 										new_item	=> board_text_placeholder);
@@ -4130,10 +4128,11 @@ is
 				-- CS reset other properties
 			end insert_circle_track;
 
+			
 			procedure build_conductor_text (
-				layer_cat	: in et_packages.type_layer_category_conductor)
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_conductor)
 			is
-				use et_packages;
+				use et_board_shapes_and_text;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4313,7 +4312,7 @@ is
 			procedure build_non_conductor_line (
 				face : in et_pcb_coordinates.type_face)
 			is
-				use et_packages;
+				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
@@ -4348,7 +4347,7 @@ is
 			procedure build_non_conductor_arc (
 				face : in et_pcb_coordinates.type_face)
 			is
-				use et_packages;
+				use et_board_shapes_and_text;
 			begin
 				board_check_arc (log_threshold + 1);
 				
@@ -4385,7 +4384,7 @@ is
 			procedure build_non_conductor_circle (
 				face : in et_pcb_coordinates.type_face)
 			is
-				use et_packages;
+				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
@@ -4416,10 +4415,12 @@ is
 					when others => invalid_section;
 				end case;
 			end build_non_conductor_circle;							
+
 			
 			procedure insert_netchanger (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
+				module		: in out et_schematic.type_module) 
+			is
 				inserted : boolean;
 				use et_submodules;
 				use pac_netchangers;
@@ -4449,7 +4450,8 @@ is
 
 			procedure insert_assembly_variant (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
+				module		: in out et_schematic.type_module) 
+			is
 				inserted : boolean;
 				use et_assembly_variants;
 				use et_assembly_variants.pac_assembly_variants;
@@ -4485,6 +4487,7 @@ is
 				
 			end insert_assembly_variant;
 
+			
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_shapes;
 				use et_conductor_polygons;
@@ -4597,6 +4600,7 @@ is
 				board_reset_polygon; -- clean up for next polygon
 			end build_route_polygon;
 
+			
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
 				use et_conductor_polygons.boards;
@@ -4609,10 +4613,11 @@ is
 				board_reset_polygon; -- clean up for next cutout zone
 			end build_route_cutout;
 
+			
 			procedure build_non_conductor_cutout (
 				face	: in et_pcb_coordinates.type_face) 
 			is 
-				use et_packages;
+				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
@@ -4644,10 +4649,11 @@ is
 				end case;
 			end build_non_conductor_cutout;
 
+			
 			procedure build_non_conductor_fill_zone (
 				face	: in et_pcb_coordinates.type_face)
 			is
-				use et_packages;
+				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
@@ -4678,6 +4684,7 @@ is
 					when others => invalid_section;
 				end case;
 			end build_non_conductor_fill_zone;
+
 			
 			procedure build_non_conductor_text (
 				face : in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
@@ -4685,17 +4692,17 @@ is
 			-- The board_text has been a general thing until now. 
 			-- Depending on the layer category and the side of the board (face) the board_text
 			-- is now assigned to the board where it belongs to.
-				use et_packages;
 
+				use et_board_shapes_and_text;
+				
 				procedure insert_text (
-					layer_cat	: in et_packages.type_layer_category_non_conductor)
+					layer_cat	: in type_layer_category_non_conductor)
 				is					
 					procedure do_it (
 						module_name	: in pac_module_name.bounded_string;
 						module		: in out et_schematic.type_module) 
 					is
 						use et_pcb_coordinates;
-						use et_packages;
 						use et_pcb;
 					begin
 						case face is
@@ -5357,13 +5364,13 @@ is
 							build_contour_text;
 							
 						when SEC_CONDUCTOR =>
-							build_conductor_text (et_packages.LAYER_CAT_CONDUCTOR);
+							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_CONDUCTOR);
 
 						when SEC_ROUTE_RESTRICT =>
-							build_conductor_text (et_packages.LAYER_CAT_ROUTE_RESTRICT);
+							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_ROUTE_RESTRICT);
 
 						when SEC_VIA_RESTRICT =>
-							build_conductor_text (et_packages.LAYER_CAT_VIA_RESTRICT);
+							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_VIA_RESTRICT);
 							
 						when others => invalid_section;
 					end case;
@@ -5401,17 +5408,17 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_ASSY,
 										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_STOP_MASK =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_STOP,
 										face		=> et_pcb_coordinates.TOP);
 
 								when others => invalid_section;
@@ -5421,17 +5428,17 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_ASSY,
 										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_STOP_MASK =>
 									insert_placeholder (
-										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_STOP,
 										face		=> et_pcb_coordinates.BOTTOM);
 
 								when others => invalid_section;
