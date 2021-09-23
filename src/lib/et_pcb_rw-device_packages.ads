@@ -40,7 +40,7 @@
 with et_packages;						use et_packages;
 with et_conductor_polygons;				use et_conductor_polygons;
 with et_conductor_polygons.packages;	--use et_conductor_polygons.packages;
-
+with et_route_restrict;					use et_route_restrict;
 
 package et_pcb_rw.device_packages is
 

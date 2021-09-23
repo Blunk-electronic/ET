@@ -38,7 +38,8 @@
 with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
 with et_conductor_text;			use et_conductor_text;
-with et_route_restrict;			use et_route_restrict;
+with et_route_restrict;
+with et_route_restrict.board;	use et_route_restrict.board;
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -70,7 +71,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				line		=> element (c),
-				width		=> route_restrict_line_width,
+				width		=> et_route_restrict.route_restrict_line_width,
 				height		=> self.frame_height);
 
 		end if;
@@ -85,7 +86,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				arc			=> element (c),
-				width		=> route_restrict_line_width,
+				width		=> et_route_restrict.route_restrict_line_width,
 				height		=> self.frame_height);
 
 		end if;
@@ -104,7 +105,7 @@ is
 						context		=> context,
 						circle		=> element (c),
 						filled		=> NO,
-						width		=> route_restrict_line_width,
+						width		=> et_route_restrict.route_restrict_line_width,
 						height		=> self.frame_height);
 					
 				when YES =>
@@ -122,6 +123,7 @@ is
 		end if;
 	end query_circle;
 
+	
 	procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is begin
 
 		-- Draw the polygon if restrict layer is enabled:
@@ -138,6 +140,7 @@ is
 		end if;
 	end query_polygon;
 
+	
 	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is begin
 
 		-- Draw the zone if restrict layer is enabled:
@@ -180,7 +183,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
-		cairo.set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+		set_line_width (context.cr, type_view_coordinate (et_route_restrict.route_restrict_line_width));
 
 		set_color_route_restrict (context.cr);
 		

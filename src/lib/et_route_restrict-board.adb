@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          ROUTE RESTRICT                                  --
+--                        ROUTE RESTRICT BOARD                              --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -37,10 +37,7 @@
 --   to do:
 
 
-
-
-package body et_route_restrict is
-
+package body et_route_restrict.board is
 
 	
 	procedure line_route_restrict_properties (
@@ -52,7 +49,7 @@ package body et_route_restrict is
 		line : type_route_restrict_line;
 	begin
 		line := element (cursor);
-		log (text => "route restrict line face" & to_string (face) & space
+		log (text => "route restrict line layers" & to_string (line.layers) & space
 			 & to_string (type_line (line)), level => log_threshold);
 	end line_route_restrict_properties;
 
@@ -66,15 +63,17 @@ package body et_route_restrict is
 		arc : type_route_restrict_arc;
 	begin
 		arc := element (cursor);
-		log (text => "route restrict arc face" & to_string (face) & space 
+		log (text => "route restrict arc layers" & to_string (arc.layers) & space 
 			 & to_string (type_arc (arc)), level => log_threshold);
 	end arc_route_restrict_properties;
 
 
-	-- CS procedure circle_route_restrict_properties
+	--CS procedure circle_route_restrict_properties
+	
+
 	
 	
-end et_route_restrict;
+end et_route_restrict.board;
 
 -- Soli Deo Gloria
 

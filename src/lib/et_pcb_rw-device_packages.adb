@@ -371,12 +371,70 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_stencil, FOOTER);			
 		end write_stencil;
 
+		
 		procedure write_route_restrict is 
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
 			use pac_route_restrict_polygons;
 			use pac_route_restrict_cutouts;
+			use et_pcb_stack;
+
+			procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
+			begin
+				line_begin;
+				write_line (element (cursor));
+				--write_signal_layers (element (cursor).layers);
+				-- CS face
+				line_end;
+			end write_line;
+
+			procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is 
+			begin
+				arc_begin;
+				write_arc (element (cursor));		
+				--write_signal_layers (element (cursor).layers);
+				-- CS face
+				arc_end;
+			end write_arc;
+
+			procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is 
+			begin
+				circle_begin;
+				write_circle (element (cursor));
+				write_fill_status (element (cursor).filled);
+				--write_signal_layers (element (cursor).layers);
+				-- CS face
+				circle_end;
+			end write_circle;
+			
+			procedure write_polygon (cursor : in pac_route_restrict_polygons.cursor) is 
+			begin
+				fill_zone_begin;
+				--write_signal_layers (element (cursor).layers);
+				-- CS face
+				
+				contours_begin;
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				contours_end;
+				
+				fill_zone_end;
+			end write_polygon;
+
+			procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
+			begin
+				cutout_zone_begin;
+				--write_signal_layers (element (cursor).layers);
+				-- CS face
+				
+				contours_begin;
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				contours_end;
+				
+				cutout_zone_end;
+			end write_cutout;
+
+			
 		begin
 			section_mark (section_route_restrict, HEADER);
 
@@ -1340,17 +1398,17 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_route_restrict_polygon is begin
-					pac_route_restrict_polygons.append (
-						container	=> packge.route_restrict.polygons, 
-						new_item	=> (type_polygon_base (polygon) 
-										with signal_layers));
+				--procedure append_route_restrict_polygon is begin
+					--pac_route_restrict_polygons.append (
+						--container	=> packge.route_restrict.polygons, 
+						--new_item	=> (type_polygon_base (polygon) 
+										--with signal_layers));
 
-					-- clean up for next polygon
-					board_reset_polygon;
+					---- clean up for next polygon
+					--board_reset_polygon;
 
-					et_pcb_stack.type_signal_layers.clear (signal_layers);
-				end;
+					--et_pcb_stack.type_signal_layers.clear (signal_layers);
+				--end;
 
 				procedure append_via_restrict_polygon is begin
 					pac_via_restrict_polygons.append (
@@ -1473,17 +1531,17 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_route_restrict_cutout is begin
-					pac_route_restrict_cutouts.append (
-						container	=> packge.route_restrict.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with 
-										layers => signal_layers));
+				--procedure append_route_restrict_cutout is begin
+					--pac_route_restrict_cutouts.append (
+						--container	=> packge.route_restrict.cutouts, 
+						--new_item	=> (type_polygon_base (polygon) with 
+										--layers => signal_layers));
 
-					-- clean up for next polygon
-					board_reset_polygon;
+					---- clean up for next polygon
+					--board_reset_polygon;
 
-					et_pcb_stack.type_signal_layers.clear (signal_layers);
-				end;
+					--et_pcb_stack.type_signal_layers.clear (signal_layers);
+				--end;
 
 				procedure append_via_restrict_cutout is begin
 					pac_via_restrict_cutouts.append (
@@ -1685,16 +1743,16 @@ package body et_pcb_rw.device_packages is
 							when SEC_HOLE =>
 								add_polygon_line (board_line);
 								
-							when SEC_ROUTE_RESTRICT =>
+							--when SEC_ROUTE_RESTRICT =>
 								
-								pac_route_restrict_lines.append (
-									container	=> packge.route_restrict.lines,
-									new_item	=> (type_line (board_line) with
-													layers	=> signal_layers));
+								--pac_route_restrict_lines.append (
+									--container	=> packge.route_restrict.lines,
+									--new_item	=> (type_line (board_line) with
+													--layers	=> signal_layers));
 
-								-- clean up for next line
-								board_reset_line;
-								et_pcb_stack.type_signal_layers.clear (signal_layers);
+								---- clean up for next line
+								--board_reset_line;
+								--et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -1853,15 +1911,15 @@ package body et_pcb_rw.device_packages is
 							when SEC_HOLE =>
 								add_polygon_arc (board_arc);
 								
-							when SEC_ROUTE_RESTRICT =>
+							--when SEC_ROUTE_RESTRICT =>
 								
-								pac_route_restrict_arcs.append (
-									container	=> packge.route_restrict.arcs,
-									new_item	=> (type_arc (board_arc) with layers => signal_layers));
+								--pac_route_restrict_arcs.append (
+									--container	=> packge.route_restrict.arcs,
+									--new_item	=> (type_arc (board_arc) with layers => signal_layers));
 
-								-- clean up for next arc
-								board_reset_arc;
-								et_pcb_stack.type_signal_layers.clear (signal_layers);
+								---- clean up for next arc
+								--board_reset_arc;
+								--et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -1991,14 +2049,14 @@ package body et_pcb_rw.device_packages is
 							when SEC_HOLE =>
 								add_polygon_circle (board_circle);
 								
-							when SEC_ROUTE_RESTRICT =>
+							--when SEC_ROUTE_RESTRICT =>
 								
-								pac_route_restrict_circles.append (
-									container	=> packge.route_restrict.circles,
-									new_item	=> (board_make_fillable_circle_solid with signal_layers));
+								--pac_route_restrict_circles.append (
+									--container	=> packge.route_restrict.circles,
+									--new_item	=> (board_make_fillable_circle_solid with signal_layers));
 
-								board_reset_circle_fillable; -- clean up for next circle
-								et_pcb_stack.type_signal_layers.clear (signal_layers);
+								--board_reset_circle_fillable; -- clean up for next circle
+								--et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -2070,8 +2128,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_ROUTE_RESTRICT =>
-								append_route_restrict_polygon;
+							--when SEC_ROUTE_RESTRICT =>
+								--append_route_restrict_polygon;
 
 							when SEC_VIA_RESTRICT =>
 								append_via_restrict_polygon;
@@ -2127,8 +2185,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_ROUTE_RESTRICT =>
-								append_route_restrict_cutout;
+							--when SEC_ROUTE_RESTRICT =>
+								--append_route_restrict_cutout;
 
 							when SEC_VIA_RESTRICT =>
 								append_via_restrict_cutout;

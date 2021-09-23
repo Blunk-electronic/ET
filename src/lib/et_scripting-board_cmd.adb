@@ -47,7 +47,7 @@ with et_design_rules;				use et_design_rules;
 with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_text;				use et_conductor_text;
---with et_route_restrict;			use et_route_restrict;
+with et_route_restrict.board;		use et_route_restrict.board;
 
 separate (et_scripting)
 	

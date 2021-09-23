@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with et_pcb_rw;					use et_pcb_rw;
+with et_pcb_rw.restrict;
+
 
 separate (et_project.modules)
 
@@ -1164,12 +1167,13 @@ is
 		use pac_keepout_circles;
 		use pac_keepout_polygons;
 
-		use et_route_restrict;
+		use et_route_restrict.board;
 		use pac_route_restrict_lines;
 		use pac_route_restrict_arcs;
 		use pac_route_restrict_circles;
 		use pac_route_restrict_polygons;
-
+		use et_pcb_rw.restrict;
+		
 		use et_via_restrict;
 		use pac_via_restrict_lines;
 		use pac_via_restrict_arcs;

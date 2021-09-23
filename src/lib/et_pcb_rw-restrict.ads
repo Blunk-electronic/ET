@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                          ROUTE RESTRICT                                  --
+--                   PCB READ AND WRITE ROUTE/VIA RESTRICT                  --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -34,51 +34,41 @@
 --
 --   history of changes:
 --
---   to do:
 
+--   do do:
 
+with et_route_restrict.board;	use et_route_restrict.board;
+--with et_via_restrict;			use et_via_restrict;
 
+package et_pcb_rw.restrict is
 
-package body et_route_restrict is
+	--section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
+	--section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 
-
-	
-	procedure line_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_route_restrict_lines;
-		line : type_route_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "route restrict line face" & to_string (face) & space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_route_restrict_properties;
-
-	
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_route_restrict_arcs;
-		arc : type_route_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "route restrict arc face" & to_string (face) & space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_route_restrict_properties;
-
-
-	-- CS procedure circle_route_restrict_properties
+	--keyword_via_restring_inner	: constant string := "restring_inner";
+	--keyword_via_restring_outer	: constant string := "restring_outer";
 	
 	
-end et_route_restrict;
+-- ROUTE RESTRICT
+	use pac_route_restrict_lines;
+	use pac_route_restrict_arcs;
+	use pac_route_restrict_circles;
+	use pac_route_restrict_polygons;
+	use pac_route_restrict_cutouts;
+	
+	
+	procedure write_line (cursor : in pac_route_restrict_lines.cursor);
+	procedure write_arc (cursor : in pac_route_restrict_arcs.cursor);
+	procedure write_circle (cursor : in pac_route_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in pac_route_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor);
 
--- Soli Deo Gloria
+-- VIA RESTRICT
+	--procedure write_line (cursor : in pac_via_restrict_lines.cursor);
+	--procedure write_arc (cursor : in pac_via_restrict_arcs.cursor);
+	--procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
+	--procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor);
+	--procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
 
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16
+	
+end et_pcb_rw.restrict;

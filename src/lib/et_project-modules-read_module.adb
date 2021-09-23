@@ -38,6 +38,10 @@
 with et_frame_rw;
 with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 
+with et_pcb_rw;					use et_pcb_rw;
+with et_pcb_rw.restrict;
+
+
 separate (et_project.modules)
 
 procedure read_module (
@@ -3627,7 +3631,7 @@ is
 
 			procedure insert_cutout_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict;
+				use et_route_restrict.board;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3790,7 +3794,7 @@ is
 
 			procedure insert_line_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict;
+				use et_route_restrict.board;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3817,7 +3821,7 @@ is
 			
 			procedure insert_arc_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict;
+				use et_route_restrict.board;
 				use et_pcb_stack;					
 				use type_signal_layers;
 				
@@ -3844,7 +3848,7 @@ is
 			end insert_arc_route_restrict;
 
 			procedure insert_circle_route_restrict is
-				use et_route_restrict;
+				use et_route_restrict.board;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3870,7 +3874,7 @@ is
 
 			procedure insert_polygon_route_restrict is
 				use et_board_shapes_and_text.pac_shapes;
-				use et_route_restrict;
+				use et_route_restrict.board;
 				use pac_route_restrict_polygons;
 				
 				use et_pcb_stack;

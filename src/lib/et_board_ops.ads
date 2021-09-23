@@ -72,7 +72,7 @@ with et_conventions;
 with et_design_rules;			use et_design_rules;
 with et_conductor_text;			use et_conductor_text;
 with et_conductor_polygons;		use et_conductor_polygons;
-with et_route_restrict;			use et_route_restrict;
+with et_route_restrict.board;	use et_route_restrict.board;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
