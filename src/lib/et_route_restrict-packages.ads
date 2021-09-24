@@ -45,7 +45,7 @@ package et_route_restrict.packages is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on routing
+		texts		: pac_conductor_texts_package.list; -- for notes on routing
 	end record;
 
 	

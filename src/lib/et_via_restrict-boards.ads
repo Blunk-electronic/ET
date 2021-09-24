@@ -99,7 +99,6 @@ package et_via_restrict.boards is
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
 		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
-		-- CS texts should use a list of texts with type_signal_layers
 	end record;
 
 

@@ -51,9 +51,7 @@ with et_conductor_segment;		use et_conductor_segment;
 with et_string_processing;		use et_string_processing;
 
 package et_conductor_text is
-	--use pac_geometry_brd;
 
-	--use et_board_shapes_and_text.pac_shapes;
 	use et_board_shapes_and_text.pac_text_fab;
 
 	package pac_conductor_line_segments is new

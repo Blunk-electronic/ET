@@ -45,7 +45,7 @@ package et_via_restrict.packages is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
+		texts		: pac_conductor_texts_package.list; -- for notes on via restrict
 	end record;
 
 
