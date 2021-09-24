@@ -38,7 +38,6 @@
 
 
 package et_route_restrict.board is
-	use pac_geometry_brd;
 
 	use et_board_shapes_and_text.pac_shapes;
 	use et_board_shapes_and_text.pac_text_fab;

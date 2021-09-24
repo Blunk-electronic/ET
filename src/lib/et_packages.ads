@@ -66,7 +66,7 @@ with et_conductor_segment;		use et_conductor_segment;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_polygons.packages;		use et_conductor_polygons.packages;
 with et_conductor_text;			use et_conductor_text;
-with et_route_restrict;			use et_route_restrict;
+with et_route_restrict.packages;	use et_route_restrict.packages;
 with et_via_restrict;			use et_via_restrict;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;

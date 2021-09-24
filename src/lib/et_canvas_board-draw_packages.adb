@@ -3213,6 +3213,7 @@ is
 		module.devices.iterate (query_device'access);
 	end query_devices;
 
+	
 	procedure query_devices_non_electric (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
