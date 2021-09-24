@@ -61,7 +61,7 @@ with et_conductor_polygons;
 with et_conductor_polygons.boards;
 with et_conductor_text;
 with et_route_restrict.board;
-with et_via_restrict;
+with et_via_restrict.boards;
 with et_stop_mask;
 with et_stencil;
 with et_silkscreen;

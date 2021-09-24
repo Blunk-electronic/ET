@@ -40,7 +40,8 @@ with et_schematic;
 with et_display.board;			use et_display.board;
 with et_conductor_text;			use et_conductor_text;
 with et_route_restrict;			use et_route_restrict;
-with et_via_restrict;			use et_via_restrict;
+with et_via_restrict;
+with et_via_restrict.boards;	use et_via_restrict.boards;
 
 with et_canvas_primitive_draw_ops;
 

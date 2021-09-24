@@ -48,6 +48,7 @@ with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_text;				use et_conductor_text;
 with et_route_restrict.board;		use et_route_restrict.board;
+with et_via_restrict.boards;		use et_via_restrict.boards;
 
 separate (et_scripting)
 	

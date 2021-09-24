@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            VIA RESTRICT                                  --
+--                       VIA RESTRICT BOARDS                                --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,74 +36,42 @@
 --
 --   to do:
 
+with ada.strings;			use ada.strings;
 
-with ada.containers; 			use ada.containers;
+package body et_via_restrict.boards is
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_via_restrict is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	-- GUI relevant only: The line width of via restrict:
-	via_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-	
-	type type_via_restrict_line is new type_line with null record;
-	
-	package pac_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
-
-	
-	type type_via_restrict_arc is new type_arc with null record;
-	
-	package pac_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
-
-	
-	type type_via_restrict_circle is new type_fillable_circle_solid with null record;
-	
-	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
-
-	
-	type type_via_restrict_polygon is new type_polygon_base with null record;
-	
-	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
-
-
-	type type_via_restrict_cutout is new type_polygon with null record;
-		
-	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
-	
-	
-
-
-	-- Logs the properties of the given line of via restrict
 	procedure line_via_restrict_properties (
 		face			: in type_face;
 		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_via_restrict_lines;
+		line : type_via_restrict_line;
+	begin
+		line := element (cursor);
+		log (text => "via restrict line layers" & to_string (line.layers) & space
+			 & to_string (type_line (line)), level => log_threshold);
+	end line_via_restrict_properties;
 
-	-- Logs the properties of the given arc of via restrict
+	
 	procedure arc_via_restrict_properties (
 		face			: in type_face;
 		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level)
+	is
+		use pac_via_restrict_arcs;
+		arc : type_via_restrict_arc;
+	begin
+		arc := element (cursor);
+		log (text => "via restrict arc layers" & to_string (arc.layers) & space 
+			 & to_string (type_arc (arc)), level => log_threshold);
+	end arc_via_restrict_properties;
 
-	-- CS procedure circle_via_restrict_properties
 
+	--CS procedure circle_via_restrict_properties
 
 	
-end et_via_restrict;
+end et_via_restrict.boards;
 
 -- Soli Deo Gloria
 

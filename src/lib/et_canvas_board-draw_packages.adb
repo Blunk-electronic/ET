@@ -1872,160 +1872,160 @@ is
 
 		
 		-- VIA RESTRICT
-		procedure draw_via_restrict is 
+		--procedure draw_via_restrict is 
 
-			-- LINES
-			use pac_via_restrict_lines;
+			---- LINES
+			--use pac_via_restrict_lines;
 			
-			procedure query_line (c : in pac_via_restrict_lines.cursor) is
-				line : type_via_restrict_line := element (c);
-			begin
-				if flipped then 
-					mirror (line.layers, bottom_layer);
-				end if;
+			--procedure query_line (c : in pac_via_restrict_lines.cursor) is
+				--line : type_via_restrict_line := element (c);
+			--begin
+				--if flipped then 
+					--mirror (line.layers, bottom_layer);
+				--end if;
 
-				if via_restrict_layer_enabled (line.layers) then
+				--if via_restrict_layer_enabled (line.layers) then
 					
-					rotate_by (line, rot (package_position));
+					--rotate_by (line, rot (package_position));
 
-					if flipped then 
-						mirror (line, Y);
-					end if;
+					--if flipped then 
+						--mirror (line, Y);
+					--end if;
 
-					move_by (line, to_distance_relative (package_position));
+					--move_by (line, to_distance_relative (package_position));
 
-					pac_draw_fab.draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
-				end if;
-			end query_line;
+					--pac_draw_fab.draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
+				--end if;
+			--end query_line;
 
 			
-			-- ARCS
-			use pac_via_restrict_arcs;
+			---- ARCS
+			--use pac_via_restrict_arcs;
 			
-			procedure query_arc (c : in pac_via_restrict_arcs.cursor) is 
-				arc : type_via_restrict_arc := element (c);
-			begin
-				if flipped then 
-					mirror (arc.layers, bottom_layer);
-				end if;
+			--procedure query_arc (c : in pac_via_restrict_arcs.cursor) is 
+				--arc : type_via_restrict_arc := element (c);
+			--begin
+				--if flipped then 
+					--mirror (arc.layers, bottom_layer);
+				--end if;
 
-				if via_restrict_layer_enabled (arc.layers) then
+				--if via_restrict_layer_enabled (arc.layers) then
 					
-					rotate_by (arc, rot (package_position));
+					--rotate_by (arc, rot (package_position));
 
-					if flipped then 
-						mirror (arc, Y); 
-					end if;
+					--if flipped then 
+						--mirror (arc, Y); 
+					--end if;
 
-					move_by (arc, to_distance_relative (package_position));
+					--move_by (arc, to_distance_relative (package_position));
 
-					pac_draw_fab.draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
-				end if;
-			end query_arc;
+					--pac_draw_fab.draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
+				--end if;
+			--end query_arc;
 
 			
-			-- CIRCLES
-			use pac_via_restrict_circles;
+			---- CIRCLES
+			--use pac_via_restrict_circles;
 			
-			procedure query_circle (c : in pac_via_restrict_circles.cursor) is 
-				circle : type_via_restrict_circle := element (c);
-			begin
-				if flipped then 
-					mirror (circle.layers, bottom_layer);
-				end if;
+			--procedure query_circle (c : in pac_via_restrict_circles.cursor) is 
+				--circle : type_via_restrict_circle := element (c);
+			--begin
+				--if flipped then 
+					--mirror (circle.layers, bottom_layer);
+				--end if;
 
-				if via_restrict_layer_enabled (circle.layers) then
+				--if via_restrict_layer_enabled (circle.layers) then
 				
-					rotate_by (circle, rot (package_position));
+					--rotate_by (circle, rot (package_position));
 
-					if flipped then 
-						mirror (circle, Y);
-					end if;
+					--if flipped then 
+						--mirror (circle, Y);
+					--end if;
 
-					move_by (circle, to_distance_relative (package_position));
+					--move_by (circle, to_distance_relative (package_position));
 
-					pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
-						via_restrict_line_width, self.frame_height);
-				end if;
+					--pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
+						--via_restrict_line_width, self.frame_height);
+				--end if;
 
-			end query_circle;
+			--end query_circle;
 
 			
-			-- POLYGONS
-			use pac_via_restrict_polygons;
+			---- POLYGONS
+			--use pac_via_restrict_polygons;
 			
-			procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is
-				polygon : type_via_restrict_polygon := element (c);
-			begin
-				if flipped then 
-					mirror (polygon.layers, bottom_layer);
-				end if;
+			--procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is
+				--polygon : type_via_restrict_polygon := element (c);
+			--begin
+				--if flipped then 
+					--mirror (polygon.layers, bottom_layer);
+				--end if;
 
-				if via_restrict_layer_enabled (polygon.layers) then
+				--if via_restrict_layer_enabled (polygon.layers) then
 					
-					rotate_by (polygon, rot (package_position));
+					--rotate_by (polygon, rot (package_position));
 
-					if flipped then 
-						mirror (polygon, Y);
-					end if;
+					--if flipped then 
+						--mirror (polygon, Y);
+					--end if;
 
-					move_by (polygon, to_distance_relative (package_position));
+					--move_by (polygon, to_distance_relative (package_position));
 
-					pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-						zero, self.frame_height);
-				end if;
+					--pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+						--zero, self.frame_height);
+				--end if;
 
-			end query_polygon;
+			--end query_polygon;
 
 
-			-- CUTOUTS
-			use pac_via_restrict_cutouts;
+			---- CUTOUTS
+			--use pac_via_restrict_cutouts;
 		
-			procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
-				cutout : type_via_restrict_cutout := element (c);
-			begin
-				if flipped then 
-					mirror (cutout.layers, bottom_layer);
-				end if;
+			--procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
+				--cutout : type_via_restrict_cutout := element (c);
+			--begin
+				--if flipped then 
+					--mirror (cutout.layers, bottom_layer);
+				--end if;
 
-				if via_restrict_layer_enabled (cutout.layers) then
+				--if via_restrict_layer_enabled (cutout.layers) then
 					
-					rotate_by (cutout, rot (package_position));
+					--rotate_by (cutout, rot (package_position));
 
-					if flipped then 
-						mirror (cutout, Y); 
-					end if;
+					--if flipped then 
+						--mirror (cutout, Y); 
+					--end if;
 					
-					move_by (cutout, to_distance_relative (package_position));
+					--move_by (cutout, to_distance_relative (package_position));
 
-					set_color_background (context.cr);
+					--set_color_background (context.cr);
 
-					pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-						zero, self.frame_height);
-				end if;
+					--pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						--zero, self.frame_height);
+				--end if;
 
-			end query_cutout;
+			--end query_cutout;
 			
-		begin -- draw_via_restrict
-			set_color_via_restrict (context.cr);
-			set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+		--begin -- draw_via_restrict
+			--set_color_via_restrict (context.cr);
+			--set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
 			
-			-- lines
-			element (package_cursor).via_restrict.lines.iterate (query_line'access);
+			---- lines
+			--element (package_cursor).via_restrict.lines.iterate (query_line'access);
 
-			-- arcs
-			element (package_cursor).via_restrict.arcs.iterate (query_arc'access);
+			---- arcs
+			--element (package_cursor).via_restrict.arcs.iterate (query_arc'access);
 
-			-- circles
-			element (package_cursor).via_restrict.circles.iterate (query_circle'access);
+			---- circles
+			--element (package_cursor).via_restrict.circles.iterate (query_circle'access);
 
-			-- polygons
-			element (package_cursor).via_restrict.polygons.iterate (query_polygon'access);
+			---- polygons
+			--element (package_cursor).via_restrict.polygons.iterate (query_polygon'access);
 
-			-- cutouts
-			element (package_cursor).via_restrict.cutouts.iterate (query_cutout'access);
+			---- cutouts
+			--element (package_cursor).via_restrict.cutouts.iterate (query_cutout'access);
 
-		end draw_via_restrict;
+		--end draw_via_restrict;
 
 		
 		-- PCB HOLE
@@ -3174,7 +3174,7 @@ is
 		draw_keepout; 
 
 		--draw_route_restrict;
-		draw_via_restrict;
+		--draw_via_restrict;
 		draw_pcb_contour;
 		
 		draw_package_origin;

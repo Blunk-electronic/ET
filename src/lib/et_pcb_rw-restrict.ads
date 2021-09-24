@@ -38,7 +38,7 @@
 --   do do:
 
 with et_route_restrict.board;	use et_route_restrict.board;
---with et_via_restrict;			use et_via_restrict;
+with et_via_restrict.boards;	use et_via_restrict.boards;
 
 package et_pcb_rw.restrict is
 
@@ -56,19 +56,25 @@ package et_pcb_rw.restrict is
 	use pac_route_restrict_polygons;
 	use pac_route_restrict_cutouts;
 	
-	
 	procedure write_line (cursor : in pac_route_restrict_lines.cursor);
 	procedure write_arc (cursor : in pac_route_restrict_arcs.cursor);
 	procedure write_circle (cursor : in pac_route_restrict_circles.cursor);	
 	procedure write_polygon (cursor : in pac_route_restrict_polygons.cursor);
 	procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor);
 
+	
 -- VIA RESTRICT
-	--procedure write_line (cursor : in pac_via_restrict_lines.cursor);
-	--procedure write_arc (cursor : in pac_via_restrict_arcs.cursor);
-	--procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
-	--procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor);
-	--procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
+	use pac_via_restrict_lines;
+	use pac_via_restrict_arcs;
+	use pac_via_restrict_circles;
+	use pac_via_restrict_polygons;
+	use pac_via_restrict_cutouts;
+
+	procedure write_line (cursor : in pac_via_restrict_lines.cursor);
+	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor);
+	procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
 
 	
 end et_pcb_rw.restrict;

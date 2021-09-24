@@ -89,7 +89,6 @@ package et_route_restrict.board is
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 
 	
-	-- this is the base type for route restrict objects
 	type type_route_restrict is record
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;

@@ -1290,64 +1290,64 @@ package body et_pcb_rw is
 	--end;
 
 	
--- VIA RESTRICT
-	procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
-		use et_pcb_stack;
-		use pac_via_restrict_lines;
-	begin
-		line_begin;
-		write_line (element (cursor));		
-		write_signal_layers (element (cursor).layers);
-		line_end;
-	end write_line;
+---- VIA RESTRICT
+	--procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
+		--use et_pcb_stack;
+		--use pac_via_restrict_lines;
+	--begin
+		--line_begin;
+		--write_line (element (cursor));		
+		--write_signal_layers (element (cursor).layers);
+		--line_end;
+	--end write_line;
 
-	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
-		use et_pcb_stack;
-		use pac_via_restrict_arcs;
-	begin
-		arc_begin;
-		write_arc (element (cursor));
-		write_signal_layers (element (cursor).layers);
-		arc_end;
-	end write_arc;
+	--procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
+		--use et_pcb_stack;
+		--use pac_via_restrict_arcs;
+	--begin
+		--arc_begin;
+		--write_arc (element (cursor));
+		--write_signal_layers (element (cursor).layers);
+		--arc_end;
+	--end write_arc;
 
-	procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
-		use et_pcb_stack;		
-		use pac_via_restrict_circles;
-	begin
-		circle_begin;
-		write_circle (element (cursor));
-		write_fill_status (element (cursor).filled);
-		write_signal_layers (element (cursor).layers);
-		circle_end;
-	end write_circle;
+	--procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
+		--use et_pcb_stack;		
+		--use pac_via_restrict_circles;
+	--begin
+		--circle_begin;
+		--write_circle (element (cursor));
+		--write_fill_status (element (cursor).filled);
+		--write_signal_layers (element (cursor).layers);
+		--circle_end;
+	--end write_circle;
 	
-	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor) is 
-		use et_pcb_stack;
-		use pac_via_restrict_polygons;
-	begin
-		fill_zone_begin;
-		write_signal_layers (element (cursor).layers);			
+	--procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor) is 
+		--use et_pcb_stack;
+		--use pac_via_restrict_polygons;
+	--begin
+		--fill_zone_begin;
+		--write_signal_layers (element (cursor).layers);			
 
-		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
-		contours_end;
+		--contours_begin;
+		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--contours_end;
 		
-		fill_zone_end;
-	end write_polygon;
+		--fill_zone_end;
+	--end write_polygon;
 
-	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
-		use pac_via_restrict_cutouts;
-	begin
-		cutout_zone_begin;
-		write_signal_layers (element (cursor).layers);
+	--procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
+		--use pac_via_restrict_cutouts;
+	--begin
+		--cutout_zone_begin;
+		--write_signal_layers (element (cursor).layers);
 		
-		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
-		contours_end;
+		--contours_begin;
+		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--contours_end;
 		
-		cutout_zone_end;
-	end;
+		--cutout_zone_end;
+	--end;
 
 	
 -- BOARD CONTOUR

@@ -1174,7 +1174,7 @@ is
 		use pac_route_restrict_polygons;
 		use et_pcb_rw.restrict;
 		
-		use et_via_restrict;
+		use et_via_restrict.boards;
 		use pac_via_restrict_lines;
 		use pac_via_restrict_arcs;
 		use pac_via_restrict_circles;
@@ -1359,6 +1359,7 @@ is
 			section_mark (section_device, FOOTER);
 		end query_devices_non_electric;
 
+		
 		procedure query_user_settings is
 			us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 

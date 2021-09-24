@@ -2578,13 +2578,14 @@ package body et_board_ops is
 		
 	end delete_route_restrict;
 
+	
 -- VIA RESTRICT
 
 	procedure draw_via_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_via_restrict_line;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_via_restrict_lines;
