@@ -39,7 +39,7 @@
 
 with et_packages;						use et_packages;
 with et_conductor_polygons;				use et_conductor_polygons;
-with et_conductor_polygons.packages;	--use et_conductor_polygons.packages;
+with et_conductor_polygons.packages;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;
 

@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        ROUTE RESTRICT BOARD                              --
+--                       ROUTE RESTRICT BOARDS                              --
 --                                                                          --
---                              B o d y                                     --
+--                              S p e c                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -37,43 +37,88 @@
 --   to do:
 
 
-package body et_route_restrict.board is
+package et_route_restrict.boards is
+
+	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text.pac_text_fab;
+
+
+	type type_route_restrict_line is new 
+		et_route_restrict.type_route_restrict_line with
+	record
+		layers 	: type_signal_layers.set;
+	end record;
+	
+	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	
+	type type_route_restrict_arc is new
+		et_route_restrict.type_route_restrict_arc with 
+	record
+		layers 	: type_signal_layers.set;
+	end record;
+	
+	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
+
+
+	
+	type type_route_restrict_circle is new
+		et_route_restrict.type_route_restrict_circle with 
+	record
+		layers 	: type_signal_layers.set;
+	end record;
+	
+	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
+
+	
+	type type_route_restrict_polygon is new
+		et_route_restrict.type_route_restrict_polygon with
+	record
+		layers 	: type_signal_layers.set;
+	end record;
+
+	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
+
+	
+	type type_route_restrict_cutout is new
+		et_route_restrict.type_route_restrict_cutout with
+	record
+		layers 	: type_signal_layers.set;
+	end record;
+		
+	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
+
+	
+	type type_route_restrict is record
+		lines 		: pac_route_restrict_lines.list;
+		arcs		: pac_route_restrict_arcs.list;
+		circles		: pac_route_restrict_circles.list;
+		polygons	: pac_route_restrict_polygons.list;
+		cutouts		: pac_route_restrict_cutouts.list;
+		texts		: pac_conductor_texts_board.list; -- for notes on routing
+		-- CS texts should use a list of texts with type_signal_layers
+	end record;
+
+	
+
+
+	-- Logs the properties of the given line of route restrict
 	procedure line_route_restrict_properties (
 		face			: in type_face;
 		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_route_restrict_lines;
-		line : type_route_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "route restrict line layers" & to_string (line.layers) & space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_route_restrict_properties;
+		log_threshold 	: in type_log_level);
 
-	
+	-- Logs the properties of the given arc of route restrict
 	procedure arc_route_restrict_properties (
 		face			: in type_face;
 		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_route_restrict_arcs;
-		arc : type_route_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "route restrict arc layers" & to_string (arc.layers) & space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_route_restrict_properties;
+		log_threshold 	: in type_log_level);
 
-
-	--CS procedure circle_route_restrict_properties
-	
+	-- CS procedure circle_route_restrict_properties
 
 	
 	
-end et_route_restrict.board;
+end et_route_restrict.boards;
 
 -- Soli Deo Gloria
 

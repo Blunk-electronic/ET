@@ -58,7 +58,7 @@ with et_general;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				--use et_geometry;
+with et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_nets;					use et_nets;
@@ -69,12 +69,12 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 with et_design_rules;			use et_design_rules;
 
-with et_conductor_polygons;		use et_conductor_polygons;
-with et_conductor_polygons.boards;		use et_conductor_polygons.boards;
+with et_conductor_polygons;			use et_conductor_polygons;
+with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 
-with et_conductor_segment;		--use et_conductor_segment;
+with et_conductor_segment;
 with et_conductor_text;			use et_conductor_text;
-with et_route_restrict.board;	use et_route_restrict.board;
+with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;

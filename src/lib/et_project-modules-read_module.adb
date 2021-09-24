@@ -3601,6 +3601,7 @@ is
 				board_reset_polygon;
 			end insert_cutout;
 
+			
 			procedure insert_cutout_via_restrict is
 				use et_board_shapes_and_text;
 				use et_via_restrict.boards;
@@ -3629,9 +3630,10 @@ is
 				clear (signal_layers);
 			end insert_cutout_via_restrict;
 
+			
 			procedure insert_cutout_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict.board;
+				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3792,9 +3794,10 @@ is
 				board_text_placeholder := (others => <>);
 			end insert_placeholder;
 
+			
 			procedure insert_line_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict.board;
+				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3818,10 +3821,11 @@ is
 				board_reset_line;
 				clear (signal_layers);
 			end insert_line_route_restrict;
+
 			
 			procedure insert_arc_route_restrict is
 				use et_board_shapes_and_text;
-				use et_route_restrict.board;
+				use et_route_restrict.boards;
 				use et_pcb_stack;					
 				use type_signal_layers;
 				
@@ -3847,8 +3851,9 @@ is
 				clear (signal_layers);
 			end insert_arc_route_restrict;
 
+			
 			procedure insert_circle_route_restrict is
-				use et_route_restrict.board;
+				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -3872,9 +3877,10 @@ is
 				clear (signal_layers);
 			end insert_circle_route_restrict;
 
+			
 			procedure insert_polygon_route_restrict is
 				use et_board_shapes_and_text.pac_shapes;
-				use et_route_restrict.board;
+				use et_route_restrict.boards;
 				use pac_route_restrict_polygons;
 				
 				use et_pcb_stack;

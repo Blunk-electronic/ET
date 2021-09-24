@@ -37,7 +37,7 @@
 
 --   do do:
 
-with et_route_restrict.board;	use et_route_restrict.board;
+with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
 package et_pcb_rw.restrict is

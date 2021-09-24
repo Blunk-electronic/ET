@@ -1167,7 +1167,7 @@ is
 		use pac_keepout_circles;
 		use pac_keepout_polygons;
 
-		use et_route_restrict.board;
+		use et_route_restrict.boards;
 		use pac_route_restrict_lines;
 		use pac_route_restrict_arcs;
 		use pac_route_restrict_circles;
