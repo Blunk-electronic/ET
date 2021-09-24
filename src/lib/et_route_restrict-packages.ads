@@ -39,22 +39,20 @@
 
 package et_route_restrict.packages is
 
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	type type_route_restrict is record
+	type type_one_side is record
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
 		texts		: pac_conductor_texts_board.list; -- for notes on routing
-		-- CS texts should use a list of texts with type_signal_layers
 	end record;
 
-
-	-- CS top/bottom ?
+	
+	type type_route_restrict is record
+		top		: type_one_side;
+		bottom	: type_one_side;
+	end record;
 	
 end et_route_restrict.packages;
 

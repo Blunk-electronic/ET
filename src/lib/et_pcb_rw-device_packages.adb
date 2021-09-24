@@ -433,20 +433,32 @@ package body et_pcb_rw.device_packages is
 				
 				cutout_zone_end;
 			end write_cutout;
-
 			
 		begin
 			section_mark (section_route_restrict, HEADER);
 
-			iterate (packge.route_restrict.lines, write_line'access);
-			iterate (packge.route_restrict.arcs, write_arc'access);
-			iterate (packge.route_restrict.circles, write_circle'access);
-			iterate (packge.route_restrict.polygons, write_polygon'access);
-			iterate (packge.route_restrict.cutouts, write_cutout'access);
+			-- top
+			section_mark (section_top, HEADER);
+			iterate (packge.route_restrict.top.lines, write_line'access);
+			iterate (packge.route_restrict.top.arcs, write_arc'access);
+			iterate (packge.route_restrict.top.circles, write_circle'access);
+			iterate (packge.route_restrict.top.polygons, write_polygon'access);
+			iterate (packge.route_restrict.top.cutouts, write_cutout'access);
+			section_mark (section_top, FOOTER);
 
+			-- bottom
+			section_mark (section_bottom, HEADER);
+			iterate (packge.route_restrict.bottom.lines, write_line'access);
+			iterate (packge.route_restrict.bottom.arcs, write_arc'access);
+			iterate (packge.route_restrict.bottom.circles, write_circle'access);
+			iterate (packge.route_restrict.bottom.polygons, write_polygon'access);
+			iterate (packge.route_restrict.bottom.cutouts, write_cutout'access);
+			section_mark (section_bottom, FOOTER);
+			
 			section_mark (section_route_restrict, FOOTER);			
 		end write_route_restrict;
 
+		
 		procedure write_via_restrict is 
 			use pac_via_restrict_lines;
 			use pac_via_restrict_arcs;
@@ -465,6 +477,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_via_restrict, FOOTER);			
 		end write_via_restrict;
 
+		
 		procedure write_holes is
 			use pac_pcb_cutouts;
 			use pac_polygon_segments;
