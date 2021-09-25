@@ -865,7 +865,8 @@ package body et_pcb_rw.device_packages is
 		pac_description			: pac_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
-		signal_layers			: et_pcb_stack.type_signal_layers.set;
+		--signal_layers			: et_pcb_stack.type_signal_layers.set;
+		-- CS remove
 	
 		--pac_text				: et_packages.type_text_with_content;
 		--pac_text				: pac_text_fab.type_text_fab;
@@ -1449,29 +1450,41 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				--procedure append_route_restrict_polygon is begin
-					--pac_route_restrict_polygons.append (
-						--container	=> packge.route_restrict.polygons, 
-						--new_item	=> (type_polygon_base (polygon) 
-										--with signal_layers));
+				procedure append_route_restrict_polygon_top is begin
+					pac_route_restrict_polygons.append (
+						container	=> packge.route_restrict.top.polygons, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-					---- clean up for next polygon
-					--board_reset_polygon;
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
 
-					--et_pcb_stack.type_signal_layers.clear (signal_layers);
-				--end;
+				procedure append_route_restrict_polygon_bottom is begin
+					pac_route_restrict_polygons.append (
+						container	=> packge.route_restrict.bottom.polygons, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-				--procedure append_via_restrict_polygon is begin
-					--pac_via_restrict_polygons.append (
-						--container	=> packge.via_restrict.polygons, 
-						--new_item	=> (type_polygon_base (polygon)
-										--with signal_layers));
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
 
-					---- clean up for next polygon
-					--board_reset_polygon;
+				procedure append_via_restrict_polygon_top is begin
+					pac_via_restrict_polygons.append (
+						container	=> packge.via_restrict.top.polygons, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-					--et_pcb_stack.type_signal_layers.clear (signal_layers);
-				--end;
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
+				
+				procedure append_via_restrict_polygon_bottom is begin
+					pac_via_restrict_polygons.append (
+						container	=> packge.via_restrict.bottom.polygons, 
+						new_item	=> (type_polygon_base (polygon) with null record));
+
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
 
 				-- cutout zones
 				procedure append_silk_cutout_top is begin
@@ -1582,30 +1595,42 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				--procedure append_route_restrict_cutout is begin
-					--pac_route_restrict_cutouts.append (
-						--container	=> packge.route_restrict.cutouts, 
-						--new_item	=> (type_polygon_base (polygon) with 
-										--layers => signal_layers));
+				procedure append_route_restrict_cutout_top is begin
+					pac_route_restrict_cutouts.append (
+						container	=> packge.route_restrict.top.cutouts, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-					---- clean up for next polygon
-					--board_reset_polygon;
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
 
-					--et_pcb_stack.type_signal_layers.clear (signal_layers);
-				--end;
+				procedure append_route_restrict_cutout_bottom is begin
+					pac_route_restrict_cutouts.append (
+						container	=> packge.route_restrict.bottom.cutouts, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-				--procedure append_via_restrict_cutout is begin
-					--pac_via_restrict_cutouts.append (
-						--container	=> packge.via_restrict.cutouts, 
-						--new_item	=> (type_polygon_base (polygon) with 
-										--layers => signal_layers));
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
+				
+				procedure append_via_restrict_cutout_top is begin
+					pac_via_restrict_cutouts.append (
+						container	=> packge.via_restrict.top.cutouts, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
-					---- clean up for next polygon
-					--board_reset_polygon;
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
 
-					--et_pcb_stack.type_signal_layers.clear (signal_layers);
-				--end;
+				procedure append_via_restrict_cutout_bottom is begin
+					pac_via_restrict_cutouts.append (
+						container	=> packge.via_restrict.bottom.cutouts, 
+						new_item	=> (type_polygon_base (polygon) with null record));
 
+					-- clean up for next polygon
+					board_reset_polygon;
+				end;
+				
 				-- holes in PCB (or cutouts)
 				procedure append_hole is begin
 					packge.holes.append (polygon);
@@ -1630,7 +1655,8 @@ package body et_pcb_rw.device_packages is
 					when SEC_TOP =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
+								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT => 
 								check_outline (polygon, log_threshold + 1);
@@ -1648,7 +1674,8 @@ package body et_pcb_rw.device_packages is
 					when SEC_BOTTOM =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
+								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT =>
 								check_outline (polygon, log_threshold + 1);
@@ -1720,6 +1747,24 @@ package body et_pcb_rw.device_packages is
 
 										-- clean up for next line
 										board_reset_line;
+
+									when SEC_ROUTE_RESTRICT =>
+										pac_route_restrict_lines.append (
+											container	=> packge.route_restrict.top.lines,
+											new_item	=> (type_line (board_line) with null record));
+
+										-- clean up for next line
+										board_reset_line;
+
+									when SEC_VIA_RESTRICT =>
+										
+										pac_via_restrict_lines.append (
+											container	=> packge.via_restrict.top.lines,
+											new_item	=> (type_line (board_line) with null record));
+
+										-- clean up for next line
+										board_reset_line;
+
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
@@ -1784,6 +1829,23 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next line
 										board_reset_line;
 
+									when SEC_ROUTE_RESTRICT =>
+										pac_route_restrict_lines.append (
+											container	=> packge.route_restrict.bottom.lines,
+											new_item	=> (type_line (board_line) with null record));
+
+										-- clean up for next line
+										board_reset_line;
+
+									when SEC_VIA_RESTRICT =>
+										
+										pac_via_restrict_lines.append (
+											container	=> packge.via_restrict.bottom.lines,
+											new_item	=> (type_line (board_line) with null record));
+
+										-- clean up for next line
+										board_reset_line;
+										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
 									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_line (board_line);
@@ -1791,41 +1853,12 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_HOLE =>
-								add_polygon_line (board_line);
-								
-							--when SEC_ROUTE_RESTRICT =>
-								
-								--pac_route_restrict_lines.append (
-									--container	=> packge.route_restrict.lines,
-									--new_item	=> (type_line (board_line) with
-													--layers	=> signal_layers));
-
-								---- clean up for next line
-								--board_reset_line;
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-
-							--when SEC_VIA_RESTRICT =>
-								
-								--pac_via_restrict_lines.append (
-									--container	=> packge.via_restrict.lines,
-									--new_item	=> (type_line (board_line) with
-													--layers	=> signal_layers));
-
-								---- clean up for next line
-								--board_reset_line;
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-								
+							when SEC_HOLE => add_polygon_line (board_line);								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
-
-							when SEC_STENCIL_CONTOURS => add_polygon_line (board_line);
-							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_line (board_line);
-							
+							when SEC_STENCIL_CONTOURS => add_polygon_line (board_line);							
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_line (board_line);							
 							when SEC_MILLINGS => add_polygon_line (board_line);
-
-							when SEC_CONTOURS => add_polygon_line (board_line);
-								
+							when SEC_CONTOURS => add_polygon_line (board_line);								
 							when others => invalid_section;
 						end case;
 						
@@ -1889,10 +1922,24 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next arc
 										board_reset_arc;
 
-									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
+									when SEC_ROUTE_RESTRICT =>										
+										pac_route_restrict_arcs.append (
+											container	=> packge.route_restrict.top.arcs,
+											new_item	=> (type_arc (board_arc) with null record));
 
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);
+										-- clean up for next arc
+										board_reset_arc;
+
+									when SEC_VIA_RESTRICT =>										
+										pac_via_restrict_arcs.append (
+											container	=> packge.via_restrict.top.arcs,
+											new_item	=> (type_arc (board_arc) with null record));
+
+										-- clean up for next arc
+										board_reset_arc;
 										
+									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);										
 									when others => invalid_section;
 								end case;
 
@@ -1952,46 +1999,33 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next arc
 										board_reset_arc;
 
-									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
+									when SEC_ROUTE_RESTRICT =>										
+										pac_route_restrict_arcs.append (
+											container	=> packge.route_restrict.bottom.arcs,
+											new_item	=> (type_arc (board_arc) with null record));
 
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);
-									
+										-- clean up for next arc
+										board_reset_arc;
+
+									when SEC_VIA_RESTRICT =>										
+										pac_via_restrict_arcs.append (
+											container	=> packge.via_restrict.bottom.arcs,
+											new_item	=> (type_arc (board_arc) with null record));
+
+										-- clean up for next arc
+										board_reset_arc;
+										
+									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);									
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE =>
-								add_polygon_arc (board_arc);
-								
-							--when SEC_ROUTE_RESTRICT =>
-								
-								--pac_route_restrict_arcs.append (
-									--container	=> packge.route_restrict.arcs,
-									--new_item	=> (type_arc (board_arc) with layers => signal_layers));
-
-								---- clean up for next arc
-								--board_reset_arc;
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-
-							--when SEC_VIA_RESTRICT =>
-								
-								--pac_via_restrict_arcs.append (
-									--container	=> packge.via_restrict.arcs,
-									--new_item	=> (type_arc (board_arc) with layers => signal_layers));
-
-								---- clean up for next arc
-								--board_reset_arc;
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-
+							when SEC_HOLE => add_polygon_arc (board_arc);
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
-
-							when SEC_STENCIL_CONTOURS => add_polygon_arc (board_arc);
-							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_arc (board_arc);
-							
+							when SEC_STENCIL_CONTOURS => add_polygon_arc (board_arc);							
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_arc (board_arc);							
 							when SEC_MILLINGS => add_polygon_arc (board_arc);
-
-							when SEC_CONTOURS => add_polygon_arc (board_arc);
-								
+							when SEC_CONTOURS => add_polygon_arc (board_arc);								
 							when others => invalid_section;
 						end case;
 
@@ -2033,6 +2067,20 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle_fillable; -- clean up for next circle
 
+									when SEC_ROUTE_RESTRICT =>										
+										pac_route_restrict_circles.append (
+											container	=> packge.route_restrict.top.circles,
+											new_item	=> (board_make_fillable_circle_solid with null record));
+
+										board_reset_circle_fillable; -- clean up for next circle
+
+									when SEC_VIA_RESTRICT =>										
+										pac_via_restrict_circles.append (
+											container	=> packge.via_restrict.top.circles,
+											new_item	=> (board_make_fillable_circle_solid with null record));
+
+										board_reset_circle_fillable; -- clean up for next circle
+										
 									when SEC_KEEPOUT =>
 										pac_keepout_circles.append (
 											container	=> packge.keepout.top.circles,
@@ -2041,9 +2089,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);
-									
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);									
 									when others => invalid_section;
 								end case;
 
@@ -2090,44 +2136,33 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle_fillable; -- clean up for next circle
 
-									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
+									when SEC_ROUTE_RESTRICT =>										
+										pac_route_restrict_circles.append (
+											container	=> packge.route_restrict.bottom.circles,
+											new_item	=> (board_make_fillable_circle_solid with null record));
 
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);
-									
+										board_reset_circle_fillable; -- clean up for next circle
+
+									when SEC_VIA_RESTRICT =>										
+										pac_via_restrict_circles.append (
+											container	=> packge.via_restrict.bottom.circles,
+											new_item	=> (board_make_fillable_circle_solid with null record));
+
+										board_reset_circle_fillable; -- clean up for next circle
+										
+									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);									
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE =>
 								add_polygon_circle (board_circle);
 								
-							--when SEC_ROUTE_RESTRICT =>
-								
-								--pac_route_restrict_circles.append (
-									--container	=> packge.route_restrict.circles,
-									--new_item	=> (board_make_fillable_circle_solid with signal_layers));
-
-								--board_reset_circle_fillable; -- clean up for next circle
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-
-							--when SEC_VIA_RESTRICT =>
-								
-								--pac_via_restrict_circles.append (
-									--container	=> packge.via_restrict.circles,
-									--new_item	=> (board_make_fillable_circle_solid with signal_layers));
-
-								--board_reset_circle_fillable; -- clean up for next circle
-								--et_pcb_stack.type_signal_layers.clear (signal_layers);
-
 							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
-
-							when SEC_STENCIL_CONTOURS => add_polygon_circle (board_circle);
-							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_circle (board_circle);
-							
+							when SEC_STENCIL_CONTOURS => add_polygon_circle (board_circle);							
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_circle (board_circle);							
 							when SEC_MILLINGS => add_polygon_circle (board_circle);
-
-							when SEC_CONTOURS => add_polygon_circle (board_circle);
-								
+							when SEC_CONTOURS => add_polygon_circle (board_circle);								
 							when others => invalid_section;
 						end case;
 
@@ -2150,6 +2185,12 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_polygon_top;
 
+									when SEC_ROUTE_RESTRICT =>
+										append_route_restrict_polygon_top;
+
+									when SEC_VIA_RESTRICT =>
+										append_via_restrict_polygon_top;
+										
 									when SEC_CONDUCTOR =>
 										append_conductor_polygon_top;
 										
@@ -2173,17 +2214,17 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_polygon_bottom;
 
+									when SEC_ROUTE_RESTRICT =>
+										append_route_restrict_polygon_bottom;
+
+									when SEC_VIA_RESTRICT =>
+										append_via_restrict_polygon_bottom;
+										
 									when SEC_CONDUCTOR =>
 										append_conductor_polygon_bottom;
 										
 									when others => invalid_section;
 								end case;
-								
-							--when SEC_ROUTE_RESTRICT =>
-								--append_route_restrict_polygon;
-
-							--when SEC_VIA_RESTRICT =>
-								--append_via_restrict_polygon;
 
 							when others => invalid_section;
 						end case;
@@ -2207,6 +2248,12 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_cutout_top;
 
+									when SEC_ROUTE_RESTRICT =>
+										append_route_restrict_cutout_top;
+
+									when SEC_VIA_RESTRICT =>
+										append_via_restrict_cutout_top;
+										
 									when SEC_CONDUCTOR =>
 										append_conductor_cutout_top;
 
@@ -2230,17 +2277,17 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_cutout_bottom;
 
+									when SEC_ROUTE_RESTRICT =>
+										append_route_restrict_cutout_bottom;
+
+									when SEC_VIA_RESTRICT =>
+										append_via_restrict_cutout_bottom;
+										
 									when SEC_CONDUCTOR =>
 										append_conductor_cutout_bottom;
 
 									when others => invalid_section;
-								end case;
-								
-							--when SEC_ROUTE_RESTRICT =>
-								--append_route_restrict_cutout;
-
-							--when SEC_VIA_RESTRICT =>
-								--append_via_restrict_cutout;
+								end case;					
 								
 							when others => invalid_section;
 						end case;
@@ -2587,10 +2634,10 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-								SEC_PAD_CONTOURS_THT => null;
+								SEC_PAD_CONTOURS_THT | 
+								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
-							when SEC_STOP_MASK_CONTOURS_THT => null;
-								
+							when SEC_STOP_MASK_CONTOURS_THT => null;								
 							when others => invalid_section;
 						end case;
 						
@@ -2616,46 +2663,19 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => read_board_line (line);
-										
+									when SEC_KEEPOUT => read_board_line (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_line (line);
-
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_line (line);
-									
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_board_line (line);
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => read_board_line (line);
-
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								if not read_board_line (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layers then -- layers 2..16
-											
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
-											signal_layers := to_layers (line, check_layers);
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-								
-							when SEC_PAD_CONTOURS_SMT => read_board_line (line);
-							
-							when SEC_STENCIL_CONTOURS => read_board_line (line);
-							
-							when SEC_STOP_MASK_CONTOURS_SMT => read_board_line (line);
-							
+							when SEC_HOLE => read_board_line (line);								
+							when SEC_PAD_CONTOURS_SMT => read_board_line (line);							
+							when SEC_STENCIL_CONTOURS => read_board_line (line);							
+							when SEC_STOP_MASK_CONTOURS_SMT => read_board_line (line);							
 							when SEC_MILLINGS => read_board_line (line);
-
-							when SEC_CONTOURS => read_board_line (line);
-								
+							when SEC_CONTOURS => read_board_line (line);								
 							when others => invalid_section;
 						end case;
 						
@@ -2681,47 +2701,19 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => read_board_arc (line);
-										
+									when SEC_KEEPOUT => read_board_arc (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
-
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_arc (line);
-										
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_board_arc (line);
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE => read_board_arc (line);
-
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								if not read_board_arc (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layers then -- layers 1 14 3
-
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
-
-											signal_layers := to_layers (line, check_layers);
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-								
 							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
-
 							when SEC_STENCIL_CONTOURS => read_board_arc (line);
-							
 							when SEC_STOP_MASK_CONTOURS_SMT => read_board_arc (line);
-							
 							when SEC_MILLINGS => read_board_arc (line);
-
-							when SEC_CONTOURS => read_board_arc (line);
-								
+							when SEC_CONTOURS => read_board_arc (line);								
 							when others => invalid_section;
 						end case;
 
@@ -2731,6 +2723,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
+										
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);
@@ -2763,6 +2756,21 @@ package body et_pcb_rw.device_packages is
 										end if;
 										
 									when SEC_KEEPOUT => 
+										if not read_board_circle (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_filled := to_filled (f (line, 2));
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
+
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);
@@ -2813,60 +2821,16 @@ package body et_pcb_rw.device_packages is
 										end if;
 										
 									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
-
-									when SEC_STOP_MASK_CONTOURS_THT => read_board_circle (line);
-									
+									when SEC_STOP_MASK_CONTOURS_THT => read_board_circle (line);									
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE => read_board_circle (line);
-							
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								if not read_board_circle (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_filled then -- filled yes/no
-											expect_field_count (line, 2);													
-											board_filled := to_filled (f (line, 2));
-
-										elsif kw = keyword_fill_style then -- fill_style solid/hatched
-											expect_field_count (line, 2);													
-											board_fill_style := to_fill_style (f (line, 2));
-
-										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-											expect_field_count (line, 2);													
-											board_hatching.line_width := to_distance (f (line, 2));
-
-										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-											expect_field_count (line, 2);													
-											board_hatching.spacing := to_distance (f (line, 2));
-
-										elsif kw = keyword_layers then -- layers 1 14 3
-
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
-
-											signal_layers := to_layers (line, check_layers);
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-								
 							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
-
 							when SEC_STENCIL_CONTOURS => read_board_circle (line);
-							
 							when SEC_STOP_MASK_CONTOURS_SMT => read_board_circle (line);
-							
 							when SEC_MILLINGS => read_board_circle (line);
-
 							when SEC_CONTOURS => read_board_circle (line);
-								
 							when others => invalid_section;
 						end case;
 
@@ -2893,7 +2857,7 @@ package body et_pcb_rw.device_packages is
 											end if;
 										end;
 
-									when SEC_KEEPOUT =>
+									when SEC_KEEPOUT |  SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										-- no parameters allowed here
 										declare
 											kw : string := f (line, 1);
@@ -2922,23 +2886,6 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 										
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_layers then -- layers 1 14 3
-
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line, check_layers);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
 							when others => invalid_section;
 						end case;
 						
@@ -2977,17 +2924,26 @@ package body et_pcb_rw.device_packages is
 											end if;
 										end;
 
-									when SEC_KEEPOUT =>
+									--when SEC_KEEPOUT =>
+										--declare
+											--kw : string := f (line, 1);
+										--begin
+											--if kw = keyword_filled then -- filled yes/no
+												--expect_field_count (line, 2);
+												--board_filled := to_filled (f (line, 2));
+											--else
+												--invalid_keyword (kw);
+											--end if;
+										--end;
+
+									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										-- no parameters allowed here
 										declare
 											kw : string := f (line, 1);
 										begin
-											if kw = keyword_filled then -- filled yes/no
-												expect_field_count (line, 2);
-												board_filled := to_filled (f (line, 2));
-											else
-												invalid_keyword (kw);
-											end if;
+											invalid_keyword (kw);
 										end;
+
 										
 									when SEC_CONDUCTOR =>
 										declare
@@ -3033,28 +2989,7 @@ package body et_pcb_rw.device_packages is
 
 									when others => invalid_section;
 								end case;
-										
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_filled then -- filled yes/no
-										expect_field_count (line, 2);
-										board_filled := to_filled (f (line, 2));
-
-									elsif kw = keyword_layers then -- layers 1 14 3
-
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line, check_layers);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+								
 							when others => invalid_section;
 						end case;
 						
