@@ -61,10 +61,8 @@ package body et_pcb_rw.device_packages is
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_package_appearance;
-		log_threshold	: in et_string_processing.type_log_level) 
-	is
-		use et_string_processing;
-	begin
+		log_threshold	: in type_log_level) 
+	is begin
 		log (text => "creating package " & to_string (package_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
@@ -97,9 +95,8 @@ package body et_pcb_rw.device_packages is
 	procedure save_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in type_package_lib; -- the actual package model
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
 		use pac_package_model_file_name;
 		
 		file_handle : ada.text_io.file_type;
@@ -828,11 +825,8 @@ package body et_pcb_rw.device_packages is
 	procedure read_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
-		--use et_pcb;
-		
 		file_handle : ada.text_io.file_type;
 
 		line : et_string_processing.type_fields_of_line;
@@ -864,10 +858,7 @@ package body et_pcb_rw.device_packages is
 		-- model has been read. See main of this procedure.
 		pac_description			: pac_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
-		
-		--signal_layers			: et_pcb_stack.type_signal_layers.set;
-		-- CS remove
-	
+
 		--pac_text				: et_packages.type_text_with_content;
 		--pac_text				: pac_text_fab.type_text_fab;
 		pac_text				: type_text_fab_with_content;

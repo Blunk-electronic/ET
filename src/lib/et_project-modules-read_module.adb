@@ -39,7 +39,7 @@ with et_frame_rw;
 with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 
 with et_pcb_rw;					use et_pcb_rw;
-with et_pcb_rw.restrict;
+with et_pcb_rw.restrict;		use et_pcb_rw.restrict;
 
 
 separate (et_project.modules)

@@ -39,7 +39,7 @@
 
 with ada.containers;            use ada.containers;
 
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_general_rw;				use et_general_rw;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
@@ -78,8 +78,6 @@ package et_pcb_rw is
 	section_stencil				: constant string	:= "[STENCIL";
 	section_stop_mask			: constant string	:= "[STOP_MASK";
 	section_keepout				: constant string	:= "[KEEPOUT";
-	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
-	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 	section_conductor			: constant string	:= "[CONDUCTOR";
 	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
 	section_hole				: constant string	:= "[HOLE";
@@ -346,19 +344,5 @@ package et_pcb_rw is
 	procedure write_polygon (cursor : in pac_stencil_polygons.cursor);
 	procedure write_cutout (cursor : in pac_stencil_cutouts.cursor);
 	
--- ROUTE RESTRICT
-	--procedure write_line (cursor : in pac_route_restrict_lines.cursor);
-	--procedure write_arc (cursor : in pac_route_restrict_arcs.cursor);
-	--procedure write_circle (cursor : in pac_route_restrict_circles.cursor);	
-	--procedure write_polygon (cursor : in pac_route_restrict_polygons.cursor);
-	--procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor);
-
--- VIA RESTRICT
-	--procedure write_line (cursor : in pac_via_restrict_lines.cursor);
-	--procedure write_arc (cursor : in pac_via_restrict_arcs.cursor);
-	--procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
-	--procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor);
-	--procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
-
 	
 end et_pcb_rw;

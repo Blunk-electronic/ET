@@ -42,11 +42,8 @@ with et_via_restrict.boards;	use et_via_restrict.boards;
 
 package et_pcb_rw.restrict is
 
-	--section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
-	--section_via_restrict		: constant string	:= "[VIA_RESTRICT";
-
-	--keyword_via_restring_inner	: constant string := "restring_inner";
-	--keyword_via_restring_outer	: constant string := "restring_outer";
+	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
+	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 	
 	
 -- ROUTE RESTRICT

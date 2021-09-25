@@ -42,6 +42,7 @@ with et_conductor_polygons;				use et_conductor_polygons;
 with et_conductor_polygons.packages;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;
+with et_pcb_rw.restrict;				use et_pcb_rw.restrict;
 
 package et_pcb_rw.device_packages is
 
