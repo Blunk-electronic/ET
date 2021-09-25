@@ -76,6 +76,7 @@ package body et_display.board is
 		return false;
 	end silkscreen_enabled;
 
+	
 	function assy_doc_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
@@ -168,6 +169,7 @@ package body et_display.board is
 
 
 
+
 	
 	function route_restrict_enabled return boolean is begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
@@ -178,6 +180,7 @@ package body et_display.board is
 
 		return false;
 	end route_restrict_enabled;
+
 	
 	function route_restrict_layer_enabled (
 		layer : in type_signal_layer) 
@@ -189,6 +192,7 @@ package body et_display.board is
 			return false;
 		end if;
 	end route_restrict_layer_enabled;
+
 	
 	function route_restrict_layer_enabled (layers : in type_signal_layers.set)
 		return boolean is
@@ -209,6 +213,22 @@ package body et_display.board is
 	end route_restrict_layer_enabled;
 
 
+	function route_restrict_enabled (
+		face 			: in type_face;
+		deepest_layer	: in type_signal_layer)
+		return boolean
+	is begin
+		case face is
+			when TOP =>
+				if layers.route_restrict (1) = ON then return true; end if;
+			when BOTTOM =>
+				if layers.route_restrict (deepest_layer) = ON then return true; end if;
+		end case;
+		return false;
+	end route_restrict_enabled;
+
+
+	
 	
 
 	function via_restrict_enabled return boolean is begin

@@ -1715,31 +1715,39 @@ is
 
 		
 		-- ROUTE RESTRICT
-		--procedure draw_route_restrict is 
+		procedure draw_route_restrict is 
 
-			---- LINES
-			--use pac_route_restrict_lines;
+			-- LINES
+			use pac_route_restrict_lines;
 			
-			--procedure query_line (c : in pac_route_restrict_lines.cursor) is
-				--line : type_route_restrict_line := element (c);
-			--begin
-				--if flipped then 
-					--mirror (line.layers, bottom_layer);
-				--end if;
+			line : type_route_restrict_line;
 
-				--if route_restrict_layer_enabled (line.layers) then
-					
-					--rotate_by (line, rot (package_position));
+			procedure draw_line (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						rotate_by (line, rot (package_position));
+						
+						if flipped then mirror (line, Y); end if;
+						
+						move_by (line, to_distance_relative (package_position));
+						pac_draw_fab.draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
+					end if;
 
-					--if flipped then 
-						--mirror (line, Y);
-					--end if;
-					
-					--move_by (line, to_distance_relative (package_position));
+				end if;
+			end draw_line;
+			
+			procedure query_line_top (c : in pac_route_restrict_lines.cursor) is begin
+				line := element (c);
+				set_destination;
+				draw_line (destination);
+			end query_line_top;
 
-					--pac_draw_fab.draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
-				--end if;
-			--end query_line;
+			procedure query_line_bottom (c : in pac_route_restrict_lines.cursor) is begin
+				line := element (c);
+				set_destination (INVERSE);
+				draw_line (destination);
+			end query_line_bottom;
 
 			
 			---- ARCS
@@ -1849,14 +1857,15 @@ is
 
 			--end query_cutout;
 			
-		--begin -- draw_route_restrict
-			--set_color_route_restrict (context.cr);
-			--set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+		begin -- draw_route_restrict
+			set_color_route_restrict (context.cr);
+			set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
 			
-			---- lines
-			--element (package_cursor).route_restrict.lines.iterate (query_line'access);
-
-			---- arcs
+			-- lines
+			element (package_cursor).route_restrict.top.lines.iterate (query_line_top'access);
+			element (package_cursor).route_restrict.bottom.lines.iterate (query_line_bottom'access);
+			
+			-- arcs
 			--element (package_cursor).route_restrict.arcs.iterate (query_arc'access);
 
 			---- circles
@@ -1868,7 +1877,7 @@ is
 			---- cutouts
 			--element (package_cursor).route_restrict.cutouts.iterate (query_cutout'access);
 
-		--end draw_route_restrict;
+		end draw_route_restrict;
 
 		
 		-- VIA RESTRICT
@@ -3173,7 +3182,7 @@ is
 		draw_assembly_documentation;
 		draw_keepout; 
 
-		--draw_route_restrict;
+		draw_route_restrict;
 		--draw_via_restrict;
 		draw_pcb_contour;
 		

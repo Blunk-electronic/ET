@@ -116,6 +116,8 @@ package et_display.board is
 
 
 	
+-- ROUTE RESTRICT
+
 	-- Returns true if any route restrict layer is enabled:
 	function route_restrict_enabled return boolean;
 	
@@ -129,8 +131,18 @@ package et_display.board is
 		layers : in type_signal_layers.set)
 		return boolean;
 
+	-- Returns true if the route restrict layer 
+	-- on TOP/BOTTOM is enabled:
+	function route_restrict_enabled (
+		face 			: in type_face;
+		deepest_layer	: in type_signal_layer) -- the deepest conductor layer of the board
+		return boolean;
+
+
 	
-	
+
+-- VIA RESTRICT
+
 	-- Returns true if any via restrict layer is enabled:
 	function via_restrict_enabled return boolean;	
 	
