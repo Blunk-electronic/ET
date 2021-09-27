@@ -241,6 +241,7 @@ package body et_display.board is
 		return false;
 	end via_restrict_enabled;
 
+	
 	function via_restrict_layer_enabled (
 		layer : in type_signal_layer) 
 		return boolean 
@@ -251,6 +252,7 @@ package body et_display.board is
 			return false;
 		end if;
 	end via_restrict_layer_enabled;
+
 	
 	function via_restrict_layer_enabled (layers : in type_signal_layers.set)
 		return boolean is
@@ -270,6 +272,22 @@ package body et_display.board is
 		return result;
 	end via_restrict_layer_enabled;
 
+
+	function via_restrict_enabled (
+		face 			: in type_face;
+		deepest_layer	: in type_signal_layer)
+		return boolean
+	is begin
+		case face is
+			when TOP =>
+				if layers.via_restrict (1) = ON then return true; end if;
+			when BOTTOM =>
+				if layers.via_restrict (deepest_layer) = ON then return true; end if;
+		end case;
+		return false;
+	end via_restrict_enabled;
+
+	
 
 	
 	function enabled_conductor_layers return string is

@@ -156,6 +156,14 @@ package et_display.board is
 		layers : in type_signal_layers.set)
 		return boolean;
 
+	-- Returns true if the via restrict layer 
+	-- on TOP/BOTTOM is enabled:
+	function via_restrict_enabled (
+		face 			: in type_face;
+		deepest_layer	: in type_signal_layer) -- the deepest conductor layer of the board
+		return boolean;
+
+
 	
 	-- Returns all enabled conductor layers in a string like "1..4,7,10..32"
 	function enabled_conductor_layers return string;

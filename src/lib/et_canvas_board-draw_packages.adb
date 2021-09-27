@@ -1718,8 +1718,7 @@ is
 		procedure draw_route_restrict is 
 
 			-- LINES
-			use pac_route_restrict_lines;
-			
+			use pac_route_restrict_lines;			
 			line : type_route_restrict_line;
 
 			procedure draw_line (f : in type_face) is begin
@@ -1750,112 +1749,138 @@ is
 			end query_line_bottom;
 
 			
-			---- ARCS
-			--use pac_route_restrict_arcs;
-			
-			--procedure query_arc (c : in pac_route_restrict_arcs.cursor) is 
-				--arc : type_route_restrict_arc := element (c);
-			--begin
-				--if flipped then 
-					--mirror (arc.layers, bottom_layer);
-				--end if;
+			-- ARCS
+			use pac_route_restrict_arcs;
+			arc : type_route_restrict_arc;
 
-				--if route_restrict_layer_enabled (arc.layers) then
-					
-					--rotate_by (arc, rot (package_position));
-
-					--if flipped then 
-						--mirror (arc, Y); 
-					--end if;
-
-					--move_by (arc, to_distance_relative (package_position));
-
-					--pac_draw_fab.draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
-				--end if;
-			--end query_arc;
-
-			
-			---- CIRCLES
-			--use pac_route_restrict_circles;
-			
-			--procedure query_circle (c : in pac_route_restrict_circles.cursor) is 
-				--circle : type_route_restrict_circle := element (c);
-			--begin
-				--if flipped then 
-					--mirror (circle.layers, bottom_layer);
-				--end if;
-
-				--if route_restrict_layer_enabled (circle.layers) then
+			procedure draw_arc (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
 				
-					--rotate_by (circle, rot (package_position));
+					if f = face then
+						rotate_by (arc, rot (package_position));
+						
+						if flipped then mirror (arc, Y); end if;
+						
+						move_by (arc, to_distance_relative (package_position));
+						pac_draw_fab.draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
+					end if;
 
-					--if flipped then 
-						--mirror (circle, Y);
-					--end if;
-					
-					--move_by (circle, to_distance_relative (package_position));
+				end if;
+			end draw_arc;
+			
+			procedure query_arc_top (c : in pac_route_restrict_arcs.cursor) is begin
+				arc := element (c);
+				set_destination;
+				draw_arc (destination);
+			end query_arc_top;
 
-					--pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
-						--route_restrict_line_width, self.frame_height);
-				--end if;
-
-			--end query_circle;
+			procedure query_arc_bottom (c : in pac_route_restrict_arcs.cursor) is begin
+				arc := element (c);
+				set_destination (INVERSE);
+				draw_arc (destination);
+			end query_arc_bottom;
 
 			
-			---- POLYGONS
-			--use pac_route_restrict_polygons;
+			-- CIRCLES
+			use pac_route_restrict_circles;
+			circle : type_route_restrict_circle;
+
+			procedure draw_circle (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						rotate_by (circle, rot (package_position));
+						
+						if flipped then mirror (circle, Y); end if;
+						
+						move_by (circle, to_distance_relative (package_position));
+						pac_draw_fab.draw_circle (in_area, context, circle, NO, route_restrict_line_width, self.frame_height);
+						-- NO means circle is not filled
+					end if;
+
+				end if;
+			end draw_circle;
 			
-			--procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is
-				--polygon : type_route_restrict_polygon := element (c);
-			--begin
-				--if flipped then 
-					--mirror (polygon.layers, bottom_layer);
-				--end if;
+			procedure query_circle_top (c : in pac_route_restrict_circles.cursor) is begin
+				circle := element (c);
+				set_destination;
+				draw_circle (destination);
+			end query_circle_top;
 
-				--if route_restrict_layer_enabled (polygon.layers) then
-					
-					--rotate_by (polygon, rot (package_position));
+			procedure query_circle_bottom (c : in pac_route_restrict_circles.cursor) is begin
+				circle := element (c);
+				set_destination (INVERSE);
+				draw_circle (destination);
+			end query_circle_bottom;
 
-					--if flipped then 
-						--mirror (polygon, Y);
-					--end if;
+			
+			-- FILL ZONES
+			use pac_route_restrict_polygons;
+			polygon : type_route_restrict_polygon;
 
-					--move_by (polygon, to_distance_relative (package_position));
+			procedure draw_polygon (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						rotate_by (polygon, rot (package_position));
+						
+						if flipped then mirror (polygon, Y); end if;
+						
+						move_by (polygon, to_distance_relative (package_position));
+						pac_draw_fab.draw_polygon (in_area, context, polygon, YES, route_restrict_line_width, self.frame_height);
+						-- YES means polygon is filled
+					end if;
 
-					--pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-						--zero, self.frame_height);
-				--end if;
+				end if;
+			end draw_polygon;
+			
+			procedure query_polygon_top (c : in pac_route_restrict_polygons.cursor) is begin
+				polygon := element (c);
+				set_destination;
+				draw_polygon (destination);
+			end query_polygon_top;
 
-			--end query_polygon;
+			procedure query_polygon_bottom (c : in pac_route_restrict_polygons.cursor) is begin
+				polygon := element (c);
+				set_destination (INVERSE);
+				draw_polygon (destination);
+			end query_polygon_bottom;
 
+			
+			-- CUTOUTS
+			use pac_route_restrict_cutouts;
+			cutout : type_route_restrict_cutout;
 
-			---- CUTOUTS
-			--use pac_route_restrict_cutouts;
-		
-			--procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is
-				--cutout : type_route_restrict_cutout := element (c);
-			--begin
-				--if flipped then 
-					--mirror (cutout.layers, bottom_layer);
-				--end if;
+			procedure draw_cutout (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						rotate_by (cutout, rot (package_position));
+						
+						if flipped then mirror (cutout, Y); end if;
+						
+						move_by (cutout, to_distance_relative (package_position));
 
-				--if route_restrict_layer_enabled (cutout.layers) then
-					
-					--rotate_by (cutout, rot (package_position));
+						set_color_background (context.cr);
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES, zero, self.frame_height);
+						-- YES means cutout is filled, zero means line width
+					end if;
 
-					--if flipped then 
-						--mirror (cutout, Y); 
-					--end if;
+				end if;
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_route_restrict_cutouts.cursor) is begin
+				cutout := element (c);
+				set_destination;
+				draw_cutout (destination);
+			end query_cutout_top;
 
-					--move_by (cutout, to_distance_relative (package_position));
+			procedure query_cutout_bottom (c : in pac_route_restrict_cutouts.cursor) is begin
+				cutout := element (c);
+				set_destination (INVERSE);
+				draw_cutout (destination);
+			end query_cutout_bottom;
 
-					--set_color_background (context.cr);
-
-					--pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-						--zero, self.frame_height);
-				--end if;
-
-			--end query_cutout;
 			
 		begin -- draw_route_restrict
 			set_color_route_restrict (context.cr);
@@ -1866,16 +1891,20 @@ is
 			element (package_cursor).route_restrict.bottom.lines.iterate (query_line_bottom'access);
 			
 			-- arcs
-			--element (package_cursor).route_restrict.arcs.iterate (query_arc'access);
+			element (package_cursor).route_restrict.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).route_restrict.bottom.arcs.iterate (query_arc_bottom'access);
 
-			---- circles
-			--element (package_cursor).route_restrict.circles.iterate (query_circle'access);
+			-- circles
+			element (package_cursor).route_restrict.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).route_restrict.bottom.circles.iterate (query_circle_bottom'access);
 
-			---- polygons
-			--element (package_cursor).route_restrict.polygons.iterate (query_polygon'access);
+			-- polygons
+			element (package_cursor).route_restrict.top.polygons.iterate (query_polygon_top'access);
+			element (package_cursor).route_restrict.bottom.polygons.iterate (query_polygon_bottom'access);
 
-			---- cutouts
-			--element (package_cursor).route_restrict.cutouts.iterate (query_cutout'access);
+			-- cutouts
+			element (package_cursor).route_restrict.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).route_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 		end draw_route_restrict;
 
