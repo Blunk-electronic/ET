@@ -2300,6 +2300,19 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.conductors.top.texts,
 											new_item	=> (pac_text with others => <>));
 
+									when SEC_ROUTE_RESTRICT =>
+
+										append (
+											container	=> packge.route_restrict.top.texts,
+											new_item	=> (pac_text with others => <>));
+										
+									when SEC_VIA_RESTRICT =>
+
+										append (
+											container	=> packge.via_restrict.top.texts,
+											new_item	=> (pac_text with others => <>));
+
+										
 									when SEC_SILK_SCREEN =>
 
 										pac_texts_fab_with_content.append (
@@ -2318,6 +2331,8 @@ package body et_pcb_rw.device_packages is
 										pac_texts_fab_with_content.append (
 											container	=> packge.stop_mask.top.texts,
 											new_item	=> pac_text);
+
+
 										
 									-- CS SEC_KEEPOUT
 										
@@ -2326,6 +2341,7 @@ package body et_pcb_rw.device_packages is
 
 								-- clean up for next text
 								pac_text := (others => <>);
+
 								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
@@ -2335,6 +2351,21 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.conductors.bottom.texts,
 											new_item	=> (pac_text with others => <>));
 
+
+									when SEC_ROUTE_RESTRICT =>
+
+										append (
+											container	=> packge.route_restrict.bottom.texts,
+											new_item	=> (pac_text with others => <>));
+
+
+									when SEC_VIA_RESTRICT =>
+
+										append (
+											container	=> packge.via_restrict.bottom.texts,
+											new_item	=> (pac_text with others => <>));
+
+										
 									when SEC_SILK_SCREEN =>
 
 										pac_texts_fab_with_content.append (
@@ -2353,6 +2384,7 @@ package body et_pcb_rw.device_packages is
 										pac_texts_fab_with_content.append (
 											container	=> packge.stop_mask.bottom.texts,
 											new_item	=> pac_text);
+
 										
 									-- CS SEC_KEEPOUT
 										
@@ -2995,7 +3027,9 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
+									when SEC_CONDUCTOR | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
+										SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STOP_MASK => -- CS SEC_KEEPOUT
 
 										read_text;
 										
@@ -3023,7 +3057,6 @@ package body et_pcb_rw.device_packages is
 					when SEC_TERMINAL =>
 						case stack.parent is
 							when SEC_TERMINALS => read_terminal;
-
 							when others => invalid_section;
 						end case;
 

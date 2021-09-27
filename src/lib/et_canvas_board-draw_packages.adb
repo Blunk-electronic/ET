@@ -1863,7 +1863,6 @@ is
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES, zero, self.frame_height);
 						-- YES means cutout is filled, zero means line width
 					end if;
-
 				end if;
 			end draw_cutout;
 			
@@ -1882,36 +1881,29 @@ is
 
 			-- TEXTS
 			use pac_conductor_texts_package;
-			
-			procedure draw_text (
-				t	: in out type_conductor_text_package;
-				f	: in type_face) 
-			is begin
-				--if stop_mask_enabled (f) then
-	
-					--if f = face then
-						--set_color_stop_mask (context.cr, f, self.scale);
-						--draw_text_with_content (t, f);
-					--end if;
+			text : type_conductor_text_package;
 
-				--end if;
-				null;
+			procedure draw_text (f : in type_face) is begin
+				if route_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						draw_text_with_content (type_text_fab_with_content (text), f);
+					end if;
+
+				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_conductor_texts_package.cursor) is
-				t : type_conductor_text_package := element (c);
-			begin
+			procedure query_text_top (c : in pac_conductor_texts_package.cursor) is begin
+				text := element (c);
 				set_destination;
-				draw_text (t, destination);
+				draw_text (destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in pac_conductor_texts_package.cursor) is
-				t : type_conductor_text_package := element (c);
-			begin
+			procedure query_text_bottom (c : in pac_conductor_texts_package.cursor) is begin
+				text := element (c);
 				set_destination (INVERSE);
-				draw_text (t, destination);
+				draw_text (destination);
 			end query_text_bottom;
-
 			
 			
 		begin -- draw_route_restrict
@@ -1938,6 +1930,10 @@ is
 			element (package_cursor).route_restrict.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).route_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
 
+			-- texts
+			set_color_route_restrict (context.cr);
+			element (package_cursor).route_restrict.top.texts.iterate (query_text_top'access);
+			element (package_cursor).route_restrict.bottom.texts.iterate (query_text_bottom'access);			
 		end draw_route_restrict;
 
 		
@@ -2108,6 +2104,33 @@ is
 				draw_cutout (destination);
 			end query_cutout_bottom;
 
+
+			-- TEXTS
+			use pac_conductor_texts_package;
+			text : type_conductor_text_package;
+
+			procedure draw_text (f : in type_face) is begin
+				if via_restrict_enabled (f, bottom_layer) then
+				
+					if f = face then
+						draw_text_with_content (type_text_fab_with_content (text), f);
+					end if;
+
+				end if;
+			end draw_text;
+
+			procedure query_text_top (c : in pac_conductor_texts_package.cursor) is begin
+				text := element (c);
+				set_destination;
+				draw_text (destination);
+			end query_text_top;
+
+			procedure query_text_bottom (c : in pac_conductor_texts_package.cursor) is begin
+				text := element (c);
+				set_destination (INVERSE);
+				draw_text (destination);
+			end query_text_bottom;
+		
 			
 		begin -- draw_via_restrict
 			set_color_via_restrict (context.cr);
@@ -2133,6 +2156,10 @@ is
 			element (package_cursor).via_restrict.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).via_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
 
+			-- texts
+			set_color_route_restrict (context.cr);
+			element (package_cursor).via_restrict.top.texts.iterate (query_text_top'access);
+			element (package_cursor).via_restrict.bottom.texts.iterate (query_text_bottom'access);			
 		end draw_via_restrict;
 
 		
