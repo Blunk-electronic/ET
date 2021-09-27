@@ -676,6 +676,7 @@ package body et_text is
 					when '-' => add (special_dash);
 					when '_' => add (special_underline);
 					when '/' => add (special_forward_slash);
+					when ':' => add (special_colon);
 					when ' ' => null;
 					
 					when others => 

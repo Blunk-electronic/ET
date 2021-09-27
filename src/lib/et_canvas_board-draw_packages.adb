@@ -1670,9 +1670,7 @@ is
 							zero, self.frame_height);
 						
 					end if;
-
-				end if;
-				
+				end if;				
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stencil_cutouts.cursor) is
@@ -1881,6 +1879,40 @@ is
 				draw_cutout (destination);
 			end query_cutout_bottom;
 
+
+			-- TEXTS
+			use pac_conductor_texts_package;
+			
+			procedure draw_text (
+				t	: in out type_conductor_text_package;
+				f	: in type_face) 
+			is begin
+				--if stop_mask_enabled (f) then
+	
+					--if f = face then
+						--set_color_stop_mask (context.cr, f, self.scale);
+						--draw_text_with_content (t, f);
+					--end if;
+
+				--end if;
+				null;
+			end draw_text;
+
+			procedure query_text_top (c : in pac_conductor_texts_package.cursor) is
+				t : type_conductor_text_package := element (c);
+			begin
+				set_destination;
+				draw_text (t, destination);
+			end query_text_top;
+
+			procedure query_text_bottom (c : in pac_conductor_texts_package.cursor) is
+				t : type_conductor_text_package := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_text (t, destination);
+			end query_text_bottom;
+
+			
 			
 		begin -- draw_route_restrict
 			set_color_route_restrict (context.cr);

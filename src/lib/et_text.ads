@@ -826,6 +826,11 @@ package et_text is
 			 1	=> (x1, y0, x3, y6)
 			 );
 
+		special_colon : constant type_character (1 .. 2) := (
+			1	=> (x2, y3, x2, y3),
+			2	=> (x2, y1, x2, y1)
+			);
+
 		
 		package pac_vector_text_lines is new doubly_linked_lists (pac_shapes.type_line);
 
