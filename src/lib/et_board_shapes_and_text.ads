@@ -175,7 +175,8 @@ package et_board_shapes_and_text is
 
 	-- Polygons in non-conducor layers such as silkscreen, stencil, ...
 	type type_polygon_non_conductor (fill_style : type_fill_style) 
-	is new type_polygon_base with record
+		is new type_polygon with 
+	record
 		easing : type_easing;
 		
 		case fill_style is
@@ -217,9 +218,9 @@ package et_board_shapes_and_text is
 	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
 	type type_fillable_circle (
 		filled		: type_filled;
-		fill_style	: type_fill_style -- don't care if filled is NO
-		)
-		is new type_circle with record
+		fill_style	: type_fill_style) -- don't care if filled is NO
+		is new type_circle 
+	with record
 		case filled is
 			when NO => 
 				-- the line width of the circumfence:

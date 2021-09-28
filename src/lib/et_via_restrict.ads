@@ -75,7 +75,7 @@ package et_via_restrict is
 	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new type_polygon_base with null record;
+	type type_via_restrict_polygon is new type_polygon with null record;
 	
 	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 

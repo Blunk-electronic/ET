@@ -68,7 +68,8 @@ package et_conductor_polygons is
 	
 	-- Polygons in conductor layers have a dedicated type for the hatching:
 	type type_polygon_conductor (fill_style : type_fill_style) 
-		is new type_polygon_base with record
+		is new type_polygon with
+	record
 
 		-- the minimum width:
 		width_min : type_track_width := type_track_width'first;
@@ -84,6 +85,7 @@ package et_conductor_polygons is
 		end case;
 	end record;
 
+	
 
 -- SOLID CONDUCTOR POLYGONS
 	type type_polygon_conductor_solid 
