@@ -58,10 +58,8 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
---with et_geometry_2;
-with et_geometry_2.contours;	
 
---with et_geometry_1;
+with et_geometry_2.contours;	
 with et_geometry_1.polygons;
 
 with et_text;
@@ -162,61 +160,6 @@ package pac_draw is
 		-- CS fill style ?
 
 
-	
----- CUTOUT
-	
-	--type type_cutout is (NO, YES);
-	
-	--type type_cutout_shape is (
-		--CIRCULAR,
-		--ARBITRARY
-		---- CS square, triangle, ... ?
-		--);
-
-	--type type_cutout_circle is new type_circle with null record;
-	--type type_cutout_arbitrary is new type_polygon with null record;
-
-	--package pac_cutouts_arbitrary is new doubly_linked_lists (type_cutout_arbitrary);
-
-	--type type_cutout_area (
-		--required	: type_cutout := NO;
-
-		---- If required is NO, then shape is don't care:
-		--shape		: type_cutout_shape := CIRCULAR)
-	--is record
-		--case required is
-			--when NO		=> null; -- no cutout required
-			--when YES	=> -- cutout required
-
-				--case shape is
-					--when CIRCULAR =>
-						--cutout_circular : type_cutout_circle;
-
-					---- CS other basic shapes ?
-						
-					--when ARBITRARY =>
-						--cutout_arbitrary : pac_cutouts_arbitrary.list;
-
-				--end case;
-		--end case;
-	--end record;
-
-	
----- CROP
-	--type type_crop is (NO, YES);
-	--type type_crop_arbitrary is new type_polygon with null record;
-	
-	--type type_crop_area (
-		--required	: type_crop := NO)
-	--is record
-		--case required is
-			--when NO		=> null; -- no crop required
-			--when YES	=> -- crop required
-				--crop : type_crop_arbitrary;
-
-		--end case;
-	--end record;
-
 
 	procedure draw_polygon (
 		area	: in type_bounding_box;
@@ -236,6 +179,7 @@ package pac_draw is
 		-- because is inside the given area:
 		drawn	: in out boolean);
 
+	
 	
 	
 	procedure draw_contour (

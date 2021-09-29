@@ -232,6 +232,17 @@ package body pac_draw is
 		return result;
 	end get_boundaries;
 
+
+	-- Returns the bounding box of a line that has the given width:
+	function get_bounding_box_line (
+		line	: in pac_geometry_1.type_line;
+		width	: in type_distance_positive;
+		height	: in type_float_internal_positive)
+		return type_bounding_box
+	is begin
+		return make_bounding_box (height, get_boundaries (line, width));
+	end get_bounding_box_line;
+	
 	
 	procedure draw_line (
 		area	: in type_bounding_box;
@@ -241,11 +252,9 @@ package body pac_draw is
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
 	is
-		-- compute the boundaries (greatest/smallest x/y) of the given line:
-		boundaries : type_boundaries := get_boundaries (line, width);
-
 		-- compute the bounding box of the given line
-		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
+		bounding_box : constant type_bounding_box := 
+			get_bounding_box_line (line, width, height);
 	begin
 		-- We draw the segment if:
 		--  - no area given or
