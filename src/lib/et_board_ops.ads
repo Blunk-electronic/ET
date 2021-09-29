@@ -70,15 +70,22 @@ with et_pick_and_place;
 with et_devices;				use et_devices;
 with et_conventions;
 with et_design_rules;			use et_design_rules;
-with et_conductor_text;			use et_conductor_text;
+with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 with et_stop_mask;				use et_stop_mask;
+with et_stop_mask.boards;		use et_stop_mask.boards;
 with et_stencil;				use et_stencil;
+with et_stencil.boards;			use et_stencil.boards;
 with et_silkscreen;				use et_silkscreen;
+with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_assy_doc;				use et_assy_doc;
+with et_assy_doc.boards;		use et_assy_doc.boards;
 with et_keepout;				use et_keepout;
+with et_keepout.boards;			use et_keepout.boards;
+with et_pcb_contour;			use et_pcb_contour;
+with et_text;
 
 package et_board_ops is
 
@@ -463,11 +470,11 @@ package et_board_ops is
 
 
 -- ASSEMBLY DOCUMENTATION
-	procedure draw_assy_doc_line (
 	-- Draws a line in the assembly documentation.
+	procedure draw_assy_doc_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		line			: in type_doc_line;
+		line			: in et_assy_doc.type_doc_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_assy_doc_arc (
@@ -613,7 +620,7 @@ package et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in type_conductor_text_board;
+		text			: in type_conductor_text;
 		log_threshold	: in type_log_level);
 
 

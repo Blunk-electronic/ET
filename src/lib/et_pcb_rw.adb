@@ -126,15 +126,15 @@ package body et_pcb_rw is
 		text_end;
 	end write_text;
 
-	procedure write_text (cursor : in pac_conductor_texts_package.cursor) is
-		use pac_conductor_texts_package;
-	begin
-		text_begin;
-		write (keyword => keyword_content, wrap => true,
-			parameters => to_string (element (cursor).content));
-		-- CS write_text_properties (element (cursor));
-		text_end;
-	end write_text;
+	--procedure write_text (cursor : in pac_conductor_texts_package.cursor) is
+		--use pac_conductor_texts_package;
+	--begin
+		--text_begin;
+		--write (keyword => keyword_content, wrap => true,
+			--parameters => to_string (element (cursor).content));
+		---- CS write_text_properties (element (cursor));
+		--text_end;
+	--end write_text;
 
 	
 	procedure write_width (width : in type_track_width) is begin

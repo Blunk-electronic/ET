@@ -840,7 +840,7 @@ package et_text is
 
 		type type_text_fab_with_content is new type_text_fab with record
 			content	: pac_text_content.bounded_string;
-			vectors	: pac_vector_text_lines.list;
+			--vectors	: pac_vector_text_lines.list;
 		end record;
 
 		package pac_texts_fab_with_content is new

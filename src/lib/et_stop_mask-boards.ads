@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                     STENCIL / SOLDER PASTE MASK                          --
+--                         STOP MASK BOARDS                                 --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -36,78 +36,30 @@
 --
 --   to do:
 
+package et_stop_mask.boards is
 
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
-
-package et_stencil is
-	use pac_geometry_brd;
-
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
-
-
-	type type_stencil_line is new type_line with record
-		width	: type_general_line_width;
+	-- for texts in conductor layer to be exposed:
+	type type_stop_mask_text is new type_text_fab_with_content with record
+		vectors	: pac_vector_text_lines.list;
 	end record;
 
-	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
-
-
-	type type_stencil_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
-
-	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
-
-	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stencil_cutouts is new doubly_linked_lists (type_polygon);	
+	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);
 	
-	-- This is the type for solder paste stencil objects in general:
-	type type_stencil is tagged record
-		lines 		: pac_stencil_lines.list;
-		arcs		: pac_stencil_arcs.list;
-		circles		: pac_stencil_circles.list;
-		polygons	: pac_stencil_polygons.list;
-		cutouts		: pac_stencil_cutouts.list;
+
+	type type_stop_mask 
+		is new et_stop_mask.type_stop_mask with 
+	record
+		texts		: pac_stop_mask_texts.list;
 	end record;
 
 
-
-
-	-- Logs the properties of the given arc of stencil
-	procedure arc_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_arcs.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given circle of stencil
-	procedure circle_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_circles.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given line of stencil
-	procedure line_stencil_properties (
-		face			: in type_face;
-		cursor			: in pac_stencil_lines.cursor;
-		log_threshold 	: in type_log_level);
+	--type type_stop_mask_both_sides is record
+		--top		: type_stop_mask;
+		--bottom	: type_stop_mask;
+	--end record;
 
 	
-	
-end et_stencil;
+end et_stop_mask.boards;
 
 -- Soli Deo Gloria
 

@@ -107,7 +107,7 @@ package et_pcb_rw is
 		face	: in et_pcb_coordinates.type_face);
 
 	procedure write_text (cursor : in pac_text_fab.pac_texts_fab_with_content.cursor);
-	procedure write_text (cursor : in pac_conductor_texts_package.cursor);
+	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
 	
 	keyword_locked : constant string := "locked"; -- layout related
 	

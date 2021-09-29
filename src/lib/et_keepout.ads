@@ -73,19 +73,14 @@ package et_keepout is
 	
 	package pac_keepout_cutouts is new doubly_linked_lists (type_polygon);	
 	
-	type type_keepout is record
+	type type_keepout is tagged record
 		lines 		: pac_keepout_lines.list;
 		arcs		: pac_keepout_arcs.list;
 		circles		: pac_keepout_circles.list;
 		polygons	: pac_keepout_polygons.list;
 		cutouts 	: pac_keepout_cutouts.list;
-		texts		: pac_texts_fab_with_content.list; -- for notes on placement
 	end record;
 
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
 
 
 	-- Logs the properties of the given line of keepout

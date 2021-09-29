@@ -1441,7 +1441,17 @@ is
 				section_mark (section_hole, FOOTER);		
 			end write_hole;
 
-			use pac_text_fab.pac_texts_fab_with_content;
+			use et_pcb_contour;
+			use pac_contour_texts;
+
+			procedure write_text (cursor : in pac_contour_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+			
 		begin
 			section_mark (section_pcb_contours, HEADER);
 

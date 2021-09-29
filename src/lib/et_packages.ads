@@ -65,14 +65,14 @@ with et_design_rules;					use et_design_rules;
 with et_conductor_segment;				use et_conductor_segment;
 with et_conductor_polygons;				use et_conductor_polygons;
 with et_conductor_polygons.packages;	use et_conductor_polygons.packages;
-with et_conductor_text;					use et_conductor_text;
+with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
-with et_stop_mask;				use et_stop_mask;
-with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
-with et_assy_doc;				use et_assy_doc;
-with et_keepout;				use et_keepout;
+with et_stop_mask.packages;				use et_stop_mask.packages;
+with et_stencil.packages;				use et_stencil.packages;
+with et_silkscreen.packages;			use et_silkscreen.packages;
+with et_assy_doc.packages;				use et_assy_doc.packages;
+with et_keepout.packages;				use et_keepout.packages;
 
 with cairo;
 
@@ -185,9 +185,9 @@ package et_packages is
 		
 -- NON ELECTRIC conductor objects
 
-	use pac_conductor_lines;
-	use pac_conductor_arcs;
-	use pac_conductor_circles;
+	--use pac_conductor_lines;
+	--use pac_conductor_arcs;
+	--use pac_conductor_circles;
 
 	type type_conductor_objects is record 
 		lines 		: pac_conductor_lines.list;
@@ -195,7 +195,7 @@ package et_packages is
 		circles		: pac_conductor_circles.list;
 		polygons	: type_conductor_polygons;
 		cutouts		: packages.pac_conductor_cutouts.list;
-		texts		: pac_conductor_texts_package.list;
+		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 	
 	-- Since NON ELECTRIC conductor objects of a package can be on both sides 
@@ -212,7 +212,9 @@ package et_packages is
 
 	
 	-- Silk screen objects include placeholders:
-	type type_silk_screen is new type_silk_screen_base with record
+	type type_silk_screen 
+		is new et_silkscreen.packages.type_silk_screen with
+	record
 		placeholders : pac_text_placeholders.list;
 	end record;
 
@@ -225,7 +227,9 @@ package et_packages is
 	
 
 	-- Assembly documentation includes placeholders:
-	type type_assembly_documentation is new type_assembly_documentation_base with record
+	type type_assembly_documentation 
+		is new et_assy_doc.packages.type_assembly_documentation with 
+	record
 		placeholders: pac_text_placeholders.list;
 	end record;
 

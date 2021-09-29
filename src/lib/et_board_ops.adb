@@ -252,10 +252,12 @@ package body et_board_ops is
 			process		=> delete'access);
 		
 	end delete_layer;
+	
 
 	function get_placeholders (
 		package_cursor : in et_packages.pac_packages_lib.cursor)
-		return et_packages.type_text_placeholders is
+		return et_packages.type_text_placeholders 
+	is
 		use et_packages;
 		use pac_packages_lib;
 	begin
@@ -271,6 +273,7 @@ package body et_board_ops is
 		
 		end returN;
 	end get_placeholders;
+
 	
 	procedure add_device ( -- non-electric !
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -3217,16 +3220,16 @@ package body et_board_ops is
 	procedure draw_assy_doc_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		line			: in type_doc_line;
-		log_threshold	: in type_log_level) is
-
+		line			: in et_assy_doc.type_doc_line;
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
-			use pac_doc_lines;
+			module		: in out type_module) 
+		is
+			use et_assy_doc.pac_doc_lines;
 		begin
 			case face is
 				when TOP =>
@@ -4216,47 +4219,73 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_texts_fab_with_content;
+			use et_text;
+			use pac_contour_texts;
+			use pac_assy_doc_texts;
+			use pac_silkscreen_texts;
+			use pac_stop_mask_texts;
+			use pac_stencil_texts;
+			use pac_keepout_texts;
+			vectors	: pac_vector_text_lines.list;		
+			mirror : type_vector_text_mirrored;
 		begin
+			-- NOTE: Texts in bottom keepout are never mirrored:
+			if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
+				mirror := NO;
+			else
+				mirror := face_to_mirror (face);
+			end if;
+			
+			vectors := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> rot (text.position),
+				position	=> type_point (text.position),
+				mirror		=> mirror,
+				line_width	=> text.line_width
+				-- CS alignment
+				); 
+
+			
 			case layer_category is
 				when LAYER_CAT_ASSY =>
 					case face is
 						when TOP =>
-							append (module.board.assy_doc.top.texts, text);
+							append (module.board.assy_doc.top.texts, (text with vectors));
 						when BOTTOM =>
-							append (module.board.assy_doc.bottom.texts, text);
+							append (module.board.assy_doc.bottom.texts, (text with vectors));
 					end case;
 
 				when LAYER_CAT_SILKSCREEN =>
 					case face is
 						when TOP =>
-							append (module.board.silk_screen.top.texts, text);
+							append (module.board.silk_screen.top.texts, (text with vectors));
 						when BOTTOM =>
-							append (module.board.silk_screen.bottom.texts, text);
+							append (module.board.silk_screen.bottom.texts, (text with vectors));
 					end case;
 					
 				when LAYER_CAT_STOP =>
 					case face is
 						when TOP =>
-							append (module.board.stop_mask.top.texts, text);
+							append (module.board.stop_mask.top.texts, (text with vectors));
 						when BOTTOM =>
-							append (module.board.stop_mask.bottom.texts, text);
+							append (module.board.stop_mask.bottom.texts, (text with vectors));
 					end case;
 
 				when LAYER_CAT_STENCIL =>
 					case face is
 						when TOP =>
-							append (module.board.stencil.top.texts, text);
+							append (module.board.stencil.top.texts, (text with vectors));
 						when BOTTOM =>
-							append (module.board.stencil.bottom.texts, text);
+							append (module.board.stencil.bottom.texts, (text with vectors));
 					end case;
 
 				when LAYER_CAT_KEEPOUT =>
 					case face is
 						when TOP =>
-							append (module.board.keepout.top.texts, text);
+							append (module.board.keepout.top.texts, (text with vectors));
 						when BOTTOM =>
-							append (module.board.keepout.bottom.texts, text);
+							append (module.board.keepout.bottom.texts, (text with vectors));
 					end case;
 			end case;
 		end place_text;
@@ -4287,11 +4316,22 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_texts_fab_with_content;
+			vectors	: pac_vector_text_lines.list;		
+			use pac_contour_texts;
 		begin
+			vectors := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> rot (text.position),
+				position	=> type_point (text.position),
+				line_width	=> text.line_width
+				-- CS alignment
+				); 
+
+
 			case layer_category is
 				when LAYER_CAT_OUTLINE =>
-					append (module.board.contours.texts, text);
+					append (module.board.contours.texts, (text with vectors));
 
 				when others => null; -- CS
 			end case;
@@ -4315,14 +4355,14 @@ package body et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in type_conductor_text_board;
+		text			: in type_conductor_text;
 		log_threshold	: in type_log_level)
 	is
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_conductor_texts_board;
+			use pac_conductor_texts;
 		begin
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>

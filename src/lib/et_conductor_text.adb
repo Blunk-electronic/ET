@@ -40,22 +40,7 @@
 
 package body et_conductor_text is
 
-	procedure text_conductor_properties (
-		cursor			: in pac_conductor_texts_board.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		text : type_conductor_text_board;
-	begin
-		text := element (cursor);
-		log (text => "conductor text signal layer" & to_string (text.layer) & " "
-			& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
-			);
-
-		log_indentation_up;
-		log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_conductor_properties;
-	
+	procedure dummy is begin null; end;
 	
 end et_conductor_text;
 

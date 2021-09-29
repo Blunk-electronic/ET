@@ -54,40 +54,39 @@ package et_conductor_text is
 
 	use et_board_shapes_and_text.pac_text_fab;
 
-	package pac_conductor_line_segments is new
-		doubly_linked_lists (type_conductor_line_segment);
+	--package pac_conductor_line_segments is new
+		--doubly_linked_lists (type_conductor_line_segment);
 
 
-	type type_conductor_text_package is new pac_text_fab.type_text_fab_with_content with null record;
-		-- CS segments: pac_conductor_line_segments.list;
-	--end record;
+	--type type_conductor_text_package is new pac_text_fab.type_text_fab_with_content with null record;
 
 
 	
-	package pac_conductor_texts_package is new 
-		doubly_linked_lists (type_conductor_text_package);
+	--package pac_conductor_texts_package is new 
+		--doubly_linked_lists (type_conductor_text_package);
 
 		
 
 	
-	type type_conductor_text_board is new type_conductor_text_package with record
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
+	--type type_conductor_text_board is new type_conductor_text_package with record
+		--layer	: type_signal_layer := type_signal_layer'first;
+	--end record;
 
 	--function to_string (text : in type_conductor_text)
 		--return string;
 	
-	package pac_conductor_texts_board is new 
-		doubly_linked_lists (type_conductor_text_board);
+	--package pac_conductor_texts_board is new 
+		--doubly_linked_lists (type_conductor_text_board);
 
-	use pac_conductor_texts_board;
+	--use pac_conductor_texts_board;
 		
 
-	-- Logs the properties of the given text.
-	procedure text_conductor_properties (
-		cursor			: in pac_conductor_texts_board.cursor;
-		log_threshold 	: in type_log_level);
+	---- Logs the properties of the given text.
+	--procedure text_conductor_properties (
+		--cursor			: in pac_conductor_texts_board.cursor;
+		--log_threshold 	: in type_log_level);
 
+	procedure dummy;
 	
 end et_conductor_text;
 

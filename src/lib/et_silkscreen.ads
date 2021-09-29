@@ -85,7 +85,6 @@ package et_silkscreen is
 		circles		: pac_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
 		cutouts 	: pac_silk_cutouts.list;
-		texts		: pac_texts_fab_with_content.list;
 	end record;
 
 

@@ -3693,10 +3693,24 @@ is
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
-				is begin
-					pac_texts_fab_with_content.append (
+				is 
+					use et_pcb_contour;
+					use pac_vector_text_lines;
+					vector_text : pac_vector_text_lines.list;
+				begin
+					-- CS
+					--vector_text := vectorize_text (
+						--content		=> board_text.content,
+						--size		=> board_text.size,
+						--rotation	=> rot (board_text.position),
+						--position	=> type_point (board_text.position),
+						--line_width	=> board_text.line_width
+						---- CS alignment
+						--); 
+					
+					pac_contour_texts.append (
 						container	=> module.board.contours.texts,
-						new_item	=> board_text);
+						new_item	=> (board_text with vector_text));
 
 				end do_it;
 				

@@ -36,6 +36,7 @@
 --
 --   to do:
 
+with et_conductor_text.boards;
 
 package et_route_restrict.boards is
 
@@ -95,7 +96,7 @@ package et_route_restrict.boards is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on routing
+		texts		: et_conductor_text.boards.pac_conductor_texts.list; -- for notes on routing
 	end record;
 
 	

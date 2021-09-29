@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       VIA RESTRICT PACKAGES                              --
+--                       CONDUCTOR TEXT BOARDS                              --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,28 +36,28 @@
 --
 --   to do:
 
-with et_conductor_text.packages;
 
-package et_via_restrict.packages is
+
+package body et_conductor_text.boards is
+
+	procedure text_conductor_properties (
+		cursor			: in pac_conductor_texts.cursor;
+		log_threshold 	: in type_log_level) 
+	is
+		text : type_conductor_text;
+	begin
+		text := element (cursor);
+		log (text => "conductor text signal layer" & to_string (text.layer) & " "
+			& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
+			);
+
+		log_indentation_up;
+		log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		log_indentation_down;
+	end text_conductor_properties;
 	
-	type type_one_side is record
-		lines 		: pac_via_restrict_lines.list;
-		arcs		: pac_via_restrict_arcs.list;
-		circles		: pac_via_restrict_circles.list;
-		polygons	: pac_via_restrict_polygons.list;
-		cutouts		: pac_via_restrict_cutouts.list;
-		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on via restrict
-	end record;
-
-
-	type type_via_restrict is record
-		top		: type_one_side;
-		bottom	: type_one_side;
-	end record;
-
-
 	
-end et_via_restrict.packages;
+end et_conductor_text.boards;
 
 -- Soli Deo Gloria
 

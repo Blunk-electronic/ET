@@ -73,14 +73,15 @@ with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 
 with et_conductor_segment;
-with et_conductor_text;			use et_conductor_text;
-with et_route_restrict.boards;	use et_route_restrict.boards;
-with et_via_restrict.boards;	use et_via_restrict.boards;
-with et_stop_mask;				use et_stop_mask;
-with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
-with et_assy_doc;				use et_assy_doc;
-with et_keepout;				use et_keepout;
+with et_conductor_text.boards;		use et_conductor_text.boards;
+with et_route_restrict.boards;		use et_route_restrict.boards;
+with et_via_restrict.boards;		use et_via_restrict.boards;
+with et_stop_mask.boards;			use et_stop_mask.boards;
+with et_stencil.boards;				use et_stencil.boards;
+with et_silkscreen.boards;			use et_silkscreen.boards;
+with et_assy_doc.boards;			use et_assy_doc.boards;
+with et_keepout.boards;				use et_keepout.boards;
+with et_pcb_contour;				use et_pcb_contour;
 
 package et_pcb is
 	
@@ -193,11 +194,13 @@ package et_pcb is
 
 	
 -- CONTOUR / OUTLINE / HOLES / EDGE CUTS
+
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
 		outline	: type_polygon;
 		holes	: pac_pcb_cutouts.list;
-		texts	: pac_text_fab.pac_texts_fab_with_content.list;
+		--texts	: pac_text_fab.pac_texts_fab_with_content.list;
+		texts	: pac_contour_texts.list;
 	end record;
 
 	-- CS
@@ -262,7 +265,7 @@ package et_pcb is
 		-- global cutout areas for conductor polygons:
 		cutouts			: boards.pac_conductor_cutouts.list;
 		
-		texts			: pac_conductor_texts_board.list;
+		texts			: et_conductor_text.boards.pac_conductor_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
 	end record;
 
@@ -287,7 +290,9 @@ package et_pcb is
 	
 
 	-- Stop mask in board (may contain placeholders):
-	type type_stop_mask is new et_stop_mask.type_stop_mask with record
+	type type_stop_mask 
+		is new et_stop_mask.boards.type_stop_mask with 
+	record
 		-- for texts in conductor layers to be exposed
 		placeholders : pac_text_placeholders.list;
 	end record;
@@ -312,7 +317,9 @@ package et_pcb is
 	
 -- SILK SCREEN
 	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen is new type_silk_screen_base with record
+	type type_silk_screen 
+		is new et_silkscreen.boards.type_silk_screen with
+	record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;
@@ -330,7 +337,9 @@ package et_pcb is
 -- ASSEMBLY DOCUMENTATION
 
 	-- For assembly documentation objects that do not belong to any packages use this type:
-	type type_assembly_documentation is new type_assembly_documentation_base with record
+	type type_assembly_documentation 
+		is new et_assy_doc.boards.type_assembly_documentation with
+	record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;

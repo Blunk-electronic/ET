@@ -83,16 +83,8 @@ package et_stop_mask is
 		circles		: pac_stop_circles.list;
 		polygons	: pac_stop_polygons.list;
 		cutouts		: pac_stop_cutouts.list;
-
-		-- for texts in conductor layer to be exposed:
-		texts		: pac_texts_fab_with_content.list;
 	end record;
 
-	-- Stop mask of packages:
-	type type_stop_mask_both_sides is record
-		top		: type_stop_mask;
-		bottom	: type_stop_mask;
-	end record;
 	
 
 

@@ -1404,19 +1404,19 @@ is
 
 					if layer_category in type_layer_category_outline then
 
-						vector_text := vectorize_text (
-							content		=> content,
-							size		=> text.size,
-							rotation	=> rotation,
-							position	=> pos_xy,
-							line_width	=> text.line_width
-							-- CS alignment
-							); 
+						--vector_text := vectorize_text (
+							--content		=> content,
+							--size		=> text.size,
+							--rotation	=> rotation,
+							--position	=> pos_xy,
+							--line_width	=> text.line_width
+							---- CS alignment
+							--); 
 						
 						place_text_in_outline_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> (text with content, vector_text),
+							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);
 
 					else
@@ -1453,28 +1453,28 @@ is
 
 						face := to_face (f (6)); -- top/bottom
 
-						-- NOTE: Texts in bottom keepout are never mirrored:
-						if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
-							mirror := NO;
-						else
-							mirror := face_to_mirror (face);
-						end if;
+						---- NOTE: Texts in bottom keepout are never mirrored:
+						--if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
+							--mirror := NO;
+						--else
+							--mirror := face_to_mirror (face);
+						--end if;
 						
-						vector_text := vectorize_text (
-							content		=> content,
-							size		=> text.size,
-							rotation	=> rotation,
-							position	=> pos_xy,
-							mirror		=> mirror,
-							line_width	=> text.line_width
-							-- CS alignment
-							); 
+						--vector_text := vectorize_text (
+							--content		=> content,
+							--size		=> text.size,
+							--rotation	=> rotation,
+							--position	=> pos_xy,
+							--mirror		=> mirror,
+							--line_width	=> text.line_width
+							---- CS alignment
+							--); 
 						
 						place_text_in_non_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							face			=> to_face (f (6)),
-							text			=> (text with content, vector_text),
+							face			=> face,
+							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);
 
 						

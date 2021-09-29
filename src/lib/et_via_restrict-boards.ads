@@ -36,6 +36,7 @@
 --
 --   to do:
 
+with et_conductor_text.boards;
 
 package et_via_restrict.boards is
 	use pac_geometry_brd;
@@ -98,7 +99,7 @@ package et_via_restrict.boards is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		texts		: pac_conductor_texts_board.list; -- for notes on via restrict
+		texts		: et_conductor_text.boards.pac_conductor_texts.list; -- for notes on routing
 	end record;
 
 
