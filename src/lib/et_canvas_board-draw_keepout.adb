@@ -35,8 +35,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+--with ada.text_io;				use ada.text_io;
 with et_keepout;				use et_keepout;
+with et_keepout.boards;			use et_keepout.boards;
 
 separate (et_canvas_board)
 
@@ -50,14 +51,13 @@ is
 	use pac_text_fab;
 	use pac_shapes;	
 
-	use et_packages;
 	use pac_keepout_lines;
 	use pac_keepout_arcs;
 	use pac_keepout_circles;
 	use pac_keepout_polygons;
 	use pac_keepout_cutouts;
+	use pac_keepout_texts;
 
-	use pac_texts_fab_with_content;
 	
 	procedure query_line (c : in pac_keepout_lines.cursor) is begin
 		
@@ -136,7 +136,7 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
+	procedure query_text (c : in pac_keepout_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

@@ -45,6 +45,13 @@ package et_assy_doc.packages is
 		texts		: pac_texts_fab_with_content.list;
 	end record;
 
+
+	-- Logs the properties of the given assembly documentation text
+	procedure text_assy_doc_properties (
+		face			: in type_face;
+		cursor			: in pac_texts_fab_with_content.cursor;
+		log_threshold 	: in type_log_level);
+
 	
 end et_assy_doc.packages;
 

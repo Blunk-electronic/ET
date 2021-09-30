@@ -43,6 +43,15 @@ package et_silkscreen.boards is
 	end record;
 
 	package pac_silkscreen_texts is new doubly_linked_lists (type_silkscreen_text);
+	use pac_silkscreen_texts;
+	
+	-- Logs the properties of the given silk screen text
+	procedure text_silk_screen_properties (
+		face			: in type_face;
+		cursor			: in pac_silkscreen_texts.cursor;
+		log_threshold 	: in type_log_level);
+
+
 	
 	-- This is the base type for assembly documentation objects in general:
 	type type_silk_screen 

@@ -51,10 +51,15 @@ use et_board_shapes_and_text.pac_shapes;
 use et_board_shapes_and_text.pac_text_fab;
 
 with et_stop_mask;				use et_stop_mask;
+with et_stop_mask.packages;		use et_stop_mask.packages;
 with et_stencil;				use et_stencil;
+with et_stencil.packages;		use et_stencil.packages;
 with et_silkscreen;				use et_silkscreen;
+with et_silkscreen.packages;	use et_silkscreen.packages;
 with et_assy_doc;				use et_assy_doc;
+with et_assy_doc.packages;		use et_assy_doc.packages;
 with et_keepout;				use et_keepout;
+with et_keepout.packages;		use et_keepout.packages;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;

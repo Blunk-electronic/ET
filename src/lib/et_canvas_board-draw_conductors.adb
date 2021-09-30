@@ -35,12 +35,12 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
+--with ada.text_io;					use ada.text_io;
 
 with et_pcb;						use et_pcb;
 with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
-with et_conductor_text;				use et_conductor_text;
+with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
@@ -75,7 +75,7 @@ is
 	use pac_fill_lines;
 	
 	use et_pcb.pac_text_placeholders_conductors;
-	use pac_conductor_texts_board;
+	use pac_conductor_texts;
 	
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
@@ -329,7 +329,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_conductor_texts_board.cursor) is 
+	procedure query_text (c : in pac_conductor_texts.cursor) is 
 	begin
 		-- Draw the text if it is in the current layer:
 		if element (c).layer = current_layer then

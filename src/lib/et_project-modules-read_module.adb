@@ -1198,7 +1198,6 @@ is
 	
 	
 	-- general board stuff
-	--board_text : et_packages.type_text_with_content;
 	use et_board_shapes_and_text.pac_text_fab;
 	board_text : type_text_fab_with_content;
 	board_text_placeholder : et_pcb.type_text_placeholder;
@@ -1743,18 +1742,15 @@ is
 		end if;
 	end read_package;
 
-	
-	-- 		board_track_circle : et_pcb.type_copper_circle;
 
 	-- This variable is used for texts in conductor layers
 	-- and for texts in restrict layers:
-	use et_conductor_text;
-	--board_text_conductor : et_packages.type_conductor_text;
-	board_text_conductor : type_conductor_text_board;
+	board_text_conductor : et_conductor_text.boards.type_conductor_text;
 
 	-- This variable is used for text placeholders in conductor layers:
 	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
 
+	
 	procedure read_board_text_conductor_placeholder is
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb_stack;
@@ -4166,7 +4162,8 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is
-					use pac_conductor_texts_board;
+					use et_conductor_text.boards;
+					use pac_conductor_texts;
 				begin
 					case layer_cat is
 						when LAYER_CAT_CONDUCTOR =>
@@ -4732,34 +4729,44 @@ is
 					is
 						use et_pcb_coordinates;
 						use et_pcb;
+
+						use et_silkscreen.boards;
+						use et_assy_doc.boards;
+						use et_keepout.boards;
+						use et_stencil.boards;
+						use et_stop_mask.boards;
+						
+						vectors	: pac_vector_text_lines.list;
 					begin
+						-- CS compute vectors
+						
 						case face is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_texts_fab_with_content.append (
+										pac_silkscreen_texts.append (
 											container	=> module.board.silk_screen.top.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_ASSY =>
-										pac_texts_fab_with_content.append (
+										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.top.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_KEEPOUT =>
-										pac_texts_fab_with_content.append (
+										pac_keepout_texts.append (
 											container	=> module.board.keepout.top.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_STENCIL =>
-										pac_texts_fab_with_content.append (
+										pac_stencil_texts.append (
 											container	=> module.board.stencil.top.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_STOP =>
-										pac_texts_fab_with_content.append (
+										pac_stop_mask_texts.append (
 											container	=> module.board.stop_mask.top.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when others => invalid_section;
 								end case;
@@ -4767,29 +4774,29 @@ is
 							when BOTTOM => null;
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_texts_fab_with_content.append (
+										pac_silkscreen_texts.append (
 											container	=> module.board.silk_screen.bottom.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_ASSY =>
-										pac_texts_fab_with_content.append (
+										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 										
 									when LAYER_CAT_KEEPOUT =>
-										pac_texts_fab_with_content.append (
+										pac_keepout_texts.append (
 											container	=> module.board.keepout.bottom.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_STENCIL =>
-										pac_texts_fab_with_content.append (
+										pac_stencil_texts.append (
 											container	=> module.board.stencil.bottom.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when LAYER_CAT_STOP =>
-										pac_texts_fab_with_content.append (
+										pac_stop_mask_texts.append (
 											container	=> module.board.stop_mask.bottom.texts,
-											new_item	=> board_text);
+											new_item	=> (board_text with vectors));
 
 									when others => invalid_section;
 								end case;

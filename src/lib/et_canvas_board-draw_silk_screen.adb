@@ -37,6 +37,7 @@
 
 with ada.text_io;				use ada.text_io;
 with et_silkscreen;				use et_silkscreen;
+with et_silkscreen.boards;		use et_silkscreen.boards;
 
 separate (et_canvas_board)
 
@@ -46,18 +47,16 @@ procedure draw_silk_screen (
 	context : in type_draw_context;
 	face	: in type_face)
 is
-
 	use et_board_shapes_and_text;
 	use pac_shapes;	
 	use pac_text_fab;
-	use pac_texts_fab_with_content;
-	
-	use et_packages;
+
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
 	use pac_silk_polygons;
 	use pac_silk_cutouts;
+	use pac_silkscreen_texts;
 	use et_pcb.pac_text_placeholders;
 
 	
@@ -189,7 +188,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
+	procedure query_text (c : in pac_silkscreen_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

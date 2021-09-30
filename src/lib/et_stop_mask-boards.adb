@@ -4,7 +4,7 @@
 --                                                                          --
 --                         STOP MASK BOARDS                                 --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,35 +36,26 @@
 --
 --   to do:
 
-package et_stop_mask.boards is
+with ada.strings;				use ada.strings;
+with et_text;					use et_text;
 
-	-- for texts in conductor layer to be exposed:
-	type type_stop_mask_text is new type_text_fab_with_content with record
-		vectors	: pac_vector_text_lines.list;
-	end record;
+package body et_stop_mask.boards is
 
-	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);
-	use pac_stop_mask_texts;
-
-	-- Logs the properties of the given stop mask text
 	procedure text_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_mask_texts.cursor;
-		log_threshold 	: in type_log_level);
+		log_threshold 	: in type_log_level) 
+	is
+		text : type_stop_mask_text;
+	begin
+		text := element (cursor);
+		log (text => "stop mask text face" & to_string (face) & space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
-	
-	
-	type type_stop_mask 
-		is new et_stop_mask.type_stop_mask with 
-	record
-		texts		: pac_stop_mask_texts.list;
-	end record;
-
-
-	--type type_stop_mask_both_sides is record
-		--top		: type_stop_mask;
-		--bottom	: type_stop_mask;
-	--end record;
+		log_indentation_up;
+		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+		log_indentation_down;
+	end text_stop_mask_properties;
 
 	
 end et_stop_mask.boards;

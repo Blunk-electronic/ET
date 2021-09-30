@@ -96,6 +96,7 @@ package body et_kicad_packages is
 		end if;
 	end to_pad_shape_smt;
 
+	
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
@@ -114,6 +115,7 @@ package body et_kicad_packages is
 		return shape;
 	end to_pad_shape_circle;
 
+	
 	function to_pad_shape_rectangle (
 	-- CS: rework as in to_pad_shape_oval
 		center		: in type_position; -- the pad center position (incl. angle)
@@ -295,6 +297,7 @@ package body et_kicad_packages is
 		
 		return shape;
 	end to_pad_shape_oval;
+
 	
 	function to_pad_milling_contour (
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
@@ -621,6 +624,7 @@ package body et_kicad_packages is
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		keepout : type_keepout_both_sides;
 
+		
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
@@ -630,6 +634,7 @@ package body et_kicad_packages is
 			terminal_bot_stop_mask := type_stop_mask_status'first;
 		end init_stop_and_mask;
 
+		
 		procedure set_stop_and_mask is
 		-- From the SMT terminal face, validates the status of stop mask and solder paste.
 			use et_pcb_coordinates;
@@ -1620,6 +1625,7 @@ package body et_kicad_packages is
 
 		end read_arg;
 
+		
 		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
@@ -2214,22 +2220,22 @@ package body et_kicad_packages is
 							when TOP_SILK => 
 								--silk_screen.top.texts.append ((et_packages.type_text (text) with content => text.content));
 								silk_screen.top.texts.append ((type_text_fab (text) with 
-									content => text.content, vectors => <>));
+									content => text.content));
 								text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								silk_screen.bottom.texts.append ((type_text_fab (text) with 
-									content => text.content, vectors => <>));
+									content => text.content));
 								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 
 								assy_doc.top.texts.append ((type_text_fab (text) with 
-									content => text.content, vectors => <>));
+									content => text.content));
 								text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								assy_doc.bottom.texts.append ((type_text_fab (text) with
-									content => text.content, vectors => <>));
+									content => text.content));
 								text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
@@ -2287,6 +2293,7 @@ package body et_kicad_packages is
 						raise;
 			
 		end exec_section;
+
 		
 		procedure check_placeholders is
 		-- Checks if there is at least one placeholder for reference and for value.
@@ -2337,6 +2344,7 @@ package body et_kicad_packages is
 			
 		end check_placeholders;
 
+		
 		procedure check_technology is
 		-- If the package is REAL, counts the tht and smd terminals. 
 		-- Warns operator if the package technology

@@ -44,12 +44,10 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 
 with et_import;
-with et_geometry;				use et_geometry;
 with et_vias;
 with et_pcb_stack;
 with et_symbols;
-with et_conductor_text;
-with et_conductor_segment;		use et_conductor_segment;
+
 
 package body et_kicad.pcb is
 
@@ -508,15 +506,15 @@ package body et_kicad.pcb is
 		package_arc			: et_kicad_packages.type_arc;
 		package_circle 		: et_kicad_packages.type_circle;
 
-		package_stop_mask		: et_stop_mask.type_stop_mask_both_sides;
+		package_stop_mask		: et_stop_mask.packages.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_stencil			: type_stencil_both_sides;
+		package_stencil			: et_stencil.packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
-		package_keepout			: type_keepout_both_sides;
+		package_keepout			: et_keepout.packages.type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
@@ -3315,6 +3313,11 @@ package body et_kicad.pcb is
 			
 			procedure insert_board_arc is 
 				use pac_polygon_segments;
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
@@ -3391,6 +3394,11 @@ package body et_kicad.pcb is
 			
 			procedure insert_board_circle is 
 				use pac_polygon_segments;
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
@@ -3474,6 +3482,11 @@ package body et_kicad.pcb is
 			
 			procedure insert_board_line is 
 				use pac_polygon_segments;
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
 			begin
 				-- The board_line is converted back to its anchestor, and
 				-- depending on the layer, extended with specific properties.
@@ -3542,7 +3555,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_text is 
-				use et_conductor_text;
+				use et_conductor_text.boards;
 			begin
 			-- Inserts the board_text in the board. 
 			-- According to the kicad layer, the text is appended to the silk_screen, assy_doc, copper ...
@@ -3607,8 +3620,15 @@ package body et_kicad.pcb is
 						end if;
 				end case;
 			end insert_board_text;
+
 			
-			procedure insert_fp_arc is begin
+			procedure insert_fp_arc is 
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
+			begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
@@ -3690,7 +3710,13 @@ package body et_kicad.pcb is
 			end insert_fp_arc;
 
 			
-			procedure insert_fp_circle is begin
+			procedure insert_fp_circle is 
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
+			begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 
 				-- Compute the circle radius from its center and point at circle:
@@ -3780,7 +3806,13 @@ package body et_kicad.pcb is
 			end insert_fp_circle;
 
 			
-			procedure insert_fp_line is begin
+			procedure insert_fp_line is 
+				use et_silkscreen;
+				use et_assy_doc;
+				use et_stencil;
+				use et_stop_mask;
+				use et_keepout;
+			begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
@@ -4160,8 +4192,11 @@ package body et_kicad.pcb is
 					
 			end insert_terminal;
 
+			
 			procedure insert_fp_text is 
 				use et_text;
+				use et_silkscreen.packages;
+				use et_assy_doc.packages;
 			begin
 				-- Since there is no alignment information provided, use default values:
 				package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
@@ -4224,22 +4259,22 @@ package body et_kicad.pcb is
 						case package_text.layer is
 							when TOP_SILK => 
 								package_silk_screen.top.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>));
+									content => package_text.content));
 								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								package_silk_screen.bottom.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>));
+									content => package_text.content));
 								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 
 								package_assy_doc.top.texts.append ((type_text_fab (package_text) with 
-									content => package_text.content, vectors => <>));
+									content => package_text.content));
 								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								package_assy_doc.bottom.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>));
+									content => package_text.content));
 								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
@@ -4249,6 +4284,7 @@ package body et_kicad.pcb is
 		
 			end insert_fp_text;
 
+			
 			procedure insert_segment is begin
 			-- inserts a segment in the list "segments"
 				type_segments.append (
@@ -4266,6 +4302,7 @@ package body et_kicad.pcb is
 				
 			end insert_segment;
 
+			
 			procedure insert_via is begin
 			-- inserts a via in the list "vias"
 				if via.layer_start > via.layer_end then
@@ -4288,6 +4325,7 @@ package body et_kicad.pcb is
 					level => log_threshold + 1);
 			end insert_via;
 
+			
 			procedure add_polygon_corner_point is
 			-- adds the current polygon_point to the corner points of the current polygon
 				use type_polygon_points;
@@ -4303,6 +4341,7 @@ package body et_kicad.pcb is
 				
 			end add_polygon_corner_point;
 
+			
 			procedure insert_polygon is
 			-- inserts the current polygon in the list "polygons"
 				--use et_packages;
@@ -4345,6 +4384,7 @@ package body et_kicad.pcb is
 				polygon := (others => <>);
 				
 			end insert_polygon;
+
 			
 		begin -- exec_section
 			log (text => process_section (section.name), level => log_threshold + 5);
@@ -4488,6 +4528,7 @@ package body et_kicad.pcb is
 						raise;
 			
 		end exec_section;
+
 		
 	begin -- to_board
 		log (text => "parsing/building board ...", level => log_threshold);
@@ -4580,6 +4621,7 @@ package body et_kicad.pcb is
 		return board;
 	end to_board;
 
+	
 	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
@@ -4618,6 +4660,7 @@ package body et_kicad.pcb is
 		return lines;
 	end corners_to_lines;
 
+	
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
 		cursor			: in pac_conductor_polygons_floating_solid.cursor;

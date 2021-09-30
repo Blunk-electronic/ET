@@ -37,6 +37,8 @@
 
 --with ada.text_io;				use ada.text_io;
 
+with et_pcb_contour;			use et_pcb_contour;
+
 separate (et_canvas_board)
 
 procedure draw_outline (
@@ -48,8 +50,10 @@ is
 	use pac_shapes;
 	use pac_polygon_segments;
 	
-	use pac_text_fab;
-	use pac_texts_fab_with_content;
+	--use pac_text_fab;
+	--use pac_texts_fab_with_content;
+
+	use pac_contour_texts;
 	
 	procedure query_segment (c : in pac_polygon_segments.cursor) is 
 		use pac_draw_fab;
@@ -74,7 +78,7 @@ is
 	end query_segment;
 
 	
-	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
+	procedure query_text (c : in pac_contour_texts.cursor) is 
 		use pac_text_fab.pac_vector_text_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

@@ -37,7 +37,7 @@
 
 with ada.text_io;				use ada.text_io;
 with et_stencil;				use et_stencil;
-with et_canvas_primitive_draw_ops;
+with et_stencil.boards;			use et_stencil.boards;
 
 separate (et_canvas_board)
 
@@ -51,14 +51,13 @@ is
 	use pac_text_fab;
 	use pac_shapes;	
 
-	use et_packages;
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
 	use pac_stencil_polygons;
 	use pac_stencil_cutouts;
-
-	use pac_texts_fab_with_content;
+	use pac_stencil_texts;
+	
 	
 	procedure query_line (c : in pac_stencil_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -156,7 +155,7 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
+	procedure query_text (c : in pac_stencil_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

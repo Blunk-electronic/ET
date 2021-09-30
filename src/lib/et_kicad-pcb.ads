@@ -50,7 +50,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;		use et_string_processing;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_schematic;				use et_schematic;
 with et_general;
 with et_nets;					use et_nets;
@@ -66,15 +66,29 @@ with et_drills;					use et_drills;
 with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
-with et_design_rules;			use et_design_rules;
-with et_conductor_polygons;		use et_conductor_polygons;
+with et_design_rules;				use et_design_rules;
+
+with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
-with et_conductor_segment;
-with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
-with et_keepout;				use et_keepout;
-with et_stop_mask;				use et_stop_mask;
-with et_assy_doc;				use et_assy_doc;
+with et_conductor_text;
+with et_conductor_text.boards;
+with et_conductor_segment;		use et_conductor_segment;
+
+with et_stencil.boards;			use et_stencil.boards;
+with et_stencil.packages;
+
+with et_silkscreen.boards;		use et_silkscreen.boards;
+with et_silkscreen.packages;
+
+with et_keepout.boards;			use et_keepout.boards;
+with et_keepout.packages;
+
+with et_stop_mask.boards;		use et_stop_mask.boards;
+with et_stop_mask.packages;
+
+with et_assy_doc.boards;		use et_assy_doc.boards;
+with et_assy_doc.packages;
+
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;

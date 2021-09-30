@@ -35,12 +35,10 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+--with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
-with et_conductor_text;			use et_conductor_text;
-with et_route_restrict;
+with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict.boards;	use et_route_restrict.boards;
-with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
 
@@ -50,17 +48,14 @@ procedure draw_route_restrict (
 	context : in type_draw_context) 
 is
 	use pac_draw_fab;
-	use et_board_shapes_and_text;
 	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_shapes;	
 
-	use et_packages;
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
 	use pac_route_restrict_polygons;
 	use pac_route_restrict_cutouts;
-	use pac_conductor_texts_board;
+	use pac_conductor_texts;
 	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 
@@ -160,7 +155,7 @@ is
 	end query_cutout;
 
 
-	procedure query_text (c : in pac_conductor_texts_board.cursor) is 
+	procedure query_text (c : in pac_conductor_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		-- Draw the text if restrict layer is enabled:

@@ -45,7 +45,14 @@ package et_stop_mask.packages is
 		texts		: pac_texts_fab_with_content.list;
 	end record;
 
+	-- Logs the properties of the given stop mask text
+	procedure text_stop_mask_properties (
+		face			: in type_face;
+		cursor			: in pac_texts_fab_with_content.cursor;
+		log_threshold 	: in type_log_level);
 
+	
+	
 	type type_stop_mask_both_sides is record
 		top		: type_stop_mask;
 		bottom	: type_stop_mask;

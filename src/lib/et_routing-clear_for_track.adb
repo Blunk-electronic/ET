@@ -346,8 +346,8 @@ is
 
 		-- TEXTS
 		procedure query_texts is
-			use pac_conductor_texts_board;
-			t : pac_conductor_texts_board.cursor := module.board.conductors.texts.first;
+			use pac_conductor_texts;
+			t : pac_conductor_texts.cursor := module.board.conductors.texts.first;
 
 			distance : type_distance;
 			clearances : pac_distances_positive.list;
@@ -385,7 +385,7 @@ is
 			end test_distance;
 
 			
-			procedure query_vectors (text : in type_conductor_text_board) is
+			procedure query_vectors (text : in type_conductor_text) is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
 
@@ -430,7 +430,7 @@ is
 			end if;
 
 			
-			while t /= pac_conductor_texts_board.no_element and result = true loop
+			while t /= pac_conductor_texts.no_element and result = true loop
 				
 				-- CS log text properties
 				

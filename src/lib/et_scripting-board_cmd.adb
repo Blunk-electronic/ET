@@ -1502,11 +1502,12 @@ is
 							-- CS alignment
 							); 
 
+						-- CS move vectorization to place_text_in_conductor_layer
 						
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> ((text with content, vector_text, signal_layer)),
+							text			=> ((text with content, signal_layer, vector_text)),
 							log_threshold	=> log_threshold + 1);
 
 					else

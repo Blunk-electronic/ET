@@ -59,14 +59,14 @@ with et_design_rules;			use et_design_rules;
 with et_meta;
 with et_conductor_polygons;
 with et_conductor_polygons.boards;
---with et_conductor_text.boards;
+with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;
-with et_stop_mask;
-with et_stencil;
-with et_silkscreen;
-with et_assy_doc;
-with et_keepout;
+with et_stop_mask.boards;
+with et_stencil.boards;
+with et_silkscreen.boards;
+with et_assy_doc.boards;
+with et_keepout.boards;
 with et_pcb_contour;
 
 package et_project.modules is

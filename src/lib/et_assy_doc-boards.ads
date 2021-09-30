@@ -43,6 +43,13 @@ package et_assy_doc.boards is
 	end record;
 
 	package pac_assy_doc_texts is new doubly_linked_lists (type_assy_doc_text);
+	use pac_assy_doc_texts;
+
+	procedure text_assy_doc_properties (
+		face			: in type_face;
+		cursor			: in pac_assy_doc_texts.cursor;
+		log_threshold 	: in type_log_level);
+
 	
 	-- This is the base type for assembly documentation objects in general:
 	type type_assembly_documentation 

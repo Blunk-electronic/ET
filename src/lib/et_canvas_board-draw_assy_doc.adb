@@ -36,6 +36,7 @@
 --
 
 with et_assy_doc;				use et_assy_doc;
+with et_assy_doc.boards;		use et_assy_doc.boards;
 with ada.text_io;				use ada.text_io;
 
 separate (et_canvas_board)
@@ -50,14 +51,14 @@ is
 	use pac_text_fab;
 	use pac_shapes;	
 
-	use et_packages;
+	--use et_packages;
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;
 	use pac_doc_polygons;
 	use pac_doc_cutouts;
 	use et_pcb.pac_text_placeholders;
-	use pac_texts_fab_with_content;
+	use pac_assy_doc_texts;
 	
 	procedure query_line (c : in pac_doc_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -189,7 +190,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_texts_fab_with_content.cursor) is 
+	procedure query_text (c : in pac_assy_doc_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

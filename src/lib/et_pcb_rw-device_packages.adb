@@ -49,15 +49,15 @@ with et_general_rw;					use et_general_rw;
 with et_text;						use et_text;
 with et_terminals;					use et_terminals;
 
-with et_conductor_text.packages;	--use et_conductor_text.packages;
-with et_conductor_polygons.packages;
+with et_conductor_text.packages;		use et_conductor_text.packages;
+with et_conductor_polygons.packages;	use et_conductor_polygons.packages;
 
 package body et_pcb_rw.device_packages is
 
 	use pac_text_fab;
 	use pac_texts_fab_with_content;
 	
-	--use pac_conductor_texts;
+	use pac_conductor_texts;
 	
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
@@ -101,6 +101,15 @@ package body et_pcb_rw.device_packages is
 		use pac_package_model_file_name;
 		
 		file_handle : ada.text_io.file_type;
+
+		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
+			text_begin;
+			write (keyword => keyword_content, wrap => true,
+				parameters => to_string (element (cursor).content));
+			-- CS write_text_properties (element (cursor));
+			text_end;
+		end write_text;
+
 		
 		procedure write_conductor is
 		-- This is about conductor objects in either top or bottom.
@@ -116,6 +125,7 @@ package body et_pcb_rw.device_packages is
 				line_end;
 			end write_line;
 
+			
 			use pac_conductor_arcs;
 			procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
 				arc_begin;
@@ -124,11 +134,13 @@ package body et_pcb_rw.device_packages is
 				arc_end;
 			end write_arc;
 
+			
 			use pac_conductor_circles;
 			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
 				write_circle_conductor (element (cursor));
 			end write_circle;
 
+			
 			use pac_conductor_polygons_solid;
 			procedure write_polygon (cursor : in pac_conductor_polygons_solid.cursor) is begin
 				fill_zone_begin;
@@ -146,6 +158,7 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
+			
 			use pac_conductor_polygons_hatched;
 			procedure write_polygon (cursor : in pac_conductor_polygons_hatched.cursor) is begin
 				fill_zone_begin;
@@ -164,8 +177,9 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
-			use packages.pac_conductor_cutouts;
-			procedure write_cutout (cursor : in packages.pac_conductor_cutouts.cursor) is begin
+			
+			use et_conductor_polygons.packages.pac_conductor_cutouts;
+			procedure write_cutout (cursor : in et_conductor_polygons.packages.pac_conductor_cutouts.cursor) is begin
 				cutout_zone_begin;
 
 				contours_begin;
@@ -173,7 +187,8 @@ package body et_pcb_rw.device_packages is
 				contours_end;
 				
 				cutout_zone_end;
-			end;
+			end write_cutout;
+
 			
 		begin -- write_conductor
 			section_mark (section_conductor, HEADER);
@@ -185,7 +200,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.top.circles, write_circle'access);
 			iterate (packge.conductors.top.polygons.solid, write_polygon'access);
 			iterate (packge.conductors.top.polygons.hatched, write_polygon'access);
-			iterate (packge.conductors.top.cutouts, write_cutout'access);			
+			iterate (packge.conductors.top.cutouts,  write_cutout'access);			
 			iterate (packge.conductors.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
@@ -203,6 +218,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_conductor, FOOTER);
 		end write_conductor;
 
+		
 		use pac_text_placeholders;		
 		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
 			placeholder_begin;
@@ -211,6 +227,7 @@ package body et_pcb_rw.device_packages is
 			placeholder_end;
 		end write_placeholder;
 
+		
 		procedure write_silk_screen is 
 			use pac_silk_lines;
 			use pac_silk_arcs;
@@ -1570,7 +1587,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_top is begin
-					packages.pac_conductor_cutouts.append (
+					et_conductor_polygons.packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with null record));
 										
@@ -1579,7 +1596,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_bottom is begin
-					packages.pac_conductor_cutouts.append (
+					et_conductor_polygons.packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with null record));
 										

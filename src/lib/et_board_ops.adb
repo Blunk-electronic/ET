@@ -4364,6 +4364,8 @@ package body et_board_ops is
 		is
 			use pac_conductor_texts;
 		begin
+			-- CS vectorize
+			
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
 					append (module.board.conductors.texts, text);

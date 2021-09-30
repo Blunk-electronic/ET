@@ -46,7 +46,7 @@ procedure save_module (
 	save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 	log_threshold	: in type_log_level)
 is
-	use et_conductor_text;
+	use et_conductor_text.boards;
 	use pac_generic_modules;
 
 	-- backup the previous output destination
@@ -54,8 +54,8 @@ is
 	
 	module_file_handle : ada.text_io.file_type;
 
-	procedure write_header is 
 	-- Creates the module/submodule file and writes a nice header in it.
+	procedure write_header is 
 		use ada.directories;
 		use gnat.directory_operations;
 		use pac_project_name;
@@ -1180,10 +1180,8 @@ is
 		use pac_via_restrict_circles;
 		use pac_via_restrict_polygons;
 
-		--use et_packages.pac_conductor_texts;
 		use et_conductor_text;
-		use pac_conductor_texts_board;
-		--use pac_conductor_texts_package;
+		use pac_conductor_texts;
 
 		use et_conductor_polygons.boards;
 
@@ -1272,7 +1270,7 @@ is
 		end;
 
 		-- texts in any signal layers
-		procedure write_text (cursor : in pac_conductor_texts_board.cursor) is begin
+		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
 			text_begin;
 			write (keyword => keyword_content, wrap => true,
 				   parameters => to_string (element (cursor).content));
@@ -1283,6 +1281,7 @@ is
 			text_end;
 		end write_text;
 
+		
 		-- text placeholders in any signal layers
 		procedure write_placeholder (cursor : in pac_text_placeholders_conductors.cursor) is begin
 			placeholder_begin;
@@ -1466,21 +1465,22 @@ is
 			
 			section_mark (section_pcb_contours, FOOTER);
 		end write_board_contours;
-	
-		
-	begin -- query_board
-		section_mark (section_board, HEADER);
 
-		-- USER SETTINGS
-		query_user_settings;
-	
-		-- NON-ELECTRIC DEVICES
-		section_mark (section_devices_non_electric, HEADER);
-		iterate (element (module_cursor).devices_non_electric, query_devices_non_electric'access);
-		section_mark (section_devices_non_electric, FOOTER);
 
-		-- SILK SCREEN
-		section_mark (section_silk_screen, HEADER);
+		procedure write_silkscreen is
+			use et_silkscreen.boards;
+			use pac_silkscreen_texts;
+
+			procedure write_text (cursor : in pac_silkscreen_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+
+		begin
+			section_mark (section_silk_screen, HEADER);
 
 			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
@@ -1501,13 +1501,27 @@ is
 			iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
-		
-		section_mark (section_silk_screen, FOOTER);
+			
+			section_mark (section_silk_screen, FOOTER);
+		end write_silkscreen;
 
-		-- ASSEMBLY DOCUMENTATION
-		section_mark (section_assembly_doc, HEADER);
 
-		section_mark (section_top, HEADER);
+		procedure write_assy_doc is
+			use et_assy_doc.boards;
+			use pac_assy_doc_texts;
+
+			procedure write_text (cursor : in pac_assy_doc_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+			
+		begin
+			section_mark (section_assembly_doc, HEADER);
+
+			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.assy_doc.top.lines, write_line'access);
 			iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
@@ -1527,12 +1541,26 @@ is
 			iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 
-		section_mark (section_assembly_doc, FOOTER);
+			section_mark (section_assembly_doc, FOOTER);
+		end write_assy_doc;
+		
 
-		-- STENCIL
-		section_mark (section_stencil, HEADER);
+		procedure write_stencil is
+			use et_stencil.boards;
+			use pac_stencil_texts;
+			
+			procedure write_text (cursor : in pac_stencil_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+		
+		begin			
+			section_mark (section_stencil, HEADER);
 
-		section_mark (section_top, HEADER);
+			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.stencil.top.lines, write_line'access);
 			iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
@@ -1548,14 +1576,28 @@ is
 			iterate (element (module_cursor).board.stencil.bottom.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.stencil.bottom.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.stencil.bottom.texts, write_text'access);		
-		section_mark (section_bottom, FOOTER);
+			section_mark (section_bottom, FOOTER);
 
-		section_mark (section_stencil, FOOTER);
+			section_mark (section_stencil, FOOTER);
+		end write_stencil;
 
-		-- STOP MASK
-		section_mark (et_pcb_rw.section_stop_mask, HEADER);
 
-		section_mark (section_top, HEADER);
+		procedure write_stop_mask is
+			use et_stop_mask.boards;
+			use pac_stop_mask_texts;
+			
+			procedure write_text (cursor : in pac_stop_mask_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+
+		begin
+			section_mark (et_pcb_rw.section_stop_mask, HEADER);
+
+			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.stop_mask.top.lines, write_line'access);
 			iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
@@ -1573,12 +1615,26 @@ is
 			iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
-		section_mark (et_pcb_rw.section_stop_mask, FOOTER);
+			section_mark (et_pcb_rw.section_stop_mask, FOOTER);
+		end write_stop_mask;
 
-		-- KEEPOUT
-		section_mark (section_keepout, HEADER);
 
-		section_mark (section_top, HEADER);
+		procedure write_keepout is
+			use et_keepout.boards;
+			use pac_keepout_texts;
+			
+			procedure write_text (cursor : in pac_keepout_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+
+		begin
+			section_mark (section_keepout, HEADER);
+
+			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.keepout.top.lines, write_line'access);
 			iterate (element (module_cursor).board.keepout.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.keepout.top.circles, write_circle'access);
@@ -1596,30 +1652,36 @@ is
 			iterate (element (module_cursor).board.keepout.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
-		section_mark (section_keepout, FOOTER);
+			section_mark (section_keepout, FOOTER);
+		end write_keepout;
 
-		-- ROUTE RESTRICT
-		section_mark (section_route_restrict, HEADER);
+		
+		procedure write_route_restrict is begin
+			section_mark (section_route_restrict, HEADER);
 			iterate (element (module_cursor).board.route_restrict.lines, write_line'access);
 			iterate (element (module_cursor).board.route_restrict.arcs, write_arc'access);
 			iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.route_restrict.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.route_restrict.texts, write_text'access);
-		section_mark (section_route_restrict, FOOTER);
+			section_mark (section_route_restrict, FOOTER);
+		end write_route_restrict;
 
-		-- VIA RESTRICT
-		section_mark (section_via_restrict, HEADER);
+
+		procedure write_via_restrict is begin
+			section_mark (section_via_restrict, HEADER);
 			iterate (element (module_cursor).board.via_restrict.lines, write_line'access);
 			iterate (element (module_cursor).board.via_restrict.arcs, write_arc'access);
 			iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.via_restrict.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.via_restrict.texts, write_text'access);
-		section_mark (section_via_restrict, FOOTER);
+			section_mark (section_via_restrict, FOOTER);
+		end write_via_restrict;
 
-		-- CONDUCTOR (NON-ELECTRIC)
-		section_mark (section_conductor, HEADER);
+
+		procedure Write_conductors is begin
+			section_mark (section_conductor, HEADER);
 			iterate (element (module_cursor).board.conductors.lines, write_line'access);
 			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);
 			iterate (element (module_cursor).board.conductors.circles, write_circle'access);
@@ -1628,7 +1690,29 @@ is
 			iterate (element (module_cursor).board.conductors.cutouts, write_cutout'access);			
 			iterate (element (module_cursor).board.conductors.texts, write_text'access);
 			iterate (element (module_cursor).board.conductors.placeholders, write_placeholder'access);
-		section_mark (section_conductor, FOOTER);
+			section_mark (section_conductor, FOOTER);
+		end Write_conductors;
+
+		
+	begin -- query_board
+		section_mark (section_board, HEADER);
+
+		-- USER SETTINGS
+		query_user_settings;
+	
+		-- NON-ELECTRIC DEVICES
+		section_mark (section_devices_non_electric, HEADER);
+		iterate (element (module_cursor).devices_non_electric, query_devices_non_electric'access);
+		section_mark (section_devices_non_electric, FOOTER);
+
+		write_silkscreen;
+		write_assy_doc;
+		write_stencil;
+		write_stop_mask;
+		write_keepout;
+		write_route_restrict;
+		write_via_restrict;
+		Write_conductors; -- NON-ELECTRIC !
 
 		-- BOARD CONTOUR
 		write_board_contours;

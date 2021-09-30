@@ -84,23 +84,6 @@ package body et_assy_doc is
 	end;
 
 
-	procedure text_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_texts_fab_with_content;
-		use et_text.pac_text_content;
-		text : type_text_fab_with_content;
-	begin
-		text := element (cursor);
-		log (text => "assembly doc text face" & to_string (face) & space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_assy_doc_properties;
 
 	
 end et_assy_doc;

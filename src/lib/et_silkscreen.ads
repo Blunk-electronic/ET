@@ -106,14 +106,6 @@ package et_silkscreen is
 		face			: in type_face;
 		cursor			: in pac_silk_circles.cursor;
 		log_threshold 	: in type_log_level);
-
-	
-	-- Logs the properties of the given silk screen text
-	procedure text_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level);
-
 	
 end et_silkscreen;
 

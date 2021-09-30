@@ -74,11 +74,17 @@ with et_frames;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_polygons.boards;
 with et_conductor_text;			use et_conductor_text;
+with et_conductor_text.boards;
 with et_stop_mask;				use et_stop_mask;
+with et_stop_mask.boards;
 with et_stencil;				use et_stencil;
+with et_stencil.boards;
 with et_silkscreen;				use et_silkscreen;
+with et_silkscreen.boards;
 with et_assy_doc;				use et_assy_doc;
+with et_assy_doc.boards;
 with et_keepout;				use et_keepout;
+with et_keepout.boards;
 
 package body et_kicad_to_native is
 
@@ -750,16 +756,18 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_nets;
 
-		procedure move_general_board_stuff (
+		
 		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
+		procedure move_general_board_stuff (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
 			use et_board_shapes_and_text.pac_text_fab;
+			use et_silkscreen.boards;
 			
 			log_threshold_add : type_log_level := 2;
 
-			use et_packages;
+			--use et_packages;
 			
 			procedure move_silk_screen is
 				use pac_silk_lines;
@@ -774,8 +782,8 @@ package body et_kicad_to_native is
 				use pac_silk_polygons;
 				polygons_cursor : pac_silk_polygons.cursor;
 
-				use pac_texts_fab_with_content;
-				texts_cursor : pac_texts_fab_with_content.cursor;
+				use pac_silkscreen_texts;
+				texts_cursor : pac_silkscreen_texts.cursor;
 				
 				board_silk_screen : constant string := "board silk screen ";
 				
@@ -793,6 +801,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (arc : in out type_silk_arc) is begin
 					log (text => board_silk_screen & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -808,6 +817,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle) is 
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -823,12 +833,14 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
-				procedure move_text (text : in out type_text_fab_with_content) is
+				
+				procedure move_text (text : in out type_silkscreen_text) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
@@ -843,6 +855,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_text;
 
+				
 			begin -- move_silk_screen
 				
 				-- LINES TOP
@@ -856,6 +869,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- LINES BOTTOM
 				lines_cursor := module.board.silk_screen.bottom.lines.first;
 				while lines_cursor /= pac_silk_lines.no_element loop
@@ -867,6 +881,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS TOP
 				arcs_cursor := module.board.silk_screen.top.arcs.first;
 				while arcs_cursor /= pac_silk_arcs.no_element loop
@@ -878,6 +893,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.silk_screen.bottom.arcs.first;
 				while arcs_cursor /= pac_silk_arcs.no_element loop
@@ -889,6 +905,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;			
 
+				
 				-- CIRCLES TOP
 				circles_cursor := module.board.silk_screen.top.circles.first;
 				while circles_cursor /= pac_silk_circles.no_element loop
@@ -900,6 +917,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.silk_screen.bottom.circles.first;
 				while circles_cursor /= pac_silk_circles.no_element loop
@@ -911,6 +929,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.silk_screen.top.polygons.first;
 				while polygons_cursor /= pac_silk_polygons.no_element loop
@@ -922,6 +941,7 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;
 
+				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.silk_screen.bottom.polygons.first;
 				while polygons_cursor /= pac_silk_polygons.no_element loop
@@ -933,10 +953,11 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;	
 
+				
 				-- TEXTS TOP
 				texts_cursor := module.board.silk_screen.top.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_silkscreen_texts.no_element loop
+					pac_silkscreen_texts.update_element (
 						container	=> module.board.silk_screen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -944,10 +965,11 @@ package body et_kicad_to_native is
 					next (texts_cursor);
 				end loop;
 
+				
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.silk_screen.bottom.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_silkscreen_texts.no_element loop
+					pac_silkscreen_texts.update_element (
 						container	=> module.board.silk_screen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -957,8 +979,11 @@ package body et_kicad_to_native is
 
 			end move_silk_screen;
 
+			
 			procedure move_assembly_documentation is
+				use et_assy_doc.boards;
 				use pac_doc_lines;
+				
 				lines_cursor : pac_doc_lines.cursor;
 
 				use pac_doc_arcs;
@@ -970,10 +995,11 @@ package body et_kicad_to_native is
 				use pac_doc_polygons;
 				polygons_cursor : pac_doc_polygons.cursor;
 
-				use pac_texts_fab_with_content;
-				texts_cursor : pac_texts_fab_with_content.cursor;
+				use pac_assy_doc_texts;
+				texts_cursor : pac_assy_doc_texts.cursor;
 				
 				doc : constant string := "board assembly documentation ";
+
 				
 				procedure move_line (line : in out type_doc_line) is begin
 					log (text => doc & "line", level => log_threshold + log_threshold_add);
@@ -989,6 +1015,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (arc : in out type_doc_arc) is begin
 					log (text => doc & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1004,6 +1031,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle) is 
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1019,12 +1047,14 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
-				procedure move_text (text : in out type_text_fab_with_content) is
+				
+				procedure move_text (text : in out type_assy_doc_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1040,6 +1070,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_text;
 
+				
 			begin -- move_assembly_documentation
 				
 				-- LINES TOP
@@ -1053,6 +1084,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- LINES BOTTOM
 				lines_cursor := module.board.assy_doc.bottom.lines.first;
 				while lines_cursor /= pac_doc_lines.no_element loop
@@ -1064,6 +1096,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS TOP
 				arcs_cursor := module.board.assy_doc.top.arcs.first;
 				while arcs_cursor /= pac_doc_arcs.no_element loop
@@ -1075,6 +1108,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.assy_doc.bottom.arcs.first;
 				while arcs_cursor /= pac_doc_arcs.no_element loop
@@ -1086,6 +1120,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;			
 
+				
 				-- CIRCLES TOP
 				circles_cursor := module.board.assy_doc.top.circles.first;
 				while circles_cursor /= pac_doc_circles.no_element loop
@@ -1097,6 +1132,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.assy_doc.bottom.circles.first;
 				while circles_cursor /= pac_doc_circles.no_element loop
@@ -1108,6 +1144,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.assy_doc.top.polygons.first;
 				while polygons_cursor /= pac_doc_polygons.no_element loop
@@ -1119,6 +1156,7 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;
 
+				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.assy_doc.bottom.polygons.first;
 				while polygons_cursor /= pac_doc_polygons.no_element loop
@@ -1132,8 +1170,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.assy_doc.top.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_assy_doc_texts.no_element loop
+					pac_assy_doc_texts.update_element (
 						container	=> module.board.assy_doc.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1141,10 +1179,11 @@ package body et_kicad_to_native is
 					next (texts_cursor);
 				end loop;
 
+				
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.assy_doc.bottom.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_assy_doc_texts.no_element loop
+					pac_assy_doc_texts.update_element (
 						container	=> module.board.assy_doc.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1154,7 +1193,9 @@ package body et_kicad_to_native is
 				
 			end move_assembly_documentation;
 
+			
 			procedure move_stencil is
+				use et_stencil.boards;
 				use pac_stencil_lines;
 				lines_cursor : pac_stencil_lines.cursor;
 
@@ -1185,6 +1226,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (arc : in out type_stencil_arc) is
 					use et_pcb;
 				begin
@@ -1202,6 +1244,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1216,6 +1259,7 @@ package body et_kicad_to_native is
 							
 					log_indentation_down;
 				end move_circle;
+
 
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
@@ -1235,6 +1279,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- LINES BOTTOM
 				lines_cursor := module.board.stencil.bottom.lines.first;
 				while lines_cursor /= pac_stencil_lines.no_element loop
@@ -1246,6 +1291,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS TOP
 				arcs_cursor := module.board.stencil.top.arcs.first;
 				while arcs_cursor /= pac_stencil_arcs.no_element loop
@@ -1257,6 +1303,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.stencil.bottom.arcs.first;
 				while arcs_cursor /= pac_stencil_arcs.no_element loop
@@ -1268,6 +1315,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;			
 
+				
 				-- CIRCLES TOP
 				circles_cursor := module.board.stencil.top.circles.first;
 				while circles_cursor /= pac_stencil_circles.no_element loop
@@ -1279,6 +1327,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.stencil.bottom.circles.first;
 				while circles_cursor /= pac_stencil_circles.no_element loop
@@ -1290,6 +1339,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stencil.top.polygons.first;
 				while polygons_cursor /= pac_stencil_polygons.no_element loop
@@ -1301,6 +1351,7 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;
 
+				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stencil.bottom.polygons.first;
 				while polygons_cursor /= pac_stencil_polygons.no_element loop
@@ -1316,7 +1367,7 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
-				use et_stop_mask;
+				use et_stop_mask.boards;
 				use pac_stop_lines;
 				lines_cursor : pac_stop_lines.cursor;
 
@@ -1329,8 +1380,8 @@ package body et_kicad_to_native is
 				use pac_stop_polygons;
 				polygons_cursor : pac_stop_polygons.cursor;
 
-				use pac_texts_fab_with_content;
-				texts_cursor : pac_texts_fab_with_content.cursor;
+				use pac_stop_mask_texts;
+				texts_cursor : pac_stop_mask_texts.cursor;
 				
 				stop : constant string := "board stop mask ";
 				
@@ -1350,6 +1401,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (arc : in out type_stop_arc) is
 					use et_pcb;
 				begin
@@ -1367,6 +1419,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1382,12 +1435,14 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
-				procedure move_text (text : in out type_text_fab_with_content) is
+				
+				procedure move_text (text : in out type_stop_mask_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1403,6 +1458,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_text;
 
+				
 			begin -- move_stop_mask
 				
 				-- LINES TOP
@@ -1416,6 +1472,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- LINES BOTTOM
 				lines_cursor := module.board.stop_mask.bottom.lines.first;
 				while lines_cursor /= pac_stop_lines.no_element loop
@@ -1427,6 +1484,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS TOP
 				arcs_cursor := module.board.stop_mask.top.arcs.first;
 				while arcs_cursor /= pac_stop_arcs.no_element loop
@@ -1438,6 +1496,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.stop_mask.bottom.arcs.first;
 				while arcs_cursor /= pac_stop_arcs.no_element loop
@@ -1449,6 +1508,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;			
 
+				
 				-- CIRCLES TOP
 				circles_cursor := module.board.stop_mask.top.circles.first;
 				while circles_cursor /= pac_stop_circles.no_element loop
@@ -1460,6 +1520,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.stop_mask.bottom.circles.first;
 				while circles_cursor /= pac_stop_circles.no_element loop
@@ -1471,6 +1532,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stop_mask.top.polygons.first;
 				while polygons_cursor /= pac_stop_polygons.no_element loop
@@ -1482,6 +1544,7 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;
 
+				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stop_mask.bottom.polygons.first;
 				while polygons_cursor /= pac_stop_polygons.no_element loop
@@ -1493,10 +1556,11 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;	
 
+				
 				-- TEXTS TOP
 				texts_cursor := module.board.stop_mask.top.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_stop_mask_texts.no_element loop
+					pac_stop_mask_texts.update_element (
 						container	=> module.board.stop_mask.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1504,10 +1568,11 @@ package body et_kicad_to_native is
 					next (texts_cursor);
 				end loop;
 
+				
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.stop_mask.bottom.texts.first;
-				while texts_cursor /= pac_texts_fab_with_content.no_element loop
-					pac_texts_fab_with_content.update_element (
+				while texts_cursor /= pac_stop_mask_texts.no_element loop
+					pac_stop_mask_texts.update_element (
 						container	=> module.board.stop_mask.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1519,6 +1584,7 @@ package body et_kicad_to_native is
 
 
 			procedure move_keepout is
+				use et_keepout.boards;
 				use pac_keepout_lines;
 				lines_cursor : pac_keepout_lines.cursor;
 
@@ -1549,6 +1615,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (arc : in out type_keepout_arc) is
 					use et_pcb;
 				begin
@@ -1566,6 +1633,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1581,6 +1649,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				
 				procedure move_circle (circle : in out type_fillable_circle_solid) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1601,6 +1670,7 @@ package body et_kicad_to_native is
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
+				
 			begin -- move_keepout
 				
 				-- LINES TOP
@@ -1614,6 +1684,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- LINES BOTTOM
 				lines_cursor := module.board.keepout.bottom.lines.first;
 				while lines_cursor /= pac_keepout_lines.no_element loop
@@ -1625,6 +1696,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS TOP
 				arcs_cursor := module.board.keepout.top.arcs.first;
 				while arcs_cursor /= pac_keepout_arcs.no_element loop
@@ -1636,6 +1708,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.keepout.bottom.arcs.first;
 				while arcs_cursor /= pac_keepout_arcs.no_element loop
@@ -1647,6 +1720,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;			
 
+				
 				-- CIRCLES TOP
 				circles_cursor := module.board.keepout.top.circles.first;
 				while circles_cursor /= pac_keepout_circles.no_element loop
@@ -1658,6 +1732,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.keepout.bottom.circles.first;
 				while circles_cursor /= pac_keepout_circles.no_element loop
@@ -1669,6 +1744,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.keepout.top.polygons.first;
 				while polygons_cursor /= pac_keepout_polygons.no_element loop
@@ -1680,6 +1756,7 @@ package body et_kicad_to_native is
 					next (polygons_cursor);
 				end loop;
 
+				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.keepout.bottom.polygons.first;
 				while polygons_cursor /= pac_keepout_polygons.no_element loop
@@ -1693,6 +1770,7 @@ package body et_kicad_to_native is
 		
 			end move_keepout;
 
+			
 			procedure move_contour is
 				use et_pcb_coordinates;
 				use pac_geometry_brd;
@@ -1782,6 +1860,7 @@ package body et_kicad_to_native is
 				-- Holes are completely inside the board area and are thus detectable.
 				
 			end move_contour;
+
 			
 			procedure move_copper is
 				use et_pcb.pac_conductor_lines;
@@ -1799,9 +1878,10 @@ package body et_kicad_to_native is
 
 				use pac_conductor_polygons_floating_hatched;
 				polygons_hatched_cursor : pac_conductor_polygons_floating_hatched.cursor;
-				
-				use pac_conductor_texts_board;
-				texts_cursor : pac_conductor_texts_board.cursor;
+
+				use et_conductor_text.boards;
+				use pac_conductor_texts;
+				texts_cursor : pac_conductor_texts.cursor;
 
 				use et_pcb.pac_text_placeholders_conductors;
 				placeholders_cursor : et_pcb.pac_text_placeholders_conductors.cursor;
@@ -1824,6 +1904,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+
 				procedure move_arc (arc : in out et_pcb.type_conductor_arc) is
 					use et_pcb;
 				begin
@@ -1841,6 +1922,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_circle (circle : in out et_pcb.type_conductor_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1856,17 +1938,20 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				
 				procedure move_polygon (polygon : in out type_polygon_conductor_solid_floating) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
+				
 				procedure move_polygon (polygon : in out type_polygon_conductor_hatched_floating) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
+
 				
-				procedure move_text (text : in out type_conductor_text_board) is
+				procedure move_text (text : in out type_conductor_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
@@ -1882,6 +1967,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_text;
 
+				
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_conductors) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_brd;
@@ -1911,6 +1997,7 @@ package body et_kicad_to_native is
 					next (lines_cursor);
 				end loop;
 
+				
 				-- ARCS
 				arcs_cursor := module.board.conductors.arcs.first;
 				while arcs_cursor /= et_pcb.pac_conductor_arcs.no_element loop
@@ -1922,6 +2009,7 @@ package body et_kicad_to_native is
 					next (arcs_cursor);
 				end loop;
 
+				
 				-- CIRCLES
 				circles_cursor := module.board.conductors.circles.first;
 				while circles_cursor /= et_pcb.pac_conductor_circles.no_element loop
@@ -1933,6 +2021,7 @@ package body et_kicad_to_native is
 					next (circles_cursor);
 				end loop;
 
+				
 				-- POLYGONS
 				-- solid
 				polygons_solid_cursor := module.board.conductors.polygons.solid.first;
@@ -1945,6 +2034,7 @@ package body et_kicad_to_native is
 					next (polygons_solid_cursor);
 				end loop;
 
+				
 				-- hatched
 				polygons_hatched_cursor := module.board.conductors.polygons.hatched.first;
 				while polygons_hatched_cursor /= pac_conductor_polygons_floating_hatched.no_element loop
@@ -1956,9 +2046,10 @@ package body et_kicad_to_native is
 					next (polygons_hatched_cursor);
 				end loop;
 				
+
 				-- TEXTS
 				texts_cursor := module.board.conductors.texts.first;
-				while texts_cursor /= pac_conductor_texts_board.no_element loop
+				while texts_cursor /= pac_conductor_texts.no_element loop
 					update_element (
 						container	=> module.board.conductors.texts,
 						position	=> texts_cursor,
@@ -1967,6 +2058,7 @@ package body et_kicad_to_native is
 					next (texts_cursor);
 				end loop;
 
+				
 				-- TEXT PLACEHOLDERS
 				placeholders_cursor := module.board.conductors.placeholders.first;
 				while placeholders_cursor /= et_pcb.pac_text_placeholders_conductors.no_element loop
@@ -1990,6 +2082,7 @@ package body et_kicad_to_native is
 			move_copper; -- non-electric copper stuff !!! (like freetracks)
 		end move_general_board_stuff;
 
+		
 		procedure flatten_netlist (
 		-- Changes the path and y position of ports.
 		-- NOTE: The netlist contains nets with their connected ports.

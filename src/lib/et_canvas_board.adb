@@ -1124,8 +1124,6 @@ package body et_canvas_board is
 
 
 	procedure place_text (destination : in type_point) is
-		use et_packages;
-		use et_board_shapes_and_text;
 		use pac_text_fab;
 		use et_canvas_schematic;
 	begin
@@ -1157,7 +1155,7 @@ package body et_canvas_board is
 					layer_category	=> text_place.category,
 					text			=> (type_text_fab (text_place.text) with 
 										content		=> text_place.text.content,
-										vectors		=> text_place.text.vectors,
+										vectors		=> text_place.vectors,
 										layer		=> text_place.signal_layer),
 					log_threshold	=> log_threshold + 1);
 
@@ -1168,6 +1166,7 @@ package body et_canvas_board is
 			end if;
 		end if;	
 	end place_text;
+	
 
 	-- Builds the final via-to-be-placed from the information
 	-- provided by temporarily variable via_place.

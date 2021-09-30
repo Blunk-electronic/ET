@@ -409,10 +409,10 @@ is
 
 		
 		procedure query_texts is
-			use pac_conductor_texts_board;
+			use pac_conductor_texts;
 			use et_text;
 			
-			procedure query_text (c : in pac_conductor_texts_board.cursor) is
+			procedure query_text (c : in pac_conductor_texts.cursor) is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
 

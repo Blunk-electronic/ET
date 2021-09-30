@@ -49,16 +49,16 @@ with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_packages;				--use et_packages;
 with et_schematic;
-with et_pcb;					--use et_pcb;
-with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_string_processing;		use et_string_processing;
-with et_project.modules;		use et_project.modules;
-with et_conductor_polygons;		use et_conductor_polygons;
+with et_pcb;						--use et_pcb;
+with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_string_processing;			use et_string_processing;
+with et_project.modules;			use et_project.modules;
+with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
-with et_conductor_segment;		use et_conductor_segment;
-with et_conductor_text;			use et_conductor_text;
+with et_conductor_segment;			use et_conductor_segment;
+with et_conductor_text.boards;		use et_conductor_text.boards;
 
 package et_routing is
 	

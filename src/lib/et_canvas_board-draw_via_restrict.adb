@@ -35,12 +35,10 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with et_schematic;
+--with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
-with et_conductor_text;			use et_conductor_text;
+with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict;			use et_route_restrict;
-with et_via_restrict;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
 with et_canvas_primitive_draw_ops;
@@ -55,15 +53,14 @@ is
 	use pac_draw_fab;
 	use et_board_shapes_and_text;
 	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_shapes;	
 
-	use et_packages;
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;
 	use pac_via_restrict_circles;
 	use pac_via_restrict_polygons;
 	use pac_via_restrict_cutouts;
-	use pac_conductor_texts_board;
+	use pac_conductor_texts;
+
 	
 	procedure query_line (c : in pac_via_restrict_lines.cursor) is begin
 
@@ -80,6 +77,7 @@ is
 		end if;
 	end query_line;
 
+	
 	procedure query_arc (c : in pac_via_restrict_arcs.cursor) is begin
 
 		-- Draw the arc if restrict layer is enabled:
@@ -97,6 +95,7 @@ is
 		end if;
 	end query_arc;
 
+	
 	procedure query_circle (c : in pac_via_restrict_circles.cursor) is begin
 
 		-- Draw the circle if restrict layer is enabled:
@@ -131,6 +130,7 @@ is
 		end if;
 	end query_circle;
 
+	
 	procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is begin
 
 		-- Draw the polygon if restrict layer is enabled:
@@ -147,6 +147,7 @@ is
 		end if;
 	end query_polygon;
 
+	
 	procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is begin
 
 		-- Draw the zone if restrict layer is enabled:
@@ -166,7 +167,7 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_conductor_texts_board.cursor) is 
+	procedure query_text (c : in pac_conductor_texts.cursor) is 
 		use pac_vector_text_lines;
 	begin
 		-- Draw the text if restrict layer is enabled:
