@@ -1374,11 +1374,11 @@ is
 		layer_category	: type_layer_category;
 		signal_layer	: type_signal_layer;
 
-		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
+		--use pac_vector_text_lines;
+		--vector_text : pac_vector_text_lines.list;
 
 		face : type_face;
-		mirror : type_vector_text_mirrored;
+		--mirror : type_vector_text_mirrored;
 	begin
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
@@ -1404,15 +1404,6 @@ is
 
 					if layer_category in type_layer_category_outline then
 
-						--vector_text := vectorize_text (
-							--content		=> content,
-							--size		=> text.size,
-							--rotation	=> rotation,
-							--position	=> pos_xy,
-							--line_width	=> text.line_width
-							---- CS alignment
-							--); 
-						
 						place_text_in_outline_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
@@ -1452,23 +1443,6 @@ is
 					if layer_category in type_layer_category_non_conductor then
 
 						face := to_face (f (6)); -- top/bottom
-
-						---- NOTE: Texts in bottom keepout are never mirrored:
-						--if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
-							--mirror := NO;
-						--else
-							--mirror := face_to_mirror (face);
-						--end if;
-						
-						--vector_text := vectorize_text (
-							--content		=> content,
-							--size		=> text.size,
-							--rotation	=> rotation,
-							--position	=> pos_xy,
-							--mirror		=> mirror,
-							--line_width	=> text.line_width
-							---- CS alignment
-							--); 
 						
 						place_text_in_non_conductor_layer (
 							module_cursor 	=> module_cursor,
@@ -1482,32 +1456,12 @@ is
 						-- This includes restrict layers.
 						
 						signal_layer := to_signal_layer (f (6));  -- 5 
-
-						-- NOTE: Texts in restrict layers are never mirrored.
-						-- Even in the deepest (bottom) signal layer the text is not mirrored.
-						if layer_category in type_layer_category_restrict then
-							mirror := NO;
-						else
-							mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
-						end if;
-
-						
-						vector_text := vectorize_text (
-							content		=> content,
-							size		=> text.size,
-							rotation	=> rotation,
-							position	=> pos_xy,
-							mirror		=> mirror,
-							line_width	=> text.line_width
-							-- CS alignment
-							); 
-
-						-- CS move vectorization to place_text_in_conductor_layer
 						
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
-							text			=> ((text with content, signal_layer, vector_text)),
+							signal_layer	=> signal_layer,
+							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);
 
 					else

@@ -4245,7 +4245,6 @@ package body et_board_ops is
 				line_width	=> text.line_width
 				-- CS alignment
 				); 
-
 			
 			case layer_category is
 				when LAYER_CAT_ASSY =>
@@ -4355,7 +4354,8 @@ package body et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in type_conductor_text;
+		signal_layer	: in type_signal_layer;
+		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
 	is
 		procedure place_text (
@@ -4363,22 +4363,43 @@ package body et_board_ops is
 			module		: in out type_module) 
 		is
 			use pac_conductor_texts;
+			vectors : pac_vector_text_lines.list;
+			use et_text;
+			mirror : type_vector_text_mirrored;
 		begin
-			-- CS vectorize
+			-- NOTE: Texts in restrict layers are never mirrored.
+			-- Even in the deepest (bottom) signal layer such texts 
+			-- are not mirrored.
+			if layer_category in type_layer_category_restrict then
+				mirror := NO;
+			else
+				mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+			end if;
+			
+			vectors := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> rot (text.position),
+				position	=> type_point (text.position),
+				mirror		=> mirror,
+				line_width	=> text.line_width
+				-- CS alignment
+				); 
+
 			
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
-					append (module.board.conductors.texts, text);
+					append (module.board.conductors.texts, (text with signal_layer, vectors));
 
 				when LAYER_CAT_ROUTE_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.route_restrict.texts, text);
+					append (module.board.route_restrict.texts, (text with signal_layer, vectors));
 					
 				when LAYER_CAT_VIA_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.via_restrict.texts, text);
+					append (module.board.via_restrict.texts, (text with signal_layer, vectors));
 
 			end case;
 		end place_text;
