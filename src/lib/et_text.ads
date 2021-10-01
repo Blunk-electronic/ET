@@ -861,8 +861,18 @@ package et_text is
 			return pac_vector_text_lines.list;
 
 		
+		type type_vector_text is private;
 
-
+		procedure set_lines (
+			text	: in out type_vector_text;
+			lines	: in pac_vector_text_lines.list);
+		
+	private
+		type type_vector_text is record
+			lines		: pac_vector_text_lines.list;
+			boundaries	: type_boundaries;
+		end record;
+		
 	end generic_pac_text;
 
 end et_text;

@@ -693,6 +693,30 @@ package body et_text is
 			return result;
 		end vectorize_text;
 
+
+		procedure set_lines (
+			text	: in out type_vector_text;
+			lines	: in pac_vector_text_lines.list)
+		is begin
+			text.lines := lines;
+		end set_lines;
+
+		
+		function get_lines (
+			text	: in type_vector_text)
+			return pac_vector_text_lines.list
+		is begin
+			return text.lines;
+		end get_lines;
+
+		
+		function get_boundaries (
+			text	: in type_vector_text)
+			return type_boundaries
+		is begin
+			return text.boundaries;
+		end get_boundaries;
+
 		
 	end generic_pac_text;
 
