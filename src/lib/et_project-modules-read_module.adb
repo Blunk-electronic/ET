@@ -4179,6 +4179,7 @@ is
 
 			
 			procedure build_conductor_text (
+				-- This includes restrict layers.
 				layer_cat	: in et_board_shapes_and_text.type_layer_category_conductor)
 			is
 				use et_board_shapes_and_text;
@@ -4187,9 +4188,35 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is
+					use et_pcb_coordinates;
+					use pac_geometry_brd;
+					use et_pcb;
 					use et_conductor_text.boards;
 					use pac_conductor_texts;
+
+					vectors : pac_vector_text_lines.list;
+					mirror : type_vector_text_mirrored;
+					
 				begin
+					-- NOTE: Texts in restrict layers are never mirrored.
+					-- Even in the deepest (bottom) signal layer such texts are not mirrored.
+					if layer_cat in type_layer_category_restrict then
+						mirror := NO;
+					else
+						mirror := signal_layer_to_mirror (board_text_conductor.layer, deepest_conductor_layer (module_cursor));
+					end if;
+					
+					board_text_conductor.vectors := vectorize_text (
+						content		=> board_text_conductor.content,
+						size		=> board_text_conductor.size,
+						rotation	=> rot (board_text_conductor.position),
+						position	=> type_point (board_text_conductor.position),
+						mirror		=> mirror,
+						line_width	=> board_text_conductor.line_width
+						-- CS alignment
+						); 
+
+					
 					case layer_cat is
 						when LAYER_CAT_CONDUCTOR =>
 							append (
@@ -4219,6 +4246,7 @@ is
 				board_text_conductor := (others => <>);
 			end build_conductor_text;
 
+			
 			procedure insert_board_text_placeholder is
 				use et_pcb;
 				
@@ -4240,6 +4268,7 @@ is
 				-- clean up for next placeholder in conductor layer
 				board_text_conductor_placeholder := (others => <>);
 			end insert_board_text_placeholder;
+
 			
 			procedure insert_line_outline is
 				use et_board_shapes_and_text;
@@ -4264,6 +4293,7 @@ is
 				-- clean up for next pcb contour line
 				board_reset_line;
 			end insert_line_outline;
+
 			
 			procedure insert_arc_outline is
 				use et_board_shapes_and_text;
@@ -4289,6 +4319,7 @@ is
 				board_reset_arc;
 			end insert_arc_outline;
 
+			
 			procedure insert_circle_outline is
 
 				procedure do_it (
@@ -4312,6 +4343,7 @@ is
 				board_reset_circle;
 			end insert_circle_outline;
 
+			
 			-- holes in PCB (or cutouts)
 			procedure append_hole is 
 				use et_packages;
@@ -4335,6 +4367,7 @@ is
 				-- clean up for next hole
 				board_reset_polygon;
 			end append_hole;
+
 			
 			--procedure insert_text_contour is
 				--use et_pcb;
@@ -4359,6 +4392,7 @@ is
 				--board_reset_lock_status;
 			--end insert_text_contour;
 
+			
 			procedure build_non_conductor_line (
 				face : in et_pcb_coordinates.type_face)
 			is
@@ -4394,6 +4428,7 @@ is
 				end case;
 			end build_non_conductor_line;
 
+			
 			procedure build_non_conductor_arc (
 				face : in et_pcb_coordinates.type_face)
 			is
@@ -4431,6 +4466,7 @@ is
 				end case;
 			end build_non_conductor_arc;
 
+			
 			procedure build_non_conductor_circle (
 				face : in et_pcb_coordinates.type_face)
 			is
@@ -4498,6 +4534,7 @@ is
 				netchanger := (others => <>);
 			end insert_netchanger;
 
+			
 			procedure insert_assembly_variant (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) 
