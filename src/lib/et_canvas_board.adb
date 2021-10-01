@@ -463,7 +463,7 @@ package body et_canvas_board is
 		context	: in type_draw_context) 
 	is		
 		use et_board_shapes_and_text;
-		type type_line is new pac_shapes.type_line with null record;
+		use pac_shapes;
 		
 		line_horizontal : constant type_line := ( -- from left to right
 			start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
