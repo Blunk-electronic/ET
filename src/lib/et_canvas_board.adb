@@ -532,8 +532,8 @@ package body et_canvas_board is
 
 	
 	-- This procedure draws the text that is being placed in a
-	-- paired layer. The properties
-	-- are taken from variable et_canvas_board_texts.text_place.
+	-- paired layer. This is about non-conductor layers.
+	-- The properties are taken from variable et_canvas_board_texts.text_place.
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. Otherwise
 	-- nothing happens here:
 	procedure draw_text_being_placed (
@@ -569,7 +569,7 @@ package body et_canvas_board is
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
-				-- Vectorize the text:
+				-- Vectorize the text on the fly:
 				vector_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
@@ -624,7 +624,7 @@ package body et_canvas_board is
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
-			-- Vectorize the text:
+			-- Vectorize the text on the fly:
 			vector_text := vectorize_text (
 				content		=> text_place.text.content,
 				size		=> text_place.text.size,
@@ -654,6 +654,7 @@ package body et_canvas_board is
 		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
 	is 
+		use et_pcb;
 		use et_pcb_stack;
 		use et_text;
 		use et_board_shapes_and_text;
@@ -661,6 +662,8 @@ package body et_canvas_board is
 		use pac_text_fab.pac_vector_text_lines;
 		vector_text : pac_text_fab.pac_vector_text_lines.list;
 
+		mirror : type_vector_text_mirrored;
+		
 		-- The place where the text shall be placed:
 		point : type_point;
 
@@ -681,13 +684,23 @@ package body et_canvas_board is
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
-				-- Vectorize the text:
+
+				-- NOTE: Texts in restrict layers are never mirrored.
+				-- Even in the deepest (bottom) signal layer such texts 
+				-- are not mirrored.
+				if category in type_layer_category_restrict then
+					mirror := NO;
+				else
+					mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
+				end if;
+				
+				-- Vectorize the text on the fly:
 				vector_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
 					position	=> point,
-					mirror		=> NO,
+					mirror		=> mirror,
 					line_width	=> text_place.text.line_width,
 					alignment	=> text_place.text.alignment -- right, bottom
 					);

@@ -362,6 +362,7 @@ is
 		-- CS iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 
+	
 	procedure query_via (v : in pac_vias.cursor) is 
 		circle : type_circle;
 

@@ -255,6 +255,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_vias;
 	
+	
 	-- Enables/disables a certain restrict layer. 
 	-- If status is empty, the layer will be enabled.
 	procedure display_restrict_layer ( -- GUI related
@@ -301,6 +302,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_restrict_layer;
 
+	
 	procedure draw_outline is
 		-- Extract from the given command the polygon arguments (everything after "outline"):
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
@@ -311,6 +313,7 @@ is
 		draw_outline (module, type_polygon (p0), log_threshold + 1);
 	end draw_outline;
 
+	
 	procedure draw_hole is
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
@@ -321,6 +324,7 @@ is
 		draw_hole (module, type_polygon (p0), log_threshold + 1);
 	end draw_hole;
 
+	
 	procedure delete_outline_segment is begin
 		case fields is
 			when 7 =>
@@ -340,6 +344,7 @@ is
 		end case;
 	end delete_outline_segment;
 
+	
 	procedure delete_hole_segment is begin
 		case fields is
 			when 7 =>
@@ -533,6 +538,7 @@ is
 		end case;
 	end draw_silkscreen;
 
+	
 	procedure draw_assy_doc is
 		shape : type_shape := to_shape (f (6));
 	begin
@@ -706,6 +712,7 @@ is
 			when others => null;
 		end case;
 	end draw_assy_doc;
+
 	
 	procedure draw_keepout is
 		shape : type_shape := to_shape (f (6));
@@ -814,6 +821,7 @@ is
 			when others => null;
 		end case;
 	end draw_keepout;
+
 	
 	procedure draw_route_restrict is
 		shape : type_shape := to_shape (f (6));
@@ -933,6 +941,7 @@ is
 		end case;
 	end draw_route_restrict;
 
+	
 	procedure draw_via_restrict is
 		shape : type_shape := to_shape (f (6));
 	begin
@@ -1043,6 +1052,7 @@ is
 		end case;
 	end draw_via_restrict;
 
+	
 	procedure draw_stop_mask is
 		shape : type_shape := to_shape (f (6));
 	begin
@@ -1204,6 +1214,7 @@ is
 		end case;
 	end draw_stop_mask;
 
+	
 	procedure draw_stencil is
 		shape : type_shape := to_shape (f (6));
 	begin
@@ -1373,12 +1384,7 @@ is
 		content			: pac_text_content.bounded_string;
 		layer_category	: type_layer_category;
 		signal_layer	: type_signal_layer;
-
-		--use pac_vector_text_lines;
-		--vector_text : pac_vector_text_lines.list;
-
-		face : type_face;
-		--mirror : type_vector_text_mirrored;
+		face			: type_face;
 	begin
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
@@ -1482,6 +1488,7 @@ is
 		end case;
 	end place_text;
 
+	
 	-- Parses a command like "board demo set via restring inner/outer 0.2"
 	-- or "board demo set via restring inner 0.2" and sets the value
 	-- for user specific via drill or restring.
@@ -1612,6 +1619,7 @@ is
 
 	end set_via_properties;
 
+	
 	-- This procedure builds the final via and calls et_board_ops.place_via
 	-- accordingly. User specific settings are taken into account.
 	-- CS: Take into account class settings (via drill size).
