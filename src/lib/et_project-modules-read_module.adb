@@ -637,13 +637,15 @@ is
 	
 	net_labels				: et_schematic.pac_net_labels.list;
 	net_label 				: et_schematic.type_net_label_base;
-	net_label_rotation		: et_coordinates.type_rotation := pac_geometry_sch.zero_rotation;
+	net_label_rotation		: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
 	net_label_appearance	: et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
 
 	-- The net label direction is relevant if appearance is TAG:
 	net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
 
+	
 	procedure read_label is
+		use et_coordinates;	
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -792,14 +794,15 @@ is
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
 		et_frames.schematic_sheet_category_default; -- product/develpment/routing
 	
-	sheet_description_number	: type_sheet := type_sheet'first;				-- 1, 2. 3, ...
+	sheet_description_number	: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 	frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-	frame_board_origin : et_pcb_coordinates.pac_geometry_brd.type_point := et_pcb.origin_default; -- x 40 y 60
+	frame_board_origin 			: et_pcb_coordinates.pac_geometry_brd.type_point := et_pcb.origin_default; -- x 40 y 60
 
+	
 	procedure read_frame_template_schematic is
 	-- Reads the name of the schematic frame template.
 		use et_frames;
@@ -814,6 +817,7 @@ is
 		end if;
 	end;
 
+	
 	procedure read_frame_template_board is
 	-- Reads the name of the board frame template.		
 		use et_frames;
@@ -832,8 +836,10 @@ is
 		end if;
 	end;
 
+	
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description is
+		use et_coordinates;	
 		use et_frames;
 		kw : constant string := f (line, 1);
 	begin
@@ -878,7 +884,9 @@ is
 	device_unit_name		: pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
+	
 	procedure read_unit is
+		use et_coordinates;	
 		use et_devices;
 		kw : constant string := f (line, 1);
 	begin
@@ -919,6 +927,7 @@ is
 	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
 
+	
 	procedure read_assembly_variant is
 		use et_devices;
 		kw : constant string := f (line, 1);
@@ -1101,6 +1110,7 @@ is
 	-- a single temporarily placeholder of a package
 	device_text_placeholder		: et_packages.type_text_placeholder;
 
+	
 	procedure read_device_text_placeholder is
 		use et_packages;
 		use et_pcb_stack;
@@ -1154,6 +1164,7 @@ is
 	unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
+	
 	procedure read_unit_placeholder is
 		use et_coordinates.pac_geometry_sch;
 		kw : constant string := f (line, 1);
@@ -1202,6 +1213,7 @@ is
 	board_text : type_text_fab_with_content;
 	board_text_placeholder : et_pcb.type_text_placeholder;
 
+	
 	procedure read_board_text_placeholder is
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
@@ -1250,6 +1262,7 @@ is
 	-- When section BOARD_LAYER_STACK closes, we also assign the deepest layer used.
 	check_layers : et_pcb_stack.type_layer_check (check => et_pcb_stack.YES);
 
+	
 	-- Checks the global signal_layer variable against check_layers:
 	procedure validate_signal_layer is 
 		use et_pcb_stack;
@@ -1277,6 +1290,7 @@ is
 	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
 
 	procedure read_netchanger is
+		use et_coordinates;	
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
 	begin
@@ -1793,7 +1807,8 @@ is
 
 	
 	procedure read_schematic_text is
-		use et_coordinates.pac_geometry_sch;
+		use et_coordinates;	
+		use pac_geometry_sch;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2525,7 +2540,9 @@ is
 				
 			end set_frame_schematic;
 
+			
 			procedure add_sheet_description is 
+				use et_coordinates;	
 				use et_frames;
 				use pac_schematic_descriptions;
 				inserted : boolean;
@@ -2544,10 +2561,12 @@ is
 				sheet_description_number := type_sheet'first;
 				sheet_description_text := to_content("");
 			end add_sheet_description;
+
 			
 			procedure set_frame_board (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
+				module		: in out et_schematic.type_module) 
+			is
 				use et_frames;
 			begin
 				log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
@@ -2565,16 +2584,18 @@ is
 				module.board.origin := frame_board_origin;
 			end set_frame_board;
 
+			
 			procedure insert_schematic_text (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
-			begin
+				module		: in out et_schematic.type_module) 
+			is begin
 				-- append schematic note to collection of notes
 				et_schematic.pac_texts.append (module.texts, schematic_text);
 
 				-- clean up for next note
 				schematic_text := (others => <>);
 			end insert_schematic_text;
+
 			
 			procedure insert_package_placeholder is
 				use et_packages;
@@ -2619,7 +2640,9 @@ is
 
 			end insert_package_placeholder;
 
+			
 			procedure insert_unit is 
+				use et_coordinates;
 				use et_symbols;
 			begin
 				log_indentation_up;
@@ -2669,10 +2692,12 @@ is
 				log_indentation_down;
 			end insert_unit;
 
+			
 			procedure build_unit_placeholder is
 			-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
 			-- Depending on the meaning of the placeholder it becomes a placeholder 
-			-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+				-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+				use et_coordinates;	
 				use et_symbols;
 			begin
 				case unit_placeholder_meaning is
@@ -4728,6 +4753,7 @@ is
 						module		: in out et_schematic.type_module) 
 					is
 						use et_pcb_coordinates;
+						use pac_geometry_brd;
 						use et_pcb;
 
 						use et_silkscreen.boards;
@@ -4737,8 +4763,25 @@ is
 						use et_stop_mask.boards;
 						
 						vectors	: pac_vector_text_lines.list;
+						mirror : type_vector_text_mirrored;
 					begin
-						-- CS compute vectors
+						-- compute vectors
+						-- NOTE: Texts in bottom keepout are never mirrored:
+						if face = BOTTOM and layer_cat = LAYER_CAT_KEEPOUT then
+							mirror := NO;
+						else
+							mirror := face_to_mirror (face);
+						end if;
+						
+						vectors := vectorize_text (
+							content		=> board_text.content,
+							size		=> board_text.size,
+							rotation	=> rot (board_text.position),
+							position	=> type_point (board_text.position),
+							mirror		=> mirror,
+							line_width	=> board_text.line_width
+							-- CS alignment
+							); 
 						
 						case face is
 							when TOP =>

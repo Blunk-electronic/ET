@@ -130,8 +130,9 @@ package body et_project.modules is
 
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;
-		sheet	: in type_sheet)
-		return et_frames.type_schematic_description is
+		sheet	: in et_coordinates.type_sheet)
+		return et_frames.type_schematic_description 
+	is
 		use et_frames;
 
 		use pac_schematic_descriptions;
@@ -141,8 +142,8 @@ package body et_project.modules is
 
 		procedure query_descriptions (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
-		begin
+			module		: in type_module) 
+		is begin
 			cursor := find (module.frames.descriptions, sheet);
 		end query_descriptions;
 										 

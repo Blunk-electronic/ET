@@ -40,7 +40,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.vectors;
 
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
 with et_symbols;
 with et_schematic;
 with et_submodules;
@@ -106,9 +106,10 @@ package et_project.modules is
 	-- Returns the description of a sheet of a generic module:
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;
-		sheet	: in type_sheet)
+		sheet	: in et_coordinates.type_sheet)
 		return et_frames.type_schematic_description;
-								   
+
+	
 	procedure port_not_at_edge (name : in pac_net_name.bounded_string);
 	
 	-- Returns true if given port of netchanger is connected with any net.

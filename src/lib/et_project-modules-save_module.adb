@@ -951,9 +951,11 @@ is
 		
 		section_mark (section_assembly_variants, FOOTER);
 	end query_assembly_variants;
+
 	
-	procedure query_netchangers is
 	-- writes the netchangers in the module file
+	procedure query_netchangers is
+		use et_coordinates;	
 		use et_submodules;
 		use pac_netchangers;
 
@@ -973,6 +975,7 @@ is
 		iterate (element (module_cursor).netchangers, query_netchanger'access);
 		section_mark (section_netchangers, FOOTER);
 	end query_netchangers;
+
 	
 	procedure query_frames is 
 		use et_frames;
@@ -982,6 +985,7 @@ is
 			use pac_schematic_descriptions;
 
 			procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
+				use et_coordinates;	
 			begin
 				section_mark (section_sheet, HEADER);
 				write (
