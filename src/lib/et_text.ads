@@ -840,13 +840,15 @@ package et_text is
 
 		type type_text_fab_with_content is new type_text_fab with record
 			content	: pac_text_content.bounded_string;
-			--vectors	: pac_vector_text_lines.list;
 		end record;
 
 		package pac_texts_fab_with_content is new
 			doubly_linked_lists (type_text_fab_with_content);
 		
 
+			
+		type type_vector_text is private;
+			
 		-- Renders the given text content to a list of lines.
 		-- IMPORTANT: Argument "content" MUST contain something ! If empty
 		-- constraint error will arise !
@@ -858,14 +860,25 @@ package et_text is
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
-			return pac_vector_text_lines.list;
+			--return pac_vector_text_lines.list;
+			return type_vector_text;
 
 		
-		type type_vector_text is private;
 
-		procedure set_lines (
-			text	: in out type_vector_text;
-			lines	: in pac_vector_text_lines.list);
+
+		--procedure set_lines (
+			--text	: in out type_vector_text;
+			--lines	: in pac_vector_text_lines.list);
+
+		function get_lines (
+			text	: in type_vector_text)
+			return pac_vector_text_lines.list;
+
+		function get_boundaries (
+			text	: in type_vector_text)
+			return type_boundaries;
+
+
 		
 	private
 		type type_vector_text is record

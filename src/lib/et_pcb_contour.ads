@@ -39,15 +39,11 @@
 with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
---with ada.containers.indefinite_doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
---with et_design_rules;			use et_design_rules;
 with et_text;					use et_text;
---with et_pcb_stack;				use et_pcb_stack;
---with et_conductor_segment;		use et_conductor_segment;
 with et_string_processing;		use et_string_processing;
 
 package et_pcb_contour is
@@ -57,7 +53,7 @@ package et_pcb_contour is
 	type type_contour_text 
 		is new pac_text_fab.type_text_fab_with_content with
 	record
-		vectors	: pac_text_fab.pac_vector_text_lines.list;		
+		vectors	: type_vector_text;		
 	end record;
 
 	package pac_contour_texts is new doubly_linked_lists (type_contour_text);

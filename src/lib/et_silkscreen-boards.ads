@@ -39,7 +39,7 @@
 package et_silkscreen.boards is
 
 	type type_silkscreen_text is new type_text_fab_with_content with record
-		vectors	: pac_vector_text_lines.list;
+		vectors	: type_vector_text;
 	end record;
 
 	package pac_silkscreen_texts is new doubly_linked_lists (type_silkscreen_text);

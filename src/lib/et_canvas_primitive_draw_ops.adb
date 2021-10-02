@@ -857,7 +857,7 @@ package body pac_draw is
 	procedure draw_vector_text (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		text	: in pac_vector_text_lines.list;
+		text	: in type_vector_text;
 		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
@@ -907,7 +907,7 @@ package body pac_draw is
 		set_line_cap (context.cr, cairo_line_cap_round);
 		
 		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
-		text.iterate (query_line'access);
+		-- CS text.lines.iterate (query_line'access);
 
 		stroke (context.cr);
 	end draw_vector_text;

@@ -155,9 +155,7 @@ is
 	end query_cutout;
 
 
-	procedure query_text (c : in pac_conductor_texts.cursor) is 
-		use pac_vector_text_lines;
-	begin
+	procedure query_text (c : in pac_conductor_texts.cursor) is begin
 		-- Draw the text if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layer) then
 
@@ -169,6 +167,7 @@ is
 			-- Draw the text:
 			draw_vector_text (in_area, context, element (c).vectors,
 				element (c).line_width, self.frame_height);
+
 			
 		end if;
 	end query_text;

@@ -286,7 +286,7 @@ package pac_draw is
 	procedure draw_vector_text (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		text	: in pac_vector_text_lines.list;
+		text	: in type_vector_text;
 
 		-- The line width is used for calculating the boundaries
 		-- of the line segments:

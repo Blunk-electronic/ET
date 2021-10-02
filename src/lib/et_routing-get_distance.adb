@@ -448,7 +448,8 @@ is
 					 level => lth + 2);
 
 				if element (c).layer = layer then
-					element (c).vectors.iterate (query_line'access);
+					null;
+					-- CS element (c).vectors.iterate (query_line'access);
 				end if;
 			end query_text;
 

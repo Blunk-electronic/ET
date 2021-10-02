@@ -4226,7 +4226,7 @@ package body et_board_ops is
 			use pac_stop_mask_texts;
 			use pac_stencil_texts;
 			use pac_keepout_texts;
-			vectors	: pac_vector_text_lines.list;		
+			v_text : type_vector_text;		
 			mirror : type_vector_text_mirrored;
 		begin
 			-- NOTE: Texts in bottom keepout are never mirrored:
@@ -4236,7 +4236,7 @@ package body et_board_ops is
 				mirror := face_to_mirror (face);
 			end if;
 			
-			vectors := vectorize_text (
+			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> rot (text.position),
@@ -4250,41 +4250,41 @@ package body et_board_ops is
 				when LAYER_CAT_ASSY =>
 					case face is
 						when TOP =>
-							append (module.board.assy_doc.top.texts, (text with vectors));
+							append (module.board.assy_doc.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.assy_doc.bottom.texts, (text with vectors));
+							append (module.board.assy_doc.bottom.texts, (text with v_text));
 					end case;
 
 				when LAYER_CAT_SILKSCREEN =>
 					case face is
 						when TOP =>
-							append (module.board.silk_screen.top.texts, (text with vectors));
+							append (module.board.silk_screen.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.silk_screen.bottom.texts, (text with vectors));
+							append (module.board.silk_screen.bottom.texts, (text with v_text));
 					end case;
 					
 				when LAYER_CAT_STOP =>
 					case face is
 						when TOP =>
-							append (module.board.stop_mask.top.texts, (text with vectors));
+							append (module.board.stop_mask.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.stop_mask.bottom.texts, (text with vectors));
+							append (module.board.stop_mask.bottom.texts, (text with v_text));
 					end case;
 
 				when LAYER_CAT_STENCIL =>
 					case face is
 						when TOP =>
-							append (module.board.stencil.top.texts, (text with vectors));
+							append (module.board.stencil.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.stencil.bottom.texts, (text with vectors));
+							append (module.board.stencil.bottom.texts, (text with v_text));
 					end case;
 
 				when LAYER_CAT_KEEPOUT =>
 					case face is
 						when TOP =>
-							append (module.board.keepout.top.texts, (text with vectors));
+							append (module.board.keepout.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.keepout.bottom.texts, (text with vectors));
+							append (module.board.keepout.bottom.texts, (text with v_text));
 					end case;
 			end case;
 		end place_text;
@@ -4315,10 +4315,10 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			vectors	: pac_vector_text_lines.list;		
+			v_text : type_vector_text;		
 			use pac_contour_texts;
 		begin
-			vectors := vectorize_text (
+			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> rot (text.position),
@@ -4330,7 +4330,7 @@ package body et_board_ops is
 
 			case layer_category is
 				when LAYER_CAT_OUTLINE =>
-					append (module.board.contours.texts, (text with vectors));
+					append (module.board.contours.texts, (text with v_text));
 
 				when others => null; -- CS
 			end case;
@@ -4366,6 +4366,8 @@ package body et_board_ops is
 			vectors : pac_vector_text_lines.list;
 			use et_text;
 			mirror : type_vector_text_mirrored;
+
+			v_text : type_vector_text;
 		begin
 			-- NOTE: Texts in restrict layers are never mirrored.
 			-- Even in the deepest (bottom) signal layer such texts 
@@ -4375,8 +4377,8 @@ package body et_board_ops is
 			else
 				mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
 			end if;
-			
-			vectors := vectorize_text (
+
+			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> rot (text.position),
@@ -4386,20 +4388,19 @@ package body et_board_ops is
 				-- CS alignment
 				); 
 
-			
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
-					append (module.board.conductors.texts, (text with signal_layer, vectors));
+					append (module.board.conductors.texts, (text with signal_layer, v_text));
 
 				when LAYER_CAT_ROUTE_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.route_restrict.texts, (text with signal_layer, vectors));
+					append (module.board.route_restrict.texts, (text with signal_layer, v_text));
 					
 				when LAYER_CAT_VIA_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.via_restrict.texts, (text with signal_layer, vectors));
+					append (module.board.via_restrict.texts, (text with signal_layer, v_text));
 
 			end case;
 		end place_text;

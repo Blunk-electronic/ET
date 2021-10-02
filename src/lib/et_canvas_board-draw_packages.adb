@@ -196,8 +196,7 @@ is
 			t : in out type_text_fab_with_content;
 			f : in type_face)
 		is
-			use pac_vector_text_lines;
-			vector_text : pac_text_fab.pac_vector_text_lines.list;
+			v_text : type_vector_text;
 		begin
 
 			-- Rotate the position of the text by the rotation of the package.
@@ -216,7 +215,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (t.line_width));
 
 			-- Vectorize the content of the text:
-			vector_text := pac_text_fab.vectorize_text (
+			v_text := pac_text_fab.vectorize_text (
 				content		=> t.content,
 				size		=> t.size,
 				rotation	=> add (rot (t.position), rot (package_position)),
@@ -227,7 +226,8 @@ is
 				);
 
 			-- Draw the content of the placeholder:
-			pac_draw_fab.draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
+			pac_draw_fab.draw_vector_text (in_area, context, v_text,
+				t.line_width, self.frame_height);
 			
 		end draw_text_with_content;
 
@@ -463,8 +463,7 @@ is
 				ph	: in out type_text_placeholder;
 				f	: in type_face)
 			is
-				use pac_text_fab.pac_vector_text_lines;
-				vector_text : pac_text_fab.pac_vector_text_lines.list;
+				v_text : type_vector_text;
 			begin
 				if silkscreen_enabled (f) then
 					
@@ -491,8 +490,8 @@ is
 						-- Set the line width of the vector text:
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
-						-- Vectorize the content of the placeholder:
-						vector_text := pac_text_fab.vectorize_text (
+						-- Vectorize the content of the placeholder on the fly:
+						v_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
@@ -503,7 +502,7 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+						pac_draw_fab.draw_vector_text (in_area, context, v_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
@@ -825,16 +824,15 @@ is
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 
+			
 			-- PLACEHOLDERS
 			use pac_text_placeholders;
 
 			procedure draw_placeholder (
 				ph	: in out type_text_placeholder;
-				f	: in type_face) is
-
-				use pac_text_fab.pac_vector_text_lines;
-				vector_text : pac_text_fab.pac_vector_text_lines.list;
-
+				f	: in type_face) 
+			is
+				v_text : type_vector_text;
 			begin
 				if assy_doc_enabled (f) then
 					
@@ -862,7 +860,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						vector_text := pac_text_fab.vectorize_text (
+						v_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
@@ -873,14 +871,15 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+						pac_draw_fab.draw_vector_text (in_area, context, v_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
 
 				end if;
 			end draw_placeholder;
-				
+
+			
 			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
@@ -891,6 +890,7 @@ is
 				end if;
 			end query_placeholder_top;
 
+			
 			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
@@ -919,6 +919,7 @@ is
 				end if;
 			end draw_text;
 
+			
 			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
 				t : type_text_fab_with_content := element (c);
 			begin
@@ -926,12 +927,14 @@ is
 				draw_text (t, destination);
 			end query_text_top;
 
+			
 			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
 				t : type_text_fab_with_content := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_text (t, destination);
 			end query_text_bottom;
+
 			
 		begin -- draw_assembly_documentation
 			-- lines
@@ -2616,8 +2619,7 @@ is
 				t : in out type_conductor_text;
 				f : in type_face)
 			is
-				use pac_text_fab.pac_vector_text_lines;
-				vector_text : pac_text_fab.pac_vector_text_lines.list;
+				v_text : type_vector_text;
 			begin
 
 				-- Rotate the position of the text by the rotation of the package.
@@ -2635,8 +2637,8 @@ is
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (t.line_width));
 
-				-- Vectorize the content of the text:
-				vector_text := pac_text_fab.vectorize_text (
+				-- Vectorize the content of the text on the fly:
+				v_text := pac_text_fab.vectorize_text (
 					content		=> t.content,
 					size		=> t.size,
 					rotation	=> add (rot (t.position), rot (package_position)),
@@ -2647,7 +2649,8 @@ is
 					);
 
 				-- Draw the content of the placeholder:
-				pac_draw_fab.draw_vector_text (in_area, context, vector_text, t.line_width, self.frame_height);
+				pac_draw_fab.draw_vector_text (in_area, context, v_text,
+					t.line_width, self.frame_height);
 				
 			end draw_conductor_text_with_content;
 

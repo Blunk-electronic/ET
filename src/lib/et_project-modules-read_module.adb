@@ -3715,23 +3715,23 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is 
+					use et_pcb_coordinates;
+					use pac_geometry_brd;
 					use et_pcb_contour;
-					use pac_vector_text_lines;
-					vector_text : pac_vector_text_lines.list;
+					v_text : type_vector_text;
 				begin
-					-- CS
-					--vector_text := vectorize_text (
-						--content		=> board_text.content,
-						--size		=> board_text.size,
-						--rotation	=> rot (board_text.position),
-						--position	=> type_point (board_text.position),
-						--line_width	=> board_text.line_width
-						---- CS alignment
-						--); 
+					v_text := vectorize_text (
+						content		=> board_text.content,
+						size		=> board_text.size,
+						rotation	=> rot (board_text.position),
+						position	=> type_point (board_text.position),
+						line_width	=> board_text.line_width
+						-- CS alignment
+						); 
 					
 					pac_contour_texts.append (
 						container	=> module.board.contours.texts,
-						new_item	=> (board_text with vector_text));
+						new_item	=> (board_text with v_text));
 
 				end do_it;
 				
@@ -4194,7 +4194,6 @@ is
 					use et_conductor_text.boards;
 					use pac_conductor_texts;
 
-					vectors : pac_vector_text_lines.list;
 					mirror : type_vector_text_mirrored;
 					
 				begin
@@ -4205,16 +4204,16 @@ is
 					else
 						mirror := signal_layer_to_mirror (board_text_conductor.layer, deepest_conductor_layer (module_cursor));
 					end if;
-					
+
 					board_text_conductor.vectors := vectorize_text (
-						content		=> board_text_conductor.content,
-						size		=> board_text_conductor.size,
-						rotation	=> rot (board_text_conductor.position),
-						position	=> type_point (board_text_conductor.position),
-						mirror		=> mirror,
-						line_width	=> board_text_conductor.line_width
-						-- CS alignment
-						); 
+							content		=> board_text_conductor.content,
+							size		=> board_text_conductor.size,
+							rotation	=> rot (board_text_conductor.position),
+							position	=> type_point (board_text_conductor.position),
+							mirror		=> mirror,
+							line_width	=> board_text_conductor.line_width
+							-- CS alignment
+							); 
 
 					
 					case layer_cat is
@@ -4799,7 +4798,7 @@ is
 						use et_stencil.boards;
 						use et_stop_mask.boards;
 						
-						vectors	: pac_vector_text_lines.list;
+						v_text : type_vector_text;
 						mirror : type_vector_text_mirrored;
 					begin
 						-- compute vectors
@@ -4810,7 +4809,7 @@ is
 							mirror := face_to_mirror (face);
 						end if;
 						
-						vectors := vectorize_text (
+						v_text := vectorize_text (
 							content		=> board_text.content,
 							size		=> board_text.size,
 							rotation	=> rot (board_text.position),
@@ -4826,57 +4825,57 @@ is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silkscreen_texts.append (
 											container	=> module.board.silk_screen.top.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>
 										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.top.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_KEEPOUT =>
 										pac_keepout_texts.append (
 											container	=> module.board.keepout.top.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_texts.append (
 											container	=> module.board.stencil.top.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STOP =>
 										pac_stop_mask_texts.append (
 											container	=> module.board.stop_mask.top.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when others => invalid_section;
 								end case;
 								
-							when BOTTOM => null;
+							when BOTTOM =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silkscreen_texts.append (
 											container	=> module.board.silk_screen.bottom.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>
 										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 										
 									when LAYER_CAT_KEEPOUT =>
 										pac_keepout_texts.append (
 											container	=> module.board.keepout.bottom.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_texts.append (
 											container	=> module.board.stencil.bottom.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STOP =>
 										pac_stop_mask_texts.append (
 											container	=> module.board.stop_mask.bottom.texts,
-											new_item	=> (board_text with vectors));
+											new_item	=> (board_text with v_text));
 
 									when others => invalid_section;
 								end case;

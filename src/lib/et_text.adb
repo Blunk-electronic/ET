@@ -420,14 +420,14 @@ package body et_text is
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
-			return pac_vector_text_lines.list
+			return type_vector_text
 		is
 			use et_general;
 			use pac_vector_text_lines;
 
 			-- We return a list of lines. In the course of this function
 			-- this list gets filled with the lines of vectorized characters:
-			result : pac_vector_text_lines.list;
+			result : type_vector_text;
 
 			-- This is the text we will be displaying. It will be read
 			-- character by character. Each character will be mapped 
@@ -515,7 +515,7 @@ package body et_text is
 				lines : pac_vector_text_lines.list := to_lines (char);
 			begin
 				move_character (lines);
-				merge (target => result, source => lines);
+				merge (target => result.lines, source => lines);
 			end add;
 
 			procedure finalize is
@@ -596,8 +596,8 @@ package body et_text is
 			begin -- finalize
 				--put_line ("length " & to_string (text_length));
 				
-				iterate (result, query_line'access);
-				result := scratch;
+				iterate (result.lines, query_line'access);
+				result.lines := scratch;
 			end finalize;
 			
 		begin -- vectorize_text
@@ -694,12 +694,12 @@ package body et_text is
 		end vectorize_text;
 
 
-		procedure set_lines (
-			text	: in out type_vector_text;
-			lines	: in pac_vector_text_lines.list)
-		is begin
-			text.lines := lines;
-		end set_lines;
+		--procedure set_lines (
+			--text	: in out type_vector_text;
+			--lines	: in pac_vector_text_lines.list)
+		--is begin
+			--text.lines := lines;
+		--end set_lines;
 
 		
 		function get_lines (

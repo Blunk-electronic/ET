@@ -164,8 +164,7 @@ is
 
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
-		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
+		v_text : type_vector_text;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
@@ -173,7 +172,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Vectorize the text:
-		vector_text := vectorize_text (
+		v_text := vectorize_text (
 			content		=> to_placeholder_content (element (c).meaning),
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),
@@ -184,15 +183,13 @@ is
 			);
 
 		-- Draw the text:
-		pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+		pac_draw_fab.draw_vector_text (in_area, context, v_text,
 			element (c).line_width, self.frame_height);
 
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_assy_doc_texts.cursor) is 
-		use pac_vector_text_lines;
-	begin
+	procedure query_text (c : in pac_assy_doc_texts.cursor) is begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
 		-- Set the line width of the vector text:

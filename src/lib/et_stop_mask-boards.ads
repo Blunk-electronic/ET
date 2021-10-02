@@ -40,7 +40,7 @@ package et_stop_mask.boards is
 
 	-- for texts in conductor layer to be exposed:
 	type type_stop_mask_text is new type_text_fab_with_content with record
-		vectors	: pac_vector_text_lines.list;
+		vectors	: type_vector_text;
 	end record;
 
 	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);

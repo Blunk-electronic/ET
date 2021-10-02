@@ -136,9 +136,7 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_keepout_texts.cursor) is 
-		use pac_vector_text_lines;
-	begin
+	procedure query_text (c : in pac_keepout_texts.cursor) is begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
 		-- Set the line width of the vector text:

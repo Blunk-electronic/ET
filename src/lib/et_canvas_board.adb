@@ -546,9 +546,8 @@ package body et_canvas_board is
 		use et_board_shapes_and_text;
 		use pac_text_fab;
 		use et_board_shapes_and_text.pac_text_fab;
-		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
-
+		v_text : type_vector_text;
+		
 		-- The place where the text shall be placed:
 		point : type_point;
 
@@ -570,7 +569,7 @@ package body et_canvas_board is
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 				-- Vectorize the text on the fly:
-				vector_text := vectorize_text (
+				v_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
@@ -581,7 +580,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+				pac_draw_fab.draw_vector_text (in_area, context, v_text,
 					text_place.text.line_width, self.frame_height);
 
 			end if;
@@ -602,8 +601,7 @@ package body et_canvas_board is
 		use et_text;
 		use et_board_shapes_and_text;
 		use et_board_shapes_and_text.pac_text_fab;
-		use pac_text_fab.pac_vector_text_lines;
-		vector_text : pac_text_fab.pac_vector_text_lines.list;
+		v_text : type_vector_text;
 
 		-- The place where the text shall be placed:
 		point : type_point;
@@ -625,7 +623,7 @@ package body et_canvas_board is
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 			-- Vectorize the text on the fly:
-			vector_text := vectorize_text (
+			v_text := vectorize_text (
 				content		=> text_place.text.content,
 				size		=> text_place.text.size,
 				rotation	=> rot (text_place.text.position),
@@ -636,7 +634,7 @@ package body et_canvas_board is
 				);
 
 			-- Draw the text:
-			pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+			pac_draw_fab.draw_vector_text (in_area, context, v_text,
 				text_place.text.line_width, self.frame_height);
 		end if;
 	end draw_text_being_placed_in_outline;
@@ -659,8 +657,7 @@ package body et_canvas_board is
 		use et_text;
 		use et_board_shapes_and_text;
 		use et_board_shapes_and_text.pac_text_fab;
-		use pac_text_fab.pac_vector_text_lines;
-		vector_text : pac_text_fab.pac_vector_text_lines.list;
+		v_text : type_vector_text;
 
 		mirror : type_vector_text_mirrored;
 		
@@ -695,7 +692,7 @@ package body et_canvas_board is
 				end if;
 				
 				-- Vectorize the text on the fly:
-				vector_text := vectorize_text (
+				v_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
@@ -706,7 +703,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				pac_draw_fab.draw_vector_text (in_area, context, vector_text,
+				pac_draw_fab.draw_vector_text (in_area, context, v_text,
 					text_place.text.line_width, self.frame_height);
 			end if;
 		end if;

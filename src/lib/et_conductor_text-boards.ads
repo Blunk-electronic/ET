@@ -47,7 +47,7 @@ package et_conductor_text.boards is
 		is new type_text_fab_with_content with
 	record
 		layer	: type_signal_layer := type_signal_layer'first;
-		vectors	: pac_vector_text_lines.list;
+		vectors	: type_vector_text;
 		-- CS segments: pac_conductor_line_segments.list;
 	end record;
 

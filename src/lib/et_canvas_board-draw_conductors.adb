@@ -296,8 +296,7 @@ is
 
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
-		use pac_vector_text_lines;
-		vector_text : pac_vector_text_lines.list;
+		v_text : type_vector_text;
 	begin
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
@@ -308,7 +307,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := vectorize_text (
+			v_text := vectorize_text (
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -322,15 +321,14 @@ is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text,
+			draw_vector_text (in_area, context, v_text,
 				element (c).line_width, self.frame_height);
 
 		end if;
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_conductor_texts.cursor) is 
-	begin
+	procedure query_text (c : in pac_conductor_texts.cursor) is begin
 		-- Draw the text if it is in the current layer:
 		if element (c).layer = current_layer then
 
