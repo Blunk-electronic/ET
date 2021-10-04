@@ -694,12 +694,27 @@ package body et_text is
 		end vectorize_text;
 
 
-		--procedure set_lines (
-			--text	: in out type_vector_text;
-			--lines	: in pac_vector_text_lines.list)
-		--is begin
-			--text.lines := lines;
-		--end set_lines;
+		function first (
+			text	: in type_vector_text)
+			return pac_vector_text_lines.cursor
+		is begin
+			return text.lines.first;
+		end first;
+
+
+		procedure iterate (
+			text	: in type_vector_text;
+			process	: not null access procedure (
+				position: in pac_vector_text_lines.cursor))
+		is 
+			use pac_vector_text_lines;
+			c : pac_vector_text_lines.cursor := text.lines.first;
+		begin
+			while c /= no_element loop
+				process (c);				
+				next (c);
+			end loop;
+		end iterate;
 
 		
 		function get_lines (

@@ -860,20 +860,30 @@ package et_text is
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
-			--return pac_vector_text_lines.list;
 			return type_vector_text;
 
+
+		-- Returns the cursor to the first line of the
+		-- given vector text:
+		function first (
+			text	: in type_vector_text)
+			return pac_vector_text_lines.cursor;
+
 		
+		-- Iterates the lines of the given vector text:
+		procedure iterate (
+			text	: in type_vector_text;
+			process	: not null access procedure (
+				position: in pac_vector_text_lines.cursor));
 
 
-		--procedure set_lines (
-			--text	: in out type_vector_text;
-			--lines	: in pac_vector_text_lines.list);
-
+		-- Returns the lines of the given vector text:
 		function get_lines (
 			text	: in type_vector_text)
 			return pac_vector_text_lines.list;
 
+
+		-- Returns the boundaries of the given vector text:		
 		function get_boundaries (
 			text	: in type_vector_text)
 			return type_boundaries;

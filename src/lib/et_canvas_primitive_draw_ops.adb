@@ -907,7 +907,7 @@ package body pac_draw is
 		set_line_cap (context.cr, cairo_line_cap_round);
 		
 		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
-		-- CS text.lines.iterate (query_line'access);
+		iterate (text, query_line'access);
 
 		stroke (context.cr);
 	end draw_vector_text;

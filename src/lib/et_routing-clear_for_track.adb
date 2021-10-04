@@ -389,7 +389,7 @@ is
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
 
-				vl : pac_vector_text_lines.cursor := text.vectors.first;
+				vl : pac_vector_text_lines.cursor := pac_text_fab.first (text.vectors);
 				cl : et_conductor_segment.type_conductor_line;
 				segment : type_conductor_line_segment;
 			begin
