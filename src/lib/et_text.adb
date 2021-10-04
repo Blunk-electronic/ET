@@ -437,9 +437,11 @@ package body et_text is
 			package sorting is new generic_sorting;
 			use sorting;
 
+			half_line_width : constant type_distance_positive := line_width * 0.5;
+			
 			-- Since there is a line width, the text position must be changed slightly:
 			offset_due_to_line_width : constant type_distance_relative :=
-				to_distance_relative (set (x => line_width * 0.5, y => line_width * 0.5));
+				to_distance_relative (set (x => half_line_width, y => half_line_width));
 			
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
@@ -455,7 +457,7 @@ package body et_text is
 			M : constant type_text_size := size - line_width;
 
 			-- For alignment we need the total length of the text:
-			text_length : constant type_distance_positive := line_width * 0.5 +
+			text_length : constant type_distance_positive := half_line_width +
 				type_distance (text'length - 1) * type_distance (spacing * M);
 
 			text_length_half : constant type_distance_positive := text_length * 0.5;
@@ -518,6 +520,7 @@ package body et_text is
 				merge (target => result.lines, source => lines);
 			end add;
 
+			
 			procedure finalize is
 				scratch : pac_vector_text_lines.list;
 
@@ -541,7 +544,55 @@ package body et_text is
 
 						end case;
 					end align_vertical;
-			
+
+
+					procedure update_text_boundaries is
+						sx : constant type_distance := get_x (l.start_point);
+						sy : constant type_distance := get_y (l.start_point);
+						ex : constant type_distance := get_x (l.end_point);
+						ey : constant type_distance := get_y (l.end_point);
+					begin
+						-- update greatest x (right border):
+						if sx > result.boundaries.greatest_x then
+							result.boundaries.greatest_x := sx;
+						end if;
+
+						if ex > result.boundaries.greatest_x then
+							result.boundaries.greatest_x := ex;
+						end if;
+
+						
+						-- update greatest y (upper border):
+						if sy > result.boundaries.greatest_y then
+							result.boundaries.greatest_y := sy;
+						end if;
+
+						if ey > result.boundaries.greatest_y then
+							result.boundaries.greatest_y := ey;
+						end if;
+
+
+						-- update smallest x (left border):
+						if sx < result.boundaries.smallest_x then
+							result.boundaries.smallest_x := sx;
+						end if;
+
+						if ex < result.boundaries.smallest_x then
+							result.boundaries.smallest_x := ex;
+						end if;
+
+						
+						-- update smallest y (lower border):
+						if sy < result.boundaries.smallest_y then
+							result.boundaries.smallest_y := sy;
+						end if;
+
+						if ey < result.boundaries.smallest_y then
+							result.boundaries.smallest_y := ey;
+						end if;
+					end update_text_boundaries;
+
+					
 				begin -- query_line
 					
 					-- Align the text with the origin:
@@ -591,6 +642,10 @@ package body et_text is
 					-- rotating operations.
 					
 					append (scratch, l);
+
+					-- Update the boundaries of the text by the x/y values
+					-- of the current line:
+					update_text_boundaries;
 				end query_line;
 			
 			begin -- finalize
@@ -598,6 +653,15 @@ package body et_text is
 				
 				iterate (result.lines, query_line'access);
 				result.lines := scratch;
+
+				-- Since the lines have a width, the boundaries must
+				-- be extended by half the line width:
+				result.boundaries.greatest_x := result.boundaries.greatest_x + half_line_width;
+				result.boundaries.greatest_y := result.boundaries.greatest_y + half_line_width;
+
+				result.boundaries.smallest_x := result.boundaries.smallest_x - half_line_width;
+				result.boundaries.smallest_y := result.boundaries.smallest_y - half_line_width;
+
 			end finalize;
 			
 		begin -- vectorize_text

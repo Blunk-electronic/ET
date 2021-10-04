@@ -861,6 +861,9 @@ package body pac_draw is
 		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
+		bounding_box_text : constant type_rectangle := 
+			make_bounding_box (height, get_boundaries (text));
+		
 		use pac_vector_text_lines;
 		
 		procedure query_line (c : in pac_vector_text_lines.cursor) is 
@@ -869,10 +872,10 @@ package body pac_draw is
 			b : type_boundaries := get_boundaries (element (c), width);
 
 			-- compute the bounding box of the given line
-			bounding_box : type_rectangle := make_bounding_box (height, b);
+			bounding_box : constant type_rectangle := 
+				make_bounding_box (height, b);
 
 		begin
-
 			-- We draw the segment if:
 			--  - no area given or
 			--  - if the bounding box of the segment intersects the given area
@@ -903,13 +906,21 @@ package body pac_draw is
 		end query_line;
 		
 	begin
-		-- The ends of the line are round:
-		set_line_cap (context.cr, cairo_line_cap_round);
-		
-		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
-		iterate (text, query_line'access);
+		-- We draw the text if:
+		--  - no area given or
+		--  - if the bounding box of the text intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box_text)) 
+		then
+			
+			-- The ends of the line are round:
+			set_line_cap (context.cr, cairo_line_cap_round);
+			
+			-- set_line_join (context.cr, cairo_line_join_miter); -- CS
+			iterate (text, query_line'access);
 
-		stroke (context.cr);
+			stroke (context.cr);
+		end if;
 	end draw_vector_text;
 
 	

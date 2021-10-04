@@ -852,6 +852,7 @@ package et_text is
 		-- Renders the given text content to a list of lines.
 		-- IMPORTANT: Argument "content" MUST contain something ! If empty
 		-- constraint error will arise !
+		-- The result provides the boundaries of the text.
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string;
 			size		: in type_text_size;
