@@ -420,10 +420,15 @@ package et_geometry is
 			width		: in type_distance_positive) 
 			return type_boundaries;
 
-		-- Moves the boundaries by the given offset:
+		-- Moves the boundaries by the given offset.
+		-- If clip is true, then the boundaries will assume
+		-- the min or max value as defined by type_position_axis.
+		-- If clip is false, then a constraint error may arise
+		-- if the boundaries exceed the limits defined by type_position_axis:
 		procedure move_by (
 			boundaries	: in out type_boundaries;
-			offset		: in type_distance_relative);
+			offset		: in type_distance_relative;
+			clip		: in boolean := false);
 
 		-- Rotates the given boundaries by given rotation.
 		procedure rotate (

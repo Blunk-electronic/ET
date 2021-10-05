@@ -656,15 +656,49 @@ package body et_geometry is
 		
 		procedure move_by (
 			boundaries	: in out type_boundaries;
-			offset		: in type_distance_relative)
-		is begin
-			boundaries.smallest_x := boundaries.smallest_x + offset.x;
-			boundaries.greatest_x := boundaries.greatest_x + offset.x;
-			
-			boundaries.smallest_y := boundaries.smallest_y + offset.y;
-			boundaries.greatest_y := boundaries.greatest_y + offset.y;
+			offset		: in type_distance_relative;
+			clip		: in boolean := false)
+		is 
+			sx : constant type_distance := boundaries.smallest_x + offset.x;
+			gx : constant type_distance := boundaries.greatest_x + offset.x;
+			sy : constant type_distance := boundaries.smallest_y + offset.y;
+			gy : constant type_distance := boundaries.greatest_y + offset.y;
+		begin
+			if clip then
+				if sx < type_position_axis'first then
+					boundaries.smallest_x := type_position_axis'first;
+				else
+					boundaries.smallest_x := sx;
+				end if;
+
+				if sy < type_position_axis'first then
+					boundaries.smallest_y := type_position_axis'first;
+				else
+					boundaries.smallest_y := sy;
+				end if;
+
+				if gx > type_position_axis'last then
+					boundaries.greatest_x := type_position_axis'last;
+				else
+					boundaries.greatest_x := gx;
+				end if;
+
+				if gy > type_position_axis'last then
+					boundaries.greatest_y := type_position_axis'last;
+				else
+					boundaries.greatest_y := gy;
+				end if;
+				
+			else
+				boundaries.smallest_x := sx;
+				boundaries.greatest_x := gx;
+				
+				boundaries.smallest_y := sy;
+				boundaries.greatest_y := gy;
+			end if;
 		end move_by;
 
+		
 		procedure rotate (
 			boundaries	: in out type_boundaries;
 			rotation	: in type_rotation) is
