@@ -184,7 +184,8 @@ package et_routing is
 	--  - Returns false (no break).
 	-- The returned break point is the center of the cap of the track.
 	function get_break_by_line (
-		track	: in type_track;
+	   track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		line	: in type_line;
 		place	: in type_place;
 		lth		: in type_log_level)
@@ -212,7 +213,8 @@ package et_routing is
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
 	function get_break_by_arc (
-		track	: in type_track;
+		track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		arc		: in type_arc;
 		place	: in type_place;
 		lth		: in type_log_level)
@@ -228,7 +230,8 @@ package et_routing is
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
 	function get_break_by_circle (
-		track	: in type_track;
+		track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		circle	: in type_circle;
 		place	: in type_place;
 		lth		: in type_log_level)

@@ -86,6 +86,7 @@ is
 		others		=> <>); -- means clearance to other objects
 
 	track_dimensions : type_track_dimensions;
+	-- NOTE: Requires to be updated after changing the clearance of the track.
 
 	
 	distance_to_obstacle : type_distance_positive := type_distance_positive'last;
@@ -126,7 +127,8 @@ is
 	-- If there is a break then its position is sent to procedure
 	-- process_break for further processing.
 	procedure test_line (l : in type_line) is 
-		b : constant type_break := get_break_by_line (track, l, place, lth + 2);
+		b : constant type_break := 
+			get_break_by_line (track, track_dimensions, l, place, lth + 2);
 	begin
 		--log (text => "test line");
 		
@@ -138,7 +140,8 @@ is
 	
 	-- See procedure test_line for details.
 	procedure test_arc (a : in type_arc) is
-		b : constant type_break_double := get_break_by_arc (track, a, place, lth + 2);
+		b : constant type_break_double := 
+			get_break_by_arc (track, track_dimensions, a, place, lth + 2);
 	begin
 		--log (text => "test arc");
 
@@ -159,7 +162,8 @@ is
 	
 	-- See procedure test_line for details.
 	procedure test_circle (c : in type_circle) is 
-		b : constant type_break_double := get_break_by_circle (track, c, place, lth + 2);
+		b : constant type_break_double := 
+			get_break_by_circle (track, track_dimensions, c, place, lth + 2);
 	begin
 		--log (text => "test circle");
 				
@@ -387,6 +391,7 @@ is
 					end if;
 
 					track.clearance	:= get_greatest (clearances);
+					track_dimensions := get_dimensions (track);
 					
 					log_indentation_up;
 					iterate (element (nf).route.lines, query_line'access);
@@ -495,8 +500,8 @@ is
 			end if;
 
 			track.clearance	:= get_greatest (clearances);
-
 			track_dimensions := get_dimensions (track);
+
 			boundaries_track := track_dimensions.boundaries;
 			move_by (boundaries_track, track_dimensions.offset, true);
 			
@@ -508,7 +513,8 @@ is
 	begin -- query_obstacles
 
 		track.clearance	:= design_rules.clearances.conductor_to_board_edge;
-
+		track_dimensions := get_dimensions (track);
+		
 		-- board contours:
 		query_outline;
 		query_holes;
@@ -518,6 +524,7 @@ is
 		-- zone borders is zero. The track is to approach the border as
 		-- close as possible (from inside the area):
 		track.clearance := zero;
+		track_dimensions := get_dimensions (track);
 		
 		if fill_zone.observe then 
 			query_fill_zone;

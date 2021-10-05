@@ -797,14 +797,13 @@ package body et_routing is
 
 	
 	function get_break_by_line (
-		track	: in type_track;
+		track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		line	: in type_line;
 		place	: in type_place;
 		lth		: in type_log_level)
 		return type_break
 	is
-		track_dimensions : constant type_track_dimensions := get_dimensions (track);
-
 		-- the clearance between center of cap and line:
 		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
 		
@@ -1126,14 +1125,13 @@ package body et_routing is
 
 	
 	function get_break_by_arc (
-		track	: in type_track;
+		track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		arc		: in type_arc;
 		place	: in type_place;
 		lth		: in type_log_level)
 		return type_break_double
 	is
-		track_dimensions : constant type_track_dimensions := get_dimensions (track);
-
 		-- the clearance between center of cap and arc:
 		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
 		
@@ -1312,14 +1310,13 @@ package body et_routing is
 
 
 	function get_break_by_circle (
-		track	: in type_track;
+		track				: in type_track;
+		track_dimensions	: in type_track_dimensions;
 		circle	: in type_circle;
 		place	: in type_place;
 		lth		: in type_log_level)
 		return type_break_double
 	is
-		track_dimensions : constant type_track_dimensions := get_dimensions (track);
-
 		-- the clearance between center of cap and arc:
 		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
 		
