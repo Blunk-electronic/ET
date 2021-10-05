@@ -155,6 +155,7 @@ package et_routing is
 	-- This function searches the break point before or after
 	-- an obstacle along the x-axis. The result is an x-position
 	-- before or after the obstacle.
+	-- This function assumes the travel direction of the fill line is zero.
 	function get_break (
 		init		: in type_distance; -- the start point of the search
 		place		: in type_place; -- before/after
@@ -184,7 +185,7 @@ package et_routing is
 	--  - Returns false (no break).
 	-- The returned break point is the center of the cap of the track.
 	function get_break_by_line (
-	   track				: in type_track;
+		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
 		line	: in type_line;
 		place	: in type_place;
@@ -257,10 +258,6 @@ package et_routing is
 		end case;
 	end record;
 
-	--type type_route_distance is record
-		--status		: type_valid;
-		--distance	: type_distance_positive;
-	--end record;
 
 	
 	type type_fill_zone (observe : boolean := FALSE) is record
@@ -288,11 +285,13 @@ package et_routing is
 	-- If the parameter "ignore_same_net" is true, then the segments
 	-- of the same net as indicated by net_cursor are ignored. When filling
 	-- fill areas (polygons) this setting should be used.
+	-- CS currently the direction of travel must be zero,
+	-- because some subprograms support only this direction.
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
-		direction		: in type_rotation;
+		direction		: in type_rotation := zero_rotation;
 		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;

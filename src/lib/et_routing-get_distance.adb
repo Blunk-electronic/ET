@@ -43,7 +43,7 @@ function get_distance (
 	module_cursor	: in pac_generic_modules.cursor;
 	start_point		: in type_point;
 	place			: in type_place := BEFORE;
-	direction		: in type_rotation;
+	direction		: in type_rotation := zero_rotation;
 	net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 	fill_zone		: in type_fill_zone;
 	layer			: in type_signal_layer;
