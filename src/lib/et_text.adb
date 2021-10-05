@@ -661,7 +661,6 @@ package body et_text is
 
 				result.boundaries.smallest_x := result.boundaries.smallest_x - half_line_width;
 				result.boundaries.smallest_y := result.boundaries.smallest_y - half_line_width;
-
 			end finalize;
 			
 		begin -- vectorize_text

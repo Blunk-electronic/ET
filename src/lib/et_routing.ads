@@ -119,8 +119,8 @@ package et_routing is
 	function get_total_width (
 		track	: in type_track)
 		return type_distance_positive;
-		
-
+	
+	
 	type type_place is (
 		BEFORE,
 		AFTER);					

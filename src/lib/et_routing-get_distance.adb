@@ -83,8 +83,11 @@ is
 	track : type_track := (
 		center		=> probe_line,
 		width		=> width,
-		others		=> <>);
+		others		=> <>); -- means clearance to other objects
 
+	track_dimensions : type_track_dimensions;
+
+	
 	distance_to_obstacle : type_distance_positive := type_distance_positive'last;
 	distance_after_obstacle : type_distance_positive := type_distance_positive'last;
 	status : type_valid := VALID;
@@ -94,6 +97,7 @@ is
 	use pac_points_after_obstacles;
 	package pac_sorting is new pac_points_after_obstacles.generic_sorting;
 
+	
 	-- If given place is BEFORE then this procedure updates distance_to_obstacle
 	-- so that the smallest distance from start_point to the break points is kept.
 	-- If place is AFTER then the procedure collects the given break point
@@ -115,6 +119,7 @@ is
 		end case;
 	end process_break;
 
+	
 	-- Test whether the given line causes a break in the track.
 	-- Parameter "place" determines whether we are interested in the
 	-- start or the end of the break.
@@ -130,6 +135,7 @@ is
 		end if;
 	end test_line;
 
+	
 	-- See procedure test_line for details.
 	procedure test_arc (a : in type_arc) is
 		b : constant type_break_double := get_break_by_arc (track, a, place, lth + 2);
@@ -150,6 +156,7 @@ is
 		end case;
 	end test_arc;
 
+	
 	-- See procedure test_line for details.
 	procedure test_circle (c : in type_circle) is 
 		b : constant type_break_double := get_break_by_circle (track, c, place, lth + 2);
@@ -186,6 +193,7 @@ is
 			--log (text => "test end");				
 		end query_segment;
 
+		
 		-- BOARD OUTLINE
 		procedure query_outline is begin
 			log (text => "probing outline ...", level => lth + 1);
@@ -200,6 +208,7 @@ is
 			log_indentation_down;
 		end query_outline;
 
+		
 		-- holes
 		procedure query_holes is
 			use et_packages;			
@@ -411,10 +420,17 @@ is
 		procedure query_texts is
 			use pac_conductor_texts;
 			use et_text;
+
+			boundaries_track : type_boundaries;
 			
 			procedure query_text (c : in pac_conductor_texts.cursor) is
+				
 				use et_board_shapes_and_text.pac_text_fab;
 				use pac_vector_text_lines;
+
+				-- The boundaries of the candidate text:
+				boundaries_text : constant type_boundaries := 
+					pac_text_fab.get_boundaries (element (c).vectors);
 
 				procedure query_line (l : in pac_vector_text_lines.cursor) is
 					-- Convert the line of the vector text to a 
@@ -448,17 +464,23 @@ is
 					 level => lth + 2);
 
 				if element (c).layer = layer then
-					
-					pac_text_fab.iterate (
-						text	=> element (c).vectors,
-						process	=> query_line'access);
-					
+
+					-- We are interested in texts whose boundaries overlap
+					-- those of the track. If there is no overlap then
+					-- the text can be skipped:
+					if intersect (boundaries_track, boundaries_text) then
+						
+						pac_text_fab.iterate (
+							text	=> element (c).vectors,
+							process	=> query_line'access);
+
+					end if;
 				end if;
 			end query_text;
 
 			use pac_distances_sorting;
 			clearances : pac_distances_positive.list;
-			
+
 		begin
 			log (text => "probing vector texts ...", level => lth + 1);
 			log_indentation_up;
@@ -474,6 +496,9 @@ is
 
 			track.clearance	:= get_greatest (clearances);
 
+			track_dimensions := get_dimensions (track);
+			boundaries_track := track_dimensions.boundaries;
+			move_by (boundaries_track, track_dimensions.offset, true);
 			
 			iterate (module.board.conductors.texts, query_text'access);
 			log_indentation_down;
