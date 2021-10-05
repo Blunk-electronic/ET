@@ -51,6 +51,9 @@ function clear_for_track (
 is
 	result : boolean := false;
 
+	circle_around_start_point : constant type_circle := (start_point, width * 0.5);
+	boundaries_start_point : constant type_boundaries := get_boundaries (circle_around_start_point, zero);
+	
 	-- get the design rules of the module:
 	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
@@ -418,6 +421,7 @@ is
 				end loop;
 			end query_vectors;
 				
+			boundaries_text : type_boundaries;
 			
 		begin -- query_texts
 			log (text => "probing texts ...", level => lth + 1);
@@ -436,10 +440,16 @@ is
 				
 				if element (t).layer = layer then
 
-					query_element (
-						position	=> t,
-						process		=> query_vectors'access);
-
+					-- We are interested in texts whose boundaries enclose
+					-- the boundaries of the given start point. If there is 
+					-- no overlap then the text can be skipped:					
+					boundaries_text := pac_text_fab.get_boundaries (element (t).vectors);
+					
+					if intersect (boundaries_start_point, boundaries_text) then
+						query_element (
+							position	=> t,
+							process		=> query_vectors'access);
+					end if;
 				end if;
 				
 				next (t);
