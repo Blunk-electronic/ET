@@ -760,6 +760,7 @@ package body et_routing is
 				exit;
 			else
 				step := d_cap_to_obstacle_abs * 0.5;
+				--step := d_cap_to_obstacle_abs;
 				
 				case place is
 					when BEFORE =>

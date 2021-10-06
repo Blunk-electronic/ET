@@ -51,8 +51,18 @@ function clear_for_track (
 is
 	result : boolean := false;
 
-	circle_around_start_point : constant type_circle := (start_point, width * 0.5);
-	boundaries_start_point : constant type_boundaries := get_boundaries (circle_around_start_point, zero);
+	-- For some preselections (to improve performance) we will test if boundaries of
+	-- objects overlap with the boundaries of the given start point. The start point
+	-- is the center of a circle that has half the width of the inquired track.
+	-- This is the inital circle around the start point.
+	circle_around_start_point_init : constant type_circle := (start_point, width * 0.5);
+	-- In the course of this function copies are taken of this circle and their radius
+	-- modified by the particular clearance being effective.
+	
+	-- The boundaries of the circle around the start point:
+	start_point_boundaries : type_boundaries;
+
+
 	
 	-- get the design rules of the module:
 	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
@@ -352,9 +362,13 @@ is
 			use pac_conductor_texts;
 			t : pac_conductor_texts.cursor := module.board.conductors.texts.first;
 
-			distance : type_distance;
+			-- There can be many clearances which must be taken into account.
+			-- The greatest among them will be relevant:
 			clearances : pac_distances_positive.list;
-
+			greatest_clearance : type_distance_positive;
+			
+			distance : type_distance;
+			
 			-- clears the "result" flag if variable "distance" is:
 			-- - negative or
 			-- - the requested track is too close to the segment of the text
@@ -376,7 +390,7 @@ is
 
 					log (text => "distance:" & to_string (distance), level => lth + 5);
 					
-					if distance >= get_greatest (clearances) then
+					if distance >= greatest_clearance then
 						log (text => "point is in safe distance", level => lth + 4);
 					else
 						log (text => "point is too close", level => lth + 4);
@@ -420,35 +434,53 @@ is
 					next (vl);
 				end loop;
 			end query_vectors;
-				
-			boundaries_text : type_boundaries;
+
+			-- Take a copy of the initial circle_around_start_point_init:
+			circle_around_start_point : type_circle := circle_around_start_point_init;
+			
+			text_boundaries : type_boundaries;
 			
 		begin -- query_texts
 			log (text => "probing texts ...", level => lth + 1);
 			log_indentation_up;
 
+			-- COLLECT CLEARANCES
+			-- net specific:
 			clearances.append (class_given_net.clearance);
 
+			-- fill zone specific:
 			if fill_zone.observe then 
 				clearances.append (fill_zone.outline.isolation);
 			end if;
 
-			
+			-- choose the greatest clearance:
+			greatest_clearance := get_greatest (clearances);
+
+			-- Extend the radius of the circle_around_start_point by the clearance
+			-- and compute the boundaries of the circle:
+			circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
+			start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+
+
+			-- Iterate texts. Abort if result changes to "false":
 			while t /= pac_conductor_texts.no_element and result = true loop
 				
 				-- CS log text properties
 				
 				if element (t).layer = layer then
 
+					-- Preselection to improve performance:
 					-- We are interested in texts whose boundaries enclose
 					-- the boundaries of the given start point. If there is 
 					-- no overlap then the text can be skipped:					
-					boundaries_text := pac_text_fab.get_boundaries (element (t).vectors);
+					text_boundaries := pac_text_fab.get_boundaries (element (t).vectors);
 					
-					if intersect (boundaries_start_point, boundaries_text) then
+					if intersect (start_point_boundaries, text_boundaries) then
+						
 						query_element (
 							position	=> t,
 							process		=> query_vectors'access);
+
 					end if;
 				end if;
 				

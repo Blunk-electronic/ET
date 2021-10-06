@@ -470,6 +470,7 @@ is
 
 				if element (c).layer = layer then
 
+					-- Preselection to improve performance:
 					-- We are interested in texts whose boundaries overlap
 					-- those of the track. If there is no overlap then
 					-- the text can be skipped:
