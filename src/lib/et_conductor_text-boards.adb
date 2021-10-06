@@ -40,6 +40,37 @@
 
 package body et_conductor_text.boards is
 
+
+	function make_segments (
+		v_text	: in type_vector_text;
+		width	: in type_distance_positive)
+		return pac_conductor_line_segments.list
+	is 
+		result : pac_conductor_line_segments.list;
+
+		procedure query_line (c : in pac_vector_text_lines.cursor) is
+			use pac_vector_text_lines;
+			cl : et_conductor_segment.type_conductor_line;
+			segment : type_conductor_line_segment;
+
+			use pac_conductor_line_segments;
+		begin
+			-- Convert the line of the vector text to a conductor line.
+			cl := (element (c) with width);
+				
+			segment := to_line_segment (cl);
+
+			append (result, segment);
+		end query_line;
+		
+	begin
+
+		pac_text_fab.iterate (v_text, query_line'access);
+		
+		return result;
+	end make_segments;
+
+	
 	procedure text_conductor_properties (
 		cursor			: in pac_conductor_texts.cursor;
 		log_threshold 	: in type_log_level) 

@@ -44,6 +44,7 @@ with et_numbering;
 with et_symbols;
 with et_packages;
 with et_conductor_polygons;			use et_conductor_polygons;
+with et_conductor_segment;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_pcb_rw.device_packages;
 with et_conventions;
@@ -4368,6 +4369,8 @@ package body et_board_ops is
 			mirror : type_vector_text_mirrored;
 
 			v_text : type_vector_text;
+			c_text : type_conductor_text;
+			
 		begin
 			-- NOTE: Texts in restrict layers are never mirrored.
 			-- Even in the deepest (bottom) signal layer such texts 
@@ -4388,19 +4391,26 @@ package body et_board_ops is
 				-- CS alignment
 				); 
 
+			-- assemble the conductor text:
+			c_text := (text with 
+				layer		=> signal_layer,
+				vectors		=> v_text, -- CS call vectorize_text here directly
+				segments	=> make_segments (v_text, text.line_width));
+
+			
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
-					append (module.board.conductors.texts, (text with signal_layer, v_text));
+					append (module.board.conductors.texts, c_text);
 
 				when LAYER_CAT_ROUTE_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.route_restrict.texts, (text with signal_layer, v_text));
+					append (module.board.route_restrict.texts, c_text);
 					
 				when LAYER_CAT_VIA_RESTRICT =>
 					-- CS Check signal layer. layer must exist and
 					-- must not be deeper than deppest used layer.
-					append (module.board.via_restrict.texts, (text with signal_layer, v_text));
+					append (module.board.via_restrict.texts, c_text);
 
 			end case;
 		end place_text;

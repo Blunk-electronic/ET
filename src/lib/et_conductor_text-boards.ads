@@ -37,18 +37,28 @@
 --   to do:
 
 
+
 package et_conductor_text.boards is
 
+	use pac_geometry_brd;
+	use pac_shapes;
+
+	
 	package pac_conductor_line_segments is new
 		doubly_linked_lists (type_conductor_line_segment);
 
+	function make_segments (
+		v_text	: in type_vector_text;
+		width	: in type_distance_positive)
+		return pac_conductor_line_segments.list;
+	
 	
 	type type_conductor_text 
 		is new type_text_fab_with_content with
 	record
 		layer	: type_signal_layer := type_signal_layer'first;
 		vectors	: type_vector_text;
-		-- CS segments: pac_conductor_line_segments.list;
+		segments: pac_conductor_line_segments.list;
 	end record;
 
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
