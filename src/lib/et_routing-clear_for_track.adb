@@ -402,39 +402,23 @@ is
 			end test_distance;
 
 			
-			procedure query_vectors (text : in type_conductor_text) is
-				use et_board_shapes_and_text.pac_text_fab;
-				use pac_vector_text_lines;
-
-				vl : pac_vector_text_lines.cursor := pac_text_fab.first (text.vectors);
-				cl : et_conductor_segment.type_conductor_line;
-				segment : type_conductor_line_segment;
+			procedure query_segments (text : in type_conductor_text) is
+				use pac_conductor_line_segments;
+				s : pac_conductor_line_segments.cursor := text.segments.first;
 			begin
-				while vl /= pac_vector_text_lines.no_element and result = true loop
-					
-					log (text => to_string (element (vl)) 
-						 & " width" & to_string (element (t).line_width),
-						 level => lth + 2);
-					
-					log_indentation_up;
-					
-					-- Convert the line of the vector text to a conductor line.
-					cl := (type_line (element (vl)) with element (t).line_width);
+				while s /= pac_conductor_line_segments.no_element and result = true loop
+					log (text => to_string (element (s)), level => lth + 2);
 					
 					-- Now we treat the line of the vector text like a regular
 					-- line of conductor material:
-					segment := to_line_segment (cl);
-
-					log (text => to_string (segment), level => lth + 3);
-					distance := get_shortest_distance (start_point, segment);
+					distance := get_shortest_distance (start_point, element (s));
 					test_distance;
 
-					log_indentation_down;
-					
-					next (vl);
+					next (s);
 				end loop;
-			end query_vectors;
+			end query_segments;
 
+			
 			-- Take a copy of the initial circle_around_start_point_init:
 			circle_around_start_point : type_circle := circle_around_start_point_init;
 			
@@ -479,7 +463,7 @@ is
 						
 						query_element (
 							position	=> t,
-							process		=> query_vectors'access);
+							process		=> query_segments'access);
 
 					end if;
 				end if;

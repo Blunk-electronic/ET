@@ -429,38 +429,30 @@ is
 			boundaries_track : type_boundaries;
 			
 			procedure query_text (c : in pac_conductor_texts.cursor) is
-				
-				use et_board_shapes_and_text.pac_text_fab;
-				use pac_vector_text_lines;
+				use pac_conductor_line_segments;
 
 				-- The boundaries of the candidate text:
 				boundaries_text : constant type_boundaries := 
 					pac_text_fab.get_boundaries (element (c).vectors);
 
-				procedure query_line (l : in pac_vector_text_lines.cursor) is
-					-- Convert the line of the vector text to a 
-					-- conductor line.
-					cl : constant et_conductor_segment.type_conductor_line := 
-						(type_line (element (l)) with element (c).line_width);
-					
+				procedure query_segment (s : in pac_conductor_line_segments.cursor) is begin
+					--log_indentation_up;
+					--log (text => "text " & to_string (element (l)), level => lth + 3);
+
 					-- Now we treat the line of the vector text like a regular
 					-- line of conductor material:
-					segment : constant type_conductor_line_segment := to_line_segment (cl);
-				begin
-					log_indentation_up;
-					log (text => "text " & to_string (element (l)), level => lth + 3);
+					test_line (get_left_edge (element (s)));
+					test_line (get_right_edge (element (s)));
 
-					test_line (get_left_edge (segment));
-					test_line (get_right_edge (segment));
-
-					test_arc (get_start_cap (segment));
-					test_arc (get_end_cap (segment));
+					test_arc (get_start_cap (element (s)));
+					test_arc (get_end_cap (element (s)));
 					
 					-- CS procedure test_segment_line (segment)
 
-					log_indentation_down;
-				end query_line;
+					--log_indentation_down;
+				end query_segment;
 
+				
 			begin -- query_text
 				log (text => "text:" 
 					 & " P:" & to_string (element (c).position)
@@ -475,11 +467,7 @@ is
 					-- those of the track. If there is no overlap then
 					-- the text can be skipped:
 					if intersect (boundaries_track, boundaries_text) then
-						
-						pac_text_fab.iterate (
-							text	=> element (c).vectors,
-							process	=> query_line'access);
-
+						iterate (element (c).segments, query_segment'access);
 					end if;
 				end if;
 			end query_text;

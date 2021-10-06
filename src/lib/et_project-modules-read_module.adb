@@ -4205,6 +4205,7 @@ is
 						mirror := signal_layer_to_mirror (board_text_conductor.layer, deepest_conductor_layer (module_cursor));
 					end if;
 
+					-- vectorize the text:
 					board_text_conductor.vectors := vectorize_text (
 							content		=> board_text_conductor.content,
 							size		=> board_text_conductor.size,
@@ -4214,6 +4215,10 @@ is
 							line_width	=> board_text_conductor.line_width
 							-- CS alignment
 							); 
+
+					-- make the conductor segments of the text:
+					board_text_conductor.segments := 
+						make_segments (board_text_conductor.vectors, board_text_conductor.line_width);
 
 					
 					case layer_cat is
