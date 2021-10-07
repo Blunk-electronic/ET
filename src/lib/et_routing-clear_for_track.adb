@@ -359,6 +359,7 @@ is
 
 		-- TEXTS
 		procedure query_texts is
+			use et_conductor_text.boards;
 			use pac_conductor_texts;
 			t : pac_conductor_texts.cursor := module.board.conductors.texts.first;
 
@@ -474,6 +475,128 @@ is
 			log_indentation_down;
 		end query_texts;
 
+
+		procedure query_devices is
+			use et_devices;
+			use et_schematic;
+			use pac_devices_sch;
+
+			use et_packages;
+			use pac_packages_lib;
+			model : pac_package_model_file_name.bounded_string;
+			package_cursor		: pac_packages_lib.cursor;
+			package_position	: type_package_position; -- incl. rotation and face
+			package_flipped		: type_flipped;
+
+			use et_conductor_text.packages;
+			use pac_conductor_texts;
+
+			use pac_text_fab;
+			v_text : type_vector_text;
+
+			segments: et_conductor_text.boards.pac_conductor_line_segments.list;
+			
+			procedure query_text_top (c : in pac_conductor_texts.cursor) is
+				t : type_conductor_text := element (c);
+			begin
+				--track.clearance := 0.15;
+				-- Rotate the position of the text by the rotation of the package.
+				-- NOTE: This does not affect the rotation of the text itself.
+				rotate_by (t.position, rot (package_position));
+
+				if package_flipped = YES then mirror (t.position, Y); end if;
+
+				-- Move the text by the package position to 
+				-- its final position:
+				move_by (t.position, to_distance_relative (package_position));
+
+				-- Vectorize the content of the text on the fly:
+				v_text := pac_text_fab.vectorize_text (
+					content		=> t.content,
+					size		=> t.size,
+					rotation	=> add (rot (t.position), rot (package_position)),
+					position	=> type_point (t.position),
+					mirror		=> to_mirror (package_flipped), -- mirror vector text if package is flipped
+					line_width	=> t.line_width,
+					alignment	=> t.alignment -- right, bottom
+					);
+
+				--if intersect (boundaries_track, get_boundaries (v_text)) then
+					--null;
+					--iterate (element (c).segments, query_segment'access);
+				--end if;
+
+				
+				segments := et_conductor_text.boards.make_segments (v_text, t.line_width);
+				
+				--et_conductor_text.boards.pac_conductor_line_segments.iterate (segments, query_segment'access);
+				-- use a loop instead of iterate
+
+			end query_text_top;
+
+			
+			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
+				t : type_conductor_text := element (c);
+			begin
+				null;
+				--set_destination (INVERSE);
+				--draw_text (t, destination);
+			end query_text_bottom;
+
+			
+			procedure query_device (c : in pac_devices_sch.cursor) is
+			begin
+				log (text => "device " & to_string (key (c)), level => lth + 2);
+				log_indentation_up;
+
+				if is_real (c) then
+					model := get_package_model (c);
+
+					log (text => "model " & to_string (model), level => lth + 3);
+					-- locate the package model in the package library:
+					package_cursor := locate_package_model (model);
+
+					package_position := element (c).position;
+					package_flipped := element (c).flipped;
+
+					
+					-- texts
+					element (package_cursor).conductors.top.texts.iterate (query_text_top'access);
+					--element (package_cursor).conductors.bottom.texts.iterate (query_text_bottom'access);
+				
+				end if;
+
+				log_indentation_down;
+			end query_device;
+
+			use pac_devices_non_electric;
+			
+			procedure query_device (c : in pac_devices_non_electric.cursor) is
+			begin
+				log (text => "device " & to_string (key (c)), level => lth + 2);
+				log_indentation_up;
+
+				model := element (c).package_model;
+				log (text => "model " & to_string (model), level => lth + 3);
+				
+				log_indentation_down;
+			end query_device;
+
+			
+		begin
+			log (text => "probing devices ...", level => lth + 1);
+			log_indentation_up;
+
+			-- probe electrical devices:
+			iterate (module.devices, query_device'access);
+
+			-- probe non-electric devices
+			--iterate (module.devices_non_electric, query_device'access);
+			
+			log_indentation_down;
+		end query_devices;
+
+
 		
 	begin -- query_module
 		result := true;
@@ -498,6 +621,10 @@ is
 
 		if result = true then
 			query_texts;
+		end if;
+
+		if result = true then
+			query_devices;
 		end if;
 
 		

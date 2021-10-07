@@ -180,22 +180,11 @@ is
 		end draw_text_origin;
 
 		
-		-- Maps from flip status to mirror status of a vector text:
-		function to_mirror (f : in et_pcb.type_flipped) return et_text.type_vector_text_mirrored is
-			use et_pcb;
-			use et_text;
-		begin
-			case f is
-				when YES => return YES;
-				when NO => return NO;
-			end case;
-		end to_mirror;
-
-		
 		procedure draw_text_with_content (
 			t : in out type_text_fab_with_content;
 			f : in type_face)
 		is
+			use et_pcb;
 			v_text : type_vector_text;
 		begin
 
@@ -463,6 +452,7 @@ is
 				ph	: in out type_text_placeholder;
 				f	: in type_face)
 			is
+				use et_pcb;
 				v_text : type_vector_text;
 			begin
 				if silkscreen_enabled (f) then
@@ -832,6 +822,7 @@ is
 				ph	: in out type_text_placeholder;
 				f	: in type_face) 
 			is
+				use et_pcb;
 				v_text : type_vector_text;
 			begin
 				if assy_doc_enabled (f) then
@@ -2619,6 +2610,7 @@ is
 				t : in out type_conductor_text;
 				f : in type_face)
 			is
+				use et_pcb;
 				v_text : type_vector_text;
 			begin
 
@@ -3331,7 +3323,7 @@ is
 			use et_symbols;
 			use et_pcb;
 		begin
-			if element (d).appearance = PCB then
+			if is_real (d) then
 				
 				draw_package (
 					device_name			=> key (d), -- R1, IC12

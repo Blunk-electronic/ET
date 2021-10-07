@@ -134,6 +134,7 @@ package et_pcb is
 		return et_text.type_vector_text_mirrored;
 
 	
+
 	
 -- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS
 	
@@ -382,6 +383,13 @@ package et_pcb is
 	function to_flipped (flipped : in string) return type_flipped;
 
 
+	-- Maps from flip status to mirror status of a 
+	-- vector text:
+	function to_mirror (
+		flipped : in type_flipped) 
+		return et_text.type_vector_text_mirrored;
+
+	
 	
 -- LOGGING PROPERTIES OF OBJECTS
 

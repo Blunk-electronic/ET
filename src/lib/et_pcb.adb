@@ -186,6 +186,17 @@ package body et_pcb is
 	end;
 
 	
+	function to_mirror (
+		flipped : in type_flipped)
+		return et_text.type_vector_text_mirrored 
+	is
+		use et_text;
+	begin
+		case flipped is
+			when YES => return YES;
+			when NO => return NO;
+		end case;
+	end to_mirror;
 
 
 	
