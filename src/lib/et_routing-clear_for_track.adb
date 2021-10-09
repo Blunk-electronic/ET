@@ -89,6 +89,44 @@ is
 	-- If no net was given (freetrack), then we get the settings of class "default":
 	class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
+
+	greatest_clearance : type_distance_positive;
+	
+	
+	-- Clears the "result" flag if distance is:
+	-- - negative or
+	-- - less than the currently greatest_clearance
+	procedure test_distance (
+		distance	: in type_distance;
+		lth			: in type_log_level)
+	is 
+		d : type_distance := distance;
+	begin
+		--log_indentation_up;
+		
+		if distance <= zero then 
+			-- start_point is inside segment/via or on the edge of the segment/via
+			log (text => " point is inside", level => lth + 1);
+			result := false;
+		else
+			-- start_point is outside the segment/via
+			log (text => " point is outside", level => lth + 1);
+			
+			-- the distance of the start point to the border of the segment/via:
+			d := distance - width * 0.5;
+
+			if d >= greatest_clearance then
+				log (text => " point is in safe distance", level => lth + 1);
+			else
+				log (text => " point is too close", level => lth + 1);
+				result := false;
+			end if;							
+		end if;
+
+		--log_indentation_down;
+	end test_distance;
+
+
 	
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
@@ -197,34 +235,6 @@ is
 					distance : type_distance;
 					clearances : pac_distances_positive.list;
 
-					-- clears the "result" flag if variable "distance" is:
-					-- - negative or
-					-- - the requested track is too close to the foregin segment or via
-					procedure test_distance is begin
-						log_indentation_up;
-						
-						if distance <= zero then 
-							-- start_point is inside segment/via or on the edge of the segment/via
-							log (text => "point is inside", level => lth + 4);
-							result := false;
-						else
-							-- start_point is outside the segment/via
-							log (text => "point is outside", level => lth + 4);
-							
-							-- the distance of the start point to the border of the segment/via:
-							distance := distance - width * 0.5;
-
-							if distance >= get_greatest (clearances) then
-								log (text => "point is in safe distance", level => lth + 4);
-							else
-								log (text => "point is too close", level => lth + 4);
-								result := false;
-							end if;							
-						end if;
-
-						log_indentation_down;
-					end test_distance;
-					
 					procedure query_lines is 
 						use et_pcb.pac_conductor_lines;
 						l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
@@ -235,7 +245,7 @@ is
 							segment_line := to_line_segment (element (l));
 							log (text => to_string (segment_line), level => lth + 3);
 							distance := get_shortest_distance (start_point, segment_line);
-							test_distance;
+							test_distance (distance, lth + 4);
 							next (l);
 						end loop;
 					end query_lines;
@@ -250,7 +260,7 @@ is
 							segment_arc := to_arc_segment (element (a));
 							log (text => to_string (segment_arc), level => lth + 3);
 							distance := get_shortest_distance (start_point, segment_arc);
-							test_distance;
+							test_distance (distance, lth + 4);
 							next (a);
 						end loop;
 					end query_arcs;
@@ -266,7 +276,7 @@ is
 
 							if get_point_to_circle_status (start_point, c) = OUTSIDE then
 								distance := get_absolute (get_shortest_distance (start_point, c));
-								test_distance;
+								test_distance (distance, lth + 4);
 							else
 								-- the start_point is inside the via
 								result := false;
@@ -325,12 +335,15 @@ is
 						clearances.append (fill_zone.outline.isolation);
 					end if;
 
+					greatest_clearance := get_greatest (clearances);
+					
 					query_lines;
 					query_arcs;
 					query_vias;
 				
 					log_indentation_down;
 				end query_segments_and_vias;
+
 				
 			begin -- query_net
 				log (text => "net " & to_string (name), level => lth + 2);
@@ -367,42 +380,8 @@ is
 			-- There can be many clearances which must be taken into account.
 			-- The greatest among them will be relevant:
 			clearances : pac_distances_positive.list;
-			greatest_clearance : type_distance_positive;
 			
 			distance : type_distance;
-			
-			-- clears the "result" flag if variable "distance" is:
-			-- - negative or
-			-- - the requested track is too close to the segment of the text
-			procedure test_distance is begin
-				log_indentation_up;
-				
-				if distance <= zero then 
-					-- start_point is inside text segment or on the edge of the segment
-					log (text => "point is inside. distance to border" 
-						 & to_string (distance), level => lth + 4);
-					
-					result := false;
-				else
-					-- start_point is outside the segment
-					log (text => "point is outside", level => lth + 4);
-					
-					-- the distance of the start point to the border of the segment:
-					distance := distance - width * 0.5;
-
-					log (text => "distance:" & to_string (distance), level => lth + 5);
-					
-					if distance >= greatest_clearance then
-						log (text => "point is in safe distance", level => lth + 4);
-					else
-						log (text => "point is too close", level => lth + 4);
-						result := false;
-					end if;							
-				end if;
-
-				log_indentation_down;
-			end test_distance;
-
 			
 			procedure query_segments (text : in type_conductor_text) is
 				use pac_conductor_line_segments;
@@ -414,7 +393,7 @@ is
 					-- Now we treat the line of the vector text like a regular
 					-- line of conductor material:
 					distance := get_shortest_distance (start_point, element (s));
-					test_distance;
+					test_distance (distance, lth + 3);
 
 					next (s);
 				end loop;
@@ -488,7 +467,6 @@ is
 			package_cursor		: pac_packages_lib.cursor;
 			package_position	: type_package_position; -- incl. rotation and face
 			package_flipped		: type_flipped;
-
 			
 			procedure query_device (c : in pac_devices_sch.cursor) is
 
@@ -587,9 +565,11 @@ is
 							clearances.append (fill_zone.outline.isolation);
 						end if;
 
+						greatest_clearance := get_greatest (clearances);
+						
 						-- Extend the radius of the circle_around_start_point by the
 						-- greatest clearance and compute the boundaries of the circle:
-						circle_around_start_point.radius := circle_around_start_point.radius + get_greatest (clearances);
+						circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
 						start_point_boundaries := get_boundaries (circle_around_start_point, zero);
 
 						
