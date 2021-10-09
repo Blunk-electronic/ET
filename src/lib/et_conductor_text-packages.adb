@@ -4,7 +4,7 @@
 --                                                                          --
 --                        CONDUCTOR TEXT PACKAGES                           --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,17 +36,23 @@
 --
 --   to do:
 
-package et_conductor_text.packages is
+package body et_conductor_text.packages is
 	
-	type type_conductor_text is new pac_text_fab.type_text_fab_with_content with null record;
-	
-	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
-	-- Iterates the texts. Aborts the process when the cancel-flag goes true:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);
-		cancel	: in boolean);
+		cancel	: in boolean)
+	is
+		use pac_conductor_texts;
+		c : pac_conductor_texts.cursor := texts.first;
+	begin
+		while c /= no_element and cancel = false loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
 	
 		
 end et_conductor_text.packages;

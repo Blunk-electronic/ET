@@ -553,7 +553,7 @@ is
 					-- Take a copy of the initial circle_around_start_point_init:
 					circle_around_start_point : type_circle := circle_around_start_point_init;
 					
-				begin
+				begin -- query_texts
 					if not is_inner_layer (layer) then
 
 						-- COLLECT CLEARANCES
@@ -574,9 +574,19 @@ is
 
 						
 						query_face := TOP;
-						element (package_cursor).conductors.top.texts.iterate (query_text'access);
+
+						packages.iterate (
+							texts	=> element (package_cursor).conductors.top.texts,
+							process	=> query_text'access,
+							cancel	=> not result);
+								 
 						query_face := BOTTOM;
-						element (package_cursor).conductors.bottom.texts.iterate (query_text'access);
+						
+						packages.iterate (
+							texts	=> element (package_cursor).conductors.bottom.texts,
+							process	=> query_text'access,
+							cancel	=> not result);
+
 					end if;
 				end query_texts;
 
