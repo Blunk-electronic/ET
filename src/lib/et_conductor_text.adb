@@ -41,6 +41,17 @@
 package body et_conductor_text is
 
 	procedure dummy is begin null; end;
+
+	function face_to_mirror (
+		f : in type_face)
+		return type_vector_text_mirrored 
+	is begin
+		case f is
+			when TOP	=> return NO;
+			when BOTTOM	=> return YES;
+		end case;
+	end face_to_mirror;
+
 	
 end et_conductor_text;
 

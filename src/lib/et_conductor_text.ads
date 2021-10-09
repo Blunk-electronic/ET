@@ -54,6 +54,12 @@ package et_conductor_text is
 
 	use et_board_shapes_and_text.pac_text_fab;
 
+
+	function face_to_mirror (
+		f : in type_face)
+		return type_vector_text_mirrored;
+
+	
 	--package pac_conductor_line_segments is new
 		--doubly_linked_lists (type_conductor_line_segment);
 

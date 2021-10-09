@@ -132,6 +132,7 @@ is
 			
 		end set_destination;
 		
+		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.pac_packages_lib.cursor := locate_package_model (model);
 
@@ -2635,7 +2636,7 @@ is
 					size		=> t.size,
 					rotation	=> add (rot (t.position), rot (package_position)),
 					position	=> type_point (t.position),
-					mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+					mirror		=> face_to_mirror (f),
 					line_width	=> t.line_width,
 					alignment	=> t.alignment -- right, bottom
 					);
