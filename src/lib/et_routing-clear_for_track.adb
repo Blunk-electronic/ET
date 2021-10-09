@@ -618,11 +618,11 @@ is
 
 			
 		begin
-			log (text => "probing devices ...", level => lth + 1);
+			log (text => "x probing devices ...", level => lth + 1);
 			log_indentation_up;
 
-			-- probe electrical devices:
-			iterate (module.devices, query_device'access);
+			-- probe electrical devices. abort when result is false:
+			iterate (devices => module.devices, process => query_device'access, cancel => not result);
 
 			-- probe non-electric devices
 			--iterate (module.devices_non_electric, query_device'access);

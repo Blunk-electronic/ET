@@ -456,6 +456,14 @@ package et_schematic is
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_sch);
 
+
+	-- Iterates the devices. Aborts the process when the cancel-flag goes true:
+	procedure iterate (
+		devices	: in pac_devices_sch.map;
+		process	: not null access procedure (position : in pac_devices_sch.cursor);
+		cancel	: in boolean);
+	
+		
 	-- Returns true if the given device is real.
 	function is_real (device : in pac_devices_sch.cursor) return boolean;
 

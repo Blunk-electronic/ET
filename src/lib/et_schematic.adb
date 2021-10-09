@@ -394,6 +394,22 @@ package body et_schematic is
 		return result;
 	end ports;
 
+
+	procedure iterate (
+		devices	: in pac_devices_sch.map;
+		process	: not null access procedure (position : in pac_devices_sch.cursor);
+		cancel	: in boolean)
+	is 
+		use pac_devices_sch;
+		c : pac_devices_sch.cursor := devices.first;
+	begin
+		while c /= no_element and cancel = false loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
 	function is_real (device : in pac_devices_sch.cursor) return boolean is 
 		use et_symbols;
 	begin
