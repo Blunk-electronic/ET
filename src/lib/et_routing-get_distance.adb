@@ -79,6 +79,16 @@ is
 	-- If no net was given (freetrack), then we get the settings of class "default":
 	class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
+
+	-- CS prepare the basic set of clearances
+	--clearances_basic : pac_distances_positive.list;
+	--clearances_basic.append (class_given_net.clearance);
+
+	--if fill_zone.observe then 
+		--clearances_basic.append (fill_zone.outline.isolation);
+	--end if;
+
+	
 	
 	track : type_track := (
 		center		=> probe_line,
@@ -179,6 +189,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) 
 	is
+		use pac_distances_sorting;
 		use pac_polygon_segments;
 
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
@@ -291,7 +302,6 @@ is
 
 				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
-				use pac_distances_sorting;
 				clearances : pac_distances_positive.list;
 
 				procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
@@ -478,7 +488,6 @@ is
 				end if;
 			end query_text;
 
-			use pac_distances_sorting;
 			clearances : pac_distances_positive.list;
 
 		begin
@@ -517,63 +526,116 @@ is
 			package_position	: type_package_position; -- incl. rotation and face
 			package_flipped		: type_flipped;
 
-			use et_conductor_text.packages;
-			use pac_conductor_texts;
-
-			use pac_text_fab;
-			v_text : type_vector_text;
-
-			segments: et_conductor_text.boards.pac_conductor_line_segments.list;
+			boundaries_track : type_boundaries;
 			
-			procedure query_text_top (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
-			begin
-				track.clearance := 0.2;
-				-- Rotate the position of the text by the rotation of the package.
-				-- NOTE: This does not affect the rotation of the text itself.
-				--rotate_by (t.position, rot (package_position));
-
-				--if package_flipped = YES then mirror (t.position, Y); end if;
-
-				-- Move the text by the package position to 
-				-- its final position:
-				move_by (t.position, to_distance_relative (package_position));
-
-				-- Vectorize the content of the text on the fly:
-				v_text := pac_text_fab.vectorize_text (
-					content		=> t.content,
-					size		=> t.size,
-					rotation	=> add (rot (t.position), rot (package_position)),
-					position	=> type_point (t.position),
-					mirror		=> to_mirror (package_flipped), -- mirror vector text if package is flipped
-					line_width	=> t.line_width,
-					alignment	=> t.alignment -- right, bottom
-					);
-
-				--if intersect (boundaries_track, get_boundaries (v_text)) then
-					--null;
-					--iterate (element (c).segments, query_segment'access);
-				--end if;
-
-				
-				segments := et_conductor_text.boards.make_segments (v_text, t.line_width);
-				
-				et_conductor_text.boards.pac_conductor_line_segments.iterate (segments, query_segment'access);
-
-			end query_text_top;
-
-			
-			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
-			begin
-				null;
-				--set_destination (INVERSE);
-				--draw_text (t, destination);
-			end query_text_bottom;
-
 			
 			procedure query_device (c : in pac_devices_sch.cursor) is
-			begin
+
+				procedure query_texts is 
+					use et_conductor_text;
+
+					clearances : pac_distances_positive.list;
+					query_face : type_face;
+					
+					procedure query_text (c : in packages.pac_conductor_texts.cursor) is
+						t : packages.type_conductor_text := packages.pac_conductor_texts.element (c);
+						
+						use et_text;
+						mirror_status : type_vector_text_mirrored := NO;
+
+						procedure query_segments is 
+							use pac_text_fab;
+							v_text : type_vector_text;
+							
+							use et_conductor_text.boards;
+							segments: pac_conductor_line_segments.list;
+						begin
+							-- Rotate the position of the text by the rotation of the package.
+							-- NOTE: This does not affect the rotation of the text itself.
+							rotate_by (t.position, rot (package_position));
+
+							if package_flipped = YES then mirror (t.position, Y); end if;
+							
+							-- Move the text by the package position to 
+							-- its final position:
+							move_by (t.position, to_distance_relative (package_position));
+
+							-- Vectorize the content of the text on the fly:
+							v_text := pac_text_fab.vectorize_text (
+								content		=> t.content,
+								size		=> t.size,
+								rotation	=> add (rot (t.position), rot (package_position)),
+								position	=> type_point (t.position),
+								mirror		=> mirror_status,
+								line_width	=> t.line_width,
+								alignment	=> t.alignment -- right, bottom
+								);
+							
+							if intersect (boundaries_track, get_boundaries (v_text)) then
+								segments := make_segments (v_text, t.line_width);
+
+								pac_conductor_line_segments.iterate (segments, query_segment'access);
+							end if;
+						end query_segments;
+			
+					begin -- query_text
+						case query_face is
+							when TOP =>
+								if package_flipped = NO then 
+									if layer = top_layer then
+										query_segments;
+									end if;
+
+								else
+									if layer = bottom_layer then
+										mirror_status := YES;
+										query_segments;
+									end if;
+								end if;
+								
+							when BOTTOM =>
+								if package_flipped = NO then
+									if layer = bottom_layer then
+										mirror_status := YES;
+										query_segments;
+									end if;
+
+								else
+									if layer = top_layer then
+										query_segments;
+									end if;
+								end if;
+
+						end case;								
+					end query_text;
+	
+					
+				begin
+					if not is_inner_layer (layer) then
+						-- The clearance to the text is the greatest of 
+						-- either the polygon isolation or the clearance of the given net.
+						-- The greatest of them will be applied to the track clearance.
+						clearances.append (class_given_net.clearance);
+
+						if fill_zone.observe then 
+							clearances.append (fill_zone.outline.isolation);
+						end if;
+
+						track.clearance	:= get_greatest (clearances);
+						track_dimensions := get_dimensions (track);
+
+						boundaries_track := track_dimensions.boundaries;
+						move_by (boundaries_track, track_dimensions.offset, true);
+
+						query_face := TOP;
+						element (package_cursor).conductors.top.texts.iterate (query_text'access);
+						query_face := BOTTOM;
+						element (package_cursor).conductors.bottom.texts.iterate (query_text'access);
+					end if;
+				end query_texts;
+
+				
+			begin -- query_device
 				log (text => "device " & to_string (key (c)), level => lth + 2);
 				log_indentation_up;
 
@@ -587,11 +649,8 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
-					
-					-- texts
-					element (package_cursor).conductors.top.texts.iterate (query_text_top'access);
-					--element (package_cursor).conductors.bottom.texts.iterate (query_text_bottom'access);
-				
+					query_texts;			
+					-- CS terminals
 				end if;
 
 				log_indentation_down;

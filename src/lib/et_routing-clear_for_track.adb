@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_text;
 
 separate (et_routing)
 
@@ -488,64 +489,119 @@ is
 			package_position	: type_package_position; -- incl. rotation and face
 			package_flipped		: type_flipped;
 
-			use et_conductor_text.packages;
-			use pac_conductor_texts;
-
-			use pac_text_fab;
-			v_text : type_vector_text;
-
-			segments: et_conductor_text.boards.pac_conductor_line_segments.list;
-			
-			procedure query_text_top (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
-			begin
-				--track.clearance := 0.15;
-				-- Rotate the position of the text by the rotation of the package.
-				-- NOTE: This does not affect the rotation of the text itself.
-				rotate_by (t.position, rot (package_position));
-
-				if package_flipped = YES then mirror (t.position, Y); end if;
-
-				-- Move the text by the package position to 
-				-- its final position:
-				move_by (t.position, to_distance_relative (package_position));
-
-				-- Vectorize the content of the text on the fly:
-				v_text := pac_text_fab.vectorize_text (
-					content		=> t.content,
-					size		=> t.size,
-					rotation	=> add (rot (t.position), rot (package_position)),
-					position	=> type_point (t.position),
-					mirror		=> to_mirror (package_flipped), -- mirror vector text if package is flipped
-					line_width	=> t.line_width,
-					alignment	=> t.alignment -- right, bottom
-					);
-
-				--if intersect (boundaries_track, get_boundaries (v_text)) then
-					--null;
-					--iterate (element (c).segments, query_segment'access);
-				--end if;
-
-				
-				segments := et_conductor_text.boards.make_segments (v_text, t.line_width);
-				
-				--et_conductor_text.boards.pac_conductor_line_segments.iterate (segments, query_segment'access);
-				-- use a loop instead of iterate
-
-			end query_text_top;
-
-			
-			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
-			begin
-				null;
-				--set_destination (INVERSE);
-				--draw_text (t, destination);
-			end query_text_bottom;
-
 			
 			procedure query_device (c : in pac_devices_sch.cursor) is
-			begin
+
+				procedure query_texts is 
+					use et_conductor_text;
+					
+					query_face : type_face;
+					clearances : pac_distances_positive.list;
+					
+					procedure query_text (c : in packages.pac_conductor_texts.cursor) is
+						t : packages.type_conductor_text := packages.pac_conductor_texts.element (c);
+
+						use et_text;
+						mirror_status : type_vector_text_mirrored := NO;
+						
+						procedure query_segments is 
+							use pac_text_fab;
+							v_text : type_vector_text;
+
+							use et_conductor_text.boards;
+							segments: pac_conductor_line_segments.list;
+							
+						begin
+							-- Rotate the position of the text by the rotation of the package.
+							-- NOTE: This does not affect the rotation of the text itself.
+							rotate_by (t.position, rot (package_position));
+
+							if package_flipped = YES then mirror (t.position, Y); end if;
+
+							-- Move the text by the package position to 
+							-- its final position:
+							move_by (t.position, to_distance_relative (package_position));
+
+							-- Vectorize the content of the text on the fly:
+							v_text := pac_text_fab.vectorize_text (
+								content		=> t.content,
+								size		=> t.size,
+								rotation	=> add (rot (t.position), rot (package_position)),
+								position	=> type_point (t.position),
+								mirror		=> mirror_status,
+								line_width	=> t.line_width,
+								alignment	=> t.alignment -- right, bottom
+								);
+
+							if intersect (start_point_boundaries, get_boundaries (v_text)) then
+								segments := make_segments (v_text, t.line_width);
+								--iterate (element (c).segments, query_segment'access);
+							end if;
+
+						end query_segments;
+					
+					begin -- query_text
+						case query_face is
+							when TOP =>
+								if package_flipped = NO then 
+									if layer = top_layer then
+										query_segments;
+									end if;
+
+								else
+									if layer = bottom_layer then
+										mirror_status := YES;
+										query_segments;
+									end if;
+								end if;
+								
+							when BOTTOM =>
+								if package_flipped = NO then
+									if layer = bottom_layer then
+										mirror_status := YES;
+										query_segments;
+									end if;
+
+								else
+									if layer = top_layer then
+										query_segments;
+									end if;
+								end if;
+
+						end case;								
+
+					end query_text;
+
+					-- Take a copy of the initial circle_around_start_point_init:
+					circle_around_start_point : type_circle := circle_around_start_point_init;
+					
+				begin
+					if not is_inner_layer (layer) then
+
+						-- COLLECT CLEARANCES
+						-- net specific:
+						clearances.append (class_given_net.clearance);
+
+						-- fill zone specific:
+						if fill_zone.observe then 
+							clearances.append (fill_zone.outline.isolation);
+						end if;
+
+						-- Extend the radius of the circle_around_start_point by the
+						-- greatest clearance and compute the boundaries of the circle:
+						circle_around_start_point.radius := circle_around_start_point.radius + get_greatest (clearances);
+						start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+
+						
+						query_face := TOP;
+						element (package_cursor).conductors.top.texts.iterate (query_text'access);
+						query_face := BOTTOM;
+						element (package_cursor).conductors.bottom.texts.iterate (query_text'access);
+					end if;
+				end query_texts;
+
+				
+			begin -- query_device
 				log (text => "device " & to_string (key (c)), level => lth + 2);
 				log_indentation_up;
 
@@ -559,16 +615,14 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
-					
-					-- texts
-					element (package_cursor).conductors.top.texts.iterate (query_text_top'access);
-					--element (package_cursor).conductors.bottom.texts.iterate (query_text_bottom'access);
-				
+					query_texts;
+					-- CS terminals
 				end if;
 
 				log_indentation_down;
 			end query_device;
 
+			
 			use pac_devices_non_electric;
 			
 			procedure query_device (c : in pac_devices_non_electric.cursor) is
