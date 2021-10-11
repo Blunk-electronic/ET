@@ -381,6 +381,15 @@ package et_schematic is
 		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
 
+
+	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		nets	: in pac_nets.map;
+		process	: not null access procedure (position : in pac_nets.cursor);
+		proceed	: not null access boolean);
+
+	
+	
 	-- Returns a cursor to the strand that is
 	-- on the given sheet and has the lowest x/y position.
 	-- Returns no_element if the given sheet does not
@@ -555,6 +564,14 @@ package et_schematic is
 		key_type		=> type_device_name, -- H1, FD2, ...
 		element_type	=> type_device_non_electric);
 
+	
+	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean);
+
+	
 	procedure device_name_in_use (
 		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical

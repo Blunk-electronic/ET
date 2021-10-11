@@ -158,6 +158,7 @@ package body et_schematic is
 		
 		return segment_cursor;
 	end get_first_segment;
+
 	
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position of the given strand.
@@ -203,6 +204,24 @@ package body et_schematic is
 
 	end set_strand_position;
 
+
+	procedure iterate (
+		nets	: in pac_nets.map;
+		process	: not null access procedure (position : in pac_nets.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_nets;
+		c : pac_nets.cursor;
+	begin
+		while c /= pac_nets.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+
+			
 	function get_first_strand_on_sheet (
 		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)
@@ -534,6 +553,22 @@ package body et_schematic is
 	end unit_positions;
 
 
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_devices_non_electric;
+		c : pac_devices_non_electric.cursor := devices.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	procedure device_name_in_use (
 		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category)	-- electrical/non-electrical

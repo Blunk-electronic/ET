@@ -338,8 +338,14 @@ is
 					greatest_clearance := get_greatest (clearances);
 					
 					query_lines;
-					query_arcs;
-					query_vias;
+
+					if result = true then
+						query_arcs;
+					end if;
+
+					if result = true then
+						query_vias;
+					end if;
 				
 					log_indentation_down;
 				end query_segments_and_vias;
@@ -437,7 +443,7 @@ is
 
 			
 		begin -- query_texts
-			log (text => "x probing texts ...", level => lth + 1);
+			log (text => "probing texts ...", level => lth + 1);
 			log_indentation_up;
 
 			-- COLLECT CLEARANCES
@@ -644,8 +650,8 @@ is
 					log_indentation_up;
 
 					model := get_package_model (c);
-
 					log (text => "model " & to_string (model), level => lth + 3);
+					
 					-- locate the package model in the package library:
 					package_cursor := locate_package_model (model);
 
@@ -653,7 +659,10 @@ is
 					package_flipped := element (c).flipped;
 					
 					query_texts;
-					-- CS terminals
+					-- CS terminals + net
+					-- CS conductors
+					-- CS route/via restrict
+					-- CS holes
 					
 					log_indentation_down;
 					
@@ -671,6 +680,21 @@ is
 
 				model := element (c).package_model;
 				log (text => "model " & to_string (model), level => lth + 3);
+
+				-- locate the package model in the package library:
+				package_cursor := locate_package_model (model);
+
+				package_position := element (c).position;
+				package_flipped := element (c).flipped;
+				
+				-- CS query_texts;
+				--query_texts;
+
+				-- CS terminals without nets !
+					-- CS conductors
+					-- CS route/via restrict
+					-- CS holes
+
 				
 				log_indentation_down;
 			end query_device;
@@ -681,10 +705,16 @@ is
 			log_indentation_up;
 
 			-- probe electrical devices. abort when result is false:
-			iterate (devices => module.devices, process => query_device'access, proceed => result'access);
+			iterate (
+				devices	=> module.devices,
+				process => query_device'access,
+				proceed => result'access);
 
 			-- probe non-electric devices
-			--iterate (module.devices_non_electric, query_device'access);
+			iterate (
+				devices => module.devices_non_electric,
+				process => query_device'access,
+				proceed	=> result'access);
 			
 			log_indentation_down;
 		end query_devices;

@@ -650,12 +650,18 @@ is
 					package_flipped := element (c).flipped;
 
 					query_texts;			
-					-- CS terminals
+					-- CS terminals + net
+
+					-- CS conductors
+					-- CS route/via restrict
+					-- CS holes
+					
 				end if;
 
 				log_indentation_down;
 			end query_device;
 
+			
 			use pac_devices_non_electric;
 			
 			procedure query_device (c : in pac_devices_non_electric.cursor) is
@@ -665,6 +671,15 @@ is
 
 				model := element (c).package_model;
 				log (text => "model " & to_string (model), level => lth + 3);
+
+
+				-- CS query_texts;
+				
+				-- CS terminals without nets !
+					-- CS conductors
+					-- CS route/via restrict
+					-- CS holes
+
 				
 				log_indentation_down;
 			end query_device;
@@ -678,7 +693,7 @@ is
 			iterate (module.devices, query_device'access);
 
 			-- probe non-electric devices
-			--iterate (module.devices_non_electric, query_device'access);
+			iterate (module.devices_non_electric, query_device'access);
 			
 			log_indentation_down;
 		end query_devices;
