@@ -377,38 +377,67 @@ is
 		procedure query_texts is
 			use et_conductor_text.boards;
 			use pac_conductor_texts;
-			t : pac_conductor_texts.cursor := module.board.conductors.texts.first;
 
 			-- There can be many clearances which must be taken into account.
 			-- The greatest among them will be relevant:
 			clearances : pac_distances_positive.list;
 			
-			distance : type_distance;
-			
-			procedure query_segments (text : in type_conductor_text) is
+
+			procedure query_segment (
+				c : in pac_conductor_line_segments.cursor)
+			is 
 				use pac_conductor_line_segments;
-				s : pac_conductor_line_segments.cursor := text.segments.first;
+				distance : type_distance;
 			begin
-				while s /= pac_conductor_line_segments.no_element and result = true loop
-					log (text => to_string (element (s)), level => lth + 2);
+				log (text => to_string (element (c)), level => lth + 3);
+				
+				-- Now we treat the line of the text like a regular
+				-- line of conductor material:
+				distance := get_shortest_distance (start_point, element (c));
+				test_distance (distance, lth + 4);
+			end query_segment;
+		
+
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+				text_boundaries : type_boundaries;
+				use et_text;
+			begin
+				if element (c).layer = layer then
+
+					-- Preselection to improve performance:
+					-- We are interested in texts whose boundaries enclose
+					-- the boundaries of the given start point. If there is 
+					-- no overlap then the text can be skipped:					
+					text_boundaries := pac_text_fab.get_boundaries (element (c).vectors);
 					
-					-- Now we treat the line of the text like a regular
-					-- line of conductor material:
-					distance := get_shortest_distance (start_point, element (s));
-					test_distance (distance, lth + 3);
+					if intersect (start_point_boundaries, text_boundaries) then
 
-					next (s);
-				end loop;
-			end query_segments;
+						log (text => "overlaps boundaries of text " 
+								& enclose_in_quotes (to_string (element (c).content)) 
+								& " at" & to_string (element (c).position),
+								level => lth + 2);
 
-			
+						log_indentation_up;
+						
+						-- Probe the segments one by one.
+						-- Abort once the result-flag goes false.
+						iterate (
+							segments	=> element (c).segments, 
+							process		=> query_segment'access,
+							proceed		=> result'access);
+
+						log_indentation_down;
+					end if;
+				end if;
+			end query_text;
+
+
 			-- Take a copy of the initial circle_around_start_point_init:
 			circle_around_start_point : type_circle := circle_around_start_point_init;
-			
-			text_boundaries : type_boundaries;
+
 			
 		begin -- query_texts
-			log (text => "probing texts ...", level => lth + 1);
+			log (text => "x probing texts ...", level => lth + 1);
 			log_indentation_up;
 
 			-- COLLECT CLEARANCES
@@ -428,31 +457,11 @@ is
 			circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
 			start_point_boundaries := get_boundaries (circle_around_start_point, zero);
 
-
 			-- Iterate texts. Abort if result changes to "false":
-			while t /= pac_conductor_texts.no_element and result = true loop
-				
-				-- CS log text properties
-				
-				if element (t).layer = layer then
-
-					-- Preselection to improve performance:
-					-- We are interested in texts whose boundaries enclose
-					-- the boundaries of the given start point. If there is 
-					-- no overlap then the text can be skipped:					
-					text_boundaries := pac_text_fab.get_boundaries (element (t).vectors);
-					
-					if intersect (start_point_boundaries, text_boundaries) then
-						
-						query_element (
-							position	=> t,
-							process		=> query_segments'access);
-
-					end if;
-				end if;
-				
-				next (t);
-			end loop;
+			iterate (
+				texts	=> module.board.conductors.texts,
+				process	=> query_text'access,
+				proceed	=> result'access);
 			
 			log_indentation_down;
 		end query_texts;
@@ -543,6 +552,7 @@ is
 								log_indentation_up;
 
 								-- Probe the segments one by one.
+								-- Abort once the result-flag goes false.
 								iterate (
 									segments	=> segments, 
 									process		=> query_segment'access,
@@ -667,7 +677,7 @@ is
 
 			
 		begin
-			log (text => "x probing devices ...", level => lth + 1);
+			log (text => "probing devices ...", level => lth + 1);
 			log_indentation_up;
 
 			-- probe electrical devices. abort when result is false:

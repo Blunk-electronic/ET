@@ -86,6 +86,24 @@ package body et_conductor_text.boards is
 		return result;
 	end make_segments;
 
+
+
+
+	procedure iterate (
+		texts	: in pac_conductor_texts.list;
+		process	: not null access procedure (position : in pac_conductor_texts.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_texts.cursor := texts.first;
+	begin
+		while c /= pac_conductor_texts.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+		
+
+
 	
 	procedure text_conductor_properties (
 		cursor			: in pac_conductor_texts.cursor;

@@ -70,6 +70,15 @@ package et_conductor_text.boards is
 
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 	use pac_conductor_texts;
+
+	
+	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		texts	: in pac_conductor_texts.list;
+		process	: not null access procedure (position : in pac_conductor_texts.cursor);
+		proceed	: not null access boolean);
+
+
 	
 	-- Logs the properties of the given text.
 	procedure text_conductor_properties (
