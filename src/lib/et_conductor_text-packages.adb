@@ -42,12 +42,12 @@ package body et_conductor_text.packages is
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);
-		cancel	: in boolean)
+		proceed	: not null access boolean)
 	is
 		use pac_conductor_texts;
 		c : pac_conductor_texts.cursor := texts.first;
 	begin
-		while c /= no_element and cancel = false loop
+		while c /= no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;

@@ -42,11 +42,11 @@ package et_conductor_text.packages is
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
-	-- Iterates the texts. Aborts the process when the cancel-flag goes true:
+	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);
-		cancel	: in boolean);
+		proceed	: not null access boolean);
 	
 		
 end et_conductor_text.packages;

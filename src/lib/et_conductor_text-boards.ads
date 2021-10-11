@@ -47,6 +47,13 @@ package et_conductor_text.boards is
 	package pac_conductor_line_segments is new
 		doubly_linked_lists (type_conductor_line_segment);
 
+	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		segments	: in pac_conductor_line_segments.list;
+		process		: not null access procedure (position : in pac_conductor_line_segments.cursor);
+		proceed		: not null access boolean);
+
+	
 	function make_segments (
 		v_text	: in type_vector_text;
 		width	: in type_distance_positive)

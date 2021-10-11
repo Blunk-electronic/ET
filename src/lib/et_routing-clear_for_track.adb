@@ -50,7 +50,7 @@ function clear_for_track (
 	lth				: in type_log_level)		
 	return boolean
 is
-	result : boolean := false;
+	result : aliased boolean := false;
 
 	-- For some preselections (to improve performance) we will test if boundaries of
 	-- objects overlap with the boundaries of the given start point. The start point
@@ -369,9 +369,11 @@ is
 			
 			log_indentation_down;
 		end query_tracks;
+
 		
 
-		-- TEXTS
+	-- TEXTS
+	
 		procedure query_texts is
 			use et_conductor_text.boards;
 			use pac_conductor_texts;
@@ -390,7 +392,7 @@ is
 				while s /= pac_conductor_line_segments.no_element and result = true loop
 					log (text => to_string (element (s)), level => lth + 2);
 					
-					-- Now we treat the line of the vector text like a regular
+					-- Now we treat the line of the text like a regular
 					-- line of conductor material:
 					distance := get_shortest_distance (start_point, element (s));
 					test_distance (distance, lth + 3);
@@ -488,6 +490,22 @@ is
 
 							use et_conductor_text.boards;
 							segments: pac_conductor_line_segments.list;
+
+							
+							procedure query_segment (
+								c : in pac_conductor_line_segments.cursor)
+							is 
+								use pac_conductor_line_segments;
+								distance : type_distance;
+							begin
+								log (text => to_string (element (c)), level => lth + 4);
+								
+								-- Now we treat the line of the text like a regular
+								-- line of conductor material:
+								distance := get_shortest_distance (start_point, element (c));
+								test_distance (distance, lth + 5);
+							end query_segment;
+
 							
 						begin
 							-- Rotate the position of the text by the rotation of the package.
@@ -511,9 +529,26 @@ is
 								alignment	=> t.alignment -- right, bottom
 								);
 
+							-- If boundaries of start point and text overlap,
+							-- compute the conductor segments and probe each of them
+							-- for its distance to the start point: 
 							if intersect (start_point_boundaries, get_boundaries (v_text)) then
+								log (text => "overlaps boundaries of text " 
+										& enclose_in_quotes (to_string (t.content)) 
+										& " at" & to_string (t.position),
+									 level => lth + 3);
+								
 								segments := make_segments (v_text, t.line_width);
-								--iterate (element (c).segments, query_segment'access);
+
+								log_indentation_up;
+
+								-- Probe the segments one by one.
+								iterate (
+									segments	=> segments, 
+									process		=> query_segment'access,
+									proceed		=> result'access);
+
+								log_indentation_down;
 							end if;
 
 						end query_segments;
@@ -555,7 +590,8 @@ is
 					
 				begin -- query_texts
 					if not is_inner_layer (layer) then
-
+						log_indentation_up;
+						
 						-- COLLECT CLEARANCES
 						-- net specific:
 						clearances.append (class_given_net.clearance);
@@ -578,24 +614,25 @@ is
 						packages.iterate (
 							texts	=> element (package_cursor).conductors.top.texts,
 							process	=> query_text'access,
-							cancel	=> not result);
+							proceed	=> result'access);
 								 
 						query_face := BOTTOM;
 						
 						packages.iterate (
 							texts	=> element (package_cursor).conductors.bottom.texts,
 							process	=> query_text'access,
-							cancel	=> not result);
+							proceed	=> result'access);
 
+						log_indentation_down;
 					end if;
 				end query_texts;
 
 				
 			begin -- query_device
-				log (text => "device " & to_string (key (c)), level => lth + 2);
-				log_indentation_up;
-
 				if is_real (c) then
+					log (text => "device " & to_string (key (c)), level => lth + 2);
+					log_indentation_up;
+
 					model := get_package_model (c);
 
 					log (text => "model " & to_string (model), level => lth + 3);
@@ -604,12 +641,14 @@ is
 
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
-
+					
 					query_texts;
 					-- CS terminals
+					
+					log_indentation_down;
+					
 				end if;
 
-				log_indentation_down;
 			end query_device;
 
 			
@@ -632,7 +671,7 @@ is
 			log_indentation_up;
 
 			-- probe electrical devices. abort when result is false:
-			iterate (devices => module.devices, process => query_device'access, cancel => not result);
+			iterate (devices => module.devices, process => query_device'access, proceed => result'access);
 
 			-- probe non-electric devices
 			--iterate (module.devices_non_electric, query_device'access);

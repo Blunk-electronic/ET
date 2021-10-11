@@ -398,12 +398,12 @@ package body et_schematic is
 	procedure iterate (
 		devices	: in pac_devices_sch.map;
 		process	: not null access procedure (position : in pac_devices_sch.cursor);
-		cancel	: in boolean)
+		proceed	: not null access boolean)
 	is 
 		use pac_devices_sch;
 		c : pac_devices_sch.cursor := devices.first;
 	begin
-		while c /= no_element and cancel = false loop
+		while c /= no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;

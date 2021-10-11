@@ -41,6 +41,22 @@
 package body et_conductor_text.boards is
 
 
+	procedure iterate (
+		segments	: in pac_conductor_line_segments.list;
+		process		: not null access procedure (position : in pac_conductor_line_segments.cursor);
+		proceed		: not null access boolean)
+	is
+		use pac_conductor_line_segments;
+		c : pac_conductor_line_segments.cursor := segments.first;
+	begin
+		while c /= pac_conductor_line_segments.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+
 	function make_segments (
 		v_text	: in type_vector_text;
 		width	: in type_distance_positive)
