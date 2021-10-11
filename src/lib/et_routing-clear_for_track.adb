@@ -239,13 +239,14 @@ is
 						use et_pcb.pac_conductor_lines;
 						l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
 						segment_line : et_conductor_segment.type_conductor_line_segment;
-						use et_packages;
 					begin
 						while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
-							segment_line := to_line_segment (element (l));
-							log (text => to_string (segment_line), level => lth + 3);
-							distance := get_shortest_distance (start_point, segment_line);
-							test_distance (distance, lth + 4);
+							if element (l).layer = layer then
+								segment_line := to_line_segment (element (l));
+								log (text => to_string (segment_line), level => lth + 3);
+								distance := get_shortest_distance (start_point, segment_line);
+								test_distance (distance, lth + 4);
+							end if;
 							next (l);
 						end loop;
 					end query_lines;
@@ -254,13 +255,14 @@ is
 						use et_pcb.pac_conductor_arcs;
 						a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
 						segment_arc : et_conductor_segment.type_conductor_arc_segment;
-						use et_packages;
 					begin
 						while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
-							segment_arc := to_arc_segment (element (a));
-							log (text => to_string (segment_arc), level => lth + 3);
-							distance := get_shortest_distance (start_point, segment_arc);
-							test_distance (distance, lth + 4);
+							if element (a).layer = layer then
+								segment_arc := to_arc_segment (element (a));
+								log (text => to_string (segment_arc), level => lth + 3);
+								distance := get_shortest_distance (start_point, segment_arc);
+								test_distance (distance, lth + 4);
+							end if;
 							next (a);
 						end loop;
 					end query_arcs;
