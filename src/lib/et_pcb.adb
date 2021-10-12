@@ -104,7 +104,20 @@ package body et_pcb is
 		--return "";
 	--end to_string;
 
-
+	
+	procedure iterate (
+		lines	: in pac_conductor_lines.list;
+		process	: not null access procedure (position : in pac_conductor_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_conductor_lines;
+		c : pac_conductor_lines.cursor := lines.first;
+	begin
+		while c /= pac_conductor_lines.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 		
 	
 	
@@ -133,6 +146,22 @@ package body et_pcb is
 		
 		return result;
 	end on_segment;
+
+
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_conductor_arcs;
+		c : pac_conductor_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_conductor_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+		
 
 	
 	function on_segment (

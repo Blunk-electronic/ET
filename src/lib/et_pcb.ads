@@ -222,8 +222,18 @@ package et_pcb is
 	type type_conductor_line is new et_conductor_segment.type_conductor_line with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
+
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 
+	
+	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lines	: in pac_conductor_lines.list;
+		process	: not null access procedure (position : in pac_conductor_lines.cursor);
+		proceed	: not null access boolean);
+	
+	
+	
 	-- Returns true if the given point sits on the given line.
 	function on_segment (
 		point		: in type_point; -- x/y
@@ -234,8 +244,18 @@ package et_pcb is
 	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
+
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 
+	
+	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Returns true if the given point sits on the given arc.
 	function on_segment (
 		point		: in type_point; -- x/y
