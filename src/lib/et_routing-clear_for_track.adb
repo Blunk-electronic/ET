@@ -668,7 +668,6 @@ is
 					log_indentation_down;
 					
 				end if;
-
 			end query_device;
 
 			

@@ -780,8 +780,8 @@ package body pac_canvas is
 
 	function mouse_position (
 		self	: not null access type_view'class)
-		return type_point is
-
+		return type_point 
+	is
 		-- The x/y position of the mouse pointer:
 		position_pointer_x : gint;
 		position_pointer_y : gint;
@@ -797,6 +797,16 @@ package body pac_canvas is
 	begin
 		-- Get the mouse position:
 		self.get_pointer (position_pointer_x, position_pointer_y);
+
+		-- Limit the pointer coordinates in case they are negative.
+		if position_pointer_x < 0 then
+			position_pointer_x := 0;
+		end if;
+
+		if position_pointer_y < 0 then
+			position_pointer_y := 0;
+		end if;
+
 
 		-- Convert mouse position to view_point:
 		view_point.x := type_view_coordinate (position_pointer_x);
@@ -822,7 +832,8 @@ package body pac_canvas is
 			x	=> type_distance (view_point.x / scale) + (get_x (topleft)),
 			y	=> type_distance (view_point.y / scale) + (get_y (topleft))
 			));
-	end;
+	end vtm;
+
 	
 	function view_to_model (
 		self   : not null access type_view;
@@ -832,11 +843,12 @@ package body pac_canvas is
 		return vtm (p, self.scale, self.topleft);
 	end view_to_model;
 
+	
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_rectangle is
-
+		return type_rectangle 
+	is
 		-- get the position of the given rectangle in drawing coordinatess
 		p1 : type_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
 	begin
@@ -846,12 +858,13 @@ package body pac_canvas is
 				height => type_distance (rect.height / self.scale));
 	end view_to_model;
 
+	
 	function mtv (
 		drawing_point	: in type_point;
 		scale			: in type_scale;
 		topleft			: in type_point) 
-		return type_view_point is
-	begin
+		return type_view_point 
+	is begin
 		return (
 			--x => type_view_coordinate (drawing_point.x - topleft.x) * scale,
 			--y => type_view_coordinate (drawing_point.y - topleft.y) * scale
@@ -861,15 +874,17 @@ package body pac_canvas is
 			
 			);
 	end mtv;
+
 	
 	function model_to_view (
 		self   : not null access type_view;
 		p      : in type_point) 
-		return type_view_point is
-	begin
+		return type_view_point 
+	is begin
 		return mtv (p, self.scale, self.topleft);
 	end model_to_view;
 
+	
 	procedure set_adjustment_values (self : not null access type_view'class) is
 		box   : type_rectangle;
 		area  : constant type_rectangle := self.get_visible_area;
