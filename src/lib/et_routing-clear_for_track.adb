@@ -236,15 +236,15 @@ is
 					clearances : pac_distances_positive.list;
 
 					procedure query_lines is 
-						use et_pcb.pac_conductor_lines;
-						l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
+						use pac_conductor_lines;
+						l : pac_conductor_lines.cursor := net.route.lines.first;
 						segment_line : et_conductor_segment.type_conductor_line_segment;
 					begin
-						while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
+						while l /= pac_conductor_lines.no_element and result = true loop
 							if element (l).layer = layer then
 								segment_line := to_line_segment (element (l));
-								log (text => to_string (segment_line), level => lth + 3);
-								distance := get_shortest_distance (start_point, segment_line);
+								log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
+								distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
 								test_distance (distance, lth + 4);
 							end if;
 							next (l);
@@ -252,15 +252,15 @@ is
 					end query_lines;
 					
 					procedure query_arcs is 
-						use et_pcb.pac_conductor_arcs;
-						a : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
+						use pac_conductor_arcs;
+						a : pac_conductor_arcs.cursor := net.route.arcs.first;
 						segment_arc : et_conductor_segment.type_conductor_arc_segment;
 					begin
-						while a /= et_pcb.pac_conductor_arcs.no_element and result = true loop
+						while a /= pac_conductor_arcs.no_element and result = true loop
 							if element (a).layer = layer then
 								segment_arc := to_arc_segment (element (a));
-								log (text => to_string (segment_arc), level => lth + 3);
-								distance := get_shortest_distance (start_point, segment_arc);
+								log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
+								distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
 								test_distance (distance, lth + 4);
 							end if;
 							next (a);
@@ -397,11 +397,11 @@ is
 				use pac_conductor_line_segments;
 				distance : type_distance;
 			begin
-				log (text => to_string (element (c)), level => lth + 3);
+				log (text => et_conductor_segment.to_string (element (c)), level => lth + 3);
 				
 				-- Now we treat the line of the text like a regular
 				-- line of conductor material:
-				distance := get_shortest_distance (start_point, element (c));
+				distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
 				test_distance (distance, lth + 4);
 			end query_segment;
 		
@@ -515,11 +515,11 @@ is
 								use pac_conductor_line_segments;
 								distance : type_distance;
 							begin
-								log (text => to_string (element (c)), level => lth + 4);
+								log (text => et_conductor_segment.to_string (element (c)), level => lth + 4);
 								
 								-- Now we treat the line of the text like a regular
 								-- line of conductor material:
-								distance := get_shortest_distance (start_point, element (c));
+								distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
 								test_distance (distance, lth + 5);
 							end query_segment;
 

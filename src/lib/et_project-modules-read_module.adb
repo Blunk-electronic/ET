@@ -4100,13 +4100,14 @@ is
 				board_reset_polygon;
 			end insert_polygon_conductor;
 
+			
 			procedure insert_line_track is -- about freetracks
-				use et_pcb;
+				use et_conductor_segment.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
-				begin
+					module		: in out et_schematic.type_module) 
+				is begin
 					pac_conductor_lines.append (
 						container	=> module.board.conductors.lines,
 						new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with
@@ -4126,8 +4127,9 @@ is
 				board_reset_signal_layer;
 			end insert_line_track;
 
+			
 			procedure insert_arc_track is -- about freetracks
-				use et_pcb;
+				use et_conductor_segment.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4152,8 +4154,9 @@ is
 				board_reset_signal_layer;
 			end insert_arc_track;
 
+			
 			procedure insert_circle_track is -- about freetracks
-				use et_pcb;
+				use et_conductor_segment.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -5191,7 +5194,7 @@ is
 						when SEC_ROUTE =>
 
 							-- insert line in route.lines
-							et_pcb.pac_conductor_lines.append (
+							et_conductor_segment.boards.pac_conductor_lines.append (
 								container	=> route.lines,
 								new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with
 										width	=> board_line_width,
@@ -5235,7 +5238,7 @@ is
 							board_check_arc (log_threshold + 1);
 							
 							-- insert arc in route.arcs
-							et_pcb.pac_conductor_arcs.append (
+							et_conductor_segment.boards.pac_conductor_arcs.append (
 								container	=> route.arcs,
 								new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with
 										width	=> board_line_width,

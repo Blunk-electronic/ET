@@ -72,7 +72,8 @@ with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_text;
 with et_conductor_text.boards;
-with et_conductor_segment;		use et_conductor_segment;
+with et_conductor_segment;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_stencil.boards;			use et_stencil.boards;
 with et_stencil.packages;

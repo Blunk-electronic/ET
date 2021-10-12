@@ -72,7 +72,7 @@ with et_design_rules;			use et_design_rules;
 with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 
-with et_conductor_segment;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
@@ -211,62 +211,6 @@ package et_pcb is
 
 	
 
-	
-	
-	
--- CONDUCTOR OBJECTS
-	
-	-- In a pcb drawing objects in conductor layers can be placed 
-	-- in various layers.
-	-- This requires a layer id for the object.
-	type type_conductor_line is new et_conductor_segment.type_conductor_line with record
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
-
-	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
-
-	
-	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		lines	: in pac_conductor_lines.list;
-		process	: not null access procedure (position : in pac_conductor_lines.cursor);
-		proceed	: not null access boolean);
-	
-	
-	
-	-- Returns true if the given point sits on the given line.
-	function on_segment (
-		point		: in type_point; -- x/y
-		layer		: in type_signal_layer;
-		line		: in pac_conductor_lines.cursor)
-		return boolean;
-	
-	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
-
-	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
-
-	
-	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		arcs	: in pac_conductor_arcs.list;
-		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
-		proceed	: not null access boolean);
-
-
-	
-	-- Returns true if the given point sits on the given arc.
-	function on_segment (
-		point		: in type_point; -- x/y
-		layer		: in type_signal_layer;
-		arc			: in pac_conductor_arcs.cursor)
-		return boolean;
-	
-	type type_conductor_circle is new et_conductor_segment.type_conductor_circle with record
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
-	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	
 
 

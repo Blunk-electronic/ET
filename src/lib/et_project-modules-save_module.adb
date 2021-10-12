@@ -496,12 +496,12 @@ is
 			section_mark (section_strands, FOOTER);
 		end query_strands;
 
+		
 		procedure query_route (
 		-- This is about routed tracks/traces and zones in the board:
 			net_name	: in pac_net_name.bounded_string;
 			net			: in et_schematic.type_net) 
 		is
-			--use et_packages;
 			use et_board_shapes_and_text;
 			use pac_shapes;
 
@@ -510,6 +510,7 @@ is
 			use et_pcb_stack;
 			use et_pcb_coordinates.pac_geometry_brd;
 			
+			use et_conductor_segment.boards;
 			use pac_conductor_lines;
 			line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 
@@ -700,6 +701,7 @@ is
 		log_indentation_down;
 	end query_nets;
 
+	
 	procedure query_devices is		
 		use et_schematic;
 		use et_symbols;
@@ -748,6 +750,7 @@ is
 			section_mark (section_units, FOOTER);
 		end query_units;
 
+		
 		procedure query_placeholders (
 			device_name : in type_device_name;
 			device 		: in type_device_sch) 
@@ -1188,7 +1191,8 @@ is
 		use pac_conductor_texts;
 
 		use et_conductor_polygons.boards;
-
+		use et_conductor_segment.boards;
+		
 		-- general stuff
 		use pac_text_placeholders_conductors;
 		procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
@@ -1199,6 +1203,7 @@ is
 			placeholder_end;
 		end write_placeholder;
 
+		
 		-- CONDUCTOR (NON-ELECTRIC) in any signal layers
 		use pac_conductor_lines;
 		procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
@@ -1218,8 +1223,8 @@ is
 			arc_end;
 		end;
 
-		use et_pcb.pac_conductor_circles;
-		procedure write_circle (cursor : in et_pcb.pac_conductor_circles.cursor) is begin
+		use pac_conductor_circles;
+		procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
 			write_circle_conductor (element (cursor));
 		end;
 

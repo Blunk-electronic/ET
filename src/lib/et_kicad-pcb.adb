@@ -3628,6 +3628,7 @@ package body et_kicad.pcb is
 				use et_stencil;
 				use et_stop_mask;
 				use et_keepout;
+				use et_conductor_segment;
 			begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
@@ -3716,6 +3717,7 @@ package body et_kicad.pcb is
 				use et_stencil;
 				use et_stop_mask;
 				use et_keepout;
+				use et_conductor_segment;
 			begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 
@@ -3812,6 +3814,7 @@ package body et_kicad.pcb is
 				use et_stencil;
 				use et_stop_mask;
 				use et_keepout;
+				use et_conductor_segment;
 			begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
@@ -4872,12 +4875,13 @@ package body et_kicad.pcb is
 					return id;
 				end to_net_id;
 
+				
 				function route (net_id : in type_net_id) return et_pcb.type_route is
 				-- Collects segments and vias by the given net_id and returns them as a type_route.
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
-					line : et_pcb.type_conductor_line; -- an ET segment
+					line : type_conductor_line; -- an ET segment
 
 					use type_vias; -- kicad vias !
 					via_cursor : type_vias.cursor := board.vias.first;
@@ -4921,7 +4925,7 @@ package body et_kicad.pcb is
 					end loop;
 
 					-- Log if the net has no routed segments.
-					if et_pcb.pac_conductor_lines.is_empty (route.lines) then
+					if pac_conductor_lines.is_empty (route.lines) then
 						log (text => "no segments", level => log_threshold + 3);
 					end if;
 					
@@ -5060,6 +5064,7 @@ package body et_kicad.pcb is
 					return route;
 				end route;
 
+				
 				procedure add_route (
 				-- adds routing information to the schematic module
 					net_name	: in pac_net_name.bounded_string;
@@ -5068,6 +5073,7 @@ package body et_kicad.pcb is
 					net.route := route (net_id);
 				end add_route;
 
+				
 				procedure update_component_in_schematic (
 				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in type_device_name;
@@ -5077,6 +5083,7 @@ package body et_kicad.pcb is
 					component.text_placeholders := text_placeholders;
 				end update_component_in_schematic;
 
+				
 				function to_placeholders return et_packages.type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
@@ -5176,6 +5183,7 @@ package body et_kicad.pcb is
 					
 				end to_placeholders;
 
+				
 				procedure transfer_net_classes is 
 				-- net classes must be tranferred from board.net_classes to the schematic module
 				-- A kicad net class has a name and a list of net_names
@@ -5323,6 +5331,7 @@ package body et_kicad.pcb is
 
 				end transfer_net_classes;
 
+				
 				-- Transfers floating polygons (their net_id is zero) to the schematic 
 				-- module (selector "board.conductors.polygons").
 				procedure transfer_floating_polygons is
@@ -5491,6 +5500,7 @@ package body et_kicad.pcb is
 				log_indentation_down;
 				
 			end add_board_objects;
+
 			
 		begin -- merge_board_and_schematic
 			log (text => "merging board and schematic ...", level => log_threshold + 1);
@@ -5508,12 +5518,14 @@ package body et_kicad.pcb is
 			
 		end merge_board_and_schematic;
 
+		
 		procedure set_board_available_flag (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.board_available := et_schematic.TRUE;
 		end set_board_available_flag;
+
 		
 	begin -- read_board
 		log (text => "reading board file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);

@@ -237,6 +237,7 @@ package body et_pcb_rw is
 	begin
 		write (keyword => keyword_layers, parameters => to_string (layers));
 	end;
+
 	
 	procedure write_circle_fillable (circle : in type_fillable_circle) is begin
 		circle_begin;
@@ -259,6 +260,7 @@ package body et_pcb_rw is
 		end case;
 		circle_end;
 	end write_circle_fillable;
+	
 
 	-- CS unify the follwing two procedures write_circle_conductor:
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle) is begin
@@ -283,7 +285,8 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle_conductor;
 
-	procedure write_circle_conductor (circle : in et_pcb.type_conductor_circle) is begin
+	
+	procedure write_circle_conductor (circle : in et_conductor_segment.boards.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write_signal_layer (circle.layer);
@@ -387,7 +390,8 @@ package body et_pcb_rw is
 		
 		return point;
 	end to_position;
-		
+
+	
 	function to_position (
 	-- Returns a type_position in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
@@ -425,6 +429,7 @@ package body et_pcb_rw is
 		return point;
 	end to_position;
 
+	
 	function position (point : in type_point'class) return string is
 		use ada.tags;
 
@@ -450,6 +455,7 @@ package body et_pcb_rw is
 		end if;
 
 	end position;
+
 	
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
@@ -483,6 +489,7 @@ package body et_pcb_rw is
 		return grid;
 	end to_grid;
 
+	
 	procedure signal_layer_invalid (
 		line			: in et_string_processing.type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;

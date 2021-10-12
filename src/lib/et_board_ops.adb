@@ -1620,23 +1620,23 @@ package body et_board_ops is
 	end;
 	
 	procedure add_named_track (
-	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_conductor_line) is
-
+		line			: in type_conductor_line) 
+	is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_pcb.pac_conductor_lines;
+				net			: in out type_net) 
+			is
+				use pac_conductor_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -1664,23 +1664,22 @@ package body et_board_ops is
 			process		=> do_it'access);
 		
 	end add_named_track;
-		
+
+	
 	procedure draw_track_line (
-	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_conductor_line;
-		log_threshold	: in type_log_level) is
-
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.pac_conductor_lines;
+		use pac_conductor_lines;
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			append (
 				container	=> module.board.conductors.lines,
 				new_item	=> line);
@@ -1714,23 +1713,25 @@ package body et_board_ops is
 
 	end draw_track_line;
 
+	
 	procedure draw_track_line (
-	-- Draws a named track line.
-	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor; -- reset_n
-		line			: in et_pcb.type_conductor_line;
-		log_threshold	: in type_log_level) is
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure add_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_pcb.pac_conductor_lines;
+				net			: in out type_net) 
+			is
+				use pac_conductor_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -1752,6 +1753,7 @@ package body et_board_ops is
 
 	end draw_track_line;
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
@@ -1766,15 +1768,15 @@ package body et_board_ops is
 		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		length			: in type_distance_positive;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_conductor_line;
+		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1820,6 +1822,7 @@ package body et_board_ops is
 		
 	end draw_track_line;
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis.
@@ -1835,15 +1838,15 @@ package body et_board_ops is
 		direction		: in type_rotation;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_conductor_line;
+		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1888,6 +1891,7 @@ package body et_board_ops is
 
 	end draw_track_line;
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends at the given point.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
@@ -1900,15 +1904,15 @@ package body et_board_ops is
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
 		end_point		: in type_point;
-		log_threshold	: in type_log_level) is
-		
+		log_threshold	: in type_log_level) 
+	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_conductor_line;
+		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1948,6 +1952,7 @@ package body et_board_ops is
 		
 	end draw_track_line;
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track runs into the 
 	-- given direction and ends after the given number of notches along the given axis.
@@ -1962,15 +1967,15 @@ package body et_board_ops is
 		terminal		: in pac_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_conductor_line;
+		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -2013,23 +2018,22 @@ package body et_board_ops is
 		add_named_track (module_cursor, net_name, line);
 
 	end draw_track_line;
+
 	
 	procedure draw_track_arc (
-	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		arc				: in et_pcb.type_conductor_arc;
-		log_threshold	: in type_log_level) is
-
+		arc				: in type_conductor_arc;
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.pac_conductor_arcs;
+		use pac_conductor_arcs;
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			append (
 				container	=> module.board.conductors.arcs,
 				new_item	=> arc);
@@ -2223,9 +2227,8 @@ package body et_board_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.pac_conductor_lines;
-		use et_pcb.pac_conductor_arcs;
+		use pac_conductor_lines;
+		use pac_conductor_arcs;
 
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 
@@ -2234,12 +2237,12 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			line_cursor : et_pcb.pac_conductor_lines.cursor := module.board.conductors.lines.first;
-			arc_cursor  : et_pcb.pac_conductor_arcs.cursor := module.board.conductors.arcs.first;
+			line_cursor : pac_conductor_lines.cursor := module.board.conductors.lines.first;
+			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
-			while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
+			while line_cursor /= pac_conductor_lines.no_element loop
 
 				if on_segment (point, layer, line_cursor) then
 					delete (module.board.conductors.lines, line_cursor);
@@ -2253,7 +2256,7 @@ package body et_board_ops is
 			-- probe arcs if no line found.
 			-- If a matching arc found, delete it and abort iteration.
 			if not deleted then
-				while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
+				while arc_cursor /= pac_conductor_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor) then
 						delete (module.board.conductors.arcs, arc_cursor);
@@ -2284,12 +2287,12 @@ package body et_board_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-				arc_cursor  : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
+				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+				arc_cursor  : pac_conductor_arcs.cursor := net.route.arcs.first;
 			begin
 				-- first probe the lines. If a matching line found, delete it 
 				-- and abort iteration.
-				while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
+				while line_cursor /= pac_conductor_lines.no_element loop
 
 					if on_segment (point, layer, line_cursor) then
 						delete (net.route.lines, line_cursor);
@@ -2303,7 +2306,7 @@ package body et_board_ops is
 				-- probe arcs if no line found.
 				-- If a matching arc found, delete it and abort iteration.
 				if not deleted then
-					while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
+					while arc_cursor /= pac_conductor_arcs.no_element loop
 
 						if on_segment (point, layer, arc_cursor) then
 							delete (net.route.arcs, arc_cursor);
@@ -2369,6 +2372,7 @@ package body et_board_ops is
 		
 	end ripup_track_segment;
 
+	
 -- ROUTE RESTRICT
 
 	procedure test_layers (
@@ -2391,8 +2395,8 @@ package body et_board_ops is
 	procedure draw_route_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_lines;
@@ -2425,12 +2429,12 @@ package body et_board_ops is
 		
 	end draw_route_restrict_line;
 
+	
 	procedure draw_route_restrict_arc (
-	-- Draws a route restrict arc.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_arcs;

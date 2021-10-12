@@ -75,6 +75,7 @@ with et_conductor_polygons;		use et_conductor_polygons;
 with et_conductor_polygons.boards;
 with et_conductor_text;			use et_conductor_text;
 with et_conductor_text.boards;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.boards;
 with et_stencil;				use et_stencil;
@@ -598,11 +599,12 @@ package body et_kicad_to_native is
 					end loop;
 				end query_segments;
 
+				
 				procedure move_route is
 				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
 
-					use et_pcb.pac_conductor_lines;
-					use et_pcb.pac_conductor_arcs;
+					use pac_conductor_lines;
+					use pac_conductor_arcs;
 					
 					use et_vias;
 					use pac_vias;
@@ -610,16 +612,15 @@ package body et_kicad_to_native is
 					use et_conductor_polygons.boards;
 					use pac_signal_polygons_solid;
 					
-					line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-					arc_cursor	: et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
+					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+					arc_cursor	: pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
 					poly_cursor	: pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
+
 					
-					procedure move_line (line : in out et_pcb.type_conductor_line) is
-						use et_pcb;
-					begin
+					procedure move_line (line : in out type_conductor_line) is begin
 						log (text => board_track & "line", level => log_threshold + 4);
 						log_indentation_up;
 
@@ -633,9 +634,8 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_line;
 
-					procedure move_arc (arc : in out et_pcb.type_conductor_arc) is
-						use et_pcb;
-					begin
+					
+					procedure move_arc (arc : in out type_conductor_arc) is begin
 						log (text => board_track & "arc", level => log_threshold + 4);
 						log_indentation_up;
 
@@ -650,6 +650,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_arc;
 
+					
 					procedure move_via (via : in out type_via) is
 						use et_pcb_coordinates.pac_geometry_brd;
 					begin
@@ -665,16 +666,18 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
+					
 					procedure move_polygon (polygon : in out type_polygon_conductor_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 					end move_polygon;
+
 					
 				begin -- move_route
 					
 					-- Move lines:
-					while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
-						et_pcb.pac_conductor_lines.update_element (
+					while line_cursor /= pac_conductor_lines.no_element loop
+						pac_conductor_lines.update_element (
 							container 	=> net.route.lines,
 							position	=> line_cursor,
 							process		=> move_line'access);
@@ -683,8 +686,8 @@ package body et_kicad_to_native is
 					end loop;
 
 					-- Move arcs:
-					while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
-						et_pcb.pac_conductor_arcs.update_element (
+					while arc_cursor /= pac_conductor_arcs.no_element loop
+						pac_conductor_arcs.update_element (
 							container 	=> net.route.arcs,
 							position	=> arc_cursor,
 							process		=> move_arc'access);
@@ -1863,14 +1866,14 @@ package body et_kicad_to_native is
 
 			
 			procedure move_copper is
-				use et_pcb.pac_conductor_lines;
-				lines_cursor : et_pcb.pac_conductor_lines.cursor;
+				use pac_conductor_lines;
+				lines_cursor : pac_conductor_lines.cursor;
 
-				use et_pcb.pac_conductor_arcs;
-				arcs_cursor : et_pcb.pac_conductor_arcs.cursor;
+				use pac_conductor_arcs;
+				arcs_cursor : pac_conductor_arcs.cursor;
 
-				use et_pcb.pac_conductor_circles;
-				circles_cursor : et_pcb.pac_conductor_circles.cursor;
+				use pac_conductor_circles;
+				circles_cursor : pac_conductor_circles.cursor;
 
 				use et_conductor_polygons.boards;
 				use pac_conductor_polygons_floating_solid;
@@ -1887,10 +1890,9 @@ package body et_kicad_to_native is
 				placeholders_cursor : et_pcb.pac_text_placeholders_conductors.cursor;
 				
 				board_copper : constant string := "board copper ";
+
 				
-				procedure move_line (line : in out et_pcb.type_conductor_line) is
-					use et_pcb;
-				begin
+				procedure move_line (line : in out type_conductor_line) is begin
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1905,9 +1907,7 @@ package body et_kicad_to_native is
 				end move_line;
 
 
-				procedure move_arc (arc : in out et_pcb.type_conductor_arc) is
-					use et_pcb;
-				begin
+				procedure move_arc (arc : in out type_conductor_arc) is begin
 					log (text => board_copper & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1923,7 +1923,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_circle (circle : in out et_pcb.type_conductor_circle) is
+				procedure move_circle (circle : in out type_conductor_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
@@ -1988,8 +1988,8 @@ package body et_kicad_to_native is
 				
 				-- LINES
 				lines_cursor := module.board.conductors.lines.first;
-				while lines_cursor /= et_pcb.pac_conductor_lines.no_element loop
-					et_pcb.pac_conductor_lines.update_element (
+				while lines_cursor /= pac_conductor_lines.no_element loop
+					pac_conductor_lines.update_element (
 						container	=> module.board.conductors.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -2000,8 +2000,8 @@ package body et_kicad_to_native is
 				
 				-- ARCS
 				arcs_cursor := module.board.conductors.arcs.first;
-				while arcs_cursor /= et_pcb.pac_conductor_arcs.no_element loop
-					et_pcb.pac_conductor_arcs.update_element (
+				while arcs_cursor /= pac_conductor_arcs.no_element loop
+					pac_conductor_arcs.update_element (
 						container	=> module.board.conductors.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -2012,8 +2012,8 @@ package body et_kicad_to_native is
 				
 				-- CIRCLES
 				circles_cursor := module.board.conductors.circles.first;
-				while circles_cursor /= et_pcb.pac_conductor_circles.no_element loop
-					et_pcb.pac_conductor_circles.update_element (
+				while circles_cursor /= pac_conductor_circles.no_element loop
+					pac_conductor_circles.update_element (
 						container	=> module.board.conductors.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);

@@ -38,6 +38,7 @@
 --with ada.text_io;					use ada.text_io;
 
 with et_pcb;						use et_pcb;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_conductor_text.boards;		use et_conductor_text.boards;
@@ -110,6 +111,7 @@ is
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
+
 	
 	procedure query_line (c : in pac_conductor_lines.cursor) is begin
 
@@ -128,6 +130,7 @@ is
 		end if;
 	end query_line;
 
+	
 	procedure query_arc (c : in pac_conductor_arcs.cursor) is begin
 
 		-- Draw the arc if it is in theh current layer:
@@ -145,8 +148,8 @@ is
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in et_pcb.pac_conductor_circles.cursor) is 
-	begin
+	
+	procedure query_circle (c : in pac_conductor_circles.cursor) is begin
 		-- Draw the circle if it is in the current layer:
 		if element (c).layer = current_layer then
 			

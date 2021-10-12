@@ -70,7 +70,8 @@ with et_pick_and_place;
 with et_devices;				use et_devices;
 with et_conventions;
 with et_design_rules;			use et_design_rules;
-with et_conductor_text.boards;	use et_conductor_text.boards;
+with et_conductor_text.boards;		use et_conductor_text.boards;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_conductor_polygons;		use et_conductor_polygons;
 with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
@@ -232,27 +233,30 @@ package et_board_ops is
 	
 -- TRACKS AND FREETRACKS
 
-	procedure add_named_track (
 	-- Adds a line track segment to the given net in the given module.
+	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_conductor_line);
+		line			: in type_conductor_line);
+
 	
-	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
+	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_conductor_line;
+		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);
 
-	procedure draw_track_line (
+	
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
+	procedure draw_track_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
-		line			: in et_pcb.type_conductor_line;
+		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
@@ -269,6 +273,7 @@ package et_board_ops is
 		length			: in type_distance_positive;
 		log_threshold	: in type_log_level);
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis.
@@ -286,6 +291,7 @@ package et_board_ops is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level);
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends at the given point.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
@@ -300,6 +306,7 @@ package et_board_ops is
 		end_point		: in type_point;
 		log_threshold	: in type_log_level);
 
+	
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track runs into the 
 	-- given direction and ends after the given number of notches along the given axis.
@@ -315,12 +322,13 @@ package et_board_ops is
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level);
+
 	
-	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
+	procedure draw_track_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		arc				: in et_pcb.type_conductor_arc;
+		arc				: in type_conductor_arc;
 		log_threshold	: in type_log_level);
 
 	-- Places a via in the given net:

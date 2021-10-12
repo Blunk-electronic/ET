@@ -57,6 +57,7 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_meta;
+with et_conductor_segment.boards;
 with et_conductor_polygons;
 with et_conductor_polygons.boards;
 with et_conductor_text.boards;

@@ -297,15 +297,16 @@ is
 			-- Queries the conductor segments of foregin nets.
 			procedure query_net (nf : in pac_nets.cursor) is
 				use et_nets.pac_net_name;
-				use et_pcb.pac_conductor_lines;
-				use et_pcb.pac_conductor_arcs;
+				use pac_conductor_lines;
+				use pac_conductor_arcs;
 
 				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
 				clearances : pac_distances_positive.list;
 
-				procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
-					segment : type_conductor_line_segment;
+				procedure query_line (c : in pac_conductor_lines.cursor) is
+					segment : et_conductor_segment.type_conductor_line_segment;
+					use et_conductor_segment;
 				begin
 					if element (c).layer = layer then
 						log (text => "segment " & to_string (element (c)), level => lth + 3);
@@ -323,8 +324,9 @@ is
 					end if;
 				end query_line;
 
-				procedure query_arc (c : in et_pcb.pac_conductor_arcs.cursor) is
-					segment : type_conductor_arc_segment;
+				procedure query_arc (c : in pac_conductor_arcs.cursor) is
+					segment : et_conductor_segment.type_conductor_arc_segment;
+					use et_conductor_segment;
 				begin
 					if element (c).layer = layer then
 						log (text => "segment " & to_string (element (c)), level => lth + 3);

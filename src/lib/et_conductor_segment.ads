@@ -100,6 +100,7 @@ package et_conductor_segment is
 		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in type_log_level);
 
+
 	
 
 -- ARCS
@@ -107,6 +108,7 @@ package et_conductor_segment is
 		width	: type_track_width;
 	end record;
 
+	
 	type type_conductor_arc_segment is private;
 
 	function to_string (segment : in type_conductor_arc_segment)
@@ -152,9 +154,9 @@ package et_conductor_segment is
 -- CIRCLES
 	type type_conductor_circle (
 		filled		: type_filled;
-		fill_style	: type_fill_style -- don't care if filled is NO
-		)
-		is new type_circle with record
+		fill_style	: type_fill_style) -- don't care if filled is NO
+		is new type_circle 
+	with record
 		case filled is
 			when NO => 
 				-- the line width of the circumfence:
@@ -178,6 +180,7 @@ package et_conductor_segment is
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in type_log_level);
+
 
 	
 	
