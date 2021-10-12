@@ -235,38 +235,34 @@ is
 					distance : type_distance;
 					clearances : pac_distances_positive.list;
 
-					procedure query_lines is 
-						use pac_conductor_lines;
-						l : pac_conductor_lines.cursor := net.route.lines.first;
+					use pac_conductor_lines;
+					
+					procedure query_line (c : in pac_conductor_lines.cursor) is
 						segment_line : et_conductor_segment.type_conductor_line_segment;
 					begin
-						while l /= pac_conductor_lines.no_element and result = true loop
-							if element (l).layer = layer then
-								segment_line := to_line_segment (element (l));
-								log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
-								distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
-								test_distance (distance, lth + 4);
-							end if;
-							next (l);
-						end loop;
-					end query_lines;
+						if element (c).layer = layer then
+							segment_line := to_line_segment (element (c));
+							log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
+							distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
+							test_distance (distance, lth + 4);
+						end if;
+					end query_line;
+
 					
-					procedure query_arcs is 
-						use pac_conductor_arcs;
-						a : pac_conductor_arcs.cursor := net.route.arcs.first;
+					use pac_conductor_arcs;					
+
+					procedure query_arc (c : pac_conductor_arcs.cursor) is 
 						segment_arc : et_conductor_segment.type_conductor_arc_segment;
 					begin
-						while a /= pac_conductor_arcs.no_element and result = true loop
-							if element (a).layer = layer then
-								segment_arc := to_arc_segment (element (a));
-								log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
-								distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
-								test_distance (distance, lth + 4);
-							end if;
-							next (a);
-						end loop;
-					end query_arcs;
+						if element (c).layer = layer then
+							segment_arc := to_arc_segment (element (c));
+							log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
+							distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
+							test_distance (distance, lth + 4);
+						end if;
+					end query_arc;
 
+					
 					procedure query_vias is
 						use et_vias;
 						use pac_vias;
@@ -339,12 +335,16 @@ is
 
 					greatest_clearance := get_greatest (clearances);
 					
-					query_lines;
+					iterate (
+						lines	=> net.route.lines,
+						process	=> query_line'access,
+						proceed	=> result'access);
 
-					if result = true then
-						query_arcs;
-					end if;
-
+					iterate (
+						arcs	=> net.route.arcs,
+						process	=> query_arc'access,
+						proceed	=> result'access);
+					
 					if result = true then
 						query_vias;
 					end if;
