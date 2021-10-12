@@ -262,11 +262,11 @@ is
 						end if;
 					end query_arc;
 
+
+					use et_vias;
+					use pac_vias;
 					
-					procedure query_vias is
-						use et_vias;
-						use pac_vias;
-						v : pac_vias.cursor := net.route.vias.first;
+					procedure query_via (v : in pac_vias.cursor) is
 						c : type_circle;
 
 						procedure set_radius (restring : in type_restring_width) is begin
@@ -282,45 +282,43 @@ is
 							end if;							
 						end set_radius;
 						
-					begin -- query_vias
-						while v /= pac_vias.no_element and result = true loop
+					begin -- query_via
+						c.center := element (v).position;
+						log (text => to_string (element (v)), level => lth + 3);
+						
+						case element (v).category is
+							when THROUGH =>
+								if is_inner_layer (layer) then
+									set_radius (element (v).restring_inner);
+								else
+									set_radius (element (v).restring_outer);
+								end if;
+								
+							when BURIED =>
+								if buried_via_uses_layer (element (v), layer) then
+									set_radius (element (v).restring_inner);
+								end if;
+								
+							when BLIND_DRILLED_FROM_TOP =>
+								if layer = type_signal_layer'first then
+									set_radius (element (v).restring_top);
 
-							c.center := element (v).position;
-							log (text => to_string (element (v)), level => lth + 3);
-							
-							case element (v).category is
-								when THROUGH =>
-									if is_inner_layer (layer) then
-										set_radius (element (v).restring_inner);
-									else
-										set_radius (element (v).restring_outer);
-									end if;
-									
-								when BURIED =>
-									if buried_via_uses_layer (element (v), layer) then
-										set_radius (element (v).restring_inner);
-									end if;
-									
-								when BLIND_DRILLED_FROM_TOP =>
-									if layer = type_signal_layer'first then
-										set_radius (element (v).restring_top);
+								elsif blind_via_uses_layer (element (v), layer) then
+									set_radius (element (v).restring_inner);
+								end if;
 
-									elsif blind_via_uses_layer (element (v), layer) then
-										set_radius (element (v).restring_inner);
-									end if;
+							when BLIND_DRILLED_FROM_BOTTOM =>
+								if layer = bottom_layer then
+									set_radius (element (v).restring_bottom);
 
-								when BLIND_DRILLED_FROM_BOTTOM =>
-									if layer = bottom_layer then
-										set_radius (element (v).restring_bottom);
+								elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
+									set_radius (element (v).restring_inner);
+								end if;
+						end case;
 
-									elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
-										set_radius (element (v).restring_inner);
-									end if;
-							end case;
-
-							next (v);
-						end loop;
-					end query_vias;
+							--next (v);
+						--end loop;
+					end query_via;
 
 					
 				begin -- query_segments_and_vias
@@ -345,9 +343,10 @@ is
 						process	=> query_arc'access,
 						proceed	=> result'access);
 					
-					if result = true then
-						query_vias;
-					end if;
+					iterate (
+						vias	=> net.route.vias,
+						process	=> query_via'access,
+						proceed	=> result'access);
 				
 					log_indentation_down;
 				end query_segments_and_vias;

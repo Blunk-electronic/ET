@@ -112,6 +112,22 @@ package body et_vias is
 		end case;
 	end blind_via_uses_layer;
 
+
+	procedure iterate (
+		vias	: in pac_vias.list;
+		process	: not null access procedure (position : in pac_vias.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_vias;
+		c : pac_vias.cursor := vias.first;
+	begin
+		while c /= pac_vias.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
 	
 	function to_string (via : in type_via) return string is
 		

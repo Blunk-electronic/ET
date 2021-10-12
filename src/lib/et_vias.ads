@@ -191,6 +191,14 @@ package et_vias is
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 
 
+	-- Iterates the vias. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		vias	: in pac_vias.list;
+		process	: not null access procedure (position : in pac_vias.cursor);
+		proceed	: not null access boolean);
+
+	
+
 	via_text_font : constant et_text.type_font := (
 		family	=> et_text.to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
