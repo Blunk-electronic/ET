@@ -262,6 +262,8 @@ package et_routing is
 	end record;
 
 
+	type type_observe_foreign_nets is new boolean;
+	
 	
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is

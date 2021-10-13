@@ -530,9 +530,9 @@ is
 
 			boundaries_track : type_boundaries;
 			
-			
-			procedure query_device (c : in pac_devices_sch.cursor) is
-
+			procedure query_package (
+				observe_foreign_nets : in type_observe_foreign_nets) 
+			is
 				procedure query_texts is 
 					use et_conductor_text;
 
@@ -636,8 +636,17 @@ is
 					end if;
 				end query_texts;
 
-				
-			begin -- query_device
+			begin
+				query_texts;			
+				-- CS terminals + net
+
+				-- CS conductors
+				-- CS route/via restrict
+				-- CS holes
+			end query_package;
+
+			
+			procedure query_device (c : in pac_devices_sch.cursor) is begin
 				log (text => "device " & to_string (key (c)), level => lth + 2);
 				log_indentation_up;
 
@@ -645,19 +654,14 @@ is
 					model := get_package_model (c);
 
 					log (text => "model " & to_string (model), level => lth + 3);
+					
 					-- locate the package model in the package library:
 					package_cursor := locate_package_model (model);
 
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
-					query_texts;			
-					-- CS terminals + net
-
-					-- CS conductors
-					-- CS route/via restrict
-					-- CS holes
-					
+					query_package (observe_foreign_nets => true);
 				end if;
 
 				log_indentation_down;
@@ -666,22 +670,20 @@ is
 			
 			use pac_devices_non_electric;
 			
-			procedure query_device (c : in pac_devices_non_electric.cursor) is
-			begin
+			procedure query_device (c : in pac_devices_non_electric.cursor) is begin
 				log (text => "device " & to_string (key (c)), level => lth + 2);
 				log_indentation_up;
 
 				model := element (c).package_model;
 				log (text => "model " & to_string (model), level => lth + 3);
 
+				-- locate the package model in the package library:
+				package_cursor := locate_package_model (model);
 
-				-- CS query_texts;
-				
-				-- CS terminals without nets !
-					-- CS conductors
-					-- CS route/via restrict
-					-- CS holes
+				package_position := element (c).position;
+				package_flipped := element (c).flipped;
 
+				query_package (observe_foreign_nets => false);
 				
 				log_indentation_down;
 			end query_device;

@@ -482,9 +482,10 @@ is
 			package_cursor		: pac_packages_lib.cursor;
 			package_position	: type_package_position; -- incl. rotation and face
 			package_flipped		: type_flipped;
-			
-			procedure query_device (c : in pac_devices_sch.cursor) is
 
+			procedure query_package (
+				observe_foreign_nets : in type_observe_foreign_nets := FALSE) 
+			is
 				procedure query_texts is 
 					use et_conductor_text;
 					
@@ -641,8 +642,17 @@ is
 					end if;
 				end query_texts;
 
-				
-			begin -- query_device
+			begin
+				query_texts;			
+				-- CS terminals + net
+
+				-- CS conductors
+				-- CS route/via restrict
+				-- CS holes
+			end query_package;
+
+			
+			procedure query_device (c : in pac_devices_sch.cursor) is begin
 				if is_real (c) then
 					log (text => "device " & to_string (key (c)), level => lth + 2);
 					log_indentation_up;
@@ -656,22 +666,16 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 					
-					query_texts;
-					-- CS terminals + net
-					-- CS conductors
-					-- CS route/via restrict
-					-- CS holes
+					query_package (observe_foreign_nets => true);
 					
-					log_indentation_down;
-					
+					log_indentation_down;					
 				end if;
 			end query_device;
 
 			
 			use pac_devices_non_electric;
 			
-			procedure query_device (c : in pac_devices_non_electric.cursor) is
-			begin
+			procedure query_device (c : in pac_devices_non_electric.cursor) is begin
 				log (text => "device " & to_string (key (c)), level => lth + 2);
 				log_indentation_up;
 
@@ -684,14 +688,7 @@ is
 				package_position := element (c).position;
 				package_flipped := element (c).flipped;
 				
-				-- CS query_texts;
-				--query_texts;
-
-				-- CS terminals without nets !
-					-- CS conductors
-					-- CS route/via restrict
-					-- CS holes
-
+				query_package (observe_foreign_nets => false);
 				
 				log_indentation_down;
 			end query_device;
