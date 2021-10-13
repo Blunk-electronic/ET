@@ -479,12 +479,14 @@ package body et_geometry is
 			
 		end to_point;
 
+		
 		function to_distance_relative (p : in type_point)
 			return type_distance_relative
 		is begin
 			return (p.x, p.y);
 		end to_distance_relative;
 
+		
 		function invert (d : in type_distance_relative)
 			return type_distance_relative
 		is begin
@@ -4487,7 +4489,8 @@ package body et_geometry is
 
 			-- Due to unavoidable errors this threshold is used
 			-- instead of 0.0 when detecting the distance to the circle:
-			th : constant type_float_internal := 1.0E-17; -- CS refine
+			--th : constant type_float_internal := 1.0E-17; -- CS refine
+			th : constant type_float_internal := 1.0E-14; -- CS refine
 
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
@@ -4561,7 +4564,9 @@ package body et_geometry is
 
 			-- Theoretically the comparison should be against 0.0. 
 			-- See comments on th above.
-			if d < - th then
+			--put_line (type_float_internal'image (d));
+			
+			if d < (-th) then
 				
 				--put_line ("none");
 				

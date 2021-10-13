@@ -315,9 +315,6 @@ is
 									set_radius (element (v).restring_inner);
 								end if;
 						end case;
-
-							--next (v);
-						--end loop;
 					end query_via;
 
 					
