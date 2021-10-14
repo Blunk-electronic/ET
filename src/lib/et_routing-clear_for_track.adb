@@ -41,8 +41,11 @@ separate (et_routing)
 
 function clear_for_track (
 	module_cursor	: in pac_generic_modules.cursor;
+	design_rules	: in type_design_rules;
+	bottom_layer	: in type_signal_layer;
 	start_point		: in type_point;
 	net_cursor		: in et_schematic.pac_nets.cursor;
+	net_class		: in type_net_class;
 	fill_zone		: in type_fill_zone;
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
@@ -64,15 +67,9 @@ is
 	start_point_boundaries : type_boundaries;
 
 
-	
-	-- get the design rules of the module:
-	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
-
 	-- The top conductor layer 1 is always there:
-	top_layer		: constant type_signal_layer := type_signal_layer'first;
+	top_layer : constant type_signal_layer := type_signal_layer'first;
 
-	-- The deepest conductor layer towards bottom is defined by the layer stack:
-	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 	
 	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
 		if layer > top_layer and layer < bottom_layer then
@@ -82,12 +79,6 @@ is
 		end if;
 	end is_inner_layer;		
 
-
-	use et_pcb;
-	
-	-- Get the net class settings of the given net.
-	-- If no net was given (freetrack), then we get the settings of class "default":
-	class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
 
 	greatest_clearance : type_distance_positive;
@@ -321,7 +312,7 @@ is
 				begin -- query_segments_and_vias
 					log_indentation_up;
 					
-					clearances.append (class_given_net.clearance);
+					clearances.append (net_class.clearance);
 					clearances.append (class_foregin_net.clearance);
 
 					if fill_zone.observe then 
@@ -446,7 +437,7 @@ is
 
 			-- COLLECT CLEARANCES
 			-- net specific:
-			clearances.append (class_given_net.clearance);
+			clearances.append (net_class.clearance);
 
 			-- fill zone specific:
 			if fill_zone.observe then 
@@ -609,7 +600,7 @@ is
 						
 						-- COLLECT CLEARANCES
 						-- net specific:
-						clearances.append (class_given_net.clearance);
+						clearances.append (net_class.clearance);
 
 						-- fill zone specific:
 						if fill_zone.observe then 

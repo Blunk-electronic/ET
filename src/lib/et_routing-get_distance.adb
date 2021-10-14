@@ -41,10 +41,13 @@ separate (et_routing)
 
 function get_distance (
 	module_cursor	: in pac_generic_modules.cursor;
+	design_rules	: in type_design_rules;
+	bottom_layer	: in type_signal_layer;
 	start_point		: in type_point;
 	place			: in type_place := BEFORE;
 	direction		: in type_rotation := zero_rotation;
 	net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+	net_class		: in type_net_class;
 	fill_zone		: in type_fill_zone;
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
@@ -55,14 +58,9 @@ is
 	probe_ray : constant type_ray := (to_vector (start_point), direction);
 	probe_line : constant type_line_vector := to_line_vector (probe_ray);
 
-	-- get the design rules of the module:
-	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
-	
 	-- The top conductor layer 1 is always there:
-	top_layer		: constant type_signal_layer := type_signal_layer'first;
+	top_layer : constant type_signal_layer := type_signal_layer'first;
 
-	-- The deepest conductor layer towards bottom is defined by the layer stack:
-	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 	
 	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
 		if layer > top_layer and layer < bottom_layer then
@@ -73,20 +71,12 @@ is
 	end is_inner_layer;		
 
 
-	use et_pcb;
-	
-	-- Get the net class settings of the given net.
-	-- If no net was given (freetrack), then we get the settings of class "default":
-	class_given_net : constant type_net_class := get_net_class (module_cursor, net_cursor);
 
-
-	-- CS prepare the basic set of clearances
-	--clearances_basic : pac_distances_positive.list;
-	--clearances_basic.append (class_given_net.clearance);
-
-	--if fill_zone.observe then 
-		--clearances_basic.append (fill_zone.outline.isolation);
-	--end if;
+	-- The basic set of clearances contains
+	-- the polygon isolation and the clearance of the given net.
+	-- Some procedure may extend this set by other clearances (in their own local sets).
+	-- The greatest clearance them will be applied to the track clearance.
+	clearances_basic : pac_distances_positive.list;
 
 	
 	
@@ -302,7 +292,10 @@ is
 
 				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
-				clearances : pac_distances_positive.list;
+				-- The clearance to foregin nets is the greatest of several different distances.
+				-- The greatest of them will later be applied to the track clearance.
+				-- We start with the set of basic clearances in this local set:
+				clearances : pac_distances_positive.list := clearances_basic;
 
 				procedure query_line (c : in pac_conductor_lines.cursor) is
 					segment : et_conductor_segment.type_conductor_line_segment;
@@ -393,14 +386,9 @@ is
 				end query_via;
 
 				procedure query_segments_and_vias is begin
-					-- The clearance to foregin nets is the greatest of several different distances.
-					-- The greatest of them will later be applied to the track clearance.
-					clearances.append (class_given_net.clearance);
-					clearances.append (class_foregin_net.clearance);
 
-					if fill_zone.observe then 
-						clearances.append (fill_zone.outline.isolation);
-					end if;
+					-- Add the clearance of the foregin net:
+					clearances.append (class_foregin_net.clearance);
 
 					track.clearance	:= get_greatest (clearances);
 					track_dimensions := get_dimensions (track);
@@ -490,22 +478,11 @@ is
 				end if;
 			end query_text;
 
-			clearances : pac_distances_positive.list;
-
 		begin
 			log (text => "probing vector texts ...", level => lth + 1);
 			log_indentation_up;
 
-			-- The clearance to the text is the greatest of 
-			-- either the polygon isolation or the clearance of the given net.
-			-- The greatest of them will be applied to the track clearance.
-			clearances.append (class_given_net.clearance);
-
-			if fill_zone.observe then 
-				clearances.append (fill_zone.outline.isolation);
-			end if;
-
-			track.clearance	:= get_greatest (clearances);
+			track.clearance	:= get_greatest (clearances_basic);
 			track_dimensions := get_dimensions (track);
 
 			boundaries_track := track_dimensions.boundaries;
@@ -536,7 +513,6 @@ is
 				procedure query_texts is 
 					use et_conductor_text;
 
-					clearances : pac_distances_positive.list;
 					query_face : type_face;
 					
 					procedure query_text (c : in packages.pac_conductor_texts.cursor) is
@@ -614,16 +590,7 @@ is
 					
 				begin
 					if not is_inner_layer (layer) then
-						-- The clearance to the text is the greatest of 
-						-- either the polygon isolation or the clearance of the given net.
-						-- The greatest of them will be applied to the track clearance.
-						clearances.append (class_given_net.clearance);
-
-						if fill_zone.observe then 
-							clearances.append (fill_zone.outline.isolation);
-						end if;
-
-						track.clearance	:= get_greatest (clearances);
+						track.clearance	:= get_greatest (clearances_basic);
 						track_dimensions := get_dimensions (track);
 
 						boundaries_track := track_dimensions.boundaries;
@@ -759,8 +726,8 @@ is
 		while c /= pac_points_after_obstacles.no_element loop
 
 			if clear_for_track (
-				module_cursor, element (c), net_cursor,
-				fill_zone, layer, width, ignore_same_net, lth + 1) 
+				module_cursor, design_rules, bottom_layer, element (c), net_cursor, 
+				net_class, fill_zone, layer, width, ignore_same_net, lth + 1) 
 			then
 				distance_after_obstacle := get_distance_total (start_point, element (c));
 				exit;
@@ -778,6 +745,18 @@ is
 
 	
 begin -- get_distance
+
+	
+	-- Setup the list of basic clearances:
+	clearances_basic.append (net_class.clearance);
+
+	if fill_zone.observe then 
+		clearances_basic.append (fill_zone.outline.isolation);
+	end if;
+
+
+	
+	
 	case place is
 		when BEFORE =>
 			log (text => "computing distance to obstacle from point" 
@@ -789,8 +768,8 @@ begin -- get_distance
 			
 			-- Test whether start_point is suitable to start a track.
 			-- At the given start_point or in its vicinity could be an obstacle already.
-			if clear_for_track (module_cursor, start_point, 
-				net_cursor, fill_zone, layer, width, ignore_same_net, lth + 1) 
+			if clear_for_track (module_cursor, design_rules, bottom_layer, start_point, 
+				net_cursor, net_class, fill_zone, layer, width, ignore_same_net, lth + 1) 
 			then
 				-- start_point qualifies to start a track
 

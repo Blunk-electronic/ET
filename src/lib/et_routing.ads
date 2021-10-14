@@ -50,7 +50,7 @@ with et_terminals;				use et_terminals;
 with et_devices;
 with et_packages;
 with et_schematic;
-with et_pcb;
+with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
@@ -294,10 +294,13 @@ package et_routing is
 	-- because some subprograms support only this direction.
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
+		design_rules	: in type_design_rules;
+		bottom_layer	: in type_signal_layer;
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
 		direction		: in type_rotation := zero_rotation;
 		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		net_class		: in type_net_class;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -312,8 +315,11 @@ package et_routing is
 	-- be used when filling fill areas (polygons):
 	function clear_for_track (
 		module_cursor	: in pac_generic_modules.cursor;
+		design_rules	: in type_design_rules;
+		bottom_layer	: in type_signal_layer;
 		start_point		: in type_point;
 		net_cursor		: in et_schematic.pac_nets.cursor;
+		net_class		: in type_net_class;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;

@@ -4600,6 +4600,11 @@ package body et_board_ops is
 
 		-- Get the design rules:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+
+		-- The deepest conductor layer towards bottom is defined by the layer stack:
+		bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
+
+
 		
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_point;
@@ -4698,6 +4703,9 @@ package body et_board_ops is
 			is
 				n : pac_nets.cursor := module.nets.first;
 
+				net_class : type_net_class;
+				
+				
 				procedure log_net_name is begin
 					log (text => "net " & to_string (key (n)), level => log_threshold + 2);
 				end log_net_name;
@@ -4770,9 +4778,12 @@ package body et_board_ops is
 							procedure get_distance_to_obstacle (start : in type_point) is 
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
+								design_rules	=> design_rules,
+								bottom_layer	=> bottom_layer,
 								start_point		=> start,
 								place			=> BEFORE,
 								net_cursor		=> n,
+								net_class		=> net_class,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
@@ -4794,9 +4805,12 @@ package body et_board_ops is
 							procedure get_distance_after_obstacle (start : in type_point) is 
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
+								design_rules	=> design_rules,
+								bottom_layer	=> bottom_layer,
 								start_point		=> start,
 								place			=> AFTER,
 								net_cursor		=> n,
+								net_class		=> net_class,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
 								width			=> element (p).width_min,
@@ -5056,6 +5070,8 @@ package body et_board_ops is
 				while n /= pac_nets.no_element loop
 
 					-- CS test if key (n) is in given list of nets
+
+					net_class := get_net_class (module_cursor, n);
 					
 					update_element (module.nets, n, route_solid'access);
 					update_element (module.nets, n, route_hatched'access);
@@ -5087,6 +5103,9 @@ package body et_board_ops is
 		-- Fill floating polygons if no explicit net names given:
 		if is_empty (nets) then
 			null;
+
+			-- use class settings of class "default":
+			
 			-- CS floating_polygons;
 		end if;
 
