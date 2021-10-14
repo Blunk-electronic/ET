@@ -484,7 +484,7 @@ is
 			package_flipped		: type_flipped;
 
 			procedure query_package (
-				observe_foreign_nets : in type_observe_foreign_nets := FALSE) 
+				observe_foreign_nets : in type_observe_foreign_nets) 
 			is
 				procedure query_texts is 
 					use et_conductor_text;
