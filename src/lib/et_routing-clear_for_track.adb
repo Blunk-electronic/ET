@@ -80,6 +80,13 @@ is
 	end is_inner_layer;		
 
 
+	-- The basic set of clearances contains
+	-- the polygon isolation and the clearance of the given net.
+	-- Some procedure may extend this set by other clearances (in their own local sets).
+	-- The greatest clearance them will be applied to the track clearance.
+	clearances_basic : pac_distances_positive.list;
+
+	
 
 	greatest_clearance : type_distance_positive;
 	
@@ -221,11 +228,13 @@ is
 				net  : in type_net) 
 			is
 				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
-						
+
+				clearances : pac_distances_positive.list := clearances_basic;
+
+				
 				procedure query_segments_and_vias is 
 					distance : type_distance;
-					clearances : pac_distances_positive.list;
-
+				
 					use pac_conductor_lines;
 					
 					procedure query_line (c : in pac_conductor_lines.cursor) is
@@ -312,15 +321,6 @@ is
 				begin -- query_segments_and_vias
 					log_indentation_up;
 					
-					clearances.append (net_class.clearance);
-					clearances.append (class_foregin_net.clearance);
-
-					if fill_zone.observe then 
-						clearances.append (fill_zone.outline.isolation);
-					end if;
-
-					greatest_clearance := get_greatest (clearances);
-					
 					iterate (
 						lines	=> net.route.lines,
 						process	=> query_line'access,
@@ -343,6 +343,12 @@ is
 			begin -- query_net
 				log (text => "net " & to_string (name), level => lth + 2);
 
+				-- Append the clearance of the foregin net and
+				-- select the greatest among the list of clearances:
+				clearances.append (class_foregin_net.clearance);
+				greatest_clearance := get_greatest (clearances);
+
+				
 				if ignore_same_net then
 					if net_cursor /= nf then
 						query_segments_and_vias;
@@ -372,11 +378,6 @@ is
 		procedure query_texts is
 			use et_conductor_text.boards;
 			use pac_conductor_texts;
-
-			-- There can be many clearances which must be taken into account.
-			-- The greatest among them will be relevant:
-			clearances : pac_distances_positive.list;
-			
 
 			procedure query_segment (
 				c : in pac_conductor_line_segments.cursor)
@@ -435,17 +436,8 @@ is
 			log (text => "probing texts ...", level => lth + 1);
 			log_indentation_up;
 
-			-- COLLECT CLEARANCES
-			-- net specific:
-			clearances.append (net_class.clearance);
-
-			-- fill zone specific:
-			if fill_zone.observe then 
-				clearances.append (fill_zone.outline.isolation);
-			end if;
-
 			-- choose the greatest clearance:
-			greatest_clearance := get_greatest (clearances);
+			greatest_clearance := get_greatest (clearances_basic);
 
 			-- Extend the radius of the circle_around_start_point by the clearance
 			-- and compute the boundaries of the circle:
@@ -481,7 +473,6 @@ is
 					use et_conductor_text;
 					
 					query_face : type_face;
-					clearances : pac_distances_positive.list;
 					
 					procedure query_text (c : in packages.pac_conductor_texts.cursor) is
 						t : packages.type_conductor_text := packages.pac_conductor_texts.element (c);
@@ -593,21 +584,13 @@ is
 
 					-- Take a copy of the initial circle_around_start_point_init:
 					circle_around_start_point : type_circle := circle_around_start_point_init;
+
 					
 				begin -- query_texts
 					if not is_inner_layer (layer) then
 						log_indentation_up;
 						
-						-- COLLECT CLEARANCES
-						-- net specific:
-						clearances.append (net_class.clearance);
-
-						-- fill zone specific:
-						if fill_zone.observe then 
-							clearances.append (fill_zone.outline.isolation);
-						end if;
-
-						greatest_clearance := get_greatest (clearances);
+						greatest_clearance := get_greatest (clearances_basic);
 						
 						-- Extend the radius of the circle_around_start_point by the
 						-- greatest clearance and compute the boundaries of the circle:
@@ -743,6 +726,18 @@ is
 	distance_to_edge : type_distance;
 	
 begin -- clear_for_track
+
+
+	-- Setup the list of basic clearances:
+	clearances_basic.append (net_class.clearance);
+
+	if fill_zone.observe then 
+		clearances_basic.append (fill_zone.outline.isolation);
+	end if;
+
+
+	
+
 	log (text => "----CLEAR FOR TRACK QUERY BEGIN-----", level => lth);
 	log (text => "probing whether point" & to_string (start_point) 
 			& " qualifies to start a track of width" & to_string (width)
