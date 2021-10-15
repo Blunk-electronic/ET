@@ -1735,7 +1735,7 @@ is
 
 	
 	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
-	device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
+	device_flipped	: et_packages.type_flipped := et_packages.flipped_default;
 	
 	procedure read_package is
 		kw : constant string := f (line, 1);
@@ -1750,7 +1750,7 @@ is
 		elsif kw = keyword_flipped then -- flipped no/yes
 			expect_field_count (line, 2);
 
-			device_flipped := et_pcb.to_flipped (f (line, 2));
+			device_flipped := et_packages.to_flipped (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -2098,7 +2098,7 @@ is
 		elsif kw = keyword_flipped then -- flipped no/yes
 			expect_field_count (line, 2);
 
-			device_flipped := et_pcb.to_flipped (f (line, 2));
+			device_flipped := et_packages.to_flipped (f (line, 2));
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 			expect_field_count (line, 2);
@@ -5618,7 +5618,7 @@ is
 							device_position := et_pcb_coordinates.package_position_default;
 
 							-- reset flip flag for next device
-							device_flipped := et_pcb.flipped_default;
+							device_flipped := et_packages.flipped_default;
 
 						when others => invalid_section;
 					end case;

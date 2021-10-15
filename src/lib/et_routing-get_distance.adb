@@ -636,32 +636,13 @@ is
 							when SMT =>
 								shape_smt := element (c).pad_shape_smt;
 								
-
-								rotate_by (position, rot (package_position));
-
-								--case element (c).face is
-									--when TOP =>
-										if package_flipped = YES then
-											mirror (position, Y);
-										end if;
-										
-									--when BOTTOM =>
-										--if package_flipped = NO then
-											--mirror (position, Y);
-										--end if;
-								--end case;
+								move_terminal (
+									term_pos	=> position,
+									outline		=> shape_smt,
+									flipped		=> package_flipped,
+									package_pos	=> package_position);
 								
-								move_by (position, to_distance_relative (package_position));
-
-								if package_flipped = YES then
-									rotate_by (shape_smt, add (rot (package_position), - rot (position)));
-									mirror (shape_smt, Y);
-								else
-									rotate_by (shape_smt, add (rot (package_position), rot (position)));
-								end if;
-								
-								move_by (shape_smt, to_distance_relative (position));
-								
+									
 								if shape_smt.contours.circular then
 									null; -- CS
 								else

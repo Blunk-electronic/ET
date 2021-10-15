@@ -361,7 +361,24 @@ package et_packages is
 
 	
 
-	
+
+	-- To indicate whether a package has been flipped in the board:
+	type type_flipped is (NO, YES);
+	flipped_default : constant type_flipped := NO;
+
+	function to_string (flipped : in type_flipped) return string;
+	function to_flipped (flipped : in string) return type_flipped;
+
+
+	-- Rotates/mirrors/moves the contours/outline of a terminal
+	-- according to the position and flip status of a package:
+	procedure move_terminal (
+		term_pos	: in out type_position; -- terminal position
+		outline		: in out type_polygon;	-- contours of terminal (smt or tht)
+		flipped		: in type_flipped;		-- package flip status
+		package_pos	: in type_package_position); -- package position
+		
+
 
 
 	-- Logs the properties of the given silk screen placeholder

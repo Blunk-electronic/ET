@@ -108,7 +108,6 @@ package body et_pcb is
 	
 
 	function package_position (position : in type_package_position) return string is
-	-- Returns the coordinates of a package (in a board) as string.
 	begin
 		return (" position" & to_string (type_point (position))
 			& " angle" & to_string (rot (position))
@@ -116,13 +115,6 @@ package body et_pcb is
 	end package_position;
 
 	
-	function to_string (flipped : in type_flipped) return string is begin
-		return to_lower (type_flipped'image (flipped));
-	end;
-
-	function to_flipped (flipped : in string) return type_flipped is begin
-		return type_flipped'value (flipped);
-	end;
 
 	
 	function to_mirror (

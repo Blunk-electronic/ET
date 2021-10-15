@@ -339,13 +339,6 @@ package et_pcb is
 	-- Returns the coordinates of a package (in a board) as string.
 
 
-	-- To indicate whether a package has been flipped by the operator:
-	type type_flipped is (NO, YES);
-	flipped_default : constant type_flipped := NO;
-
-	function to_string (flipped : in type_flipped) return string;
-	function to_flipped (flipped : in string) return type_flipped;
-
 
 	-- Maps from flip status to mirror status of a 
 	-- vector text:

@@ -238,8 +238,7 @@ package body et_packages is
 
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
-	-- Returns true if the given package is real (means it has a height).
-		use pac_packages_lib;
+			use pac_packages_lib;
 		cursor : pac_packages_lib.cursor;
 	begin
 		cursor := find (packages_lib, package_name);
@@ -255,8 +254,8 @@ package body et_packages is
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
-		return type_terminals.cursor is
-	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
+		return type_terminals.cursor 
+	is
 		terminal_cursor : type_terminals.cursor;
 
 		procedure query_terminals (
@@ -278,6 +277,63 @@ package body et_packages is
 
 	
 
+	function to_string (flipped : in type_flipped) return string is begin
+		return to_lower (type_flipped'image (flipped));
+	end;
+
+	function to_flipped (flipped : in string) return type_flipped is begin
+		return type_flipped'value (flipped);
+	end;
+
+	
+
+
+	procedure move_terminal (
+		term_pos	: in out type_position; -- terminal position
+		outline		: in out type_polygon;
+		flipped		: in type_flipped;
+		package_pos	: in type_package_position) 
+	is 
+		package_rotation : constant type_rotation := rot (package_pos);
+		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos);
+	begin
+		-- Rotate the given terminal position by the position of the package:
+		rotate_by (term_pos, package_rotation);
+
+		-- If the package is flipped, then the terminal position
+		-- must be mirrored along the Y axis.
+		if flipped = YES then mirror (term_pos, Y); end if;
+		
+		-- Move the given terminal position by the position of the package.
+		move_by (term_pos, package_position_relative);
+		-- The terminal position is now ready for drawing the terminal
+		-- name and the pad outline.
+
+		-- The terminal position will later be the offset by which the outline will be moved
+		-- to its final place.
+
+		
+		if flipped = YES then
+			-- The outline must be rotated by the rotation of the package
+			-- minus the rotation of the given position itself:
+			rotate_by (outline, add (package_rotation, - rot (term_pos)));
+
+			-- If the package is flipped, then the
+			-- given outline (of a pad or a milled hole)
+			-- must be mirrored along the Y axis.
+			mirror (outline, Y); 
+		else				
+			-- The outline must be rotated by the rotation of the package
+			-- plus the rotation of the given position itself:
+			rotate_by (outline, add (package_rotation, rot (term_pos)));
+		end if;
+		
+		-- Move the outline to its final position:
+		move_by (outline, to_distance_relative (term_pos));
+	end move_terminal;
+
+
+	
 	
 
 	procedure placeholder_silk_screen_properties (

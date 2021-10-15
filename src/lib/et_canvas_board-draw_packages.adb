@@ -83,7 +83,7 @@ is
 		device_purpose	: in et_devices.pac_device_purpose.bounded_string; -- brightness control
 		model			: in et_packages.pac_package_model_file_name.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		flip			: in et_pcb.type_flipped;
+		flip			: in et_packages.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
 		-- CS should improve performance:
@@ -2727,6 +2727,7 @@ is
 
 			-- Calculates the final position of the terminal and the 
 			-- rotated or mirrored outline.
+			-- CS use procedure et_packages.move_terminal instead
 			procedure move (
 				term_pos	: in out type_position; -- terminal position
 				outline		: in out type_polygon_base) is
@@ -2904,6 +2905,7 @@ is
 							-- Calculate the final position of the terminal and the
 							-- rotated or mirrored pad outline.
 							move (pad_pos, type_polygon_base (pad_outline));
+							-- CS use procedure et_packages.move_terminal
 							
 							-- draw the solder pad (conductor material):
 							if conductor_enabled (ly) then
@@ -2939,12 +2941,14 @@ is
 
 										-- compute final position of expanded stop mask opening
 										move (pad_pos, type_polygon_base (stop_mask_contours));
+										-- CS use procedure et_packages.move_terminal
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stop mask contours:
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
 										move (pad_pos, type_polygon_base (stop_mask_contours));
+										-- CS use procedure et_packages.move_terminal
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
@@ -2974,12 +2978,15 @@ is
 
 										-- compute final position of shrinked stencil opening
 										move (pad_pos, type_polygon_base (stencil_contours));
+										-- CS use procedure et_packages.move_terminal
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stencil contours:
 										pad_pos := pad_pos_in; -- get initial pad position
 										stencil_contours := stencil_in.contours;
 										move (pad_pos, type_polygon_base (stencil_contours));
+										-- CS use procedure et_packages.move_terminal
+										
 								end case;
 
 								set_color_stencil (context.cr, f, self.scale);
@@ -3022,7 +3029,8 @@ is
 							-- Calculate the final position of the terminal and the
 							-- rotated or mirrored pad outline.
 							move (pad_pos, type_polygon_base (pad_outline_outer_layer));
-
+							-- CS use procedure et_packages.move_terminal
+							
 							-- draw the outer solder pad contour:
 							if conductor_enabled (ly) then
 								case drilled_milled is
@@ -3039,6 +3047,7 @@ is
 										-- Calculate the final position of the milled hole:
 										pad_pos := pad_pos_in;
 										move (pad_pos, type_polygon_base (hole_outline));
+										-- CS use procedure et_packages.move_terminal
 										
 										draw_tht_pad_with_arbitrary_cutout (
 											outer_border	=> pad_outline_outer_layer,

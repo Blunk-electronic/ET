@@ -821,7 +821,7 @@ is
 					section_mark (section_package, HEADER);
 
 					-- Flip status:
-					write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (d).flipped));
+					write (keyword => keyword_flipped, parameters => et_packages.to_string (element (d).flipped));
 					
 					-- This is the position of the package in the layout, 
 					write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom

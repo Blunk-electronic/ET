@@ -197,7 +197,7 @@ package et_schematic is
 				-- or vice versa.
 				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
 				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
-				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
+				flipped				: et_packages.type_flipped := et_packages.flipped_default;
 				text_placeholders	: et_packages.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
@@ -553,7 +553,7 @@ package et_schematic is
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
+		flipped				: et_packages.type_flipped := et_packages.flipped_default;
 		text_placeholders	: et_packages.type_text_placeholders;
 		package_model		: et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 	end record;
