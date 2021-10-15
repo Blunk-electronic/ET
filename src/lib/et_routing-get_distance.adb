@@ -613,12 +613,33 @@ is
 						position : type_position := element (c).position;
 						shape_smt : type_polygon;
 
-						procedure query_segment (c : pac_polygon_segments.cursor) is begin
-							case element (c).shape is
-								when LINE	=> test_line (element (c).segment_line);
-								when ARC	=> test_arc (element (c).segment_arc);
-							end case;
-						end query_segment;
+
+						procedure move_outline is 
+
+							procedure query_segment (c : pac_polygon_segments.cursor) is begin
+								case element (c).shape is
+									when LINE	=> test_line (element (c).segment_line);
+									when ARC	=> test_arc (element (c).segment_arc);
+								end case;
+							end query_segment;
+
+						begin
+							shape_smt := element (c).pad_shape_smt;
+							
+							move_terminal (
+								term_pos	=> position,
+								outline		=> shape_smt,
+								flipped		=> package_flipped,
+								package_pos	=> package_position);
+							
+								
+							if shape_smt.contours.circular then
+								null; -- CS
+							else
+								iterate (shape_smt.contours.segments, query_segment'access);
+							end if;
+						end move_outline;
+
 						
 					begin
 						if observe_foreign_nets then
@@ -634,19 +655,30 @@ is
 								null;
 
 							when SMT =>
-								shape_smt := element (c).pad_shape_smt;
-								
-								move_terminal (
-									term_pos	=> position,
-									outline		=> shape_smt,
-									flipped		=> package_flipped,
-									package_pos	=> package_position);
-								
-									
-								if shape_smt.contours.circular then
-									null; -- CS
+								if package_flipped = NO then
+									case element (c).face is
+										when TOP =>
+											if layer = top_layer then
+												move_outline;
+											end if;
+
+										when BOTTOM =>
+											if layer = bottom_layer then
+												move_outline;
+											end if;
+									end case;
 								else
-									iterate (shape_smt.contours.segments, query_segment'access);
+									case element (c).face is
+										when TOP =>
+											if layer = bottom_layer then
+												move_outline;
+											end if;
+
+										when BOTTOM =>
+											if layer = top_layer then
+												move_outline;
+											end if;
+									end case;
 								end if;
 						end case;
 						
