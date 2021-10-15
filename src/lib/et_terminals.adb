@@ -232,6 +232,22 @@ package body et_terminals is
 
 		log_indentation_down;
 	end terminal_properties;
+
+
+	procedure iterate (
+		terminals	: in type_terminals.map;
+		process		: not null access procedure (position : type_terminals.cursor);
+		proceed		: not null access boolean)
+	is
+		use type_terminals;
+		c : type_terminals.cursor := terminals.first;
+	begin
+		while c /= type_terminals.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
 	
 end et_terminals;
 

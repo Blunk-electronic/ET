@@ -311,17 +311,24 @@ package et_terminals is
 
 	
 	
-	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
+	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	package type_terminals is new indefinite_ordered_maps (
+	package type_terminals is new indefinite_ordered_maps ( -- CS rename to pac_terminals
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal,
 		"<"				=> pac_terminal_name."<");
 
+
+	-- Iterates the terminate. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		terminals	: in type_terminals.map;
+		process		: not null access procedure (position : type_terminals.cursor);
+		proceed		: not null access boolean);
+	
 	
 end et_terminals;
 

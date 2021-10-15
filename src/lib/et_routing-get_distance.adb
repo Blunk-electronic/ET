@@ -126,7 +126,7 @@ is
 	-- start or the end of the break.
 	-- If there is a break then its position is sent to procedure
 	-- process_break for further processing.
-	procedure test_line (l : in type_line) is 
+	procedure test_line (l : in type_line) is -- CS pass log threshhold
 		b : constant type_break := 
 			get_break_by_line (track, track_dimensions, l, place, lth + 2);
 	begin
@@ -139,7 +139,7 @@ is
 
 	
 	-- See procedure test_line for details.
-	procedure test_arc (a : in type_arc) is
+	procedure test_arc (a : in type_arc) is -- CS pass log threshhold
 		b : constant type_break_double := 
 			get_break_by_arc (track, track_dimensions, a, place, lth + 2);
 	begin
@@ -161,7 +161,7 @@ is
 
 	
 	-- See procedure test_line for details.
-	procedure test_circle (c : in type_circle) is 
+	procedure test_circle (c : in type_circle) is  -- CS pass log threshhold
 		b : constant type_break_double := 
 			get_break_by_circle (track, track_dimensions, c, place, lth + 2);
 	begin
@@ -603,10 +603,88 @@ is
 					end if;
 				end query_texts;
 
-			begin
-				query_texts;			
-				-- CS terminals + net
 
+				procedure query_terminals is
+					use type_terminals;
+
+					procedure query_terminal (c : in type_terminals.cursor) is
+						--clearances : pac_distances_positive.list := clearances_basic;
+
+						position : type_position := element (c).position;
+						shape_smt : type_polygon;
+
+						procedure query_segment (c : pac_polygon_segments.cursor) is begin
+							case element (c).shape is
+								when LINE	=> test_line (element (c).segment_line);
+								when ARC	=> test_arc (element (c).segment_arc);
+							end case;
+						end query_segment;
+						
+					begin
+						if observe_foreign_nets then
+							null; 
+							-- CS get the clearance of the connected net
+							-- and append it to clearances
+
+							--class_foregin_net := get_net_class (module_cursor, nf);
+						end if;
+
+						case element (c).technology is
+							when THT =>
+								null;
+
+							when SMT =>
+								shape_smt := element (c).pad_shape_smt;
+								
+
+								rotate_by (position, rot (package_position));
+
+								--case element (c).face is
+									--when TOP =>
+										if package_flipped = YES then
+											mirror (position, Y);
+										end if;
+										
+									--when BOTTOM =>
+										--if package_flipped = NO then
+											--mirror (position, Y);
+										--end if;
+								--end case;
+								
+								move_by (position, to_distance_relative (package_position));
+
+								if package_flipped = YES then
+									rotate_by (shape_smt, add (rot (package_position), - rot (position)));
+									mirror (shape_smt, Y);
+								else
+									rotate_by (shape_smt, add (rot (package_position), rot (position)));
+								end if;
+								
+								move_by (shape_smt, to_distance_relative (position));
+								
+								if shape_smt.contours.circular then
+									null; -- CS
+								else
+									iterate (shape_smt.contours.segments, query_segment'access);
+								end if;
+						end case;
+						
+					end query_terminal;
+					
+				begin
+					track.clearance	:= get_greatest (clearances_basic);
+					track_dimensions := get_dimensions (track);
+
+					-- CS terminals + net
+					iterate (element (package_cursor).terminals, query_terminal'access);
+
+				end query_terminals;
+
+				
+			begin
+				query_terminals;
+
+				query_texts;					
 				-- CS conductors
 				-- CS route/via restrict
 				-- CS holes
