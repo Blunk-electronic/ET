@@ -101,7 +101,8 @@ package et_terminals is
 -- PLATED MILLINGS OF TERMINALS
 	
 	-- Plated millings as used by terminals. These structures have closed circumfence.
-	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
+	type type_plated_millings is new pac_shapes.type_polygon with null record;
+	-- CS other properties of plated millings
 	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
@@ -197,8 +198,9 @@ package et_terminals is
 	function to_string (shape : in type_stencil_shape) return string;
 	function to_shape (shape : in string) return type_stencil_shape;
 
-	type type_stencil_contours is new pac_shapes.type_polygon_base with null record;
-
+	type type_stencil_contours is new pac_shapes.type_polygon with null record;
+	-- CS other properties stencil contours ?
+	
 	type type_stencil (shape : type_stencil_shape := stencil_shape_default) is record
 		case shape is
 			when USER_SPECIFIC 	=> contours : type_stencil_contours;
