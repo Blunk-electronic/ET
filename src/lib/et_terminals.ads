@@ -154,7 +154,8 @@ package et_terminals is
 	function to_string (shape : in type_stop_mask_shape) return string;
 	function to_shape (shape : in string) return type_stop_mask_shape;
 	
-	type type_stop_mask_contours is new pac_shapes.type_polygon_base with null record;
+	type type_stop_mask_contours is new pac_shapes.type_polygon with null record;
+	-- CS other properties of stop mask contours ?
 
 	-- Contours of stop mask are required only if the shape is user specific.
 	-- Otherwise the shape is to be derived from the underlying conductor pad and
