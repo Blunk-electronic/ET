@@ -626,7 +626,7 @@ is
 						begin
 							shape_smt := element (c).pad_shape_smt;
 							
-							move_terminal (
+							move_contours (
 								term_pos	=> position,
 								outline		=> shape_smt,
 								flipped		=> package_flipped,

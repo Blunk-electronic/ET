@@ -370,11 +370,11 @@ package et_packages is
 	function to_flipped (flipped : in string) return type_flipped;
 
 
-	-- Rotates/mirrors/moves the contours/outline of a terminal
-	-- according to the position and flip status of a package:
-	procedure move_terminal (
+	-- Rotates/mirrors/moves the contours of stop mask, stencil, holes, ...
+	-- of a terminal according to the position and flip status of a package:
+	procedure move_contours (
 		term_pos	: in out type_position; -- terminal position
-		outline		: in out type_polygon;	-- contours of terminal (smt or tht)
+		outline		: in out type_polygon'class;	-- contours of terminal (smt or tht)
 		flipped		: in type_flipped;		-- package flip status
 		package_pos	: in type_package_position); -- package position
 		

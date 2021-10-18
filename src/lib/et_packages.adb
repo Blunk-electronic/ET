@@ -288,9 +288,9 @@ package body et_packages is
 	
 
 
-	procedure move_terminal (
+	procedure move_contours (
 		term_pos	: in out type_position; -- terminal position
-		outline		: in out type_polygon;
+		outline		: in out type_polygon'class;
 		flipped		: in type_flipped;
 		package_pos	: in type_package_position) 
 	is 
@@ -330,7 +330,7 @@ package body et_packages is
 		
 		-- Move the outline to its final position:
 		move_by (outline, to_distance_relative (term_pos));
-	end move_terminal;
+	end move_contours;
 
 
 	

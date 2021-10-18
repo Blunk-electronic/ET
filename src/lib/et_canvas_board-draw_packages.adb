@@ -2721,51 +2721,10 @@ is
 		begin
 			return get_pcb_design_rules (current_active_module).stop_mask.expansion_min;
 		end get_stop_mask_expansion;
+
 		
 		procedure draw_terminals is
 			use type_terminals;
-
-			-- Calculates the final position of the terminal and the 
-			-- rotated or mirrored outline.
-			-- CS use procedure et_packages.move_terminal instead
-			procedure move (
-				term_pos	: in out type_position; -- terminal position
-				outline		: in out type_polygon_base) is
-			begin
-				-- Rotate the given terminal position by the position of the package:
-				rotate_by (term_pos, rot (package_position));
-
-				-- If the package is flipped, then the terminal position
-				-- must be mirrored along the Y axis.
-				if flipped then mirror (term_pos, Y); end if;
-				
-				-- Move the given terminal position by the position of the package.
-				move_by (term_pos, to_distance_relative (package_position));
-				-- The terminal position is now ready for drawing the terminal
-				-- name and the pad outline.
-
-				-- The terminal position will later be the offset by which the outline will be moved
-				-- to its final place.
-
-				
-				if flipped then
-					-- The outline must be rotated by the rotation of the package
-					-- minus the rotation of the given position itself:
-					rotate_by (outline, add (rot (package_position), - rot (term_pos)));
-
-					-- If the package is flipped, then the
-					-- given outline (of a pad or a milled hole)
-					-- must be mirrored along the Y axis.
-					mirror (outline, Y); 
-				else				
-					-- The outline must be rotated by the rotation of the package
-					-- plus the rotation of the given position itself:
-					rotate_by (outline, add (rot (package_position), rot (term_pos)));
-				end if;
-				
-				-- Move the outline to its final position:
-				move_by (outline, to_distance_relative (term_pos));
-			end move;
 
 			procedure draw_tht_pad_with_circular_cutout (
 				outer_border	: in type_polygon;
@@ -2785,6 +2744,7 @@ is
 
 			end draw_tht_pad_with_circular_cutout;
 
+			
 			procedure draw_tht_pad_with_arbitrary_cutout (
 				outer_border	: in type_polygon;
 				inner_border	: in type_plated_millings)
@@ -2904,7 +2864,7 @@ is
 
 							-- Calculate the final position of the terminal and the
 							-- rotated or mirrored pad outline.
-							move_terminal (pad_pos, pad_outline, flip, package_position);
+							move_contours (pad_pos, pad_outline, flip, package_position);
 								
 							-- draw the solder pad (conductor material):
 							if conductor_enabled (ly) then
@@ -2939,15 +2899,14 @@ is
 												distance	=> get_stop_mask_expansion)); -- from DRU
 
 										-- compute final position of expanded stop mask opening
-										move (pad_pos, type_polygon_base (stop_mask_contours));
-										--move_terminal (pad_pos, stop_mask_contours, flip, package_position);
+										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stop mask contours:
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
-										move (pad_pos, type_polygon_base (stop_mask_contours));
-										-- CS use procedure et_packages.move_terminal
+										move_contours (pad_pos, stop_mask_contours, flip, package_position);
+
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
@@ -2976,15 +2935,13 @@ is
 											offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
 
 										-- compute final position of shrinked stencil opening
-										move (pad_pos, type_polygon_base (stencil_contours));
-										-- CS use procedure et_packages.move_terminal
+										move_contours (pad_pos, stencil_contours, flip, package_position);
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stencil contours:
 										pad_pos := pad_pos_in; -- get initial pad position
 										stencil_contours := stencil_in.contours;
-										move (pad_pos, type_polygon_base (stencil_contours));
-										-- CS use procedure et_packages.move_terminal
+										move_contours (pad_pos, stencil_contours, flip, package_position);
 										
 								end case;
 
@@ -2997,6 +2954,7 @@ is
 						end if;
 					end if;
 				end draw_pad_smt;
+				
 				
 				-- This procedure draws the outer contour of the THT pad and 
 				-- th outer contour of the stop mask
@@ -3027,8 +2985,7 @@ is
 
 							-- Calculate the final position of the terminal and the
 							-- rotated or mirrored pad outline.
-							move (pad_pos, type_polygon_base (pad_outline_outer_layer));
-							-- CS use procedure et_packages.move_terminal
+							move_contours (pad_pos, pad_outline_outer_layer, flip, package_position);
 							
 							-- draw the outer solder pad contour:
 							if conductor_enabled (ly) then
@@ -3045,8 +3002,7 @@ is
 
 										-- Calculate the final position of the milled hole:
 										pad_pos := pad_pos_in;
-										move (pad_pos, type_polygon_base (hole_outline));
-										-- CS use procedure et_packages.move_terminal
+										move_contours (pad_pos, hole_outline, flip, package_position);
 										
 										draw_tht_pad_with_arbitrary_cutout (
 											outer_border	=> pad_outline_outer_layer,
@@ -3076,13 +3032,13 @@ is
 												distance	=> get_stop_mask_expansion));  -- from DRU
 
 										-- compute final position of expanded stop mask opening
-										move (pad_pos, type_polygon_base (stop_mask_contours));
+										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stop mask contours:
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
-										move (pad_pos, type_polygon_base (stop_mask_contours));
+										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
@@ -3103,6 +3059,7 @@ is
 					end if;
 				end tht_outer_layer;
 
+				
 				-- This procedure draws the pad contour of a milled THT pad
 				-- in an inner conductor layer
 				-- if any inner conductor layer is enabled. If no inner conductor
@@ -3119,7 +3076,7 @@ is
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 								
-						move (pad_pos, type_polygon_base (hole_outline));
+						move_contours (pad_pos, hole_outline, flip, package_position);
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
 						pad_outline_inner_layers := (type_polygon_base (hole_outline_in) with null record);
@@ -3130,7 +3087,7 @@ is
 
 						-- move the conductor frame to its final position:
 						pad_pos := pad_pos_in;  -- get initial pad position
-						move (pad_pos, type_polygon_base (pad_outline_inner_layers));
+						move_contours (pad_pos, pad_outline_inner_layers, flip, package_position);
 						
 						draw_tht_pad_with_arbitrary_cutout (
 							outer_border	=> pad_outline_inner_layers,
@@ -3139,6 +3096,7 @@ is
 					end if;
 				end tht_inner_layer_milled;
 
+				
 				-- This procedure draws the pad contour of a drilled THT pad
 				-- in an inner conductor layer
 				-- if any inner conductor layer is enabled. If no inner conductor
