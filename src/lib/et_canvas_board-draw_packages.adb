@@ -2904,9 +2904,8 @@ is
 
 							-- Calculate the final position of the terminal and the
 							-- rotated or mirrored pad outline.
-							move (pad_pos, type_polygon_base (pad_outline));
-							-- CS use procedure et_packages.move_terminal
-							
+							move_terminal (pad_pos, pad_outline, flip, package_position);
+								
 							-- draw the solder pad (conductor material):
 							if conductor_enabled (ly) then
 
@@ -2941,7 +2940,7 @@ is
 
 										-- compute final position of expanded stop mask opening
 										move (pad_pos, type_polygon_base (stop_mask_contours));
-										-- CS use procedure et_packages.move_terminal
+										--move_terminal (pad_pos, stop_mask_contours, flip, package_position);
 										
 									when USER_SPECIFIC =>
 										-- compute position of user specific stop mask contours:
