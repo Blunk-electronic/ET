@@ -551,6 +551,8 @@ is
 						end query_segments;
 					
 					begin -- query_text
+						-- CS log text content and position
+						
 						case query_face is
 							when TOP =>
 								if package_flipped = NO then 
@@ -616,9 +618,141 @@ is
 					end if;
 				end query_texts;
 
-			begin
-				query_texts;			
+
+				procedure query_terminals is
+					use et_terminals;
+
+					procedure query_terminal (c : in type_terminals.cursor) is
+						use type_terminals;
+
+						position : type_position := element (c).position;
+
+						
+						procedure move_outline_smt is 
+							oln : type_polygon;
+							distance : type_distance;
+						begin
+							oln := element (c).pad_shape_smt;
+							
+							move_contours (
+								term_pos	=> position,
+								outline		=> oln,
+								flipped		=> package_flipped,
+								package_pos	=> package_position);
+															
+							distance := get_absolute (get_shortest_distance (oln, start_point));
+							test_distance (distance, lth + 4);
+
+						end move_outline_smt;
+
+
+						procedure move_outline_tht is 
+							oln : type_polygon;
+							distance : type_distance;
+						begin
+							if package_flipped = NO then
+								if layer = top_layer then
+									oln := element (c).pad_shape_tht.top;
+								elsif layer = bottom_layer then
+									oln := element (c).pad_shape_tht.bottom;
+								else
+									-- inner layer
+									null; -- CS
+								end if;
+
+							else -- package has been flipped by operator
+								if layer = top_layer then
+									oln := element (c).pad_shape_tht.bottom;
+								elsif layer = bottom_layer then
+									oln := element (c).pad_shape_tht.top;
+								else
+									-- inner layer
+									null; -- CS
+								end if;
+
+							end if;
+								
+							move_contours (
+								term_pos	=> position,
+								outline		=> oln,
+								flipped		=> package_flipped,
+								package_pos	=> package_position);
+								
+							distance := get_absolute (get_shortest_distance (oln, start_point));
+							test_distance (distance, lth + 4);
+
+						end move_outline_tht;
+
+						
+					begin
+						-- CS log terminal name
+
+						if observe_foreign_nets then
+							null; 
+							-- CS get the clearance of the connected net
+							-- and append it to clearances
+
+							--class_foregin_net := get_net_class (module_cursor, nf);
+						end if;
+
+						case element (c).technology is
+							when THT =>
+								move_outline_tht;
+
+							when SMT =>
+								if package_flipped = NO then
+									case element (c).face is
+										when TOP =>
+											if layer = top_layer then
+												move_outline_smt;
+											end if;
+
+										when BOTTOM =>
+											if layer = bottom_layer then
+												move_outline_smt;
+											end if;
+									end case;
+								else
+									case element (c).face is
+										when TOP =>
+											if layer = bottom_layer then
+												move_outline_smt;
+											end if;
+
+										when BOTTOM =>
+											if layer = top_layer then
+												move_outline_smt;
+											end if;
+									end case;
+								end if;
+						end case;
+						
+					end query_terminal;
+					
+
+					-- Take a copy of the initial circle_around_start_point_init:
+					circle_around_start_point : type_circle := circle_around_start_point_init;
+
+				begin -- query_terminals
+					greatest_clearance := get_greatest (clearances_basic);
+						
+					-- Extend the radius of the circle_around_start_point by the
+					-- greatest clearance and compute the boundaries of the circle:
+					circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
+					start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+
+					iterate (
+						terminals	=> element (package_cursor).terminals,
+						process		=> query_terminal'access,
+						proceed		=> result'access);
+					
 				-- CS terminals + net
+					
+				end query_terminals;
+				
+			begin
+				query_terminals;
+				query_texts;
 
 				-- CS conductors
 				-- CS route/via restrict

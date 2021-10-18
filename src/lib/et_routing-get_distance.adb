@@ -557,6 +557,8 @@ is
 						end query_segments;
 			
 					begin -- query_text
+						-- CS log text content and position
+						
 						case query_face is
 							when TOP =>
 								if package_flipped = NO then 
@@ -611,37 +613,70 @@ is
 						--clearances : pac_distances_positive.list := clearances_basic;
 
 						position : type_position := element (c).position;
-						shape_smt : type_polygon;
 
 
-						procedure move_outline is 
-
-							procedure query_segment (c : pac_polygon_segments.cursor) is begin
-								case element (c).shape is
-									when LINE	=> test_line (element (c).segment_line);
-									when ARC	=> test_arc (element (c).segment_arc);
-								end case;
-							end query_segment;
-
+						procedure move_outline_smt is 
+							oln : type_polygon;
 						begin
-							shape_smt := element (c).pad_shape_smt;
+							oln := element (c).pad_shape_smt;
 							
 							move_contours (
 								term_pos	=> position,
-								outline		=> shape_smt,
+								outline		=> oln,
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
 							
 								
-							if shape_smt.contours.circular then
-								null; -- CS
+							if oln.contours.circular then
+								test_circle (oln.contours.circle);
 							else
-								iterate (shape_smt.contours.segments, query_segment'access);
+								iterate (oln.contours.segments, query_segment'access);
 							end if;
-						end move_outline;
+						end move_outline_smt;
+
+
+						procedure move_outline_tht is 
+							oln : type_polygon;
+						begin
+							if package_flipped = NO then
+								if layer = top_layer then
+									oln := element (c).pad_shape_tht.top;
+								elsif layer = bottom_layer then
+									oln := element (c).pad_shape_tht.bottom;
+								else
+									-- inner layer
+									null; -- CS
+								end if;
+
+							else -- package has been flipped by operator
+								if layer = top_layer then
+									oln := element (c).pad_shape_tht.bottom;
+								elsif layer = bottom_layer then
+									oln := element (c).pad_shape_tht.top;
+								else
+									-- inner layer
+									null; -- CS
+								end if;
+
+							end if;
+								
+							move_contours (
+								term_pos	=> position,
+								outline		=> oln,
+								flipped		=> package_flipped,
+								package_pos	=> package_position);
+															
+							if oln.contours.circular then
+								test_circle (oln.contours.circle);
+							else
+								iterate (oln.contours.segments, query_segment'access);
+							end if;
+						end move_outline_tht;
 
 						
 					begin
+						-- CS log terminal name
+						
 						if observe_foreign_nets then
 							null; 
 							-- CS get the clearance of the connected net
@@ -652,31 +687,31 @@ is
 
 						case element (c).technology is
 							when THT =>
-								null;
+								move_outline_tht;
 
 							when SMT =>
 								if package_flipped = NO then
 									case element (c).face is
 										when TOP =>
 											if layer = top_layer then
-												move_outline;
+												move_outline_smt;
 											end if;
 
 										when BOTTOM =>
 											if layer = bottom_layer then
-												move_outline;
+												move_outline_smt;
 											end if;
 									end case;
 								else
 									case element (c).face is
 										when TOP =>
 											if layer = bottom_layer then
-												move_outline;
+												move_outline_smt;
 											end if;
 
 										when BOTTOM =>
 											if layer = top_layer then
-												move_outline;
+												move_outline_smt;
 											end if;
 									end case;
 								end if;
