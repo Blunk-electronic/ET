@@ -558,6 +558,7 @@ is
 			
 					begin -- query_text
 						-- CS log text content and position
+						--log (text => "text " & enclose_in_quotes (to_string (element (c).content)), level => lth + 4);
 						
 						case query_face is
 							when TOP =>
@@ -698,7 +699,7 @@ is
 
 						
 					begin
-						-- CS log terminal name
+						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 						
 						if observe_foreign_nets then
 							null; 
@@ -777,7 +778,9 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
+					log_indentation_up;
 					query_package (observe_foreign_nets => true);
+					log_indentation_down;
 				end if;
 
 				log_indentation_down;
@@ -799,7 +802,9 @@ is
 				package_position := element (c).position;
 				package_flipped := element (c).flipped;
 
+				log_indentation_up;
 				query_package (observe_foreign_nets => false);
+				log_indentation_down;
 				
 				log_indentation_down;
 			end query_device;
