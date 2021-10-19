@@ -76,12 +76,20 @@ generic
 		-- The used text package must have been instantiated with the same shapes package:
 		pac_shapes		=> pac_shapes, 
 		others			=> <>);
+
 	
 package pac_draw is
 	use pac_canvas;
 	use pac_shapes;
 	use pac_shapes.pac_geometry;
 
+
+	function make_bounding_box (
+		height		: in pac_shapes.pac_geometry.type_distance;
+		boundaries	: in type_boundaries)
+		return type_rectangle;
+
+	
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.

@@ -53,6 +53,7 @@ package body pac_draw is
 		return type_view_coordinate (x);
 	end;
 
+	
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	function shift_y (
 		y		: in pac_shapes.pac_geometry.type_distance;
@@ -62,6 +63,7 @@ package body pac_draw is
 		return type_view_coordinate (height - y);
 	end;
 
+	
 	function shift_y (
 		y		: in pac_shapes.pac_geometry.type_distance;
 		height	: in pac_shapes.pac_geometry.type_distance)
@@ -70,11 +72,12 @@ package body pac_draw is
 		return (height - y);
 	end;
 
+	
 	function make_bounding_box (
 		height		: in pac_shapes.pac_geometry.type_distance;
 		boundaries	: in type_boundaries)
-		return type_rectangle is
-	begin
+		return type_rectangle 
+	is begin
 		return (
 			-- The bounding box origin is the upper left corner.
 			-- The box position in x is the smallest_x.
@@ -596,6 +599,7 @@ package body pac_draw is
 		return gdouble (size) * conversion_factor_mm_to_pt;
 	end to_points;
 
+	
 	procedure draw_origin (
 		context		: in type_draw_context;
 		position	: in type_view_point) is
@@ -638,6 +642,7 @@ package body pac_draw is
 
 		stroke (context.cr);
 	end draw_origin;
+
 	
 	function start_point (
 		width		: in type_view_coordinate;
@@ -672,6 +677,7 @@ package body pac_draw is
 
 		return sp;
 	end start_point;
+
 	
 	procedure draw_text (
 		context		: in type_draw_context;
@@ -736,6 +742,7 @@ package body pac_draw is
 		restore (context.cr);
 	end draw_text;
 
+	
 	function get_text_extents (
 		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
@@ -756,6 +763,7 @@ package body pac_draw is
 		text_extents (cr => context.cr, utf8 => text, extents => result'access);
 		return result;
 	end get_text_extents;
+
 	
 	procedure draw_text (
 		area		: in type_rectangle;
