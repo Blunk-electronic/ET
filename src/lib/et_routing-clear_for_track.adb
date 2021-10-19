@@ -625,10 +625,9 @@ is
 					procedure query_terminal (c : in type_terminals.cursor) is
 						use type_terminals;
 
-						position : type_position := element (c).position;
-
 						
 						procedure move_outline_smt is 
+							position : type_position := element (c).position;
 							oln : type_polygon;
 							distance : type_distance;
 						begin
@@ -640,24 +639,53 @@ is
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
 															
-							distance := get_absolute (get_shortest_distance (oln, start_point));
-							test_distance (distance, lth + 4);
+							if in_polygon_status (oln, start_point).status = OUTSIDE then
+								distance := get_absolute (get_shortest_distance (oln, start_point));
+								test_distance (distance, lth + 4);
+							else
+								result := false;
+							end if;
 
 						end move_outline_smt;
 
 
 						procedure move_outline_tht is 
+							position : type_position := element (c).position;
 							oln : type_polygon;
 							distance : type_distance;
-						begin
+
+							procedure inner_layer is begin
+								case element (c).tht_hole is
+									when DRILLED =>											
+										declare
+											s : type_polygon_segments := (circular => true, others => <>);
+										begin
+											s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
+											oln.contours := s;
+										end;
+
+									when MILLED =>
+										declare
+											om : type_polygon := type_polygon (element (c).millings);
+										begin
+											offset_polygon (
+												polygon		=> om, 
+												offset		=> (style => BY_DISTANCE, distance => element (c).width_inner_layers));
+											
+											oln := om;
+										end;
+								end case;
+							end inner_layer;
+							
+							
+						begin -- move_outline_tht
 							if package_flipped = NO then
 								if layer = top_layer then
 									oln := element (c).pad_shape_tht.top;
 								elsif layer = bottom_layer then
 									oln := element (c).pad_shape_tht.bottom;
 								else
-									-- inner layer
-									null; -- CS
+									inner_layer;
 								end if;
 
 							else -- package has been flipped by operator
@@ -666,8 +694,7 @@ is
 								elsif layer = bottom_layer then
 									oln := element (c).pad_shape_tht.top;
 								else
-									-- inner layer
-									null; -- CS
+									inner_layer;
 								end if;
 
 							end if;
@@ -677,9 +704,13 @@ is
 								outline		=> oln,
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
-								
-							distance := get_absolute (get_shortest_distance (oln, start_point));
-							test_distance (distance, lth + 4);
+
+							if in_polygon_status (oln, start_point).status = OUTSIDE then
+								distance := get_absolute (get_shortest_distance (oln, start_point));
+								test_distance (distance, lth + 4);
+							else
+								result := false;
+							end if;
 
 						end move_outline_tht;
 

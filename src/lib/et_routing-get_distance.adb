@@ -612,10 +612,9 @@ is
 					procedure query_terminal (c : in type_terminals.cursor) is
 						--clearances : pac_distances_positive.list := clearances_basic;
 
-						position : type_position := element (c).position;
-
 
 						procedure move_outline_smt is 
+							position : type_position := element (c).position;
 							oln : type_polygon;
 						begin
 							oln := element (c).pad_shape_smt;
@@ -636,16 +635,41 @@ is
 
 
 						procedure move_outline_tht is 
+							position : type_position := element (c).position;
 							oln : type_polygon;
-						begin
+
+							procedure inner_layer is begin
+								case element (c).tht_hole is
+									when DRILLED =>											
+										declare
+											s : type_polygon_segments := (circular => true, others => <>);
+										begin
+											s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
+											oln.contours := s;
+										end;
+
+									when MILLED =>
+										declare
+											om : type_polygon := type_polygon (element (c).millings);
+										begin
+											offset_polygon (
+												polygon		=> om, 
+												offset		=> (style => BY_DISTANCE, distance => element (c).width_inner_layers));
+											
+											oln := om;
+										end;
+								end case;
+							end inner_layer;
+
+							
+						begin -- move_outline_tht
 							if package_flipped = NO then
 								if layer = top_layer then
 									oln := element (c).pad_shape_tht.top;
 								elsif layer = bottom_layer then
 									oln := element (c).pad_shape_tht.bottom;
 								else
-									-- inner layer
-									null; -- CS
+									inner_layer;
 								end if;
 
 							else -- package has been flipped by operator
@@ -654,8 +678,7 @@ is
 								elsif layer = bottom_layer then
 									oln := element (c).pad_shape_tht.top;
 								else
-									-- inner layer
-									null; -- CS
+									inner_layer;
 								end if;
 
 							end if;
