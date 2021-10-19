@@ -1217,6 +1217,7 @@ package body et_canvas_board is
 
 		end if;
 	end place_via;
+
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -1278,10 +1279,11 @@ package body et_canvas_board is
 				when others => status_noun_invalid;
 			end case;
 		end place;
+
 		
 	begin -- evaluate_key
 		
--- 		put_line ("board: evaluating other key ...");
+		--put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 		case key is
@@ -1395,6 +1397,7 @@ package body et_canvas_board is
 		
 	end evaluate_key;
 
+	
 	procedure evaluate_mouse_position (
 		self	: not null access type_view;
 		point	: in type_point) 
@@ -1404,12 +1407,12 @@ package body et_canvas_board is
 				case noun is
 					when NOUN_TEXT =>
 						if text_place.being_moved then
-							redraw;
+							redraw_board;
 						end if;
 
 					when NOUN_VIA =>
 						if via_place.being_moved then
-							redraw;
+							redraw_board;
 						end if;
 						
 					when others => null;
@@ -1419,6 +1422,7 @@ package body et_canvas_board is
 		end case;
 		
 	end evaluate_mouse_position;
+
 	
 	procedure button_pressed (
 		self	: not null access type_view;

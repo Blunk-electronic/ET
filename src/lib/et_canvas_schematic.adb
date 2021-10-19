@@ -2100,22 +2100,22 @@ package body et_canvas_schematic is
 				case noun is
 					when NOUN_LABEL =>
 						if label.being_moved then
-							redraw;
+							redraw_schematic;
 						end if;
 						
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if placeholder_move.being_moved then
-							redraw;
+							redraw_schematic;
 						end if;
 
 					when NOUN_NET =>
 						if segment.being_moved then
-							redraw;
+							redraw_schematic;
 						end if;
 
 					when NOUN_UNIT =>
 						if unit_move.being_moved then
-							redraw;
+							redraw_schematic;
 						end if;
 
 					when others => null;
