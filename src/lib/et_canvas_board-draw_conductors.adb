@@ -185,14 +185,14 @@ is
 		end if;
 	end query_circle;
 
+	
 	-- The width of the lines that fill the polygon.
 	fill_line_width : type_track_width;
+
 	
 	-- This procedure draws a solidly filled area of a conductor polygon:
 	procedure query_fill_line (l : in pac_fill_lines.cursor) is begin
 
-		set_line_width (context.cr, type_view_coordinate (fill_line_width));
-			
 		draw_line (
 			area		=> in_area,
 			context		=> context,
@@ -201,6 +201,7 @@ is
 			height		=> self.frame_height);
 		
 	end query_fill_line;
+
 	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
 		-- Draw the polygon if it is in the current layer:
@@ -216,11 +217,16 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
+
+			-- All fill lines will be drawn with the same width:
 			fill_line_width := element (c).width_min;			
+			set_line_width (context.cr, type_view_coordinate (fill_line_width));
+			
 			iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 
+	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -239,6 +245,7 @@ is
 		end if;
 	end query_polygon;
 
+	
 	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is begin
 		
 		-- Draw the polygon if it is in the current layer:
@@ -254,11 +261,16 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
+			
+			-- All fill lines will be drawn with the same width:
 			fill_line_width := element (c).width_min;
+			set_line_width (context.cr, type_view_coordinate (fill_line_width));
+			
 			iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 
+	
 	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is begin
 		
 		-- Draw the polygon if it is in the current layer:
@@ -277,6 +289,7 @@ is
 			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
+
 	
 	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
 		-- Draw the zone if it is in the current layer:
@@ -422,6 +435,7 @@ is
 			end if;
 		end draw_net_name;
 
+		
 		-- Draws the layer numbers above the net name.
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
@@ -449,6 +463,7 @@ is
 			
 		end draw_numbers;
 
+		
 		-- Draws the drill size below the net name.
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_drill_size is 
@@ -496,6 +511,7 @@ is
 				end if;
 			end draw_numbers_blind_top;
 
+			
 			procedure draw_numbers_blind_bottom is begin
 				-- Draw the layer numbers only once:
 				if not numbers_drawn then
@@ -506,6 +522,7 @@ is
 					numbers_drawn := true;
 				end if;
 			end draw_numbers_blind_bottom;		
+
 			
 		begin -- query_category	
 			case element (v).category is
@@ -620,6 +637,7 @@ is
 					
 			end case;
 		end query_category;
+
 		
 	begin -- query_via
 		circle.center := element (v).position;
@@ -778,6 +796,7 @@ is
 			vias_being_placed.iterate (query_via'access); 
 		end if;
 	end draw_via_being_placed;
+
 	
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
