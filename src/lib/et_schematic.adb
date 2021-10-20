@@ -515,6 +515,26 @@ package body et_schematic is
 		return is_real (package_name);
 	end has_real_package;
 
+
+	function get_net (
+		device		: in pac_devices_sch.cursor;
+		terminal	: in et_terminals.pac_terminals.cursor)
+		return pac_nets.cursor
+	is
+		result : pac_nets.cursor;
+
+		use pac_devices_sch;
+		--use et_devices;
+		--use pac_devices_lib;
+		device_model_cursor : pac_devices_lib.cursor := locate_device (element (device).model);
+	begin
+		--device_model 
+		-- element (device).model
+		-- element (device).variant
+		return result;
+	end get_net;
+
+	
 	
 	function to_string (
 		mirror	: in type_mirror;

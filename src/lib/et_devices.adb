@@ -1044,19 +1044,20 @@ package body et_devices is
 
 	
 	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
-	-- Locates the given generic device in container "devices".
-		return pac_devices_lib.cursor is
+		return pac_devices_lib.cursor 
+	is
 		use pac_devices_lib;
 		cursor : pac_devices_lib.cursor := pac_devices_lib.find (devices, model);
 	begin
 		return cursor;
 	end;
 
+	
 	function locate_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
-		return type_unit_cursors is
-
+		return type_unit_cursors 
+	is
 		use pac_devices_lib;
 		use pac_units_external;
 		use pac_units_internal;

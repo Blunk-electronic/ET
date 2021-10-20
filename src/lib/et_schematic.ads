@@ -59,6 +59,7 @@ with et_nets;					use et_nets;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;
+with et_terminals;
 with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;
@@ -207,7 +208,7 @@ package et_schematic is
 		end case;
 	end record;
 
-
+	
 
 	
 	-- This is the port of a device as it appears in a net segment:
@@ -382,6 +383,8 @@ package et_schematic is
 		element_type	=> type_net);
 
 
+	
+
 	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		nets	: in pac_nets.map;
@@ -471,6 +474,7 @@ package et_schematic is
 		devices	: in pac_devices_sch.map;
 		process	: not null access procedure (position : in pac_devices_sch.cursor);
 		proceed	: not null access boolean);
+
 	
 		
 	-- Returns true if the given device is real.
@@ -525,6 +529,15 @@ package et_schematic is
 	-- Returns true if the given device has a real package.
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
 
+
+	-- Returns a cursor to the net that is connected with the given device and terminal.
+	-- If there is no net connected, then the return is no_element:
+	function get_net (
+		device		: in pac_devices_sch.cursor;
+		terminal	: in et_terminals.pac_terminals.cursor)
+		return pac_nets.cursor;
+
+	
 	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;

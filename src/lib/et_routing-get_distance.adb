@@ -506,6 +506,9 @@ is
 			package_flipped		: type_flipped;
 
 			boundaries_track : type_boundaries;
+
+			device_cursor : pac_devices_sch.cursor;
+
 			
 			procedure query_package (
 				observe_foreign_nets : in type_observe_foreign_nets) 
@@ -697,16 +700,20 @@ is
 							end if;
 						end move_outline_tht;
 
+						foregin_net : pac_nets.cursor;
+						foregin_net_class : type_net_class;
 						
 					begin
 						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 						
 						if observe_foreign_nets then
 							null; 
+
+							foregin_net := get_net (device_cursor, c);
 							-- CS get the clearance of the connected net
 							-- and append it to clearances
 
-							--class_foregin_net := get_net_class (module_cursor, nf);
+							foregin_net_class := get_net_class (module_cursor, foregin_net);
 						end if;
 
 						case element (c).technology is
@@ -747,7 +754,6 @@ is
 					track.clearance	:= get_greatest (clearances_basic);
 					track_dimensions := get_dimensions (track);
 
-					-- CS terminals + net
 					iterate (element (package_cursor).terminals, query_terminal'access);
 
 				end query_terminals;
@@ -779,6 +785,7 @@ is
 					package_flipped := element (c).flipped;
 
 					log_indentation_up;
+					device_cursor := c;
 					query_package (observe_foreign_nets => true);
 					log_indentation_down;
 				end if;
