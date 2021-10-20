@@ -204,28 +204,23 @@ is
 
 	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is 
-		boundaries : type_boundaries;
-		bounding_box : type_rectangle;
+		drawn : boolean := false;
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
-			-- We draw the polygon only if it intersects the given area:
-			boundaries := get_boundaries (element (c), zero);
-			bounding_box := make_bounding_box (self.frame_height, boundaries);
+			-- draw polygon outer contours
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> NO,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
-			if intersects (in_area, bounding_box) then
-			
-				-- draw polygon outer contours
-				draw_polygon (
-					area	=> in_area,
-					context	=> context,
-					polygon	=> element (c),
-					filled	=> NO,
-					width	=> zero, -- CS should be the dynamically calculated width of the contours
-					height	=> self.frame_height);
-
-				-- draw filled areas
+			-- draw fill lines if polygon has been drawn
+			if drawn then
 
 				-- All fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
@@ -237,7 +232,9 @@ is
 	end query_polygon;
 
 	
-	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
+	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is 
+		drawn : boolean := false;
+	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 			
@@ -248,7 +245,8 @@ is
 				polygon	=> element (c),
 				filled	=> NO,
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.frame_height);
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
 			-- draw filled areas
 			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
@@ -257,43 +255,39 @@ is
 
 	
 	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
-		boundaries : type_boundaries;
-		bounding_box : type_rectangle;
+		drawn : boolean := false;
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
+	
+			-- draw polygon outer contours
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> NO,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
-			-- We draw the polygon only if it intersects the given area:
-			boundaries := get_boundaries (element (c), zero);
-			bounding_box := make_bounding_box (self.frame_height, boundaries);
+			-- draw fill lines if polygon has been drawn
+			if drawn then
+				--put_line ("draw fill lines");
 
-			if intersects (in_area, bounding_box) then
-
-				--put_line ("drawing polygon");
-				
-				-- draw polygon outer contours
-				draw_polygon (
-					area	=> in_area,
-					context	=> context,
-					polygon	=> element (c),
-					filled	=> NO,
-					width	=> zero, -- CS should be the dynamically calculated width of the contours
-					height	=> self.frame_height);
-
-				-- draw filled areas
-				
 				-- All fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				
 				iterate (element (c).properties.fill_lines, query_fill_line'access);
 			end if;
+
 		end if;
 	end query_polygon;
 
 	
-	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is begin
-		
+	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
+		drawn : boolean := false;
+	begin		
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
@@ -304,7 +298,8 @@ is
 				polygon	=> element (c),
 				filled	=> NO,
 				width	=> zero,
-				height	=> self.frame_height);
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
 			-- draw filled areas
 			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
@@ -312,7 +307,9 @@ is
 	end query_polygon;
 
 	
-	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
+	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is 
+		drawn : boolean := false;
+	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
@@ -325,7 +322,8 @@ is
 				polygon	=> element (c),
 				filled	=> NO,
 				width	=> zero,
-				height	=> self.frame_height);
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
 			--restore (context.cr);
 		end if;

@@ -204,6 +204,7 @@ package body pac_draw is
 		end if;
 	end draw_arc;
 
+	
 	procedure draw_circle (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -265,6 +266,7 @@ package body pac_draw is
 		end if;
 	end draw_circle;
 
+	
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -273,7 +275,8 @@ package body pac_draw is
 		width	: in type_distance_positive;
 		-- CS fill style
 
-		height	: in pac_shapes.pac_geometry.type_distance)
+		height	: in pac_shapes.pac_geometry.type_distance;
+		drawn	: in out boolean)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
 		boundaries : constant type_boundaries := get_boundaries (polygon, width);
@@ -364,6 +367,7 @@ package body pac_draw is
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
+			
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
@@ -435,7 +439,13 @@ package body pac_draw is
 
 			-- Disable line dashes:
 			set_dash (context.cr, no_dashes, 0.0);
+
 			
+			-- The polygon has been drawn:
+			drawn := true;			
+		else
+			-- The polygon has not been drawn:
+			drawn := false;
 		end if;
 	end draw_polygon;
 
@@ -446,12 +456,14 @@ package body pac_draw is
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry.type_distance)
-	is begin
+	is 
+		drawn : boolean := false;
+	begin
 		-- Since this is about filled areas, the line width must be zero:
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
 		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, zero, height);
+		draw_polygon (area, context, outer_border, YES, zero, height, drawn);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
@@ -470,18 +482,20 @@ package body pac_draw is
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_polygon_base'class;
 		height			: in pac_shapes.pac_geometry.type_distance)
-	is begin
+	is 
+		drawn : boolean := false;
+	begin
 		-- Since this is about filled areas, the line width must be zero:
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
 		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, zero, height);
+		draw_polygon (area, context, outer_border, YES, zero, height, drawn);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner polygon - the area to be taken out:
-		draw_polygon (area, context, inner_border, YES, zero, height);
+		draw_polygon (area, context, inner_border, YES, zero, height, drawn);
 		
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		

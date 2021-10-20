@@ -356,7 +356,9 @@ is
 			procedure draw_polygon (
 				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if silkscreen_enabled (f) then
 					
 					if f = face then
@@ -371,14 +373,14 @@ is
 						case polygon.fill_style is
 							when SOLID =>
 								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
 								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height);
+									polygon.hatching.border_width, self.frame_height, drawn);
 								-- CS hatching ?
 						end case;
 						
@@ -410,7 +412,9 @@ is
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if silkscreen_enabled (f) then
 					
 					if f = face then
@@ -423,11 +427,10 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 					end if;
 
-				end if;
-				
+				end if;				
 			end draw_cutout;
 
 			
@@ -726,7 +729,9 @@ is
 			procedure draw_polygon (
 				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if assy_doc_enabled (f) then
 					
 					if f = face then
@@ -741,22 +746,21 @@ is
 						case polygon.fill_style is
 							when SOLID =>
 								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
 								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height);
+									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
 						end case;
 						
 					end if;
 
-				end if;
-				
+				end if;				
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
@@ -780,7 +784,9 @@ is
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if assy_doc_enabled (f) then
 					
 					if f = face then
@@ -793,7 +799,7 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 
@@ -1078,7 +1084,9 @@ is
 			procedure draw_polygon (
 				polygon	: in out type_polygon_base'class;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if keepout_enabled (f) then
 					
 					if f = face then
@@ -1091,7 +1099,7 @@ is
 						set_color_keepout (context.cr, f);
 
 						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 
@@ -1119,7 +1127,9 @@ is
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if keepout_enabled (f) then
 					
 					if f = face then
@@ -1132,13 +1142,13 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 
-				end if;
-				
+				end if;				
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
 				cutout : type_polygon := element (c);
@@ -1313,7 +1323,9 @@ is
 			procedure draw_polygon (
 				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if stop_mask_enabled (f) then
 					
 					if f = face then
@@ -1328,14 +1340,14 @@ is
 						case polygon.fill_style is
 							when SOLID =>
 								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
 								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height);
+									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
 						end case;
@@ -1366,7 +1378,9 @@ is
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if stop_mask_enabled (f) then
 					
 					if f = face then
@@ -1379,12 +1393,11 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 
-				end if;
-				
+				end if;				
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
@@ -1596,7 +1609,9 @@ is
 			procedure draw_polygon (
 				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if stencil_enabled (f) then
 					
 					if f = face then
@@ -1611,14 +1626,14 @@ is
 						case polygon.fill_style is
 							when SOLID =>
 								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 
 								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height);
+									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
 						end case;
@@ -1649,7 +1664,9 @@ is
 			procedure draw_cutout (
 				cutout	: in out type_polygon;
 				f		: in type_face)
-			is begin
+			is 
+				drawn : boolean := false;
+			begin
 				if stencil_enabled (f) then
 					
 					if f = face then
@@ -1662,7 +1679,7 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 				end if;				
@@ -1811,7 +1828,9 @@ is
 			use pac_route_restrict_polygons;
 			polygon : type_route_restrict_polygon;
 
-			procedure draw_polygon (f : in type_face) is begin
+			procedure draw_polygon (f : in type_face) is 
+				drawn : boolean := false;
+			begin
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
@@ -1820,7 +1839,8 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position));
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES, route_restrict_line_width, self.frame_height);
+						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+							route_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
 
@@ -1844,7 +1864,9 @@ is
 			use pac_route_restrict_cutouts;
 			cutout : type_route_restrict_cutout;
 
-			procedure draw_cutout (f : in type_face) is begin
+			procedure draw_cutout (f : in type_face) is 
+				drawn : boolean := false;
+			begin
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
@@ -1855,7 +1877,8 @@ is
 						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES, zero, self.frame_height);
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
 				end if;
@@ -2036,7 +2059,9 @@ is
 			use pac_via_restrict_polygons;
 			polygon : type_via_restrict_polygon;
 
-			procedure draw_polygon (f : in type_face) is begin
+			procedure draw_polygon (f : in type_face) is 
+				drawn : boolean := false;
+			begin
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
@@ -2045,7 +2070,8 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position));
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES, via_restrict_line_width, self.frame_height);
+						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+							via_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
 
@@ -2069,7 +2095,9 @@ is
 			use pac_via_restrict_cutouts;
 			cutout : type_via_restrict_cutout;
 
-			procedure draw_cutout (f : in type_face) is begin
+			procedure draw_cutout (f : in type_face) is 
+				drawn : boolean := false;
+			begin
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
@@ -2080,7 +2108,8 @@ is
 						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES, zero, self.frame_height);
+						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
 
@@ -2460,6 +2489,7 @@ is
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
+				drawn : boolean := false;
 			begin
 				if conductor_enabled (ly) then
 					
@@ -2473,7 +2503,7 @@ is
 						set_color_conductor (context.cr, ly);
 
 						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 -- CS
 -- 		easing : type_easing;
 -- 		width_min : type_track_width; -- the minimum width
@@ -2481,9 +2511,9 @@ is
 						
 					end if;
 
-				end if;
-				
+				end if;				
 			end draw_polygon_solid;
+
 			
 			procedure query_polygon_top_solid (
 				c : in pac_conductor_polygons_solid.cursor) 
@@ -2565,6 +2595,7 @@ is
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
+				drawn : boolean := false;
 			begin
 				if conductor_enabled (ly) then
 					
@@ -2578,7 +2609,7 @@ is
 						set_color_background (context.cr);
 
 						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
-							zero, self.frame_height);
+							zero, self.frame_height, drawn);
 						
 					end if;
 
@@ -2855,6 +2886,7 @@ is
 					stencil_contours	: type_stencil_contours;
 					
 					ly : constant type_signal_layer := face_to_layer (f);
+					drawn : boolean := false;
 				begin
 					-- We draw only if either the signal layer, the stop mask or the stencil
 					-- is enabled. Otherwise nothing will happen here:
@@ -2872,7 +2904,7 @@ is
 								set_color_conductor (context.cr, ly);
 								
 								pac_draw_fab.draw_polygon (in_area, context, pad_outline, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 
 								-- draw the terminal name
 								draw_name_smt (name, pad_pos);
@@ -2912,7 +2944,7 @@ is
 								set_color_stop_mask (context.cr, f, self.scale);
 								
 								pac_draw_fab.draw_polygon (in_area, context, stop_mask_contours, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 							end if;
 							
 							-- draw stencil (or solder paste mask)
@@ -2948,7 +2980,7 @@ is
 								set_color_stencil (context.cr, f, self.scale);
 								
 								pac_draw_fab.draw_polygon (in_area, context, stencil_contours, YES,
-									zero, self.frame_height);
+									zero, self.frame_height, drawn);
 							end if;
 
 						end if;
@@ -2976,6 +3008,7 @@ is
 					stop_mask_contours : type_stop_mask_contours;
 					
 					ly : constant type_signal_layer := face_to_layer (f);
+					drawn : boolean := false;
 				begin
 					-- We draw only if either the signal layer or the stop mask
 					-- is enabled. Otherwise nothing will happen here:
@@ -3050,7 +3083,8 @@ is
 									polygon		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,
-									height		=> self.frame_height);
+									height		=> self.frame_height,
+									drawn		=> drawn);
 
 							end if;
 

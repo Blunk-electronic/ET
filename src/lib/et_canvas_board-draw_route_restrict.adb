@@ -72,6 +72,7 @@ is
 		end if;
 	end query_line;
 
+	
 	procedure query_arc (c : in pac_route_restrict_arcs.cursor) is begin
 
 		-- Draw the arc if restrict layer is enabled:
@@ -87,6 +88,7 @@ is
 		end if;
 	end query_arc;
 
+	
 	procedure query_circle (c : in pac_route_restrict_circles.cursor) is begin
 
 		-- Draw the circle if restrict layer is enabled:
@@ -119,7 +121,9 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is 
+		drawn : boolean := false;
+	begin
 
 		-- Draw the polygon if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
@@ -130,13 +134,16 @@ is
 				polygon	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height);
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
 		end if;
 	end query_polygon;
 
 	
-	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is begin
+	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is 
+		drawn : boolean := false;
+	begin
 
 		-- Draw the zone if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
@@ -149,7 +156,8 @@ is
 				polygon	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height);
+				height	=> self.frame_height,
+				drawn	=> drawn);
 
 		end if;
 	end query_cutout;

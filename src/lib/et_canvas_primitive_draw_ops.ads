@@ -209,7 +209,11 @@ package pac_draw is
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
 		
-		height	: in pac_shapes.pac_geometry.type_distance);
+		height	: in pac_shapes.pac_geometry.type_distance;
+
+		-- This flag is set if the polygon has been drawn
+		-- because is inside the given area:
+		drawn	: in out boolean);
 
 
 	procedure draw_polygon_with_circular_cutout (

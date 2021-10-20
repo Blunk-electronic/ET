@@ -110,19 +110,24 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_keepout_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_keepout_polygons.cursor) is 
+		drawn : boolean := false;
+	begin
 		pac_draw_fab.draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.frame_height);
+			height	=> self.frame_height,
+			drawn	=> drawn);
 
 	end query_polygon;
 
 	
-	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is begin
+	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
+		drawn : boolean := false;
+	begin
 		set_color_background (context.cr);
 		
 		pac_draw_fab.draw_polygon (
@@ -131,7 +136,8 @@ is
 			polygon	=> element (c),
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.frame_height);
+			height	=> self.frame_height,
+			drawn	=> drawn);
 
 	end query_cutout;
 

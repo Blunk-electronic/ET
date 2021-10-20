@@ -119,7 +119,9 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_silk_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_silk_polygons.cursor) is 
+		drawn : boolean := false;
+	begin
 		case element (c).fill_style is
 			when SOLID =>
 				pac_draw_fab.draw_polygon (
@@ -128,7 +130,8 @@ is
 					polygon	=> element (c),
 					filled	=> YES,
 					width	=> zero,
-					height	=> self.frame_height);
+					height	=> self.frame_height,
+					drawn	=> drawn);
 
 			when HATCHED =>
 				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
@@ -139,7 +142,8 @@ is
 					polygon	=> element (c),
 					filled	=> NO,
 					width	=> element (c).hatching.border_width,
-					height	=> self.frame_height);
+					height	=> self.frame_height,
+					drawn	=> drawn);
 
 				-- CS hatching ?
 		end case;
@@ -147,7 +151,9 @@ is
 	end query_polygon;
 
 	
-	procedure query_cutout (c : in pac_silk_cutouts.cursor) is begin
+	procedure query_cutout (c : in pac_silk_cutouts.cursor) is 
+		drawn : boolean := false;
+	begin
 		set_color_background (context.cr);
 		
 		pac_draw_fab.draw_polygon (
@@ -156,7 +162,8 @@ is
 			polygon	=> element (c),
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.frame_height);
+			height	=> self.frame_height,
+			drawn	=> drawn);
 
 	end query_cutout;
 
