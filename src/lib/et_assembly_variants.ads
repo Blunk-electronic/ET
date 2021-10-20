@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -67,8 +67,7 @@ package et_assembly_variants is
 	function to_mounted (mounted : in type_mounted) return string;
 
 	-- If a device is mounted, then it has a value, partcode and purpose
-	-- that owerrides those specified in the default assembly variant.
-	-- The default value, partcode and purpose is specified in et_schematic.type_device.
+	-- that overrides those specified in the default assembly variant.
 	type type_device (mounted : type_mounted) is record
 		case mounted is
 			when YES =>
