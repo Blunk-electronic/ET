@@ -1388,18 +1388,20 @@ package body et_board_ops is
 		
 	end make_pick_and_place;
 
+	
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_name		: in type_device_name)
-		return pac_devices_sch.cursor is
+		return pac_devices_sch.cursor 
+	is
 
 		device_cursor : pac_devices_sch.cursor;
 		
 		procedure query_devices (
 			module_name		: in pac_module_name.bounded_string;
-			module			: in type_module) is
-		begin
+			module			: in type_module) 
+		is begin
 			device_cursor := find (module.devices, device_name);
 		end query_devices;
 		
@@ -1414,14 +1416,16 @@ package body et_board_ops is
 		
 		return device_cursor;
 	end;
-		
+
+	
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
-		return type_terminal_position is
+		return type_terminal_position 
+	is
 		use et_pcb;
 
 		-- This is the position of the package as it is in the layout:
@@ -1434,9 +1438,9 @@ package body et_board_ops is
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		package_model_cursor : pac_packages_lib.cursor;
 
-		use type_terminals;
+		use pac_terminals;
 		-- This cursor points to the terminal in the package model:
-		terminal_cursor : type_terminals.cursor;
+		terminal_cursor : pac_terminals.cursor;
 		
 		terminal_technology : type_assembly_technology;
 	begin
@@ -1451,7 +1455,7 @@ package body et_board_ops is
 
 		-- locate the desired terminal in the package model:
 		terminal_cursor := terminal_properties (package_model_cursor, terminal_name);
-		if terminal_cursor = type_terminals.no_element then
+		if terminal_cursor = pac_terminals.no_element then
 			terminal_not_found (terminal_name);
 		end if;
 
@@ -1459,7 +1463,7 @@ package body et_board_ops is
 		terminal_technology := element (terminal_cursor).technology;
 
 		-- get x/y/rotation of the terminal as given by the package model:
-		terminal_position_base := type_terminals.element (terminal_cursor).position;
+		terminal_position_base := pac_terminals.element (terminal_cursor).position;
 
 		-- In the board: If the package has been flipped (to any side) by the operator
 		-- then the terminal must be flipped also.

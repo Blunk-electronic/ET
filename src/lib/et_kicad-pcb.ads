@@ -520,7 +520,7 @@ package et_kicad.pcb is
 	end record;
 
 	-- the list of terminals of a package:
-	package type_terminals is new indefinite_ordered_maps (
+	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> et_terminals.pac_terminal_name.bounded_string,
 		element_type	=> type_terminal,
 		"<"				=> et_terminals.pac_terminal_name."<");
@@ -532,7 +532,7 @@ package et_kicad.pcb is
 	type type_package_board is new type_package with record
 		silk_screen				: et_packages.type_silk_screen_both_sides;
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
-		terminals				: type_terminals.map; -- terminals with net names
+		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: pac_device_value.bounded_string;
 		position				: et_pcb_coordinates.type_package_position; -- incl. angle, face

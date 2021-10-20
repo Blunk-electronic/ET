@@ -559,8 +559,8 @@ package body et_pcb_rw.device_packages is
 		end write_package_contour;
 
 		procedure write_terminals is
-			use type_terminals;
-			terminal_cursor : type_terminals.cursor := packge.terminals.first;
+			use pac_terminals;
+			terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
 			procedure write_stop_mask_tht is 
 				
@@ -715,7 +715,7 @@ package body et_pcb_rw.device_packages is
 		begin -- write_terminals
 			section_mark (section_terminals, HEADER);
 			
-			while terminal_cursor /= type_terminals.no_element loop
+			while terminal_cursor /= pac_terminals.no_element loop
 				section_mark (section_terminal, HEADER);
 				write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
@@ -1048,7 +1048,7 @@ package body et_pcb_rw.device_packages is
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
 		-- list of terminals of the package.
-			cursor : type_terminals.cursor;
+			cursor : pac_terminals.cursor;
 			inserted : boolean;
 
 			-- Builds the stop mask of the terminal if it is a SMT type:
@@ -1118,7 +1118,7 @@ package body et_pcb_rw.device_packages is
 					case tht_hole is
 						when DRILLED =>
 
-							type_terminals.insert (
+							pac_terminals.insert (
 								container	=> packge.terminals,
 								key			=> terminal_name, -- 1,4,16
 								position	=> cursor,
@@ -1134,7 +1134,7 @@ package body et_pcb_rw.device_packages is
 									width_inner_layers		=> tht_width_inner_layers));
 
 						when MILLED =>
-							type_terminals.insert (
+							pac_terminals.insert (
 								container	=> packge.terminals,
 								key			=> terminal_name, -- 1,4,16
 								position	=> cursor,
@@ -1163,7 +1163,7 @@ package body et_pcb_rw.device_packages is
 					delete_segments (tht_stop_mask_contours_bottom);
 					
 				when SMT =>
-					type_terminals.insert (
+					pac_terminals.insert (
 						container	=> packge.terminals,
 						key			=> terminal_name, -- 1,4,16,H9
 						position	=> cursor,

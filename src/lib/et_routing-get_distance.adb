@@ -608,9 +608,9 @@ is
 
 
 				procedure query_terminals is
-					use type_terminals;
+					use pac_terminals;
 
-					procedure query_terminal (c : in type_terminals.cursor) is
+					procedure query_terminal (c : in pac_terminals.cursor) is
 						--clearances : pac_distances_positive.list := clearances_basic;
 
 

@@ -568,8 +568,7 @@ package body et_kicad.pcb is
 		terminal_stop_mask_status : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
-		terminals : type_terminals.map;
+		terminals : et_kicad.pcb.pac_terminals.map; -- includes net names
 
 
 
@@ -3882,7 +3881,7 @@ package body et_kicad.pcb is
 			-- This is layout related stuff.
 			
 				-- This cursor points to the last inserted terminal:
-				terminal_cursor : type_terminals.cursor;
+				terminal_cursor : pac_terminals.cursor;
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
@@ -4169,8 +4168,8 @@ package body et_kicad.pcb is
 				-- Otherwise abort due to a duplicated usage:
 				if terminal_inserted then
 					et_terminals.terminal_properties (
-						terminal		=> et_terminals.type_terminal (type_terminals.element (terminal_cursor)),
-						name			=> type_terminals.key (terminal_cursor),
+						terminal		=> et_terminals.type_terminal (pac_terminals.element (terminal_cursor)),
+						name			=> pac_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 
 					-- Whether the terminal is connected with a net or not, can be followed by the lenght of
@@ -4744,9 +4743,9 @@ package body et_kicad.pcb is
 				use type_packages_board;
 				package_cursor : type_packages_board.cursor;
 
-				use type_terminals;
-				terminals : type_terminals.map;
-				terminal_cursor : type_terminals.cursor;
+				use pac_terminals;
+				terminals : pac_terminals.map;
+				terminal_cursor : pac_terminals.cursor;
 				
 			begin -- to_net_name
 				-- Locate the given component in the board. If component does not
@@ -4762,7 +4761,7 @@ package body et_kicad.pcb is
 					-- the name of the connected net. 
 					-- If the terminal does not exist -> raise alarm and abort
 					terminal_cursor := terminals.find (terminal);
-					if terminal_cursor /= type_terminals.no_element then -- terminal found
+					if terminal_cursor /= pac_terminals.no_element then -- terminal found
 						net := element (terminal_cursor).net_name;
 					else
 						log (ERROR, "component reference " & to_string (reference) &
@@ -5215,8 +5214,8 @@ package body et_kicad.pcb is
 							package_name	: in type_device_name;
 							packge			: in type_package_board)
 						is
-							use type_terminals;
-							terminal_cursor : type_terminals.cursor := packge.terminals.first;
+							use pac_terminals;
+							terminal_cursor : pac_terminals.cursor := packge.terminals.first;
 
 							use pac_net_name;
 						begin -- query_terminals
@@ -5224,7 +5223,7 @@ package body et_kicad.pcb is
 							-- is found that is connected with the given net name_in.
 							-- On match, set the terminal_name, package_name and exit the loop.
 							-- The flag terminal_found indicates the superordinated loop to exit prematurely.
-							while terminal_cursor /= type_terminals.no_element loop
+							while terminal_cursor /= pac_terminals.no_element loop
 								if element (terminal_cursor).net_name = net_name_in then
 									terminal_found := true;
 
@@ -5628,7 +5627,7 @@ package body et_kicad.pcb is
 		procedure locate_package (
 			library_name	: in type_package_library_name.bounded_string;
 			packages		: in type_packages_library.map) is
-			use et_terminals.type_terminals;
+			use et_terminals.pac_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;
 		begin

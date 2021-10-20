@@ -158,7 +158,7 @@ package et_kicad_packages is
 	type type_package_library is new type_package with record
 		silk_screen				: et_packages.type_silk_screen_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
-		terminals				: et_terminals.type_terminals.map;
+		terminals				: et_terminals.pac_terminals.map;
 	end record;
 
 	

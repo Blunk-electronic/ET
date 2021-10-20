@@ -622,8 +622,8 @@ is
 				procedure query_terminals is
 					use et_terminals;
 
-					procedure query_terminal (c : in type_terminals.cursor) is
-						use type_terminals;
+					procedure query_terminal (c : in pac_terminals.cursor) is
+						use pac_terminals;
 
 						
 						procedure move_outline_smt is 

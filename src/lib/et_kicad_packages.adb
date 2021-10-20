@@ -588,7 +588,7 @@ package body et_kicad_packages is
 		terminal_stop_mask_status : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		terminals : et_terminals.type_terminals.map;
+		terminals : et_terminals.pac_terminals.map;
 
 
 
@@ -1893,7 +1893,7 @@ package body et_kicad_packages is
 				use et_terminals;
 				
 				-- this cursor points to the terminal inserted last
-				terminal_cursor : et_terminals.type_terminals.cursor;
+				terminal_cursor : et_terminals.pac_terminals.cursor;
 				
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
@@ -2158,8 +2158,8 @@ package body et_kicad_packages is
 
 				if terminal_inserted then
 					et_terminals.terminal_properties (
-						terminal		=> et_terminals.type_terminals.element (terminal_cursor),
-						name			=> et_terminals.type_terminals.key (terminal_cursor),
+						terminal		=> et_terminals.pac_terminals.element (terminal_cursor),
+						name			=> et_terminals.pac_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
 					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
@@ -2349,8 +2349,8 @@ package body et_kicad_packages is
 		-- If the package is REAL, counts the tht and smd terminals. 
 		-- Warns operator if the package technology
 		-- is not set according to the majority of terminals respectively.
-			use et_terminals.type_terminals;
-			cursor : et_terminals.type_terminals.cursor := terminals.first;
+			use et_terminals.pac_terminals;
+			cursor : et_terminals.pac_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
 
 			function number (count : in natural) return string is begin
@@ -2366,7 +2366,7 @@ package body et_kicad_packages is
 			if package_appearance = REAL then
 				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
 			
-				while cursor /= et_terminals.type_terminals.no_element loop
+				while cursor /= et_terminals.pac_terminals.no_element loop
 					case element (cursor).technology is
 						when THT => tht_count := tht_count + 1;
 						when SMT => smt_count := smt_count + 1;

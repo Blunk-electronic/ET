@@ -1071,10 +1071,10 @@ package body et_kicad_libraries is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
-		procedure validate_terminals (package_terminals : in et_terminals.type_terminals.map) is
+		procedure validate_terminals (package_terminals : in et_terminals.pac_terminals.map) is
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
-			use et_terminals.type_terminals; -- the terminals of the package
+			use et_terminals.pac_terminals; -- the terminals of the package
 			use pac_terminal_port_map;
 		
 			-- This cursor points to the terminal in the terminal_port_map
@@ -1089,7 +1089,7 @@ package body et_kicad_libraries is
 			while terminal_cursor /= pac_terminal_port_map.no_element loop
 				terminal_name_in_map := key (terminal_cursor);
 
-				if package_terminals.find (terminal_name_in_map) = et_terminals.type_terminals.no_element then
+				if package_terminals.find (terminal_name_in_map) = et_terminals.pac_terminals.no_element then
 					log (ERROR, "package " & et_packages.to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & et_terminals.to_string (terminal_name_in_map) & "' !", console => true);
@@ -1104,11 +1104,12 @@ package body et_kicad_libraries is
 		procedure locate_package (
 		-- Locates the package by package_name in the given package library.
 			library_name	: in type_package_library_name.bounded_string;
-			packages		: in type_packages_library.map) is
+			packages		: in type_packages_library.map) 
+		is
 			package_cursor : type_packages_library.cursor;
 
 			use type_packages_library;
-			use et_terminals.type_terminals;
+			use et_terminals.pac_terminals;
 			use pac_terminal_port_map;
 			terminals : et_devices.type_terminal_count;
 		begin

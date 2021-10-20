@@ -2755,7 +2755,7 @@ is
 
 		
 		procedure draw_terminals is
-			use type_terminals;
+			use pac_terminals;
 
 			procedure draw_tht_pad_with_circular_cutout (
 				outer_border	: in type_polygon;
@@ -2793,7 +2793,7 @@ is
 
 			
 			
-			procedure query_terminal (c : in type_terminals.cursor) is
+			procedure query_terminal (c : in pac_terminals.cursor) is
 				t : constant type_terminal := element (c);
 
 				-- Draws the name of a smt pad.

@@ -320,7 +320,7 @@ package et_terminals is
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	package type_terminals is new indefinite_ordered_maps ( -- CS rename to pac_terminals
+	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal,
 		"<"				=> pac_terminal_name."<");
@@ -328,8 +328,8 @@ package et_terminals is
 
 	-- Iterates the terminate. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		terminals	: in type_terminals.map;
-		process		: not null access procedure (position : type_terminals.cursor);
+		terminals	: in pac_terminals.map;
+		process		: not null access procedure (position : pac_terminals.cursor);
 		proceed		: not null access boolean);
 	
 	

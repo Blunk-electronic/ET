@@ -330,7 +330,7 @@ package et_packages is
 		-- CS default for face ?
 		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
-		terminals				: type_terminals.map;
+		terminals				: pac_terminals.map;
 	end record;
 
 	-- CS: this should be a hashed map:
@@ -357,7 +357,7 @@ package et_packages is
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
-		return type_terminals.cursor;
+		return pac_terminals.cursor;
 
 	
 

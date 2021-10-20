@@ -254,14 +254,15 @@ package body et_packages is
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
-		return type_terminals.cursor 
+		return pac_terminals.cursor 
 	is
-		terminal_cursor : type_terminals.cursor;
+		terminal_cursor : pac_terminals.cursor;
 
 		procedure query_terminals (
 			model_name	: in pac_package_model_file_name.bounded_string;
-			model		: in type_package_lib) is
-			use type_terminals;
+			model		: in type_package_lib) 
+		is
+			use pac_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);
 		end;
