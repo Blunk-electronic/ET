@@ -59,7 +59,7 @@ with et_nets;					use et_nets;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;
-with et_packages;
+with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_submodules;
@@ -197,8 +197,8 @@ package et_schematic is
 				-- or vice versa.
 				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
 				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
-				flipped				: et_packages.type_flipped := et_packages.flipped_default;
-				text_placeholders	: et_packages.type_text_placeholders;
+				flipped				: type_flipped := flipped_default;
+				text_placeholders	: type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				
@@ -515,10 +515,11 @@ package et_schematic is
 	function get_variant (device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string;
 	
-	-- Returns the name of the package model of the given device.
+	-- Returns the name of the package model of the given device
+	-- according to the current package variant of the device.
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model (device : in pac_devices_sch.cursor)
-		return et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 	function has_real_package (device : in pac_devices_sch.cursor) return boolean;
 	-- Returns true if the given device has a real package.
@@ -553,9 +554,9 @@ package et_schematic is
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		flipped				: et_packages.type_flipped := et_packages.flipped_default;
-		text_placeholders	: et_packages.type_text_placeholders;
-		package_model		: et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		flipped				: type_flipped := flipped_default;
+		text_placeholders	: type_text_placeholders;
+		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 	end record;
 	-- CS move to et_devices ?
 	
