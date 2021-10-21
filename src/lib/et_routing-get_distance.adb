@@ -36,6 +36,7 @@
 --
 
 with et_text;
+with et_schematic.device_query_ops;
 
 separate (et_routing)
 
@@ -616,6 +617,7 @@ is
 					procedure query_terminal (c : in pac_terminals.cursor) is
 						--clearances : pac_distances_positive.list := clearances_basic;
 
+						use device_query_ops;
 
 						procedure move_outline_smt is 
 							position : type_position := element (c).position;

@@ -166,7 +166,6 @@ package body et_schematic is
 		point_1, point_2 : type_point;
 	
 		use pac_net_segments;
-		use et_string_processing;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
@@ -369,7 +368,6 @@ package body et_schematic is
 		use pac_nets;
 		use pac_strands;
 		use pac_net_segments;
-		use et_string_processing;
 
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
 			use pac_device_ports;
@@ -516,24 +514,6 @@ package body et_schematic is
 	end has_real_package;
 
 
-	function get_net (
-		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
-		return pac_nets.cursor
-	is
-		result : pac_nets.cursor;
-
-		use pac_devices_sch;
-		--use et_devices;
-		--use pac_devices_lib;
-		device_model_cursor : pac_devices_lib.cursor := locate_device (element (device).model);
-	begin
-		--device_model 
-		-- element (device).model
-		-- element (device).variant
-		return result;
-	end get_net;
-
 	
 	
 	function to_string (
@@ -595,9 +575,7 @@ package body et_schematic is
 	procedure device_name_in_use (
 		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category)	-- electrical/non-electrical
-	is 
-		use et_string_processing;
-	begin
+	is begin
 		case by_cat is
 			when NON_ELECTRICAL =>
 				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &

@@ -58,7 +58,7 @@ with et_general;				use et_general;
 with et_nets;					use et_nets;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_terminals;
 with et_packages;				use et_packages;
 with et_pcb;
@@ -530,12 +530,6 @@ package et_schematic is
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
 
 
-	-- Returns a cursor to the net that is connected with the given device and terminal.
-	-- If there is no net connected, then the return is no_element:
-	function get_net (
-		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
-		return pac_nets.cursor;
 
 	
 	
