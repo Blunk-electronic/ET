@@ -353,16 +353,13 @@ package body et_schematic is
 		end if;
 
 	end stub_direction;
+
 	
-	function ports (
+	function get_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor)
-		return type_ports is
-	-- Returns the ports of devices, submodules and netchangers in
-	-- the given net. The given assembly variant determines whether
-	-- a device should be excluded.
-	-- NOTE: If variant points to no element, then the default variant is assumend
-	-- and ALL devices are returned.
+		return type_ports 
+	is
 		result : type_ports; -- to be returned
 
 		use pac_nets;
@@ -406,10 +403,10 @@ package body et_schematic is
 			iterate (element (strand_cursor).segments, query_segments'access);
 		end query_strands;
 	
-	begin -- ports
+	begin
 		iterate (element (net).strands, query_strands'access);
 		return result;
-	end ports;
+	end get_ports;
 
 
 	procedure iterate (

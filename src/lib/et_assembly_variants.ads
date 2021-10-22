@@ -112,7 +112,7 @@ package et_assembly_variants is
 		key_type		=> pac_assembly_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_assembly_variant);
 
-	function is_mounted (
+	function is_mounted ( -- CS move to et_schematic.device_query_ops ?
 		device	: in type_device_name; -- IC1
 		variant	: in pac_assembly_variants.cursor)
 		return boolean;

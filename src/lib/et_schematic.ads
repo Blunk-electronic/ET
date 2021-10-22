@@ -452,10 +452,10 @@ package et_schematic is
 	
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
-	-- a device should be excluded.
+	-- devices should be excluded (because they may not be present in an assembly variant).
 	-- NOTE: If variant points to no element, then the default variant is assumend
 	-- and ALL devices are returned.
-	function ports ( -- CS rename to get_ports
+	function get_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor)
 		return type_ports;

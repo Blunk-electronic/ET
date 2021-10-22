@@ -1578,6 +1578,7 @@ package body et_schematic_ops is
 
 		port : constant et_symbols.pac_port_name.bounded_string :=
 			get_port (device, terminal);  -- CE, WE
+
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -1586,16 +1587,23 @@ package body et_schematic_ops is
 			proceed : aliased boolean := true;
 			
 			procedure query_net (c : in pac_nets.cursor) is 
-				ports : type_ports;
+				ports : et_schematic.type_ports;
+
+				use et_assembly_variants;
 			begin
-				--ports :=
-				null;
+				-- We search for ALL ports in the net.
+				-- We assume the default assembly variant.
+				ports := get_ports (c, pac_assembly_variants.no_element);
+
+				-- port in ports.ports_devices ?
 			end query_net;
-	
+
+			
 		begin
 			et_schematic.iterate (module.nets, query_net'access, proceed'access);
 		end query_nets;
 
+		
 	begin 
 		query_element (module, query_nets'access);
 		
@@ -8869,7 +8877,7 @@ package body et_schematic_ops is
 
 						-- Get all device, netchanger and submodule ports of this net
 						-- according to the given assembly variant:
-						all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
+						all_ports := get_ports (net_cursor_sch, variant_cursor);
 					
 						-- extend the submodule ports by their directions (master/slave):
 						submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
