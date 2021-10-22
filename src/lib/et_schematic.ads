@@ -59,7 +59,6 @@ with et_nets;					use et_nets;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
-with et_terminals;
 with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;
@@ -427,6 +426,7 @@ package et_schematic is
 	-- Maps from stub direction to rotation:
 	function to_label_rotation (direction : in type_stub_direction)
 		return type_rotation;
+
 	
 	-- Detects whether the given segment is a stub and if so
 	-- detects the direction of the stub relative to the given point.
@@ -448,16 +448,17 @@ package et_schematic is
 		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
+
 	
-	function ports (
-		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor)
-		return type_ports;
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
 	-- a device should be excluded.
 	-- NOTE: If variant points to no element, then the default variant is assumend
 	-- and ALL devices are returned.
+	function ports (
+		net		: in pac_nets.cursor;
+		variant	: in pac_assembly_variants.cursor)
+		return type_ports;
 
 
 	
@@ -514,44 +515,19 @@ package et_schematic is
 
 
 
-	
-	-- Devices which do not have a counterpart in the schematic 
-	-- (like fiducials, mounting holes, ...). They can have
-	-- terminals. But the terminals are not connected with any net.
-	-- They have names like H1 (hole) or FD (fiducial).
-	-- This is NOT about accessories of the module !
-	-- These devices do NOT appear in the BOM !
-	-- We collect them in an indefinite ordered map.
+
 
 	-- To distinguish between electrical and non-electrical devices
 	-- use this type:
 	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
 	
-	type type_device_non_electric is record
-		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		flipped				: type_flipped := flipped_default;
-		text_placeholders	: type_text_placeholders;
-		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
-	end record;
-
-	
-	-- CS: this should be a hashed map:
-	package pac_devices_non_electric is new ordered_maps (
-		key_type		=> type_device_name, -- H1, FD2, ...
-		element_type	=> type_device_non_electric);
-
-	
-	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
-		proceed	: not null access boolean);
 
 	
 	procedure device_name_in_use (
 		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical
 
+	
 	-- For the design rules we simply refer to the file where the rules are
 	-- written like JLP_ML4_standard.dru.
 	-- The content of the file itself will later be stored in
@@ -605,7 +581,7 @@ package et_schematic is
 		netlists		: pac_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
-		devices_non_electric : pac_devices_non_electric.map; -- fiducials, mounting holes, ...
+		devices_non_electric : et_pcb.pac_devices_non_electric.map; -- fiducials, mounting holes, ...
 
 		-- CS: images
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...

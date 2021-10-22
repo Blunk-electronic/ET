@@ -916,7 +916,7 @@ is
 	end read_unit;
 	
 
-	device_non_electric			: et_schematic.type_device_non_electric;
+	device_non_electric			: et_pcb.type_device_non_electric;
 	device_non_electric_model	: et_packages.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 

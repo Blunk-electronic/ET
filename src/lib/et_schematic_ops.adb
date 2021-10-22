@@ -45,6 +45,7 @@ with et_exceptions;					use et_exceptions;
 with et_modes;						use et_modes;
 with et_conventions;
 with et_pcb_coordinates;
+with et_pcb;
 with et_terminals;
 with et_packages;
 with et_device_rw;
@@ -3032,12 +3033,15 @@ package body et_schematic_ops is
 			
 		end search_gap_electric;
 
+		
 		procedure search_gap_non_electric (
 		-- Searches for the lowest available non-electrical device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix is MH, it looks
 		-- for the lowest available mounting hole index.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
+			use et_pcb;
 			use pac_devices_non_electric;
 			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
 

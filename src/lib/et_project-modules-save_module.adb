@@ -1308,16 +1308,18 @@ is
 
 		use pac_route_restrict_cutouts;
 		use pac_via_restrict_cutouts;
-		use et_schematic.pac_devices_non_electric;
+		use et_pcb.pac_devices_non_electric;
+
 		
 		procedure query_devices_non_electric (
-			c : in et_schematic.pac_devices_non_electric.cursor) 
+			c : in et_pcb.pac_devices_non_electric.cursor) 
 		is
+			use et_pcb;
 			use et_packages;
 
 			procedure query_placeholders (
 				device_name : in type_device_name;
-				device 		: in et_schematic.type_device_non_electric) 
+				device 		: in type_device_non_electric) 
 			is
 				use et_pcb_coordinates;
 				use et_packages.pac_text_placeholders;

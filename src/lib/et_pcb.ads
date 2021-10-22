@@ -395,9 +395,38 @@ package et_pcb is
 
 
 
+	-- Devices which do not have a counterpart in the schematic 
+	-- (like fiducials, mounting holes, ...). They can have
+	-- terminals. But the terminals are not connected with any net.
+	-- They have names like H1 (hole) or FD (fiducial).
+	-- This is NOT about accessories of the module !
+	-- These devices do NOT appear in the BOM !
+	-- We collect them in an indefinite ordered map.
+	
+	type type_device_non_electric is record
+		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		flipped				: type_flipped := flipped_default;
+		text_placeholders	: type_text_placeholders;
+		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+	end record;
+
+	
+	-- CS: this should be a hashed map:
+	package pac_devices_non_electric is new ordered_maps (
+		key_type		=> et_devices.type_device_name, -- H1, FD2, ...
+		"<"				=> et_devices."<",													 
+		element_type	=> type_device_non_electric);
+
+	
+	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean);
 
 	
 
+	
 	
 	-- This is general board stuff:
 	type type_board is tagged record

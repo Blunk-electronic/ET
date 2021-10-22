@@ -214,6 +214,22 @@ package body et_pcb is
 	end pcb_contour_circle_properties;
 	
 
+
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_devices_non_electric;
+		c : pac_devices_non_electric.cursor := devices.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
 	
 end et_pcb;
 

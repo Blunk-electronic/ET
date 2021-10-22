@@ -3350,9 +3350,10 @@ is
 	
 	procedure query_devices_non_electric (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) is
-
-		use et_schematic.pac_devices_non_electric;
+		module		: in type_module) 
+	is
+		use et_pcb;
+		use pac_devices_non_electric;
 		
 		procedure query_device (p : in pac_devices_non_electric.cursor) is 
 			use et_devices;
