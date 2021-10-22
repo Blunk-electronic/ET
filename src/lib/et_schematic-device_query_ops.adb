@@ -37,66 +37,65 @@
 
 package body et_schematic.device_query_ops is
 
+
+	
 	function get_port (
 		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
+		terminal	: in et_terminals.pac_terminal_name.bounded_string)
 		return pac_port_name.bounded_string
 	is
-		result : pac_port_name.bounded_string;
+		result : pac_port_name.bounded_string; -- GPIO1, VCC
 
-		-- Get the full device model:
-		device_model : pac_devices_lib.cursor := locate_device (pac_devices_sch.element (device).model);
+		-- Get the cursor to the full device model:
+		device_model : constant pac_devices_lib.cursor := 
+			locate_device (pac_devices_sch.element (device).model);
 
+		-- This is the package variant used by the given device:
+		variant_sch : constant pac_package_variant_name.bounded_string :=
+			pac_devices_sch.element (device).variant; -- N, D
+
+		
 		procedure query_model (
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_lib)
 		is
+			use pac_variants;
+
+			-- Locate the package variant of the given device
+			-- in the device model:
+			variant_lib : constant pac_variants.cursor := 
+				find (device.variants, variant_sch);
+
+			
+			procedure query_terminal_port_map (
+				name	: in pac_package_variant_name.bounded_string;
+				variant	: in type_variant)
+			is
+				use pac_terminal_port_map;
+
+				-- Locate the variant in the terminal-port-map
+				-- of the device model:
+				c : constant pac_terminal_port_map.cursor :=
+					find (variant.terminal_port_map, terminal);
+			begin
+				-- Get the terminal name (which is what we want):
+				result := element (c).name;
+			end query_terminal_port_map;
+
+			
 		begin
-			--query_element (model.
-			null;
+			query_element (variant_lib, query_terminal_port_map'access);
 		end query_model;
+
 		
-		use pac_devices_lib;
 	begin
-		-- The given device must be real. Otherwise we return an empty string.
-		if pac_devices_sch.element (device).appearance = PCB then
-			query_element (device_model, query_model'access);
-		else
-			result := to_port_name ("");
-		end if;
+		pac_devices_lib.query_element (device_model, query_model'access);
 			
 		return result;
 	end get_port;
 
 	
 	
-	function get_net (
-		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
-		return pac_nets.cursor
-	is
-		result : pac_nets.cursor;
-
-		use pac_devices_sch;
-		--use et_devices;
-		device_model : pac_devices_lib.cursor := locate_device (element (device).model);
-
-		procedure query_model (
-			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib)
-		is
-		begin
-			null;
-		end query_model;
-		
-		use pac_devices_lib;
-	begin 
-		query_element (device_model, query_model'access);
-		--device_model 
-		-- element (device).model
-		-- element (device).variant
-		return result;
-	end get_net;
 
 
 	

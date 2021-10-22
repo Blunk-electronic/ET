@@ -63,6 +63,7 @@ with et_assembly_variants;
 with et_numbering;
 with et_material;
 with et_netlists;
+with et_terminals;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_conventions;
@@ -211,6 +212,15 @@ package et_schematic_ops is
 		net_name		: in pac_net_name.bounded_string)
 		return et_schematic.pac_nets.cursor;
 
+
+	-- Returns a cursor to the net that is connected with the given device and terminal.
+	-- If there is no net connected, then the return is no_element:
+	function get_net (
+		device		: in pac_devices_sch.cursor;
+		terminal	: in et_terminals.pac_terminals.cursor)
+		return pac_nets.cursor;
+
+	
 	
 	-- CS move to et_schematic ?
 	type type_drag is record

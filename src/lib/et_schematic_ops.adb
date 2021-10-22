@@ -1542,17 +1542,18 @@ package body et_schematic_ops is
 
 	end rotate_unit_placeholder;
 
+	
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string)		
-		return pac_nets.cursor is
-		
+		return pac_nets.cursor 
+	is	
 		cursor : pac_nets.cursor;
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
-		begin
+			module		: in type_module) 
+		is begin
 			cursor := pac_nets.find (module.nets, net_name);
 		end query_nets;
 		
@@ -1563,6 +1564,37 @@ package body et_schematic_ops is
 		
 		return cursor;
 	end locate_net;
+
+
+	function get_net (
+		device		: in pac_devices_sch.cursor;
+		terminal	: in et_terminals.pac_terminals.cursor)
+		return pac_nets.cursor
+	is
+		result : pac_nets.cursor;
+
+		use pac_devices_sch;
+		--use et_devices;
+		device_model : pac_devices_lib.cursor := locate_device (element (device).model);
+
+		procedure query_model (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_lib)
+		is
+		begin
+			null;
+		end query_model;
+		
+		use pac_devices_lib;
+	begin 
+		query_element (device_model, query_model'access);
+		--device_model 
+		-- element (device).model
+		-- element (device).variant
+		return result;
+	end get_net;
+
+
 	
 -- 	procedure drag_net_segments (
 -- 	-- Drags the net segments according to the given drag_list of a unit.
