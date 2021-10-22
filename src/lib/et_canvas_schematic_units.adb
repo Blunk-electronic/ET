@@ -65,7 +65,10 @@ with et_geometry;					use et_geometry;
 with et_devices;					use et_devices;
 with et_device_rw;
 with et_packages;
+
 with et_schematic;					use et_schematic;
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+
 with et_material;
 with et_meta;
 with et_modes.schematic;			use et_modes.schematic;

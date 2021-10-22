@@ -427,91 +427,10 @@ package body et_schematic is
 	end iterate;
 
 	
-	function is_real (device : in pac_devices_sch.cursor) return boolean is 
-		use et_symbols;
-	begin
-		case pac_devices_sch.element (device).appearance is
-			when PCB		=> return true;
-			when VIRTUAL	=> return false;
-		end case;
-	end is_real;
-
-	function get_device (device : in pac_devices_sch.cursor)
-		return pac_devices_lib.cursor
-	is
-		model_file : pac_device_model_file.bounded_string;
-	begin
-		-- The name of the device model file is THE link
-		-- from device in schematic to device in library:
-		model_file := pac_devices_sch.element (device).model;
-		return locate_device (model_file);
-	end get_device;
-	
-	function get_value (device : in pac_devices_sch.cursor)
-		return pac_device_value.bounded_string 
-	is
-		use et_devices;
-	begin
-		return pac_devices_sch.element (device).value;
-	end get_value;
-
-	function get_purpose (device : in pac_devices_sch.cursor)
-		return pac_device_purpose.bounded_string
-	is
-		use et_devices;
-	begin
-		return pac_devices_sch.element (device).purpose;
-	end get_purpose;
-
-	function get_partcode (device : in pac_devices_sch.cursor)
-		return et_material.type_partcode.bounded_string
-	is
-		use et_devices;
-	begin
-		return pac_devices_sch.element (device).partcode;
-	end get_partcode;
-
-	function get_variant (device : in pac_devices_sch.cursor)
-		return pac_package_variant_name.bounded_string
-	is
-		use et_devices;
-	begin
-		return pac_devices_sch.element (device).variant;
-	end get_variant;
 
 	
-	function get_package_model (device : in pac_devices_sch.cursor)
-		return pac_package_model_file_name.bounded_string -- libraries/packages/smd/SOT23.pac
-	is
-		device_model		: pac_device_model_file.bounded_string;
-		device_cursor_lib	: pac_devices_lib.cursor;
-		device_variant		: pac_package_variant_name.bounded_string; -- N, D
-	begin
-		-- CS: The device is located twice here. Consumes too much time.
-		-- The issue may dissolve once devices are stored in a hashed map:
-		
-		-- load package variant of given device
-		device_variant := pac_devices_sch.element (device).variant;
-		
-		-- load the name of the generic device model
-		device_model := pac_devices_sch.element (device).model;
-		
-		-- locate the generic device model in the device library
-		device_cursor_lib := locate_device (device_model);
-		
-		return package_model (device_cursor_lib, device_variant);
-	end get_package_model;
 
 	
-	function has_real_package (device : in pac_devices_sch.cursor) return boolean is
-		package_name : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-	begin
-		-- get the package name of the given device:
-		package_name := get_package_model (device);
-
-		-- ask for the package status (real or virtual) and return the result right away:
-		return is_real (package_name);
-	end has_real_package;
 
 
 	
@@ -519,9 +438,8 @@ package body et_schematic is
 	function to_string (
 		mirror	: in type_mirror;
 		verbose : in boolean)
-		return string is
-	-- returns the given mirror style as string
-	begin
+		return string 
+	is begin
 		if verbose then
 			return "mirrored " & to_lower (type_mirror'image (mirror));
 		else
@@ -529,19 +447,24 @@ package body et_schematic is
 		end if;
 	end to_string;
 
+	
 	function to_mirror_style (style : in string) return type_mirror is begin
 		return type_mirror'value (style);
 	end to_mirror_style;
 
+	
 	function to_string (unit : in pac_units.cursor) return string is
 		use pac_units;
 	begin
 		return et_devices.to_string (key (unit)) 
 			& to_string (type_point (element (unit).position));
 	end to_string;
+
 	
-	function unit_positions (units : in pac_units.map) return pac_unit_positions.map is
-	-- Returns a list of units and their coordinates in the schematic.
+	function unit_positions (
+		units : in pac_units.map)
+		return pac_unit_positions.map
+	is
 		list : pac_unit_positions.map; -- to be returned
 		use pac_units;
 		use pac_unit_positions;

@@ -36,6 +36,7 @@
 --
 
 with et_text;
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 with et_schematic.device_query_ops;
 
 separate (et_routing)

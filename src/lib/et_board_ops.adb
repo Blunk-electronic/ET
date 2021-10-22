@@ -39,6 +39,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.tags;
 
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 with et_submodules;
 with et_numbering;
 with et_symbols;

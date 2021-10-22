@@ -477,57 +477,26 @@ package et_schematic is
 
 	
 		
-	-- Returns true if the given device is real.
-	function is_real (device : in pac_devices_sch.cursor) return boolean;
-
-	-- Maps from schematic device to library device:
-	function get_device (device : in pac_devices_sch.cursor)
-		return pac_devices_lib.cursor;
 	
-	-- Returns the value of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_value (device : in pac_devices_sch.cursor)
-		return pac_device_value.bounded_string;
 
 	-- CS procedure set_value (
 		--device	: in pac_devices_sch.cursor;
 	--value	: in pac_device_value.bounded_string);
 	-- use it in schematic_ops
 	
-	-- Returns the purpose of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_purpose (device : in pac_devices_sch.cursor)
-		return pac_device_purpose.bounded_string;
 
 	-- CS procedure set_purpose (
 		--device	: in pac_devices_sch.cursor;
 		--purpose	: in pac_device_purpose.bounded_string);
 	-- use it in schematic_ops
 	
-	-- Returns the partcode of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_partcode (device : in pac_devices_sch.cursor)
-		return et_material.type_partcode.bounded_string;
 
 	-- CS procedure set_partcode (
 		--device	: in pac_devices_sch.cursor;
 		--partcode	: in et_material.type_partcode.bounded_string);
 	-- use it in schematic_ops
 
-	-- Returns the package variant of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_variant (device : in pac_devices_sch.cursor)
-		return pac_package_variant_name.bounded_string;
 	
-	-- Returns the name of the package model of the given device
-	-- according to the current package variant of the device.
-	-- The given device must be real. Otherwise constraint error arises here.	
-	function get_package_model (device : in pac_devices_sch.cursor)
-		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-
-	function has_real_package (device : in pac_devices_sch.cursor) return boolean;
-	-- Returns true if the given device has a real package.
-	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
 
 
 

@@ -46,6 +46,8 @@ with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 with et_design_rules;			use et_design_rules;

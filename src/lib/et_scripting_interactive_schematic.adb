@@ -52,6 +52,7 @@ with et_geometry;
 with et_coordinates;				use et_coordinates;
 with et_packages;
 with et_schematic;					use et_schematic;
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;

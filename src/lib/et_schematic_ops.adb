@@ -48,6 +48,7 @@ with et_pcb_coordinates;
 with et_terminals;
 with et_packages;
 with et_device_rw;
+with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 
 with et_canvas_schematic;
 
