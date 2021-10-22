@@ -1569,30 +1569,36 @@ package body et_schematic_ops is
 
 
 	function get_net (
+		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
+		terminal	: in et_terminals.pac_terminal_name.bounded_string)
 		return pac_nets.cursor
 	is
 		result : pac_nets.cursor;
 
-		use pac_devices_sch;
-		--use et_devices;
-		device_model : pac_devices_lib.cursor := locate_device (element (device).model);
-
-		procedure query_model (
-			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib)
-		is
-		begin
-			null;
-		end query_model;
+		port : constant et_symbols.pac_port_name.bounded_string :=
+			get_port (device, terminal);  -- CE, WE
 		
-		use pac_devices_lib;
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is 
+			proceed : aliased boolean := true;
+			
+			procedure query_net (c : in pac_nets.cursor) is 
+				ports : type_ports;
+			begin
+				--ports :=
+				null;
+			end query_net;
+	
+		begin
+			et_schematic.iterate (module.nets, query_net'access, proceed'access);
+		end query_nets;
+
 	begin 
-		query_element (device_model, query_model'access);
-		--device_model 
-		-- element (device).model
-		-- element (device).variant
+		query_element (module, query_nets'access);
+		
 		return result;
 	end get_net;
 

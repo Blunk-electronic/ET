@@ -455,7 +455,7 @@ package et_schematic is
 	-- a device should be excluded.
 	-- NOTE: If variant points to no element, then the default variant is assumend
 	-- and ALL devices are returned.
-	function ports (
+	function ports ( -- CS rename to get_ports
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor)
 		return type_ports;
@@ -479,27 +479,6 @@ package et_schematic is
 	
 		
 	
-
-	-- CS procedure set_value (
-		--device	: in pac_devices_sch.cursor;
-	--value	: in pac_device_value.bounded_string);
-	-- use it in schematic_ops
-	
-
-	-- CS procedure set_purpose (
-		--device	: in pac_devices_sch.cursor;
-		--purpose	: in pac_device_purpose.bounded_string);
-	-- use it in schematic_ops
-	
-
-	-- CS procedure set_partcode (
-		--device	: in pac_devices_sch.cursor;
-		--partcode	: in et_material.type_partcode.bounded_string);
-	-- use it in schematic_ops
-
-	
-
-
 
 	
 	

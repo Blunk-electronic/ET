@@ -205,6 +205,7 @@ package et_schematic_ops is
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
+	
 	-- Returns a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.
 	function locate_net (
@@ -216,8 +217,9 @@ package et_schematic_ops is
 	-- Returns a cursor to the net that is connected with the given device and terminal.
 	-- If there is no net connected, then the return is no_element:
 	function get_net (
+		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminals.cursor)
+		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 16
 		return pac_nets.cursor;
 
 	
@@ -260,6 +262,7 @@ package et_schematic_ops is
 		port 		: in string;
 		position	: in et_coordinates.type_position);
 
+	
 	-- Renames a device.
 	-- Raises exception if name before equals name after.
 	-- Raises exception if prefix changes. For example renaming from
@@ -272,9 +275,10 @@ package et_schematic_ops is
 
 	-- CS procedure rename_device that takes a module cursor and a device 
 	-- cursor for device_name_before.
+
 	
-	procedure set_value (
 	-- Sets the value of a device.
+	procedure set_value (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
@@ -282,8 +286,8 @@ package et_schematic_ops is
 
 	-- CS procedure set_value that takes a module cursor and a device cursor.
 	
-	procedure set_purpose (
 	-- Sets the purpose of a device.
+	procedure set_purpose (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
@@ -291,14 +295,15 @@ package et_schematic_ops is
 
 	-- CS procedure set_purpose that takes a module cursor and a device cursor.
 	
-	procedure set_partcode (
 	-- Sets the partcode of a device.
+	procedure set_partcode (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
 
 	-- CS procedure set_partcode that takes a module cursor and a device cursor.
+
 	
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						

@@ -712,7 +712,7 @@ is
 						if observe_foreign_nets then
 							null; 
 
-							foregin_net := get_net (device_cursor, c);
+							foregin_net := get_net (module_cursor, device_cursor, key (c));
 							-- CS get the clearance of the connected net
 							-- and append it to clearances
 
