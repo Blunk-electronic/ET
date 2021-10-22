@@ -526,7 +526,6 @@ package et_schematic is
 	-- To distinguish between electrical and non-electrical devices
 	-- use this type:
 	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
-	-- CS move to et_devices ?
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
@@ -534,7 +533,7 @@ package et_schematic is
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 	end record;
-	-- CS move to et_devices ?
+
 	
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (

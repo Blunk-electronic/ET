@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              DEVICES                                     --
+--                         DEVICES IN LIBRARIES                             --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --

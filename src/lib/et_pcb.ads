@@ -65,6 +65,7 @@ with et_nets;					use et_nets;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
 with et_packages;				use et_packages;
+with et_devices;
 with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 with et_design_rules;			use et_design_rules;
@@ -391,7 +392,13 @@ package et_pcb is
 
 		-- CS polygons_non_conductor
 	end record;
-		
+
+
+
+
+	
+
+	
 	-- This is general board stuff:
 	type type_board is tagged record
 		origin			: type_point := origin_default;
