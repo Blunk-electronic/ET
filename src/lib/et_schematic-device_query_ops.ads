@@ -46,25 +46,6 @@ with et_devices;				use et_devices;
 
 package et_schematic.device_query_ops is
 
-	--type type_device_exists is new boolean;
-	--type type_terminal_exists is new boolean;
-
-	
-	--type type_get_port_result (
-		--device_appearance	: type_appearance_schematic;
-		--device_exists		: type_device_exists)
-	--is record
-		--case device_exists is
-			--when TRUE =>
-				--case device_appearance is
-					--when PCB =>
-
-			
-		--terminal_exists		: type_terminal_exists := FALSE;
-		--port				: pac_port_name.bounded_string; -- OE1, CS
-
-			--when FALSE => null;
-	--end record;
 
 	-- Returns true if the given device is real.
 	function is_real (

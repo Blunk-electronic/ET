@@ -112,12 +112,15 @@ package et_assembly_variants is
 		key_type		=> pac_assembly_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_assembly_variant);
 
-	function is_mounted ( -- CS move to et_schematic.device_query_ops ?
+	use pac_assembly_variants;
+	
+	
+	-- Returns true if the given device is to be mounted according to given assembly variant.
+	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
+	function is_mounted (
 		device	: in type_device_name; -- IC1
 		variant	: in pac_assembly_variants.cursor)
 		return boolean;
-	-- Returns true if the given device is to be mounted according to given assembly variant.
-	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 	
 end et_assembly_variants;
 

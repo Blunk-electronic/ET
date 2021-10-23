@@ -1591,7 +1591,7 @@ package body et_schematic_ops is
 
 				use et_assembly_variants;
 			begin
-				-- We search for ALL ports in the net.
+				-- We search for ALL ports (of devices) in the net.
 				-- We assume the default assembly variant.
 				ports := get_ports (c, pac_assembly_variants.no_element);
 
