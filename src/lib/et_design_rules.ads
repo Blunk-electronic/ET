@@ -69,8 +69,9 @@ package et_design_rules is
 	conductor_width_min : constant type_distance_positive := 0.05;
 	
 	conductor_clearance_min : constant type_distance_positive := conductor_width_min;
-	
-	subtype type_track_clearance is type_distance_positive 
+
+	-- The clearance between two conductor objects:
+	subtype type_track_clearance is type_distance_positive  -- CS rename to type_clearance_conductor
 		range conductor_clearance_min .. type_distance_positive'last;
 
 	-- Checks whether the given track clearance is in range of type_track_clearance.

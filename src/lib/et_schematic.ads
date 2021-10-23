@@ -220,6 +220,14 @@ package et_schematic is
 	function "<" (left, right : in type_device_port) return boolean;
 	package pac_device_ports is new ordered_sets (type_device_port);
 
+	-- Iterates the device ports. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		ports	: in pac_device_ports.set;
+		process	: not null access procedure (position : in pac_device_ports.cursor);
+		proceed	: not null access boolean);
+
+
 	
 	-- This is the port of a submodule:
 	type type_submodule_port is record

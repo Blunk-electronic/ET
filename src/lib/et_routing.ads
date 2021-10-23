@@ -86,6 +86,13 @@ package et_routing is
 		--return type_distance_positive;
 
 
+	function get_clearance (
+		module	: in pac_generic_modules.cursor;
+		device	: in et_schematic.pac_devices_sch.cursor;
+		terminal: in pac_terminals.cursor)
+		return type_track_clearance;
+
+	
 	-- Returns the distance to the nearest point
 	-- on the board edge. Objects that are regarded as board
 	-- edges are outline segments and hole segments:

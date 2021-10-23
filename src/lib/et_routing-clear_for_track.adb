@@ -466,7 +466,9 @@ is
 			package_cursor		: pac_packages_lib.cursor;
 			package_position	: type_package_position; -- incl. rotation and face
 			package_flipped		: type_flipped;
-
+			
+			device_cursor : pac_devices_sch.cursor; -- used for querying electrical devices
+			
 			procedure query_package (
 				observe_foreign_nets : in type_observe_foreign_nets) 
 			is
@@ -621,6 +623,11 @@ is
 
 
 				procedure query_terminals is
+
+					-- Take a copy of the initial circle_around_start_point_init:
+					circle_around_start_point : type_circle := circle_around_start_point_init;
+
+
 					use et_terminals;
 
 					procedure query_terminal (c : in pac_terminals.cursor) is
@@ -716,15 +723,28 @@ is
 						end move_outline_tht;
 
 						
-					begin
+						clearances : pac_distances_positive.list;						
+						clearance_foreign_net : type_track_clearance;
+
+						
+					begin -- query_terminal
 						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 
 						if observe_foreign_nets then
-							null; 
-							-- CS get the clearance of the connected net
-							-- and append it to clearances
+							clearances := clearances_basic;
+							
+							-- Get the clearance of the connected foreign net
+							-- and append it to clearances:
+							clearance_foreign_net := get_clearance (module_cursor, device_cursor, c);
+							
+							clearances.append (clearance_foreign_net);
 
-							--class_foregin_net := get_net_class (module_cursor, nf);
+							greatest_clearance := get_greatest (clearances);
+								
+							-- Extend the radius of the circle_around_start_point by the
+							-- greatest clearance and compute the boundaries of the circle:
+							circle_around_start_point.radius := circle_around_start_point_init.radius + greatest_clearance;
+							start_point_boundaries := get_boundaries (circle_around_start_point, zero);
 						end if;
 
 						case element (c).technology is
@@ -760,10 +780,7 @@ is
 						end case;
 						
 					end query_terminal;
-					
 
-					-- Take a copy of the initial circle_around_start_point_init:
-					circle_around_start_point : type_circle := circle_around_start_point_init;
 
 				begin -- query_terminals
 					greatest_clearance := get_greatest (clearances_basic);
@@ -777,8 +794,6 @@ is
 						terminals	=> element (package_cursor).terminals,
 						process		=> query_terminal'access,
 						proceed		=> result'access);
-					
-				-- CS terminals + net
 					
 				end query_terminals;
 				
@@ -807,6 +822,7 @@ is
 					package_flipped := element (c).flipped;
 
 					log_indentation_up;
+					device_cursor := c;
 					query_package (observe_foreign_nets => true);
 					log_indentation_down;
 					

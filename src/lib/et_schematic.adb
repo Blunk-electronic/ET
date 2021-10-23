@@ -476,6 +476,22 @@ package body et_schematic is
 	end unit_positions;
 
 
+
+	procedure iterate (
+		ports	: in pac_device_ports.set;
+		process	: not null access procedure (position : in pac_device_ports.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_device_ports;
+		c : pac_device_ports.cursor := ports.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
 	--procedure iterate (
 		--devices	: in pac_devices_non_electric.map;
 		--process	: not null access procedure (position : in pac_devices_non_electric.cursor);

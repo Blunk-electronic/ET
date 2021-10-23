@@ -37,7 +37,7 @@
 
 with et_text;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
-with et_schematic.device_query_ops;
+
 
 separate (et_routing)
 
@@ -616,8 +616,6 @@ is
 					use pac_terminals;
 
 					procedure query_terminal (c : in pac_terminals.cursor) is
-						--clearances : pac_distances_positive.list := clearances_basic;
-
 						use et_schematic_ops;
 
 						procedure move_outline_smt is 
@@ -703,20 +701,24 @@ is
 							end if;
 						end move_outline_tht;
 
-						foregin_net : pac_nets.cursor;
-						foregin_net_class : type_net_class;
+						clearances : pac_distances_positive.list;						
+						clearance_foreign_net : type_track_clearance;
 						
 					begin
 						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 						
 						if observe_foreign_nets then
-							null; 
+							clearances := clearances_basic;
+							
+							-- Get the clearance of the connected foreign net
+							-- and append it to clearances:
+							clearance_foreign_net := get_clearance (module_cursor, device_cursor, c);
+							
+							clearances.append (clearance_foreign_net);
 
-							foregin_net := get_net (module_cursor, device_cursor, key (c));
-							-- CS get the clearance of the connected net
-							-- and append it to clearances
-
-							foregin_net_class := get_net_class (module_cursor, foregin_net);
+							-- Apply the greatest clearance to the track:
+							track.clearance	:= get_greatest (clearances);
+							track_dimensions := get_dimensions (track);
 						end if;
 
 						case element (c).technology is
@@ -754,9 +756,11 @@ is
 					end query_terminal;
 					
 				begin
+					-- Apply the greatest clearance to the track:
 					track.clearance	:= get_greatest (clearances_basic);
 					track_dimensions := get_dimensions (track);
 
+					-- Iterate through the terminals of the package:
 					iterate (element (package_cursor).terminals, query_terminal'access);
 
 				end query_terminals;
@@ -764,8 +768,8 @@ is
 				
 			begin
 				query_terminals;
-
-				query_texts;					
+				query_texts;	
+				
 				-- CS conductors
 				-- CS route/via restrict
 				-- CS holes

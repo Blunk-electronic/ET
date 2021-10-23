@@ -48,6 +48,22 @@ package body et_routing is
 	use et_board_shapes_and_text.pac_shapes;
 	use pac_generic_modules;
 	
+
+	function get_clearance (
+		module	: in pac_generic_modules.cursor;
+		device	: in et_schematic.pac_devices_sch.cursor;
+		terminal: in pac_terminals.cursor)
+		return type_track_clearance
+	is 
+		net_class	: type_net_class;
+		net			: et_schematic.pac_nets.cursor;
+	begin
+		net := et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
+		net_class := get_net_class (module, net);
+
+		return net_class.clearance;
+	end get_clearance;
+
 	
 	--function compute_clearance (
 		--status			: in type_point_status; -- transition to inside/outside area

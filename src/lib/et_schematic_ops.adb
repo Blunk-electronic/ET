@@ -1576,7 +1576,10 @@ package body et_schematic_ops is
 	is
 		result : pac_nets.cursor;
 
-		port : constant et_symbols.pac_port_name.bounded_string :=
+		use et_symbols;
+
+		-- Map from the given terminal to the linked port of the device:
+		port : constant pac_port_name.bounded_string :=
 			get_port (device, terminal);  -- CE, WE
 
 		
@@ -1586,16 +1589,37 @@ package body et_schematic_ops is
 		is 
 			proceed : aliased boolean := true;
 			
-			procedure query_net (c : in pac_nets.cursor) is 
-				ports : et_schematic.type_ports;
-
+			procedure query_net (n : in pac_nets.cursor) is 
 				use et_assembly_variants;
-			begin
+				
 				-- We search for ALL ports (of devices) in the net.
 				-- We assume the default assembly variant.
-				ports := get_ports (c, pac_assembly_variants.no_element);
+				ports : constant et_schematic.type_ports := 
+					get_ports (n, pac_assembly_variants.no_element);
 
-				-- port in ports.ports_devices ?
+				-- ports.devices now contains all ports of devices in
+				-- the net indicated by cursor n.
+
+				procedure query_port (p : in pac_device_ports.cursor) is
+					use pac_device_ports;
+					use pac_port_name;
+					use pac_devices_sch;
+				begin
+					if element (p).device_name = key (device) 
+					and then element (p).port_name = port then
+						proceed := false; -- stops the iteration
+
+						-- The result is now the cursor of the
+						-- current net:
+						result := n;
+					end if;
+				end query_port;
+
+				
+			begin
+				-- Iterate through all device ports and abort as soon
+				-- as a port has been found that matches the given device and port:
+				iterate (ports.devices, query_port'access, proceed'access);
 			end query_net;
 
 			

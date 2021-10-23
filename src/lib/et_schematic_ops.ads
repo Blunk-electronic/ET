@@ -215,7 +215,8 @@ package et_schematic_ops is
 
 
 	-- Returns a cursor to the net that is connected with the given device and terminal.
-	-- If there is no net connected, then the return is no_element:
+	-- If there is no net connected, then the return is no_element.
+	-- Assumes the default assembly variant:
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_sch.cursor;
