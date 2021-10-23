@@ -1467,6 +1467,7 @@ package body et_schematic_ops.nets is
 		return nets;
 	end nets_at_place;
 
+	
 	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in out pac_nets.cursor;
@@ -1516,10 +1517,12 @@ package body et_schematic_ops.nets is
 			pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
 			et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
 		end;
+
 		
 		procedure create_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module)
+		is
 			inserted : boolean;
 			strand : type_strand;
 			net : type_net;
@@ -2046,6 +2049,7 @@ package body et_schematic_ops.nets is
 			
 		end extend_net;
 
+		
 	begin -- insert_segment
 
 		-- If no net named after net_name exists yet, notify operator that a 
@@ -2090,14 +2094,15 @@ package body et_schematic_ops.nets is
 		end if;
 
 	end insert_segment;
+
 	
 	procedure insert_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-		
+		log_threshold	: in type_log_level) 
+	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_schematic.pac_nets;
@@ -2131,6 +2136,77 @@ package body et_schematic_ops.nets is
 		
 	end insert_net;
 
+
+	procedure set_net_class (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
+		log_threshold	: in type_log_level)
+	is
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
+
+		module_cursor : pac_generic_modules.cursor; -- points to the module
+
+		procedure query_module (
+			name	: in pac_module_name.bounded_string;
+			module	: in out type_module)
+		is
+			procedure set_class (
+				name	: in pac_net_name.bounded_string;
+				net		: in out type_net)
+			is 
+				use et_pcb.pac_net_class_name;
+			begin
+				if net.class = net_class then
+					log (text => "Net already in class " 
+							& enclose_in_quotes (to_string (net_class)),
+						level => log_threshold + 1);
+				else
+					log (text => "Changing net class from "
+						 & enclose_in_quotes (to_string (net.class)) 
+						 & " to " & enclose_in_quotes (to_string (net_class)),
+						level => log_threshold + 1);
+
+					net.class := net_class;
+				end if;
+			end set_class;
+			
+		begin
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> set_class'access);
+
+		end query_module;
+								
+	begin
+		log (text => "module " & to_string (module_name) 
+			& " setting class of net " & enclose_in_quotes (to_string (net_name)) 
+			& " to " & enclose_in_quotes (et_pcb.to_string (net_class)),
+			level => log_threshold);
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- The net can be in the module already. Locate the requested net in the module.
+		-- net_cursor will point to no_element if the net is not already there.
+		net_cursor := locate_net (module_cursor, net_name);
+
+		log_indentation_up;
+
+		-- CS test whether given net class exists
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+			
+		log_indentation_down;
+	end set_net_class;
+
+
+	
 	procedure set_scope (
 	-- Sets the scope of a net.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -55,10 +55,14 @@ package body et_routing is
 		terminal: in pac_terminals.cursor)
 		return type_track_clearance
 	is 
+		use et_nets;
+		use pac_net_name;
+		
 		net_class	: type_net_class;
 		net			: et_schematic.pac_nets.cursor;
 	begin
 		net := et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
+		log (text => "net " & enclose_in_quotes (to_string (et_schematic.pac_nets.key (net))));
 		net_class := get_net_class (module, net);
 
 		return net_class.clearance;

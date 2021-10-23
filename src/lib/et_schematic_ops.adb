@@ -2482,13 +2482,13 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_purpose;
 
+	
 	procedure set_partcode (
-	-- Sets the partcode of a device.
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		log_threshold		: in type_log_level) is
-
+		log_threshold		: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -2550,6 +2550,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_partcode;
 
+	
 	function exists (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name)
@@ -8742,6 +8743,7 @@ package body et_schematic_ops is
 		
 		return direction;
 	end port_direction;
+
 	
 	function extend_ports (
 	-- Adds the port direction (master/slave) to the given submodule ports.
@@ -8778,6 +8780,7 @@ package body et_schematic_ops is
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
+
 	
 	procedure make_netlists (
 	-- Generates the netlists of all assembly variants from the given top module.

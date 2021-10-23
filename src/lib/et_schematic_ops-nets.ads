@@ -36,6 +36,8 @@
 --
 --   ToDo: 
 
+with et_pcb;
+
 package et_schematic_ops.nets is
 
 	use pac_generic_modules;	
@@ -163,14 +165,24 @@ package et_schematic_ops.nets is
 		segment_new		: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level);
 
-	procedure insert_net (
 	-- See description for procedure insert_segment.
+	procedure insert_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+
+	-- Sets the net class of a net:
+	procedure set_net_class (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
+		log_threshold	: in type_log_level);
+
+	
+	
 	procedure set_scope (
 	-- Sets the scope of a net.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

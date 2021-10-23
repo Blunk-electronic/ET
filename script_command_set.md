@@ -567,13 +567,18 @@ If a submodule is to be removed from the assembly variant:
 schematic led_driver remove submodule low_cost FLT1
 ```
 
-## NETS, NET SEGMENTS, STRANDS, LABELS
+## NETS, CLASSES, NET SEGMENTS, STRANDS, LABELS
 
 ### DRAWING
 ```
 schematic led_driver draw net reset_n 1 200 140 10 40 # net segment on sheet 1 from 230/150 to 10/40
 ```
 Note: Creating a stub in a sloping net segment is not possible !
+
+```
+schematic led_driver set class GND pwr # add net GND to class 'pwr'
+```
+
 
 ### JUNCTION
 A junction can be placed in a net segment with this command:

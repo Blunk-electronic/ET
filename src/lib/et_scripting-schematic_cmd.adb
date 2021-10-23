@@ -67,19 +67,23 @@ is
 	-- In order to tell the command processor that an operation is meant to 
 	-- apply to the current sheet, we use the UNIX-bash-like period character:
 	here : constant string := ".";
+
 	
 	function f (place : in count_type) return string is begin
 		return get_field (single_cmd_status.cmd, place);
 	end;
 
+	
 	function fields return count_type is begin
 		return field_count (single_cmd_status.cmd);
 	end;
+
 
 	procedure too_long is begin -- CS use it more often
 		command_too_long (single_cmd_status.cmd, fields - 1);
 	end;
 
+	
 	procedure command_incomplete is begin
 		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
 			single_cmd_status.complete := false;
@@ -87,6 +91,7 @@ is
 			raise exception_command_incomplete with "command not complete";
 		end if;
 	end command_incomplete;
+
 	
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
@@ -106,6 +111,7 @@ is
 		end case;
 	end zoom_center;
 
+	
 	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
 		use glib;
 		s : gdouble := gdouble'value (scale);
@@ -122,6 +128,7 @@ is
 		end case;
 	end set_scale;
 
+	
 	-- Positions the cursor absolute or relative:
 	procedure position_cursor is  -- GUI related
 		use et_geometry;
@@ -289,10 +296,12 @@ is
 		end case;
 	end show_device;
 
+	
 	-- For showing and finding nets:
 	type type_show_net is (
 		FIRST_NET,
 		NET_ON_CURRENT_SHEET);
+
 	
 	procedure show_net (
 		net		: in pac_net_name.bounded_string; -- RESET_N
@@ -366,6 +375,7 @@ is
 				"ERROR: Net " & enclose_in_quotes (to_string (net)) & " does not exist !";
 		end if;
 	end show_net;
+
 	
 	procedure show_sheet is -- GUI related
 		use et_canvas_schematic;
@@ -510,6 +520,7 @@ is
 			terminate_main;
 		end if;
 	end delete_active_module;
+
 	
 	procedure delete_explicit_module (
 		module_name : in pac_module_name.bounded_string) 
@@ -542,6 +553,7 @@ is
 		end if;
 	end delete_explicit_module;
 
+	
 	procedure create_module (
 		module_name : in pac_module_name.bounded_string) 
 	is
@@ -565,6 +577,8 @@ is
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (active_module);
 	end create_module;
+
+
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
@@ -1843,6 +1857,20 @@ is
 				
 			when VERB_SET =>
 				case noun is
+					when NOUN_CLASS =>
+						case fields is
+							when 6 =>
+								-- schematic led_driver set class GND pwr
+								set_net_class (
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)),
+									net_class		=> et_pcb.to_net_class_name (f (6)),
+									log_threshold	=> log_threshold + 1);
+								
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when others => command_incomplete;
+						end case;
+						
 					when NOUN_GRID =>
 						case fields is
 							-- schematic led_driver set grid 5 5
@@ -2142,6 +2170,7 @@ is
 		end if;
 		
 	end parse;		
+
 	
 	procedure propose_arguments is
 		use et_scripting_interactive_schematic;
@@ -2812,6 +2841,7 @@ is
 		
 		end case;
 	end propose_arguments;
+
 	
 begin -- schematic_cmd
 	log (text => "given command: " 

@@ -713,7 +713,8 @@ is
 							-- Get the clearance of the connected foreign net
 							-- and append it to clearances:
 							clearance_foreign_net := get_clearance (module_cursor, device_cursor, c);
-							
+
+							log (text => "clearance foregin net " & to_string (clearance_foreign_net));
 							clearances.append (clearance_foreign_net);
 
 							-- Apply the greatest clearance to the track:
