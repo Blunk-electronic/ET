@@ -86,11 +86,33 @@ package et_routing is
 		--return type_distance_positive;
 
 
+	-- When inquiring the clearance of a terminal then
+	-- these types are required:
+
+	-- A terminal may or may not be connected with a net:
+	type type_connected is new boolean;
+
+	-- If the terminal is connected with a net then the
+	-- clearance exists:
+	type type_get_terminal_clearance_result (
+		connected : type_connected := true)
+	is record
+		case connected is
+			when TRUE => clearance : type_track_clearance := type_track_clearance'first;
+			when FALSE => null;
+		end case;
+	end record;
+
+
+	-- Returns the clearance required to a terminal of a device.
+	-- If the terminal is not connected to a net then it returns
+	-- no clearance:
 	function get_clearance (
 		module	: in pac_generic_modules.cursor;
 		device	: in et_schematic.pac_devices_sch.cursor;
 		terminal: in pac_terminals.cursor)
-		return type_track_clearance;
+		return type_get_terminal_clearance_result;
+
 
 	
 	-- Returns the distance to the nearest point

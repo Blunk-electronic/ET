@@ -722,29 +722,42 @@ is
 
 						end move_outline_tht;
 
-						
-						clearances : pac_distances_positive.list;						
-						clearance_foreign_net : type_track_clearance;
 
+						status : type_get_terminal_clearance_result;
 						
 					begin -- query_terminal
 						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 
 						if observe_foreign_nets then
-							clearances := clearances_basic;
 							
 							-- Get the clearance of the connected foreign net
 							-- and append it to clearances:
-							clearance_foreign_net := get_clearance (module_cursor, device_cursor, c);
-							
-							clearances.append (clearance_foreign_net);
+							status := get_clearance (module_cursor, device_cursor, c);
 
-							greatest_clearance := get_greatest (clearances);
-								
-							-- Extend the radius of the circle_around_start_point by the
-							-- greatest clearance and compute the boundaries of the circle:
-							circle_around_start_point.radius := circle_around_start_point_init.radius + greatest_clearance;
-							start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+							if status.connected then
+								declare
+									clearances : pac_distances_positive.list;						
+									clearance_foreign_net : type_track_clearance;
+								begin
+									clearances := clearances_basic;
+									clearance_foreign_net := status.clearance;
+									clearances.append (clearance_foreign_net);
+
+									greatest_clearance := get_greatest (clearances);
+									
+									-- Extend the radius of the circle_around_start_point by the
+									-- greatest clearance and compute the boundaries of the circle:
+									circle_around_start_point.radius := circle_around_start_point_init.radius + greatest_clearance;
+									start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+								end;
+							else
+								greatest_clearance := get_greatest (clearances_basic);
+									
+								-- Extend the radius of the circle_around_start_point by the
+								-- greatest clearance and compute the boundaries of the circle:
+								circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
+								start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+							end if;
 						end if;
 
 						case element (c).technology is

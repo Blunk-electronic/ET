@@ -252,10 +252,11 @@ package et_devices is
 
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
 
-	function to_string (terminals : in type_terminal_count) return string;
 	-- Returns the given number of terminals as string.
+	function to_string (terminals : in type_terminal_count) return string;
 	
-	
+
+
 
 
 	
@@ -379,7 +380,7 @@ package et_devices is
 	-- Raises exception if invalid character found.
 
 	type type_port_in_terminal_port_map is record
-		name	: pac_port_name.bounded_string; -- CLK, CE, VSS
+		name	: pac_port_name.bounded_string; -- CLK, CE, VSS -- CS rename to port
 		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
 	end record;
 	

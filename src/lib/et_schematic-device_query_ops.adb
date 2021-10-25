@@ -136,9 +136,9 @@ package body et_schematic.device_query_ops is
 	function get_port (
 		device		: in pac_devices_sch.cursor;
 		terminal	: in et_terminals.pac_terminal_name.bounded_string)
-		return pac_port_name.bounded_string
+		return type_get_port_result
 	is
-		result : pac_port_name.bounded_string; -- GPIO1, VCC
+		result : type_get_port_result;
 
 		-- Get the cursor to the full device model:
 		device_model : constant pac_devices_lib.cursor := 
@@ -167,13 +167,22 @@ package body et_schematic.device_query_ops is
 			is
 				use pac_terminal_port_map;
 
-				-- Locate the variant in the terminal-port-map
+				-- Locate the terminal in the terminal-port-map
 				-- of the device model:
-				c : constant pac_terminal_port_map.cursor :=
+				t : constant pac_terminal_port_map.cursor :=
 					find (variant.terminal_port_map, terminal);
 			begin
-				-- Get the terminal name (which is what we want):
-				result := element (c).name;
+				-- Get the port and unit name (which is what we want):
+				if t /= pac_terminal_port_map.no_element then
+					result := (
+						linked	=> TRUE, 
+						unit	=> element (t).unit, 
+						port	=> element (t).name);
+				else
+					-- If the terminal can not be found in the map then
+					-- it is not linked to any port.
+					result := (linked => FALSE);
+				end if;
 			end query_terminal_port_map;
 
 			

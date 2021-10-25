@@ -701,25 +701,41 @@ is
 							end if;
 						end move_outline_tht;
 
-						clearances : pac_distances_positive.list;						
-						clearance_foreign_net : type_track_clearance;
+						status : type_get_terminal_clearance_result;
 						
-					begin
-						log (text => "terminal " & to_string (key (c)), level => lth + 4);
+					begin -- query_terminal
+						log (text => "x terminal " & to_string (key (c)), level => lth + 4);
 						
 						if observe_foreign_nets then
-							clearances := clearances_basic;
 							
 							-- Get the clearance of the connected foreign net
 							-- and append it to clearances:
-							clearance_foreign_net := get_clearance (module_cursor, device_cursor, c);
+							status := get_clearance (module_cursor, device_cursor, c);
 
-							log (text => "clearance foregin net " & to_string (clearance_foreign_net));
-							clearances.append (clearance_foreign_net);
+							if status.connected then
+								declare
+									clearances : pac_distances_positive.list;						
+									clearance_foreign_net : type_track_clearance;
+								begin								
+									clearances := clearances_basic;
+									clearance_foreign_net := status.clearance;
+									log (text => "clearance foregin net " 
+											& to_string (clearance_foreign_net),
+										 level => lth + 5);
+								
+									clearances.append (clearance_foreign_net);
 
-							-- Apply the greatest clearance to the track:
-							track.clearance	:= get_greatest (clearances);
-							track_dimensions := get_dimensions (track);
+									-- Apply the greatest clearance to the track:
+									track.clearance	:= get_greatest (clearances);
+									track_dimensions := get_dimensions (track);
+								end;
+							else
+								log (text => "not connected", level => lth + 5);
+								
+								-- Apply the greatest clearance to the track:
+								track.clearance	:= get_greatest (clearances_basic);
+								track_dimensions := get_dimensions (track);
+							end if;
 						end if;
 
 						case element (c).technology is

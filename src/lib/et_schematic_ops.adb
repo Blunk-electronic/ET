@@ -1578,8 +1578,11 @@ package body et_schematic_ops is
 
 		use et_symbols;
 
-		-- Map from the given terminal to the linked port of the device:
-		port : constant pac_port_name.bounded_string :=
+		-- Map from the given terminal to the linked 
+		-- unit and port of the device. If the terminal is not linked
+		-- to any port then this function will just return a cursor that
+		-- points to no net (no_element):
+		linked_unit_and_port : constant type_get_port_result :=
 			get_port (device, terminal);  -- CE, WE
 
 		
@@ -1597,16 +1600,21 @@ package body et_schematic_ops is
 				ports : constant et_schematic.type_ports := 
 					get_ports (n, pac_assembly_variants.no_element);
 
-				-- ports.devices now contains all ports of devices in
+				-- ports.devices now contains all ports and units of devices in
 				-- the net indicated by cursor n.
 
 				procedure query_port (p : in pac_device_ports.cursor) is
 					use pac_device_ports;
 					use pac_port_name;
+					use pac_unit_name;
 					use pac_devices_sch;
 				begin
-					if element (p).device_name = key (device) 
-					and then element (p).port_name = port then
+					--log (text => to_string (element (p).device_name)
+						--& " " & et_symbols.to_string (element (p).port_name));
+					
+					if element (p).device_name = key (device)
+					and then element (p).unit_name = linked_unit_and_port.unit
+					and then element (p).port_name = linked_unit_and_port.port then
 						proceed := false; -- stops the iteration
 
 						-- The result is now the cursor of the
@@ -1617,20 +1625,26 @@ package body et_schematic_ops is
 
 				
 			begin
-				-- Iterate through all device ports and abort as soon
-				-- as a port has been found that matches the given device and port:
+				-- Iterate through all device ports. Abort as soon
+				-- as a unit and port have been found as given in 
+				-- linked_unit_and_port:
 				iterate (ports.devices, query_port'access, proceed'access);
 			end query_net;
 
 			
 		begin
+			-- Iterate through the nets of the module:
 			et_schematic.iterate (module.nets, query_net'access, proceed'access);
 		end query_nets;
 
 		
 	begin 
-		query_element (module, query_nets'access);
-		
+		if linked_unit_and_port.linked then
+			--log (text => "given port " & et_symbols.to_string (port));
+					
+			query_element (module, query_nets'access);
+		end if;
+			
 		return result;
 	end get_net;
 

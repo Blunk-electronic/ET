@@ -53,19 +53,33 @@ package body et_routing is
 		module	: in pac_generic_modules.cursor;
 		device	: in et_schematic.pac_devices_sch.cursor;
 		terminal: in pac_terminals.cursor)
-		return type_track_clearance
+		return type_get_terminal_clearance_result
 	is 
 		use et_nets;
 		use pac_net_name;
+
+		-- Get a cursor to the net connected with the terminal.
+		-- If there is no net connected then we return a not-connected-status:
+		net : constant et_schematic.pac_nets.cursor := 
+			et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
 		
 		net_class	: type_net_class;
-		net			: et_schematic.pac_nets.cursor;
-	begin
-		net := et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
-		log (text => "net " & enclose_in_quotes (to_string (et_schematic.pac_nets.key (net))));
-		net_class := get_net_class (module, net);
+		status		: type_get_terminal_clearance_result;
 
-		return net_class.clearance;
+		use et_schematic.pac_nets;
+	begin
+
+		if net = et_schematic.pac_nets.no_element then
+			status := (connected => false);
+		else
+			--log (text => "net " & enclose_in_quotes (to_string (et_schematic.pac_nets.key (net))));
+
+			-- Get the net class of the net:
+			net_class := get_net_class (module, net);
+			status := (connected => true, clearance => net_class.clearance);
+		end if;
+
+		return status;
 	end get_clearance;
 
 	
