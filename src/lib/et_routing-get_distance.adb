@@ -90,6 +90,15 @@ is
 	track_dimensions : type_track_dimensions;
 	-- NOTE: Requires to be updated after changing the clearance of the track.
 
+
+	-- Applies from the given clearances the greatest clearance to the track:
+	procedure apply_greatest_clearance_to_track (
+		clearances : in pac_distances_positive.list)
+	is begin
+		track.clearance	:= get_greatest (clearances);
+		track_dimensions := get_dimensions (track);
+	end;
+
 	
 	distance_to_obstacle : type_distance_positive := type_distance_positive'last;
 	distance_after_obstacle : type_distance_positive := type_distance_positive'last;
@@ -343,6 +352,7 @@ is
 				use et_vias;
 				use pac_vias;
 
+				
 				procedure query_via (v : in pac_vias.cursor) is 
 
 					function to_circle (restring : in type_restring_width) return type_circle is begin
@@ -387,14 +397,14 @@ is
 					end case;
 				end query_via;
 
+				
 				procedure query_segments_and_vias is begin
 
 					-- Add the clearance of the foregin net:
 					clearances.append (class_foregin_net.clearance);
 
-					track.clearance	:= get_greatest (clearances);
-					track_dimensions := get_dimensions (track);
-					
+					apply_greatest_clearance_to_track (clearances);
+										
 					log_indentation_up;
 					iterate (element (nf).route.lines, query_line'access);
 					iterate (element (nf).route.arcs, query_arc'access);
@@ -403,6 +413,7 @@ is
 					-- CS other objects ... see et_pcb.type_route
 					log_indentation_down;
 				end query_segments_and_vias;
+
 				
 			begin -- query_net
 				log (text => "net " & to_string (key (nf)), level => lth + 2);
@@ -415,6 +426,7 @@ is
 					query_segments_and_vias;
 				end if;
 			end query_net;
+
 			
 		begin -- query_tracks
 			log (text => "probing tracks ...", level => lth + 1);
@@ -484,8 +496,7 @@ is
 			log (text => "probing vector texts ...", level => lth + 1);
 			log_indentation_up;
 
-			track.clearance	:= get_greatest (clearances_basic);
-			track_dimensions := get_dimensions (track);
+			apply_greatest_clearance_to_track (clearances_basic);
 
 			boundaries_track := track_dimensions.boundaries;
 			move_by (boundaries_track, track_dimensions.offset, true);
@@ -598,8 +609,7 @@ is
 					
 				begin
 					if not is_inner_layer (layer) then
-						track.clearance	:= get_greatest (clearances_basic);
-						track_dimensions := get_dimensions (track);
+						apply_greatest_clearance_to_track (clearances_basic);
 
 						boundaries_track := track_dimensions.boundaries;
 						move_by (boundaries_track, track_dimensions.offset, true);
@@ -704,7 +714,7 @@ is
 						status : type_get_terminal_clearance_result;
 						
 					begin -- query_terminal
-						log (text => "x terminal " & to_string (key (c)), level => lth + 4);
+						log (text => "terminal " & to_string (key (c)), level => lth + 4);
 						
 						if observe_foreign_nets then
 							
@@ -725,16 +735,12 @@ is
 								
 									clearances.append (clearance_foreign_net);
 
-									-- Apply the greatest clearance to the track:
-									track.clearance	:= get_greatest (clearances);
-									track_dimensions := get_dimensions (track);
+									apply_greatest_clearance_to_track (clearances);
 								end;
 							else
 								log (text => "not connected", level => lth + 5);
 								
-								-- Apply the greatest clearance to the track:
-								track.clearance	:= get_greatest (clearances_basic);
-								track_dimensions := get_dimensions (track);
+								apply_greatest_clearance_to_track (clearances_basic);
 							end if;
 						end if;
 
@@ -773,13 +779,10 @@ is
 					end query_terminal;
 					
 				begin
-					-- Apply the greatest clearance to the track:
-					track.clearance	:= get_greatest (clearances_basic);
-					track_dimensions := get_dimensions (track);
-
+					apply_greatest_clearance_to_track (clearances_basic);
+					
 					-- Iterate through the terminals of the package:
 					iterate (element (package_cursor).terminals, query_terminal'access);
-
 				end query_terminals;
 
 				
