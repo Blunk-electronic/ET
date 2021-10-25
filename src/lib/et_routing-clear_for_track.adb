@@ -736,13 +736,9 @@ is
 
 							if status.connected then
 								declare
-									clearances : pac_distances_positive.list;						
-									clearance_foreign_net : type_track_clearance;
+									clearances : pac_distances_positive.list := clearances_basic;
 								begin
-									clearances := clearances_basic;
-									clearance_foreign_net := status.clearance;
-									clearances.append (clearance_foreign_net);
-
+									clearances.append (status.clearance);
 									greatest_clearance := get_greatest (clearances);
 									
 									-- Extend the radius of the circle_around_start_point by the

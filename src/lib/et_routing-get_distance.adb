@@ -724,17 +724,13 @@ is
 
 							if status.connected then
 								declare
-									clearances : pac_distances_positive.list;						
-									clearance_foreign_net : type_track_clearance;
+									clearances : pac_distances_positive.list := clearances_basic;
 								begin								
-									clearances := clearances_basic;
-									clearance_foreign_net := status.clearance;
 									log (text => "clearance foregin net " 
-											& to_string (clearance_foreign_net),
+											& to_string (status.clearance),
 										 level => lth + 5);
 								
-									clearances.append (clearance_foreign_net);
-
+									clearances.append (status.clearance);
 									apply_greatest_clearance_to_track (clearances);
 								end;
 							else
