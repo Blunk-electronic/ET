@@ -124,9 +124,6 @@ package body et_geometry is
 
 	
 	
-	function to_string (curvature : in type_curvature) return string is begin
-		return type_curvature'image (curvature);
-	end to_string;
 	
 
 
@@ -3343,30 +3340,6 @@ package body et_geometry is
 		end crosses_threshold;
 
 		
-		function get_curvature (
-			arc		: in type_arc)
-			return type_curvature_of_arc
-		is
-			c : type_curvature_of_arc;
-		begin
-			case arc.direction is
-				when CW =>
-					if  get_y (arc.start_point) > get_y (arc.end_point) then
-						c := CONCAVE; 
-					else
-						c := CONVEX; 
-					end if;
-					
-				when CCW =>
-					if get_y (arc.start_point) > get_y (arc.end_point) then
-						c := CONVEX;								
-					else
-						c := CONCAVE; 
-					end if;
-			end case;
-
-			return c;
-		end get_curvature;
 		
 		
 		function get_radius_start (
@@ -3376,6 +3349,7 @@ package body et_geometry is
 			return get_distance_total (arc.center, arc.start_point);
 		end get_radius_start;
 
+		
 		function get_radius_end (
 			arc : in type_arc)
 			return type_distance_positive
@@ -5786,69 +5760,8 @@ package body et_geometry is
 		
 
 		
-		function subtract_180_if_greater_90 (
-			angle : in type_rotation)
-			return type_rotation
-		is begin
-			if angle > 90.0 then
-				return abs (angle - 180.0);
-			else
-				return angle;
-			end if;
-		end subtract_180_if_greater_90;
-
-
-		function invert_status (
-			intersections	: in type_inside_polygon_query_result)
-			return type_inside_polygon_query_result
-		is 
-			result : type_inside_polygon_query_result := intersections;
-		begin
-			case intersections.status is
-				when INSIDE => result.status := OUTSIDE;
-				when OUTSIDE => result.status := INSIDE;
-			end case;
-
-			return result;
-		end invert_status;
 
 		
-		procedure merge_intersections (
-			query_1 : in out type_inside_polygon_query_result;
-			query_2 : in type_inside_polygon_query_result)
-		is
-			query_2_tmp : type_inside_polygon_query_result := query_2;
-			
-			use pac_probe_line_intersections;
-			use pac_probe_line_intersections_sorting;
-		begin
-			if query_1.start = query_2.start then
-
-				-- Append query_2_tmp to query_1. query_2_tmp will be 
-				-- cleared afterwards.
-				splice (
-					target	=> query_1.intersections,
-					before	=> no_element,	   
-					source	=> query_2_tmp.intersections);
-
-				-- If the total number of intersections is an odd number,
-				-- then the start point is inside the polygon.
-				-- If the total is even, then the point is outside.				
-				if (length (query_1.intersections) rem 2) = 1 then
-					query_1.status := INSIDE;
-				else 
-					query_1.status := OUTSIDE;
-				end if;
-
-				sort (query_1.intersections);
-				
-			else
-				raise constraint_error with 
-					"ERROR: Start points of given queries do not match:"
-					& to_string (query_1.start) 
-					& to_string (query_2.start);
-			end if;			
-		end merge_intersections;
 		
 		
 		
@@ -5939,12 +5852,12 @@ package body et_geometry is
 			it : count_type := 0;
 
 			use pac_probe_line_intersections;
+
 			
 			-- This procedure collects the intersection in the return value.
 			procedure collect_intersection (
 				intersection: in type_intersection; -- incl. point and angle
 				segment		: in type_intersected_segment;
-				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
 				radius		: in type_distance_positive := zero)
 			is 
@@ -5955,40 +5868,14 @@ package body et_geometry is
 				-- point then we ignore it:
 				if xi >= type_float_internal (get_x (point)) then
 					
-					case curvature is
-						when STRAIGHT =>
-							
-							append (result.intersections, (
-								x_position	=> xi,
-								angle		=> intersection.angle,
-								segment		=> segment,
-								curvature	=> STRAIGHT
-								));
+					append (result.intersections, (
+						x_position	=> xi,
+						angle		=> intersection.angle,
+						segment		=> segment));
 
-						when CONVEX =>
-
-							append (result.intersections, (
-								x_position	=> xi,
-								angle		=> intersection.angle,
-								segment		=> segment,
-								curvature	=> CONVEX,
-								center		=> center,
-								radius		=> radius
-								));
-
-						when CONCAVE =>
-
-							append (result.intersections, (
-								x_position	=> xi,
-								angle		=> intersection.angle,
-								segment		=> segment,
-								curvature	=> CONCAVE,
-								center		=> center,
-								radius		=> radius
-								));
-					end case;
 				end if;
 			end collect_intersection;
+
 			
 			procedure query_line (l : in type_line) is 
 				-- Find out whether there is an intersection of the probe line
@@ -6017,6 +5904,7 @@ package body et_geometry is
 				end if;				
 			end query_line;
 
+			
 			procedure query_arc (a : in type_arc) is
 				a_norm : constant type_arc := type_arc (normalize_arc (a));
 				
@@ -6032,24 +5920,20 @@ package body et_geometry is
 				-- then they need to be ordered according to their distance to
 				-- the start point of the probe line (starts at given point);
 				ordered_intersections : type_ordered_line_circle_intersections;
+
 				
 				procedure count_two is begin
 					-- Add the two intersections to the result:
 					collect_intersection (
-						intersection=> ordered_intersections.entry_point,
-						segment		=> (ARC, a_norm),					 
-						curvature	=> CONVEX, -- entry point is always convex
-						center		=> a_norm.center,
-						radius		=> radius);
+						intersection	=> ordered_intersections.entry_point,
+						segment			=> (ARC, a_norm));
 
 					collect_intersection (
-						intersection=> ordered_intersections.exit_point,	
-						segment		=> (ARC, a_norm),
-						curvature	=> CONCAVE, -- exit point is always concave
-						center		=> a_norm.center,
-						radius		=> radius);
+						intersection	=> ordered_intersections.exit_point,	
+						segment			=> (ARC, a_norm));
 
 				end count_two;
+
 				
 			begin -- query_arc
 				--put_line ("##");
@@ -6077,14 +5961,7 @@ package body et_geometry is
 
 									collect_intersection (
 										intersection	=> i.intersection,	
-										segment			=> (ARC, a_norm),
-										
-										-- If there is only one intersection, deduce
-										-- the curvature at the point of intersection:
-										curvature		=> get_curvature (a_norm), -- depends on CW/CCW
-										
-										center			=> a_norm.center,
-										radius			=> radius);
+										segment			=> (ARC, a_norm));
 									
 								end if;
 						end case;
@@ -6101,105 +5978,11 @@ package body et_geometry is
 							intersections	=> i);
 
 						count_two;
-						
-						
-						--if get_y (a.start_point) /= y_threshold then
-							---- Since we have TWO intersections, the end point of the arc
-							---- must be in the same half as the start point of the arc.
-							---- So the arc crosses the threshold line twice:
-							--count_two;
-							
-						--else
-							---- Special case: Start or end point of arc is ON the probe line.
-							
-							---- If start and end point of the candidate arc is ABOVE-OR-ON the 
-							---- threshold then we consider the arc to be threshold-crossing.
-							---- The remaining question is: How often does the arc intersect
-							---- the probe line ?
-
-							---- If start point in exactly on the probe line:
-							--if get_y (a.start_point) = y_threshold then
-
-								---- If the arc starts ON the probe line and ends ABOVE
-								---- the probe line, then it runs first downwards through the lower half,
-								---- goes up, crosses the threshold at point P and ends somewhere 
-								---- in the upper half:
-								--if get_y (a.end_point) > y_threshold then
-									
-									---- Count the point P as intersection:
-									--case a.direction is
-										--when CCW => 
-											--collect_intersection (
-												--intersection=> ordered_intersections.exit_point,
-												--segment		=> (ARC, a),
-												--curvature	=> CONCAVE, -- exit point is always concave
-												--center		=> a.center,
-												--radius		=> radius);
-
-										--when CW => 
-											--put_line ("SE");
-											--collect_intersection (
-												--intersection=> ordered_intersections.entry_point,
-												--segment		=> (ARC, a),																	 
-												--curvature	=> CONVEX, -- entry point is always convex
-												--center		=> a.center,
-												--radius		=> radius);
-									--end case;
 											
-								---- If the arc starts ON the probe line and ends BELOW
-								---- the probe line, then it runs first upwards through the upper half,
-								---- goes down, crosses the threshold at point P and ends somewhere 
-								---- in the lower half.
-								--elsif get_y (a.end_point) < y_threshold then
-
-									---- Count the start point and point P as intersections:
-									--count_two;
-								--end if;
-
-								
-							---- If end point on probe line:
-							--elsif get_y (a.end_point) = y_threshold then
-
-								---- If the arc starts somewhere in the upper half, then it runs
-								---- down, crosses the threshold at point P, runs through the 
-								---- lower half, goes up and ends ON the threshold line:
-								--if get_y (a.start_point) > y_threshold then
-
-									---- Count the point P as intersection:
-									--case a.direction is
-										--when CCW => 
-											--collect_intersection (
-												--intersection=> ordered_intersections.entry_point,
-												--segment		=> (ARC, a),					 
-												--curvature	=> CONVEX, -- entry point is always convex
-												--center		=> a.center,
-												--radius		=> radius);
-
-										--when CW => 
-											--collect_intersection (
-												--intersection=> ordered_intersections.exit_point,	
-												--segment		=> (ARC, a),
-												--curvature	=> CONCAVE, -- exit point is always concave
-												--center		=> a.center,
-												--radius		=> radius);
-									--end case;
-								
-
-								---- If the arc starts somewhere in the lower half, then it runs
-								---- up, crosses the threshold at point P, runs through the
-								---- upper half, goes down and ends ON the threshold line:
-								--elsif get_y (a.start_point) < y_threshold then
-
-									---- Count the end point and point P as intersections:
-									--count_two;
-								--end if;
-								
-							--end if;
-						--end if;
-					
 				end case;
 			end query_arc;
 
+			
 			use pac_polygon_segments;
 			
 			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
@@ -6208,6 +5991,7 @@ package body et_geometry is
 					when ARC	=> query_arc (element (c).segment_arc);
 				end case;
 			end query_segment;
+
 			
 			procedure query_circle (c : in type_circle) is
 				-- Find out whether there is an intersection of the probe line
@@ -6236,23 +6020,21 @@ package body et_geometry is
 						
 						-- Add the intersections to the result:
 						collect_intersection (
-							intersection=> ordered_intersections.entry_point,	
-							segment		=> (CIRCLE, c),
-							curvature	=> CONVEX, -- entry point is always convex
-							center		=> c.center,
-							radius		=> c.radius);
+							intersection	=> ordered_intersections.entry_point,	
+							segment			=> (CIRCLE, c));
 
 						collect_intersection (
-							intersection=> ordered_intersections.exit_point,	
-							segment		=> (CIRCLE, c),
-							curvature	=> CONCAVE, -- exit point is always concave
-							center		=> c.center,
-							radius		=> c.radius);
+							intersection	=> ordered_intersections.exit_point,	
+							segment			=> (CIRCLE, c));
 
 				end case;
 			end query_circle;
 
+			
 			procedure sort_x_values is
+				package pac_probe_line_intersections_sorting is new 
+					pac_probe_line_intersections.generic_sorting;
+				
 				use pac_probe_line_intersections_sorting;
 				c : pac_probe_line_intersections.cursor;
 			begin
@@ -6291,6 +6073,7 @@ package body et_geometry is
 				--end loop;
 
 			end sort_x_values;
+
 			
 		begin -- in_polygon_status
 			--put_line ("Y-threshold:" & to_string (y_threshold));
@@ -6325,30 +6108,7 @@ package body et_geometry is
 		end in_polygon_status;
 
 		
-		function intersections_found (
-			i : in type_inside_polygon_query_result)
-			return boolean
-		is
-			use pac_probe_line_intersections;
-		begin
-			if length (i.intersections) = 0 then -- no intersections with polygon
-				return false;
-			else
-				return true; -- at least one intersection found
-			end if;
-		end intersections_found;
 
-		
-		function get_first_intersection (
-			i : in type_inside_polygon_query_result)
-			return type_probe_line_intersection
-		is
-			use pac_probe_line_intersections;
-		begin
-			return element (i.intersections.first);
-		end get_first_intersection;
-		
-		
 		function get_lower_left_corner (
 			polygon	: in type_polygon_base)
 			return type_lower_left_corner

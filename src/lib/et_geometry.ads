@@ -142,13 +142,6 @@ package et_geometry is
 	type type_bended is (NO, YES);
 
 
-	
-	-- CURVATURE ------------------
-	type type_curvature is (STRAIGHT, CONVEX, CONCAVE);
-
-	function to_string (curvature : in type_curvature) return string;
-	
-	subtype type_curvature_of_arc is type_curvature range CONVEX .. CONCAVE;
 
 	
 	
@@ -1380,11 +1373,6 @@ package et_geometry is
 			return boolean;
 
 		
-		-- Deduces the curvature of an arc that crosses a certain y_threshold 
-		-- line as it intersects the arc from the left to the right.
-		function get_curvature (
-			arc		: in type_arc)
-			return type_curvature_of_arc;
 		
 		-- Returns the distance between the start point and the center of the arc.
 		function get_radius_start (
@@ -1648,6 +1636,7 @@ package et_geometry is
 		
 		-- The angle of a tangent to a circle:
 		subtype type_tangent_angle_circle is type_rotation range -90.0 .. 90.0;
+
 		
 		-- Computes the angle of a tangent that touches a circle
 		-- at the given point. The center of the circle is assumed to be the origin.
@@ -1992,33 +1981,19 @@ package et_geometry is
 
 		-- The intersection of a probe line with the polygon side can
 		-- be described as:
-		type type_probe_line_intersection (
-			curvature : type_curvature)
-		is record
-			
+		type type_probe_line_intersection is record
 			x_position	: type_float_internal;
 			angle		: type_rotation := zero_rotation;
-
-			segment : type_intersected_segment;
-			
-			case curvature is
-				when STRAIGHT => null;
-				
-				when CONVEX | CONCAVE =>
-					-- The center and radius of an imaginary circle:
-					center	: type_point := origin;
-					radius	: type_distance_positive := zero;
-			end case;
-
+			segment		: type_intersected_segment;
 		end record;
 
 		
 		-- Subtracts 180 degree from the given angle if it is
 		-- greater 90 degrees and returns the absolute value of the difference.
 		-- Otherwise returns the given angle unchanged.		
-		function subtract_180_if_greater_90 (
-			angle : in type_rotation)
-			return type_rotation;
+		--function subtract_180_if_greater_90 (
+			--angle : in type_rotation)
+			--return type_rotation;
 
 		
 		function "<" (left, right : in type_probe_line_intersection)
@@ -2027,9 +2002,8 @@ package et_geometry is
 
 		
 		package pac_probe_line_intersections is new
-			indefinite_doubly_linked_lists (type_probe_line_intersection);
+			doubly_linked_lists (type_probe_line_intersection);
 
-		package pac_probe_line_intersections_sorting is new pac_probe_line_intersections.generic_sorting;
 			
 		type type_inside_polygon_query_result is record
 			-- the point where the probe line has started:
@@ -2041,26 +2015,14 @@ package et_geometry is
 			intersections	: pac_probe_line_intersections.list;
 		end record;
 
-		function invert_status (
-			intersections	: in type_inside_polygon_query_result)
-			return type_inside_polygon_query_result;
 		
-		package pac_intersections is new 
-			doubly_linked_lists (type_inside_polygon_query_result);
 			
-		-- Merges the intersections of query_2 with query_1.
-		-- Updates the status accordingly.
-		-- Sorts the intersections in query_1 finally by their 
-		-- x-position (from left to right):
-		procedure merge_intersections (
-			query_1 : in out type_inside_polygon_query_result;
-			query_2 : in type_inside_polygon_query_result);
-
 		
 		-- Returns the query result as a human readable string:
 		function to_string (
 			i : in type_inside_polygon_query_result)
 			return string;
+
 		
 		-- Detects whether the given point is inside or outside
 		-- the polygon. The point is regarded as "outside" if
@@ -2070,19 +2032,7 @@ package et_geometry is
 			point		: in type_point)
 			return type_inside_polygon_query_result;
 
-							   
-		-- Returns true if the given query result contains at least
-		-- one x-value of an intersection:
-		function intersections_found (
-			i : in type_inside_polygon_query_result)
-			return boolean;
 
-		-- Returns the first intersection of the given query result.
-		-- Raises constraint error if given query result does
-		-- not contain any intersections:
-		function get_first_intersection (
-			i : in type_inside_polygon_query_result)
-			return type_probe_line_intersection;
 		
 		-- For finding the lower left corner of a polygon this type
 		-- is required. The lower left corner can be a point somewhere
