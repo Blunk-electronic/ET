@@ -56,17 +56,6 @@ function clear_for_track (
 is
 	result : aliased boolean := false;
 
-	-- For some preselections (to improve performance) we will test if boundaries of
-	-- objects overlap with the boundaries of the given start point. The start point
-	-- is the center of a circle that has half the width of the inquired track.
-	-- This is the inital circle around the start point.
-	circle_around_start_point_init : constant type_circle := (start_point, width * 0.5);
-	-- In the course of this function copies are taken of this circle and their radius
-	-- modified by the particular clearance being effective.
-	
-	-- The boundaries of the circle around the start point:
-	start_point_boundaries : type_boundaries;
-
 
 	-- The top conductor layer 1 is always there:
 	top_layer : constant type_signal_layer := type_signal_layer'first;
@@ -80,17 +69,42 @@ is
 		end if;
 	end is_inner_layer;		
 
+	
+	
+	-- For some preselections (to improve performance) we will test if boundaries of
+	-- objects overlap with the boundaries of the given start point. The start point
+	-- is the center of a circle that has half the width of the inquired track.
+	-- This is the inital circle around the start point.
+	circle_around_start_point_init : constant type_circle := (start_point, width * 0.5);
 
+	-- In the course of this function copies of circle_around_start_point_init
+	-- are taken here their radius extended by the particular clearance being 
+	-- effective temporarily:
+	circle_around_start_point : type_circle;
+
+	
+	-- The boundaries of the circle around the start point:
+	start_point_boundaries : type_boundaries;
+
+	
 	-- The basic set of clearances contains
 	-- the polygon isolation and the clearance of the given net.
 	-- Some procedure may extend this set by other clearances (in their own local sets).
 	-- The greatest clearance them will be applied to the track clearance.
 	clearances_basic : pac_distances_positive.list;
-
 	
 
 	greatest_clearance : type_distance_positive;
+
 	
+	-- Extends the radius of the circle_around_start_point by the
+	-- greatest clearance and updates the boundaries of the circle:
+	procedure extend_circle is begin
+		circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
+		start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+	end extend_circle;
+
+
 	
 	-- Clears the "result" flag if distance is:
 	-- - negative or
@@ -428,22 +442,19 @@ is
 				end if;
 			end query_text;
 
-
-			-- Take a copy of the initial circle_around_start_point_init:
-			circle_around_start_point : type_circle := circle_around_start_point_init;
-
 			
 		begin -- query_texts
 			log (text => "probing texts ...", level => lth + 1);
 			log_indentation_up;
 
+			-- Take a copy of the initial circle_around_start_point_init:
+			circle_around_start_point := circle_around_start_point_init;
+
+			
 			-- choose the greatest clearance:
 			greatest_clearance := get_greatest (clearances_basic);
 
-			-- Extend the radius of the circle_around_start_point by the clearance
-			-- and compute the boundaries of the circle:
-			circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
-			start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+			extend_circle;
 
 			-- Iterate texts. Abort if result changes to "false":
 			iterate (
@@ -587,21 +598,17 @@ is
 
 					end query_text;
 
-					-- Take a copy of the initial circle_around_start_point_init:
-					circle_around_start_point : type_circle := circle_around_start_point_init;
-
 					
 				begin -- query_texts
 					if not is_inner_layer (layer) then
 						log_indentation_up;
+
+						-- Take a copy of the initial circle_around_start_point_init:
+						circle_around_start_point := circle_around_start_point_init;
 						
 						greatest_clearance := get_greatest (clearances_basic);
-						
-						-- Extend the radius of the circle_around_start_point by the
-						-- greatest clearance and compute the boundaries of the circle:
-						circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
-						start_point_boundaries := get_boundaries (circle_around_start_point, zero);
 
+						extend_circle;
 						
 						query_face := TOP;
 
@@ -623,11 +630,6 @@ is
 
 
 				procedure query_terminals is
-
-					-- Take a copy of the initial circle_around_start_point_init:
-					circle_around_start_point : type_circle := circle_around_start_point_init;
-
-
 					use et_terminals;
 
 					procedure query_terminal (c : in pac_terminals.cursor) is
@@ -740,19 +742,12 @@ is
 								begin
 									clearances.append (status.clearance);
 									greatest_clearance := get_greatest (clearances);
-									
-									-- Extend the radius of the circle_around_start_point by the
-									-- greatest clearance and compute the boundaries of the circle:
-									circle_around_start_point.radius := circle_around_start_point_init.radius + greatest_clearance;
-									start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+
+									extend_circle;
 								end;
 							else
 								greatest_clearance := get_greatest (clearances_basic);
-									
-								-- Extend the radius of the circle_around_start_point by the
-								-- greatest clearance and compute the boundaries of the circle:
-								circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
-								start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+								extend_circle;
 							end if;
 						end if;
 
@@ -792,12 +787,13 @@ is
 
 
 				begin -- query_terminals
+
+					-- Take a copy of the initial circle_around_start_point_init:
+					circle_around_start_point := circle_around_start_point_init;
+					
 					greatest_clearance := get_greatest (clearances_basic);
-						
-					-- Extend the radius of the circle_around_start_point by the
-					-- greatest clearance and compute the boundaries of the circle:
-					circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
-					start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+
+					extend_circle;
 
 					iterate (
 						terminals	=> element (package_cursor).terminals,
