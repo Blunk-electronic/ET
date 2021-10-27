@@ -79,6 +79,7 @@ with system.storage_elements;	use system.storage_elements;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
+with et_geometry_1;
 with et_frames;
 with et_string_processing;		use et_string_processing;
 with et_colors;
@@ -165,7 +166,7 @@ generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	-- The system of measurement:
-	with package geometry is new et_geometry.generic_pac_geometry (<>);
+	with package geometry is new et_geometry_1 (<>);
 	
 package pac_canvas is
 	use geometry;

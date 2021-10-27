@@ -39,11 +39,12 @@
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
-with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_exceptions;				use et_exceptions;
+
+
 
 package body et_geometry_2 is
 	

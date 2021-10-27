@@ -54,6 +54,7 @@ with et_coordinates;
 with et_string_processing;
 
 with et_geometry;
+with et_geometry_1;
 
 
 package et_pcb_coordinates is
@@ -109,7 +110,7 @@ package et_pcb_coordinates is
 
 		
 	-- instantiation of the geometry package:	
-	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
+	package pac_geometry_brd is new et_geometry_1 (
 		type_distance			=> type_distance,
 		type_distance_coarse	=> type_distance_coarse,
 		type_float_internal		=> type_float_internal,
