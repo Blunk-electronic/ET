@@ -48,12 +48,12 @@ with et_string_processing;		use et_string_processing;
 
 generic
 	
-	with package pac_geometry is new et_geometry_1 (<>);
+	with package pac_geometry_1 is new et_geometry_1 (<>);
 	
 package et_geometry_2 is
 	
 
-	use pac_geometry;
+	use pac_geometry_1;
 	use pac_functions_distance;
 
 	type type_point_status is (

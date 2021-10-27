@@ -160,13 +160,13 @@ package et_text is
 	generic
 		with package pac_shapes is new et_geometry_2 (<>);
 		
-		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance_positive;
-		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance_positive;
+		size_min, size_max, size_default : pac_shapes.pac_geometry_1.type_distance_positive;
+		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry_1.type_distance_positive;
 		
 	package generic_pac_text is
 		use pac_shapes;
 
-		use pac_geometry;
+		use pac_geometry_1;
 		-- NOTE: This use clause does not work properly. 
 		-- For some reason the prefix "pac_geometry" must be explicitely provided
 		-- for types that stem from pac_shapes.pac_geometry.
@@ -177,13 +177,13 @@ package et_text is
 		subtype type_text_line_width is type_distance_positive range line_width_min .. line_width_max;
 
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
-		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
+		function to_text_size (size : in pac_geometry_1.type_distance) return type_text_size;
 	
 		
-		procedure validate_text_size (size : in pac_geometry.type_distance);
+		procedure validate_text_size (size : in pac_geometry_1.type_distance);
 		-- Checks whether given text size is in range of type_text_size.
 
-		procedure validate_text_line_width (width : in pac_geometry.type_distance);
+		procedure validate_text_line_width (width : in pac_geometry_1.type_distance);
 		-- Checks whether given line width is in range of type_text_line_width
 		
 		type type_text is abstract tagged record
@@ -213,7 +213,7 @@ package et_text is
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return pac_geometry.type_rotation;
+			return pac_geometry_1.type_rotation;
 
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees as string:
 		function to_string (rotation : in type_rotation_documentation) return string;
@@ -221,8 +221,8 @@ package et_text is
 		-- Adds HORIZONTAL/VERTICAL (which is 0/90 degrees) to rotation_add:
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in pac_geometry.type_rotation)
-			return pac_geometry.type_rotation;
+			rotation_add	: in pac_geometry_1.type_rotation)
+			return pac_geometry_1.type_rotation;
 
 		-- Issues a warning that the given angle is neither 0 or 90 degrees.
 		procedure warning_rotation_outside_range; -- CS argument for angle ?
@@ -239,7 +239,7 @@ package et_text is
 		-- - If rotation is 135 degree, then the return is VERTICAL.		
 		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
 		-- - If rotation is 270 degree, then the return is VERTICAL.		
-		function snap (rotation : in pac_geometry.type_rotation) return type_rotation_documentation;
+		function snap (rotation : in pac_geometry_1.type_rotation) return type_rotation_documentation;
 		
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation;		
@@ -857,10 +857,10 @@ package et_text is
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string;
 			size		: in type_text_size;
-			rotation	: in pac_geometry.type_rotation;
+			rotation	: in pac_geometry_1.type_rotation;
 			position	: in type_point;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in pac_geometry.type_distance_positive;
+			line_width	: in pac_geometry_1.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return type_vector_text;
 

@@ -56,7 +56,7 @@ generic
 
 	with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
 
-	in_area			: draw_ops.pac_shapes.pac_geometry.type_rectangle;
+	in_area			: draw_ops.pac_shapes.pac_geometry_1.type_rectangle;
 	context			: draw_ops.pac_canvas.type_draw_context;
 	frame_size		: et_frames.type_frame_size;
 	border_width	: et_frames.type_border_width;
@@ -64,10 +64,11 @@ generic
 	title_block		: et_frames.type_title_block;  -- incl. common placeholders
 	meta			: et_meta.type_basic;
 	placeholders	: et_frames.type_placeholders_basic;
+
 	
 package pac_draw_frame is
 	use draw_ops;
-	use draw_ops.pac_shapes.pac_geometry;
+	use draw_ops.pac_shapes.pac_geometry_1;
 	use et_frames;
 	use pac_lines;
 	

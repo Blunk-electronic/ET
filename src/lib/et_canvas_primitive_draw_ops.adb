@@ -47,7 +47,7 @@ package body et_canvas_primitive_draw_ops is
 package body pac_draw is
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	function convert_x (x : in pac_shapes.pac_geometry.type_distance) 
+	function convert_x (x : in pac_shapes.pac_geometry_1.type_distance) 
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate (x);
@@ -56,8 +56,8 @@ package body pac_draw is
 	
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	function shift_y (
-		y		: in pac_shapes.pac_geometry.type_distance;
-		height	: in pac_shapes.pac_geometry.type_distance)
+		y		: in pac_shapes.pac_geometry_1.type_distance;
+		height	: in pac_shapes.pac_geometry_1.type_distance)
 		return type_view_coordinate is
 	begin
 		return type_view_coordinate (height - y);
@@ -65,16 +65,16 @@ package body pac_draw is
 
 	
 	function shift_y (
-		y		: in pac_shapes.pac_geometry.type_distance;
-		height	: in pac_shapes.pac_geometry.type_distance)
-		return pac_shapes.pac_geometry.type_distance is
+		y		: in pac_shapes.pac_geometry_1.type_distance;
+		height	: in pac_shapes.pac_geometry_1.type_distance)
+		return pac_shapes.pac_geometry_1.type_distance is
 	begin
 		return (height - y);
 	end;
 
 	
 	function make_bounding_box (
-		height		: in pac_shapes.pac_geometry.type_distance;
+		height		: in pac_shapes.pac_geometry_1.type_distance;
 		boundaries	: in type_boundaries)
 		return type_rectangle 
 	is begin
@@ -100,7 +100,7 @@ package body pac_draw is
 		context	: in type_draw_context;
 		line	: in type_line'class;
 		width	: in type_distance_positive;
-		height	: in pac_shapes.pac_geometry.type_distance)
+		height	: in pac_shapes.pac_geometry_1.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given line:
 		boundaries : type_boundaries := get_boundaries (line, width);
@@ -150,7 +150,7 @@ package body pac_draw is
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
 		width	: in type_distance_positive;
-		height	: in pac_shapes.pac_geometry.type_distance)
+		height	: in pac_shapes.pac_geometry_1.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := get_boundaries (arc, width);
@@ -211,7 +211,7 @@ package body pac_draw is
 		circle	: in type_circle'class;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
-		height	: in pac_shapes.pac_geometry.type_distance)
+		height	: in pac_shapes.pac_geometry_1.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
 		boundaries : type_boundaries := get_boundaries (circle, width);
@@ -275,7 +275,7 @@ package body pac_draw is
 		width	: in type_distance_positive;
 		-- CS fill style
 
-		height	: in pac_shapes.pac_geometry.type_distance;
+		height	: in pac_shapes.pac_geometry_1.type_distance;
 		drawn	: in out boolean)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
@@ -455,7 +455,7 @@ package body pac_draw is
 		context			: in type_draw_context;
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_circle'class;
-		height			: in pac_shapes.pac_geometry.type_distance)
+		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
 		drawn : boolean := false;
 	begin
@@ -481,7 +481,7 @@ package body pac_draw is
 		context			: in type_draw_context;
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_polygon_base'class;
-		height			: in pac_shapes.pac_geometry.type_distance)
+		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
 		drawn : boolean := false;
 	begin
@@ -506,9 +506,9 @@ package body pac_draw is
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		position		: in type_point'class; -- the lower left corner
-		width			: in pac_shapes.pac_geometry.type_distance;
-		height			: in pac_shapes.pac_geometry.type_distance;
-		frame_height	: in pac_shapes.pac_geometry.type_distance;
+		width			: in pac_shapes.pac_geometry_1.type_distance;
+		height			: in pac_shapes.pac_geometry_1.type_distance;
+		frame_height	: in pac_shapes.pac_geometry_1.type_distance;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default) is
 
@@ -700,7 +700,7 @@ package body pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
 		origin		: in boolean;
-		rotation	: in pac_shapes.pac_geometry.type_rotation;
+		rotation	: in pac_shapes.pac_geometry_1.type_rotation;
 		alignment	: in type_text_alignment) is
 		
 		-- Here we will store the extents of the given text:
@@ -787,9 +787,9 @@ package body pac_draw is
 		font		: in et_text.type_font;
 		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
-		rotation	: in pac_geometry.type_rotation;
+		rotation	: in pac_geometry_1.type_rotation;
 		alignment	: in type_text_alignment;
-		height		: in pac_shapes.pac_geometry.type_distance)  -- the height of the drawing frame
+		height		: in pac_shapes.pac_geometry_1.type_distance)  -- the height of the drawing frame
 	is
 		text_area : cairo_text_extents;
 
@@ -882,7 +882,7 @@ package body pac_draw is
 		context	: in type_draw_context;
 		text	: in type_vector_text;
 		width	: in type_distance_positive;
-		height	: in pac_shapes.pac_geometry.type_distance)
+		height	: in pac_shapes.pac_geometry_1.type_distance)
 	is
 		bounding_box_text : constant type_rectangle := 
 			make_bounding_box (height, get_boundaries (text));

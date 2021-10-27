@@ -229,7 +229,7 @@ package body et_text is
 	package body generic_pac_text is
 
 		-- With this line uncommented the linker does not output any errors:
-		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
+		function to_text_size (size : in pac_geometry_1.type_distance) return type_text_size is
 
 		-- With this line uncommented the linker outputs errors like "undefined reference ..."
 		-- function to_text_size (size : in type_distance) return type_text_size is
@@ -241,9 +241,9 @@ package body et_text is
 			-- Returns the given text size as string.
 			begin
 				if preamble then
-					return "size " & pac_geometry.to_string (size);
+					return "size " & pac_geometry_1.to_string (size);
 				else
-					return pac_geometry.to_string (size);
+					return pac_geometry_1.to_string (size);
 				end if;
 			end to_string;
 
@@ -264,7 +264,7 @@ package body et_text is
 		end to_text_size;
 		
 		
-		procedure validate_text_size (size : in pac_geometry.type_distance) is
+		procedure validate_text_size (size : in pac_geometry_1.type_distance) is
 		begin
 			if size not in type_text_size then
 				log (ERROR, "text size invalid ! Allowed range is" 
@@ -275,7 +275,7 @@ package body et_text is
 			end if;
 		end validate_text_size;
 
-		procedure validate_text_line_width (width : in pac_geometry.type_distance) is
+		procedure validate_text_line_width (width : in pac_geometry_1.type_distance) is
 		begin
 			if width not in type_text_line_width then
 				log (ERROR, "line width invalid ! Allowed range is" 
@@ -314,7 +314,7 @@ package body et_text is
 
 		
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return pac_geometry.type_rotation is
+			return pac_geometry_1.type_rotation is
 		begin
 			case rotation is
 				when HORIZONTAL => return zero_rotation;
@@ -334,8 +334,8 @@ package body et_text is
 
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in pac_geometry.type_rotation)
-			return pac_geometry.type_rotation is
+			rotation_add	: in pac_geometry_1.type_rotation)
+			return pac_geometry_1.type_rotation is
 		begin
 			return to_rotation (rotation_doc) + rotation_add;
 		end;
@@ -345,9 +345,9 @@ package body et_text is
 			log (WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;
 
-		function snap (rotation : in pac_geometry.type_rotation) return type_rotation_documentation is
-			offset : constant pac_geometry.type_rotation := 45.0 - pac_geometry.type_rotation'small;
-			r1 : pac_geometry.type_rotation;
+		function snap (rotation : in pac_geometry_1.type_rotation) return type_rotation_documentation is
+			offset : constant pac_geometry_1.type_rotation := 45.0 - pac_geometry_1.type_rotation'small;
+			r1 : pac_geometry_1.type_rotation;
 			r2 : float;
 			r3 : integer;
 		begin
@@ -362,7 +362,7 @@ package body et_text is
 	
 		
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
-			r : constant pac_geometry.type_rotation := to_rotation (rotation);
+			r : constant pac_geometry_1.type_rotation := to_rotation (rotation);
 		begin
 			if r = zero_rotation then
 				return HORIZONTAL;
@@ -415,10 +415,10 @@ package body et_text is
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
-			rotation	: in pac_geometry.type_rotation; 
+			rotation	: in pac_geometry_1.type_rotation; 
 			position	: in type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in pac_geometry.type_distance_positive;
+			line_width	: in pac_geometry_1.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return type_vector_text
 		is
