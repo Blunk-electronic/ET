@@ -53,6 +53,7 @@ with cairo;
 
 with et_coordinates;			use et_coordinates;
 with et_geometry;
+with et_geometry_2;
 with et_string_processing;
 with et_general;
 with et_text;
@@ -63,9 +64,9 @@ package et_symbols is
 
 
 
--- Instantiation of the generic shapes package et_geometry.generic_pac_shapes:
+	-- Instantiation of the generic et_geometry_2 package:
 	package pac_shapes is new 
-		et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
+		et_geometry_2 (et_coordinates.pac_geometry_sch);
 	use pac_shapes;
 
 	

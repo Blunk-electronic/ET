@@ -43,6 +43,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with cairo;
 with et_geometry;				use et_geometry;
+with et_geometry_2;
 with et_string_processing;		use et_string_processing;
 
 package et_text is
@@ -157,7 +158,7 @@ package et_text is
 -- GENERIC PART
 	
 	generic
-		with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
+		with package pac_shapes is new et_geometry_2 (<>);
 		
 		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance_positive;
 		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance_positive;

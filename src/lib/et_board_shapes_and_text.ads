@@ -40,15 +40,16 @@
 with et_text;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
+with et_geometry_2;
 with et_design_rules;			use et_design_rules;
 with et_string_processing;		use et_string_processing;
 
 package et_board_shapes_and_text is
 	use pac_geometry_brd;
 
-	-- Instantiation of the shapes package:
+	-- Instantiation of the et_geometry_2 package:
 	package pac_shapes is new 
-		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
+		et_geometry_2 (et_pcb_coordinates.pac_geometry_brd);
 
 	use pac_shapes;
 		
