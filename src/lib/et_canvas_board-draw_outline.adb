@@ -48,6 +48,7 @@ procedure draw_outline (
 is	
 	use et_board_shapes_and_text;
 	use pac_shapes;
+	use pac_polygons;
 	use pac_polygon_segments;
 	
 	--use pac_text_fab;

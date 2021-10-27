@@ -53,10 +53,11 @@ with et_string_processing;		use et_string_processing;
 package et_route_restrict is
 	use pac_geometry_brd;
 
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
+	use pac_shapes;
+	use pac_polygons;
+	use pac_text_fab;
 
-
+	
 	-- GUI relevant only: The line width of route restrict:
 	route_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 

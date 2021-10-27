@@ -3886,7 +3886,7 @@ package body et_kicad.pcb is
 				terminal_inserted : boolean;
 
 				--shape : et_terminals.type_pad_outline;
-				shape : pac_shapes.type_polygon;
+				shape : pac_polygons.type_polygon;
 
 				procedure insert_tht is 
 					use et_packages;
@@ -4628,7 +4628,7 @@ package body et_kicad.pcb is
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
 	function corners_to_lines (corners : type_polygon_points.list)
-		return pac_shapes.pac_polygon_segments.list 
+		return pac_polygons.pac_polygon_segments.list 
 	is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;

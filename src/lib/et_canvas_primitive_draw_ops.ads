@@ -59,6 +59,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_geometry;			use et_geometry;
 with et_geometry_2;
+with et_geometry_2.polygons;
 with et_text;
 with et_canvas_general;
 
@@ -72,6 +73,9 @@ generic
 	-- The instantiated shapes package:
 	with package pac_shapes is new et_geometry_2 (<>);
 
+	-- The instantiated polygon package:
+	with package pac_polygons is new pac_shapes.polygons;
+
 	-- The instantiated text package:
 	with package pac_text is new et_text.generic_pac_text (
 		-- The used text package must have been instantiated with the same shapes package:
@@ -82,6 +86,7 @@ generic
 package pac_draw is
 	use pac_canvas;
 	use pac_shapes;
+	use pac_polygons;
 	use pac_shapes.pac_geometry;
 
 

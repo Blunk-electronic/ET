@@ -3271,6 +3271,7 @@ is
 					use et_pcb_coordinates;
 					--use et_terminals;
 					use et_board_shapes_and_text;
+					use pac_polygons;
 					use et_packages;
 					
 					procedure append_silk_polygon_top is begin
@@ -3278,14 +3279,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3297,14 +3298,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3316,14 +3317,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3335,14 +3336,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+									new_item	=> (type_polygon_base (polygon) with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3366,14 +3367,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3385,14 +3386,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3404,14 +3405,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3423,14 +3424,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (pac_shapes.type_polygon_base (polygon) with
+									new_item	=> (type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3490,6 +3491,7 @@ is
 				board_reset_polygon;
 			end insert_polygon;
 
+			
 			procedure insert_cutout (
 				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
@@ -3504,6 +3506,8 @@ is
 				is
 					use et_pcb_coordinates;
 					use et_board_shapes_and_text;
+					use pac_polygons;
+					
 					use et_stop_mask;
 					use et_stencil;
 					use et_silkscreen;
@@ -3513,61 +3517,61 @@ is
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record)); 
+							new_item	=> (type_polygon_base (polygon) with null record)); 
 					end;
 
 					procedure append_silk_cutout_bottom is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 					
 					procedure append_assy_doc_cutout_top is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_assy_doc_cutout_bottom is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_keepout_cutout_bottom is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.bottom.cutouts, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stencil_cutout_top is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stencil_cutout_bottom is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stop_cutout_top is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stop_cutout_bottom is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 					
 				begin -- do_it
@@ -3625,6 +3629,7 @@ is
 			
 			procedure insert_cutout_via_restrict is
 				use et_board_shapes_and_text;
+				use pac_polygons;				
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3635,7 +3640,7 @@ is
 				begin
 					pac_via_restrict_cutouts.append (
 						container	=> module.board.via_restrict.cutouts,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with
+						new_item	=> (type_polygon_base (polygon) with
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3654,6 +3659,7 @@ is
 			
 			procedure insert_cutout_route_restrict is
 				use et_board_shapes_and_text;
+				use pac_polygons;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3664,7 +3670,7 @@ is
 				begin
 					pac_route_restrict_cutouts.append (
 						container	=> module.board.route_restrict.cutouts,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
+						new_item	=> (type_polygon_base (polygon) with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3684,6 +3690,7 @@ is
 			procedure insert_cutout_conductor is
 			-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
+				use pac_polygons;
 				use et_packages;
 				use et_pcb;
 				use et_conductor_polygons.boards;
@@ -3694,7 +3701,7 @@ is
 				begin
 					pac_conductor_cutouts.append (
 						container	=> module.board.conductors.cutouts,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with
+						new_item	=> (type_polygon_base (polygon) with
 								layer => signal_layer));
 				end do_it;
 									
@@ -3915,6 +3922,7 @@ is
 			
 			procedure insert_polygon_route_restrict is
 				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_polygons;
 				use et_route_restrict.boards;
 				use pac_route_restrict_polygons;
 				
@@ -4030,6 +4038,7 @@ is
 			
 			procedure insert_polygon_via_restrict is
 				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_polygons;
 				use et_via_restrict.boards;
 				use pac_via_restrict_polygons;
 				use et_pcb_stack;
@@ -4056,9 +4065,11 @@ is
 				clear (signal_layers);
 			end insert_polygon_via_restrict;
 
+			
 			procedure insert_polygon_conductor is
 			-- This is about floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
+				use pac_polygons;
 				use et_conductor_polygons;
 				use et_conductor_polygons.boards;
 				
@@ -4070,7 +4081,7 @@ is
 						when SOLID =>
 							pac_conductor_polygons_floating_solid.append (
 								container	=> module.board.conductors.polygons.solid,
-								new_item	=> (pac_shapes.type_polygon_base (polygon) with
+								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> SOLID,
 									easing			=> board_easing,
 									properties		=> (signal_layer, polygon_priority, no_fill_lines),
@@ -4080,7 +4091,7 @@ is
 						when HATCHED =>
 							pac_conductor_polygons_floating_hatched.append (
 								container	=> module.board.conductors.polygons.hatched,
-								new_item	=> (pac_shapes.type_polygon_base (polygon) with
+								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> HATCHED,
 									easing			=> board_easing,
 									properties		=> (signal_layer, polygon_priority, no_fill_lines),
@@ -4089,7 +4100,8 @@ is
 									hatching		=> board_hatching_conductor));
 					end case;
 				end do_it;
-									
+
+				
 			begin -- insert_polygon_conductor
 				update_element (
 					container	=> generic_modules,
@@ -4280,6 +4292,7 @@ is
 			procedure insert_line_outline is
 				use et_board_shapes_and_text;
 				use pac_shapes;
+				use pac_polygons;
 				use pac_polygon_segments;
 				
 				procedure do_it (
@@ -4288,7 +4301,7 @@ is
 				is begin
 					append (
 						container	=> module.board.contours.outline.contours.segments,
-						new_item	=> (pac_shapes.LINE, board_line));
+						new_item	=> (pac_polygons.LINE, board_line));
 				end do_it;
 									
 			begin -- insert_line_outline
@@ -4305,6 +4318,7 @@ is
 			procedure insert_arc_outline is
 				use et_board_shapes_and_text;
 				use pac_shapes;
+				use pac_polygons;
 				use pac_polygon_segments;
 				
 				procedure do_it (
@@ -4313,7 +4327,7 @@ is
 				is begin
 					append (
 						container	=> module.board.contours.outline.contours.segments,
-						new_item	=> (pac_shapes.ARC, board_arc));
+						new_item	=> (pac_polygons.ARC, board_arc));
 				end do_it;
 									
 			begin -- insert_arc_outline
@@ -4584,6 +4598,7 @@ is
 			
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_polygons;
 				use et_conductor_polygons;
 				use et_conductor_polygons.boards;
 				
@@ -4609,6 +4624,7 @@ is
 							new_item	=> p);
 					end;
 
+					
 					procedure connection_solid is
 						p : type_polygon_conductor_route_solid (connection => boards.SOLID);
 					begin
@@ -4627,6 +4643,7 @@ is
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
+
 					
 				begin -- solid_polygon
 					case polygon_pad_connection is
@@ -4635,6 +4652,7 @@ is
 					end case;
 				end solid_polygon;
 
+				
 				procedure hatched_polygon is
 					use pac_signal_polygons_hatched;
 					use et_packages;
@@ -4658,6 +4676,7 @@ is
 							new_item	=> p);
 					end;
 
+					
 					procedure connection_solid is
 						p : type_polygon_conductor_route_hatched (connection => boards.SOLID);
 					begin
@@ -4677,6 +4696,7 @@ is
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
+
 					
 				begin -- hatched_polygon
 					case polygon_pad_connection is
@@ -4685,6 +4705,7 @@ is
 					end case;
 				end hatched_polygon;
 
+				
 			begin -- build_route_polygon
 				case board_fill_style is
 					when SOLID		=> solid_polygon;
@@ -4697,11 +4718,12 @@ is
 			
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
+				use pac_polygons;
 				use et_conductor_polygons.boards;
 			begin
 				pac_conductor_cutouts.append (
 					container	=> route.cutouts,
-					new_item	=> (pac_shapes.type_polygon_base (polygon) with
+					new_item	=> (type_polygon_base (polygon) with
 									layer	=> signal_layer));
 
 				board_reset_polygon; -- clean up for next cutout zone

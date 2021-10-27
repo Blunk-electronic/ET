@@ -504,6 +504,7 @@ is
 		is
 			use et_board_shapes_and_text;
 			use pac_shapes;
+			use pac_polygons;
 
 			use et_terminals;
 			use et_pcb;
@@ -619,13 +620,14 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (polygon_solid_cursor)));
+				write_polygon_segments (type_polygon_base (element (polygon_solid_cursor)));
 				contours_end;
 				
 				fill_zone_end;
 				next (polygon_solid_cursor);
 			end loop;
 
+			
 			-- hatched fill zones
 			while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
 				fill_zone_begin;
@@ -653,20 +655,21 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (polygon_hatched_cursor)));
+				write_polygon_segments (type_polygon_base (element (polygon_hatched_cursor)));
 				contours_end;
 				
 				fill_zone_end;
 				next (polygon_hatched_cursor);
 			end loop;
 
+			
 			-- cutout zones
 			while cutout_zone_cursor /= pac_conductor_cutouts.no_element loop
 				cutout_zone_begin;
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (cutout_zone_cursor)));
+				write_polygon_segments (type_polygon_base (element (cutout_zone_cursor)));
 				contours_end;
 				
 				cutout_zone_end;
@@ -676,6 +679,7 @@ is
 			section_mark (section_route, FOOTER);
 		end query_route;
 
+		
 		procedure write (net_cursor : in et_schematic.pac_nets.cursor) is begin
 			log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 			section_mark (section_net, HEADER);
@@ -1134,6 +1138,7 @@ is
 		--use et_packages;
 		--use et_terminals;
 		use et_board_shapes_and_text;
+		use pac_polygons;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -1243,11 +1248,12 @@ is
 
 			write_fill_style (element (cursor).fill_style);
 
-			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon_base (element (cursor)));
 
 			fill_zone_end;
 		end;
 
+		
 		-- hatched fill zones in conductor
 		use pac_conductor_polygons_floating_hatched;
 		procedure write_polygon (cursor : in pac_conductor_polygons_floating_hatched.cursor) is begin
@@ -1264,20 +1270,22 @@ is
 			write_fill_style (element (cursor).fill_style);
 			write_hatching (element (cursor).hatching);
 
-			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon_base (element (cursor)));
 
 			fill_zone_end;
 		end;
 
+		
 		-- cutout zones in any signal layers
 		use pac_conductor_cutouts;
 		procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
-			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon_base (element (cursor)));
 			cutout_zone_end;
 		end;
 
+		
 		-- texts in any signal layers
 		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
 			text_begin;

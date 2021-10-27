@@ -93,8 +93,9 @@ is
 		-- use package_offset instead of many calls of to_distance_relative (package_position)
 		
 		use et_board_shapes_and_text;
-		use pac_text_fab;
 		use pac_shapes;	
+		use pac_polygons;
+		use pac_text_fab;
 
 		use pac_packages_lib;
 
@@ -2918,13 +2919,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours
-										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+										stop_mask_contours := (type_polygon_base (pad_outline) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										stop_mask_contours := (type_polygon_base (pad_outline_in) with null record);
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
@@ -2956,13 +2957,13 @@ is
 									
 									when AS_PAD =>
 										-- copy solder pad contours
-										stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+										stencil_contours := (type_polygon_base (pad_outline) with null record);
 										
 									when SHRINK_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 
 										-- copy solder pad contours and shrink according to shrink_factor
-										stencil_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										stencil_contours := (type_polygon_base (pad_outline_in) with null record);
 										
 										offset_polygon (
 											polygon		=> stencil_contours,
@@ -3052,13 +3053,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours to stop mask:
-										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_outer_layer) with null record);
+										stop_mask_contours := (type_polygon_base (pad_outline_outer_layer) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										stop_mask_contours := (type_polygon_base (pad_outline_in) with null record);
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,

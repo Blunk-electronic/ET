@@ -50,9 +50,11 @@ with et_string_processing;		use et_string_processing;
 package et_conductor_segment is
 	use pac_geometry_brd;
 
-	use et_board_shapes_and_text.pac_shapes;
-	use et_board_shapes_and_text.pac_text_fab;
+	use pac_shapes;
+	use pac_polygons;
+	use pac_text_fab;
 
+	
 -- LINES
 	type type_conductor_line is new type_line with record
 		width	: type_track_width;

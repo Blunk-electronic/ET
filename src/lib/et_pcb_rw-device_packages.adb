@@ -420,7 +420,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				fill_zone_begin;
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (type_polygon_base (element (cursor)));
 				contours_end;
 				fill_zone_end;
 			end write_polygon;
@@ -429,7 +429,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				cutout_zone_begin;
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (type_polygon_base (element (cursor)));
 				contours_end;
 				cutout_zone_end;
 			end write_cutout;
@@ -492,7 +492,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				fill_zone_begin;
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (type_polygon_base (element (cursor)));
 				contours_end;
 				fill_zone_end;
 			end write_polygon;
@@ -501,7 +501,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				cutout_zone_begin;
 				contours_begin;
-				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (type_polygon_base (element (cursor)));
 				contours_end;
 				cutout_zone_end;
 			end write_cutout;

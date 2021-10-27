@@ -86,9 +86,11 @@ with et_pcb_contour;				use et_pcb_contour;
 
 package et_pcb is
 	
-	use et_pcb_coordinates.pac_geometry_brd;
-	use et_board_shapes_and_text.pac_shapes;
+	use pac_geometry_brd;
 
+	use pac_shapes;
+	use pac_polygons;
+	use pac_text_fab;
 	
 
 -- NET CLASSES

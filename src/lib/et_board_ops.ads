@@ -95,8 +95,10 @@ package et_board_ops is
 
 	use et_board_shapes_and_text.pac_shapes;
 	use et_board_shapes_and_text;
+	use pac_polygons;
 	use pac_text_fab;
 	use pac_net_name;
+
 	
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 

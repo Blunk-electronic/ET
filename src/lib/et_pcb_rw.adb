@@ -314,9 +314,9 @@ package body et_pcb_rw is
 
 	
 	procedure write_polygon_segments (
-		polygon : in pac_shapes.type_polygon_base'class)
+		polygon : in type_polygon_base'class)
 	is
-		use pac_shapes.pac_polygon_segments;
+		use pac_polygon_segments;
 		
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 			case element (c).shape is
@@ -596,17 +596,19 @@ package body et_pcb_rw is
 	procedure board_reset_line is begin board_line := (others => <>); end;
 
 	procedure add_polygon_line (l : in out type_line) is begin
-		pac_shapes.append_segment (polygon, (LINE, l));
+		append_segment (polygon, (LINE, l));
 		board_reset_line;
 	end;	
 
+	
 	procedure board_reset_arc is begin board_arc := (others => <>); end;
 	
 	procedure add_polygon_arc (a : in out type_arc) is begin
-		pac_shapes.append_segment (polygon, (ARC, a));
+		append_segment (polygon, (ARC, a));
 		board_reset_arc;
 	end;
 
+	
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 	
 	procedure add_polygon_circle (c : in out type_circle) is begin
@@ -618,7 +620,7 @@ package body et_pcb_rw is
 		-- Any attempt to append a line or an arc causes a discriminant error.
 		
 		-- Assign the circle to the polygon contours:
-		pac_shapes.set_circle (polygon, c);
+		set_circle (polygon, c);
 		board_reset_circle;
 	end;
 
@@ -801,10 +803,9 @@ package body et_pcb_rw is
 
 
 	procedure check_outline (
-		polygon			: in pac_shapes.type_polygon;
-		log_threshold	: in et_string_processing.type_log_level) 
+		polygon			: in type_polygon;
+		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
 		status : constant type_polygon_status := is_closed (polygon);
 	begin
 		log (text => "checking polygon outline ...", level => log_threshold);
@@ -978,6 +979,7 @@ package body et_pcb_rw is
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_silk_polygons.cursor) is 
 		use pac_silk_polygons;
@@ -995,25 +997,27 @@ package body et_pcb_rw is
 		end case;
 
 		contours_begin;		
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
 
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_silk_cutouts.cursor) is 
 		use pac_silk_cutouts;
 	begin
 		cutout_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 
 		cutout_zone_end;
 	end;
 
+	
 -- ASSEMBLY DOCUMENTATION
 	procedure write_line (cursor : in pac_doc_lines.cursor) is 
 		use pac_doc_lines;
@@ -1033,11 +1037,13 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
+	
 	procedure write_circle (cursor : in pac_doc_circles.cursor) is
 		use pac_doc_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_doc_polygons.cursor) is 
 		use pac_doc_polygons;
@@ -1055,23 +1061,25 @@ package body et_pcb_rw is
 		end case;
 
 		contours_begin;		
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_doc_cutouts.cursor) is 
 		use pac_doc_cutouts;
 	begin
 		cutout_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
 	end;
+
 	
 -- KEEPOUT
 	procedure write_line (cursor : in pac_keepout_lines.cursor) is
@@ -1082,6 +1090,7 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
+	
 	procedure write_arc (cursor : in pac_keepout_arcs.cursor) is 
 		use pac_keepout_arcs;
 	begin
@@ -1089,6 +1098,7 @@ package body et_pcb_rw is
 		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
+
 	
 	procedure write_circle (cursor : in pac_keepout_circles.cursor) is 
 		use pac_keepout_circles;
@@ -1098,6 +1108,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 		circle_end;
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_keepout_polygons.cursor) is 
 		use pac_keepout_polygons;
@@ -1105,19 +1116,20 @@ package body et_pcb_rw is
 		fill_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 
 		fill_zone_end;
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
 		use pac_keepout_cutouts;
 	begin
 		cutout_zone_begin;
 		
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1160,7 +1172,7 @@ package body et_pcb_rw is
 		end if;
 
 		contours_begin;		
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1172,7 +1184,7 @@ package body et_pcb_rw is
 		cutout_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1215,7 +1227,7 @@ package body et_pcb_rw is
 		end if;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1227,7 +1239,7 @@ package body et_pcb_rw is
 		cutout_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1276,7 +1288,7 @@ package body et_pcb_rw is
 		--write_signal_layers (element (cursor).layers);
 
 		--contours_begin;
-		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--write_polygon_segments (type_polygon_base (element (cursor)));
 		--contours_end;
 		
 		--fill_zone_end;
@@ -1290,7 +1302,7 @@ package body et_pcb_rw is
 		--write_signal_layers (element (cursor).layers);
 
 		--contours_begin;
-		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--write_polygon_segments (type_polygon_base (element (cursor)));
 		--contours_end;
 		
 		--cutout_zone_end;
@@ -1337,7 +1349,7 @@ package body et_pcb_rw is
 		--write_signal_layers (element (cursor).layers);			
 
 		--contours_begin;
-		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--write_polygon_segments (type_polygon_base (element (cursor)));
 		--contours_end;
 		
 		--fill_zone_end;
@@ -1350,7 +1362,7 @@ package body et_pcb_rw is
 		--write_signal_layers (element (cursor).layers);
 		
 		--contours_begin;
-		--write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		--write_polygon_segments (type_polygon_base (element (cursor)));
 		--contours_end;
 		
 		--cutout_zone_end;

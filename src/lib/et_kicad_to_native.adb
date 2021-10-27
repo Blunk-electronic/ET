@@ -669,7 +669,7 @@ package body et_kicad_to_native is
 					
 					procedure move_polygon (polygon : in out type_polygon_conductor_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
-						et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+						et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 					end move_polygon;
 
 					
@@ -839,7 +839,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
 				
@@ -1053,7 +1053,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end;
 
 				
@@ -1441,7 +1441,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
@@ -1667,10 +1667,11 @@ package body et_kicad_to_native is
 							
 					log_indentation_down;
 				end move_circle;
+
 				
 				procedure move_polygon (polygon : in out type_keepout_polygon) is begin
 					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
@@ -1779,6 +1780,7 @@ package body et_kicad_to_native is
 				use pac_geometry_brd;
 				use et_board_shapes_and_text;
 				use pac_shapes;
+				use pac_polygons;
 				use pac_polygon_segments;
 				
 				contour : constant string := "board contour ";
@@ -1797,6 +1799,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
+				
 				procedure move_arc (s : in out type_polygon_segment) is begin
 					log (text => contour & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1812,6 +1815,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
+				
 				procedure move_segment (c : in pac_polygon_segments.cursor) is begin
 					case element (c).shape is
 						
@@ -1830,6 +1834,7 @@ package body et_kicad_to_native is
 					end case;
 				end move_segment;
 
+				
 				procedure move_outline is begin
 					if module.board.contours.outline.contours.circular then
 
@@ -1853,6 +1858,7 @@ package body et_kicad_to_native is
 						iterate (module.board.contours.outline.contours.segments, move_segment'access);
 					end if;
 				end move_outline;
+
 				
 			begin -- move_contour
 				move_outline;
@@ -1941,13 +1947,13 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_polygon_conductor_solid_floating) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 				procedure move_polygon (polygon : in out type_polygon_conductor_hatched_floating) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
+					et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
 				

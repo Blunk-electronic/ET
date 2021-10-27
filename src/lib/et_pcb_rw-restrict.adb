@@ -77,7 +77,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -90,7 +90,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -109,6 +109,7 @@ package body et_pcb_rw.restrict is
 		line_end;
 	end write_line;
 
+	
 	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
 		use et_pcb_stack;
 		use pac_via_restrict_arcs;
@@ -119,6 +120,7 @@ package body et_pcb_rw.restrict is
 		arc_end;
 	end write_arc;
 
+	
 	procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
 		use et_pcb_stack;		
 		use pac_via_restrict_circles;
@@ -129,6 +131,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 		circle_end;
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor) is 
 		use et_pcb_stack;
@@ -138,12 +141,13 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);			
 
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
 		use pac_via_restrict_cutouts;
 	begin
@@ -151,7 +155,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 		
 		contours_begin;
-		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;

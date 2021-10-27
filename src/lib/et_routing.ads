@@ -66,8 +66,10 @@ with et_conductor_text.boards;
 
 package et_routing is
 	
-	use et_pcb_coordinates.pac_geometry_brd;
-	use et_board_shapes_and_text.pac_shapes;
+	use pac_geometry_brd;
+	use pac_shapes;
+	use pac_polygons;
+	
 
 	fab_tolerance : constant type_distance_positive := 0.001;
 	

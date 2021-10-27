@@ -54,6 +54,7 @@ with cairo;
 with et_coordinates;			use et_coordinates;
 with et_geometry;
 with et_geometry_2;
+with et_geometry_2.polygons;
 with et_string_processing;
 with et_general;
 with et_text;
@@ -68,6 +69,8 @@ package et_symbols is
 	package pac_shapes is new 
 		et_geometry_2 (et_coordinates.pac_geometry_sch);
 	use pac_shapes;
+
+	package pac_polygons is new pac_shapes.polygons;
 
 	
 	
