@@ -160,16 +160,21 @@ package et_text is
 	generic
 		with package pac_geometry_2 is new et_geometry_2 (<>);
 		
-		size_min, size_max, size_default : pac_geometry_2.pac_geometry_1.type_distance_positive;
-		line_width_min, line_width_max, line_width_default : pac_geometry_2.pac_geometry_1.type_distance_positive;
+		size_min		: pac_geometry_2.pac_geometry_1.type_distance_positive;
+		size_max		: pac_geometry_2.pac_geometry_1.type_distance_positive;
+		size_default	: pac_geometry_2.pac_geometry_1.type_distance_positive;		
+		
+		line_width_min		: pac_geometry_2.pac_geometry_1.type_distance_positive;
+		line_width_max		: pac_geometry_2.pac_geometry_1.type_distance_positive;
+		line_width_default	: pac_geometry_2.pac_geometry_1.type_distance_positive;
 		
 	package generic_pac_text is
 		use pac_geometry_2;
 
 		use pac_geometry_1;
 		-- NOTE: This use clause does not work properly. 
-		-- For some reason the prefix "pac_geometry" must be explicitely provided
-		-- for types that stem from pac_geometry_2.pac_geometry.
+		-- For some reason the package name must be explicitely provided
+		-- for stuff that stems from pac_geometry_1.
 		-- Otherwise the linker reports lots of "undefined references" ...
 
 		
