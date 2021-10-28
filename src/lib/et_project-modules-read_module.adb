@@ -1354,7 +1354,7 @@ is
 	
 	procedure read_cutout_non_conductor is
 		use et_board_shapes_and_text;
-		use pac_shapes;
+		use pac_geometry_2;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1376,7 +1376,7 @@ is
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
 		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;
+		use et_board_shapes_and_text.pac_geometry_2;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1398,7 +1398,7 @@ is
 	-- do with nets and routes.
 	procedure read_cutout_conductor_non_electric is
 		use et_board_shapes_and_text;
-		use pac_shapes;									
+		use pac_geometry_2;									
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
@@ -1497,7 +1497,7 @@ is
 	
 	procedure read_fill_zone_non_conductor is
 		use et_board_shapes_and_text;
-		use pac_shapes;
+		use pac_geometry_2;
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
@@ -1530,7 +1530,7 @@ is
 
 	
 	procedure read_fill_zone_keepout is
-		use et_board_shapes_and_text.pac_shapes;
+		use et_board_shapes_and_text.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1547,7 +1547,7 @@ is
 	procedure read_fill_zone_restrict is
 		use et_pcb_stack;
 		use et_packages;
-		use et_board_shapes_and_text.pac_shapes;
+		use et_board_shapes_and_text.pac_geometry_2;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1570,7 +1570,7 @@ is
 	
 	procedure read_fill_zone_conductor_non_electric is
 		use et_board_shapes_and_text;
-		use pac_shapes;									
+		use pac_geometry_2;									
 		use et_pcb_stack;
 		use et_conductor_polygons.boards;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -2977,6 +2977,7 @@ is
 			-- is now assigned to the board where it belongs to.
 
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -2995,27 +2996,27 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
 										container	=> module.board.silk_screen.top.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_lines.append (
 										container	=> module.board.assy_doc.top.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_lines.append (
 										container	=> module.board.stencil.top.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
 										container	=> module.board.stop_mask.top.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_lines.append (
 										container	=> module.board.keepout.top.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with null record));
+										new_item	=> (type_line (board_line) with null record));
 									
 							end case;
 							
@@ -3024,27 +3025,27 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
 										container	=> module.board.silk_screen.bottom.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_lines.append (
 										container	=> module.board.assy_doc.bottom.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 									
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_lines.append (
 										container	=> module.board.stencil.bottom.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
 										container	=> module.board.stop_mask.bottom.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
+										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_lines.append (
 										container	=> module.board.keepout.bottom.lines,
-										new_item	=> (pac_shapes.type_line (board_line) with null record));
+										new_item	=> (type_line (board_line) with null record));
 
 							end case;
 							
@@ -3072,6 +3073,7 @@ is
 			-- is now assigned to the board where it belongs to.
 
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
@@ -3091,27 +3093,27 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.top.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.top.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_arcs.append (
 										container	=> module.board.stencil.top.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.top.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_arcs.append (
 										container	=> module.board.keepout.top.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
+										new_item	=> (type_arc (board_arc) with null record));
 							end case;
 							
 						when BOTTOM => null;
@@ -3119,27 +3121,27 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.bottom.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.bottom.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 									
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_arcs.append (
 										container	=> module.board.stencil.bottom.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.bottom.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
+										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_arcs.append (
 										container	=> module.board.keepout.bottom.arcs,
-										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
+										new_item	=> (type_arc (board_arc) with null record));
 							end case;
 							
 					end case;
@@ -3257,7 +3259,7 @@ is
 			-- Depending on the layer and the side of the board (face) the polygon
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_geometry_2;
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -3839,6 +3841,7 @@ is
 			
 			procedure insert_line_route_restrict is
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3849,7 +3852,7 @@ is
 				begin
 					pac_route_restrict_lines.append (
 						container	=> module.board.route_restrict.lines,
-						new_item	=> (pac_shapes.type_line (board_line) with 
+						new_item	=> (type_line (board_line) with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3867,6 +3870,7 @@ is
 			
 			procedure insert_arc_route_restrict is
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;					
 				use type_signal_layers;
@@ -3877,7 +3881,7 @@ is
 				begin
 					pac_route_restrict_arcs.append (
 						container	=> module.board.route_restrict.arcs,
-						new_item	=> (pac_shapes.type_arc (board_arc) with 
+						new_item	=> (type_arc (board_arc) with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3921,7 +3925,7 @@ is
 
 			
 			procedure insert_polygon_route_restrict is
-				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_polygons;
 				use et_route_restrict.boards;
 				use pac_route_restrict_polygons;
@@ -3953,6 +3957,7 @@ is
 			
 			procedure insert_line_via_restrict is
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3963,7 +3968,7 @@ is
 				begin
 					pac_via_restrict_lines.append (
 						container	=> module.board.via_restrict.lines,
-						new_item	=> (pac_shapes.type_line (board_line) with 
+						new_item	=> (type_line (board_line) with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3982,6 +3987,7 @@ is
 			
 			procedure insert_arc_via_restrict is
 				use et_board_shapes_and_text;
+				use pac_geometry_2;
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3992,7 +3998,7 @@ is
 				begin
 					pac_via_restrict_arcs.append (
 						container	=> module.board.via_restrict.arcs,
-						new_item	=> (pac_shapes.type_arc (board_arc) with 
+						new_item	=> (type_arc (board_arc) with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -4037,7 +4043,7 @@ is
 
 			
 			procedure insert_polygon_via_restrict is
-				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_polygons;
 				use et_via_restrict.boards;
 				use pac_via_restrict_polygons;
@@ -4122,7 +4128,7 @@ is
 				is begin
 					pac_conductor_lines.append (
 						container	=> module.board.conductors.lines,
-						new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with
+						new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 				end;
@@ -4149,7 +4155,7 @@ is
 				begin
 					pac_conductor_arcs.append (
 						container	=> module.board.conductors.arcs,
-						new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with
+						new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 				end;
@@ -4291,7 +4297,7 @@ is
 			
 			procedure insert_line_outline is
 				use et_board_shapes_and_text;
-				use pac_shapes;
+				use pac_geometry_2;
 				use pac_polygons;
 				use pac_polygon_segments;
 				
@@ -4317,7 +4323,7 @@ is
 			
 			procedure insert_arc_outline is
 				use et_board_shapes_and_text;
-				use pac_shapes;
+				use pac_geometry_2;
 				use pac_polygons;
 				use pac_polygon_segments;
 				
@@ -4399,7 +4405,7 @@ is
 				--begin
 					--pac_pcb_contour_circles.append (
 						--container	=> module.board.contours.texts,
-						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_circle (board_circle) with board_lock_status));
+						--new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_circle (board_circle) with board_lock_status));
 				--end do_it;
 									
 			--begin -- insert_text_contour
@@ -4597,7 +4603,7 @@ is
 
 			
 			procedure build_route_polygon is
-				use et_board_shapes_and_text.pac_shapes;
+				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_polygons;
 				use et_conductor_polygons;
 				use et_conductor_polygons.boards;
@@ -5218,7 +5224,7 @@ is
 							-- insert line in route.lines
 							et_conductor_segment.boards.pac_conductor_lines.append (
 								container	=> route.lines,
-								new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with
+								new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 								
@@ -5262,7 +5268,7 @@ is
 							-- insert arc in route.arcs
 							et_conductor_segment.boards.pac_conductor_arcs.append (
 								container	=> route.arcs,
-								new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with
+								new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 								
@@ -6201,7 +6207,7 @@ is
 							if not read_board_arc (line) then
 								declare
 									kw : string := f (line, 1);
-									use et_board_shapes_and_text.pac_shapes;
+									use et_board_shapes_and_text.pac_geometry_2;
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6273,7 +6279,7 @@ is
 							if not read_board_arc (line) then
 								declare
 									kw : string := f (line, 1);
-									use et_board_shapes_and_text.pac_shapes;
+									use et_board_shapes_and_text.pac_geometry_2;
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6311,7 +6317,7 @@ is
 									
 										declare
 											use et_board_shapes_and_text;
-											use pac_shapes;
+											use pac_geometry_2;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -6367,7 +6373,7 @@ is
 								declare
 									use et_pcb_stack;
 									use et_packages;
-									use et_board_shapes_and_text.pac_shapes;
+									use et_board_shapes_and_text.pac_geometry_2;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
@@ -6394,7 +6400,7 @@ is
 							if not read_board_circle (line) then
 								declare
 									use et_board_shapes_and_text;
-									use pac_shapes;
+									use pac_geometry_2;
 									use et_pcb_stack;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);

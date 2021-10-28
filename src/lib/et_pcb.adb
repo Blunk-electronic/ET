@@ -43,7 +43,7 @@ with et_text;					use et_text;
 
 package body et_pcb is
 
-	use pac_shapes;
+	use pac_geometry_2;
 	
 
 

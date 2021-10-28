@@ -141,19 +141,21 @@ package body et_pcb_rw is
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
-	procedure write_line (line : in pac_shapes.type_line'class) is begin
+	procedure write_line (line : in type_line'class) is begin
 		write (keyword => keyword_start, parameters => position (line.start_point));
 		write (keyword => keyword_end  , parameters => position (line.end_point));
 	end write_line;
 
-	procedure write_arc (arc : in pac_shapes.type_arc'class) is begin
+	
+	procedure write_arc (arc : in type_arc'class) is begin
 		write (keyword => keyword_center, parameters => position (arc.center));
 		write (keyword => keyword_start, parameters => position (arc.start_point));
 		write (keyword => keyword_end, parameters => position (arc.end_point));
 		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));		
 	end write_arc;
 
-	procedure write_circle (circle : in pac_shapes.type_circle'class) is begin
+	
+	procedure write_circle (circle : in type_circle'class) is begin
 		write (keyword => keyword_center, parameters => position (circle.center));
 		write (keyword => keyword_radius, parameters => to_string (circle.radius));
 	end write_circle;
@@ -852,8 +854,9 @@ package body et_pcb_rw is
 		board_reset_line_width;
 	end;
 
+	
 	function to_fillable_circle (
-		circle				: in pac_shapes.type_circle;
+		circle				: in type_circle;
 		filled				: in type_filled;
 		fill_style			: in type_fill_style;
 		circumfence_width	: in type_general_line_width;
@@ -884,24 +887,29 @@ package body et_pcb_rw is
 				end case;
 		end case;
 	end to_fillable_circle;
+
 	
 	function board_make_fillable_circle return type_fillable_circle is begin
 		return to_fillable_circle (
-			circle 				=> pac_shapes.type_circle (board_circle),
+			circle 				=> type_circle (board_circle),
 			filled				=> board_filled,
 			fill_style			=> board_fill_style,
 			circumfence_width	=> board_line_width,
 			hatching			=> board_hatching);
 	end;
 
-	function board_make_fillable_circle_solid return type_fillable_circle_solid is begin
-		return (pac_shapes.type_circle (board_circle) with board_filled);
+	
+	function board_make_fillable_circle_solid 
+		return type_fillable_circle_solid 
+	is begin
+		return (type_circle (board_circle) with board_filled);
 	end;
 
+	
 	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle is begin
 		case board_filled is
 			when NO =>
-				return (pac_shapes.type_circle (board_circle) with 
+				return (type_circle (board_circle) with 
 					filled			=> NO,
 					fill_style		=> SOLID, -- don't care here
 					border_width	=> board_line_width);
@@ -909,18 +917,19 @@ package body et_pcb_rw is
 			when YES =>
 				case board_fill_style is
 					when SOLID =>
-						return (pac_shapes.type_circle (board_circle) with 
+						return (type_circle (board_circle) with 
 							filled		=> YES,
 							fill_style	=> SOLID);
 
 					when HATCHED =>
-						return (pac_shapes.type_circle (board_circle) with
+						return (type_circle (board_circle) with
 							filled		=> YES,
 							fill_style	=> HATCHED,
 							hatching 	=> board_hatching_conductor);
 				end case;
 		end case;
 	end;
+
 	
 	procedure board_reset_polygon is
 	-- This procedure resets the global variable "polygon" to its default.

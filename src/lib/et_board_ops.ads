@@ -93,7 +93,7 @@ package et_board_ops is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text;
 	use pac_polygons;
 	use pac_text_fab;

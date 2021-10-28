@@ -63,7 +63,7 @@ with et_keepout;				use et_keepout;
 package et_pcb_rw is
 
 	use pac_geometry_brd;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 	
 	
@@ -116,13 +116,13 @@ package et_pcb_rw is
 	
 	procedure write_width (width : in type_track_width);	
 
-	procedure write_line (line : in pac_shapes.type_line'class);
+	procedure write_line (line : in type_line'class);
 	-- writes start and end point of a line
 
-	procedure write_arc (arc : in pac_shapes.type_arc'class);
+	procedure write_arc (arc : in type_arc'class);
 	-- writes center, start and end point of an arc
 
-	procedure write_circle (circle : in pac_shapes.type_circle'class);
+	procedure write_circle (circle : in type_circle'class);
 	-- writes center and radius of a circle
 
 	
@@ -279,7 +279,7 @@ package et_pcb_rw is
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
 	function to_fillable_circle (
-		circle				: in pac_shapes.type_circle;
+		circle				: in type_circle;
 		filled				: in type_filled;
 		fill_style			: in type_fill_style;
 		circumfence_width	: in type_general_line_width;

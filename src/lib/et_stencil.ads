@@ -53,7 +53,7 @@ with et_string_processing;		use et_string_processing;
 package et_stencil is
 	use pac_geometry_brd;
 
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 	use pac_text_fab;
 

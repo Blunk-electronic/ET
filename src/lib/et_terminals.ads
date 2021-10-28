@@ -60,7 +60,7 @@ with cairo;
 package et_terminals is
 
 	use pac_geometry_brd;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 	use pac_text_fab;
 
@@ -136,7 +136,7 @@ package et_terminals is
 
 	
 	-- A pad outline is a polygon:
-	--type type_pad_outline is new pac_shapes.type_polygon_base with null record;
+	--type type_pad_outline is new pac_geometry_2.type_polygon_base with null record;
 	
 	type type_pad_outline_tht is record
 		top		: type_polygon; -- The shape on the top side

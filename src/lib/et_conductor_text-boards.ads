@@ -41,7 +41,7 @@
 package et_conductor_text.boards is
 
 	use pac_geometry_brd;
-	use pac_shapes;
+	use pac_geometry_2;
 
 	
 	package pac_conductor_line_segments is new

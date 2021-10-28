@@ -67,7 +67,7 @@ with et_conductor_text.boards;
 package et_routing is
 	
 	use pac_geometry_brd;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 	
 

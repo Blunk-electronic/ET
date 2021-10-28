@@ -49,7 +49,7 @@ procedure draw_assy_doc (
 is
 	use et_board_shapes_and_text;
 	use pac_text_fab;
-	use pac_shapes;	
+	use pac_geometry_2;	
 
 	--use et_packages;
 	use pac_doc_lines;

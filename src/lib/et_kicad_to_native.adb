@@ -1779,7 +1779,7 @@ package body et_kicad_to_native is
 				use et_pcb_coordinates;
 				use pac_geometry_brd;
 				use et_board_shapes_and_text;
-				use pac_shapes;
+				use pac_geometry_2;
 				use pac_polygons;
 				use pac_polygon_segments;
 				

@@ -44,8 +44,6 @@ with ada.text_io;				use ada.text_io;
 
 package body et_routing is
 	
-	use et_pcb_coordinates.pac_geometry_brd;
-	use et_board_shapes_and_text.pac_shapes;
 	use pac_generic_modules;
 	
 

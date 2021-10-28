@@ -50,11 +50,11 @@ package et_board_shapes_and_text is
 	use pac_geometry_brd;
 
 
-	package pac_shapes is new et_geometry_2 (pac_geometry_brd);
-	use pac_shapes;
+	package pac_geometry_2 is new et_geometry_2 (pac_geometry_brd);
+	use pac_geometry_2;
 		
 
-	package pac_polygons is new pac_shapes.polygons;
+	package pac_polygons is new pac_geometry_2.polygons;
 	use pac_polygons;
 		
 		
@@ -81,7 +81,7 @@ package et_board_shapes_and_text is
 		width_default 	=> 0.15);
 
 	package pac_text_fab is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
+		pac_shapes			=> pac_geometry_2,
 		size_min			=> text_parameters_fab.size_min,
 		size_max			=> text_parameters_fab.size_max,
 		size_default		=> text_parameters_fab.size_default,
@@ -111,7 +111,7 @@ package et_board_shapes_and_text is
 		width_default 	=> 0.005);
 	
 	package pac_text_doc is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
+		pac_shapes			=> pac_geometry_2,
 		size_min			=> text_parameters_doc.size_min,
 		size_max			=> text_parameters_doc.size_max,
 		size_default		=> text_parameters_doc.size_default,

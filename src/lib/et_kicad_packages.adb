@@ -144,11 +144,11 @@ package body et_kicad_packages is
 		p11, p12 : type_point;
 		p21, p22 : type_point;
 
-		use pac_shapes;
+		use pac_geometry_2;
 		
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : pac_shapes.type_line; -- left line, right line
-		line_3, line_4 : pac_shapes.type_line; -- upper line, lower line
+		line_1, line_2 : pac_geometry_2.type_line; -- left line, right line
+		line_3, line_4 : pac_geometry_2.type_line; -- upper line, lower line
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
@@ -228,11 +228,11 @@ package body et_kicad_packages is
 		p21, p22 : type_point; -- start/end point of lower line
 		p41, p42 : type_point; -- center of left/right arc
 
-		use pac_shapes;
+		use pac_geometry_2;
 		
 		-- These are the two lines and the two arcs we need for the oval pad contour:
-		line_1, line_2	: pac_shapes.type_line;	-- upper/lower line
-		arc_1, arc_2	: pac_shapes.type_arc;	-- left/right arc
+		line_1, line_2	: pac_geometry_2.type_line;	-- upper/lower line
+		arc_1, arc_2	: pac_geometry_2.type_arc;	-- left/right arc
 		
 	begin -- to_pad_shape_oval
 
@@ -327,8 +327,8 @@ package body et_kicad_packages is
 		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : pac_shapes.type_line; -- left line, right line
-		line_3, line_4 : pac_shapes.type_line; -- upper line, lower line
+		line_1, line_2 : pac_geometry_2.type_line; -- left line, right line
+		line_3, line_4 : pac_geometry_2.type_line; -- upper line, lower line
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
@@ -1663,20 +1663,20 @@ package body et_kicad_packages is
 				-- is formed and appended to the list of silk screen circles.
 				case arc.layer is
 					when TOP_SILK =>
-						silk_screen.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						silk_screen.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						assy_doc.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -1702,29 +1702,29 @@ package body et_kicad_packages is
 
 						
 					when TOP_COPPER => 
-						copper.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						copper.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_conductor_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						copper.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_conductor_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						stop_mask.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						stop_mask.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						stencil.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						stencil.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
+						stencil.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_stencil_properties (BOTTOM, stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1749,71 +1749,71 @@ package body et_kicad_packages is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
 					when TOP_SILK =>
-						silk_screen.top.circles.append ((pac_shapes.type_circle (circle) with 
+						silk_screen.top.circles.append ((pac_geometry_2.type_circle (circle) with 
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.circles.append ((pac_shapes.type_circle (circle) with
+						silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						assy_doc.top.circles.append ((pac_shapes.type_circle (circle) with
+						assy_doc.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.circles.append ((pac_shapes.type_circle (circle) with
+						assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						keepout.top.circles.append ((pac_shapes.type_circle (circle) with filled => NO));
+						keepout.top.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO));
 
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						keepout.bottom.circles.append ((pac_shapes.type_circle (circle) with filled => NO)); 
+						keepout.bottom.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_COPPER => 
-						copper.top.circles.append ((pac_shapes.type_circle (circle) with
+						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
 						circle_conductor_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.circles.append ((pac_shapes.type_circle (circle) with
+						copper.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
 						circle_conductor_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
-						stop_mask.top.circles.append ((pac_shapes.type_circle (circle) with
+						stop_mask.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.circles.append ((pac_shapes.type_circle (circle) with
+						stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						stencil.top.circles.append ((pac_shapes.type_circle (circle) with
+						stencil.top.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.circles.append ((pac_shapes.type_circle (circle) with
+						stencil.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);

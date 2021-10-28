@@ -63,7 +63,7 @@ is
 	use pac_draw_fab;
 	use et_board_shapes_and_text;
 	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_shapes;	
+	use et_board_shapes_and_text.pac_geometry_2;	
 
 	use pac_conductor_lines;
 	use pac_conductor_arcs;

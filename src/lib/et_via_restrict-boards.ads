@@ -41,7 +41,7 @@ with et_conductor_text.boards;
 package et_via_restrict.boards is
 	use pac_geometry_brd;
 
-	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text.pac_text_fab;
 
 

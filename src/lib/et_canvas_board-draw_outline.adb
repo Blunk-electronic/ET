@@ -47,7 +47,7 @@ procedure draw_outline (
 	context : in type_draw_context) 
 is	
 	use et_board_shapes_and_text;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 	use pac_polygon_segments;
 	

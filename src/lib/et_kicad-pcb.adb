@@ -3327,38 +3327,38 @@ package body et_kicad.pcb is
 				-- depending on the layer extended with specific properties.
 				case board_arc.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						board.stencil.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stencil.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stencil.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
 
@@ -3383,7 +3383,7 @@ package body et_kicad.pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contours.segments, (ARC, pac_shapes.type_arc (board_arc)));
+						append (board.contours.outline.contours.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
 						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
 						
 					when others => invalid_layer;
@@ -3411,65 +3411,65 @@ package body et_kicad.pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case board_circle.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.silk_screen.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.assy_doc.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						board.stencil.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stencil.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stencil.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
 					when TOP_STOP =>
-						board.stop_mask.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stop_mask.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((pac_shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.top.circles.append ((pac_geometry_2.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((pac_shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.outline.contours.circle := pac_shapes.type_circle (board_circle);
+						board.contours.outline.contours.circle := pac_geometry_2.type_circle (board_circle);
 						pcb_contour_circle_properties (board.contours.outline.contours.circle, log_threshold + 1);
 						
 						
@@ -3492,38 +3492,38 @@ package body et_kicad.pcb is
 				case board_line.layer is
 
 					when TOP_SILK =>
-						board.silk_screen.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.silk_screen.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.silk_screen.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.assy_doc.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.assy_doc.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						board.stencil.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stencil.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stencil.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stop_mask.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stop_mask.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
 
 
@@ -3543,7 +3543,7 @@ package body et_kicad.pcb is
 
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contours.segments, (LINE, pac_shapes.type_line (board_line)));
+						append (board.contours.outline.contours.segments, (LINE, pac_geometry_2.type_line (board_line)));
 						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
 
 						
@@ -3641,20 +3641,20 @@ package body et_kicad.pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_arc.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -3680,29 +3680,29 @@ package body et_kicad.pcb is
 
 						
 					when TOP_COPPER => 
-						package_copper.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_conductor_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_conductor_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -3732,71 +3732,71 @@ package body et_kicad.pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case package_circle.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_silk_screen.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_assy_doc.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((pac_shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.top.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((pac_shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_COPPER => 
-						package_copper.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_copper.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_copper.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
-						package_stop_mask.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stop_mask.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						package_stencil.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stencil.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stencil.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
@@ -4293,7 +4293,7 @@ package body et_kicad.pcb is
 					container	=> board.segments,
 					new_item	=> segment);
 
-				log (text => "segment " & to_string (pac_shapes.type_line (segment)) & -- start and end point
+				log (text => "segment " & to_string (pac_geometry_2.type_line (segment)) & -- start and end point
 					 " width" & pac_geometry_brd.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
@@ -4633,11 +4633,11 @@ package body et_kicad.pcb is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
 
-		use pac_shapes;
+		use pac_geometry_2;
 		use pac_polygon_segments;
 
 		lines : pac_polygon_segments.list; -- to be returned
-		l : pac_shapes.type_line;
+		l : pac_geometry_2.type_line;
 
 	begin
 		while corner /= corners.last loop

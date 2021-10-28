@@ -96,7 +96,7 @@ with et_kicad_packages;			use et_kicad_packages;
 
 package et_kicad.pcb is
 
-	use et_board_shapes_and_text.pac_shapes;
+	use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text.pac_polygons;
 	use et_board_shapes_and_text.pac_text_fab;
 	use et_pcb_coordinates.pac_geometry_brd;

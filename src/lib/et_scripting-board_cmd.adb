@@ -60,9 +60,8 @@ is
 	use et_board_ops;
 	use et_packages;
 	use et_board_shapes_and_text;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
-	--use et_terminals.pac_shapes;
 	use et_drills;
 	use et_vias;
 	use et_pcb;

@@ -108,7 +108,7 @@ package et_canvas_board is
 	-- that are fabrication relevant:
 	package pac_draw_fab is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		pac_shapes		=> et_board_shapes_and_text.pac_shapes,
+		pac_shapes		=> et_board_shapes_and_text.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_text		=> et_board_shapes_and_text.pac_text_fab);
 	
@@ -118,7 +118,7 @@ package et_canvas_board is
 	--that are for documentation (not fabrication relevant):
 	package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		pac_shapes		=> et_board_shapes_and_text.pac_shapes,
+		pac_shapes		=> et_board_shapes_and_text.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_text		=> et_board_shapes_and_text.pac_text_doc);
 
@@ -228,7 +228,7 @@ package et_canvas_board is
 	
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
+	type type_cursor_line is new et_board_shapes_and_text.pac_geometry_2.type_line with null record;
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

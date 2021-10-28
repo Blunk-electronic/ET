@@ -93,7 +93,7 @@ is
 		-- use package_offset instead of many calls of to_distance_relative (package_position)
 		
 		use et_board_shapes_and_text;
-		use pac_shapes;	
+		use pac_geometry_2;	
 		use pac_polygons;
 		use pac_text_fab;
 

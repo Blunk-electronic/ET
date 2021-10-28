@@ -63,7 +63,7 @@ with et_design_rules;			use et_design_rules;
 package et_conductor_polygons is
 	
 	use pac_geometry_brd;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_polygons;
 
 	
