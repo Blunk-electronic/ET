@@ -158,18 +158,18 @@ package et_text is
 -- GENERIC PART
 	
 	generic
-		with package pac_shapes is new et_geometry_2 (<>);
+		with package pac_geometry_2 is new et_geometry_2 (<>);
 		
-		size_min, size_max, size_default : pac_shapes.pac_geometry_1.type_distance_positive;
-		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry_1.type_distance_positive;
+		size_min, size_max, size_default : pac_geometry_2.pac_geometry_1.type_distance_positive;
+		line_width_min, line_width_max, line_width_default : pac_geometry_2.pac_geometry_1.type_distance_positive;
 		
 	package generic_pac_text is
-		use pac_shapes;
+		use pac_geometry_2;
 
 		use pac_geometry_1;
 		-- NOTE: This use clause does not work properly. 
 		-- For some reason the prefix "pac_geometry" must be explicitely provided
-		-- for types that stem from pac_shapes.pac_geometry.
+		-- for types that stem from pac_geometry_2.pac_geometry.
 		-- Otherwise the linker reports lots of "undefined references" ...
 
 		
@@ -833,7 +833,7 @@ package et_text is
 			);
 
 		
-		package pac_vector_text_lines is new doubly_linked_lists (pac_shapes.type_line);
+		package pac_vector_text_lines is new doubly_linked_lists (pac_geometry_2.type_line);
 
 		-- Converts a character to a list of lines:
 		function to_lines (char : in type_character) return pac_vector_text_lines.list;

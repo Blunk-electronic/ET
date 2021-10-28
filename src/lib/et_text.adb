@@ -489,15 +489,15 @@ package body et_text is
 					scale_line (l);
 
 					-- Move the line by offset_due_to_line_width (see above):
-					pac_shapes.move_by (
-						line	=> pac_shapes.type_line (l),
+					pac_geometry_2.move_by (
+						line	=> pac_geometry_2.type_line (l),
 						offset	=> offset_due_to_line_width);
 										   
 					-- Move the line to the right according to the
 					-- position of the character inside the text. 
 					-- CS: depends on alignment ?
-					pac_shapes.move_by (
-						line	=> pac_shapes.type_line (l),
+					pac_geometry_2.move_by (
+						line	=> pac_geometry_2.type_line (l),
 						offset	=> to_distance_relative (set (
 									x => type_distance (place - 1) * spacing,
 									y => zero)));
@@ -533,13 +533,13 @@ package body et_text is
 								null; -- text is already computed for bottom alignment. nothing to do
 							
 							when CENTER =>
-								pac_shapes.move_by (
-									line	=> pac_shapes.type_line (l),
+								pac_geometry_2.move_by (
+									line	=> pac_geometry_2.type_line (l),
 									offset	=> to_distance_relative (set (zero, - text_height_half)));
 
 							when TOP =>
-								pac_shapes.move_by (
-									line	=> pac_shapes.type_line (l),
+								pac_geometry_2.move_by (
+									line	=> pac_geometry_2.type_line (l),
 									offset	=> to_distance_relative (set (zero, - text_height)));
 
 						end case;
@@ -602,15 +602,15 @@ package body et_text is
 							align_vertical;
 
 						when CENTER =>
-							pac_shapes.move_by (
-								line	=> pac_shapes.type_line (l),
+							pac_geometry_2.move_by (
+								line	=> pac_geometry_2.type_line (l),
 								offset	=> to_distance_relative (set (- text_length_half, zero)));
 
 							align_vertical;
 							
 						when RIGHT =>
-							pac_shapes.move_by (
-								line	=> pac_shapes.type_line (l),
+							pac_geometry_2.move_by (
+								line	=> pac_geometry_2.type_line (l),
 								offset	=> to_distance_relative (set (- text_length, zero)));
 							
 							align_vertical;
@@ -618,22 +618,22 @@ package body et_text is
 					
 					-- Rotate the text (about the origin) if required:
 					if rotation /= zero_rotation then
-						pac_shapes.rotate_by (
-							line		=> pac_shapes.type_line (l),
+						pac_geometry_2.rotate_by (
+							line		=> pac_geometry_2.type_line (l),
 							rotation	=> rotation);
 					end if;
 
 					-- Mirror the text if required:
 					if mirror = YES then
-						pac_shapes.mirror (
-							line	=> pac_shapes.type_line (l),
+						pac_geometry_2.mirror (
+							line	=> pac_geometry_2.type_line (l),
 							axis	=> Y);
 					end if;
 					
 					-- Move the text by the given position. 
 					-- The given position is the anchor point of the text.
-					pac_shapes.move_by (
-						line	=> pac_shapes.type_line (l),
+					pac_geometry_2.move_by (
+						line	=> pac_geometry_2.type_line (l),
 						offset	=> to_distance_relative (position));
 
 					round (l); 

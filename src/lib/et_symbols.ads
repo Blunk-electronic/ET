@@ -86,7 +86,7 @@ package et_symbols is
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
-		pac_shapes			=> pac_geometry_2,
+		pac_geometry_2		=> pac_geometry_2,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
