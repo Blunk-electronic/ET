@@ -40,7 +40,7 @@ with ada.exceptions;
 
 package body et_schematic_ops.units is
 
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
 	
 	use pac_generic_modules;

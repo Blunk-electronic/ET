@@ -66,11 +66,10 @@ package et_symbols is
 
 
 	-- Instantiation of the generic et_geometry_2 package:
-	package pac_shapes is new 
-		et_geometry_2 (et_coordinates.pac_geometry_sch);
-	use pac_shapes;
+	package pac_geometry_2 is new et_geometry_2 (pac_geometry_sch);
+	use pac_geometry_2;
 
-	package pac_polygons is new pac_shapes.polygons;
+	package pac_polygons is new pac_geometry_2.polygons;
 
 	
 	
@@ -87,7 +86,7 @@ package et_symbols is
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
+		pac_shapes			=> pac_geometry_2,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
@@ -436,13 +435,13 @@ package et_symbols is
 
 
 	-- lines
-	type type_line is new pac_shapes.type_line with record
+	type type_line is new pac_geometry_2.type_line with record
 		width		: type_line_width := line_width_default;
 	end record;
 	package pac_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
-	type type_arc is new pac_shapes.type_arc with record
+	type type_arc is new pac_geometry_2.type_arc with record
 		width		: type_line_width := line_width_default;
 	end record;
 	package pac_arcs is new doubly_linked_lists (type_arc);
@@ -452,7 +451,7 @@ package et_symbols is
 	function to_circle_filled (filled : in string) return type_circle_filled;
 	
 	-- Circles
-	type type_circle_base is new pac_shapes.type_circle with record
+	type type_circle_base is new pac_geometry_2.type_circle with record
 		width		: type_line_width := line_width_default;
 	end record;
 

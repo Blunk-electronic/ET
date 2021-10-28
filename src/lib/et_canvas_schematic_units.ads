@@ -60,7 +60,7 @@ with et_canvas_schematic_nets;
 
 package et_canvas_schematic_units is
 
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	use et_project.modules.pac_generic_modules;
 
 	-- Whenever a unit (or the whole device with all its units)

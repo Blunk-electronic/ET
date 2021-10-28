@@ -346,7 +346,7 @@ is
 			segment	: in type_net_segment) return boolean is
 
 			-- CS this is a workaround in order to provide a line for function line:
-			type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
+			type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
 			line : type_line_scratch := (
 				start_point	=> type_point (segment.coordinates_start), 
 				end_point	=> type_point (segment.coordinates_end));

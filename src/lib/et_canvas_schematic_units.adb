@@ -81,7 +81,7 @@ package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
 
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	
 	procedure clear_proposed_units is begin
 		clear (proposed_units);

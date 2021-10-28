@@ -43,7 +43,7 @@ with et_exceptions;					use et_exceptions;
 
 package body et_schematic_ops.nets is
 
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
@@ -731,6 +731,7 @@ package body et_schematic_ops.nets is
 		return result;
 	end no_ports;
 
+	
 	function movable (
 		module_name		: in pac_module_name.bounded_string;
 		segment			: in type_net_segment;

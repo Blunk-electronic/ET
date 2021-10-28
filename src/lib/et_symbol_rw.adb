@@ -185,7 +185,7 @@ package body et_symbol_rw is
 		symbol			: in type_symbol;
 		log_threshold	: in et_string_processing.type_log_level)
 	is
-		use pac_shapes;
+		use pac_geometry_2;
 		use et_text;
 
 		use pac_lines;

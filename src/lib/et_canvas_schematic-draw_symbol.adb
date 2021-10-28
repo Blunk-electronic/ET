@@ -56,7 +56,7 @@ procedure draw_symbol (
 	preview			: in boolean := false)
 is
 	use et_symbols;
-	use pac_shapes;
+	use pac_geometry_2;
 	use pac_text;
 	
 	use pac_lines;
@@ -65,13 +65,13 @@ is
 	use pac_ports;
 	use pac_texts;
 	
-	type type_line is new pac_shapes.type_line with null record;
-	type type_arc is new pac_shapes.type_arc with null record;		
-	type type_circle is new pac_shapes.type_circle with null record;
+	type type_line is new pac_geometry_2.type_line with null record;
+	type type_arc is new pac_geometry_2.type_arc with null record;		
+	type type_circle is new pac_geometry_2.type_circle with null record;
 	
 	procedure draw_line (c : in pac_lines.cursor) is 
 		-- Take a copy of the given line:
-		line : type_line := (pac_shapes.type_line (element (c)) with null record);
+		line : type_line := (pac_geometry_2.type_line (element (c)) with null record);
 	begin
 		rotate_by (line, unit_rotation);
 		move_by (line, to_distance_relative (unit_position));
@@ -81,7 +81,7 @@ is
 
 	procedure draw_arc (c : in pac_arcs.cursor) is 
 		-- Take a copy of the given arc:
-		arc : type_arc := (pac_shapes.type_arc (element (c)) with null record);
+		arc : type_arc := (pac_geometry_2.type_arc (element (c)) with null record);
 	begin
 		rotate_by (arc, unit_rotation);
 		move_by (arc, to_distance_relative (unit_position));
@@ -90,7 +90,7 @@ is
 	end draw_arc;
 
 	procedure draw_circle (c : in pac_circles.cursor) is 
-		circle : type_circle := (pac_shapes.type_circle (element (c)) with null record);
+		circle : type_circle := (pac_geometry_2.type_circle (element (c)) with null record);
 	begin
 		rotate_by (circle, unit_rotation);
 		move_by (circle, to_distance_relative (unit_position));

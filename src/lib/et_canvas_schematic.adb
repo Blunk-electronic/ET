@@ -457,7 +457,7 @@ package body et_canvas_schematic is
 	is
 		use et_schematic;
 
-		type type_line is new et_symbols.pac_shapes.type_line with null record;
+		type type_line is new et_symbols.pac_geometry_2.type_line with null record;
 		line : type_line;
 
 		procedure compute_route (s, e : in type_point) is 

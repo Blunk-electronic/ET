@@ -89,7 +89,7 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package et_canvas_schematic is
 
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
 	
 	use et_project.modules.pac_generic_modules;
@@ -123,7 +123,7 @@ package et_canvas_schematic is
 	-- For primitve draw operations:
 	package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		pac_shapes		=> et_symbols.pac_shapes,
+		pac_shapes		=> et_symbols.pac_geometry_2,
 		pac_polygons	=> et_symbols.pac_polygons,
 		pac_text		=> et_symbols.pac_text);
 

@@ -61,7 +61,7 @@ package et_canvas_schematic_nets is
 	use et_project.modules.pac_generic_modules;
 
 	use pac_net_name;
-	use et_symbols.pac_shapes;
+	use et_symbols.pac_geometry_2;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
