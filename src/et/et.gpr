@@ -8,7 +8,14 @@ project et is
  	for source_dirs use ("." , "../lib");
  	for main use ("et");
 
+	package Compiler is
+		--for Default_Switches ("Ada") use ("-O3");
+	end Compiler;
+ 	
 end et;
+
+-- see https://docs.adacore.com/gprbuild-docs/html/gprbuild_ug/gnat_project_manager.html
+-- http://www.pegasoft.ca/resources/boblap/7.html
 
 -- build with command "gprbuild -j4"
 -- build with command "gprbuild -j4 -gnatm4"
