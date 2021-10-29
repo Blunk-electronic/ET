@@ -149,25 +149,46 @@ package body et_geometry_1 is
 		return type_distance 
 	is
 		use pac_distance_io;
+		
+		d1 : type_distance := type_distance (f);
+		d2 : type_float_internal;
+
+		f1 : constant type_float_internal := 5.0 * type_float_internal (type_distance'small);
 	begin
+		d2 := 10.0 * abs (f - type_float_internal (d1));
+		
 		if f < 0.0 then
-			declare
-				r : string (1 .. type_distance'digits + 2); -- sign + point
-			begin
-				-- CS: IMPROVEMENT REQUIRED !!!
-				put (to => r, item => f, aft => type_distance'scale, exp => 0);
-				return type_distance'value (r);
-			end;
+			if d2 > f1 then
+				d1 := d1 - type_distance'small;
+			end if;
 		else
-			declare
-				r : string (1 .. type_distance'digits + 1); -- point
-			begin
-				--put_line (type_float_internal'image (f) & " " & natural'image (r'length));
-				-- CS: IMPROVEMENT REQUIRED !!!
-				put (to => r, item => f, aft => type_distance'scale, exp => 0);
-				return type_distance'value (r);
-			end;
+			if d2 > f1 then
+				d1 := d1 + type_distance'small;
+			end if;
 		end if;
+
+		return d1;
+		
+		--if f < 0.0 then
+			--declare
+				--r : string (1 .. type_distance'digits + 2); -- sign + point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_distance'scale, exp => 0);
+				--return type_distance'value (r);
+			--end;
+		--else
+			--declare
+				--r : string (1 .. type_distance'digits + 1); -- point
+			--begin
+				----put_line (type_float_internal'image (f) & " " & natural'image (r'length));
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_distance'scale, exp => 0);
+				--return type_distance'value (r);
+			--end;
+		--end if;
+
+		
 	end to_distance;
 	
 
@@ -175,24 +196,44 @@ package body et_geometry_1 is
 		return type_rotation 
 	is
 		use pac_distance_io;
+
+		d1 : type_rotation := type_rotation (f);
+		d2 : type_float_internal;
+
+		f1 : constant type_float_internal := 5.0 * type_float_internal (type_rotation'small);
+
 	begin
+		d2 := 10.0 * abs (f - type_float_internal (d1));
+		
 		if f < 0.0 then
-			declare
-				r : string (1 .. type_rotation'digits + 2); -- sign + point
-			begin
-				-- CS: IMPROVEMENT REQUIRED !!!
-				put (to => r, item => f, aft => type_rotation'scale, exp => 0);
-				return type_rotation'value (r);
-			end;
+			if d2 > f1 then
+				d1 := d1 - type_rotation'small;
+			end if;
 		else
-			declare
-				r : string (1 .. type_rotation'digits + 1); -- point
-			begin
-				-- CS: IMPROVEMENT REQUIRED !!!
-				put (to => r, item => f, aft => type_rotation'scale, exp => 0);
-				return type_rotation'value (r);
-			end;
+			if d2 > f1 then
+				d1 := d1 + type_rotation'small;
+			end if;
 		end if;
+
+		return d1;
+		
+		--if f < 0.0 then
+			--declare
+				--r : string (1 .. type_rotation'digits + 2); -- sign + point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--else
+			--declare
+				--r : string (1 .. type_rotation'digits + 1); -- point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--end if;
 	end to_rotation;
 
 	
