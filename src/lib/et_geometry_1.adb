@@ -285,6 +285,7 @@ package body et_geometry_1 is
 		end if;
 	end clip_distance;
 
+	
 	procedure clip_distance (d : in out type_distance) is begin
 		if d > axis_max then d := axis_max;
 		elsif d < axis_min then d := axis_min;

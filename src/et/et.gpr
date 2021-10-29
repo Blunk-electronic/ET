@@ -9,7 +9,8 @@ project et is
  	for main use ("et");
 
 	package Compiler is
-		--for Default_Switches ("Ada") use ("-O3");
+		for Default_Switches ("Ada") use ("-O3");
+		--for Default_Switches ("Ada") use ("-gnatn");
 	end Compiler;
  	
 end et;
