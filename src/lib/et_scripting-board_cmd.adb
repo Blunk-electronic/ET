@@ -73,19 +73,24 @@ is
 	use et_modes.board;
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	
+
+	-- Returns a field from the current command:
 	function f (place : in count_type) return string is begin
 		return get_field (single_cmd_status.cmd, place);
 	end;
 
-	function fields return count_type is begin
+	
+	-- Returns the total number of fields in the current command:
+	function get_field_count return count_type is begin
 		return field_count (single_cmd_status.cmd);
 	end;
 
+	
 	procedure too_long is begin -- CS use it more often
-		command_too_long (single_cmd_status.cmd, fields - 1);
+		command_too_long (single_cmd_status.cmd, get_field_count - 1);
 	end;
 
+	
 	procedure command_incomplete is begin
 		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
 			single_cmd_status.complete := false;
@@ -117,6 +122,7 @@ is
 		
 		-- CS exception handler if status is invalid
 	end display_grid;
+
 	
 	-- Enables/disables the outline layer. If status is empty,
 	-- the layer will be enabled.
@@ -140,6 +146,7 @@ is
 		
 		-- CS exception handler if status is invalid
 	end display_outline;
+
 	
 	-- Enables/disables a certain non-conductor layer. If status is empty,
 	-- the layer will be enabled.
@@ -197,6 +204,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_non_conductor_layer;
 
+	
 	-- Enables/disables a certain conductor layer. 
 	-- If status is empty, the layer will be enabled.
 	procedure display_conductor_layer ( -- GUI related
@@ -225,6 +233,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_conductor_layer;
 
+	
 	-- Enables/disables a the via layer. 
 	-- If status is empty, the layer will be enabled.
 	procedure display_vias ( -- GUI related
@@ -326,7 +335,7 @@ is
 
 	
 	procedure delete_outline_segment is begin
-		case fields is
+		case get_field_count is
 			when 7 =>
 				-- delete a segment of board outline
 				delete_outline (
@@ -338,7 +347,7 @@ is
 					
 					log_threshold	=> log_threshold + 1);
 
-			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 				
 			when others => command_incomplete;
 		end case;
@@ -346,7 +355,7 @@ is
 
 	
 	procedure delete_hole_segment is begin
-		case fields is
+		case get_field_count is
 			when 7 =>
 				-- delete a segment of a hole
 				delete_hole (
@@ -358,7 +367,7 @@ is
 					
 					log_threshold	=> log_threshold + 1);
 
-			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 				
 			when others => command_incomplete;
 		end case;
@@ -370,7 +379,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 11 =>
 						draw_silk_screen_line (
 							module_name 	=> module,
@@ -389,14 +398,14 @@ is
 							);
 
 					when 12 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 14 =>
 						draw_silk_screen_arc (
 							module_name 	=> module,
@@ -419,14 +428,14 @@ is
 							);
 
 					when 15 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 
 					-- The 7th field can either be a line width like 2.5 or a 
@@ -527,7 +536,7 @@ is
 						end if;
 
 					when 13 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
@@ -544,7 +553,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 11 =>
 						draw_assy_doc_line (
 							module_name 	=> module,
@@ -563,14 +572,14 @@ is
 							);
 
 					when 12 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 14 =>
 						draw_assy_doc_arc (
 							module_name 	=> module,
@@ -593,14 +602,14 @@ is
 							);
 
 					when 15 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 
 					-- The 7th field can either be a line width like 2.5 or a 
@@ -702,7 +711,7 @@ is
 						end if;
 
 					when 13 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
@@ -719,7 +728,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 						draw_keepout_line (
 							module_name 	=> module,
@@ -735,13 +744,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 13 =>
 						draw_keepout_arc (
 							module_name 	=> module,
@@ -761,13 +770,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 9 =>
 					-- board led_driver draw keepout top circle 50 50 40 -- 9 fields
 						
@@ -812,7 +821,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 							
-					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -828,7 +837,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 						-- board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10
 						-- CS board led_driver draw route_restrict 3 line 10 10 60 10
@@ -853,13 +862,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 13 =>
 						-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
 						draw_route_restrict_arc (
@@ -880,13 +889,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 9 =>
 						-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
 						if is_number (f (7)) then -- 20
@@ -932,7 +941,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 					
 					when others => command_incomplete;
 				end case;
@@ -947,7 +956,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 						-- board led_driver draw via_restrict [1,3,5-9] line 10 10 60 10
 						draw_via_restrict_line (
@@ -964,13 +973,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 13 =>
 						-- board led_driver draw via_restrict [1,3,5-9] arc 50 50 0 50 100 0
 						draw_via_restrict_arc (
@@ -991,13 +1000,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 9 =>
 						-- board led_driver draw via_restrict [1,3,5-9] circle 20 50 40
 						if is_number (f (7)) then -- 20
@@ -1043,7 +1052,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 					
 					when others => command_incomplete;
 				end case;
@@ -1058,7 +1067,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 11 =>
 						draw_stop_line (
 							module_name 	=> module,
@@ -1075,13 +1084,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 14 =>
 						draw_stop_arc (
 							module_name 	=> module,
@@ -1102,13 +1111,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 
 					-- The 7th field can either be a line width like 2.5 or a 
@@ -1204,7 +1213,7 @@ is
 							end case;
 						end if;
 
-					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -1220,7 +1229,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 11 =>
 						draw_stencil_line (
 							module_name 	=> module,
@@ -1237,13 +1246,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 14 =>
 						draw_stencil_arc (
 							module_name 	=> module,
@@ -1264,13 +1273,13 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
-				case fields is
+				case get_field_count is
 					when 10 =>
 
 					-- The 7th field can either be a line width like 2.5 or a 
@@ -1366,7 +1375,7 @@ is
 							end case;
 						end if;
 
-					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -1389,7 +1398,7 @@ is
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
-		case fields is
+		case get_field_count is
 			when 11 =>
 				layer_category := to_layer_category (f (5));
 				
@@ -1559,7 +1568,7 @@ is
 		end activate_outer_restring;
 		
 	begin -- set_via_properties
-		case fields is
+		case get_field_count is
 			when 6 => 
 				-- board demo set via drill 0.3/dru
 				if f (5) = kw_drill then
@@ -1735,7 +1744,7 @@ is
 			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 		
-		case fields is
+		case get_field_count is
 			when 7 => 
 				-- board demo place via RESET_N 10 14
 				set_net_name;
@@ -1924,7 +1933,7 @@ is
 		end set_thermal_gap;	
 		
 	begin -- set_polygon_properties
-		case fields is
+		case get_field_count is
 			when 6 => 
 				-- board demo set polygon fill solid/hatched
 				if f (5) = kw_fill then
@@ -2078,7 +2087,7 @@ is
 	begin -- route_freetrack
 		case shape is
 			when LINE =>
-				case fields is
+				case get_field_count is
 					when 11 =>
 						-- draw a freetrack
 						draw_track_line (
@@ -2098,14 +2107,14 @@ is
 							);
 
 					when 12 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 14 =>
 						-- draw a freetrack
 						draw_track_arc (
@@ -2130,14 +2139,14 @@ is
 							);
 						
 					when 15 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 
 			when POLYGON =>
-				case fields is
+				case get_field_count is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
 					--  board led_driver route freetrack 1 polygon /
@@ -2299,7 +2308,7 @@ is
 					-- THE TRACK STARTS AT A DEDICATED POINT AT X/Y:
 					
 					-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
-					case fields is
+					case get_field_count is
 						when 12 =>
 							draw_track_line (
 								module_name 	=> module,
@@ -2318,7 +2327,7 @@ is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+						when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 							
 						when others => command_incomplete;
 					end case;
@@ -2334,7 +2343,7 @@ is
 							-- THE TRACK ENDS AT A DEDICATED POINT X/Y
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
-							case fields is
+							case get_field_count is
 								when 13 =>
 									draw_track_line (
 										module_name => module,
@@ -2351,7 +2360,7 @@ is
 										);
 									
 								when 14 .. count_type'last =>
-									command_too_long (single_cmd_status.cmd, fields - 1);
+									command_too_long (single_cmd_status.cmd, get_field_count - 1);
 									
 								when others =>
 									command_incomplete;
@@ -2362,7 +2371,7 @@ is
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 							if f (12) = to_string (X) or f (12) = to_string (Y) then
-								case fields is
+								case get_field_count is
 									when 13 =>
 										draw_track_line (
 											module_name => module,
@@ -2378,7 +2387,7 @@ is
 											);
 										
 									when 14 .. count_type'last =>
-										command_too_long (single_cmd_status.cmd, fields - 1);
+										command_too_long (single_cmd_status.cmd, get_field_count - 1);
 										
 									when others =>
 										command_incomplete;
@@ -2398,7 +2407,7 @@ is
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
 							
-							case fields is
+							case get_field_count is
 								when 13 =>
 									draw_track_line (
 										module_name => module,
@@ -2414,7 +2423,7 @@ is
 										);
 
 								when 14 .. count_type'last =>
-									command_too_long (single_cmd_status.cmd, fields - 1);
+									command_too_long (single_cmd_status.cmd, get_field_count - 1);
 									
 								when others =>
 									command_incomplete;
@@ -2426,7 +2435,7 @@ is
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
 							if f (13) = to_string (X) or f (13) = to_string (Y) then
 								
-								case fields is
+								case get_field_count is
 									when 14 =>
 										draw_track_line (
 											module_name => module,
@@ -2442,7 +2451,7 @@ is
 											log_threshold	=> log_threshold + 1
 											);
 
-									when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+									when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 										
 									when others => 
 										command_incomplete;
@@ -2459,7 +2468,7 @@ is
 				end if;
 				
 			when ARC =>
-				case fields is
+				case get_field_count is
 					when 15 =>
 						-- draw a named track
 						draw_track_arc (
@@ -2483,14 +2492,14 @@ is
 							log_threshold	=> log_threshold + 1
 							);
 						
-					when 16 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+					when 16 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
 
 			when POLYGON =>
-				case fields is
+				case get_field_count is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
 					--  board led_driver route net RESET_N 1 polygon /
@@ -2582,6 +2591,7 @@ is
 		end case;
 	end position_cursor;
 
+	
 	procedure add_device is -- non-electric device !
 		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
 		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
@@ -2591,7 +2601,7 @@ is
 				y => to_distance (f (8))));
 
 	begin
-		case fields is
+		case get_field_count is
 			when 8 =>
 				add_device (
 					module_name		=> module,
@@ -2632,6 +2642,7 @@ is
 		end case;
 	end add_device;
 
+	
 	procedure delete_device is -- non-electric device !
 		-- board led_driver delete device FD1
 	begin
@@ -2642,6 +2653,7 @@ is
 
 	end delete_device;
 
+	
 	procedure rename_device is -- non-electric device !
 		-- board led_driver rename device FD1 FD3
 	begin
@@ -2653,6 +2665,34 @@ is
 
 	end rename_device;
 
+
+	procedure fill_polygons is 
+		nets : pac_net_names.list;
+	begin
+		case get_field_count is
+			when 4 => -- fill all polygons
+				
+				-- command: board demo fill polygon
+				fill_conductor_polygons (module_cursor, log_threshold + 1);
+
+				
+			when others => 
+				-- like: board demo fill polygon GND P3V3 AGND
+
+				-- collect the optional net names in list "nets":
+				for place in 5 .. get_field_count loop
+					nets.append (to_net_name (f (place)));
+				end loop;
+
+				fill_conductor_polygons (module_cursor, log_threshold + 1, nets);
+		end case;
+				
+		if runmode /= MODE_HEADLESS then
+			set_status ("conductor polygons filled");
+		end if;
+	end fill_polygons;
+	
+	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
 		log (text => "parsing command: " 
@@ -2668,7 +2708,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 8..10 => add_device;
 							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
 							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
@@ -2680,12 +2720,12 @@ is
 						end case;
 
 					when NOUN_LAYER =>
-						case fields is
+						case get_field_count is
 							when 6 =>
 								-- board tree_1 add layer 0.12 0.2
 								add_layer;
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -2696,7 +2736,7 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 5 => delete_device; -- board led_driver delete device FD1
 
 							when 6 .. count_type'last => too_long;
@@ -2705,7 +2745,7 @@ is
 						end case;
 
 					when NOUN_LAYER =>
-						case fields is
+						case get_field_count is
 							when 5 =>
 								-- board tree_1 delete layer 2
 								delete_layer (
@@ -2714,7 +2754,7 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 
@@ -2728,7 +2768,7 @@ is
 						
 					when NOUN_SILKSCREEN =>
 						-- board led_driver delete silkscreen top 40 50 1
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- delete a segment of silk screen
 								delete_silk_screen (
@@ -2743,7 +2783,7 @@ is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
@@ -2751,7 +2791,7 @@ is
 
 					when NOUN_ASSY =>
 						-- board led_driver delete assy top 40 50 1
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- delete a segment of assembly documentation
 								delete_assy_doc (
@@ -2765,14 +2805,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_KEEPOUT =>
 						-- board led_driver delete keepout top 40 50 1
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- delete a segment of keepout
 								delete_keepout (
@@ -2786,14 +2826,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_STENCIL =>
 						-- board led_driver delete stencil top 40 50 1
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- delete a segment of stencil
 								delete_stencil (
@@ -2807,14 +2847,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_STOP =>
 						-- board led_driver delete stop top 40 50 1
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- delete a segment of stop mask
 								delete_stop (
@@ -2828,14 +2868,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_ROUTE_RESTRICT =>
 						-- board led_driver delete route_restrict 40 50 1
-						case fields is
+						case get_field_count is
 							when 7 =>
 								-- delete a segment of route restrict
 								delete_route_restrict (
@@ -2848,14 +2888,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_VIA_RESTRICT =>
 						-- board led_driver delete via_restrict 40 50 1
-						case fields is
+						case get_field_count is
 							when 7 =>
 								-- delete a segment of via restrict
 								delete_via_restrict (
@@ -2868,7 +2908,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -2880,7 +2920,7 @@ is
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_GRID => -- like "board led_driver display grid [on/off]"
-						case fields is
+						case get_field_count is
 							when 4 => display_grid; -- if status is omitted
 							when 5 => display_grid (f (5));
 							when 6 .. count_type'last => too_long;
@@ -2889,7 +2929,7 @@ is
 						
 					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
 						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
-						case fields is
+						case get_field_count is
 							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
 							when 6 => display_non_conductor_layer (noun, f (5), f (6));
 							when 7 .. count_type'last => too_long;
@@ -2897,7 +2937,7 @@ is
 						end case;
 
 					when NOUN_CONDUCTORS => -- like "board led_driver display conductors 2 [on/off]"
-						case fields is
+						case get_field_count is
 							when 5 => display_conductor_layer (f (5)); -- if status is omitted
 							when 6 => display_conductor_layer (f (5), f (6));
 							when 7 .. count_type'last => too_long;
@@ -2905,7 +2945,7 @@ is
 						end case;
 
 					when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
-						case fields is
+						case get_field_count is
 							when 4 => display_outline; -- if status is omitted
 							when 5 => display_outline (f (5));
 							when 6 .. count_type'last => too_long;
@@ -2913,7 +2953,7 @@ is
 						end case;
 						
 					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
-						case fields is
+						case get_field_count is
 							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
 							when 7 => display_restrict_layer (f (5), f (6), f (7));
 							when 8 .. count_type'last => too_long;
@@ -2921,7 +2961,7 @@ is
 						end case;
 
 					when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
-						case fields is
+						case get_field_count is
 							--when 5 => display_vias (f (5)); -- if status is omitted
 							--when 6 => display_vias (f (5), f (6));
 							--when 7 .. count_type'last => too_long;
@@ -2969,7 +3009,7 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						case fields is
+						case get_field_count is
 							when 5 => 
 								execute_nested_script (
 									file			=> f (5),
@@ -2988,10 +3028,7 @@ is
 			when VERB_FILL =>
 				case noun is
 					when NOUN_POLYGON =>
-						fill_conductor_polygons (module_cursor, log_threshold + 1);
-						if runmode /= MODE_HEADLESS then
-							set_status ("conductor polygons filled");
-						end if;
+						fill_polygons;
 						
 					when others => 
 						invalid_noun (to_string (noun));
@@ -3000,7 +3037,7 @@ is
 			when VERB_FLIP =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 6 =>
 								flip_device (
 									module_name 	=> module,
@@ -3009,7 +3046,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -3020,7 +3057,7 @@ is
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_PNP =>
-						case fields is
+						case get_field_count is
 							when 4 =>
 								make_pick_and_place 
 									(
@@ -3028,7 +3065,7 @@ is
 									log_threshold	=> log_threshold + 1);
 
 							when 5 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
@@ -3040,7 +3077,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_BOARD =>
-						case fields is
+						case get_field_count is
 							when 7 => -- board led_driver move board absolute 20 50
 								move_board (
 									module_name 	=> module,
@@ -3052,14 +3089,14 @@ is
 									);
 
 							when 8 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
 						end case;
 						
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 8 =>
 								move_device (
 									module_name 	=> module,
@@ -3072,14 +3109,14 @@ is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
 						end case;
 
 					when NOUN_SUBMODULE =>
-						case fields is
+						case get_field_count is
 							when 8 =>
 								move_submodule (
 									module_name 	=> module,
@@ -3092,7 +3129,7 @@ is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
@@ -3111,7 +3148,7 @@ is
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
-						case fields is
+						case get_field_count is
 							when 7 => position_cursor; -- position cursor absolute/relative 25 30
 							when 8 .. count_type'last => too_long;
 							when others => command_incomplete;
@@ -3123,7 +3160,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 6 => rename_device; -- board led_driver renames device FD1 FD3
 
 							when 7 .. count_type'last => too_long;
@@ -3148,7 +3185,7 @@ is
 			when VERB_RIPUP =>
 				case noun is
 					when NOUN_FREETRACK =>
-						case fields is
+						case get_field_count is
 							when 8 =>
 								-- ripup a segment of a freetrack
 								ripup_track_segment (
@@ -3164,14 +3201,14 @@ is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
 						end case;
 
 					when NOUN_NET =>
-						case fields is
+						case get_field_count is
 							when 9 =>
 								-- ripup a segment of a named track
 								ripup_track_segment (
@@ -3187,7 +3224,7 @@ is
 									);
 
 							when 10 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
@@ -3200,7 +3237,7 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case get_field_count is
 							when 7 =>
 								rotate_device (
 									module_name 	=> module,
@@ -3211,7 +3248,7 @@ is
 									);
 
 							when 8 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
+								command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others =>
 								command_incomplete;
@@ -3223,7 +3260,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
-						case fields is
+						case get_field_count is
 							-- board led_driver set grid 0.5 0.5
 							when 6 =>
 								set_grid (
@@ -3233,7 +3270,7 @@ is
 											y => to_distance (f (6))),
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -3250,7 +3287,7 @@ is
 	-- 			when VERB_SHOW => -- GUI related
 	-- 				case noun is
 	-- 					when NOUN_DEVICE =>
-	-- 						case fields is
+	-- 						case get_field_count is
 	-- 							when 5 => null; -- CS
 	-- 							when 6 .. count_type'last => too_long;
 	-- 							when others => command_incomplete;
@@ -3262,7 +3299,7 @@ is
 			when VERB_ZOOM => -- GUI related
 				case noun is
 					when NOUN_FIT => -- zoom fit
-						case fields is
+						case get_field_count is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
 								scale_to_fit (canvas);
@@ -3273,7 +3310,7 @@ is
 						end case;
 
 					when NOUN_LEVEL => -- zoom level 3
-						case fields is
+						case get_field_count is
 							when 4 => 
 								set_scale (f (5));
 
@@ -3283,7 +3320,7 @@ is
 						end case;
 						
 					when NOUN_CENTER => -- zoom center 10 10
-						case fields is
+						case get_field_count is
 							when 6 =>  -- zoom center 10 10
 								zoom_center;
 
@@ -3307,6 +3344,7 @@ is
 		end if;
 			
 	end parse;
+
 	
 	procedure propose_arguments is
 		use et_canvas_board_devices;
@@ -3335,7 +3373,7 @@ is
 
 		
 	begin -- propose_arguments
-		log_command_incomplete (fields, log_threshold);
+		log_command_incomplete (get_field_count, log_threshold);
 
 		case verb is
 			when VERB_PLACE =>
@@ -3345,7 +3383,7 @@ is
 						single_cmd_status.finalization_pending := true;
 
 					when NOUN_VIA =>
-						case fields is
+						case get_field_count is
 							when 4 => -- place via
 								show_via_properties;
 								single_cmd_status.finalization_pending := true;

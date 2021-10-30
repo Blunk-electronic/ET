@@ -4603,6 +4603,8 @@ package body et_board_ops is
 		use pac_net_names;
 		use et_routing;
 
+		all_polygons : boolean;
+		
 		-- Get the design rules:
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
@@ -4702,19 +4704,14 @@ package body et_board_ops is
 			use pac_signal_polygons_solid;
 			use pac_signal_polygons_hatched;
 
-			procedure locate_net (
+			procedure query_nets (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_module) 
 			is
-				n : pac_nets.cursor := module.nets.first;
-
+				net_cursor : pac_nets.cursor;
 				net_class : type_net_class;
-				
-				
-				procedure log_net_name is begin
-					log (text => "net " & to_string (key (n)), level => log_threshold + 2);
-				end log_net_name;
 
+				
 				procedure route_solid (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
@@ -4787,7 +4784,7 @@ package body et_board_ops is
 								bottom_layer	=> bottom_layer,
 								start_point		=> start,
 								place			=> BEFORE,
-								net_cursor		=> n,
+								net_cursor		=> net_cursor,
 								net_class		=> net_class,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
@@ -4814,7 +4811,7 @@ package body et_board_ops is
 								bottom_layer	=> bottom_layer,
 								start_point		=> start,
 								place			=> AFTER,
-								net_cursor		=> n,
+								net_cursor		=> net_cursor,
 								net_class		=> net_class,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
@@ -4962,17 +4959,27 @@ package body et_board_ops is
 						end if;
 						
 					end compute_fill_lines;
+
+
+					procedure delete_lines (
+						polygon	: in out type_polygon_conductor_route_solid)
+					is
+						use pac_fill_lines;
+					begin
+						polygon.properties.fill_lines.clear;
+					end delete_lines;
+					
 					
 				begin -- route_solid
 					while p /= pac_signal_polygons_solid.no_element loop
 
-						log_net_name;
+						-- delete all existing fill lines:
+						update_element (net.route.polygons.solid, p, delete_lines'access);
 
 						-- Get the boundaries of the polygon. From the boundaries we will
 						-- later derive the total height and the lower left corner:
 						boundaries := get_boundaries (element (p), zero);
 
-						log_indentation_up;
 						log (text => to_string (boundaries), level => log_threshold + 2);
 
 						-- Get the total height of the polygon:
@@ -5012,7 +5019,7 @@ package body et_board_ops is
 						compute_fill_lines (lower_left_corner);
 
 						log_indentation_down;
-						log_indentation_down;
+
 						next (p);
 					end loop;
 				end route_solid;
@@ -5024,6 +5031,8 @@ package body et_board_ops is
 				is 
 					p : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
 
+					-- CS: delete all existing fill lines:
+					
 					-- The width of a fill line:
 					line_width : type_track_width;
 
@@ -5043,13 +5052,10 @@ package body et_board_ops is
 				begin
 					while p /= pac_signal_polygons_hatched.no_element loop
 
-						log_net_name;
-
 						-- Get the boundaries of the polygon. From the boundaries we will
 						-- later derive the total height and the lower left corner:
 						boundaries := get_boundaries (element (p), zero);
 
-						log_indentation_up;
 						log (text => to_string (boundaries), level => log_threshold + 2);
 
 						-- Get the total height of the polygon:
@@ -5063,60 +5069,109 @@ package body et_board_ops is
 						--lower_left_corner := get_lower_left_corner (element (p));
 						--log_lower_left_corner (log_threshold + 3);
 
-						log_indentation_down;
+						--log_indentation_down;
 						next (p);
 					end loop;
 				end route_hatched;
 
-				
 
-				
-			begin -- locate_net
-				while n /= pac_nets.no_element loop
-
-					-- CS test if key (n) is in given list of nets
-
-					net_class := get_net_class (module_cursor, n);
+				procedure query_net is begin
+					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 2);
 					
-					update_element (module.nets, n, route_solid'access);
-					update_element (module.nets, n, route_hatched'access);
+					log_indentation_up;
+
+					net_class := get_net_class (module_cursor, net_cursor);
+					
+					update_element (module.nets, net_cursor, route_solid'access);
+					update_element (module.nets, net_cursor, route_hatched'access);
 
 
 					-- CS draw contours around obstacles ?
 					
 					-- CS draw thermals ?
-					
-					next (n);
-				end loop;
-			end locate_net;
-		
+
+					log_indentation_down;
+				end query_net;
+				
+
+				procedure query_given_net (gn : pac_net_names.cursor) is begin
+					-- Locate the given net in the module.
+					-- If if does not exist, issue a warning.
+					net_cursor := find (module.nets, element (gn));
+
+					if net_cursor /= pac_nets.no_element then
+						query_net;
+					else
+						log (
+							importance => WARNING, 
+							text => "Net " & enclose_in_quotes (to_string (element (gn))) 
+								& " does not exist !", 
+							level => log_threshold + 2);
+					end if;
+				end query_given_net;
+				
+				
+			begin -- query_nets
+				if all_polygons then
+
+					-- we must query all nets:
+					net_cursor := module.nets.first;
+
+					-- Iterate through all nets of the module:
+					while net_cursor /= pac_nets.no_element loop
+						query_net;
+						next (net_cursor);
+					end loop;
+
+				else
+					-- we query only the nets given by argument "nets":
+					nets.iterate (query_given_net'access);
+
+				end if;
+			end query_nets;
+
+			
 		begin -- route_polygons
 			log (text => "route polygons ...", level => log_threshold + 1);
-			update_element (generic_modules, module_cursor, locate_net'access);
+			log_indentation_up;
+			update_element (generic_modules, module_cursor, query_nets'access);
+			log_indentation_down;
 		end route_polygons;
 
 		
 	begin -- fill_conductor_polygons
-		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " refilling conductor polygons ...",
-			level => log_threshold);
-
-		log_indentation_up;
-
-		-- Fill floating polygons if no explicit net names given:
 		if is_empty (nets) then
-			null;
-
-			-- use class settings of class "default":
+			-- Fill floating polygons if no explicit net names given:
 			
+			log (text => "module " 
+				& enclose_in_quotes (to_string (key (module_cursor)))
+				& " filling all conductor polygons ...",
+				level => log_threshold);
+
+			all_polygons := true;
+			
+			log_indentation_up;
+			route_polygons;
+
 			-- CS floating_polygons;
+			-- use class settings of class "default":
+
+			log_indentation_down;
+						
+		else
+			log (text => "module " 
+				& enclose_in_quotes (to_string (key (module_cursor)))
+				& " filling conductor polygons of dedicated nets ...",
+				level => log_threshold);
+
+			all_polygons := false;
+			
+			log_indentation_up;
+			route_polygons;
+			log_indentation_down;
+			
 		end if;
 
-		route_polygons;
-		
-		log_indentation_down;
 	end fill_conductor_polygons;
 	
 end et_board_ops;

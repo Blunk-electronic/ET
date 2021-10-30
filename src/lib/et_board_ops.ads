@@ -657,6 +657,10 @@ package et_board_ops is
 		-- The type of the given polygon is the cirteria:
 		net_name		: in pac_net_name.bounded_string := no_name);
 
+	-- Fills conductor polygons. If nets is empty, then all
+	-- polygons will be filled (even those who are floating).
+	-- If nets contains net names then only the polygons of these
+	-- nets will be filled:
 	procedure fill_conductor_polygons (
 		module_cursor	: in pac_generic_modules.cursor;	
 		log_threshold	: in type_log_level;
