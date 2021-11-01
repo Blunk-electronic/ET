@@ -43,6 +43,17 @@ with gnat.calendar;
 
 package body et_logging is
 
+	function to_string (cat : in type_log_category) return string is begin
+		return type_log_category'image (cat);
+	end to_string;
+
+	
+	function to_log_category (cat : in string) return type_log_category is begin
+		return type_log_category'value (cat);
+	end to_log_category;
+
+
+	
 	function to_string (
 		log_level	: in type_log_level;
 		preamble	: in boolean := true) -- if true -> prepend preamble
@@ -100,7 +111,8 @@ package body et_logging is
 		importance	: in type_message_importance := NORMAL;
 		text		: in string;
 		level		: in type_log_level := type_log_level'first;
-		console		: in boolean := false) is
+		console		: in boolean := false) 
+	is
 
 		function to_importance (importance : in type_message_importance) return string is begin
 			case importance is

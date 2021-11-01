@@ -54,6 +54,7 @@ function get_distance (
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
 	ignore_same_net	: in boolean;
+	log_category	: in type_log_category := log_category_default;
 	lth				: in type_log_level)
 	return type_route_distance
 is
@@ -911,7 +912,7 @@ is
 
 			if clear_for_track (
 				module_cursor, design_rules, bottom_layer, element (c), net_cursor, 
-				net_class, fill_zone, layer, width, ignore_same_net, lth + 1) 
+				net_class, fill_zone, layer, width, ignore_same_net, log_category, lth + 1) 
 			then
 				distance_after_obstacle := get_distance_total (start_point, element (c));
 				exit;
@@ -953,7 +954,7 @@ begin -- get_distance
 			-- Test whether start_point is suitable to start a track.
 			-- At the given start_point or in its vicinity could be an obstacle already.
 			if clear_for_track (module_cursor, design_rules, bottom_layer, start_point, 
-				net_cursor, net_class, fill_zone, layer, width, ignore_same_net, lth + 1) 
+				net_cursor, net_class, fill_zone, layer, width, ignore_same_net, log_category, lth + 1) 
 			then
 				-- start_point qualifies to start a track
 

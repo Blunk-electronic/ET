@@ -54,17 +54,28 @@ with et_string_processing;		use et_string_processing;
 
 package et_logging is
 
+	type type_log_category is (
+		NORMAL,
+		HIGH,
+		INSANE);
+
+	log_category_default : constant type_log_category := NORMAL;
+	
+	function to_string (cat : in type_log_category) return string;
+	function to_log_category (cat : in string) return type_log_category;
+	
+	
 	-- The log level is limited to a reasonable value.
 	log_level_max : constant positive := 50; -- CS increase if neccessary
 	-- Functions and procedures pass each other this log level type.
 	-- Theoretically it may assume indefinite values (for example during creation of 
 	-- routing tables). However, it is limited to a reasonable value. See above.
-	type type_log_level is range 0..log_level_max;
+	type type_log_level is range 0 .. log_level_max;
 
 -- 	no_logging : constant type_log_level := type_log_level'last;
 	
-	function to_string (
 	-- Returns the given log level as string. 
+	function to_string (
 		log_level	: in type_log_level;
 		preamble	: in boolean := true) -- if true -> prepend preamble
 		return string;
@@ -74,6 +85,7 @@ package et_logging is
 	log_level_cmd_line_max : constant type_log_level := 20;
 	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
 
+	
 	-- This global variable is set on launching ET. See et.adb. It receives its
 	-- value via the command line. It is a subtype of type_log_level and thus
 	-- limited to a reasonable value.
@@ -107,11 +119,11 @@ package et_logging is
 	
 
 
-	function message_warning return string;
 	-- Returns a warning string and increments the import/export) warning counter.
+	function message_warning return string;
 
-	function message_note return string;
 	-- Returns a notification string.
+	function message_note return string;
 
 	
 	procedure write_message (
@@ -125,44 +137,48 @@ package et_logging is
 
 	report_handle : ada.text_io.file_type; -- CS rename to log_handle
 	
-	type type_warning_counter is private;
 
-	procedure increment_warning_counter;
-	-- Increments the warning counter by one.
 
-	function warning_count return type_warning_counter;
-	-- Returns the number of warnings.
-	
-	function warning_count return string;
-	-- Returns the number of warnings as string.
-
-	function no_warnings return boolean;
-	-- Returns true if no warnings have been generated.
-
-	function log_file_name return string;
-	-- Returns the relative path and name of the import report file.
-	
-	procedure create_report;
-	-- Creates the report file in report_directory.
-	-- Sets the output to the report file.
-	-- Leaves the report file open for further puts.
-
-	procedure close_report;
-	-- Writes the report footer and closes the report file.
-	-- Sets the output back to standard_output.
-
-	procedure show_line (
-	-- Output the line of code where the exception occured:
-		file : string; -- the file name like et_kicad.adb
-		line : natural);-- the line number
-	
-private
-	
 	type type_warning_counter is new natural;
 		
 	warning_counter : type_warning_counter := 0;
 	
 
+	-- Increments the warning counter by one.
+	procedure increment_warning_counter;
+
+	
+	-- Returns the number of warnings.
+	function warning_count return type_warning_counter;
+
+	
+	-- Returns the number of warnings as string.
+	function warning_count return string;
+
+	
+	-- Returns true if no warnings have been generated.
+	function no_warnings return boolean;
+
+	
+	-- Returns the relative path and name of the import report file.
+	function log_file_name return string;
+	
+	-- Creates the report file in report_directory.
+	-- Sets the output to the report file.
+	-- Leaves the report file open for further puts.
+	procedure create_report;
+
+	
+	-- Writes the report footer and closes the report file.
+	-- Sets the output back to standard_output.
+	procedure close_report;
+
+	
+	-- Output the file and line:
+	procedure show_line (
+		file : string; -- the file name
+		line : natural);-- the line number
+	
 
 		
 end et_logging;

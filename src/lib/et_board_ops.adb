@@ -4597,6 +4597,7 @@ package body et_board_ops is
 
 	procedure fill_conductor_polygons (
 		module_cursor	: in pac_generic_modules.cursor;
+		log_category	: in type_log_category := log_category_default;
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names)
 	is 
@@ -4791,6 +4792,7 @@ package body et_board_ops is
 								layer			=> element (polygon_cursor).properties.layer,
 								width			=> element (polygon_cursor).width_min,
 								ignore_same_net	=> true,
+								log_category	=> log_category,
 								lth				=> log_threshold + 5);
 							begin
 								status := d.status;
@@ -4817,6 +4819,7 @@ package body et_board_ops is
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
 								layer			=> element (polygon_cursor).properties.layer,
 								width			=> element (polygon_cursor).width_min,
+								log_category	=> log_category,
 								ignore_same_net	=> true,
 								lth				=> log_threshold + 5);
 							begin

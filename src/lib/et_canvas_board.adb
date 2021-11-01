@@ -1239,17 +1239,19 @@ package body et_canvas_board is
 			end case;
 		end delete;
 
+		
 		procedure fill is begin
 			case key is
 				when GDK_LC_p =>
 					noun := NOUN_POLYGON;
-					fill_conductor_polygons (current_active_module, log_threshold + 1);
+					fill_conductor_polygons (current_active_module, NORMAL, log_threshold + 1);
 
 					set_status ("conductor polygons filled");
 					
 				when others => status_noun_invalid;
 			end case;
 		end fill;
+
 		
 		procedure place is begin
 			case key is

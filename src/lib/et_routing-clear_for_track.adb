@@ -51,6 +51,7 @@ function clear_for_track (
 	layer			: in type_signal_layer;
 	width			: in type_track_width;
 	ignore_same_net	: in boolean;
+	log_category	: in type_log_category := log_category_default;
 	lth				: in type_log_level)		
 	return boolean
 is
