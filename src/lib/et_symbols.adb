@@ -72,12 +72,9 @@ package body et_symbols is
 
 
 	procedure write_placeholder_properties (
-	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;
-		log_threshold	: in et_string_processing.type_log_level) is
-
-		use et_string_processing;
-	begin
+		log_threshold	: in type_log_level) 
+	is begin
 		-- meaning
 		log (text => to_string (placeholder.meaning), level => log_threshold);
 		log_indentation_up;
@@ -102,12 +99,11 @@ package body et_symbols is
 		log_indentation_down;
 	end write_placeholder_properties;
 
+	
 	procedure write_text_properies (
-	-- Outputs the properties of the given text.
 		text 			: in type_text;
-		log_threshold	: in et_string_processing.type_log_level) is
-
-		use et_string_processing;
+		log_threshold	: in type_log_level) 
+	is
 		use et_text;
 	begin
 		log_indentation_up;

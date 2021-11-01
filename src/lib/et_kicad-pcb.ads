@@ -49,10 +49,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_string_processing;		use et_string_processing;
 with et_geometry;				use et_geometry;
 with et_schematic;				use et_schematic;
-with et_general;
 with et_nets;					use et_nets;
 with et_terminals;				use et_terminals;
 with et_packages;
@@ -657,7 +655,7 @@ package et_kicad.pcb is
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
 		cursor			: in pac_conductor_polygons_floating_solid.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 	
 	-- This is the type for the Kicad board design:
@@ -697,10 +695,10 @@ package et_kicad.pcb is
 
 	procedure read_board (
 		file_name 		: in string;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 
-	procedure read_boards (log_threshold : in et_string_processing.type_log_level);
+	procedure read_boards (log_threshold : in type_log_level);
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
 
@@ -709,7 +707,7 @@ package et_kicad.pcb is
 		return et_devices.type_terminal_count;
 	
 
--- 	procedure to_native (log_threshold : in et_string_processing.type_log_level);
+-- 	procedure to_native (log_threshold : in type_log_level);
 -- 	-- Converts the packages (from package_libraries) to native packages.
 -- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
 

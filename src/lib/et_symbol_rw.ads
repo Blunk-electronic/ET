@@ -37,7 +37,8 @@
 
 with ada.containers;			use ada.containers;
 
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_coordinates;
 with et_symbols;				use et_symbols;
 
@@ -54,7 +55,7 @@ package et_symbol_rw is
 	
 	
 	function to_grid (
-		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
 		return type_grid;
 
@@ -63,7 +64,7 @@ package et_symbol_rw is
 	-- Returns something like "x 12.34 y 45.0".
 
 	function to_position (
-		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
 		return type_point;
 	
@@ -87,22 +88,22 @@ package et_symbol_rw is
 	-- Creates a symbol and stores it in container et_symbols.symbols.
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by file_name.
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 end et_symbol_rw;

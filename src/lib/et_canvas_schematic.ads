@@ -82,10 +82,12 @@ with et_text;						use et_text;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;	
 with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 with et_schematic_ops;
 with et_canvas_schematic_nets;		use et_canvas_schematic_nets;
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
+
 
 package et_canvas_schematic is
 

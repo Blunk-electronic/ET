@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -48,6 +48,7 @@ with et_schematic;				use et_schematic;
 with et_project;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 package et_import is
 

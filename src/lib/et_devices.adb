@@ -50,8 +50,6 @@ package body et_devices is
 	end to_string;
 
 	function purpose_length_valid (purpose : in string) return boolean is 
-	-- Returns true if given purpose is too long. Issues warning.
-		use et_string_processing;
 	begin
 		if purpose'length > purpose_length_max then
 			log (WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
@@ -68,8 +66,8 @@ package body et_devices is
 	-- by given character set. Returns false if invalid character found.
 		purpose		: in pac_device_purpose.bounded_string;
 		characters	: in character_set := purpose_characters) 
-		return boolean is
-		use et_string_processing;
+		return boolean 
+	is
 		use pac_device_purpose;
 		invalid_character_position : natural := 0;
 	begin
@@ -90,7 +88,6 @@ package body et_devices is
 	end purpose_characters_valid;
 
 	procedure purpose_invalid (purpose : in string) is 
-		use et_string_processing;
 	begin
 		--log (ERROR, "purpose " & enclose_in_quotes (purpose) &
 			 --" invalid !", console => true);
@@ -159,7 +156,6 @@ package body et_devices is
 	function value_length_valid (value : in string) return boolean is
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.		
-		use et_string_processing;
 	begin
 		if value'length > value_length_max then
 			log (WARNING, "value " & enclose_in_quotes (value) & " is longer than" 
@@ -172,7 +168,6 @@ package body et_devices is
 
 	function truncate (value : in string) return pac_device_value.bounded_string is
 		value_out : string (1 .. value_length_max);
-		use et_string_processing;
 	begin
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
@@ -187,7 +182,6 @@ package body et_devices is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	-- Issues warning.
-		use et_string_processing;
 		use pac_device_value;
 		invalid_character_position : natural := 0;
 	begin
@@ -208,7 +202,6 @@ package body et_devices is
 	end value_characters_valid;
 
 	procedure value_invalid (value : in string) is 
-		use et_string_processing;
 	begin
 		--log (ERROR, "value " & enclose_in_quotes (value) &
 			 --" invalid !", console => true);
@@ -272,7 +265,6 @@ package body et_devices is
 
 	procedure check_prefix_length (prefix : in string) is
 	-- Tests if the given prefix is longer than allowed.
-		use et_string_processing;
 	begin
 		if prefix'length > prefix_length_max then
 			log (ERROR, "max. number of characters for device name prefix is" 
@@ -285,7 +277,6 @@ package body et_devices is
 	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
-		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -337,7 +328,6 @@ package body et_devices is
 		p : pac_device_prefix.bounded_string;
 	
 		procedure invalid_device_name is
-			use et_string_processing;
 		begin
 			--log (ERROR, latin_1.lf & "invalid device name '" 
 				 --& text_in_justified & "'", console => true);
@@ -617,7 +607,6 @@ package body et_devices is
 
 	procedure check_variant_name_length (variant_name : in string) is
 	-- tests if the given variant name is not longer than allowed
-		use et_string_processing;
 	begin
 		if variant_name'length > variant_name_length_max then
 			log (WARNING, "variant name too long. Max. length is" 
@@ -630,7 +619,6 @@ package body et_devices is
 		characters	: in character_set := variant_name_characters) is
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
-		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given variant name and get position of possible invalid characters.
@@ -764,8 +752,7 @@ package body et_devices is
 		use pac_units_internal;
 		use pac_units_external;
 
-		use et_string_processing;
-
+		
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_lib) is
@@ -911,7 +898,6 @@ package body et_devices is
 		use pac_units_internal;
 		use pac_units_external;
 
-		use et_string_processing;
 		
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;

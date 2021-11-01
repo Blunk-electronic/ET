@@ -56,6 +56,7 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
@@ -356,26 +357,28 @@ package et_pcb is
 	
 
 	
-	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
+	procedure route_line_properties (
 		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
-	procedure route_via_properties (
+	
 	-- Logs the properties of the given via of a route
+	procedure route_via_properties (
 		cursor			: in pac_vias.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 
 	-- Logs the properties of the given contour segment:
 	procedure pcb_contour_segment_properties (
 		cursor			: in pac_polygon_segments.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
+
 	
 	-- Logs the properties of the given contour circle:
 	procedure pcb_contour_circle_properties (
 		circle			: in type_circle;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 
 	

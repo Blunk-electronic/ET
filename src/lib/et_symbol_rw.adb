@@ -56,7 +56,7 @@ with et_text;					--use et_text;
 package body et_symbol_rw is
 
 	function to_grid (
-		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
 		return type_grid 
 	is
@@ -99,7 +99,7 @@ package body et_symbol_rw is
 	end position;
 
 	function to_position (
-		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
 		return type_point 
 	is
@@ -149,7 +149,7 @@ package body et_symbol_rw is
 	-- Creates a symbol and stores it in container et_symbols.symbols.
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		use et_string_processing;
 		use pac_symbols;
 	begin
@@ -183,7 +183,7 @@ package body et_symbol_rw is
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use pac_geometry_2;
 		use et_text;
@@ -342,7 +342,7 @@ package body et_symbol_rw is
 	-- Saves the given symbol model in a file specified by file_name.
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
 	begin
@@ -386,13 +386,13 @@ package body et_symbol_rw is
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		use et_string_processing;
 		use et_text;
 		
 		file_handle : ada.text_io.file_type;
 
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 
 		-- This is the section stack of the symbol model. 
 		-- Here we track the sections. On entering a section, its name is
@@ -1095,7 +1095,7 @@ package body et_symbol_rw is
 
 			-- read the file line by line
 			while not end_of_file loop
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

@@ -125,8 +125,9 @@ package body et_design_rules is
 	
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is separate;
+
 	
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
 		return type_design_rules 

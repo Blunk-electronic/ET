@@ -42,9 +42,9 @@ with ada.numerics.generic_elementary_functions;
 
 package body et_coordinates is
 -- 	pragma assertion_policy (check);
+
 	
 	function to_angle (angle : in string) return type_rotation is 
-		use et_string_processing;
 		r : type_rotation;
 	begin
 		r := type_rotation'value (angle);
@@ -175,7 +175,6 @@ package body et_coordinates is
 
 	
 	function to_string (position : in type_position) return string is
-		use et_string_processing;
 
 		coordinates_preamble_sheet : constant string := " pos "
 			& "(sheet"

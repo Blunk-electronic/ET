@@ -39,12 +39,11 @@ with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
-with et_string_processing;
+--with et_string_processing;
 
 package body et_csv is
 
 	function to_string (column : in type_column) return string is
-	-- Returns the given column as string.
 	begin
 		return trim (type_column'image (column),left);
 	end to_string;
@@ -78,10 +77,8 @@ package body et_csv is
 	-- Puts a line feed into a csv file.
 	-- Resets columns variable "column".
 		file		: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
-		field_count	: in type_column) is -- the number of empty fields to append before line feed
-
-		use et_string_processing;
-	
+		field_count	: in type_column) -- the number of empty fields to append before line feed
+	is
 		fill_fields : type_column;
 	begin
 		if column < field_count then -- less columns than field_count -> fill pad fields

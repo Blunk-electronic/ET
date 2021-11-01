@@ -46,9 +46,11 @@ with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 package et_nets is
 
+	
 	-- If the name of a strand can not be identified,
 	-- we default to the well proven "N$" notation:
 	anonymous_net_name_prefix : constant string := "N$";

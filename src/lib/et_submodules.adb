@@ -36,7 +36,7 @@
 --
 --   ToDo: 
 
-with et_string_processing;		use et_string_processing;
+
 
 package body et_submodules is
 

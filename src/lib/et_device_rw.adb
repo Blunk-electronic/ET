@@ -74,7 +74,7 @@ package body et_device_rw is
 	-- Creates a device and stores it in container et_devices.devices.
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
 		use pac_devices_lib;
@@ -112,7 +112,7 @@ package body et_device_rw is
 	-- Saves the given device model in a file specified by name.
 		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		device			: in type_device_lib; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
@@ -262,13 +262,13 @@ package body et_device_rw is
 	-- Opens the device and stores it in container devices.
 		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
 		use et_text;
 		file_handle : ada.text_io.file_type;
 
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 
 		-- This is the section stack of the device model. 
 		-- Here we track the sections. On entering a section, its name is
@@ -1448,7 +1448,7 @@ package body et_device_rw is
 
 			-- read the file line by line
 			while not end_of_file loop
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

@@ -43,7 +43,8 @@ with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_geometry_2.polygons;
 with et_design_rules;			use et_design_rules;
-with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package et_board_shapes_and_text is
 

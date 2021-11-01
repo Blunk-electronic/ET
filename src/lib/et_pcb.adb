@@ -136,7 +136,7 @@ package body et_pcb is
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is
 		use pac_conductor_lines;
 		line : type_conductor_line;
@@ -148,10 +148,11 @@ package body et_pcb is
 			 -- CS locked
 			 , level => log_threshold);
 	end route_line_properties;
+
 	
 	procedure route_via_properties (
 		cursor			: in pac_vias.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_vias;
 		
@@ -186,7 +187,7 @@ package body et_pcb is
 
 	procedure pcb_contour_segment_properties (
 		cursor			: in pac_polygon_segments.cursor;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is 
 		use pac_polygon_segments;
 	begin
@@ -204,9 +205,10 @@ package body et_pcb is
 		end case;
 	end pcb_contour_segment_properties;
 
+	
 	procedure pcb_contour_circle_properties (
 		circle			: in type_circle;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is begin
 		log (text => "PCB contour (edge cuts / outline) circle" & space 
 			 & to_string (circle),

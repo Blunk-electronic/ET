@@ -69,6 +69,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_text;					--use et_text;
 
 
@@ -268,14 +269,14 @@ package et_kicad_packages is
 	-- Builds a package model from the given lines.
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in pac_lines_of_file.list;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_package_library;
 	
 	procedure read_libraries ( -- CS rename to read_package_libraries
 	-- Reads package libraries.
 	-- Create the libraries in container package_libraries. 
 	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (

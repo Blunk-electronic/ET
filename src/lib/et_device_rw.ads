@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -36,6 +36,7 @@
 --
 
 with et_string_processing;
+with et_logging;				use et_logging;
 with et_terminals;
 with et_devices;				use et_devices;
 with et_symbols;
@@ -82,12 +83,12 @@ package et_device_rw is
 	-- Creates a device and stores it in container et_devices.devices.
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure save_device (
 		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		device			: in type_device_lib; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	procedure read_device (
 	-- Opens the device and stores it in container et_libraries.devices.
@@ -96,7 +97,7 @@ package et_device_rw is
 	-- range type_signal_layer'first .. deepest conductor layer.
 		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 end et_device_rw;

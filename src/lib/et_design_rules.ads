@@ -46,9 +46,11 @@ with ada.directories;			use ada.directories;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
-with et_string_processing;
---with et_terminals;				use et_terminals;
+
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_drills;					use et_drills;
+
 
 package et_design_rules is
 
@@ -182,11 +184,13 @@ package et_design_rules is
 	-- Here we collect all sets of design rules of the project:
 	design_rules : pac_design_rules.map;
 
-	-- Reads the design rules specified in the given file
+	
+	-- Reads the design rulesspecified in the given file
 	-- and inserts the data set in list "design_rules" (see above):
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
+
 	
 	keyword_between_conductors			: constant string := "between_conductors";
 	keyword_between_conductors_same_net	: constant string := "between_conductors_of_same_net";

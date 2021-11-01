@@ -44,7 +44,7 @@ with ada.numerics.generic_elementary_functions;
 
 with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
-
+with et_logging;				use et_logging;
 
 
 generic

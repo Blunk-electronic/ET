@@ -52,6 +52,7 @@ with et_nets;					use et_nets;
 with et_submodules;				use et_submodules;
 with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_symbols;
 with et_terminals;
 with et_packages;
@@ -59,6 +60,7 @@ with et_devices;				use et_devices;
 
 package et_netlists is
 
+	
 	comment_mark : constant string := "#";
 
 	use pac_net_name;

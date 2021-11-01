@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -39,7 +39,7 @@ separate (et_project.configuration)
 	
 procedure read_configuration (
 	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-	log_threshold 	: in et_string_processing.type_log_level) 
+	log_threshold 	: in type_log_level) 
 is
 	use et_string_processing;
 	use ada.directories;
@@ -54,7 +54,7 @@ is
 	file_handle : ada.text_io.file_type;
 
 	-- the line fetched from the configuration file:
-	line : et_string_processing.type_fields_of_line;
+	line : type_fields_of_line;
 
 
 	
@@ -202,7 +202,7 @@ is
 		
 		-- read the file line by line
 		while not end_of_file loop
-			line := et_string_processing.read_line (
+			line := read_line (
 				line 			=> get_line,
 				number			=> ada.text_io.line (current_input),
 				comment_mark 	=> comment_mark, -- comments start with "--"

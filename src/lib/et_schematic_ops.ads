@@ -54,6 +54,7 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
@@ -776,7 +777,7 @@ package et_schematic_ops is
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
 		offset			: in type_name_index; -- 100
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.

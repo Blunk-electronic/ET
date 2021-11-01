@@ -44,6 +44,7 @@ with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 with et_project.modules;		use et_project.modules;
 with et_canvas_schematic;

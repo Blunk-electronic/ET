@@ -45,6 +45,8 @@ with cairo;
 with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package et_text is
 

@@ -45,7 +45,7 @@ package body et_stop_mask.packages is
 	procedure text_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_texts_fab_with_content;
 		text : type_text_fab_with_content;

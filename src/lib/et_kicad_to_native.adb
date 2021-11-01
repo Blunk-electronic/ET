@@ -90,7 +90,7 @@ with et_keepout.boards;
 package body et_kicad_to_native is
 
 	
-	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
+	procedure transpose (log_threshold : in type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
 	-- 1. In schematic changes the path (selector of et_coordinates.type_position) to the root path (/).
 	--    CS: Native coordinates currently do not require the "path" selector. The change-path-stuff is thus not required.
@@ -2446,7 +2446,7 @@ package body et_kicad_to_native is
 	
 	procedure to_native (
 		project_name	: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 -- 		-- When the native project is created we need a project path and a project name:
 -- 		project_path : et_project.type_et_project_path.bounded_string :=
@@ -3808,7 +3808,7 @@ package body et_kicad_to_native is
 
 		procedure save_libraries (
 		-- Saves the library containers in the current working directory.
-			log_threshold	: in et_string_processing.type_log_level) is
+			log_threshold	: in type_log_level) is
 			use et_string_processing;
 			use pac_devices_lib;
 
@@ -3944,7 +3944,7 @@ package body et_kicad_to_native is
 			when event: others =>
 
 				-- output the line of code where the exception occured:
-				et_string_processing.show_line (file => gnat.source_info.file, line => gnat.source_info.line);
+				show_line (file => gnat.source_info.file, line => gnat.source_info.line);
 				raise;
 		
 	end to_native;

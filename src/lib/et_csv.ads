@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,6 +37,9 @@
 with ada.strings.unbounded; 		use ada.strings.unbounded;
 with ada.strings.unbounded.text_io;	use ada.strings.unbounded.text_io;
 with ada.text_io;					use ada.text_io;
+
+with et_logging;					use et_logging;
+
 
 package et_csv is
 

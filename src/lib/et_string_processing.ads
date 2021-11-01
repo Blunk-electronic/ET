@@ -53,58 +53,6 @@ with et_general;
 
 package et_string_processing is
 
-	-- The log level is limited to a reasonable value.
-	log_level_max : constant positive := 50; -- CS increase if neccessary
-	-- Functions and procedures pass each other this log level type.
-	-- Theoretically it may assume indefinite values (for example during creation of 
-	-- routing tables). However, it is limited to a reasonable value. See above.
-	type type_log_level is range 0..log_level_max;
-
--- 	no_logging : constant type_log_level := type_log_level'last;
-	
-	function to_string (
-	-- Returns the given log level as string. 
-		log_level	: in type_log_level;
-		preamble	: in boolean := true) -- if true -> prepend preamble
-		return string;
-	
-	--log_level : type_log_level := type_log_level'first;
-
-	log_level_cmd_line_max : constant type_log_level := 20;
-	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
-
-	-- This global variable is set on launching ET. See et.adb. It receives its
-	-- value via the command line. It is a subtype of type_log_level and thus
-	-- limited to a reasonable value.
-	log_level : type_log_level_cmd_line := type_log_level_cmd_line'first;
-
-	-- The log indentation is a global variable that serves to shift log messages
-	-- to the right.
-	log_indentation_max : constant positive := 30;
-	type type_indentation_level is range 0..log_indentation_max;
-	log_indentation : type_indentation_level := type_indentation_level'first;
-	
-	procedure log_indentation_up;
-	procedure log_indentation_down;
-	procedure log_indentation_reset;
-
-	tabulator : constant character := latin_1.ht;
-	
-	function indent (width : in type_indentation_level) return string;
-
-	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
-
-	-- Writes the given text with the current log_indentation in the current output. 
-	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
-	-- Does not log anything if given level is no_logging.
-	procedure log (
-		importance	: in type_message_importance := NORMAL;
-		text		: in string;
-		level		: in type_log_level := type_log_level'first;
-		console		: in boolean := false);
-
-	
-
 
 	
 -- DATE
@@ -135,11 +83,6 @@ package et_string_processing is
 	function angles_in_degrees return string;
 	-- Returns a message about the degrees used.
 	
-	function message_warning return string;
-	-- Returns a warning string and increments the import/export) warning counter.
-
-	function message_note return string;
-	-- Returns a notification string.
 
 	function strip_directory_separator (text : in string) return string;
 	-- Removes a possible trailing directory separtor.
@@ -186,13 +129,6 @@ package et_string_processing is
 	function remove_trailing_directory_separator (path_in : string) return string;
 	-- removes a trailing directory separator.
 	
-	procedure write_message (
-		file_handle	: in ada.text_io.file_type;
-		identation 	: in natural := 0;
-		text 		: in string;
-		lf   		: in boolean := true;
-		file 		: in boolean := true;
-		console 	: in boolean := false);
 
 	function is_number (text : in string) return boolean;
 	-- Returns true if given string is a number. 
@@ -272,44 +208,9 @@ package et_string_processing is
 
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
 
-	report_handle : ada.text_io.file_type; -- CS rename to log_handle
 	
-	type type_warning_counter is private;
-
-	procedure increment_warning_counter;
-	-- Increments the warning counter by one.
-
-	function warning_count return type_warning_counter;
-	-- Returns the number of warnings.
+private
 	
-	function warning_count return string;
-	-- Returns the number of warnings as string.
-
-	function no_warnings return boolean;
-	-- Returns true if no warnings have been generated.
-
-	function log_file_name return string;
-	-- Returns the relative path and name of the import report file.
-	
-	procedure create_report;
-	-- Creates the report file in report_directory.
-	-- Sets the output to the report file.
-	-- Leaves the report file open for further puts.
-
-	procedure close_report;
-	-- Writes the report footer and closes the report file.
-	-- Sets the output back to standard_output.
-
-	procedure show_line (
-	-- Output the line of code where the exception occured:
-		file : string; -- the file name like et_kicad.adb
-		line : natural);-- the line number
-	
-	private
-	
-	type type_warning_counter is new natural;
-		
-	warning_counter : type_warning_counter := 0;
 	
 	type type_fields_of_line is record
 		fields		: type_list_of_strings.vector;

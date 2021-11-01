@@ -398,7 +398,7 @@ package body et_kicad_packages is
 	function to_package_model (
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in pac_lines_of_file.list;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_package_library 
 	is
 		use pac_lines_of_file;
@@ -2562,7 +2562,7 @@ package body et_kicad_packages is
 	-- V5:
 	--	- The list package_libraries has been created on reading the project file with empty libraries inside.
 	-- 	- Now the libraries must be filled.
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in type_log_level) is
 
 		use ada.directories;
 		use et_general;
@@ -2642,8 +2642,8 @@ package body et_kicad_packages is
 				set_input (library_handle);
 				while not end_of_file loop
 
-					-- Store a single line in variable "line" (see et_string_processing.ads)
-					line := et_string_processing.read_line (
+					-- Store a single line in variable "line"
+					line := read_line (
 						line 			=> get_line,
 						comment_mark	=> comment_mark,
 						number 			=> ada.text_io.line (current_input),

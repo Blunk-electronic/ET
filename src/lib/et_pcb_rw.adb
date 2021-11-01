@@ -356,7 +356,7 @@ package body et_pcb_rw is
 	
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
-		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
+		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
 		from : in count_type)
 		return type_point 
 	is
@@ -396,7 +396,7 @@ package body et_pcb_rw is
 	
 	function to_position (
 	-- Returns a type_position in the layout.
-		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in count_type)
 		return type_position 
 	is
@@ -460,7 +460,7 @@ package body et_pcb_rw is
 
 	
 	function to_grid (
-		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
 		return type_grid 
 	is
@@ -493,7 +493,7 @@ package body et_pcb_rw is
 
 	
 	procedure signal_layer_invalid (
-		line			: in et_string_processing.type_fields_of_line;
+		line			: in type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check) 
 	is
@@ -514,7 +514,7 @@ package body et_pcb_rw is
 	
 	
 	function to_layers (
-		line			: in et_string_processing.type_fields_of_line; -- layers 1 3 17
+		line			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return et_pcb_stack.type_signal_layers.set 
 	is
@@ -629,7 +629,7 @@ package body et_pcb_rw is
 
 	
 	procedure read_board_line (
-		line : et_string_processing.type_fields_of_line)
+		line : type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 	begin
@@ -652,7 +652,7 @@ package body et_pcb_rw is
 	end;
 
 	function read_board_line (
-		line : et_string_processing.type_fields_of_line)
+		line : type_fields_of_line)
 		return boolean 
 	is
 		kw : constant string := f (line, 1);
@@ -676,7 +676,7 @@ package body et_pcb_rw is
 	end;
 
 	procedure board_check_arc (
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		use et_string_processing;
 	begin
 		log (text => "checking arc ...", level => log_threshold);
@@ -687,7 +687,7 @@ package body et_pcb_rw is
 	end board_check_arc;
 	
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
-	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
+	procedure read_board_arc (line : type_fields_of_line) is
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -719,7 +719,7 @@ package body et_pcb_rw is
 	end;
 
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
-	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
+	function read_board_arc (line : type_fields_of_line) return boolean is
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -759,7 +759,7 @@ package body et_pcb_rw is
 	end;
 	
 	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
-	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
+	procedure read_board_circle (line : type_fields_of_line) is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -779,7 +779,7 @@ package body et_pcb_rw is
 	end;
 
 	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
-	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
+	function read_board_circle (line : type_fields_of_line) return boolean is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag

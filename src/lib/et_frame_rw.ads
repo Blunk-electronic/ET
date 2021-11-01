@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -42,10 +42,12 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_string_processing;
+with et_logging;				use et_logging;
 with et_coordinates;
 with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;
+
 
 package et_frame_rw is
 
@@ -150,19 +152,19 @@ package et_frame_rw is
 	-- Creates and saves a frame in given file_name.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;							   
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure save_frame (
 	-- Saves the given frame in file_name.
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;							 
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	function read_frame (
 	-- Reads a frame from given file_name and returns a parameterized type_frame.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_frame;
 	
 end et_frame_rw;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -126,11 +126,11 @@ package body et_project.rigs is
 	
 	procedure save_rig_configuration (
 		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 		is separate;
 
 	procedure read_rigs (
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 		is separate;
 		
 end et_project.rigs;

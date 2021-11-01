@@ -55,8 +55,10 @@ with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 with et_canvas_schematic_nets;
+
 
 package et_canvas_schematic_units is
 

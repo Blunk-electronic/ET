@@ -58,6 +58,8 @@ with et_geometry_2.polygons;
 with et_string_processing;
 with et_general;
 with et_text;
+with et_logging;				use et_logging;
+
 
 package et_symbols is
 
@@ -151,7 +153,7 @@ package et_symbols is
 	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 	-- This is a real text with content (used for things like "counter" or "decoder"
@@ -170,7 +172,7 @@ package et_symbols is
 	procedure write_text_properies (
 	-- Outputs the properties of the given text.
 		text 			: in type_text;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	function content (text : in type_text) return string;
 	-- Returns the content of the given text as string.

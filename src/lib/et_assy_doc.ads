@@ -48,9 +48,11 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
-with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package et_assy_doc is
+
 	use pac_geometry_brd;
 
 	use pac_geometry_2;

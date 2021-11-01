@@ -174,7 +174,7 @@ package body et_packages is
 
 -- 	procedure log_plated_millings (
 -- 		millings 		: in type_plated_millings;
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		is
 -- -- 		use pac_pcb_contour_lines;
 -- -- 		use pac_pcb_contour_arcs;
@@ -340,7 +340,7 @@ package body et_packages is
 	procedure placeholder_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_text_placeholders;
 		placeholder : type_text_placeholder;
@@ -362,7 +362,7 @@ package body et_packages is
 	procedure placeholder_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in type_log_level) is
 		use pac_text_placeholders;
 		placeholder : type_text_placeholder;
 	begin
@@ -384,7 +384,7 @@ package body et_packages is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	--procedure line_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_lines.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level)
+		--log_threshold 	: in type_log_level)
 	--is
 		--use pac_pcb_contour_lines;
 		--line : type_pcb_contour_line;
@@ -396,7 +396,7 @@ package body et_packages is
 
 	--procedure arc_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_arcs.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level)
+		--log_threshold 	: in type_log_level)
 	--is
 		--use pac_pcb_contour_arcs;
 		--arc : type_pcb_contour_arc;
@@ -408,7 +408,7 @@ package body et_packages is
 
 	--procedure circle_pcb_contour_properties (
 		--cursor			: in pac_pcb_contour_circles.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level)
+		--log_threshold 	: in type_log_level)
 	--is
 		--use pac_pcb_contour_circles;
 		--circle : type_pcb_contour_circle;
@@ -428,7 +428,7 @@ package body et_packages is
 -- 	-- Logs the properties of the given terminal.
 -- 		terminal		: in type_terminal;
 -- 		name			: in pac_terminal_name.bounded_string;
--- 		log_threshold 	: in et_string_processing.type_log_level) is
+-- 		log_threshold 	: in type_log_level) is
 -- 		use et_pcb_coordinates;
 -- 		log_threshold_1 : type_log_level := log_threshold + 1;
 -- 

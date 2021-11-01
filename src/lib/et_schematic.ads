@@ -59,6 +59,7 @@ with et_nets;					use et_nets;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;

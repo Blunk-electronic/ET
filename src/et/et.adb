@@ -50,6 +50,7 @@ with ada.directories;			use ada.directories;
 with et_modes;					use et_modes;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_import;
 with et_export;
 with et_conventions;

@@ -82,6 +82,7 @@ with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_frames;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_colors;
 
 package et_canvas_general is

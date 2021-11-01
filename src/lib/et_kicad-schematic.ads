@@ -59,7 +59,6 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_pcb_coordinates;
-with et_string_processing;		use et_string_processing;
 with et_text;
 with et_symbols;				--use et_symbols;
 with et_devices;				use et_devices;
@@ -165,7 +164,7 @@ package et_kicad.schematic is
 		reference		: in et_devices.type_device_name;
 		unit_name		: in et_devices.pac_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 	-- Units of a component are collected in a map.
@@ -208,7 +207,7 @@ package et_kicad.schematic is
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
 		unit			: in type_units_schematic.cursor;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 	-- Alternative references used in instances of sheets:
@@ -261,7 +260,7 @@ package et_kicad.schematic is
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference		: in et_devices.type_device_name;
 		component		: in type_component_schematic;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 
 	-- The components of a module are collected in a map.
@@ -293,7 +292,7 @@ package et_kicad.schematic is
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
 		component 		: in type_components_schematic.cursor;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 
 
@@ -349,7 +348,7 @@ package et_kicad.schematic is
 	function to_terminal (
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module 
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 		return et_devices.type_terminal;
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
@@ -495,7 +494,7 @@ package et_kicad.schematic is
 	procedure import_design (
 		--first_instance 	: in boolean := false;
 		project			: in et_project.pac_project_name.bounded_string;								
-		log_threshold	: in et_string_processing.type_log_level); 
+		log_threshold	: in type_log_level); 
 	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in container "modules".
 	-- Leaves the module_cursor pointing where the module was inserted.
@@ -856,34 +855,34 @@ package et_kicad.schematic is
 -- 	-- If no purpose specified for the component, an empty string is returned.						 
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
 -- 		reference		: in et_libraries.type_device_name; -- X701
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string;
 
 	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
 	
-	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
+	procedure update_strand_names (log_threshold : in type_log_level);
 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 
-	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
+	procedure write_strands (log_threshold : in type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
 
-	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
+	procedure write_nets (log_threshold : in type_log_level);
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
 	function components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of real component ports that are connected with the given net.
 
@@ -898,15 +897,15 @@ package et_kicad.schematic is
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
 
-	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
+	function build_portlists (log_threshold : in type_log_level) 
 		return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
 
-	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
+	procedure check_open_ports (log_threshold : in type_log_level);
 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
 
-	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
+	procedure check_non_deployed_units (log_threshold : in type_log_level);
 	-- Warns about not deployed units and open ports thereof.
 
 	function module_count return natural;
@@ -938,28 +937,28 @@ package et_kicad.schematic is
 	
 
 	
-	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
+	procedure check_junctions (log_threshold : in type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 
-	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level);
+	procedure check_orphaned_junctions (log_threshold : in type_log_level);
 	-- Warns about orphaned junctions.
 
-	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level);
+	procedure check_misplaced_junctions (log_threshold : in type_log_level);
 	-- Warns about misplaced junctions.
 
-	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	procedure check_misplaced_no_connection_flags (log_threshold : in type_log_level);
 	-- Warns about no_connection_flags placed at nets.
 
-	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	procedure check_orphaned_no_connection_flags (log_threshold : in type_log_level);
 	-- Warns about orphaned no_connection_flags.
 
-	procedure net_test (log_threshold : in et_string_processing.type_log_level);
+	procedure net_test (log_threshold : in type_log_level);
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 
 	function connected_net (
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return pac_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
 	-- Searches the netlist of the given module for the given port. 
@@ -967,7 +966,7 @@ package et_kicad.schematic is
 	-- is to be returned.
 	-- If no net connected with the given port, an empty string is returned.
 	
-	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
+	procedure make_netlists (log_threshold : in type_log_level);
 	-- Builds the netlists of all modules.
 	-- Currently there is only one module. kicad does not support multiple modules at the same time.	
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
@@ -977,7 +976,7 @@ package et_kicad.schematic is
 	
 	function terminal_count (
 		reference		: in et_devices.type_device_name;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return et_devices.type_terminal_count;
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
@@ -987,10 +986,10 @@ package et_kicad.schematic is
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_devices.type_device_name;	-- IC45
 		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
-		log_threshold	: in et_string_processing.type_log_level)		
+		log_threshold	: in type_log_level)		
 		return pac_net_name.bounded_string;
 
--- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
+-- 	procedure write_statistics (log_threshold : in type_log_level);  -- CS this is general and should be in et_schematic
 -- 	-- Writes the statistics on components and nets of the modules.
 -- 	-- Distinguishes between CAD and CAM related things.
 
@@ -998,14 +997,14 @@ package et_kicad.schematic is
 -- 	-- Outputs an warning message on multiple usage of a purpose of a component category.
 -- 		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 -- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold	: in et_string_processing.type_log_level);
+-- 		log_threshold	: in type_log_level);
 	
 -- 	function multiple_purpose ( -- CS move to et_schematic or et_project
 -- 	-- Returns the number of occurences of components with the given purpose and category.
 -- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
 -- 		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 -- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return natural;
 
 	
@@ -1013,7 +1012,7 @@ package et_kicad.schematic is
 
 	procedure write_note_properties (
 		note			: in type_text;
-		log_threshold	: in et_string_processing.type_log_level := 0);
+		log_threshold	: in type_log_level := 0);
 	-- Writes the properties of the given note
 
 	procedure add_note (note : in type_text);

@@ -44,7 +44,7 @@ package body et_stop_mask is
 	procedure arc_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_stop_arcs;
 		arc : type_stop_arc;
@@ -56,10 +56,11 @@ package body et_stop_mask is
 			 level => log_threshold);
 	end arc_stop_mask_properties;
 
+	
 	procedure circle_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_stop_circles;
 	begin
@@ -72,7 +73,7 @@ package body et_stop_mask is
 	procedure line_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use pac_stop_lines;
 		line : type_stop_line;

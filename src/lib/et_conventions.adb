@@ -664,7 +664,7 @@ package body et_conventions is
 -- 		log_indentation_down;
 -- 	end compare_nets;
 	
--- 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level) is
+-- 	procedure validate_module_interconnections (log_threshold: in type_log_level) is
 -- 	-- Tests if module interconnections like "LMX 1 "PWR CTRL IN" PWR 1 "PWR CTRL OUT"" 
 -- 	-- make sense at net level.
 -- 	-- NOTE: call AFTER modules have been imported !
@@ -856,7 +856,7 @@ package body et_conventions is
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set is
 -- 	-- Returns a set of component ports that are connected with the given net.
 -- 	-- Returns only components of given category.
@@ -955,7 +955,7 @@ package body et_conventions is
 -- 		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core, led_matrix
 -- 		instance		: in et_coordinates.type_submodule_instance;			-- 2
 -- 		reference		: in et_libraries.type_device_name;				-- X701
--- 		log_threshold	: in et_string_processing.type_log_level 
+-- 		log_threshold	: in type_log_level 
 -- 		) return boolean is
 -- 		
 -- 		use et_libraries;
@@ -1041,7 +1041,7 @@ package body et_conventions is
 -- 		generic_name 	: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix
 -- 		instance		: in et_coordinates.type_submodule_instance;			-- 2
 -- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set is
 -- 
 -- 		use et_kicad;
@@ -1094,7 +1094,7 @@ package body et_conventions is
 -- 	-- Returns the counterpart of the given connector port on the opposide of the module interconnection.
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
 -- 		port			: in et_kicad.type_port_with_reference;
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return et_kicad.type_port_of_module is
 -- 		opposide_port : et_kicad.type_port_of_module; -- to be returned
 -- 
@@ -1285,7 +1285,7 @@ package body et_conventions is
 -- 		return route_length;
 -- 	end longest_route;
 -- 		
--- 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
+-- 	procedure make_routing_tables (log_threshold : in type_log_level) is
 -- 	-- Creates the routing table for the whole rig in global variable routin_table.
 -- 	-- CS: create routing tables for projects separately.	
 -- 		use et_string_processing;
@@ -1587,7 +1587,7 @@ package body et_conventions is
 -- 		log_indentation_down;
 -- 	end make_routing_tables;
 
--- 	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level) is 
+-- 	procedure export_routing_tables (log_threshold : in type_log_level) is 
 -- 	-- Exports/Writes the routing table of the rig in a csv file.
 -- 	-- Reads the global rig wide routing table variable routing_table. 
 -- 	-- Requires that procedure make_routing_tables has been executed before.
@@ -2153,7 +2153,7 @@ package body et_conventions is
 	-- Starts the validation from the given character position.
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 		use et_material;
 		use et_material.type_partcode;
@@ -2283,7 +2283,7 @@ package body et_conventions is
 		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		is
 
 		use et_string_processing;
@@ -2409,7 +2409,7 @@ package body et_conventions is
 	
 	procedure make_default_conventions (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 	-- Creates a default conventions file.
 		use et_general;
 		use et_coordinates.pac_geometry_sch;
@@ -2610,13 +2610,13 @@ package body et_conventions is
 
 	procedure read_conventions (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 	-- Reads the given conventions file.
 
 		previous_input : ada.text_io.file_type renames current_input;
 		
 		use et_string_processing;
-		line : et_string_processing.type_fields_of_line; -- the line of the file
+		line : type_fields_of_line; -- the line of the file
 
 		conventions_file_handle : ada.text_io.file_type;
 		
@@ -2633,8 +2633,8 @@ package body et_conventions is
 		
 		-- lines of the file are collected in a simple list:
 		package type_lines is new doubly_linked_lists (
-			element_type	=> et_string_processing.type_fields_of_line,
-			"="				=> et_string_processing.lines_equally);
+			element_type	=> type_fields_of_line,
+			"="				=> lines_equally);
 		use type_lines;
 		lines : type_lines.list := type_lines.empty_list;
 			
@@ -2912,8 +2912,8 @@ package body et_conventions is
 			-- read configuration file line per line
 			while not end_of_file loop
 
-				-- Store line in variable "line" (see et_string_processing.ads)
-				line := et_string_processing.read_line (
+				-- Store line in variable "line" (see ads)
+				line := read_line (
 					line			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark	=> comment_mark,

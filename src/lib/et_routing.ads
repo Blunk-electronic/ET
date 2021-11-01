@@ -56,6 +56,7 @@ with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 with et_project.modules;			use et_project.modules;
 with et_conductor_polygons;			use et_conductor_polygons;
 with et_conductor_polygons.boards;

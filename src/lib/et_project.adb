@@ -69,7 +69,7 @@ package body et_project is
 
 	procedure validate_project_name (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is
 		use et_string_processing;
 		use ada.directories;
@@ -94,7 +94,7 @@ package body et_project is
 	
 	procedure create_supplementary_directories (
 		path			: in string;
-		log_threshold	: in et_string_processing.type_log_level) 
+		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
 		use ada.directories;
@@ -134,7 +134,7 @@ package body et_project is
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
@@ -320,7 +320,7 @@ package body et_project is
 		
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 		
 		use et_general;
 		use ada.directories;
@@ -364,7 +364,7 @@ package body et_project is
 
 	procedure validate_project (
 		project_name	: in pac_project_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is
 		use et_string_processing;
 		use ada.directories;
@@ -382,7 +382,7 @@ package body et_project is
 						
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is
 		use et_string_processing;
 		use ada.directories;
@@ -438,10 +438,11 @@ package body et_project is
 			return true;
 		end if;
 	end inside_project_directory;
+
 	
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 	is
 		use et_project.rigs;
 		use rigs.pac_rigs;		

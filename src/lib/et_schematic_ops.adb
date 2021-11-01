@@ -5588,7 +5588,7 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string;
 		port_name		: in pac_net_name.bounded_string;
 		point 			: in et_coordinates.type_position;
-		log_threshold	: in et_string_processing.type_log_level) is 
+		log_threshold	: in type_log_level) is 
 		ports : type_ports;
 		port : type_submodule_port;
 
@@ -7979,11 +7979,12 @@ package body et_schematic_ops is
 
 	end autoset_device_name_offsets;
 
+	
 	procedure dump_tree (
 	-- Dumps submodule names, instances and device name offsets:
 		module_name		: in pac_module_name.bounded_string;
-		log_threshold	: in type_log_level) is
-		
+		log_threshold	: in type_log_level) 
+	is		
 		module_cursor : pac_generic_modules.cursor;
 
 		procedure query_submodules (
@@ -8013,12 +8014,13 @@ package body et_schematic_ops is
 
 		log_indentation_down;
 	end dump_tree;
+
 	
 	procedure build_submodules_tree (
 	-- Re(builds) the submodule tree of the given parent module.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		-- the cursor to the given top module
 		module_cursor : pac_generic_modules.cursor;
 		
@@ -8130,11 +8132,13 @@ package body et_schematic_ops is
 		
 	end build_submodules_tree;
 
+	
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
 		offset			: in type_name_index; -- 100
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		device_name_instance : type_device_name;
 	begin
 		-- apply offset if it is greater zero. If offset is zero, we
@@ -8158,12 +8162,13 @@ package body et_schematic_ops is
 		end if;
 	end;
 
+	
 	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.
 	-- The files are named after the module name and the variant name.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;

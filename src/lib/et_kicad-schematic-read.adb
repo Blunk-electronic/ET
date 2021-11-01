@@ -56,7 +56,7 @@ is
 	
 	use pac_lines_of_file;
 	
-	line		: et_string_processing.type_fields_of_line; -- the line of the schematic file being processed
+	line		: type_fields_of_line; -- the line of the schematic file being processed
 	lines		: pac_lines_of_file.list;
 	line_cursor	: pac_lines_of_file.cursor;			
 
@@ -88,7 +88,7 @@ is
 	begin
 		log (ERROR, "in schematic file '" 
 			& to_string (current_schematic.sheet.file) & "' " 
-			& et_string_processing.affected_line (line)
+			& affected_line (line)
 			& to_string (line),
 			console => true);
 	end error_in_schematic_file;
@@ -1612,7 +1612,7 @@ is
 	-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 		result : boolean := false;
 	begin
-		if et_string_processing.field_count (line) = 4 then
+		if field_count (line) = 4 then
 			if f (line,1) = schematic_keyword_connection then
 				if f (line,2) = schematic_tilde then
 					result := true;
@@ -1676,7 +1676,7 @@ is
 	-- "Text Label 2350 3250 0 60 ~ 0"
 		result : boolean := false;
 	begin
-		if et_string_processing.field_count (line) = 8 then
+		if field_count (line) = 8 then
 			if 	f (line,1) = schematic_keyword_text and 
 				f (line,2) = schematic_keyword_label_simple then
 					result := true;
@@ -1743,7 +1743,7 @@ is
 	-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
 		result : boolean := false;
 	begin
-		if et_string_processing.field_count (line) = 9 then
+		if field_count (line) = 9 then
 			if f (line,1) = schematic_keyword_text and 
 				(f (line,2) = schematic_keyword_label_hierarchic or
 				f (line,2) = schematic_keyword_label_global) then
@@ -1822,7 +1822,7 @@ is
 	-- ET Test Circuit
 		result : boolean := false;
 	begin
-		if et_string_processing.field_count (line) = 8 then
+		if field_count (line) = 8 then
 			if f (line,1) = schematic_keyword_text and 
 				f (line,2) = schematic_keyword_note then
 					result := true;
@@ -1909,7 +1909,7 @@ is
 	-- Returns true if given line is a header of a component.
 	-- The header is "$Comp"	
 	begin
-		if et_string_processing.field_count (line) = 1 then
+		if field_count (line) = 1 then
 			if f (line,1) = schematic_component_header then
 				return true;
 			else 
@@ -1924,7 +1924,7 @@ is
 	-- Returns true if given line is a footer of a component.
 	-- The footer is "$EndComp"
 	begin
-		if et_string_processing.field_count (line) = 1 then
+		if field_count (line) = 1 then
 			if f (line,1) = schematic_component_footer then
 				return true;
 			else 
@@ -2222,7 +2222,7 @@ is
 		-- component in the schematic.
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
-			log_threshold	: in et_string_processing.type_log_level)
+			log_threshold	: in type_log_level)
 			return type_device_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
 			use type_device_libraries;
@@ -2790,30 +2790,30 @@ is
 		-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1" 
 		-- to the list alternative_references.
 		
-			path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
+			path	: type_fields_of_line; -- 59F17F77 5A991798
 			ref		: type_device_name; -- #PWR03
 			unit	: pac_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
 			path_segment : type_timestamp;
 			alt_ref_path : type_alternative_reference_path.list;
 		begin
-			log (text => "alternative reference " & et_string_processing.to_string (line), level => log_threshold + 3); -- Path="/59F17F77/5A991798
+			log (text => "alternative reference " & to_string (line), level => log_threshold + 3); -- Path="/59F17F77/5A991798
 			--log (text => field (line, 2) (8 .. field (line, 2)'last), level => log_threshold + 1);
 			
 			-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
-			path := et_string_processing.read_line (
+			path := read_line (
 				line			=> trim (f (line, 2) (8 .. f (line, 2)'last), both), -- 59F17F77/5A991798
 				-- NOTE: the trailing double quote is already gone.
 				
 				comment_mark	=> "", -- no comment marks
 				ifs				=> hierarchy_separator (1)); -- hierarchy_separator is a string
 
-			--log (text => et_string_processing.to_string (path), level => log_threshold + 1);
+			--log (text => to_string (path), level => log_threshold + 1);
 			
 			-- Transfer the path segments to alt_ref_path.
 			-- "path" contains a list of strings.
 			-- alt_ref_path is a list of timestamps
-			for place in 1 .. et_string_processing.field_count (path) loop
+			for place in 1 .. field_count (path) loop
 
 				-- convert the segment from string to timestamp
 				path_segment := type_timestamp (f (path, place));
@@ -3163,8 +3163,8 @@ begin -- read
 		-- read schematic file line per line
 		while not end_of_file loop
 
-			-- Store line in variable "line" (see et_string_processing.ads)
-			line := et_string_processing.read_line (
+			-- Store line in variable "line"
+			line := read_line (
 						line 			=> get_line,
 						number 			=> ada.text_io.line (current_input),
 						comment_mark 	=> "", -- there are no comment marks in the schematic file

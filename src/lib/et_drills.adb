@@ -36,7 +36,6 @@
 --
 
 
-with et_string_processing;		use et_string_processing;
 
 package body et_drills is
 
@@ -50,6 +49,7 @@ package body et_drills is
 		end if;
 	end validate_drill_size;
 
+	
 	function to_string (drill : in type_drill) return string is begin
 		return ("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter));
 	end to_string;

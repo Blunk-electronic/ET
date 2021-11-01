@@ -48,9 +48,11 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
 
-with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package et_stop_mask is
+
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
@@ -89,23 +91,23 @@ package et_stop_mask is
 	
 
 
-	procedure arc_stop_mask_properties (
 	-- Logs the properties of the given arc of stop mask
+	procedure arc_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
-	procedure circle_stop_mask_properties (
 	-- Logs the properties of the given circle of stop mask
+	procedure circle_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
-	procedure line_stop_mask_properties (
 	-- Logs the properties of the given line of stop mask
+	procedure line_stop_mask_properties (
 		face			: in type_face;
 		cursor			: in pac_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 
 	

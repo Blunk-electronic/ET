@@ -40,7 +40,7 @@ separate (et_design_rules)
 
 procedure read_rules (
 	file_name		: in pac_file_name.bounded_string;
-	log_threshold 	: in et_string_processing.type_log_level)
+	log_threshold 	: in type_log_level)
 is 
 	previous_input : ada.text_io.file_type renames current_input;
 	
@@ -48,7 +48,6 @@ is
 	-- In order to test whether the given dru file exists, file name_name must be expanded
 	-- so that the environment variables are replaced by the real paths like:
 	-- dru-files/JLP_ML4_standard.dru:
-	use et_string_processing;
 	use pac_design_rules;
 	design_rules_cursor : pac_design_rules.cursor;
 	rule_inserted : boolean;
@@ -58,7 +57,7 @@ is
 	file_handle : ada.text_io.file_type;
 
 	-- The line read from the the dru file:
-	line : et_string_processing.type_fields_of_line;
+	line : type_fields_of_line;
 
 	-- This is the section stack of the design rules. 
 	-- Here we track the sections. On entering a section, its name is
@@ -320,7 +319,7 @@ begin -- read_rules
 			
 			-- read the file line by line
 			while not end_of_file loop
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

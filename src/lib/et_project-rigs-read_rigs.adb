@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -41,9 +41,8 @@ with et_project.modules;
 separate (et_project.rigs)
 
 procedure read_rigs (
-	log_threshold 	: in et_string_processing.type_log_level) is
-
-	use et_string_processing;
+	log_threshold 	: in type_log_level) 
+is
 	use ada.directories;
 	use et_project.modules;
 
@@ -70,7 +69,7 @@ procedure read_rigs (
 		rig_cursor : pac_rigs.cursor;
 		rig_inserted : boolean;
 		
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 
 		-- This is the section stack of the configuration file. 
 		-- Here we track the sections. On entering a section, its name is
@@ -427,7 +426,7 @@ procedure read_rigs (
 		
 		-- read the file line by line
 		while not end_of_file loop
-			line := et_string_processing.read_line (
+			line := read_line (
 				line 			=> get_line,
 				number			=> ada.text_io.line (current_input),
 				comment_mark 	=> comment_mark, -- comments start with "--"

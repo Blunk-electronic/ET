@@ -50,6 +50,7 @@ with et_coordinates;
 -- with et_import;
 with et_material;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_packages;
@@ -180,7 +181,7 @@ package et_conventions is
 -- 	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
 -- 	-- in connection with entries in section import_modules
 
--- 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level);
+-- 	procedure validate_module_interconnections (log_threshold: in type_log_level);
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
 
@@ -223,7 +224,7 @@ package et_conventions is
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
--- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		log_threshold	: in type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set;
 -- 	-- Returns a set of component ports that are connected with the given net.
 -- 	-- Returns only components of given category.
@@ -270,11 +271,11 @@ package et_conventions is
 -- 	routing_table_file_name_length : constant positive := 100; -- CS: should suffice for now
 -- 	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
 	
--- 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
+-- 	procedure make_routing_tables (log_threshold : in type_log_level);
 -- 	-- Creates the routing table for the whole rig in global variable routin_table.
 -- 	-- CS: create routing tables for projects separately.
 	
--- 	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level);
+-- 	procedure export_routing_tables (log_threshold : in type_log_level);
 -- 	-- Exports/Writes the routing table of the rig in a csv file.
 -- 	-- Reads the global rig wide routing table variable routing_table. 
 -- 	-- Requires that procedure make_routing_tables has been executed before.
@@ -477,7 +478,7 @@ package et_conventions is
 		device_name		: in type_device_name; -- R45
 		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	
 
@@ -493,12 +494,12 @@ package et_conventions is
 	
 	procedure make_default_conventions (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	-- Creates a default conventions file.
 
 	procedure read_conventions (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	-- Reads the given conventions file.
 
 	function value_valid (

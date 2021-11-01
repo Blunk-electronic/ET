@@ -46,7 +46,8 @@ with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_general;
-with et_string_processing;		use et_string_processing;
+--with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -107,7 +108,7 @@ package et_terminals is
 	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	plated_millings_default : type_plated_millings;
 	-- CS this variable should never be changed.
@@ -319,7 +320,7 @@ package et_terminals is
 	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14

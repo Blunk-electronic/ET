@@ -55,7 +55,7 @@ package body et_terminals is
 	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		is
 -- 		use type_pcb_contour_lines;
 -- 		use type_pcb_contour_arcs;
@@ -137,10 +137,11 @@ package body et_terminals is
 		return pac_terminal_name.to_bounded_string (terminal);
 	end;
 
+	
 	procedure terminal_properties (
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level)
+		log_threshold 	: in type_log_level)
 	is
 		use et_pcb_coordinates;
 		log_threshold_1 : type_log_level := log_threshold + 1;

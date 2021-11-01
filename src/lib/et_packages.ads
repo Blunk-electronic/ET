@@ -54,6 +54,7 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -386,7 +387,7 @@ package et_packages is
 	procedure placeholder_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 
 	
@@ -396,7 +397,7 @@ package et_packages is
 	procedure placeholder_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_text_placeholders.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 	
 	
@@ -408,17 +409,17 @@ package et_packages is
 	--procedure line_pcb_contour_properties (
 	---- Logs the properties of the given line of pcb contour
 		--cursor			: in pac_pcb_contour_lines.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level);
+		--log_threshold 	: in type_log_level);
 
 	--procedure arc_pcb_contour_properties (
 	---- Logs the properties of the given arc of pcb contour
 		--cursor			: in pac_pcb_contour_arcs.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level);
+		--log_threshold 	: in type_log_level);
 
 	--procedure circle_pcb_contour_properties (
 	---- Logs the properties of the given circle of pcb contour
 		--cursor			: in pac_pcb_contour_circles.cursor;
-		--log_threshold 	: in et_string_processing.type_log_level);
+		--log_threshold 	: in type_log_level);
 
 	
 

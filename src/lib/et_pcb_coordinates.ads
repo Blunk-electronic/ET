@@ -51,7 +51,7 @@ with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 with et_coordinates;
-with et_string_processing;
+with et_logging;				use et_logging;
 
 with et_geometry;
 with et_geometry_1;

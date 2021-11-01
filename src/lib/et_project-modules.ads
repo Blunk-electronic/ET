@@ -296,7 +296,7 @@ package et_project.modules is
 	-- than "untitled" then the module file will also be created.
 	procedure create_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	procedure save_module (
 	-- Saves a generic module (from container generic_modules) in a file inside 
@@ -306,13 +306,13 @@ package et_project.modules is
 	-- If the module is outside the project directory then it will not be touched.
 	-- If the module does not exist, a warning will be issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	procedure delete_module (
 	-- Deletes a generic module (from container generic_modules) and
 	-- the module file (*.mod) itself.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	
 	
 

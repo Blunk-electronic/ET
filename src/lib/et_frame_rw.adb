@@ -66,7 +66,7 @@ package body et_frame_rw is
 			keyword_y & space & to_string (position.y);
 	end;
 
-	function to_position (line : in et_string_processing.type_fields_of_line)
+	function to_position (line : in type_fields_of_line)
 	-- Converts the fields like "x 220 y 239" of a line to a type_position.
 	-- Starts processing from field 2. Ignores field 1 and fields after field 5.
 		return type_position is
@@ -92,7 +92,7 @@ package body et_frame_rw is
 	procedure write (
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 		use et_geometry;  -- for keywords only		
 		
@@ -419,7 +419,7 @@ package body et_frame_rw is
 	-- Creates and saves a frame in given file_name.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;							   
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 		frame : type_frame (domain);
 	begin
@@ -436,7 +436,7 @@ package body et_frame_rw is
 	-- Saves the given frame in file_name.
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 	begin
 		log (text => "saving frame as " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -452,14 +452,14 @@ package body et_frame_rw is
 	-- CS add more log messages on level 1 and 2.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_frame is
 
 		frame : type_frame (domain); -- to be returned
 
 		file_handle : ada.text_io.file_type;
 
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 
 		-- This is the section stack of the frame.
 		-- Here we track the sections. On entering a section, its name is
@@ -1315,7 +1315,7 @@ package body et_frame_rw is
 
 			-- read the file line by line
 			while not end_of_file loop
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

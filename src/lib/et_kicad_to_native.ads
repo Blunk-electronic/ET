@@ -50,7 +50,7 @@ with et_nets;						use et_nets;
 with et_project;
 with et_general;
 with et_coordinates;
-with et_string_processing;
+with et_logging;					use et_logging;
 with et_pcb;
 with et_pcb_coordinates;
 
@@ -58,7 +58,7 @@ package et_kicad_to_native is
 
 	use pac_net_name;
 	
-	procedure transpose (log_threshold : in et_string_processing.type_log_level);
+	procedure transpose (log_threshold : in type_log_level);
 	-- Transposes coordinates of schematic and layout elements:
 	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
 	-- 2. Moves schematic objects from negative to positive y coordinates.
@@ -66,7 +66,7 @@ package et_kicad_to_native is
 	
 	procedure to_native (
 		project_name	: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 	-- Converts the kicad module (incl. component libraries) to a native module.
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications

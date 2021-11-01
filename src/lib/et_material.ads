@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -50,6 +50,7 @@ with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_devices;				use et_devices;
 with et_packages;
 

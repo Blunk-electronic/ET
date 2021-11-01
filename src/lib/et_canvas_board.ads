@@ -73,6 +73,7 @@ with et_frames;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 with et_canvas_board_texts;			use et_canvas_board_texts;
 with et_canvas_board_vias;			use et_canvas_board_vias;

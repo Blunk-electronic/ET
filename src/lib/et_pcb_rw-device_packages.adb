@@ -847,7 +847,7 @@ package body et_pcb_rw.device_packages is
 	is
 		file_handle : ada.text_io.file_type;
 
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 
 		-- This is the section stack of the package model. 
 		-- Here we track the sections. On entering a section, its name is
@@ -3135,7 +3135,7 @@ package body et_pcb_rw.device_packages is
 
 			-- read the file line by line
 			while not end_of_file loop
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

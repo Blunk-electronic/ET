@@ -43,6 +43,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 
 package et_project is
@@ -100,7 +101,7 @@ package et_project is
 	-- Raises constraint error otherwise.
 	procedure validate_project_name (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 	-- Creates given project directory.
 	-- Creates a default rig configuration file.										   
@@ -108,20 +109,20 @@ package et_project is
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold	: in et_string_processing.type_log_level);
+		log_threshold	: in type_log_level);
 
 	-- Opens the project with the given name. Assumes the project to exist
 	-- in the current directory.
 	-- Assigns to the global variable "current_project" the given project_name.
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 	-- Files outside the project directory MUST NOT be saved. To test a file for its location
 	-- this function shall be used.
@@ -137,7 +138,7 @@ package et_project is
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 end et_project;
 

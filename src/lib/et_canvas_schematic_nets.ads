@@ -55,6 +55,7 @@ with et_schematic;					use et_schematic;
 with et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -126,7 +126,7 @@ package et_project.rigs is
 	-- in a *.rig file.
 	procedure save_rig_configuration ( -- CS rename to save_rig
 		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 
 	
 
@@ -157,7 +157,7 @@ package et_project.rigs is
 	-- in et_project.modules.generic_modules.
 	-- Use this procedure when opening a project.
 	procedure read_rigs (
-		log_threshold 	: in et_string_processing.type_log_level);
+		log_threshold 	: in type_log_level);
 	
 end et_project.rigs;
 

@@ -53,8 +53,9 @@ with ada.containers.vectors;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_string_processing;
+with et_logging;				use et_logging;
 with et_pcb_coordinates;		use et_pcb_coordinates;
+
 
 package et_pcb_stack is
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -39,11 +39,11 @@ separate (et_project.rigs)
 
 procedure save_rig_configuration (
 	rig_cursor		: in pac_rigs.cursor;
-	log_threshold 	: in et_string_processing.type_log_level) is
+	log_threshold 	: in type_log_level) 
+is
 
 	use pac_rigs;
 	use ada.directories;
-	use et_string_processing;
 	use type_module_instances;
 	use type_module_connectors;
 

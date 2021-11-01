@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -67,7 +67,7 @@ package body et_project.configuration is
 	
 	procedure read_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 		is separate;
 
 	procedure write_configuration_header is 
@@ -94,7 +94,7 @@ package body et_project.configuration is
 
 	procedure save_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level) 
+		log_threshold 	: in type_log_level) 
 		is separate;
 
 		

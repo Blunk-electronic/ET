@@ -49,6 +49,8 @@ with et_text;					use et_text;
 with et_pcb_stack;				use et_pcb_stack;
 with et_conductor_segment;		use et_conductor_segment;
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package et_conductor_text is
 

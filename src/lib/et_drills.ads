@@ -37,7 +37,8 @@
 --   to do:
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
+with et_logging;				use et_logging;
+
 
 package et_drills is
 	use pac_geometry_brd;

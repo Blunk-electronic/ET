@@ -362,7 +362,7 @@ package body et_project.modules is
 
 	procedure create_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor;
 		inserted : boolean;
@@ -439,7 +439,7 @@ package body et_project.modules is
 	
 	procedure delete_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
@@ -638,7 +638,7 @@ package body et_project.modules is
 			-- convert the submodule path to a submodule name
 			submod_name := to_module_name (remove_extension (to_string (submod_path)));
 
-			--et_string_processing.log (text => "submod name " & to_string (submod_name));
+			--log (text => "submod name " & to_string (submod_name));
 
 			-- get a cursor to the submodule file
 			submod_cursor := locate_module (submod_name);

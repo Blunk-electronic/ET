@@ -61,9 +61,11 @@ use et_coordinates.pac_geometry_sch;
 with et_kicad_packages;			use et_kicad_packages;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_text;					use et_text;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
+
 
 package et_kicad_libraries is
 
