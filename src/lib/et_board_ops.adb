@@ -4699,7 +4699,8 @@ package body et_board_ops is
 		end floating_polygons;
 
 
-		procedure route_polygons is
+		-- Fills polygons that are connected with a net:
+		procedure signal_polygons is
 			use pac_nets;
 			use pac_signal_polygons_solid;
 			use pac_signal_polygons_hatched;
@@ -4790,7 +4791,7 @@ package body et_board_ops is
 								layer			=> element (polygon_cursor).properties.layer,
 								width			=> element (polygon_cursor).width_min,
 								ignore_same_net	=> true,
-								lth				=> log_threshold + 4);
+								lth				=> log_threshold + 5);
 							begin
 								status := d.status;
 
@@ -4817,7 +4818,7 @@ package body et_board_ops is
 								layer			=> element (polygon_cursor).properties.layer,
 								width			=> element (polygon_cursor).width_min,
 								ignore_same_net	=> true,
-								lth				=> log_threshold + 4);
+								lth				=> log_threshold + 5);
 							begin
 								status := d.status;
 
@@ -4839,7 +4840,7 @@ package body et_board_ops is
 							-- Each iteration computes a single fill line.
 							for lc in 1.. type_line_count'last loop
 								
-								log (text => "fill line" & positive'image (lc), level => log_threshold + 3);
+								log (text => "fill line" & positive'image (lc), level => log_threshold + 4);
 								log_indentation_up;
 								
 								get_distance_after_obstacle (point);
@@ -4929,7 +4930,7 @@ package body et_board_ops is
 
 							log (text => "row" & natural'image (r) 
 								 & ": start" & to_string (start_point),
-								 level => log_threshold + 2);
+								 level => log_threshold + 3);
 							
 							fill_row;					
 						end loop;
@@ -4953,7 +4954,7 @@ package body et_board_ops is
 							move_by (start_point, offset);
 
 							log (text => "extra row: start" & to_string (start_point),
-								 level => log_threshold + 2);
+								 level => log_threshold + 3);
 							
 							fill_row;
 						end if;
@@ -5132,12 +5133,12 @@ package body et_board_ops is
 			end query_nets;
 
 			
-		begin -- route_polygons
-			log (text => "route polygons ...", level => log_threshold + 1);
+		begin -- signal_polygons
+			log (text => "signal polygons ...", level => log_threshold + 1);
 			log_indentation_up;
 			update_element (generic_modules, module_cursor, query_nets'access);
 			log_indentation_down;
-		end route_polygons;
+		end signal_polygons;
 
 		
 	begin -- fill_conductor_polygons
@@ -5152,7 +5153,7 @@ package body et_board_ops is
 			all_polygons := true;
 			
 			log_indentation_up;
-			route_polygons;
+			signal_polygons;
 
 			-- CS floating_polygons;
 			-- use class settings of class "default":
@@ -5168,7 +5169,7 @@ package body et_board_ops is
 			all_polygons := false;
 			
 			log_indentation_up;
-			route_polygons;
+			signal_polygons;
 			log_indentation_down;
 			
 		end if;
