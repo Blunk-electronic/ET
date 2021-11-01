@@ -4717,7 +4717,7 @@ package body et_board_ops is
 					net			: in out type_net)
 				is 
 					-- The cursor that points to the polygon being filled:
-					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+					polygon_cursor : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 					
 					-- The width of a fill line:
 					line_width : type_track_width;
@@ -4741,7 +4741,7 @@ package body et_board_ops is
 					-- If an extra row is required, this flag goes true;
 					extra_row : boolean := false;
 					
-					-- Computes the fill lines required after given start point.
+					-- Computes the horizantal fill lines required after given start point.
 					-- Creates fill lines from the left to the right.
 					-- Appends the fill lines to the polygon indicated by
 					-- polygon cursor p:
@@ -4786,9 +4786,9 @@ package body et_board_ops is
 								place			=> BEFORE,
 								net_cursor		=> net_cursor,
 								net_class		=> net_class,
-								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
-								layer			=> element (p).properties.layer,
-								width			=> element (p).width_min,
+								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+								layer			=> element (polygon_cursor).properties.layer,
+								width			=> element (polygon_cursor).width_min,
 								ignore_same_net	=> true,
 								lth				=> log_threshold + 4);
 							begin
@@ -4813,9 +4813,9 @@ package body et_board_ops is
 								place			=> AFTER,
 								net_cursor		=> net_cursor,
 								net_class		=> net_class,
-								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
-								layer			=> element (p).properties.layer,
-								width			=> element (p).width_min,
+								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+								layer			=> element (polygon_cursor).properties.layer,
+								width			=> element (polygon_cursor).width_min,
 								ignore_same_net	=> true,
 								lth				=> log_threshold + 4);
 							begin
@@ -4891,7 +4891,7 @@ package body et_board_ops is
 							-- to the conductor polygon:
 							update_element (
 								container	=> net.route.polygons.solid,
-								position	=> p,
+								position	=> polygon_cursor,
 								process		=> add_lines'access);
 
 							log_indentation_down;
@@ -4961,6 +4961,7 @@ package body et_board_ops is
 					end compute_fill_lines;
 
 
+					-- Deletes all fill lines of the polygon:
 					procedure delete_lines (
 						polygon	: in out type_polygon_conductor_route_solid)
 					is
@@ -4971,14 +4972,14 @@ package body et_board_ops is
 					
 					
 				begin -- route_solid
-					while p /= pac_signal_polygons_solid.no_element loop
+					while polygon_cursor /= pac_signal_polygons_solid.no_element loop
 
 						-- delete all existing fill lines:
-						update_element (net.route.polygons.solid, p, delete_lines'access);
+						update_element (net.route.polygons.solid, polygon_cursor, delete_lines'access);
 
 						-- Get the boundaries of the polygon. From the boundaries we will
 						-- later derive the total height and the lower left corner:
-						boundaries := get_boundaries (element (p), zero);
+						boundaries := get_boundaries (element (polygon_cursor), zero);
 
 						log (text => to_string (boundaries), level => log_threshold + 2);
 
@@ -4986,7 +4987,7 @@ package body et_board_ops is
 						height := get_height (boundaries);
 
 						-- Get the width of the fill lines:
-						line_width := element (p).width_min;
+						line_width := element (polygon_cursor).width_min;
 						
 						-- Since the fill lines overlap slightly the effective
 						-- line width is smaller than line_width. The effective_line_width
@@ -5020,7 +5021,7 @@ package body et_board_ops is
 
 						log_indentation_down;
 
-						next (p);
+						next (polygon_cursor);
 					end loop;
 				end route_solid;
 
