@@ -140,7 +140,7 @@ is
 	-- process_break for further processing.
 	procedure test_line (l : in type_line) is -- CS pass log threshhold
 		b : constant type_break := 
-			get_break_by_line (track, track_dimensions, l, place, lth + 2);
+			get_break_by_line (track, track_dimensions, l, place, log_category, lth + 2);
 	begin
 		--log (text => "test line");
 		
@@ -153,7 +153,7 @@ is
 	-- See procedure test_line for details.
 	procedure test_arc (a : in type_arc) is -- CS pass log threshhold
 		b : constant type_break_double := 
-			get_break_by_arc (track, track_dimensions, a, place, lth + 2);
+			get_break_by_arc (track, track_dimensions, a, place, log_category, lth + 2);
 	begin
 		--log (text => "test arc");
 
@@ -175,7 +175,7 @@ is
 	-- See procedure test_line for details.
 	procedure test_circle (c : in type_circle) is  -- CS pass log threshhold
 		b : constant type_break_double := 
-			get_break_by_circle (track, track_dimensions, c, place, lth + 2);
+			get_break_by_circle (track, track_dimensions, c, place, log_category, lth + 2);
 	begin
 		--log (text => "test circle");
 				
@@ -213,8 +213,10 @@ is
 		
 		-- BOARD OUTLINE
 		procedure query_outline is begin
-			log (text => "probing outline ...", level => lth + 1);
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "probing outline ...", level => lth + 1);
+				log_indentation_up;
+			end if;
 			
 			if module.board.contours.outline.contours.circular then
 				test_circle (module.board.contours.outline.contours.circle);
@@ -222,7 +224,9 @@ is
 				iterate (module.board.contours.outline.contours.segments, query_segment'access);
 			end if;
 
-			log_indentation_down;
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_outline;
 
 		
@@ -232,7 +236,10 @@ is
 			use pac_pcb_cutouts;
 
 			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
-				log_indentation_up;
+
+				if log_category >= HIGH then
+					log_indentation_up;
+				end if;
 				
 				if element (c).contours.circular then
 					--log (text => "circular hole");
@@ -242,19 +249,27 @@ is
 					iterate (element (c).contours.segments, query_segment'access);
 				end if;
 
-				log_indentation_down;
+				if log_category >= HIGH then
+					log_indentation_down;
+				end if;
 			end query_hole;
 			
 		begin -- query_holes
-			log (text => "probing holes ...", level => lth + 1);				
+			if log_category >= HIGH then
+				log (text => "probing holes ...", level => lth + 1);
+			end if;
+			
 			iterate (module.board.contours.holes, query_hole'access);
 		end query_holes;
 
 		
 		-- CONDUCTOR FILL ZONES
 		procedure query_fill_zone is begin
-			log (text => "probing fill zone ...", level => lth + 1);
-			log_indentation_up;
+
+			if log_category >= HIGH then
+				log (text => "probing fill zone ...", level => lth + 1);
+				log_indentation_up;
+			end if;
 			
 			if fill_zone.outline.contours.circular then
 				test_circle (fill_zone.outline.contours.circle);
@@ -262,7 +277,9 @@ is
 				iterate (fill_zone.outline.contours.segments, query_segment'access);
 			end if;
 
-			log_indentation_down;
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_fill_zone;
 
 
@@ -273,7 +290,10 @@ is
 			
 			procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
 				if element (c).layer = layer then
-					log_indentation_up;
+
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
 						
 					if element (c).contours.circular then
 						test_circle (element (c).contours.circle);
@@ -281,12 +301,17 @@ is
 						iterate (element (c).contours.segments, query_segment'access);
 					end if;
 
-					log_indentation_down;
+					if log_category >= HIGH then
+						log_indentation_down;
+					end if;
 				end if;
 			end query_cutout;
 		
 		begin -- query_global_cutouts
-			log (text => "probing global cutout areas ...", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => "probing global cutout areas ...", level => lth + 1);
+			end if;
+			
 			iterate (module.board.conductors.cutouts, query_cutout'access);
 		end query_global_cutouts;
 
@@ -314,8 +339,11 @@ is
 					use et_conductor_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment " & to_string (element (c)), level => lth + 3);
-						log_indentation_up;
+						
+						if log_category >= HIGH then
+							log (text => "segment " & to_string (element (c)), level => lth + 3);
+							log_indentation_up;
+						end if;
 						
 						segment := to_line_segment (element (c));
 
@@ -325,17 +353,24 @@ is
 						test_arc (get_end_cap (segment));
 
 						-- CS procedure test_segment_line (segment)
-						log_indentation_down;
+
+						if log_category >= HIGH then
+							log_indentation_down;
+						end if;
 					end if;
 				end query_line;
 
+				
 				procedure query_arc (c : in pac_conductor_arcs.cursor) is
 					segment : et_conductor_segment.type_conductor_arc_segment;
 					use et_conductor_segment;
 				begin
 					if element (c).layer = layer then
-						log (text => "segment " & to_string (element (c)), level => lth + 3);
-						log_indentation_up;
+						
+						if log_category >= HIGH then
+							log (text => "segment " & to_string (element (c)), level => lth + 3);
+							log_indentation_up;
+						end if;
 						
 						segment := to_arc_segment (element (c));
 
@@ -344,7 +379,9 @@ is
 						test_arc (get_inner_edge (segment));
 						test_arc (get_end_cap (segment));
 
-						log_indentation_down;
+						if log_category >= HIGH then
+							log_indentation_down;
+						end if;
 					end if;
 				end query_arc;
 
@@ -365,7 +402,9 @@ is
 				begin
 					case element (v).category is
 						when THROUGH =>
-							log (text => to_string (element (v)), level => lth + 3);
+							if log_category >= HIGH then
+								log (text => to_string (element (v)), level => lth + 3);
+							end if;
 
 							if is_inner_layer (layer) then
 								test_circle (to_circle (element (v).restring_inner));
@@ -405,19 +444,27 @@ is
 					clearances.append (class_foregin_net.clearance);
 
 					apply_greatest_clearance_to_track (clearances);
-										
-					log_indentation_up;
+
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
+					
 					iterate (element (nf).route.lines, query_line'access);
 					iterate (element (nf).route.arcs, query_arc'access);
 					iterate (element (nf).route.vias, query_via'access);
 					
 					-- CS other objects ... see et_pcb.type_route
-					log_indentation_down;
+
+					if log_category >= HIGH then
+						log_indentation_down;
+					end if;
 				end query_segments_and_vias;
 
 				
 			begin -- query_net
-				log (text => "net " & to_string (key (nf)), level => lth + 2);
+				if log_category >= HIGH then
+					log (text => "net " & to_string (key (nf)), level => lth + 2);
+				end if;
 
 				if ignore_same_net then
 					if net_cursor /= nf then
@@ -430,10 +477,16 @@ is
 
 			
 		begin -- query_tracks
-			log (text => "probing tracks ...", level => lth + 1);
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "probing tracks ...", level => lth + 1);
+				log_indentation_up;
+			end if;
+			
 			iterate (module.nets, query_net'access);
-			log_indentation_down;
+
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_tracks;
 
 
@@ -475,12 +528,14 @@ is
 					pac_text_fab.get_boundaries (element (c).vectors);
 				
 			begin -- query_text
-				log (text => "text:" 
-					 & " P:" & to_string (element (c).position)
-					 & " / L: " & to_string (element (c).layer)
-					 & " / C: " & enclose_in_quotes (to_string (element (c).content)),
-					 level => lth + 2);
-
+				if log_category >= HIGH then
+					log (text => "text:" 
+						& " P:" & to_string (element (c).position)
+						& " / L: " & to_string (element (c).layer)
+						& " / C: " & enclose_in_quotes (to_string (element (c).content)),
+						level => lth + 2);
+				end if;
+				
 				if element (c).layer = layer then
 
 					-- Preselection to improve performance:
@@ -494,8 +549,10 @@ is
 			end query_text;
 
 		begin
-			log (text => "probing vector texts ...", level => lth + 1);
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "probing vector texts ...", level => lth + 1);
+				log_indentation_up;
+			end if;
 
 			apply_greatest_clearance_to_track (clearances_basic);
 
@@ -503,7 +560,10 @@ is
 			move_by (boundaries_track, track_dimensions.offset, true);
 			
 			iterate (module.board.conductors.texts, query_text'access);
-			log_indentation_down;
+
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_texts;
 
 
@@ -715,7 +775,9 @@ is
 						status : type_get_terminal_clearance_result;
 						
 					begin -- query_terminal
-						log (text => "terminal " & to_string (key (c)), level => lth + 4);
+						if log_category >= HIGH then
+							log (text => "terminal " & to_string (key (c)), level => lth + 4);
+						end if;
 						
 						if observe_foreign_nets then
 							
@@ -727,15 +789,19 @@ is
 								declare
 									clearances : pac_distances_positive.list := clearances_basic;
 								begin								
-									log (text => "clearance foregin net " 
-											& to_string (status.clearance),
-										 level => lth + 5);
-								
+									if log_category >= HIGH then
+										log (text => "clearance foregin net " 
+												& to_string (status.clearance),
+											level => lth + 5);
+									end if;
+									
 									clearances.append (status.clearance);
 									apply_greatest_clearance_to_track (clearances);
 								end;
 							else
-								log (text => "not connected", level => lth + 5);
+								if log_category >= HIGH then
+									log (text => "not connected", level => lth + 5);
+								end if;
 								
 								apply_greatest_clearance_to_track (clearances_basic);
 							end if;
@@ -794,13 +860,17 @@ is
 
 			
 			procedure query_device (c : in pac_devices_sch.cursor) is begin
-				log (text => "device " & to_string (key (c)), level => lth + 2);
-				log_indentation_up;
+				if log_category >= HIGH then
+					log (text => "device " & to_string (key (c)), level => lth + 2);
+					log_indentation_up;
+				end if;
 
 				if is_real (c) then
 					model := get_package_model (c);
 
-					log (text => "model " & to_string (model), level => lth + 3);
+					if log_category >= HIGH then
+						log (text => "model " & to_string (model), level => lth + 3);
+					end if;
 					
 					-- locate the package model in the package library:
 					package_cursor := locate_package_model (model);
@@ -808,50 +878,73 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
-					log_indentation_up;
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
+					
 					device_cursor := c;
 					query_package (observe_foreign_nets => true);
-					log_indentation_down;
+
+					if log_category >= HIGH then
+						log_indentation_down;
+					end if;
 				end if;
 
-				log_indentation_down;
+				if log_category >= HIGH then
+					log_indentation_down;
+				end if;
 			end query_device;
 
 			
 			use pac_devices_non_electric;
 			
 			procedure query_device (c : in pac_devices_non_electric.cursor) is begin
-				log (text => "device " & to_string (key (c)), level => lth + 2);
-				log_indentation_up;
+
+				if log_category >= HIGH then
+					log (text => "device " & to_string (key (c)), level => lth + 2);
+					log_indentation_up;
+				end if;
 
 				model := element (c).package_model;
-				log (text => "model " & to_string (model), level => lth + 3);
 
+				if log_category >= HIGH then
+					log (text => "model " & to_string (model), level => lth + 3);
+				end if;
+				
 				-- locate the package model in the package library:
 				package_cursor := locate_package_model (model);
 
 				package_position := element (c).position;
 				package_flipped := element (c).flipped;
 
-				log_indentation_up;
-				query_package (observe_foreign_nets => false);
-				log_indentation_down;
+				if log_category >= HIGH then
+					log_indentation_up;
+				end if;
 				
-				log_indentation_down;
+				query_package (observe_foreign_nets => false);
+
+				if log_category >= HIGH then
+					log_indentation_down;
+					log_indentation_down;
+				end if;
 			end query_device;
 
 			
 		begin
-			log (text => "probing devices ...", level => lth + 1);
-			log_indentation_up;
-
+			if log_category >= HIGH then
+				log (text => "probing devices ...", level => lth + 1);
+				log_indentation_up;
+			end if;
+			
 			-- probe electrical devices:
 			iterate (module.devices, query_device'access);
 
 			-- probe non-electric devices
 			iterate (module.devices_non_electric, query_device'access);
-			
-			log_indentation_down;
+
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_devices;
 		
 			
@@ -944,12 +1037,14 @@ begin -- get_distance
 	
 	case place is
 		when BEFORE =>
-			log (text => "computing distance to obstacle from point" 
-					& to_string (start_point)
-					& " direction" & to_string (direction) & " ...",
-					level => lth);
-
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "computing distance to obstacle from point" 
+						& to_string (start_point)
+						& " direction" & to_string (direction) & " ...",
+						level => lth);
+			
+				log_indentation_up;
+			end if;
 			
 			-- Test whether start_point is suitable to start a track.
 			-- At the given start_point or in its vicinity could be an obstacle already.
@@ -963,21 +1058,25 @@ begin -- get_distance
 				-- the nearest obstacle (to the right of start_point) will finally be
 				-- stored in variable distance_to_obstacle:
 				query_element (module_cursor, query_obstacles'access);
-				
-				log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
+
+				if log_category >= HIGH then
+					log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
 						level => lth);
 				
-				log_indentation_down;
+					log_indentation_down;
+				end if;
 				
 				return (VALID, distance_to_obstacle);
 				
 			else 
 				-- start_point does NOT qualify to start a track
-				
-				log (text => "track not allowed here",
-					level => lth);
 
-				log_indentation_down;
+				if log_category >= HIGH then
+					log (text => "track not allowed here",
+						level => lth);
+
+					log_indentation_down;
+				end if;
 				
 				return (status => INVALID);
 			end if;
@@ -985,12 +1084,14 @@ begin -- get_distance
 
 			
 		when AFTER =>
-			log (text => "computing distance until after obstacles from point" 
+			if log_category >= HIGH then
+				log (text => "computing distance until after obstacles from point" 
 					& to_string (start_point)
 					& " direction" & to_string (direction) & " ...",
 					level => lth);
 
-			log_indentation_up;
+				log_indentation_up;
+			end if;
 
 			-- There can be more than one obstacle. They may overlap in some way.
 			-- So a point must be found after a cluster of obstacles where 
@@ -1003,20 +1104,23 @@ begin -- get_distance
 			case status is
 				when VALID => -- suitable point found
 
-					log (text => "distance until after obstacle:" & to_string (distance_after_obstacle),
-						level => lth);
+					if log_category >= HIGH then
+						log (text => "distance until after obstacle:" & to_string (distance_after_obstacle),
+							level => lth);
 					
-					log_indentation_down;
+						log_indentation_down;
+					end if;
 
 					return (VALID, distance_after_obstacle);
 
 					
 				when INVALID => -- NO suitable point found 
+
+					if log_category >= HIGH then
+						log (text => "no obstacle found", level => lth);
 					
-					log (text => "no obstacle found",
-						level => lth);
-					
-					log_indentation_down;
+						log_indentation_down;
+					end if;
 
 					return (status => INVALID);
 			end case;

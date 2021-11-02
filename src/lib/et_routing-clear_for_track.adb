@@ -120,19 +120,29 @@ is
 		
 		if distance <= zero then 
 			-- start_point is inside segment/via or on the edge of the segment/via
-			log (text => " point is inside", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => " point is inside", level => lth + 1);
+			end if;
+			
 			result := false;
 		else
 			-- start_point is outside the segment/via
-			log (text => " point is outside", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => " point is outside", level => lth + 1);
+			end if;
 			
 			-- the distance of the start point to the border of the segment/via:
 			d := distance - width * 0.5;
 
 			if d >= greatest_clearance then
-				log (text => " point is in safe distance", level => lth + 1);
+				if log_category >= HIGH then
+					log (text => " point is in safe distance", level => lth + 1);
+				end if;
 			else
-				log (text => " point is too close", level => lth + 1);
+				if log_category >= HIGH then
+					log (text => " point is too close", level => lth + 1);
+				end if;
+				
 				result := false;
 			end if;							
 		end if;
@@ -151,35 +161,53 @@ is
 			use et_packages;
 			distance_to_border : type_distance; -- CS rename to distance_to_border
 		begin
-			log (text => "probing fill zone ...", level => lth + 1);
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "probing fill zone ...", level => lth + 1);
+				log_indentation_up;
+			end if;
 
 			if in_polygon_status (fill_zone.outline, start_point).status = INSIDE then
-				log (text => "point is in fill zone", level => lth + 1);
 
+				if log_category >= HIGH then
+					log (text => "point is in fill zone", level => lth + 1);
+				end if;
+				
 				-- the distance of the point to the border of the fill zone:
 				distance_to_border := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-				log (text => "distance to border:" & to_string (distance_to_border),
-					level => lth + 1);
+				if log_category >= HIGH then
+					log (text => "distance to border:" & to_string (distance_to_border),
+						 level => lth + 1);
+				end if;
 				
 				-- the distance of the start point to the border:
 				distance_to_border := distance_to_border - 0.5 * width;
 
 				if distance_to_border >= zero then
-					log (text => "point is in safe distance to border", level => lth + 1);
+					if log_category >= HIGH then
+						log (text => "point is in safe distance to border", level => lth + 1);
+					end if;
+					
 					result := true;
 				else
-					log (text => "point is too close to border", level => lth + 1);
+					if log_category >= HIGH then
+						log (text => "point is too close to border", level => lth + 1);
+					end if;
+					
 					result := false;
 				end if;
 				
 			else
-				log (text => "point is outside fill zone", level => lth + 1);
+				if log_category >= HIGH then
+					log (text => "point is outside fill zone", level => lth + 1);
+				end if;
+				
 				result := false;
 			end if;
 
-			log_indentation_down;
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_fill_zone;
 
 		
@@ -192,38 +220,59 @@ is
 				distance_to_border : type_distance;
 			begin
 				if element (c).layer = layer then
-					log_indentation_up;
+					
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
 						
 					if in_polygon_status (element (c), start_point).status = OUTSIDE then
-						log (text => "point is outside global cutout area", level => lth + 1);
 
+						if log_category >= HIGH then
+							log (text => "point is outside global cutout area", level => lth + 1);
+						end if;
+						
 						-- the distance of the point to the border of the cutout area:
 						distance_to_border := get_absolute (get_shortest_distance (element (c), start_point));
 
-						log (text => " distance to border:" & to_string (distance_to_border),
-							level => lth + 1);
+						if log_category >= HIGH then
+							log (text => " distance to border:" & to_string (distance_to_border),
+								 level => lth + 1);
+						end if;
 						
 						-- the distance of the start point line to the border:
 						distance_to_border := distance_to_border - 0.5 * width;
 
 						if distance_to_border >= zero then
-							log (text => " point is in safe distance to border", level => lth + 1);
+							if log_category >= HIGH then
+								log (text => " point is in safe distance to border", level => lth + 1);
+							end if;
 						else
-							log (text => " point is too close to border", level => lth + 1);
+							if log_category >= HIGH then
+								log (text => " point is too close to border", level => lth + 1);
+							end if;
+							
 							result := false;
 						end if;
 						
 					else
-						log (text => " point is in global cutout area", level => lth + 1);
+						if log_category >= HIGH then
+							log (text => " point is in global cutout area", level => lth + 1);
+						end if;
+						
 						result := false;
 					end if;
-					
-					log_indentation_down;
+
+					if log_category >= HIGH then
+						log_indentation_down;
+					end if;
 				end if;
 			end query_cutout;
 
 		begin
-			log (text => "probing global cutout areas ...", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => "probing global cutout areas ...", level => lth + 1);
+			end if;
+			
 			iterate (module.board.conductors.cutouts, query_cutout'access);
 			-- CS use a loop instead of iterate. if result goes false, there is no need
 			-- to probe other cutouts.
@@ -258,7 +307,11 @@ is
 					begin
 						if element (c).layer = layer then
 							segment_line := to_line_segment (element (c));
-							log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
+
+							if log_category >= HIGH then
+								log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
+							end if;
+							
 							distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
 							test_distance (distance, lth + 4);
 						end if;
@@ -272,7 +325,11 @@ is
 					begin
 						if element (c).layer = layer then
 							segment_arc := to_arc_segment (element (c));
-							log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
+
+							if log_category >= HIGH then
+								log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
+							end if;
+							
 							distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
 							test_distance (distance, lth + 4);
 						end if;
@@ -294,13 +351,19 @@ is
 							else
 								-- the start_point is inside the via
 								result := false;
-								log (text => " point is inside the via", level => lth + 4);
+
+								if log_category >= HIGH then
+									log (text => " point is inside the via", level => lth + 4);
+								end if;
 							end if;							
 						end set_radius;
 						
 					begin -- query_via
 						c.center := element (v).position;
-						log (text => to_string (element (v)), level => lth + 3);
+
+						if log_category >= HIGH then
+							log (text => to_string (element (v)), level => lth + 3);
+						end if;
 						
 						case element (v).category is
 							when THROUGH =>
@@ -335,7 +398,9 @@ is
 
 					
 				begin -- query_segments_and_vias
-					log_indentation_up;
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
 					
 					iterate (
 						lines	=> net.route.lines,
@@ -352,13 +417,17 @@ is
 						process	=> query_via'access,
 						proceed	=> result'access);
 				
-					log_indentation_down;
+					if log_category >= HIGH then
+						log_indentation_down;
+					end if;
 				end query_segments_and_vias;
 
 				
 			begin -- query_net
-				log (text => "net " & to_string (name), level => lth + 2);
-
+				if log_category >= HIGH then
+					log (text => "net " & to_string (name), level => lth + 2);
+				end if;
+				
 				-- Append the clearance of the foregin net and
 				-- select the greatest among the list of clearances:
 				clearances.append (class_foregin_net.clearance);
@@ -376,15 +445,19 @@ is
 
 			
 		begin -- query_tracks
-			log (text => "probing tracks ...", level => lth + 1);
-			log_indentation_up;
+			if log_category >= HIGH then
+				log (text => "probing tracks ...", level => lth + 1);
+				log_indentation_up;
+			end if;
 			
 			while nf /= pac_nets.no_element and result = true loop
 				query_element (nf, query_net'access);
 				next (nf);
 			end loop;
 			
-			log_indentation_down;
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_tracks;
 
 		
@@ -401,7 +474,9 @@ is
 				use pac_conductor_line_segments;
 				distance : type_distance;
 			begin
-				log (text => et_conductor_segment.to_string (element (c)), level => lth + 3);
+				if log_category >= HIGH then
+					log (text => et_conductor_segment.to_string (element (c)), level => lth + 3);
+				end if;
 				
 				-- Now we treat the line of the text like a regular
 				-- line of conductor material:
@@ -424,12 +499,14 @@ is
 					
 					if intersect (start_point_boundaries, text_boundaries) then
 
-						log (text => "overlaps boundaries of text " 
+						if log_category >= HIGH then
+							log (text => "overlaps boundaries of text " 
 								& enclose_in_quotes (to_string (element (c).content)) 
 								& " at" & to_string (element (c).position),
 								level => lth + 2);
 
-						log_indentation_up;
+							log_indentation_up;
+						end if;
 						
 						-- Probe the segments one by one.
 						-- Abort once the result-flag goes false.
@@ -438,16 +515,20 @@ is
 							process		=> query_segment'access,
 							proceed		=> result'access);
 
-						log_indentation_down;
+						if log_category >= HIGH then
+							log_indentation_down;
+						end if;
 					end if;
 				end if;
 			end query_text;
 
 			
 		begin -- query_texts
-			log (text => "probing texts ...", level => lth + 1);
-			log_indentation_up;
-
+			if log_category >= HIGH then
+				log (text => "probing texts ...", level => lth + 1);
+				log_indentation_up;
+			end if;
+			
 			-- Take a copy of the initial circle_around_start_point_init:
 			circle_around_start_point := circle_around_start_point_init;
 
@@ -462,8 +543,10 @@ is
 				texts	=> module.board.conductors.texts,
 				process	=> query_text'access,
 				proceed	=> result'access);
-			
-			log_indentation_down;
+
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_texts;
 
 
@@ -509,7 +592,9 @@ is
 								use pac_conductor_line_segments;
 								distance : type_distance;
 							begin
-								log (text => et_conductor_segment.to_string (element (c)), level => lth + 4);
+								if log_category >= HIGH then
+									log (text => et_conductor_segment.to_string (element (c)), level => lth + 4);
+								end if;
 								
 								-- Now we treat the line of the text like a regular
 								-- line of conductor material:
@@ -544,14 +629,17 @@ is
 							-- compute the conductor segments and probe each of them
 							-- for its distance to the start point: 
 							if intersect (start_point_boundaries, get_boundaries (v_text)) then
-								log (text => "overlaps boundaries of text " 
+
+								if log_category >= HIGH then
+									log (text => "overlaps boundaries of text " 
 										& enclose_in_quotes (to_string (t.content)) 
 										& " at" & to_string (t.position),
 									 level => lth + 3);
 								
+									log_indentation_up;
+								end if;
+								
 								segments := make_segments (v_text, t.line_width);
-
-								log_indentation_up;
 
 								-- Probe the segments one by one.
 								-- Abort once the result-flag goes false.
@@ -560,7 +648,9 @@ is
 									process		=> query_segment'access,
 									proceed		=> result'access);
 
-								log_indentation_down;
+								if log_category >= HIGH then
+									log_indentation_down;
+								end if;
 							end if;
 
 						end query_segments;
@@ -602,7 +692,10 @@ is
 					
 				begin -- query_texts
 					if not is_inner_layer (layer) then
-						log_indentation_up;
+
+						if log_category >= HIGH then
+							log_indentation_up;
+						end if;
 
 						-- Take a copy of the initial circle_around_start_point_init:
 						circle_around_start_point := circle_around_start_point_init;
@@ -625,7 +718,9 @@ is
 							process	=> query_text'access,
 							proceed	=> result'access);
 
-						log_indentation_down;
+						if log_category >= HIGH then
+							log_indentation_down;
+						end if;
 					end if;
 				end query_texts;
 
@@ -729,8 +824,10 @@ is
 						status : type_get_terminal_clearance_result;
 						
 					begin -- query_terminal
-						log (text => "terminal " & to_string (key (c)), level => lth + 4);
-
+						if log_category >= HIGH then
+							log (text => "terminal " & to_string (key (c)), level => lth + 4);
+						end if;
+						
 						if observe_foreign_nets then
 							
 							-- Get the clearance of the connected foreign net
@@ -815,11 +912,17 @@ is
 			
 			procedure query_device (c : in pac_devices_sch.cursor) is begin
 				if is_real (c) then
-					log (text => "device " & to_string (key (c)), level => lth + 2);
-					log_indentation_up;
+
+					if log_category >= HIGH then
+						log (text => "device " & to_string (key (c)), level => lth + 2);
+						log_indentation_up;
+					end if;
 
 					model := get_package_model (c);
-					log (text => "model " & to_string (model), level => lth + 3);
+
+					if log_category >= HIGH then
+						log (text => "model " & to_string (model), level => lth + 3);
+					end if;
 					
 					-- locate the package model in the package library:
 					package_cursor := locate_package_model (model);
@@ -827,12 +930,17 @@ is
 					package_position := element (c).position;
 					package_flipped := element (c).flipped;
 
-					log_indentation_up;
+					if log_category >= HIGH then
+						log_indentation_up;
+					end if;
+					
 					device_cursor := c;
 					query_package (observe_foreign_nets => true);
-					log_indentation_down;
-					
-					log_indentation_down;					
+
+					if log_category >= HIGH then
+						log_indentation_down;
+						log_indentation_down;					
+					end if;
 				end if;
 			end query_device;
 
@@ -840,30 +948,43 @@ is
 			use pac_devices_non_electric;
 			
 			procedure query_device (c : in pac_devices_non_electric.cursor) is begin
-				log (text => "device " & to_string (key (c)), level => lth + 2);
-				log_indentation_up;
+
+				if log_category >= HIGH then
+					log (text => "device " & to_string (key (c)), level => lth + 2);
+					log_indentation_up;
+				end if;
 
 				model := element (c).package_model;
-				log (text => "model " & to_string (model), level => lth + 3);
 
+				if log_category >= HIGH then
+					log (text => "model " & to_string (model), level => lth + 3);
+				end if;
+				
 				-- locate the package model in the package library:
 				package_cursor := locate_package_model (model);
 
 				package_position := element (c).position;
 				package_flipped := element (c).flipped;
 
-				log_indentation_up;
-				query_package (observe_foreign_nets => false);
-				log_indentation_down;
+				if log_category >= HIGH then
+					log_indentation_up;
+				end if;
 				
-				log_indentation_down;
+				query_package (observe_foreign_nets => false);
+
+				if log_category >= HIGH then
+					log_indentation_down;
+					log_indentation_down;
+				end if;
 			end query_device;
 
 			
 		begin
-			log (text => "probing devices ...", level => lth + 1);
-			log_indentation_up;
-
+			if log_category >= HIGH then
+				log (text => "probing devices ...", level => lth + 1);
+				log_indentation_up;
+			end if;
+			
 			-- probe electrical devices. abort when result is false:
 			iterate (
 				devices	=> module.devices,
@@ -875,8 +996,10 @@ is
 				devices => module.devices_non_electric,
 				process => query_device'access,
 				proceed	=> result'access);
-			
-			log_indentation_down;
+
+			if log_category >= HIGH then
+				log_indentation_down;
+			end if;
 		end query_devices;
 
 
@@ -929,58 +1052,73 @@ begin -- clear_for_track
 
 
 	
-
-	log (text => "----CLEAR FOR TRACK QUERY BEGIN-----", level => lth);
-	log (text => "probing whether point" & to_string (start_point) 
+	if log_category >= HIGH then
+		log (text => "----CLEAR FOR TRACK QUERY BEGIN-----", level => lth);
+		log (text => "probing whether point" & to_string (start_point) 
 			& " qualifies to start a track of width" & to_string (width)
 			& " in layer " & to_string (layer),
 			level => lth);
 
-	-- CS write the net name or "freetrack" in log message
+		-- CS write the net name or "freetrack" in log message
 	
-	log_indentation_up;
+		log_indentation_up;
+	end if;
+	
 
 	-- The first an basic test is to figure out whether the point is on
 	-- board and not inside a hole. If both conditions are true, then
 	-- other objects will be probed:
-	if on_board (module_cursor, start_point, lth + 1) then
+	if on_board (module_cursor, start_point, log_category, lth + 1) then
 
 		-- the distance of the point to the board edge (incl. holes):
 		distance_to_edge := get_absolute (
-			get_distance_to_edge (module_cursor, start_point, lth + 1));
+			get_distance_to_edge (module_cursor, start_point, log_category, lth + 1));
 
-		log (text => " distance point to board edge:" & to_string (distance_to_edge),
-			level => lth + 1);
+		if log_category >= HIGH then
+			log (text => " distance point to board edge:" & to_string (distance_to_edge),
+				level => lth + 1);
+		end if;
 		
 		-- the distance of the conductor to the board edge:
 		distance_to_edge := distance_to_edge - 0.5 * width;
 
-		log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
-			level => lth + 1);
+		if log_category >= HIGH then
+			log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
+				 level => lth + 1);
+		end if;
 
 		if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
-			log (text => " point is in safe distance to board edge", level => lth + 1);
 
+			if log_category >= HIGH then
+				log (text => " point is in safe distance to board edge", level => lth + 1);
+			end if;
+			
 			-- probe other objects:
 			query_element (module_cursor, query_module'access);
 		else
-			log (text => " point is too close to board edge", level => lth + 1);			
+			if log_category >= HIGH then
+				log (text => " point is too close to board edge", level => lth + 1);			
+			end if;
 		end if;
 			
 	else
-		log (text => " point is not in board area", level => lth + 1);			
+		if log_category >= HIGH then
+			log (text => " point is not in board area", level => lth + 1);
+		end if;
 	end if;
 
-	
-	if result = TRUE then
-		log (text => "point accepted", level => lth);
-	else
-		log (text => "point not accepted", level => lth);
-	end if;
-	
-	log_indentation_down;
 
-	log (text => "----CLEAR FOR TRACK QUERY END-----", level => lth);
+	if log_category >= HIGH then
+		if result = TRUE then
+			log (text => "point accepted", level => lth);
+		else
+			log (text => "point not accepted", level => lth);
+		end if;
+		
+		log_indentation_down;
+
+		log (text => "----CLEAR FOR TRACK QUERY END-----", level => lth);
+	end if;
 	
 	return result;
 end clear_for_track;

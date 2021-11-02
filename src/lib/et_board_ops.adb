@@ -5150,7 +5150,8 @@ package body et_board_ops is
 			
 			log (text => "module " 
 				& enclose_in_quotes (to_string (key (module_cursor)))
-				& " filling all conductor polygons ...",
+				& " filling all conductor polygons. Log category " 
+				& to_string (log_category) & " ...",
 				level => log_threshold);
 
 			all_polygons := true;
@@ -5166,7 +5167,8 @@ package body et_board_ops is
 		else
 			log (text => "module " 
 				& enclose_in_quotes (to_string (key (module_cursor)))
-				& " filling conductor polygons of dedicated nets ...",
+				& " filling conductor polygons of dedicated nets. Log category " 
+				& to_string (log_category) & " ...",
 				level => log_threshold);
 
 			all_polygons := false;

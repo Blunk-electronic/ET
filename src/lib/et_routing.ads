@@ -110,6 +110,7 @@ package et_routing is
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
+		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return type_distance_polar;
 	
@@ -121,6 +122,7 @@ package et_routing is
 	function on_board (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
+		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return boolean;
 
@@ -179,11 +181,12 @@ package et_routing is
 	-- before or after the obstacle.
 	-- This function assumes the travel direction of the fill line is zero.
 	function get_break (
-		init		: in type_distance; -- the start point of the search
-		place		: in type_place; -- before/after
-		obstacle	: in type_obstacle;
-		clearance	: in type_distance_positive; -- the clearance to the obstacle
-		lth			: in type_log_level) 
+		init			: in type_distance; -- the start point of the search
+		place			: in type_place; -- before/after
+		obstacle		: in type_obstacle;
+		clearance		: in type_distance_positive; -- the clearance to the obstacle
+		log_category	: in type_log_category;
+		lth				: in type_log_level) 
 		return type_distance;
 
 	
@@ -209,9 +212,10 @@ package et_routing is
 	function get_break_by_line (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		line	: in type_line;
-		place	: in type_place;
-		lth		: in type_log_level)
+		line				: in type_line;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break;
 
 	
@@ -238,9 +242,10 @@ package et_routing is
 	function get_break_by_arc (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		arc		: in type_arc;
-		place	: in type_place;
-		lth		: in type_log_level)
+		arc					: in type_arc;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break_double;
 
 	-- Returns the point where a track is broken/interrupted
@@ -255,9 +260,10 @@ package et_routing is
 	function get_break_by_circle (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		circle	: in type_circle;
-		place	: in type_place;
-		lth		: in type_log_level)
+		circle				: in type_circle;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break_double;
 	
 

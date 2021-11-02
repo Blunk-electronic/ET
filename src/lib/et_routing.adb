@@ -87,6 +87,7 @@ package body et_routing is
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
+		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return type_distance_polar
 	is
@@ -105,35 +106,54 @@ package body et_routing is
 		is
 			use et_packages;
 			use pac_pcb_cutouts;
+			
 			procedure query_hole (c : pac_pcb_cutouts.cursor) is begin
 				update (get_shortest_distance (element (c), point));
 			end query_hole;
 			
 		begin
 			-- test board outline:
-			log (text => "probing outline ...", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => "probing outline ...", level => lth + 1);
+			end if;
+			
 			result := get_shortest_distance (module.board.contours.outline, point);
 
-			log (text => " distance to outline" & to_string (get_absolute (result)),
-				 level => lth + 1);
+			if log_category >= HIGH then
+				log (text => " distance to outline" & to_string (get_absolute (result)),
+					 level => lth + 1);
+			end if;
 			
 			-- test holes in board (if there are any):
 			if not is_empty (module.board.contours.holes) then
-				log (text => "probing holes...", level => lth + 1);			
+
+				if log_category >= HIGH then
+					log (text => "probing holes...", level => lth + 1);			
+				end if;
+				
 				iterate (module.board.contours.holes, query_hole'access);
 
-				log (text => " distance to hole" & to_string (get_absolute (result)),
-					 level => lth + 1);
+				if log_category >= HIGH then
+					log (text => " distance to hole" & to_string (get_absolute (result)),
+						 level => lth + 1);
+				end if;
 			end if;
 		end query_module;
 
 	begin
-		log (text => "computing distance of point" & to_string (point) 
-			 & " to board edge ...", level => lth);
+		if log_category >= HIGH then
+			log (text => "computing distance of point" & to_string (point) 
+				& " to board edge ...", level => lth);
 
-		log_indentation_up;
+			log_indentation_up;
+		end if;
+		
 		query_element (module_cursor, query_module'access);	
-		log_indentation_down;
+
+		if log_category >= HIGH then
+			log_indentation_down;
+		end if;
+		
 		return result;
 	end get_distance_to_edge;
 	
@@ -141,7 +161,8 @@ package body et_routing is
 	function on_board (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
-		lth				: in type_log_level)
+		log_category	: in type_log_category;
+		lth				: in type_log_level)		
 		return boolean
 	is
 		result : boolean := true;
@@ -166,7 +187,10 @@ package body et_routing is
 				while c /= pac_pcb_cutouts.no_element loop
 					if in_polygon_status (element (c), point).status = INSIDE then
 
-						log (text => "point is in a hole", level => lth + 1);
+						if log_category >= HIGH then
+							log (text => "point is in a hole", level => lth + 1);
+						end if;
+						
 						result := false;
 						
 						exit; -- no need to test other holes
@@ -175,31 +199,44 @@ package body et_routing is
 					next (c);
 				end loop;
 			end query_holes;
+
 			
 		begin -- query_module
-			log (text => "probing outline ...", level => lth + 1);
+			if log_category >= HIGH then
+				log (text => "probing outline ...", level => lth + 1);
+			end if;
+			
 			query_outline;
 
 			if result = true then -- point is inside board outlines
-				log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
+				if log_category >= HIGH then
+					log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
+				end if;
+				
 				query_holes;
 			end if;
 		end query_module;
 
+		
 	begin -- on_board
-		log (text => "probing whether point" & to_string (point) 
+		if log_category >= HIGH then
+			log (text => "probing whether point" & to_string (point) 
 			 & " is on board ...", level => lth);
 
-		log_indentation_up;
-		query_element (module_cursor, query_module'access);
-
-		if result = true then
-			log (text => "point is on board", level => lth);
-		else
-			log (text => "point is not on board", level => lth);
+			log_indentation_up;
 		end if;
 		
-		log_indentation_down;
+		query_element (module_cursor, query_module'access);
+
+		if log_category >= HIGH then
+			if result = true then
+				log (text => "point is on board", level => lth);
+			else
+				log (text => "point is not on board", level => lth);
+			end if;
+			
+			log_indentation_down;
+		end if;
 		return result;
 	end on_board;
 
@@ -279,11 +316,12 @@ package body et_routing is
 
 	
 	function get_break (
-		init		: in type_distance;
-		place		: in type_place;
-		obstacle	: in type_obstacle;
-		clearance	: in type_distance_positive;
-		lth			: in type_log_level) 
+		init			: in type_distance;
+		place			: in type_place;
+		obstacle		: in type_obstacle;
+		clearance		: in type_distance_positive;
+		log_category	: in type_log_category;
+		lth				: in type_log_level) 
 		return type_distance
 	is
 		-- Build a circle that models the cap of the track.
@@ -301,21 +339,22 @@ package body et_routing is
 		max_iterations : constant positive := 2000; -- CS increase if necessary
 
 	begin		
-		log (text => "starting numerical search ...", level => lth);
-		log_indentation_up;
+		if log_category = INSANE then
+			log (text => "starting numerical search ...", level => lth);
+			log_indentation_up;
 
-		case obstacle.shape is
-			when LINE =>
-				log (text => to_string (place) & " obstacle " & to_string (obstacle.line), level => lth + 1);
-			when ARC =>
-				log (text => to_string (place) & " obstacle " & to_string (obstacle.arc), level => lth + 1);
-			when CIRCLE =>
-				log (text => to_string (place) & " obstacle " & to_string (obstacle.circle), level => lth + 1);
-		end case;
+			case obstacle.shape is
+				when LINE =>
+					log (text => to_string (place) & " obstacle " & to_string (obstacle.line), level => lth + 1);
+				when ARC =>
+					log (text => to_string (place) & " obstacle " & to_string (obstacle.arc), level => lth + 1);
+				when CIRCLE =>
+					log (text => to_string (place) & " obstacle " & to_string (obstacle.circle), level => lth + 1);
+			end case;
 
-		log (text => "clearance: " & to_string (clearance), level => lth + 1);
-		log (text => "init     : " & to_string (init), level => lth + 1);
-		
+			log (text => "clearance: " & to_string (clearance), level => lth + 1);
+			log (text => "init     : " & to_string (init), level => lth + 1);
+		end if;
 		
 		-- Set the inital position of the cap:
 		case place is
@@ -326,7 +365,9 @@ package body et_routing is
 				c.center := type_point (set (init + c.radius, zero));
 		end case;
 
-		log (text => "cap start: " & to_string (c), level => lth + 1);
+		if log_category = INSANE then
+			log (text => "cap start: " & to_string (c), level => lth + 1);
+		end if;
 
 		
 		for i in 1 .. max_iterations loop
@@ -343,7 +384,9 @@ package body et_routing is
 					d_cap_to_obstacle := get_distance (c, obstacle.circle);
 			end case;
 					
-			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
+			if log_category = INSANE then
+				log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
+			end if;
 			
 			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
 
@@ -351,8 +394,11 @@ package body et_routing is
 			-- Cancel this loop once the distance is sufficiently small.
 			-- Otherwise take half of the distance and move cap to new position:
 			if d_cap_to_obstacle_abs < fab_tolerance then
-				log (text => " break point found after" & positive'image (i) & " iterations",
-					level => lth + 1);
+				if log_category = INSANE then
+					log (text => " break point found after" & positive'image (i) & " iterations",
+						level => lth + 1);
+				end if;
+				
 				exit;
 			else
 				step := d_cap_to_obstacle_abs * 0.5;
@@ -387,7 +433,10 @@ package body et_routing is
 			end if;
 		end loop;
 
-		log_indentation_down;
+
+		if log_category = INSANE then
+			log_indentation_down;
+		end if;
 		
 		return get_x (c.center);
 	end get_break;
@@ -396,9 +445,10 @@ package body et_routing is
 	function get_break_by_line (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		line	: in type_line;
-		place	: in type_place;
-		lth		: in type_log_level)
+		line				: in type_line;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break
 	is
 		-- the clearance between center of cap and line:
@@ -455,13 +505,16 @@ package body et_routing is
 
 			use pac_functions_distance;
 		begin
-			log_indentation_up;
+			if log_category = INSANE then
+				log_indentation_up;
 
 			--log (text => "line " & to_string (line_tmp) 
 				 --& " intersects center of track at" & to_string (i_center.intersection.point)
 				 --& " angle" & to_string (i_center.intersection.angle),
 				 --level => lth + 2);
 
+			end if;
+			
 			-- clearance is the distance from center of the cap perpendicular to the line.
 			--spacing := type_distance (round (
 				--d_fine	=> type_distance_positive (float (clearance) / cos (angle, float (units_per_cycle))),
@@ -486,15 +539,20 @@ package body et_routing is
 				when AFTER =>
 					bp := type_point (set (to_distance (get_x (i_center.intersection.vector)) + spacing, zero));
 			end case;
-			
-			log_indentation_down;
+
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end full_intersection;
-			
+
+		
 	begin -- get_break_by_line
 		if bi.exists then -- line and track boundaries do intersect in some way
 
-			log (text => "break by " & to_string (line), level => lth);
-			log_indentation_up;
+			if log_category = INSANE then
+				log (text => "break by " & to_string (line), level => lth);
+				log_indentation_up;
+			end if;
 
 			--log (text => "track " & to_string (track_dimensions.boundaries));
 			--log (text => "line  " & to_string (line_boundaries));
@@ -502,16 +560,21 @@ package body et_routing is
 			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				-- The candidate line intersects the upper and lower edge of the track.
 
-				log (text => "line intersects track upper and lower edge", level => lth + 1);
-		
+				if log_category = INSANE then
+					log (text => "line intersects track upper and lower edge", level => lth + 1);
+				end if;
+				
 				full_intersection;
 				-- bp is now set
 
 			else
 				-- We have a partial intersection.			
 				-- The candidate line intersects only one edge or none at all.
-				log (text => "line intersects track partially", level => lth + 1);
-				log_indentation_up;
+
+				if log_category = INSANE then
+					log (text => "line intersects track partially", level => lth + 1);
+					log_indentation_up;
+				end if;
 				
 				case place is
 					when BEFORE =>
@@ -527,17 +590,22 @@ package body et_routing is
 
 				-- start the numerical search for the break point:
 				bp := type_point (set (get_break (
-						init		=> start_point,
-						place		=> place,
-						obstacle	=> (et_geometry.LINE, line_tmp),
-						clearance	=> clearance,
-						lth			=> lth + 1),
-						zero));
+					init			=> start_point,
+					place			=> place,
+					obstacle		=> (et_geometry.LINE, line_tmp),
+					clearance		=> clearance,
+					log_category	=> log_category,
+					lth				=> lth + 1),
+					zero));
 
-				log_indentation_down;
+				if log_category = INSANE then
+					log_indentation_down;
+				end if;
 			end if;
 
-			log_indentation_down;
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end if;
 
 		--bp := type_point (round (bp));
@@ -555,8 +623,10 @@ package body et_routing is
 			
 			break_exists := true;
 
-			log (text => " break point " & type_place'image (place) & " line:" & to_string (bp),
-				level => lth + 2);
+			if log_category = INSANE then
+				log (text => " break point " & type_place'image (place) & " line:" & to_string (bp),
+					 level => lth + 2);
+			end if;
 		end if;
 
 		
@@ -617,6 +687,7 @@ package body et_routing is
 		bp1					: in out type_point;
 		bp2					: in out type_point;
 		break_count			: in out type_break_count;
+		log_category		: in type_log_category;
 		lth					: in type_log_level)
 	is
 		arc_boundaries : type_boundaries;
@@ -628,9 +699,11 @@ package body et_routing is
 		-- Loop in collection of arc segments (it is an array of arcs):
 		for i in arcs'first .. arcs'last loop
 
-			-- log the candidate arc:
-			log (text => "fragment" & natural'image (i) & ": "
-				& to_string (arcs (i)), level => lth);
+			if log_category = INSANE then
+				-- log the candidate arc:
+				log (text => "fragment" & natural'image (i) & ": "
+					& to_string (arcs (i)), level => lth);
+			end if;
 			
 			-- Get the boundaries of the candidate arc:
 			arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
@@ -660,11 +733,12 @@ package body et_routing is
 					end case;
 
 					x_pre := get_break (
-						init		=> start_point,
-						place		=> place,
-						obstacle	=> (et_geometry.ARC, arcs (i)),
-						clearance	=> clearance,
-						lth			=> lth + 1);
+						init			=> start_point,
+						place			=> place,
+						obstacle		=> (et_geometry.ARC, arcs (i)),
+						clearance		=> clearance,
+						log_category	=> log_category,
+						lth				=> lth + 1);
 					
 					-- The break must be after the start of the track.
 					-- Otherwise the break is ignored.
@@ -693,9 +767,10 @@ package body et_routing is
 				rotate_to (bp1, track_dimensions.direction);
 				move_by (bp1, track_dimensions.offset);
 
-				log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+				if log_category = INSANE then
+					log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
 						level => lth + 2);
-
+				end if;
 				
 			when 2 =>
 				x_cursor := x_values.first;					
@@ -708,14 +783,18 @@ package body et_routing is
 				rotate_to (bp1, track_dimensions.direction);
 				move_by (bp1, track_dimensions.offset);
 
-				log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-						level => lth + 2);
+				if log_category = INSANE then
+					log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+						 level => lth + 2);
+				end if;
 
 				rotate_to (bp2, track_dimensions.direction);
 				move_by (bp2, track_dimensions.offset);
-				
-				log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
-					level => lth + 2);
+
+				if log_category = INSANE then
+					log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
+						 level => lth + 2);
+				end if;
 
 		end case;
 	end set_break_points;
@@ -724,9 +803,10 @@ package body et_routing is
 	function get_break_by_arc (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		arc		: in type_arc;
-		place	: in type_place;
-		lth		: in type_log_level)
+		arc					: in type_arc;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break_double
 	is
 		-- the clearance between center of cap and arc:
@@ -775,15 +855,19 @@ package body et_routing is
 		-- The arc must be split in 2 or 3 smaller arcs. Each of them
 		-- will then be treated separately.
 		procedure split is begin
-			log (text => "splitting of arc required", level => lth + 1);
-			log_indentation_up;
+			if log_category = INSANE then
+				log (text => "splitting of arc required", level => lth + 1);
+				log_indentation_up;
+			end if;
 			
 			set_break_points (
 				track_dimensions, clearance, place, 
 				split_arc (arc_tmp), -- the arc is split here
-				bp1, bp2, break_count, lth + 2);
+				bp1, bp2, break_count, log_category, lth + 2);
 
-			log_indentation_down;
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end split;
 		
 		
@@ -793,8 +877,10 @@ package body et_routing is
 			-- the place along the x-axis where the search for the break is to begin:
 			start_point : type_distance;
 		begin
-			log (text => "using boundaries of whole overlapping area", level => lth + 1);
-			log_indentation_up;
+			if log_category = INSANE then
+				log (text => "using boundaries of whole overlapping area", level => lth + 1);
+				log_indentation_up;
+			end if;
 			
 			case place is
 				when BEFORE =>
@@ -809,11 +895,12 @@ package body et_routing is
 			end case;
 
 			bp1 := type_point (set (get_break (
-				init		=> start_point,
-				place		=> place,
-				obstacle	=> (et_geometry.ARC, arc_tmp),
-				clearance	=> clearance,
-				lth			=> lth + 2),
+				init			=> start_point,
+				place			=> place,
+				obstacle		=> (et_geometry.ARC, arc_tmp),
+				clearance		=> clearance,
+				log_category	=> log_category,
+				lth				=> lth + 2),
 				zero));
 
 			-- The computed break point must be after the start of the track.
@@ -826,21 +913,27 @@ package body et_routing is
 				move_by (bp1, track_dimensions.offset);
 
 				break_count := 1;
-
-				log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
-					level => lth + 2);
+				
+				if log_category = INSANE then
+					log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
+						 level => lth + 2);
+				end if;
 			end if;
 
-			log_indentation_down;
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end use_overlap_area;
 		
 		
 	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
 
-			log (text => "break by " & to_string (arc), level => lth);
-			log_indentation_up;
-
+			if log_category = INSANE then
+				log (text => "break by " & to_string (arc), level => lth);
+				log_indentation_up;
+			end if;
+			
 			-- The number of intersections with the arc determines
 			-- how to proceed:
 			case length (x_values_pre) is
@@ -860,8 +953,10 @@ package body et_routing is
 					then
 						use_overlap_area;
 					else
-						log (text => "boundaries of arc are before start of track -> arc skipped",
-							 level => lth);
+						if log_category = INSANE then
+							log (text => "boundaries of arc are before start of track -> arc skipped",
+								 level => lth);
+						end if;
 					end if;
 
 				when 1..2 =>
@@ -883,8 +978,10 @@ package body et_routing is
 							use_overlap_area;
 						end if;
 					else
-						log (text => "all intersections are before start of track -> arc skipped",
-							level => lth);
+						if log_category = INSANE then
+							log (text => "all intersections are before start of track -> arc skipped",
+								 level => lth);
+						end if;
 					end if;
 				
 				when 3..4 =>
@@ -893,8 +990,10 @@ package body et_routing is
 
 				when others => raise constraint_error; -- CS should never happen
 			end case;
-			
-			log_indentation_down;
+
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end if;
 
 
@@ -909,9 +1008,10 @@ package body et_routing is
 	function get_break_by_circle (
 		track				: in type_track;
 		track_dimensions	: in type_track_dimensions;
-		circle	: in type_circle;
-		place	: in type_place;
-		lth		: in type_log_level)
+		circle				: in type_circle;
+		place				: in type_place;
+		log_category		: in type_log_category;
+		lth					: in type_log_level)
 		return type_break_double
 	is
 		-- the clearance between center of cap and arc:
@@ -960,9 +1060,11 @@ package body et_routing is
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
 
-			log (text => "break by " & to_string (circle), level => lth);
-			log_indentation_up;
-
+			if log_category = INSANE then
+				log (text => "break by " & to_string (circle), level => lth);
+				log_indentation_up;
+			end if;
+			
 			-- The number of intersections with the arc determines
 			-- how to proceed:
 			-- CS: see get_break_by_arc for possible improvements here.
@@ -990,10 +1092,13 @@ package body et_routing is
 					then
 						-- The search for the break point (before or after) can be 
 						-- done by means of the boundaries of the whole overlapping area.
-						log (text => "using boundaries of whole overlapping area",
-							 level => lth + 1);
+
+						if log_category = INSANE then
+							log (text => "using boundaries of whole overlapping area",
+								level => lth + 1);
 						
-						log_indentation_up;
+							log_indentation_up;
+						end if;
 						
 						case place is
 							when BEFORE =>
@@ -1008,11 +1113,12 @@ package body et_routing is
 						end case;
 
 						bp1 := type_point (set (get_break (
-							init		=> start_point,
-							place		=> place,
-							obstacle	=> (et_geometry.CIRCLE, circle_tmp),
-							clearance	=> clearance,
-							lth			=> lth + 2),
+							init			=> start_point,
+							place			=> place,
+							obstacle		=> (et_geometry.CIRCLE, circle_tmp),
+							clearance		=> clearance,
+							log_category	=> log_category,
+							lth				=> lth + 2),
 							zero));
 
 						-- The computed break point must be after the start of the track.
@@ -1026,14 +1132,20 @@ package body et_routing is
 
 							break_count := 1;
 
-							log (text => "break point " & type_place'image (place) & " circle:" & to_string (bp1),
-								level => lth + 2);
+							if log_category = INSANE then
+								log (text => "break point " & type_place'image (place) & " circle:" & to_string (bp1),
+									 level => lth + 2);
+							end if;
 						end if;
 
-						log_indentation_down;
+						if log_category = INSANE then
+							log_indentation_down;
+						end if;
 					else
-						log (text => "boundaries of circle before start of track -> circle skipped",
-							 level => lth);
+						if log_category = INSANE then
+							log (text => "boundaries of circle before start of track -> circle skipped",
+								 level => lth);
+						end if;
 					end if;
 
 					
@@ -1041,22 +1153,28 @@ package body et_routing is
 					-- The circle intersects the track in 4 points.
 					-- So the circle must be split in 2 arcs. Each arc
 					-- will then be treated separately.
-					log (text => "splitting of circle required", level => lth + 1);
-					log_indentation_up;
+					if log_category = INSANE then
+						log (text => "splitting of circle required", level => lth + 1);
+						log_indentation_up;
+					end if;
 					
 					-- split the circle in 2 arcs:
 					set_break_points (
 						track_dimensions, clearance, place, 
 						split_circle (circle_tmp), -- the circle is split here
-						bp1, bp2, break_count, lth + 2);
+						bp1, bp2, break_count, log_category, lth + 2);
 
-					log_indentation_down;
+					if log_category = INSANE then
+						log_indentation_down;
+					end if;
 					
 				when others =>
 					raise constraint_error; -- CS useful message
 			end case;
-			
-			log_indentation_down;
+
+			if log_category = INSANE then
+				log_indentation_down;
+			end if;
 		end if;
 
 		
