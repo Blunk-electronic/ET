@@ -46,6 +46,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.hashed_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
@@ -458,7 +459,26 @@ package et_devices is
 		return type_rotated_placeholders;
 
 
+
+	--function hash_device_model (
+		--model	: in pac_device_model_file.bounded_string)
+		--return hash_type;
+
+	--function equivalent_models (
+		--d1, d2 : in type_device_lib)
+		--return boolean;
+
+	--subtype type_t is type_device_lib (PCB);
 	
+	--package pac_devices_lib2 is new hashed_maps (
+		--key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
+		--element_type	=> type_t,
+		--hash			=> hash_device_model,
+		--equivalent_keys	=> pac_device_model_file."=",
+		--"="				=> equivalent_models);
+
+	-- https://github.com/PiEqThree/Ada_Hash_Map/blob/main/main.adb
+
 	
 	package pac_devices_lib is new indefinite_ordered_maps (
 		key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev

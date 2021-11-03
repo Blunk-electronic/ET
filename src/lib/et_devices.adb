@@ -36,6 +36,7 @@
 --
 
 with ada.strings; 				use ada.strings;
+--with ada.strings.hash;
 with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
@@ -702,6 +703,27 @@ package body et_devices is
 	end rotate_placeholders;
 
 
+
+
+	--function hash_device_model (
+		--model	: in pac_device_model_file.bounded_string)
+		--return hash_type
+	--is 
+	--begin
+		--return ada.strings.hash (to_string (model));
+	--end hash_device_model;
+
+
+	--function equivalent_models (
+		--d1, d2 : in type_device_lib)
+		--return boolean
+	--is begin
+		--return d1 = d2;
+	--end equivalent_models;
+
+	
+
+	
 	function provides_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
