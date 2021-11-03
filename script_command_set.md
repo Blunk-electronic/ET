@@ -684,14 +684,20 @@ board demo set polygon thermal width 0.2
 ```
 board demo set polygon thermal gap 0.33
 ```
+
+When filling polygons a lot of logging data mey be generated.
+With this command the verbosity of logging can be set.
+Default is NORMAL.
 ```
-board led_driver route freetrack 1 polygon line 0 0 100 0 line 100 0 100 100 
-arc 50 100 100 100 0 100 ccw line 0 100 0 0
+board demo set polygon log HIGH # NORMAL, HIGH, INSANE
 ```
-Notes on syntax:
-Line: start x/y, end x/y
-Arc: center x/y, start x/y, end x/y, direction
-Circle: center x/y, radius
+
+
+
+Drawing the polygon outline:
+```
+board demo route net gnd 1 polygon line 0 0 line 50 0 line 50 50 line 0 50
+```
 
 
 <!--Changing width. CS: Not implemented yet.
@@ -746,9 +752,19 @@ board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, cr
 #### Polygons / Fill Zones
 Commands to set basic properties: (see section freetracks)
 ```
-board led_driver route net reset_n 1 polygon line 0 0 100 0 line 100 0 100 100 
-arc 50 100 100 100 0 100 ccw line 0 100 0 0
+board demo route net gnd 1 polygon line 0 0 line 50 0 line 50 50 line 0 50
 ```
+
+Fill all polygons:
+```
+board demo fill polygon
+```
+
+Fill polygons that are connected with certains nets:
+```
+board demo fill polygon GND P3V3
+```
+
 
 
 ##### Via Restring
