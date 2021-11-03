@@ -1807,6 +1807,10 @@ is
 
 -- ROUTE / TRACK / POLYGON
 
+
+	polygon_log_category : type_log_category := log_category_default;
+	
+
 	-- Applies to polygons (or fill zones) in conductor layers only.
 	-- Parses a command like "board demo set polygon fill solid/hatched"
 	-- or "board demo set polygon isolaton 0.4" and sets the value
@@ -1828,6 +1832,8 @@ is
 		kw_connection	: constant string := "connection";
 		kw_thermal		: constant string := "thermal";
 		kw_gap			: constant string := "gap";
+
+		kw_log			: constant string := "log";
 		
 		use pac_generic_modules;
 		use et_schematic;
@@ -1842,8 +1848,9 @@ is
 				& enclose_in_quotes (kw_priority) & comma
 				& enclose_in_quotes (kw_hatching) & comma
 				& enclose_in_quotes (kw_thermal) & comma
-				& enclose_in_quotes (kw_easing) & " or "
-				& enclose_in_quotes (kw_isolation) 
+				& enclose_in_quotes (kw_easing) & comma
+				& enclose_in_quotes (kw_isolation) & " or "
+				& enclose_in_quotes (kw_log) 
 				& " after keyword " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
 
@@ -1954,11 +1961,16 @@ is
 				-- board demo set polygon connection thermal/solid
 				elsif f (5) = kw_connection then
 					update_element (generic_modules, module_cursor, set_connection'access);
-					
+
+				-- board demo set polygon log NORMAL/HIGH/INSANE
+				elsif f (5) = kw_log then
+					polygon_log_category := to_log_category (f (6));
+					log (text => "LOGCAT " & to_string (polygon_log_category));
 				else
 					expect_keywords;
 				end if;
 
+				
 			when 7 =>
 				-- board demo set polygon easing style none/chamfer/fillet
 				if f (5) = kw_easing then
@@ -2017,6 +2029,7 @@ is
 							& " after keyword " & enclose_in_quotes (kw_thermal) & " !";
 					end if;
 
+					
 				else
 					expect_keywords;
 				end if;
@@ -2027,6 +2040,7 @@ is
 				
 		end case;
 	end set_polygon_properties;
+
 	
 	type type_track_shape is (LINE, ARC, POLYGON);
 	-- CS circular tracks are currently not supported
@@ -2668,13 +2682,12 @@ is
 
 	procedure fill_polygons is 
 		nets : pac_net_names.list;
-		log_category : type_log_category := INSANE;
 	begin
 		case get_field_count is
 			when 4 => -- fill all polygons
 				
 				-- command: board demo fill polygon
-				fill_conductor_polygons (module_cursor, log_category, log_threshold + 1);
+				fill_conductor_polygons (module_cursor, polygon_log_category, log_threshold + 1);
 
 				
 			when others => 
@@ -2685,7 +2698,7 @@ is
 					nets.append (to_net_name (f (place)));
 				end loop;
 
-				fill_conductor_polygons (module_cursor, log_category, log_threshold + 1, nets);
+				fill_conductor_polygons (module_cursor, polygon_log_category, log_threshold + 1, nets);
 		end case;
 				
 		if runmode /= MODE_HEADLESS then
