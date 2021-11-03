@@ -38,8 +38,6 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
---with ada.strings.unbounded;
-
 
 
 package body et_routing is
@@ -243,14 +241,6 @@ package body et_routing is
 						  
 
 
-	function get_total_width (
-		track	: in type_track)
-		return type_distance_positive
-	is begin
-		return track.width + 2.0 * track.clearance;
-	end get_total_width;
-
-
 	function to_string (place : in type_place) return string is begin
 		return "place: " & type_place'image (place);
 	end to_string;
@@ -266,7 +256,7 @@ package body et_routing is
 		track_start : constant type_point := to_point (track.center.v_start);
 
 		-- the total track width (incl. clearance) is:
-		width : constant type_track_width := get_total_width (track);
+		width : constant type_track_width := track.width + 2.0 * track.clearance;
 
 		-- the start and end points of the upper and lower edge:
 		upper_edge_start, upper_edge_end,
@@ -285,7 +275,7 @@ package body et_routing is
 				end_point	=> type_point (set (
 								x => far_right - width * 0.5,
 								y => zero)));
-		-- CS assumes track travel direction of zero !
+
 		
 		-- build the horizontally running track:
 		
@@ -1218,7 +1208,7 @@ package body et_routing is
 		bottom_layer	: in type_signal_layer;		
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
-		direction		: in type_rotation := zero_rotation;
+		direction		: in type_rotation;
 		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		net_class		: in type_net_class;
 		fill_zone		: in type_fill_zone;

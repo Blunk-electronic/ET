@@ -139,11 +139,7 @@ package et_routing is
 		clearance	: type_distance_positive;
 	end record;
 
-	-- Returns the sum of track.width and track.clearance:
-	function get_total_width (
-		track	: in type_track)
-		return type_distance_positive;
-	
+
 	
 	type type_place is (
 		BEFORE,
@@ -157,9 +153,9 @@ package et_routing is
 		direction	: type_rotation; -- the direction of travel
 		offset		: type_distance_relative; -- start point relative to the origin
 		boundaries	: type_boundaries; -- incl. clearance
-		upper_edge	: type_line;
-		center_line	: type_line;
-		lower_edge	: type_line;
+		upper_edge	: type_line; -- a horizontal line
+		center_line	: type_line; -- a horizontal line
+		lower_edge	: type_line; -- a horizontal line
 	end record;
 
 	-- Calculates the dimensions of a track:
@@ -315,15 +311,13 @@ package et_routing is
 	-- If the parameter "ignore_same_net" is true, then the segments
 	-- of the same net as indicated by net_cursor are ignored. When filling
 	-- fill areas (polygons) this setting should be used.
-	-- CS currently the direction of travel must be zero,
-	-- because some subprograms support only this direction.
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		design_rules	: in type_design_rules;
 		bottom_layer	: in type_signal_layer;
 		start_point		: in type_point;
 		place			: in type_place := BEFORE;
-		direction		: in type_rotation := zero_rotation;
+		direction		: in type_rotation;
 		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		net_class		: in type_net_class;
 		fill_zone		: in type_fill_zone;
