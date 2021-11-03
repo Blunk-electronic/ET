@@ -136,6 +136,12 @@ package et_scripting is
 		cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level);
 
+
+
+	
+	polygon_log_category : type_log_category := log_category_default;
+	
+	
 	-- Executes a board command.
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure board_cmd (

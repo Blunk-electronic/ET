@@ -1808,9 +1808,6 @@ is
 -- ROUTE / TRACK / POLYGON
 
 
-	polygon_log_category : type_log_category := log_category_default;
-	
-
 	-- Applies to polygons (or fill zones) in conductor layers only.
 	-- Parses a command like "board demo set polygon fill solid/hatched"
 	-- or "board demo set polygon isolaton 0.4" and sets the value
@@ -1965,7 +1962,6 @@ is
 				-- board demo set polygon log NORMAL/HIGH/INSANE
 				elsif f (5) = kw_log then
 					polygon_log_category := to_log_category (f (6));
-					log (text => "LOGCAT " & to_string (polygon_log_category));
 				else
 					expect_keywords;
 				end if;
