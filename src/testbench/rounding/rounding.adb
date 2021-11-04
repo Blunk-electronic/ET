@@ -38,36 +38,83 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
-
-with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-
-use et_pcb_coordinates.pac_geometry_brd;
-
+--with et_board_shapes_and_text;	use et_board_shapes_and_text;
 
 procedure rounding is
 
-	use functions_float;
+use et_pcb_coordinates.pac_geometry_brd;
 
-	d1 : type_distance := 0.0;
-	d2 : type_distance_coarse;
+	
+	d : type_distance;
+	f : type_float_internal;
+	d2 : type_distance;
 
-	mode : type_rounding_mode := DOWN;
+	S : type_distance := 0.0; --1.0000000007;
+	E : type_distance := 1.000;
+	I : type_distance_positive := 0.0000000001;
+	M : type_float_internal    := 0.00000000001;
+
+	log_on : boolean := true;
+
+	procedure log_result is begin
+		put_line ("d:"  & to_string (d) & " f:"  & type_float_internal'image (f)
+				& " d2:" & to_string (d2));
+	end log_result;
+
+
+	function to_distance_2 (f : in type_float_internal)
+		return type_distance 
+	is
+		use pac_distance_io;
+	begin
+		--return 1.05 * type_distance (f);
+		return type_distance (f);
+		--if f < 0.0 then
+			--declare
+				--r : string (1 .. type_distance'digits + 2); -- sign + point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_distance'scale, exp => 0);
+				--return type_distance'value (r);
+			--end;
+		--else
+			--declare
+				--r : string (1 .. type_distance'digits + 1); -- point
+			--begin
+				----put_line (type_float_internal'image (f) & " " & natural'image (r'length));
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_distance'scale, exp => 0);
+				--return type_distance'value (r);
+			--end;
+		--end if;
+	end to_distance_2;
+
+
 	
 begin
-	put_line ("coarse resolution:" & to_string (d_coarse => type_distance_coarse'small));
-	put_line ("rounding mode: " & type_rounding_mode'image (mode));	
+	--log_on := false;
+	d := S;
 	
-	for i in 1 .. 21 loop
-		new_line;
-		put_line ("d1:" & to_string (d1));
+	while d < E loop
+		f := type_float_internal (d);
 
-		d2 := round (d1, mode);
+		f := f * M;
+		--d2 := to_distance (f);
+		d2 := to_distance_2 (f) / type_distance (M);
 		
-		put_line ("d2:" & to_string (d2));
-
-		d1 := d1 - 0.1 * type_distance_coarse'small;
-		--d1 := d1 + 0.01 * type_distance_coarse'small;
+		if log_on then
+			log_result;
+		end if;
+		
+		if d /= d2 then
+			put_line ("ERROR");
+			log_result;
+			exit;
+		end if;
+			
+		d := d + I;
+		--d := d * M;
 	end loop;
 
 
