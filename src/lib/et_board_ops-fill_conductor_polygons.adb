@@ -51,8 +51,8 @@ procedure fill_conductor_polygons (
 is 
 	use pac_net_names;
 
-
 	all_polygons : boolean;
+
 	
 	-- Get the design rules:
 	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
@@ -60,41 +60,305 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
-
+	use pac_fill_lines;
 	
-	-- We fill the polygons with lines from left to right.
-	lower_left_corner : type_point;
 
-	-- This is the offset required for the lower left corner:
-	-- half of the minimal line widht to the right and up.
-	-- This measure is required in order to let the fill lines start inside
-	-- the polygon and not at the polygon edge:
-	offset : type_distance_relative;
-
-	fill_line : type_line;
-
-	procedure set_start (p : in type_point) is begin
-		fill_line.start_point := p;
-	end set_start;
-
-	procedure set_end (p : in type_point) is begin
-		fill_line.end_point := p;
-	end set_end;
-
-	
-	procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
-		log (text => "lower left corner:" 
-			& to_string (lower_left_corner),
-			--& " status " 
-			--& type_lower_left_corner_status'image (lower_left_corner.status),
-			level => log_threshold);
+		
+	procedure log_lower_left_corner (
+		corner	: in type_point;
+		lth		: in type_log_level) 
+	is begin
+		log (text => "lower left corner:" & to_string (corner),
+			level => lth);
 	end log_lower_left_corner;
 
 
-	procedure make_border
+	-- Computes the horizontal fill lines required after given start point.
+	-- Creates fill lines from the left to the right.
+	-- Appends the fill lines to the polygon indicated by
+	-- polygon cursor p:
+	function make_horizontal_fill_lines (
+		net_cursor		: in pac_nets.cursor;
+		net_class		: in type_net_class;
+		fill_zone		: in type_fill_zone;
+		layer			: in type_signal_layer;
+		width			: in type_track_width; -- width of a fill line
+		height			: in type_distance_positive; -- of the polygon
+		start_point_in	: in type_point;
+		lth				: in type_log_level) 
+		return pac_fill_lines.list
 	is
+
+		-- Take a copy of the given start point because start point will
+		-- change its position in the course of this procedure:
+		start_point : type_point := start_point_in;
+		
+		-- The fill lines to be returned. 
+		-- Ordered from bottom to top and the left to the right:
+		result : pac_fill_lines.list;
+
+		
+		-- The number of rows in a rational number (like 45.7):
+		rows_rational : type_distance_positive;
+
+		-- The minimal number of rows in a natural number (like 45):
+		rows_min : natural;
+
+		-- If an extra row is required, this flag goes true;
+		extra_row : boolean := false;
+
+		
+		--The effective line width of a fill line is smaller than line_width
+		--because the fill lines must overlap slightly:
+		effective_line_width : type_distance_positive;
+
+		
+		procedure fill_row is
+			use pac_fill_lines;
+
+			fill_line : type_line;
+			
+			point : type_point := start_point;
+			row : type_position_axis := get_y (point);
+			status : type_valid;
+			distance : type_distance_positive;
+
+			-- Queries the distance after a given point to the next
+			-- obstacle. Updates variables "status" and "distance".
+			-- If it sets status to INVALID then the given point is
+			-- NOT allowed to start a fill line:
+			procedure get_distance_to_obstacle (start : in type_point) is 
+				d : constant type_route_distance := get_distance (
+				module_cursor	=> module_cursor,
+				design_rules	=> design_rules,
+				bottom_layer	=> bottom_layer,
+				start_point		=> start,
+				place			=> BEFORE,
+				direction		=> 0.0,
+				net_cursor		=> net_cursor,
+				net_class		=> net_class,
+				fill_zone		=> fill_zone,
+				layer			=> layer,
+				width			=> width,
+				ignore_same_net	=> true,
+				log_category	=> log_category,
+				lth				=> log_threshold + 3);
+			begin
+				status := d.status;
+
+				if d.status = VALID then
+					distance := d.distance;
+				end if;
+			end get_distance_to_obstacle;
+
+			-- Queries the distance after a given point to the next place
+			-- where it is allowed to start a fill line.
+			-- Updates variables "status" and "distance":
+			-- If it sets status to INVALID then NO place after the given point
+			-- has been found to start a fill line:
+			procedure get_distance_after_obstacle (start : in type_point) is 
+				d : constant type_route_distance := get_distance (
+				module_cursor	=> module_cursor,
+				design_rules	=> design_rules,
+				bottom_layer	=> bottom_layer,
+				start_point		=> start,
+				place			=> AFTER,
+				direction		=> 0.0,
+				net_cursor		=> net_cursor,
+				net_class		=> net_class,
+				fill_zone		=> fill_zone,
+				layer			=> layer,
+				width			=> width,
+				log_category	=> log_category,
+				ignore_same_net	=> true,
+				lth				=> log_threshold + 3);
+			begin
+				status := d.status;
+
+				if d.status = VALID then
+					distance := d.distance;
+				end if;
+			end get_distance_after_obstacle;
+
+			-- Safety measure to prevent infinite looping.
+			-- CS: Increase maximum to reasonable value:
+			subtype type_line_count is positive range 1 .. 1000;
+			
+		begin -- fill_row
+			log_indentation_up;
+
+			-- For the current row we compute fill line per fill line
+			-- from the left to the right. This loop counts the
+			-- fill lines per row. 
+			-- Each iteration computes a single fill line.
+			for lc in 1.. type_line_count'last loop
+				
+				log (text => "fill line" & positive'image (lc), level => log_threshold + 2);
+				log_indentation_up;
+				
+				get_distance_after_obstacle (point);
+				
+				if status = VALID then 
+					-- there is a place to start another fill line
+
+					-- move point to the place where the obstacle ends:
+					point := type_point (set (
+						x => get_x (point) + distance,
+						y => row));
+
+					-- the fill line starts here:
+					fill_line.start_point := point;
+					
+					get_distance_to_obstacle (point);
+
+					if distance = type_distance_positive'last then
+						raise constraint_error with 
+						"ERROR: No end point for fill line found !";
+					end if;
+
+					
+					if status = VALID then -- point is allowed to start a line
+
+						point := type_point (set (
+							x => get_x (point) + distance,
+							y => row));
+
+						-- the fill line ends here:
+						fill_line.end_point := point;
+						
+						append (result, fill_line);										
+					end if;
+					
+				else
+					-- no place to start another fill line.
+					-- Abort this row:
+					log_indentation_down;
+					exit;
+				end if;
+
+				log_indentation_down;
+			end loop;
+
+			-- Row finished.
+			
+			log_indentation_down;
+		end fill_row;
+		
+
+		-- This is the offset required for the lower left corner:
+		-- half of the minimal line widht to the right and up.
+		-- This measure is required in order to let the fill lines start inside
+		-- the polygon and not at the polygon edge:
+		offset : type_distance_relative;
+
+		
+	begin -- make_horizontal_fill_lines
+
+		-- Since the fill lines overlap slightly the effective
+		-- line width is smaller than line_width. The effective_line_width
+		-- is used to compute the number of fill lines:
+		effective_line_width := width * fill_line_overlap_factor;
+
+		-- Compute the number of fill lines in a rational number (like 6.3).
+		rows_rational := type_distance_positive (height / effective_line_width);
+
+		-- Compute the minimal number of fill lines in a natural number (like 6)
+		rows_min := natural (float'floor (float (rows_rational)));
+		
+		log (text => "height:" & to_string (height) 
+			& " / line width:" & to_string (width)
+			& " / rows min:" & natural'image (rows_min),
+			level => log_threshold);
+
+		--if rows_rational > type_distance_positive (rows_min) then
+			--log (text => "extra row required", level => log_threshold + 2);
+			--extra_row := true;
+		--end if;
+
+
+		
+		-- The fill line runs horizontally from the left to the right
+		-- edge of the polygon.
+		-- - Move the start point so that the line starts at a
+		--   virtual point outside (on the left) of the polygon.
+		--   This way the line enters the polygon in any case with its full width.
+		--   (The fill line has round caps at start and end point !).
+		-- - Further-on move the start point up so that the lower edge
+		--   of the fill line lies on the lower edge of the polygon:
+		offset := to_distance_relative (set (
+				x => - width * 0.5, -- to the left
+				y => + width * 0.5)); -- up
+
+		move_by (start_point, offset);
+
+		-- Make the fill lines (bottom - up):
+		for r in 1 .. rows_min loop
+
+			-- For the lowest fill line, the start point has already been
+			-- computed. For each of the follwing lines the start point
+			-- moves up by the effective line width (lines must overlap):
+			if r > 1 then
+				offset := to_distance_relative (set (
+						x => zero, -- no change
+						y => effective_line_width)); -- up
+				
+				move_by (start_point, offset);
+			end if;
+
+			log (text => "row" & natural'image (r) 
+					& ": start" & to_string (start_point),
+					level => log_threshold + 1);
+			
+			fill_row;					
+		end loop;
+
+		-- If an extra row is required, then compute its start point starting
+		-- with the upper left corner of the polygon.
+		--if extra_row then
+
+			--start_point := type_point (set (boundaries.smallest_x, boundaries.greatest_y));
+
+			---- - Move the start point so that the line starts at a
+			----   virtual point outside (on the left) of the polygon.
+			----   This way the line enters the polygon in any case with its full width.
+			----   (The fill line has round caps at start and end point !).
+			---- - Further-on move the start point down so that the upper edge
+			----   of the fill line lies on the upper edge of the polygon:
+			--offset := to_distance_relative (set (
+					--x => - line_width * 0.5, -- to the left
+					--y => - line_width * 0.5)); -- down
+
+			--move_by (start_point, offset);
+
+			--log (text => "extra row: start" & to_string (start_point),
+					--level => log_threshold + 3);
+			
+			--fill_row;
+		--end if;
+
+		return result;
+	end make_horizontal_fill_lines;
+
+	
+	function make_border (
+		net_cursor		: in pac_nets.cursor;
+		net_class		: in type_net_class;
+		fill_zone		: in type_fill_zone;
+		layer			: in type_signal_layer;
+		width			: in type_track_width; -- width of a fill line
+		start_point		: in type_point;
+		lth				: in type_log_level)					 
+		return pac_fill_lines.list
+	is
+		result : pac_fill_lines.list;
+
+		line : type_line;
 	begin
-		nulL;
+		line.start_point := start_point;
+		line.end_point := origin;
+
+		append (result, line);
+		return result;
 	end make_border;
 	
 	
@@ -177,263 +441,65 @@ is
 				-- The cursor that points to the polygon being filled:
 				polygon_cursor : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 				
-				-- The width of a fill line:
-				line_width : type_track_width;
-
-				-- The effective line width of a fill line is smaller than line_width
-				-- because the fill lines must overlap slightly:
-				effective_line_width : type_distance_positive;
-
 				-- The boundaries of the polygon (greatest/smallest x/y):
 				boundaries : type_boundaries;
 
-				-- The total height of the polygon:
-				height : type_distance_positive;
+				-- We fill the polygons with lines from left to right.
+				lower_left_corner : type_point;
 
-				-- The number of rows in a rational number (like 45.7):
-				rows_rational : type_distance_positive;
-
-				-- The minimal number of rows in a natural number (like 45):
-				rows_min : natural;
-
-				-- If an extra row is required, this flag goes true;
-				extra_row : boolean := false;
-				
-				-- Computes the horizantal fill lines required after given start point.
-				-- Creates fill lines from the left to the right.
-				-- Appends the fill lines to the polygon indicated by
-				-- polygon cursor p:
-				procedure make_horizontal_fill_lines (start_point_in : in type_point) is
-
-					-- Take a copy of the given start point because start point will
-					-- change its position in the course of this procedure:
-					start_point : type_point := start_point_in;
-					
-					-- The fill lines for the current row. Ordered from the left to the right:
-					fill_lines : pac_fill_lines.list;
-
-					procedure add_lines (
-						polygon	: in out type_polygon_conductor_route_solid)
-					is
-						use pac_fill_lines;
-					begin
-						splice (
-							target	=> polygon.properties.fill_lines, 
-							before	=> pac_fill_lines.no_element,
-							source	=> fill_lines);
-					end add_lines;
-
-					
-					procedure fill_row is
-						use pac_fill_lines;
-						
-						point : type_point := start_point;
-						row : type_position_axis := get_y (point);
-						status : type_valid;
-						distance : type_distance_positive;
-
-						-- Queries the distance after a given point to the next
-						-- obstacle. Updates variables "status" and "distance".
-						-- If it sets status to INVALID then the given point is
-						-- NOT allowed to start a fill line:
-						procedure get_distance_to_obstacle (start : in type_point) is 
-							d : constant type_route_distance := get_distance (
-							module_cursor	=> module_cursor,
-							design_rules	=> design_rules,
-							bottom_layer	=> bottom_layer,
-							start_point		=> start,
-							place			=> BEFORE,
-							direction		=> 0.0,
-							net_cursor		=> net_cursor,
-							net_class		=> net_class,
-							fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
-							layer			=> element (polygon_cursor).properties.layer,
-							width			=> element (polygon_cursor).width_min,
-							ignore_same_net	=> true,
-							log_category	=> log_category,
-							lth				=> log_threshold + 5);
-						begin
-							status := d.status;
-
-							if d.status = VALID then
-								distance := d.distance;
-							end if;
-						end get_distance_to_obstacle;
-
-						-- Queries the distance after a given point to the next place
-						-- where it is allowed to start a fill line.
-						-- Updates variables "status" and "distance":
-						-- If it sets status to INVALID then NO place after the given point
-						-- has been found to start a fill line:
-						procedure get_distance_after_obstacle (start : in type_point) is 
-							d : constant type_route_distance := get_distance (
-							module_cursor	=> module_cursor,
-							design_rules	=> design_rules,
-							bottom_layer	=> bottom_layer,
-							start_point		=> start,
-							place			=> AFTER,
-							direction		=> 0.0,
-							net_cursor		=> net_cursor,
-							net_class		=> net_class,
-							fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
-							layer			=> element (polygon_cursor).properties.layer,
-							width			=> element (polygon_cursor).width_min,
-							log_category	=> log_category,
-							ignore_same_net	=> true,
-							lth				=> log_threshold + 5);
-						begin
-							status := d.status;
-
-							if d.status = VALID then
-								distance := d.distance;
-							end if;
-						end get_distance_after_obstacle;
-
-						-- Safety measure to prevent infinite looping.
-						-- CS: Increase maximum to reasonable value:
-						subtype type_line_count is positive range 1 .. 100;
-						
-					begin -- fill_row
-						log_indentation_up;
-
-						-- For the current row we compute fill line per fill line
-						-- from the left to the right. This loop counts the
-						-- fill lines per row. 
-						-- Each iteration computes a single fill line.
-						for lc in 1.. type_line_count'last loop
-							
-							log (text => "fill line" & positive'image (lc), level => log_threshold + 4);
-							log_indentation_up;
-							
-							get_distance_after_obstacle (point);
-							
-							if status = VALID then 
-								-- there is a place to start another fill line
-
-								-- move point to the place where the obstacle ends:
-								point := type_point (set (
-									x => get_x (point) + distance,
-									y => row));
-
-								-- the fill line starts at point
-								set_start (point);
-
-								
-								get_distance_to_obstacle (point);
-
-								if distance = type_distance_positive'last then
-									raise constraint_error with 
-									"ERROR: No end point for fill line found !";
-								end if;
-
-								
-								if status = VALID then -- point is allowed to start a line
-
-									point := type_point (set (
-										x => get_x (point) + distance,
-										y => row));
-
-									set_end (point);
-
-									append (fill_lines, fill_line);										
-								end if;
-								
-							else
-								-- no place to start another fill line.
-								-- Abort this row:
-								log_indentation_down;
-								exit;
-							end if;
-
-							log_indentation_down;
-						end loop;
-
-						-- Row finished.
-						
-						-- Add the fill lines, that have been collected for the current row,
-						-- to the conductor polygon:
-						update_element (
-							container	=> net.route.polygons.solid,
-							position	=> polygon_cursor,
-							process		=> add_lines'access);
-
-						log_indentation_down;
-					end fill_row;
-					
-				begin -- make_horizontal_fill_lines
-					
-					-- The fill line runs horizontally from the left to the right
-					-- edge of the polygon.
-					-- - Move the start point so that the line starts at a
-					--   virtual point outside (on the left) of the polygon.
-					--   This way the line enters the polygon in any case with its full width.
-					--   (The fill line has round caps at start and end point !).
-					-- - Further-on move the start point up so that the lower edge
-					--   of the fill line lies on the lower edge of the polygon:
-					offset := to_distance_relative (set (
-							x => - line_width * 0.5, -- to the left
-							y => + line_width * 0.5)); -- up
-
-					move_by (start_point, offset);
-
-					-- Make the fill lines (bottom - up):
-					for r in 1 .. rows_min loop
-
-						-- For the lowest fill line, the start point has already been
-						-- computed. For each of the follwing lines the start point
-						-- moves up by the effective line width (lines must overlap):
-						if r > 1 then
-							offset := to_distance_relative (set (
-									x => zero, -- no change
-									y => effective_line_width)); -- up
-							
-							move_by (start_point, offset);
-						end if;
-
-						log (text => "row" & natural'image (r) 
-								& ": start" & to_string (start_point),
-								level => log_threshold + 3);
-						
-						fill_row;					
-					end loop;
-
-					-- If an extra row is required, then compute its start point starting
-					-- with the upper left corner of the polygon.
-					if extra_row then
-
-						start_point := type_point (set (boundaries.smallest_x, boundaries.greatest_y));
-
-						-- - Move the start point so that the line starts at a
-						--   virtual point outside (on the left) of the polygon.
-						--   This way the line enters the polygon in any case with its full width.
-						--   (The fill line has round caps at start and end point !).
-						-- - Further-on move the start point down so that the upper edge
-						--   of the fill line lies on the upper edge of the polygon:
-						offset := to_distance_relative (set (
-								x => - line_width * 0.5, -- to the left
-								y => - line_width * 0.5)); -- down
-
-						move_by (start_point, offset);
-
-						log (text => "extra row: start" & to_string (start_point),
-								level => log_threshold + 3);
-						
-						fill_row;
-					end if;
-
-				end make_horizontal_fill_lines;
-
-				
 
 				-- Deletes all fill lines of the polygon:
 				procedure delete_lines (
 					polygon	: in out type_polygon_conductor_route_solid)
-				is
-					use pac_fill_lines;
-				begin
+				is begin
 					polygon.properties.fill_lines.clear;
 				end delete_lines;
+
+
+				-- The horizontal fill lines to be computed:
+				h_lines : pac_fill_lines.list;
+
+				-- Assigns the horizontal fill lines to the current polygon:
+				procedure add_lines (
+					polygon	: in out type_polygon_conductor_route_solid)
+				is begin
+					splice (
+						target	=> polygon.properties.fill_lines, 
+						before	=> pac_fill_lines.no_element,
+						source	=> h_lines);
+				end add_lines;
+
+
+
+				-- The point where the border starts (and where it ends after the round-trip):
+				border_start : type_point;
+
+				-- Sets the start point of the border.
+				-- Assumes there are only horizontal fill lines at this time !
+				procedure set_border_start (
+					polygon : in type_polygon_conductor_route_solid)
+				is begin
+					-- Use the start point of the first horizontal fill line:
+					border_start := polygon.properties.fill_lines.first_element.start_point;
+				end set_border_start;
+
 				
+				
+				-- The border (which consists of fill lines in arbitrary directions)
+				border : pac_fill_lines.list;
+				
+				-- Assigns the border to the current polygon:
+				procedure add_border (
+					polygon	: in out type_polygon_conductor_route_solid)
+				is begin
+					splice (
+						target	=> polygon.properties.fill_lines, 
+						before	=> pac_fill_lines.no_element,
+						source	=> border);
+				end add_border;
+
+
+
 				
 			begin -- route_solid
 				while polygon_cursor /= pac_signal_polygons_solid.no_element loop
@@ -447,43 +513,43 @@ is
 
 					log (text => to_string (boundaries), level => log_threshold + 2);
 
-					-- Get the total height of the polygon:
-					height := get_height (boundaries);
-
-					-- Get the width of the fill lines:
-					line_width := element (polygon_cursor).width_min;
-					
-					-- Since the fill lines overlap slightly the effective
-					-- line width is smaller than line_width. The effective_line_width
-					-- is used to compute the number of fill lines:
-					effective_line_width := line_width * fill_line_overlap_factor;
-
-					-- Compute the number of fill lines in a rational number (like 6.3).
-					rows_rational := type_distance_positive (height / effective_line_width);
-
-					-- Compute the minimal number of fill lines in a natural number (like 6)
-					rows_min := natural (float'floor (float (rows_rational)));
-					
-					log (text => "height:" & to_string (height) 
-						& " / line width:" & to_string (line_width)
-						& " / rows min:" & natural'image (rows_min),
-						level => log_threshold + 2);
-
-					if rows_rational > type_distance_positive (rows_min) then
-						log (text => "extra row required", level => log_threshold + 2);
-						
-						extra_row := true;
-					end if;
 					
 					-- obtain the lower left corner of the polygon from the boundaries:
 					lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
-					log_lower_left_corner (log_threshold + 2);
+					log_lower_left_corner (lower_left_corner, log_threshold + 2);
 
+					
 					log_indentation_up;
-					make_horizontal_fill_lines (lower_left_corner);
 
-					make_border;
+					-- compute the horizontal fill lines:
+					h_lines := make_horizontal_fill_lines (
+						net_cursor		=> net_cursor,
+						net_class		=> net_class,
+						fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+						layer			=> element (polygon_cursor).properties.layer,
+						width			=> element (polygon_cursor).width_min,
+						height			=> get_height (boundaries),
+						start_point_in	=> lower_left_corner,
+						lth				=> log_threshold + 3);
+
+					update_element (net.route.polygons.solid, polygon_cursor, add_lines'access);
+
+					
+					-- compute the border:
+					query_element (polygon_cursor, set_border_start'access);
+					
+					border := make_border (
+						net_cursor		=> net_cursor,
+						net_class		=> net_class,
+						fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+						layer			=> element (polygon_cursor).properties.layer,
+						width			=> element (polygon_cursor).width_min,
+						start_point		=> border_start,
+						lth				=> log_threshold + 3);
+
+					update_element (net.route.polygons.solid, polygon_cursor, add_border'access);
+
 					
 					log_indentation_down;
 
@@ -508,13 +574,6 @@ is
 
 				-- The total height of the polygon:
 				height : type_distance_positive;
-
-				-- The number of rows in a rational number (like 45.7):
-				--rows_rational : type_distance_positive;
-
-				-- The minimal number of rows in a natural number (like 45):
-				--rows_min : natural;
-
 				
 			begin
 				while p /= pac_signal_polygons_hatched.no_element loop
