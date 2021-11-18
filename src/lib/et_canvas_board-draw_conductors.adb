@@ -73,7 +73,10 @@ is
 	use pac_conductor_polygons_floating_hatched;
 	use pac_signal_polygons_solid;
 	use pac_signal_polygons_hatched;
-	use pac_fill_lines;
+
+	--use pac_fill_lines;
+	use pac_h_lines;
+	use pac_rows;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use pac_conductor_texts;
@@ -100,6 +103,7 @@ is
 			return false;
 		end if;
 	end is_double_layer_board;
+
 	
 	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
 		if layer > top_layer and layer < bottom_layer then
@@ -190,8 +194,8 @@ is
 	fill_line_width : type_track_width;
 
 	
-	-- This procedure draws a solidly filled area of a conductor polygon:
-	procedure query_fill_line (l : in pac_fill_lines.cursor) is begin
+	-- This procedure draws a horizontal fill line of a conductor polygon:
+	procedure query_h_line (l : in pac_h_lines.cursor) is begin
 
 		draw_line (
 			area		=> in_area,
@@ -200,11 +204,16 @@ is
 			width		=> fill_line_width,
 			height		=> self.frame_height);
 		
-	end query_fill_line;
+	end query_h_line;
 
 	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is 
 		drawn : boolean := false;
+
+		procedure query_row (r : in pac_rows.cursor) is begin
+			iterate (element (r).lines, query_h_line'access);
+		end query_row;
+		
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -225,8 +234,8 @@ is
 				-- All fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				
-				iterate (element (c).properties.fill_lines, query_fill_line'access);
+
+				iterate (element (c).properties.fill.rows, query_row'access);
 			end if;
 		end if;
 	end query_polygon;
@@ -249,13 +258,18 @@ is
 				drawn	=> drawn);
 
 			-- draw filled areas
-			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
+			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
 		end if;
 	end query_polygon;
 
 	
 	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
 		drawn : boolean := false;
+
+		procedure query_row (r : in pac_rows.cursor) is begin
+			iterate (element (r).lines, query_h_line'access);
+		end query_row;
+		
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -278,7 +292,7 @@ is
 				fill_line_width := element (c).width_min;
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				
-				iterate (element (c).properties.fill_lines, query_fill_line'access);
+				iterate (element (c).properties.fill.rows, query_row'access);
 			end if;
 
 		end if;
@@ -302,7 +316,7 @@ is
 				drawn	=> drawn);
 
 			-- draw filled areas
-			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
+			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
 		end if;
 	end query_polygon;
 

@@ -121,7 +121,7 @@ package et_conductor_polygons is
 	package pac_h_lines is new doubly_linked_lists (type_line);
 
 	type type_row is record
-		h_lines	: pac_h_lines.list;
+		lines	: pac_h_lines.list;
 	end record;
 
 	package pac_rows is new doubly_linked_lists (type_row);

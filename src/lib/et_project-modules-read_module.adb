@@ -4090,7 +4090,7 @@ is
 								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> SOLID,
 									easing			=> board_easing,
-									properties		=> (signal_layer, polygon_priority, no_fill_lines),
+									properties		=> (signal_layer, polygon_priority, others => <>),
 									isolation		=> polygon_isolation,
 									width_min		=> polygon_width_min));
 
@@ -4100,7 +4100,7 @@ is
 								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> HATCHED,
 									easing			=> board_easing,
-									properties		=> (signal_layer, polygon_priority, no_fill_lines),
+									properties		=> (signal_layer, polygon_priority, others => <>),
 									isolation		=> polygon_isolation,
 									width_min		=> polygon_width_min,
 									hatching		=> board_hatching_conductor));

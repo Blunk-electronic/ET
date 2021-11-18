@@ -2068,7 +2068,7 @@ is
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
-							fill_lines		=> no_fill_lines),
+							others			=> <>),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2085,7 +2085,7 @@ is
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
-							fill_lines		=> no_fill_lines),
+							others			=> <>),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2203,7 +2203,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						fill_lines		=> no_fill_lines));
+						others			=> <>));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2213,6 +2213,7 @@ is
 				
 			end make_solid_thermal;
 
+			
 			procedure make_solid_solid is 
 				p1 : type_polygon_conductor_solid;
 				p2 : type_polygon_conductor_route_solid (connection => SOLID);
@@ -2229,7 +2230,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						fill_lines		=> no_fill_lines));
+						others			=> <>));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2239,6 +2240,7 @@ is
 
 			end make_solid_solid;
 
+			
 			procedure make_hatched_thermal is
 				p1 : type_polygon_conductor_hatched;
 				p2 : type_polygon_conductor_route_hatched (connection => THERMAL);
@@ -2256,7 +2258,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						fill_lines		=> no_fill_lines));
+						others			=> <>));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2266,6 +2268,7 @@ is
 				
 			end make_hatched_thermal;
 
+			
 			procedure make_hatched_solid is
 				p1 : type_polygon_conductor_hatched;
 				p2 : type_polygon_conductor_route_hatched (connection => SOLID);
@@ -2283,7 +2286,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						fill_lines		=> no_fill_lines));
+						others			=> <>));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2292,6 +2295,7 @@ is
 					log_threshold	=> log_threshold + 1);
 				
 			end make_hatched_solid;
+
 			
 		begin -- make_polygon
 			case settings.polygons_conductor.fill_style is
