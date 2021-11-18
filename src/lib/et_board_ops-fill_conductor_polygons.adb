@@ -353,11 +353,66 @@ is
 		result : pac_fill_lines.list;
 
 		line : type_line;
-	begin
-		line.start_point := start_point;
-		line.end_point := origin;
 
-		append (result, line);
+		--distance : type_distance_positive;
+		dir : type_rotation := 180.0;
+
+		d_min : constant type_distance_positive := 0.1;
+
+		proceed : boolean := true;
+
+		P : type_point := start_point;
+	begin
+		--line.start_point := start_point;
+		--line.end_point := origin;
+
+		--while proceed loop
+			
+			--declare
+				--distance : constant type_route_distance := 
+
+					--et_routing.get_distance (
+					--module_cursor	=> module_cursor,
+					--design_rules	=> design_rules,
+					--bottom_layer	=> bottom_layer,
+					--start_point		=> P,
+					--place			=> BEFORE,
+					--direction		=> dir,
+					--net_cursor		=> net_cursor,
+					--net_class		=> net_class,
+					--fill_zone		=> fill_zone,
+					--layer			=> layer,
+					--width			=> width,
+					--ignore_same_net	=> true,
+					--log_category	=> log_category,
+					--lth				=> lth);
+			--begin
+				--if distance.status = VALID then
+					--if distance.distance < d_min then
+						--dir := dir - 10.0;
+						--if dir = 90.0 then
+							--exit;
+						--end if;
+					--else
+						--line.start_point := P;
+						
+						--P := type_point (move (P, dir, distance.distance));
+
+						--line.end_point := P;
+
+						--append (result, line);
+
+						--dir := 180.0;
+					--end if;
+				--else
+					--proceed := false;
+				--end if;
+				
+			--end;
+
+		--end loop;
+
+		
 		return result;
 	end make_border;
 	
