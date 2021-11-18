@@ -116,6 +116,33 @@ package et_conductor_polygons is
 
 	no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
 
+
+-- HORIZONTAL FILL LINES
+	package pac_h_lines is new doubly_linked_lists (type_line);
+
+	type type_row is record
+		h_lines	: pac_h_lines.list;
+	end record;
+
+	package pac_rows is new doubly_linked_lists (type_row);
+
+	
+-- BORDERS
+	package pac_border_lines is new doubly_linked_lists (type_line);
+
+	type type_border is record
+		border : pac_border_lines.list;
+	end record;
+
+	package pac_borders is new doubly_linked_lists (type_border);
+	
+	type type_fill is tagged record
+		rows	: pac_rows.list;
+		-- CS border	: pac_borders.list;
+	end record;
+
+
+
 	
 	-- The factor that causes the fill lines to overlap slightly.
 	-- It is required in order to avoid a possible small gap between them

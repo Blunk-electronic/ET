@@ -144,12 +144,21 @@ package et_conductor_polygons.boards is
 
 
 	
+	package pac_thermals is new doubly_linked_lists (type_line);
+
+	type type_fill is new et_conductor_polygons.type_fill with record
+		thermals	: pac_thermals.list;
+	end record;
+
+	
+	
 	-- All fill zones in conductor layers have these common
 	-- properties:
 	type type_conductor_polygon_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		fill_lines		: pac_fill_lines.list;
+		--fill_lines		: pac_fill_lines.list;
+		fill			: type_fill;
 	end record;
 
 	
