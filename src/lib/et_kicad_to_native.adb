@@ -610,12 +610,12 @@ package body et_kicad_to_native is
 					use pac_vias;
 
 					use et_conductor_polygons.boards;
-					use pac_signal_polygons_solid;
+					use pac_solid_route;
 					
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 					arc_cursor	: pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+					poly_cursor	: pac_solid_route.cursor := net.route.polygons.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
 
@@ -667,7 +667,7 @@ package body et_kicad_to_native is
 					end move_via;
 
 					
-					procedure move_polygon (polygon : in out type_polygon_conductor_route_solid) is begin
+					procedure move_polygon (polygon : in out type_solid_route) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						et_board_shapes_and_text.pac_polygons.transpose_polygon (polygon, layout_sheet_height);
 					end move_polygon;
@@ -705,8 +705,8 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= pac_signal_polygons_solid.no_element loop
-						pac_signal_polygons_solid.update_element (
+					while poly_cursor /= pac_solid_route.no_element loop
+						pac_solid_route.update_element (
 							container 	=> net.route.polygons.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);

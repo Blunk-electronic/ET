@@ -4480,6 +4480,7 @@ package body et_board_ops is
 		-- to the targeted net:
 		net_cursor : pac_nets.cursor;
 
+		
 		procedure locate_targeted_net is begin
 			net_cursor := locate_net (module_cursor, net_name);
 
@@ -4489,15 +4490,16 @@ package body et_board_ops is
 					& " does not exist !";
 			end if;
 		end locate_targeted_net;
+
 		
 		procedure route_solid (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_signal_polygons_solid;
+			use pac_solid_route;
 
-			p : type_polygon_conductor_route_solid := 
-				type_polygon_conductor_route_solid (polygon);
+			p : type_solid_route := 
+				type_solid_route (polygon);
 
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
@@ -4521,10 +4523,10 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_signal_polygons_hatched;
+			use pac_hatched_route;
 
-			p : type_polygon_conductor_route_hatched := 
-				type_polygon_conductor_route_hatched (polygon);
+			p : type_hatched_route := 
+				type_hatched_route (polygon);
 			
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
@@ -4569,7 +4571,7 @@ package body et_board_ops is
 
 
 		-- route polygons:
-		elsif polygon'tag = type_polygon_conductor_route_solid'tag then
+		elsif polygon'tag = type_solid_route'tag then
 
 			locate_targeted_net;
 						
@@ -4578,7 +4580,7 @@ package body et_board_ops is
 				position	=> module_cursor,
 				process		=> route_solid'access);
 
-		elsif polygon'tag = type_polygon_conductor_route_hatched'tag then
+		elsif polygon'tag = type_hatched_route'tag then
 
 			locate_targeted_net;
 

@@ -2183,7 +2183,7 @@ is
 
 			procedure make_solid_thermal is
 				p1 : type_polygon_conductor_solid;
-				p2 : type_polygon_conductor_route_solid (connection => THERMAL);
+				p2 : type_solid_route (connection => THERMAL);
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> SOLID,
@@ -2210,7 +2210,7 @@ is
 			
 			procedure make_solid_solid is 
 				p1 : type_polygon_conductor_solid;
-				p2 : type_polygon_conductor_route_solid (connection => SOLID);
+				p2 : type_solid_route (connection => SOLID);
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> SOLID,
@@ -2237,7 +2237,7 @@ is
 			
 			procedure make_hatched_thermal is
 				p1 : type_polygon_conductor_hatched;
-				p2 : type_polygon_conductor_route_hatched (connection => THERMAL);
+				p2 : type_hatched_route (connection => THERMAL);
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> HATCHED,
@@ -2265,7 +2265,7 @@ is
 			
 			procedure make_hatched_solid is
 				p1 : type_polygon_conductor_hatched;
-				p2 : type_polygon_conductor_route_hatched (connection => SOLID);
+				p2 : type_hatched_route (connection => SOLID);
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> HATCHED,

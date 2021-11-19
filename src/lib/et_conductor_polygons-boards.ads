@@ -200,7 +200,7 @@ package et_conductor_polygons.boards is
 
 
 
-	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) 
+	type type_solid_route (connection : type_polygon_pad_connection) 
 		is new type_polygon_conductor_solid
 	with record
 		properties	: type_properties;
@@ -216,7 +216,8 @@ package et_conductor_polygons.boards is
 		end case;				
 	end record;
 
-	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) 
+	
+	type type_hatched_route (connection : type_polygon_pad_connection) 
 		is new type_polygon_conductor_hatched 
 	with record
 		properties	: type_properties;
@@ -234,17 +235,17 @@ package et_conductor_polygons.boards is
 
 
 	
-	package pac_signal_polygons_solid is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_solid);
+	package pac_solid_route is new
+		indefinite_doubly_linked_lists (type_solid_route);
 	
-	package pac_signal_polygons_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_hatched);	
+	package pac_hatched_route is new
+		indefinite_doubly_linked_lists (type_hatched_route);	
 
 
 		
-	type type_signal_polygons is record
-		solid	: pac_signal_polygons_solid.list;
-		hatched	: pac_signal_polygons_hatched.list;
+	type type_route is record
+		solid	: pac_solid_route.list;
+		hatched	: pac_hatched_route.list;
 	end record;
 
 

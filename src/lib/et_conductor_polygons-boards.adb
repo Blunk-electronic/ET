@@ -88,7 +88,7 @@ package body et_conductor_polygons.boards is
 			result := result & space & s;
 		end append;
 
-		procedure connected_with_net (p : in type_polygon_conductor_route_solid) is
+		procedure connected_with_net (p : in type_solid_route) is
 		begin
 			case p.connection is
 				when THERMAL => NULL;
@@ -105,12 +105,12 @@ package body et_conductor_polygons.boards is
 		then
 			append ("floating");
 			
-		elsif polygon'tag = type_polygon_conductor_route_solid'tag 
-		or    polygon'tag = type_polygon_conductor_route_hatched'tag 
+		elsif polygon'tag = type_solid_route'tag 
+		or    polygon'tag = type_hatched_route'tag 
 		then
 			append ("net " & pac_net_name.to_string (net_name));
 			
-			-- CS connected_with_net (type_polygon_conductor_route_solid (polygon));
+			-- CS connected_with_net (type_solid_route (polygon));
 		end if;
 
 		

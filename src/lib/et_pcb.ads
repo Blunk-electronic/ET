@@ -251,7 +251,7 @@ package et_pcb is
 		vias		: pac_vias.list;
 
 		-- fill areas:
-		polygons	: type_signal_polygons;
+		polygons	: boards.type_route;
 
 		-- route specific cutout areas:
 		cutouts		: boards.pac_conductor_cutouts.list;

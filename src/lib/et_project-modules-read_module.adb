@@ -4609,10 +4609,10 @@ is
 				use et_conductor_polygons.boards;
 				
 				procedure solid_polygon is
-					use pac_signal_polygons_solid;
+					use pac_solid_route;
 
 					procedure connection_thermal is
-						p : type_polygon_conductor_route_solid (connection => boards.THERMAL);
+						p : type_solid_route (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4625,14 +4625,14 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.thermal					:= et_pcb_rw.thermal;
 
-						pac_signal_polygons_solid.append (
+						pac_solid_route.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
 
 					
 					procedure connection_solid is
-						p : type_polygon_conductor_route_solid (connection => boards.SOLID);
+						p : type_solid_route (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4645,7 +4645,7 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.technology				:= et_pcb_rw.thermal.technology;
 
-						pac_signal_polygons_solid.append (
+						pac_solid_route.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
@@ -4660,11 +4660,11 @@ is
 
 				
 				procedure hatched_polygon is
-					use pac_signal_polygons_hatched;
+					use pac_hatched_route;
 					use et_packages;
 
 					procedure connection_thermal is
-						p : type_polygon_conductor_route_hatched (connection => boards.THERMAL);
+						p : type_hatched_route (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4677,14 +4677,14 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.thermal					:= et_pcb_rw.thermal;
 						
-						pac_signal_polygons_hatched.append (
+						pac_hatched_route.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
 
 					
 					procedure connection_solid is
-						p : type_polygon_conductor_route_hatched (connection => boards.SOLID);
+						p : type_hatched_route (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4698,7 +4698,7 @@ is
 						
 						p.technology := et_pcb_rw.thermal.technology;
 						
-						pac_signal_polygons_hatched.append (
+						pac_hatched_route.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;

@@ -382,7 +382,7 @@ is
 				-- Sets the start point of the border.
 				-- Assumes there are only horizontal fill lines at this time !
 				--procedure set_border_start (
-					--polygon : in type_polygon_conductor_route_solid)
+					--polygon : in type_solid_route)
 				--is begin
 					---- Use the start point of the first horizontal fill line:
 					----border_start := polygon.properties.fill.rows.first_element.start_point;
@@ -506,8 +506,8 @@ is
 	-- Fills polygons that are connected with a net:
 	procedure signal_polygons is
 		use pac_nets;
-		use pac_signal_polygons_solid;
-		use pac_signal_polygons_hatched;
+		use pac_solid_route;
+		use pac_hatched_route;
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -522,7 +522,7 @@ is
 				net			: in out type_net)
 			is 
 				-- The cursor that points to the polygon being filled:
-				polygon_cursor : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+				polygon_cursor : pac_solid_route.cursor := net.route.polygons.solid.first;
 				
 				-- The boundaries of the polygon (greatest/smallest x/y):
 				boundaries : type_boundaries;
@@ -533,7 +533,7 @@ is
 
 				-- Deletes the complete fill of the polygon:
 				procedure clear_fill (
-					polygon	: in out type_polygon_conductor_route_solid)
+					polygon	: in out type_solid_route)
 				is begin
 					polygon.properties.fill := (others => <>);
 				end clear_fill;
@@ -546,7 +546,7 @@ is
 				
 				-- Assigns the rows to the current polygon:
 				procedure add_rows (
-					polygon	: in out type_polygon_conductor_route_solid)
+					polygon	: in out type_solid_route)
 				is begin
 					polygon.properties.fill.rows := rows;
 				end add_rows;
@@ -557,7 +557,7 @@ is
 				
 				-- Assigns the borders to the current polygon:
 				procedure add_borders (
-					polygon	: in out type_polygon_conductor_route_solid)
+					polygon	: in out type_solid_route)
 				is begin
 					polygon.properties.fill.borders := borders;
 				end add_borders;
@@ -566,7 +566,7 @@ is
 
 				
 			begin -- route_solid
-				while polygon_cursor /= pac_signal_polygons_solid.no_element loop
+				while polygon_cursor /= pac_solid_route.no_element loop
 
 					-- clear the complete fill:
 					update_element (net.route.polygons.solid, polygon_cursor, clear_fill'access);
@@ -624,7 +624,7 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				p : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
+				p : pac_hatched_route.cursor := net.route.polygons.hatched.first;
 
 				-- CS: delete all existing fill lines:
 				
@@ -638,7 +638,7 @@ is
 				height : type_distance_positive;
 				
 			begin
-				while p /= pac_signal_polygons_hatched.no_element loop
+				while p /= pac_hatched_route.no_element loop
 
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:
