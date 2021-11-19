@@ -352,17 +352,17 @@ is
 	end make_rows;
 
 	
-	function make_border (
+	function make_borders (
+		rows			: in pac_rows.list;
 		net_cursor		: in pac_nets.cursor;
 		net_class		: in type_net_class;
 		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width; -- width of a fill line
-		start_point		: in type_point;
 		lth				: in type_log_level)					 
-		return pac_fill_lines.list
+		return pac_borders.list
 	is
-		result : pac_fill_lines.list;
+		result : pac_borders.list;
 
 		line : type_line;
 
@@ -373,8 +373,24 @@ is
 
 		proceed : boolean := true;
 
-		P : type_point := start_point;
+		--P : type_point := start_point;
 	begin
+
+				-- The point where the border starts (and where it ends after the round-trip):
+				--border_start : type_point;
+
+				-- Sets the start point of the border.
+				-- Assumes there are only horizontal fill lines at this time !
+				--procedure set_border_start (
+					--polygon : in type_polygon_conductor_route_solid)
+				--is begin
+					---- Use the start point of the first horizontal fill line:
+					----border_start := polygon.properties.fill.rows.first_element.start_point;
+					---- CS
+					--null;
+				--end set_border_start;
+
+		
 		--line.start_point := start_point;
 		--line.end_point := origin;
 
@@ -426,7 +442,7 @@ is
 
 		
 		return result;
-	end make_border;
+	end make_borders;
 	
 	
 	procedure floating_polygons is
@@ -527,48 +543,24 @@ is
 				use pac_rows;
 				rows : pac_rows.list;
 
+				
 				-- Assigns the rows to the current polygon:
 				procedure add_rows (
 					polygon	: in out type_polygon_conductor_route_solid)
 				is begin
-					--splice (
-						--target	=> polygon.properties.fill_lines, 
-						--before	=> pac_fill_lines.no_element,
-						--source	=> rows);
 					polygon.properties.fill.rows := rows;
 				end add_rows;
-
-
-
-				-- The point where the border starts (and where it ends after the round-trip):
-				--border_start : type_point;
-
-				-- Sets the start point of the border.
-				-- Assumes there are only horizontal fill lines at this time !
-				procedure set_border_start (
-					polygon : in type_polygon_conductor_route_solid)
-				is begin
-					-- Use the start point of the first horizontal fill line:
-					--border_start := polygon.properties.fill.rows.first_element.start_point;
-					-- CS
-					null;
-				end set_border_start;
-
 				
 				
 				-- The border (which consists of fill lines in arbitrary directions)
-				--border : pac_fill_lines.list;
+				borders : pac_borders.list;
 				
-				-- Assigns the border to the current polygon:
-				procedure add_border (
+				-- Assigns the borders to the current polygon:
+				procedure add_borders (
 					polygon	: in out type_polygon_conductor_route_solid)
 				is begin
-					null;
-					--splice (
-						--target	=> polygon.properties.fill_lines, 
-						--before	=> pac_fill_lines.no_element,
-						--source	=> border);
-				end add_border;
+					polygon.properties.fill.borders := borders;
+				end add_borders;
 
 
 
@@ -609,18 +601,16 @@ is
 
 					
 					-- compute the border:
-					query_element (polygon_cursor, set_border_start'access);
-					
-					--border := make_border (
-						--net_cursor		=> net_cursor,
-						--net_class		=> net_class,
-						--fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
-						--layer			=> element (polygon_cursor).properties.layer,
-						--width			=> element (polygon_cursor).width_min,
-						--start_point		=> border_start,
-						--lth				=> log_threshold + 3);
+					borders := make_borders (
+						rows			=> rows,
+						net_cursor		=> net_cursor,
+						net_class		=> net_class,
+						fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+						layer			=> element (polygon_cursor).properties.layer,
+						width			=> element (polygon_cursor).width_min,
+						lth				=> log_threshold + 3);
 
-					--update_element (net.route.polygons.solid, polygon_cursor, add_border'access);
+					update_element (net.route.polygons.solid, polygon_cursor, add_borders'access);
 
 					
 					log_indentation_down;

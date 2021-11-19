@@ -135,10 +135,12 @@ package et_conductor_polygons is
 	end record;
 
 	package pac_borders is new doubly_linked_lists (type_border);
-	
+
+
+-- FILL
 	type type_fill is tagged record
 		rows	: pac_rows.list;
-		-- CS border	: pac_borders.list;
+		borders	: pac_borders.list;
 	end record;
 
 

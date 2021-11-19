@@ -74,9 +74,10 @@ is
 	use pac_signal_polygons_solid;
 	use pac_signal_polygons_hatched;
 
-	--use pac_fill_lines;
 	use pac_h_lines;
 	use pac_rows;
+	use pac_borders;
+	use pac_border_lines;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use pac_conductor_texts;
@@ -96,6 +97,7 @@ is
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (et_canvas_schematic.current_active_module);
 
+	
 	function is_double_layer_board return boolean is begin
 		if bottom_layer = 2 then
 			return true;
@@ -206,12 +208,29 @@ is
 		
 	end query_h_line;
 
+
+	-- This procedure draws a border line of a conductor polygon:
+	procedure query_b_line (l : in pac_border_lines.cursor) is begin
+
+		draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> element (l),
+			width		=> fill_line_width,
+			height		=> self.frame_height);
+		
+	end query_b_line;
+
 	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is 
 		drawn : boolean := false;
 
 		procedure query_row (r : in pac_rows.cursor) is begin
 			iterate (element (r).lines, query_h_line'access);
+		end query_row;
+
+		procedure query_row (r : in pac_borders.cursor) is begin
+			iterate (element (r).border, query_b_line'access);
 		end query_row;
 		
 	begin
@@ -236,6 +255,7 @@ is
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 
 				iterate (element (c).properties.fill.rows, query_row'access);
+				iterate (element (c).properties.fill.borders, query_row'access);
 			end if;
 		end if;
 	end query_polygon;
@@ -269,6 +289,11 @@ is
 		procedure query_row (r : in pac_rows.cursor) is begin
 			iterate (element (r).lines, query_h_line'access);
 		end query_row;
+
+		procedure query_row (r : in pac_borders.cursor) is begin
+			iterate (element (r).border, query_b_line'access);
+		end query_row;
+
 		
 	begin
 		-- Draw the polygon if it is in the current layer:
@@ -293,6 +318,8 @@ is
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				
 				iterate (element (c).properties.fill.rows, query_row'access);
+				iterate (element (c).properties.fill.borders, query_row'access);
+				
 			end if;
 
 		end if;
