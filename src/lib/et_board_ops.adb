@@ -4446,10 +4446,10 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_conductor_polygons_floating_solid;
+			use pac_floating_solid;
 
-			p : type_polygon_conductor_solid_floating := 
-				type_polygon_conductor_solid_floating (polygon);
+			p : type_solid_floating := 
+				type_solid_floating (polygon);
 			
 		begin
 			log (text => conductor_polygon_properties_to_string (p, p.properties),
@@ -4458,14 +4458,15 @@ package body et_board_ops is
 			module.board.conductors.polygons.solid.append (p);
 		end floating_solid;
 
+		
 		procedure floating_hatched (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_conductor_polygons_floating_hatched;
+			use pac_floating_hatched;
 
-			p : type_polygon_conductor_hatched_floating := 
-				type_polygon_conductor_hatched_floating (polygon);
+			p : type_hatched_floating := 
+				type_hatched_floating (polygon);
 			
 		begin
 			log (text => conductor_polygon_properties_to_string (p, p.properties),
@@ -4552,14 +4553,14 @@ package body et_board_ops is
 		log_indentation_up;
 		
 		-- floating polygons:
-		if polygon'tag = type_polygon_conductor_solid_floating'tag then
+		if polygon'tag = type_solid_floating'tag then
 
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> floating_solid'access);
 
-		elsif polygon'tag = type_polygon_conductor_hatched_floating'tag then
+		elsif polygon'tag = type_hatched_floating'tag then
 
 			update_element (
 				container	=> generic_modules,

@@ -654,7 +654,7 @@ package et_kicad.pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
-		cursor			: in pac_conductor_polygons_floating_solid.cursor;
+		cursor			: in pac_floating_solid.cursor;
 		log_threshold 	: in type_log_level);
 
 	

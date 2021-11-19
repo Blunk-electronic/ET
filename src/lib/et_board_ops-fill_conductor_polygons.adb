@@ -446,16 +446,16 @@ is
 	
 	
 	procedure floating_polygons is
-		use pac_conductor_polygons_floating_solid;
+		use pac_floating_solid;
 		
-		--procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
+		--procedure query_polygon (c : in pac_floating_solid.cursor) is begin
 			--lower_left_corner := get_lower_left_corner (element (c));
 			--log_lower_left_corner (log_threshold + 2);
 		--end query_polygon;
 	
-		use pac_conductor_polygons_floating_hatched;
+		use pac_floating_hatched;
 		
-		--procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
+		--procedure query_polygon (c : in pac_floating_hatched.cursor) is begin
 			--lower_left_corner := get_lower_left_corner (element (c));
 			--log_lower_left_corner (log_threshold + 2);
 		--end query_polygon;
@@ -464,9 +464,9 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_conductor_polygons_floating_solid.cursor := module.board.conductors.polygons.solid.first;
+			c : pac_floating_solid.cursor := module.board.conductors.polygons.solid.first;
 		begin
-			while c /= pac_conductor_polygons_floating_solid.no_element loop
+			while c /= pac_floating_solid.no_element loop
 
 				--lower_left_corner := get_lower_left_corner (element (c));
 				--log_lower_left_corner (log_threshold + 2);
@@ -479,9 +479,9 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_conductor_polygons_floating_hatched.cursor := module.board.conductors.polygons.hatched.first;
+			c : pac_floating_hatched.cursor := module.board.conductors.polygons.hatched.first;
 		begin
-			while c /= pac_conductor_polygons_floating_hatched.no_element loop
+			while c /= pac_floating_hatched.no_element loop
 
 				--lower_left_corner := get_lower_left_corner (element (c));
 				--log_lower_left_corner (log_threshold + 2);

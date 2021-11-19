@@ -122,7 +122,7 @@ package et_conductor_polygons.boards is
 	text_polygon_signal_layer : constant string := "signal_layer";
 	
 
-	type type_user_settings_polygons_conductor is record
+	type type_user_settings is record
 
 		-- relevant if polygon is connected with a net:
 		connection		: type_polygon_pad_connection := polygon_pad_connection_default;
@@ -152,19 +152,17 @@ package et_conductor_polygons.boards is
 
 	
 	
-	-- All fill zones in conductor layers have these common
-	-- properties:
-	type type_conductor_polygon_properties is record
+	-- All fill zones in conductor layers have these common properties:
+	type type_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		--fill_lines		: pac_fill_lines.list;
 		fill			: type_fill;
 	end record;
 
 	
 	function conductor_polygon_properties_to_string (
 		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties;
+		properties		: in type_properties;
 
 		-- Net name is relevant if polygon is part of a route.
 		-- The type of the given polygon is the cirteria:
@@ -174,30 +172,30 @@ package et_conductor_polygons.boards is
 	
 	
 	-- A floating conductor polygon is not connected to any net:
-	type type_polygon_conductor_solid_floating is new 
+	type type_solid_floating is new 
 		type_polygon_conductor (fill_style => SOLID)
 	with record
-		properties	: type_conductor_polygon_properties;
+		properties	: type_properties;
 	end record;
 
-	package pac_conductor_polygons_floating_solid is new 
-		indefinite_doubly_linked_lists (type_polygon_conductor_solid_floating);
+	package pac_floating_solid is new 
+		indefinite_doubly_linked_lists (type_solid_floating);
 
 		
 		
-	type type_polygon_conductor_hatched_floating is new 
+	type type_hatched_floating is new 
 		type_polygon_conductor (fill_style => HATCHED) 
 	with record
-		properties	: type_conductor_polygon_properties;
+		properties	: type_properties;
 	end record;
 
-	package pac_conductor_polygons_floating_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_hatched_floating);
+	package pac_floating_hatched is new
+		indefinite_doubly_linked_lists (type_hatched_floating);
 
 		
-	type type_conductor_polygons_floating is record
-		solid	: pac_conductor_polygons_floating_solid.list;
-		hatched	: pac_conductor_polygons_floating_hatched.list;
+	type type_floating is record
+		solid	: pac_floating_solid.list;
+		hatched	: pac_floating_hatched.list;
 	end record;
 
 
@@ -205,7 +203,7 @@ package et_conductor_polygons.boards is
 	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) 
 		is new type_polygon_conductor_solid
 	with record
-		properties	: type_conductor_polygon_properties;
+		properties	: type_properties;
 
 		case connection is
 			when THERMAL =>
@@ -221,7 +219,7 @@ package et_conductor_polygons.boards is
 	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) 
 		is new type_polygon_conductor_hatched 
 	with record
-		properties	: type_conductor_polygon_properties;
+		properties	: type_properties;
 				
 		case connection is
 			when THERMAL =>

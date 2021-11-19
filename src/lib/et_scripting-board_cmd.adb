@@ -1711,7 +1711,7 @@ is
 		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board
-		settings : constant type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 	begin -- place_via
 		-- Set the drill size and restring according to a user specific values:
@@ -2045,15 +2045,15 @@ is
 		shape : constant type_track_shape := type_track_shape'value (f (6));
 
 		-- get the user specific settings of the board
-		settings : constant type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 
 		procedure make_polygon is
 			-- Extract from the given command the polygon arguments (everything after "polygon"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
-			ps : type_polygon_conductor_solid_floating;
-			ph : type_polygon_conductor_hatched_floating;
+			ps : type_solid_floating;
+			ph : type_hatched_floating;
 
 			-- Build a basic polygon from the arguments:
 			p : constant type_polygon_base'class := to_polygon (arguments);
@@ -2157,13 +2157,6 @@ is
 
 			when POLYGON =>
 				case get_field_count is
-					-- The polygon command is very long. The following example spreads across
-					-- several lines:
-					--  board led_driver route freetrack 1 polygon /
-					--  line 0 0 100 0 /
-					--  line 100 0 100 100 / 
-					--  arc 50 100 100 100 0 100 ccw / 
-					--  line 0 100 0 0
 					when 5 .. count_type'last =>
 						make_polygon;
 
@@ -2172,13 +2165,14 @@ is
 				end case;
 			end case;
 	end route_freetrack;
+
 	
 	procedure route_net is 
 		use et_terminals;
 		shape : constant type_track_shape := type_track_shape'value (f (7));
 
 		-- get the user specific settings of the board
-		settings : constant type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 		procedure make_polygon is
 			-- Extract from the given command the polygon arguments (everything after "polygon"):

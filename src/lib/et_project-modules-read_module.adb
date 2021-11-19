@@ -4085,7 +4085,7 @@ is
 				begin
 					case board_fill_style is
 						when SOLID =>
-							pac_conductor_polygons_floating_solid.append (
+							pac_floating_solid.append (
 								container	=> module.board.conductors.polygons.solid,
 								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> SOLID,
@@ -4095,7 +4095,7 @@ is
 									width_min		=> polygon_width_min));
 
 						when HATCHED =>
-							pac_conductor_polygons_floating_hatched.append (
+							pac_floating_hatched.append (
 								container	=> module.board.conductors.polygons.hatched,
 								new_item	=> (type_polygon_base (polygon) with
 									fill_style 		=> HATCHED,

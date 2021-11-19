@@ -4664,12 +4664,11 @@ package body et_kicad.pcb is
 
 	
 	procedure floating_copper_polygon_properties (
-	-- Logs the properties of the given floating copper polygon.
-		cursor			: in pac_conductor_polygons_floating_solid.cursor;
+		cursor			: in pac_floating_solid.cursor;
 		log_threshold 	: in type_log_level) 
 	is
 		use et_conductor_polygons;
-		use pac_conductor_polygons_floating_solid;
+		use pac_floating_solid;
 		use et_pcb_stack;
 		use et_packages;
 	begin
@@ -5337,7 +5336,7 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					p : type_polygon_conductor_solid_floating;
+					p : type_solid_floating;
 				begin
 					-- search polygons with a net_id of zero:
 					while polygon_cursor /= type_polygons.no_element loop

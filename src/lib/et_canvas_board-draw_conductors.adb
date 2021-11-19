@@ -69,8 +69,8 @@ is
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
 	use pac_conductor_cutouts;
-	use pac_conductor_polygons_floating_solid;
-	use pac_conductor_polygons_floating_hatched;
+	use pac_floating_solid;
+	use pac_floating_hatched;
 	use pac_signal_polygons_solid;
 	use pac_signal_polygons_hatched;
 
@@ -222,7 +222,7 @@ is
 	end query_b_line;
 
 	
-	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is 
+	procedure query_polygon (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
 
 		procedure query_row (r : in pac_rows.cursor) is begin
@@ -261,7 +261,7 @@ is
 	end query_polygon;
 
 	
-	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is 
+	procedure query_polygon (c : in pac_floating_hatched.cursor) is 
 		drawn : boolean := false;
 	begin
 		-- Draw the polygon if it is in the current layer:

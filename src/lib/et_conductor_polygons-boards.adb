@@ -74,7 +74,7 @@ package body et_conductor_polygons.boards is
 	
 	function conductor_polygon_properties_to_string (
 		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties;
+		properties		: in type_properties;
 		net_name		: in pac_net_name.bounded_string := no_name)
 		return string
 	is
@@ -100,8 +100,8 @@ package body et_conductor_polygons.boards is
 		
 	begin -- conductor_polygon_properties_to_string
 
-		if polygon'tag = type_polygon_conductor_solid_floating'tag 
-		or polygon'tag = type_polygon_conductor_hatched_floating'tag 
+		if polygon'tag = type_solid_floating'tag 
+		or polygon'tag = type_hatched_floating'tag 
 		then
 			append ("floating");
 			

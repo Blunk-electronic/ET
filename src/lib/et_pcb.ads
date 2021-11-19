@@ -228,7 +228,7 @@ package et_pcb is
 		circles			: pac_conductor_circles.list;
 
 		-- floating conductor polygons/fill areas:
-		polygons		: type_conductor_polygons_floating; 
+		polygons		: type_floating; 
 		-- CS: It is probably no good idea to allow floating conductor polygons.
 
 		-- global cutout areas for conductor polygons:
@@ -393,7 +393,7 @@ package et_pcb is
 		vias		: type_user_settings_vias;
 		-- CS auto set drill and track width ?
 		
-		polygons_conductor	: type_user_settings_polygons_conductor;
+		polygons_conductor	: boards.type_user_settings;
 
 		-- CS polygons_non_conductor
 	end record;
