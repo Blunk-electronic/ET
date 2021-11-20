@@ -120,12 +120,20 @@ package et_conductor_polygons is
 -- HORIZONTAL FILL LINES
 	package pac_h_lines is new doubly_linked_lists (type_line);
 
+	-- Returns true if the given h_lines overlap each other in x direction.
+	function overlap (
+		hl_1, hl_2 : in pac_h_lines.cursor)
+		return boolean;
+
+
 	type type_row is record
 		lines	: pac_h_lines.list;
 	end record;
 
 	package pac_rows is new doubly_linked_lists (type_row);
 
+
+	
 	
 -- BORDERS
 	package pac_border_lines is new doubly_linked_lists (type_line);
@@ -145,6 +153,8 @@ package et_conductor_polygons is
 
 
 
+	
+	
 	
 	-- The factor that causes the fill lines to overlap slightly.
 	-- It is required in order to avoid a possible small gap between them

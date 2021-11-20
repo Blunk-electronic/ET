@@ -43,7 +43,54 @@
 
 package body et_conductor_polygons is
 
-	--use pac_shapes;
+	function overlap (
+		hl_1, hl_2 : in pac_h_lines.cursor)
+		return boolean
+	is
+		use pac_h_lines;
+		
+		result : boolean := false;
+
+		L1S : constant type_distance := get_x (element (hl_1).start_point);
+		L1E : constant type_distance := get_x (element (hl_1).end_point);
+
+		L2S : constant type_distance := get_x (element (hl_2).start_point);
+		L2E : constant type_distance := get_x (element (hl_2).end_point);
+
+	begin
+		-- case 1:
+		--
+		--        L1S----L1E
+		--    L2S------------L2E
+		--
+		-- case 2:
+		--
+		--         L1S----L1E
+		--    L2S-----L2E
+
+		if L1S >= L2S and L1S <= L2E then
+			result := true;
+		else
+
+		-- case 3:
+		--
+		--    L1S----------L1E
+		--       L2S----L2E
+
+		-- case 4:
+		--
+		--    L1S------L1E
+		--         L2S------L2E
+			
+			if L2S >= L1S and L2S <= L1E then
+				result := true;
+			end if;
+
+		end if;
+		
+		return result;
+	end overlap;
+
 
 	procedure dummy is begin null; end;
 
