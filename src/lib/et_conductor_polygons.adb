@@ -43,6 +43,40 @@
 
 package body et_conductor_polygons is
 
+
+	procedure iterate (
+		h_lines	: in pac_h_lines.list;
+		side	: in type_side;
+		process	: not null access procedure (position : in pac_h_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_h_lines;
+		c : pac_h_lines.cursor;
+	begin
+		case side is
+			when LEFT => 
+				c := h_lines.first;
+
+				while c /= no_element and proceed.all = TRUE loop
+					process (c);
+					next (c);
+				end loop;
+
+				
+			when RIGHT => 
+				c := h_lines.last;
+
+				while c /= no_element and proceed.all = TRUE loop
+					process (c);
+					previous (c);
+				end loop;
+				
+		end case;
+				
+	end iterate;
+
+
+	
 	function overlap (
 		hl_1, hl_2 : in pac_h_lines.cursor)
 		return boolean
@@ -92,6 +126,66 @@ package body et_conductor_polygons is
 	end overlap;
 
 
+
+
+
+
+	function get_adjacent_h_line (
+		row		: in pac_rows.cursor;
+		h_line	: in pac_h_lines.cursor;							 
+		place	: in type_adjacent;
+		side	: in type_side)
+		return pac_h_lines.cursor
+	is
+		result : pac_h_lines.cursor := pac_h_lines.no_element;
+
+		use pac_rows;
+		row_cursor : pac_rows.cursor := row;
+
+
+		procedure query_row (row : in type_row) is
+			proceed : aliased boolean := true;
+
+			procedure query_h_line (l : in pac_h_lines.cursor) is begin
+				if overlap (h_line, l) then
+					result := l;
+					proceed := false;
+				end if;
+			end query_h_line;
+			
+		begin
+			iterate (row.lines, side, query_h_line'access, proceed'access);
+		end query_row;
+
+		
+	begin -- get_adjacent_h_line
+
+		case place is
+			when ABOVE =>
+				next (row_cursor);
+				
+				if row_cursor /= no_element then
+					query_element (row_cursor, query_row'access);
+				end if;
+					
+
+			when BELOW =>
+				previous (row_cursor);
+				
+				if row_cursor /= no_element then
+					query_element (row_cursor, query_row'access);
+				end if;
+		end case;
+
+		return result;
+	end get_adjacent_h_line;
+
+
+
+
+
+
+	
 	procedure dummy is begin null; end;
 
 

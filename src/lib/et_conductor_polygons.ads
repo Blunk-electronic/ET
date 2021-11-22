@@ -120,6 +120,19 @@ package et_conductor_polygons is
 -- HORIZONTAL FILL LINES
 	package pac_h_lines is new doubly_linked_lists (type_line);
 
+
+	type type_side is (LEFT, RIGHT);
+	
+	
+	-- Iterates the h_lines. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		h_lines	: in pac_h_lines.list;
+		side	: in type_side;				  
+		process	: not null access procedure (position : in pac_h_lines.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Returns true if the given h_lines overlap each other in x direction.
 	function overlap (
 		hl_1, hl_2 : in pac_h_lines.cursor)
@@ -132,6 +145,17 @@ package et_conductor_polygons is
 
 	package pac_rows is new doubly_linked_lists (type_row);
 
+
+
+	type type_adjacent is (ABOVE, BELOW);
+
+	
+	function get_adjacent_h_line (
+		row		: in pac_rows.cursor;
+		h_line	: in pac_h_lines.cursor;							 
+		place	: in type_adjacent;
+		side	: in type_side)
+		return pac_h_lines.cursor;
 
 	
 	
