@@ -51,6 +51,8 @@ package et_colors.board is
 	grid 				: type_color := gray;	
 	origin				: type_color := gray;	
 	placeholders		: type_color := white;
+
+	ratsnest			: type_color := yellow;
 	
 	via					: type_color := green;
 	via_layers			: type_color := white; -- the layers the via is connecting
@@ -109,6 +111,11 @@ package et_colors.board is
 	
 	procedure set_color_origin (
 		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+
+
+	procedure set_color_ratsnest (
+		context 	: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 
 	

@@ -243,8 +243,23 @@ package et_pcb is
 -- Types for ELECTRIC !! conductor objects:
 
 
+	type type_airwire is new type_line with null record;
+
+	package pac_airwires is new doubly_linked_lists (type_airwire);
+
+	type type_airwires is record
+		lines	: pac_airwires.list;
+		hidden	: boolean := true;
+	end record;
+
+	status_ratsnest_updated : constant string := "ratsnest updated";
+
+	airwire_line_width : constant type_distance_positive := 0.1;
 	
-	type type_route is record 
+	
+	type type_route is record
+		airwires	: type_airwires;
+		
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
@@ -258,6 +273,9 @@ package et_pcb is
 	end record;
 	
 
+
+
+	
 	-- Stop mask in board (may contain placeholders):
 	type type_stop_mask 
 		is new et_stop_mask.boards.type_stop_mask with 

@@ -46,8 +46,8 @@ package body et_colors is
 	function dim (
 		color		: in type_color;
 		brightness	: in type_dim_factor)
-		return type_color is
-
+		return type_color 
+	is
 		use type color_range;
 		
 		b : constant color_range := color_range (brightness);
@@ -60,6 +60,7 @@ package body et_colors is
 		return result;
 	end dim;
 
+	
 	procedure set_color (
 		context		: in cairo_context;
 		color		: in type_color;

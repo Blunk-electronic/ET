@@ -1282,6 +1282,21 @@ package body et_canvas_board is
 			end case;
 		end place;
 
+
+		procedure update is 
+			use et_pcb;
+		begin
+			case key is
+				when GDK_LC_r =>
+					noun := NOUN_RATSNEST;
+					update_ratsnest (current_active_module, log_threshold + 1);
+
+					set_status (status_ratsnest_updated);
+					
+				when others => status_noun_invalid;
+			end case;
+		end update;
+
 		
 	begin -- evaluate_key
 		
@@ -1355,6 +1370,11 @@ package body et_canvas_board is
 								when GDK_LC_r =>
 									verb := VERB_ROUTE;
 									status_enter_noun;
+
+								when GDK_LC_u =>
+									verb := VERB_UPDATE;
+									status_enter_noun;
+
 									
 								when others =>
 									--put_line ("other key pressed " & gdk_key_type'image (key));
@@ -1377,6 +1397,7 @@ package body et_canvas_board is
 								when VERB_DELETE	=> delete;
 								when VERB_FILL		=> fill;
 								when VERB_PLACE		=> place;
+								when VERB_UPDATE	=> update;
 								when others => null; -- CS
 							end case;
 							

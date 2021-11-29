@@ -49,6 +49,7 @@ package body et_display.board is
 			return false;
 		end if;
 	end grid_enabled;
+
 	
 	function outline_enabled return boolean is begin
 		if layers.outline = ON then 
@@ -58,6 +59,7 @@ package body et_display.board is
 		end if;
 	end outline_enabled;
 
+	
 	function plated_millings_enabled return boolean is begin
 		if layers.plated_millings = ON then 
 			return true;
@@ -65,6 +67,7 @@ package body et_display.board is
 			return false;
 		end if;
 	end plated_millings_enabled;
+
 	
 	function silkscreen_enabled (face : in type_face) return boolean is begin
 		case face is
@@ -87,6 +90,7 @@ package body et_display.board is
 		return false;
 	end assy_doc_enabled;
 
+	
 	function keepout_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
@@ -97,6 +101,7 @@ package body et_display.board is
 		return false;
 	end keepout_enabled;
 
+	
 	function stop_mask_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
@@ -106,6 +111,7 @@ package body et_display.board is
 		end case;
 		return false;
 	end stop_mask_enabled;
+
 
 	function stencil_enabled (face : in type_face) return boolean is begin
 		case face is
@@ -117,6 +123,7 @@ package body et_display.board is
 		return false;
 	end stencil_enabled;
 
+	
 	function device_origins_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
@@ -126,6 +133,16 @@ package body et_display.board is
 		end case;
 		return false;
 	end device_origins_enabled;
+
+
+	function ratsnest_enabled return boolean is begin
+		if layers.ratsnest = ON then
+			return true;
+		else 
+			return false;
+		end if;
+	end ratsnest_enabled;
+	
 	
 	function vias_enabled return boolean is begin
 		if layers.vias = ON then
@@ -146,6 +163,7 @@ package body et_display.board is
 		return false;
 	end conductors_enabled;
 
+	
 	function inner_conductors_enabled (
 		deepest_layer : in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean is 

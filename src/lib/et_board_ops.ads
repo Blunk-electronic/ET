@@ -233,9 +233,16 @@ package et_board_ops is
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);
 
-	
--- TRACKS AND FREETRACKS
 
+	
+-- RATSNEST / TRACKS / FREETRACKS
+
+
+	procedure update_ratsnest (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 	-- Adds a line track segment to the given net in the given module.
 	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;

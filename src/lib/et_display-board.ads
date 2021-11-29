@@ -72,6 +72,9 @@ package et_display.board is
 		stencil			: type_paired := (others => OFF);
 		device_origins	: type_paired := (others => ON);
 		-- CS text_origins (for texts and placeholders) ?
+
+		ratsnest		: type_layer_status := ON;
+
 		
 		-- By default conductor layers 1..4 are displayed:
 		conductors		: type_conductors := (
@@ -100,6 +103,9 @@ package et_display.board is
 	function stencil_enabled (face : in type_face) return boolean;
 	function device_origins_enabled (face : in type_face) return boolean;
 
+	function ratsnest_enabled return boolean;
+
+	
 	-- Returns true if any conductor layer is enabled:
 	function conductors_enabled return boolean;
 

@@ -45,6 +45,7 @@ package body et_colors.board is
 			cursor.green,
 			cursor.blue);
 	end set_color_cursor;
+
 	
 	procedure set_color_background (
 		context : in cairo_context;
@@ -57,6 +58,7 @@ package body et_colors.board is
 			background.blue,
 			color_range (opacity));
 	end set_color_background;
+
 	
 	procedure set_color_frame (
 		context		: in cairo_context;
@@ -68,6 +70,7 @@ package body et_colors.board is
 		set_color (context, frame, brightness);
 	end set_color_frame;
 
+	
 	procedure set_color_origin (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
@@ -77,6 +80,16 @@ package body et_colors.board is
 		
 		set_color (context, origin, brightness);
 	end set_color_origin;
+
+
+	procedure set_color_ratsnest (
+		context 	: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		set_color (context, ratsnest, brightness);
+	end set_color_ratsnest;
+
+	
 	
 	procedure set_color_outline (
 		context : in cairo_context;
@@ -104,6 +117,7 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_vias;
 
+	
 	procedure set_color_via_layers (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity)
@@ -116,6 +130,7 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_via_layers;
 
+	
 	procedure set_color_via_net_name (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity)
@@ -128,6 +143,7 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_via_net_name;
 
+	
 	procedure set_color_via_drill_size (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity)
@@ -166,6 +182,7 @@ package body et_colors.board is
 		end case;
 	end set_color_silkscreen;
 
+	
 	procedure set_color_assy_doc (
 		context : in cairo_context;
 		face	: in type_face;

@@ -6,6 +6,25 @@
 Board Layout Editor
 *******************
 
+
++++++++++++++++++++++
+Ratsnest and Airwires
++++++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Update ratsnest
+
+	.. code-block::
+
+		update ratsnest
+
+	|VNS| u r
+
+	
+	
+
 ++++
 Vias
 ++++

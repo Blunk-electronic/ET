@@ -2542,6 +2542,7 @@ is
 
 	end add_layer;
 
+	
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
 		c : type_point := type_point (set (
@@ -2560,6 +2561,7 @@ is
 		end case;
 	end zoom_center;
 
+	
 	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
 		use glib;
 		s : gdouble := gdouble'value (scale);
@@ -2575,6 +2577,7 @@ is
 				
 		end case;
 	end set_scale;
+
 	
 	-- Positions the cursor absolute or relative:
 	procedure position_cursor is -- GUI related
@@ -2700,6 +2703,24 @@ is
 		end if;
 	end fill_polygons;
 	
+
+
+	procedure update_ratsnest is
+	begin
+		-- board demo update ratsnest
+		case get_field_count is
+				
+			when 4 => 
+				update_ratsnest (module_cursor, log_threshold + 1);
+				set_status (status_ratsnest_updated);
+			
+			when 5 .. count_type'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end update_ratsnest;
+
+
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
@@ -3304,6 +3325,16 @@ is
 	-- 					when others => invalid_noun (to_string (noun));
 	-- 				end case;
 
+
+			when VERB_UPDATE =>
+				case noun is
+					when NOUN_RATSNEST => -- board demo update ratsnest
+						update_ratsnest;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+				
 			when VERB_ZOOM => -- GUI related
 				case noun is
 					when NOUN_FIT => -- zoom fit

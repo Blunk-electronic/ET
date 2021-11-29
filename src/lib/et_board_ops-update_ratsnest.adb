@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        BOARD OPERATING MODES                             --
+--                  BOARD OPERATIONS / UPDATE RATSNEST                      --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -34,101 +34,39 @@
 --
 --   history of changes:
 --
---   ToDo: 
 
-package et_modes.board is
-	
-	type type_verb is (
-		VERB_ADD,
-		VERB_DELETE,
-		VERB_DISPLAY,
-		--DRAG,
-		VERB_DRAW,	
-		VERB_EXECUTE,
-		VERB_EXIT,
-		VERB_FILL,
-		VERB_FLIP,
-		VERB_MAKE,
-		VERB_MOVE,
-		VERB_PLACE,
-		VERB_POSITION,
-		VERB_QUIT,
-		VERB_RIPUP,
-		VERB_RENAME,
-		VERB_ROTATE,
-		VERB_ROUTE,
-		VERB_SET,
-		VERB_UPDATE,
-		--VERB_SHOW CS
-		VERB_ZOOM
-		--WRITE
-		);
+with ada.strings;					use ada.strings;
+with ada.exceptions;
+with et_exceptions;					use et_exceptions;
 
-	verb_default : constant type_verb := VERB_ADD; -- CS show
+--with et_routing;					use et_routing;
 
-	verb : type_verb := verb_default;
-	
-	function to_string (verb : in type_verb) return string;
-	function to_verb (verb : in string) return type_verb;
-	
+separate (et_board_ops)
+
+procedure update_ratsnest (
+	module_cursor	: in pac_generic_modules.cursor;
+	log_threshold	: in type_log_level)
+is 
 
 	
-	type type_noun is (
-		NOUN_ASSY, -- assembly documentation
-		NOUN_BOARD,
-		NOUN_CENTER,
-		NOUN_CONDUCTORS,
-		NOUN_CURSOR,
-		NOUN_DEVICE,
-		NOUN_FREETRACK,
-		NOUN_FIT,
-		NOUN_GRID,
-		NOUN_HOLE,
-		NOUN_KEEPOUT,
-		NOUN_LAYER, 	-- signal layer with dielectic
-		NOUN_LEVEL,
-		NOUN_NAME,
-		NOUN_NET,
-		NOUN_ORIGINS, -- the center of a package
-		NOUN_OUTLINE,
-		NOUN_PARTCODE,
-		NOUN_POLYGON,
-		NOUN_PNP, -- pick & place
-		NOUN_PURPOSE,
-		NOUN_RATSNEST,
-		NOUN_RESTRICT,
-		NOUN_ROUTE_RESTRICT,
-		NOUN_SCRIPT,
-		NOUN_SILKSCREEN,
-		NOUN_STENCIL, -- solder mask or solder paste
-		NOUN_STOP, -- solder stop mask
-		NOUN_SUBMODULE,
-		NOUN_TEXT,
-		NOUN_TEXT_SIZE,
-		NOUN_TEXT_LINE_WIDTH,
--- 		TRACK,
-		NOUN_VALUE,
-		NOUN_VIA,
-		NOUN_VIAS,
-		NOUN_VIA_DRILL,
-		NOUN_VIA_RESTRICT
-		);
+begin -- update_ratsnest
 
-	noun_default : constant type_noun := NOUN_NAME;
+	log (text => "module " 
+		& enclose_in_quotes (to_string (key (module_cursor)))
+		& " updating ratsnest ...",
+		level => log_threshold);
+
+	log_indentation_up;
+
+
+	log_indentation_down;
+		
+
+
+end update_ratsnest;
 	
-	noun : type_noun := noun_default;
-
-	
-	function to_string (noun : in type_noun) return string;
-	function to_noun (noun : in string) return type_noun;
-
-
-
-	expect_entry : type_expect_entry := expect_entry_default;
-	
-end et_modes.board;
-
 -- Soli Deo Gloria
+
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

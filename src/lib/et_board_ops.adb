@@ -1623,6 +1623,13 @@ package body et_board_ops is
 
 		end if;
 	end;
+
+
+	procedure update_ratsnest (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is separate;
+
 	
 	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -425,7 +425,7 @@ is
 		is_signal := true;
 		net_name := key (n);
 		net_class := element (n).class;
-
+	
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
@@ -738,12 +738,53 @@ is
 		iterate (element (n).route.vias, query_via'access);
 	end query_net_via;
 
+
+
+	
 	
 	-- Draws the tracks, vias and texts in conductor layers:
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) is
-	begin
+		module		: in type_module) 
+	is
+
+		procedure draw_ratsnest is
+
+			procedure query_net (n : in pac_nets.cursor) is 
+				use pac_airwires;
+				
+				procedure query_airwire (c : in pac_airwires.cursor) is begin
+					draw_line (
+						area		=> in_area,
+						context		=> context,
+						line		=> element (c),
+						width		=> airwire_line_width,
+						height		=> self.frame_height);
+					
+				end query_airwire;
+
+
+			begin -- query_net
+				if not element (n).route.airwires.hidden then
+					iterate (element (n).route.airwires.lines, query_airwire'access);
+				end if;
+			end query_net;
+
+		begin
+			if ratsnest_enabled then
+				-- All airwires of all nets are drawn with the same
+				-- color and width:
+				set_color_ratsnest (context.cr);
+				set_line_width (context.cr, type_view_coordinate (airwire_line_width));
+				
+				pac_nets.iterate (module.nets, query_net'access);
+			end if;
+		end draw_ratsnest;
+
+		
+		
+	begin -- query_items
+		
 		-- Iterate all conductor layers starting at the bottom layer and ending
 		-- with the top layer:
 		for ly in reverse top_layer .. bottom_layer loop
@@ -782,6 +823,9 @@ is
 			end if;
 		end loop;
 
+		-- draw unrouted stuff (airwires)
+		draw_ratsnest;
+		
 		-- Draw the vias that exist in the nets:
 		iterate (module.nets, query_net_via'access);
 	end query_items;
