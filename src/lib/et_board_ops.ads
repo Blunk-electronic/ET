@@ -198,6 +198,7 @@ package et_board_ops is
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
+
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
@@ -208,26 +209,30 @@ package et_board_ops is
 		end case;
 	end record;
 
-	function locate_device (
+	
 	-- Returns a cursor to the requested device in the given module.
+	function locate_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name)
 		return et_schematic.pac_devices_sch.cursor;
+
 	
-	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
+	function terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
 
+	
 	-- Sets the grid of the module.
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 
+	
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in type_grid;
@@ -240,7 +245,7 @@ package et_board_ops is
 
 	procedure update_ratsnest (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
+		lth				: in type_log_level);
 
 	
 	-- Adds a line track segment to the given net in the given module.

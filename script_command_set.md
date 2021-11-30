@@ -254,6 +254,10 @@ board led_driver display origins top [on/off]
 board led_driver display origins bottom [on/off]
 ```
 
+Ratsnest (Airwires, Unrouted)
+```
+board led_driver display ratsnest [on/off]
+```
 
 Conductor or signal layers (usually copper):
 ```

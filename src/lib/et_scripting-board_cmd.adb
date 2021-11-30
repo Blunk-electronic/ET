@@ -147,6 +147,31 @@ is
 		-- CS exception handler if status is invalid
 	end display_outline;
 
+
+	-- Enables/disables the ratsnest layer. If status is empty,
+	-- the layer will be enabled.
+	procedure display_ratsnest ( -- GUI related
+		status	: in string := "") 
+	is 
+		ls : type_layer_status;
+	begin
+		-- Convert the given status to type_layer_status.
+		-- If no status given, assume status ON:
+		if status = "" then
+			ls := ON;
+		else
+			ls := to_layer_status (status);
+		end if;
+
+		log (text => "display ratsnest layer" & space & to_string (ls),
+				level => log_threshold + 1);
+
+		layers.ratsnest := ls;
+		
+		-- CS exception handler if status is invalid
+	end display_ratsnest;
+
+
 	
 	-- Enables/disables a certain non-conductor layer. If status is empty,
 	-- the layer will be enabled.
@@ -2977,6 +3002,14 @@ is
 						case get_field_count is
 							when 4 => display_outline; -- if status is omitted
 							when 5 => display_outline (f (5));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_RATSNEST => -- like "board led_driver display ratsnest [on/off]"
+						case get_field_count is
+							when 4 => display_ratsnest; -- if status is omitted
+							when 5 => display_ratsnest (f (5));
 							when 6 .. count_type'last => too_long;
 							when others => command_incomplete;
 						end case;

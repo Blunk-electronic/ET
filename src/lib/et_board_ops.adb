@@ -1584,6 +1584,7 @@ package body et_board_ops is
 		end if;
 	end is_freetrack;
 
+	
 	function net_exists (net_cursor : in pac_nets.cursor) return boolean is 
 	begin
 		if net_cursor = pac_nets.no_element then
@@ -1593,6 +1594,7 @@ package body et_board_ops is
 		end if;
 	end;
 
+	
 	procedure check_terminal_face_vs_layer (
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is an SMT type, then the track may start at either the top or bottom
@@ -1627,7 +1629,7 @@ package body et_board_ops is
 
 	procedure update_ratsnest (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
+		lth				: in type_log_level)
 	is separate;
 
 	

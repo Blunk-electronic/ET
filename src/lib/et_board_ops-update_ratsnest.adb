@@ -45,8 +45,34 @@ separate (et_board_ops)
 
 procedure update_ratsnest (
 	module_cursor	: in pac_generic_modules.cursor;
-	log_threshold	: in type_log_level)
-is 
+	lth				: in type_log_level)
+is
+
+	procedure query_module (
+		module_name	: in pac_module_name.bounded_string;
+		module		: in out type_module) 
+	is
+		net_cursor : pac_nets.cursor := module.nets.first;
+
+		procedure query_net (
+			net_name	: in pac_net_name.bounded_string;
+			net			: in out type_net)
+		is 
+			--aw : type_airwire := (1.0;
+		begin
+			log (text => "net " & to_string (net_name), level => lth + 1);
+
+			--append 
+			null;
+		end query_net;
+
+		
+	begin -- query_module
+		while net_cursor /= pac_nets.no_element loop
+			update_element (module.nets, net_cursor, query_net'access);
+			next (net_cursor);
+		end loop;
+	end query_module;
 
 	
 begin -- update_ratsnest
@@ -54,10 +80,11 @@ begin -- update_ratsnest
 	log (text => "module " 
 		& enclose_in_quotes (to_string (key (module_cursor)))
 		& " updating ratsnest ...",
-		level => log_threshold);
+		level => lth);
 
 	log_indentation_up;
 
+	update_element (generic_modules, module_cursor, query_module'access);
 
 	log_indentation_down;
 		
