@@ -296,11 +296,16 @@ package et_geometry_2 is
 	type type_line_base is abstract tagged record
 		start_point 	: type_point;
 		end_point   	: type_point;
-		-- CS locked : type_locked;
 	end record;
 
 	type type_line is new type_line_base with null record;
-	-- CS use this type wherever a type_line is declared unnessecarily.
+
+	function make_line (
+		start_x, start_y, end_x, end_y : in type_distance)
+		return type_line'class;
+
+
+
 
 	
 	function round (line : in type_line)

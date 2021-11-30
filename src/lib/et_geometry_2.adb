@@ -646,6 +646,21 @@ package body et_geometry_2 is
 	end get_angle_of_itersection;
 
 
+	function make_line (
+		start_x, start_y, end_x, end_y : in type_distance)
+		return type_line'class
+	is
+		line : type_line;
+	begin
+		line := (
+			start_point => type_point (set (start_x, start_y)),
+			end_point	=> type_point (set (end_x, end_y)));
+
+		return line;
+	end make_line;
+
+	
+
 	function round (line : in type_line)
 		return type_line'class
 	is 
@@ -658,6 +673,7 @@ package body et_geometry_2 is
 		return r;
 	end round;
 
+	
 	procedure round (line : in out type_line) 
 	is begin
 		line.start_point := type_point (round (line.start_point));
