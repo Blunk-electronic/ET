@@ -249,12 +249,12 @@ package et_pcb is
 
 	type type_airwires is record
 		lines	: pac_airwires.list;
-		hidden	: boolean := true;
+		hidden	: boolean := false;
 	end record;
 
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
-	airwire_line_width : constant type_distance_positive := 0.1;
+	airwire_line_width : constant type_distance_positive := 0.01;
 	
 	
 	type type_route is record

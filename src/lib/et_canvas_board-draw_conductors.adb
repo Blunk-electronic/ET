@@ -754,6 +754,7 @@ is
 				use pac_airwires;
 				
 				procedure query_airwire (c : in pac_airwires.cursor) is begin
+					
 					draw_line (
 						area		=> in_area,
 						context		=> context,
@@ -772,6 +773,7 @@ is
 
 		begin
 			if ratsnest_enabled then
+				
 				-- All airwires of all nets are drawn with the same
 				-- color and width:
 				set_color_ratsnest (context.cr);

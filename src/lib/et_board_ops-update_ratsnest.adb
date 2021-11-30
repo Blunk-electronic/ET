@@ -58,12 +58,17 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in out type_net)
 		is 
-			--aw : type_airwire := (1.0;
+			aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
+
 		begin
 			log (text => "net " & to_string (net_name), level => lth + 1);
+			
+			net.route.airwires.lines.append (aw);
 
-			--append 
-			null;
+		--lines 		: pac_conductor_lines.list;
+		--arcs		: pac_conductor_arcs.list;
+		--vias		: pac_vias.list;
+			
 		end query_net;
 
 		
