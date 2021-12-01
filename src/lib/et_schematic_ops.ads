@@ -791,7 +791,7 @@ package et_schematic_ops is
 	-- See et_libraries.type_port for detail.
 	-- The device must exist in the module and must be real. Run intergrity check
 	-- in case exception occurs here.
-	function port_properties (
+	function get_port_properties (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2

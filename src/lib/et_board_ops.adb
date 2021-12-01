@@ -39,6 +39,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.tags;
 
+with et_netlists;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 with et_submodules;
 with et_numbering;
@@ -1419,7 +1420,7 @@ package body et_board_ops is
 	end;
 
 	
-	function terminal_position (
+	function get_terminal_position (
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
@@ -1504,7 +1505,7 @@ package body et_board_ops is
 				return (terminal_position_base with technology => THT);
 
 		end case;
-	end terminal_position;
+	end get_terminal_position;
 
 
 	function get_terminal_positions (
@@ -1516,15 +1517,54 @@ package body et_board_ops is
 
 		ports : et_schematic.type_ports;
 
-		--procedure query_module (
-			--module_name	: in pac_module_name.bounded_string;
-			--module		: in type_module) 
-		--is
-		--begin
-			--null;
-		--end query_module;
-
 		port_properties : type_port_properties_access;
+
+		
+		use pac_device_ports;
+		procedure query_device (d : in pac_device_ports.cursor) is
+			device_cursor : pac_devices_sch.cursor;
+			terminal_position : type_point;
+		begin
+			port_properties := get_port_properties (
+				module_cursor	=> module_cursor,
+				device_name		=> element (d).device_name,
+				unit_name		=> element (d).unit_name,
+				port_name		=> element (d).port_name);
+
+			-- port_properties.terminal -- 14, H6
+			device_cursor := locate_device (module_cursor, element (d).device_name);
+
+			-- get x/y of the terminal:
+			terminal_position := type_point (get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
+
+			-- Add the terminal position to the result:
+			append_point (result, terminal_position);
+		end query_device;
+
+		
+		use pac_submodule_ports;
+		procedure query_submodule (s : in pac_submodule_ports.cursor) is
+		begin
+			-- CS
+			
+			-- element (s).module_name
+			-- element (s).port_name  -> position in brd
+			null;
+		end query_submodule;
+
+		
+		use et_netlists;
+		use pac_netchanger_ports;
+		procedure query_netchanger (n : in pac_netchanger_ports.cursor) is
+		begin
+			null;
+
+			-- CS
+			
+			-- element (n).index
+			-- element (n).port  -> position in brd
+		end query_netchanger;
+		
 		
 	begin
 		-- Get the ports of devices, netchangers and submodules that are connected
@@ -1533,8 +1573,11 @@ package body et_board_ops is
 				net		=> net_cursor,
 				variant	=> et_assembly_variants.pac_assembly_variants.no_element);
 
-		
-		--query_element (module_cursor, query_module'access);
+
+		iterate (ports.devices, query_device'access);
+		iterate (ports.submodules, query_submodule'access);
+		iterate (ports.netchangers, query_netchanger'access);
+
 		
 		return result;
 	end get_terminal_positions;
@@ -1863,7 +1906,7 @@ package body et_board_ops is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 		
@@ -1932,7 +1975,7 @@ package body et_board_ops is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 
@@ -1993,7 +2036,7 @@ package body et_board_ops is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 		
@@ -2060,7 +2103,7 @@ package body et_board_ops is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 

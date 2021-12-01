@@ -70,13 +70,6 @@ is
 		--vias		: pac_vias.list;
 
 
-	--function get_ports (
-		--net		: in pac_nets.cursor;
-		--variant	: in pac_assembly_variants.cursor)
-		--return type_ports;
-			
-		--end query_net;
-
 		points : type_points;
 		
 	begin -- query_module

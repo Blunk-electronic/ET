@@ -205,7 +205,7 @@ is
 
 			-- Get the properties of the port. Properties is a record that provides
 			-- the terminal name. Other things of properties are not relevant here:
-			properties := et_schematic_ops.port_properties (
+			properties := et_schematic_ops.get_port_properties (
 				module_cursor	=> current_active_module,
 				device_name		=> device_name,
 				unit_name		=> unit_name,

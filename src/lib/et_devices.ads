@@ -597,14 +597,15 @@ package et_devices is
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
 
-	-- Used for netlists:
+	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
 		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
 		properties	: type_port (direction);
 	end record;
 
+	
+	-- Returns the properties of the given port of the given device.
 	function properties (
-	-- Returns the poperties of the given port of the given device.
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_ports.cursor;

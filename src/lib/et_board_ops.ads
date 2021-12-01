@@ -212,14 +212,14 @@ package et_board_ops is
 	
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
-	function terminal_position (
+	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
 
 
-	-- Returns the positions of the terminals of
+	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
 	-- The default assembly variant is assumed (means all devices are mounted).
 	function get_terminal_positions (

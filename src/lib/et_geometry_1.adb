@@ -386,6 +386,14 @@ package body et_geometry_1 is
 	end;
 
 
+	procedure append_point (
+		points	: in out type_points;
+		point	: in type_point)
+	is begin
+		pac_points.append (points.points, point);
+	end append_point;
+
+	
 	
 	function to_string (point : in type_point) return string is begin
 		return point_preamble

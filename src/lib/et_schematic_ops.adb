@@ -8567,7 +8567,7 @@ package body et_schematic_ops is
 	end make_boms;
 
 	
-	function port_properties (
+	function get_port_properties (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
@@ -8669,13 +8669,13 @@ package body et_schematic_ops is
 			
 		end query_devices;
 
-	begin -- port_properties 
+	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 		
 		return properties;
-	end port_properties;
+	end get_port_properties;
 
 	
 	function extend_ports (
@@ -8696,7 +8696,7 @@ package body et_schematic_ops is
 			more_properties	: type_port_properties_access;
 		begin
 			-- get further properties of the current port
-			more_properties := port_properties (
+			more_properties := get_port_properties (
 				module_cursor	=> module_cursor, 
 				device_name		=> port_sch.device_name, 
 				unit_name		=> port_sch.unit_name,

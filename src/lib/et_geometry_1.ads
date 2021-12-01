@@ -205,6 +205,9 @@ package et_geometry_1 is
 
 	type type_points is private;
 	
+	procedure append_point (
+		points	: in out type_points;
+		point	: in type_point);
 	
 	
 	origin			: constant type_point;		
