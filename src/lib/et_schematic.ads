@@ -461,13 +461,14 @@ package et_schematic is
 
 	
 	-- Returns the ports of devices, submodules and netchangers in
-	-- the given net. The given assembly variant determines whether
-	-- devices should be excluded (because they may not be present in an assembly variant).
+	-- the given net. The given assembly variant determines whether certain
+	-- devices should be excluded (because they may not be present in a particular
+	-- assembly variant).
 	-- NOTE: If variant points to no element, then the default variant is assumend
 	-- and ALL devices are returned.
 	function get_ports (
 		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor)
+		variant	: in pac_assembly_variants.cursor) -- CS default no_element ?
 		return type_ports;
 
 
@@ -541,8 +542,10 @@ package et_schematic is
 		grid			: type_grid; -- the drawing grid of the schematic
 
 		board_available	: type_board_available := FALSE;
+
+		-- ALL devices of the module independent of the assembly variant:
+		devices			: pac_devices_sch.map;
 		
-		devices			: pac_devices_sch.map;				-- the devices of the module
 		net_classes		: et_pcb.pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
 		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
@@ -552,7 +555,9 @@ package et_schematic is
 		-- the nets of the module (incl. routing information for the board):
 		nets 	    	: pac_nets.map;
 
-		-- the assembly variants of the module
+		-- The assembly variants of the module.
+		-- (means which device is mounted or not or which device can have a different
+		-- value, partcode or purpose):
 		variants		: pac_assembly_variants.map;
 		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
 		

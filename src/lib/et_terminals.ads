@@ -44,6 +44,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.indefinite_ordered_maps;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with et_general;
 --with et_string_processing;		use et_string_processing;
@@ -291,6 +292,21 @@ package et_terminals is
 	end record;
 
 
+	-- For laying out traces we need a type that provides for a terminal information about
+	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
+	type type_terminal_position (technology	: type_assembly_technology) 
+	is new pac_geometry_brd.type_position with record
+		case technology is
+			when SMT => face : type_face;
+			when THT => null;
+		end case;
+	end record;
+
+
+	-- package pac_terminal_positions is new indefinite_doubly_linked_lists (type_terminal_position);
+
+	
+	
 	-- A terminal is the physical point where electrical energy comes in or out of the device.
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
 	-- we further-on speak about "terminals".

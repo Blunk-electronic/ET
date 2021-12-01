@@ -1420,8 +1420,6 @@ package body et_board_ops is
 
 	
 	function terminal_position (
-	-- Returns the position of a terminal of the given device in the board.
-	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
@@ -1508,11 +1506,46 @@ package body et_board_ops is
 		end case;
 	end terminal_position;
 
+
+	function get_terminal_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in et_schematic.pac_nets.cursor)
+		return type_points
+	is
+		result : type_points;
+
+		ports : et_schematic.type_ports;
+
+		--procedure query_module (
+			--module_name	: in pac_module_name.bounded_string;
+			--module		: in type_module) 
+		--is
+		--begin
+			--null;
+		--end query_module;
+
+		port_properties : type_port_properties_access;
+		
+	begin
+		-- Get the ports of devices, netchangers and submodules that are connected
+		-- with the given net. Assume default assembly variant:
+		ports := get_ports (
+				net		=> net_cursor,
+				variant	=> et_assembly_variants.pac_assembly_variants.no_element);
+
+		
+		--query_element (module_cursor, query_module'access);
+		
+		return result;
+	end get_terminal_positions;
+
+
+	
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure do_it (

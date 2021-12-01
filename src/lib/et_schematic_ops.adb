@@ -8565,12 +8565,9 @@ package body et_schematic_ops is
 				
 		log_indentation_down;
 	end make_boms;
+
 	
 	function port_properties (
-	-- Returns properties of the given device port in module indicated by module_cursor.
-	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
-	-- The device must exist in the module and must be real. Run intergrity check
-	-- in case exception occurs here.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
@@ -8589,7 +8586,8 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor_sch	: pac_devices_sch.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
@@ -8597,12 +8595,14 @@ package body et_schematic_ops is
 
 			procedure query_variants (
 				model	: in pac_device_model_file.bounded_string;
-				device	: in type_device_lib) is
+				device	: in type_device_lib) 
+			is
 				variant_cursor : pac_variants.cursor;
 
 				procedure query_ports (
 					variant_name	: in pac_package_variant_name.bounded_string;
-					variant			: in et_devices.type_variant) is
+					variant			: in et_devices.type_variant) 
+				is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use pac_port_name;
@@ -8631,7 +8631,7 @@ package body et_schematic_ops is
 			use et_symbols.pac_ports;
 			
 		begin -- query_devices
-			-- locate device in schematic
+			-- locate the device in schematic (default assembly variant):
 			device_cursor_sch := find (module.devices, device_name);
 
 -- 			if device_cursor_sch /= pac_devices_sch.no_element then
@@ -8676,6 +8676,7 @@ package body et_schematic_ops is
 		
 		return properties;
 	end port_properties;
+
 	
 	function extend_ports (
 	-- Adds further properties to the given device ports.

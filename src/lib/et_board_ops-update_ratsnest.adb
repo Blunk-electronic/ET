@@ -54,27 +54,37 @@ is
 	is
 		net_cursor : pac_nets.cursor := module.nets.first;
 
-		procedure query_net (
-			net_name	: in pac_net_name.bounded_string;
-			net			: in out type_net)
-		is 
-			aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
+		--procedure query_net (
+			--net_name	: in pac_net_name.bounded_string;
+			--net			: in out type_net)
+		--is 
+			--aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
 
-		begin
-			log (text => "net " & to_string (net_name), level => lth + 1);
+		--begin
+			--log (text => "net " & to_string (net_name), level => lth + 1);
 			
-			net.route.airwires.lines.append (aw);
+			--net.route.airwires.lines.append (aw);
 
 		--lines 		: pac_conductor_lines.list;
 		--arcs		: pac_conductor_arcs.list;
 		--vias		: pac_vias.list;
-			
-		end query_net;
 
+
+	--function get_ports (
+		--net		: in pac_nets.cursor;
+		--variant	: in pac_assembly_variants.cursor)
+		--return type_ports;
+			
+		--end query_net;
+
+		points : type_points;
 		
 	begin -- query_module
 		while net_cursor /= pac_nets.no_element loop
-			update_element (module.nets, net_cursor, query_net'access);
+			--update_element (module.nets, net_cursor, query_net'access);
+
+			points := get_terminal_positions (module_cursor, net_cursor);
+			
 			next (net_cursor);
 		end loop;
 	end query_module;

@@ -785,12 +785,13 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 	
-	function port_properties (
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
+	-- Assumes the default assembly variant (means ALL devices are mounted).
 	-- See et_libraries.type_port for detail.
 	-- The device must exist in the module and must be real. Run intergrity check
 	-- in case exception occurs here.
+	function port_properties (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2

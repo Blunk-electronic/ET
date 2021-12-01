@@ -194,10 +194,18 @@ package et_geometry_1 is
 		scale	: in type_distance_positive);			
 	
 	function to_string (grid : in type_grid) return string;
+
+
 	
 	type type_point is tagged private;
 
 	--function "=" (left, right : in type_point) return boolean;
+
+	function "<" (left, right : in type_point) return boolean;
+
+	type type_points is private;
+	
+	
 	
 	origin			: constant type_point;		
 	far_upper_left	: constant type_point;
@@ -366,7 +374,7 @@ package et_geometry_1 is
 		& axis_separator
 		& "rotation)";
 
-	function "<" (left, right : in type_point) return boolean;
+
 
 	
 	function set (
@@ -641,7 +649,8 @@ package et_geometry_1 is
 		return type_point'class;
 
 	overriding function to_string (point : in type_position) return string;
-		
+
+	
 private
 	-- CS need an abstract type_point_abstract ?
 	
@@ -649,6 +658,17 @@ private
 		x, y : type_position_axis := zero;
 	end record;
 
+
+	
+	package pac_points is new doubly_linked_lists (type_point);
+
+	type type_points is record
+		points : pac_points.list;
+	end record;
+	
+
+	
+	
 	type type_distance_polar is record
 		absolute: type_distance_positive := zero;
 		angle	: type_rotation := zero_rotation; -- ranges from -180 to 180 degrees

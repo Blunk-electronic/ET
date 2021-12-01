@@ -200,14 +200,7 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- For laying out traces we need a type that provides for a terminal information about
-	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
-	type type_terminal_position (technology	: type_assembly_technology) is new pac_geometry_brd.type_position with record
-		case technology is
-			when SMT => face : type_face;
-			when THT => null;
-		end case;
-	end record;
+
 
 	
 	-- Returns a cursor to the requested device in the given module.
@@ -224,6 +217,15 @@ package et_board_ops is
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
+
+
+	-- Returns the positions of the terminals of
+	-- devices, netchangers and submodules of the given net.
+	-- The default assembly variant is assumed (means all devices are mounted).
+	function get_terminal_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in et_schematic.pac_nets.cursor)
+		return type_points;
 
 	
 	-- Sets the grid of the module.

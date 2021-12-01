@@ -353,12 +353,13 @@ package body et_geometry_1 is
 		grid.x := grid.x * scale;
 		grid.y := grid.y * scale;
 	end scale_grid;
+
 	
 	function to_string (grid : in type_grid) return string is begin
 		return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
 	end;
 
-
+	
 	--function "=" (left, right : in type_point) return boolean is begin
 		--if abs (left.x - right.x) <= type_distance'small 
 		--and abs (left.y - right.y) <= type_distance'small
@@ -369,6 +370,22 @@ package body et_geometry_1 is
 		--end if;
 	--end;
 	
+	function "<" (left, right : in type_point) return boolean is begin
+		if left.x < right.x then
+			return true;
+		elsif left.x > right.x then
+			return false;
+
+		-- left.x = right.x -> compare y:
+		elsif left.y < right.y then
+			return true;
+		else 
+			-- if left.y greater or equal right.y
+			return false;
+		end if;
+	end;
+
+
 	
 	function to_string (point : in type_point) return string is begin
 		return point_preamble
@@ -762,20 +779,6 @@ package body et_geometry_1 is
 	end mil_to_distance;
 
 	
-	function "<" (left, right : in type_point) return boolean is begin
-		if left.x < right.x then
-			return true;
-		elsif left.x > right.x then
-			return false;
-
-		-- left.x = right.x -> compare y:
-		elsif left.y < right.y then
-			return true;
-		else 
-			-- if left.y greater or equal right.y
-			return false;
-		end if;
-	end;
 	
 
 	function distance_to_mil (distance : in type_distance) return string is
