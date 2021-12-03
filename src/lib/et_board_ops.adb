@@ -1511,9 +1511,10 @@ package body et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return type_points
+		return pac_points.list
 	is
-		result : type_points;
+		use pac_points;
+		result : pac_points.list;
 
 		ports : et_schematic.type_ports;
 
@@ -1538,7 +1539,7 @@ package body et_board_ops is
 			terminal_position := type_point (get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
 
 			-- Add the terminal position to the result:
-			append_point (result, terminal_position);
+			append (result, terminal_position);
 		end query_device;
 
 		
@@ -1584,14 +1585,15 @@ package body et_board_ops is
 
 	function get_via_positions (
 		net_cursor : in et_schematic.pac_nets.cursor)
-		return type_points
+		return pac_points.list
 	is
-		result : type_points;
+		use pac_points;
+		result : pac_points.list;
 
 		use pac_vias;
 		procedure query_via (v : in pac_vias.cursor) is
 		begin
-			append_point (result, element (v).position);
+			append (result, element (v).position);
 		end query_via;
 		
 	begin

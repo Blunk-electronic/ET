@@ -70,7 +70,7 @@ is
 		--vias		: pac_vias.list;
 
 
-		points : type_points;
+		points : pac_points.list;
 
 		procedure query_net (n : in pac_nets.cursor) is
 		begin

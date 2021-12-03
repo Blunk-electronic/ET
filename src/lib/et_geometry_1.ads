@@ -196,49 +196,66 @@ package et_geometry_1 is
 	function to_string (grid : in type_grid) return string;
 
 
-	
-	type type_point is tagged private;
 
-	--function "=" (left, right : in type_point) return boolean;
-
-	function "<" (left, right : in type_point) return boolean;
-
-	type type_points is private;
-
-	-- Appends the given point to the list points:
-	procedure append_point (
-		points	: in out type_points;
-		point	: in type_point);
-
-	
-	-- Appends all points of source to the target.
-	procedure splice_points (
-		points_target : in out type_points;
-		points_source : in type_points);
-
-
-	
-	origin			: constant type_point;		
-	far_upper_left	: constant type_point;
-	far_upper_right	: constant type_point;
-	far_lower_left	: constant type_point;
-	far_lower_right	: constant type_point;
-	
-	function to_string (point : in type_point) return string;
-
-	
-	function round (point : in type_point)
-		return type_point'class;
-
-	procedure round (point : in out type_point'class);
-	
-	
 	type type_distance_relative is record
 		x, y : type_distance := zero;
 	end record;
 
 	function to_string (distance : in type_distance_relative)
 		return string;
+
+
+	
+
+	--type type_point_base is abstract tagged record
+		--x, y : type_position_axis := zero;
+	--end record;
+
+	--type type_point is new type_point_base with null record;
+
+	type type_point is tagged record
+		x, y : type_position_axis := zero;
+	end record;
+
+	--type type_point is new type_point_base with null record;
+
+	origin			: constant type_point;		
+	far_upper_left	: constant type_point;
+	far_upper_right	: constant type_point;
+	far_lower_left	: constant type_point;
+	far_lower_right	: constant type_point;
+
+	
+	function "<" (left, right : in type_point) return boolean;
+
+	--function "=" (left, right : in type_point) return boolean;
+
+
+	function to_string (point : in type_point) return string;
+
+
+	
+	function round (point : in type_point)
+		return type_point'class;
+
+	procedure round (point : in out type_point'class);
+
+	
+	
+	function to_distance_relative (p : in type_point)
+		return type_distance_relative;
+
+
+
+	-- Returns the rotation of the given point about the origin.
+	-- If for example point is (1/1) then the return is 45 degree.
+	-- if point is (-1/-1) then the return is -135 degree.
+	function get_rotation (point : in type_point) return type_rotation;
+
+	
+	
+	
+	
 	
 	
 	function to_point (
@@ -246,8 +263,6 @@ package et_geometry_1 is
 		clip	: in boolean := false)
 		return type_point'class;
 
-	function to_distance_relative (p : in type_point)
-		return type_distance_relative;
 
 	-- Inverts the given relative distance by 
 	-- multiplying x by -1 and y by -1.
@@ -262,10 +277,6 @@ package et_geometry_1 is
 	function get_y (point : in type_point'class) return type_position_axis;		
 
 	
-	-- Returns the rotation of the given point about the origin.
-	-- If for example point is (1/1) then the return is 45 degree.
-	-- if point is (-1/-1) then the return is -135 degree.
-	function get_rotation (point : in type_point) return type_rotation;
 
 	
 	-- The area (a rectangular box around an object)
@@ -661,23 +672,25 @@ package et_geometry_1 is
 
 	overriding function to_string (point : in type_position) return string;
 
+
+
+	
+
+	package pac_points is new doubly_linked_lists (type_point);
+
+	
+	-- Appends all points of source to the target.
+	procedure splice_points (
+		points_target : in out pac_points.list;
+		points_source : in pac_points.list);
+
+
+	
+
 	
 private
 	-- CS need an abstract type_point_abstract ?
 	
-	type type_point is tagged record
-		x, y : type_position_axis := zero;
-	end record;
-
-
-	
-	package pac_points is new doubly_linked_lists (type_point);
-
-	type type_points is record
-		points : pac_points.list;
-	end record;
-	
-
 	
 	
 	type type_distance_polar is record
@@ -685,6 +698,7 @@ private
 		angle	: type_rotation := zero_rotation; -- ranges from -180 to 180 degrees
 	end record;
 	
+
 	origin : constant type_point := (others => zero);
 
 	far_upper_left : constant type_point :=

@@ -386,24 +386,24 @@ package body et_geometry_1 is
 	end;
 
 
-	procedure append_point (
-		points	: in out type_points;
-		point	: in type_point)
-	is begin
-		pac_points.append (points.points, point);
-	end append_point;
+	--procedure append_point (
+		--points	: in out type_points;
+		--point	: in type_point)
+	--is begin
+		--pac_points.append (points.points, point);
+	--end append_point;
 
 
 	procedure splice_points (
-		points_target : in out type_points;
-		points_source : in type_points)
+		points_target : in out pac_points.list;
+		points_source : in pac_points.list)
 	is 
-		scratch : type_points := points_source;
+		scratch : pac_points.list := points_source;
 	begin
 		pac_points.splice (
-			target	=> points_target.points,
+			target	=> points_target,
 			before	=> pac_points.no_element,
-			source	=> scratch.points);
+			source	=> scratch);
 	end splice_points;
 	
 	

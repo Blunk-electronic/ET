@@ -225,13 +225,13 @@ package et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return type_points;
+		return pac_points.list;
 
 	
 	-- Returns the positions (x/y) of all vias of the given net:
 	function get_via_positions (
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return type_points;
+		return pac_points.list;
 
 	
 	-- Sets the grid of the module.
