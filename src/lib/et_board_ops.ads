@@ -228,6 +228,12 @@ package et_board_ops is
 		return type_points;
 
 	
+	-- Returns the positions (x/y) of all vias of the given net:
+	function get_via_positions (
+		net_cursor		: in et_schematic.pac_nets.cursor)
+		return type_points;
+
+	
 	-- Sets the grid of the module.
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

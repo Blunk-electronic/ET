@@ -393,6 +393,18 @@ package body et_geometry_1 is
 		pac_points.append (points.points, point);
 	end append_point;
 
+
+	procedure splice_points (
+		points_target : in out type_points;
+		points_source : in type_points)
+	is 
+		scratch : type_points := points_source;
+	begin
+		pac_points.splice (
+			target	=> points_target.points,
+			before	=> pac_points.no_element,
+			source	=> scratch.points);
+	end splice_points;
 	
 	
 	function to_string (point : in type_point) return string is begin

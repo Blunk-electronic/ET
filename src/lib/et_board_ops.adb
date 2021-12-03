@@ -1577,12 +1577,28 @@ package body et_board_ops is
 		iterate (ports.devices, query_device'access);
 		iterate (ports.submodules, query_submodule'access);
 		iterate (ports.netchangers, query_netchanger'access);
-
 		
 		return result;
 	end get_terminal_positions;
 
 
+	function get_via_positions (
+		net_cursor : in et_schematic.pac_nets.cursor)
+		return type_points
+	is
+		result : type_points;
+
+		use pac_vias;
+		procedure query_via (v : in pac_vias.cursor) is
+		begin
+			append_point (result, element (v).position);
+		end query_via;
+		
+	begin
+		iterate (element (net_cursor).route.vias, query_via'access);
+		return result;
+	end get_via_positions;
+	
 	
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

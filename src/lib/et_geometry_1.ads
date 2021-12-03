@@ -204,11 +204,19 @@ package et_geometry_1 is
 	function "<" (left, right : in type_point) return boolean;
 
 	type type_points is private;
-	
+
+	-- Appends the given point to the list points:
 	procedure append_point (
 		points	: in out type_points;
 		point	: in type_point);
+
 	
+	-- Appends all points of source to the target.
+	procedure splice_points (
+		points_target : in out type_points;
+		points_source : in type_points);
+
+
 	
 	origin			: constant type_point;		
 	far_upper_left	: constant type_point;

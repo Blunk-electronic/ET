@@ -71,15 +71,24 @@ is
 
 
 		points : type_points;
+
+		procedure query_net (n : in pac_nets.cursor) is
+		begin
+			-- get x/y of all terminals:
+			points := get_terminal_positions (module_cursor, net_cursor);
+
+			-- get x/y of all vias and append to points:
+			splice_points (points, get_via_positions (net_cursor));
+
+		end query_net;
+
 		
 	begin -- query_module
-		while net_cursor /= pac_nets.no_element loop
-			--update_element (module.nets, net_cursor, query_net'access);
 
-			points := get_terminal_positions (module_cursor, net_cursor);
-			
-			next (net_cursor);
-		end loop;
+		iterate (module.nets, query_net'access);
+
+
+		
 	end query_module;
 
 	
