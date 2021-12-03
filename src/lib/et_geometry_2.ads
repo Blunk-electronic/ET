@@ -304,6 +304,9 @@ package et_geometry_2 is
 		start_x, start_y, end_x, end_y : in type_distance)
 		return type_line'class;
 
+	function make_line (
+		start_point, end_point : in type_point)
+		return type_line'class;
 
 
 

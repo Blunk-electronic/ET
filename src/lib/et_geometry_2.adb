@@ -659,6 +659,18 @@ package body et_geometry_2 is
 		return line;
 	end make_line;
 
+
+	function make_line (
+		start_point, end_point : in type_point)
+		return type_line'class
+	is
+		line : type_line;
+	begin
+		line := (start_point, end_point);
+
+		return line;
+	end make_line;
+
 	
 
 	function round (line : in type_line)

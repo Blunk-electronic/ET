@@ -52,7 +52,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) 
 	is
-		net_cursor : pac_nets.cursor := module.nets.first;
+		--net_cursor : pac_nets.cursor := module.nets.first;
 
 		--procedure query_net (
 			--net_name	: in pac_net_name.bounded_string;
@@ -69,23 +69,57 @@ is
 		--arcs		: pac_conductor_arcs.list;
 		--vias		: pac_vias.list;
 
+		use pac_points;
 
-		points : pac_points.list;
 
-		procedure query_net (n : in pac_nets.cursor) is
+
+		procedure query_net (net_cursor : in pac_nets.cursor) is
+			points : pac_points.list;
+
+			
+			procedure query_start_point (sp : in pac_points.cursor) is
+				distance_to_end_point : type_distance := type_distance'last;
+				ep : type_point;
+
+				procedure query_end_point (cp : in pac_points.cursor) is
+					d : type_distance := get_absolute (get_distance (element (sp), element (cp)));
+				begin
+					if d < distance_to_end_point then
+						distance_to_end_point := d;
+						ep := element (cp);
+					end if;
+
+				end query_end_point;
+
+				airwire : type_airwire;
+				
+			begin
+				put_line (to_string (element (sp)));
+
+				points.iterate (query_end_point'access);
+
+				airwire := (type_line (make_line (element (sp), ep)) with null record);
+			end query_start_point;
+
+
 		begin
+			put_line ("net " & to_string (key (net_cursor)));
+			
 			-- get x/y of all terminals:
 			points := get_terminal_positions (module_cursor, net_cursor);
 
 			-- get x/y of all vias and append to points:
 			splice_points (points, get_via_positions (net_cursor));
 
+			points.iterate (query_start_point'access);
 		end query_net;
+
+
 
 		
 	begin -- query_module
 
-		iterate (module.nets, query_net'access);
+		module.nets.iterate (query_net'access);
 
 
 		
