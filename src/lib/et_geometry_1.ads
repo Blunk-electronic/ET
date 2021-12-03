@@ -218,7 +218,8 @@ package et_geometry_1 is
 	end record;
 
 	--type type_point is new type_point_base with null record;
-
+	-- CS need an abstract type_point_abstract ?
+	
 	origin			: constant type_point;		
 	far_upper_left	: constant type_point;
 	far_upper_right	: constant type_point;
@@ -689,9 +690,6 @@ package et_geometry_1 is
 
 	
 private
-	-- CS need an abstract type_point_abstract ?
-	
-	
 	
 	type type_distance_polar is record
 		absolute: type_distance_positive := zero;
