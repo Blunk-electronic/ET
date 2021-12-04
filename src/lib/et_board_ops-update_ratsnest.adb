@@ -74,34 +74,62 @@ is
 
 
 		procedure query_net (net_cursor : in pac_nets.cursor) is
+			use pac_points;
 			points : pac_points.list;
 
+			airwires : pac_airwires.list;
 			
 			procedure query_start_point (sp : in pac_points.cursor) is
 				distance_to_end_point : type_distance := type_distance'last;
 				ep : type_point;
 
 				procedure query_end_point (cp : in pac_points.cursor) is
-					d : type_distance := get_absolute (get_distance (element (sp), element (cp)));
+					d : type_distance;
 				begin
-					if d < distance_to_end_point then
-						distance_to_end_point := d;
-						ep := element (cp);
+					if element (sp) /= element (cp) then
+						
+						d := get_absolute (get_distance (element (sp), element (cp)));
+					--put_line (" end " & to_string (element (cp)) & " d " & to_string (d));
+					
+						if d < distance_to_end_point then
+							distance_to_end_point := d;
+							ep := element (cp);
+						end if;
 					end if;
-
 				end query_end_point;
 
 				airwire : type_airwire;
 				
-			begin
-				put_line (to_string (element (sp)));
+			begin -- query_start_point
+				put_line ("start " & to_string (element (sp)));
 
 				points.iterate (query_end_point'access);
 
-				airwire := (type_line (make_line (element (sp), ep)) with null record);
+				--put_line (" end " & to_string (ep));
+				
+				--if element (sp) /= ep then
+					airwire := (type_line (make_line (element (sp), ep)) with null record);
+
+					if not airwires.contains (airwire) then
+						airwires.append (airwire);
+					end if;
+				--end if;
 			end query_start_point;
 
 
+			procedure assign_airwires (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				--aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
+
+				use pac_airwires;
+			begin
+				--append (net.route.airwires.lines, aw);
+				net.route.airwires.lines := airwires;
+			end assign_airwires;
+
+			
 		begin
 			put_line ("net " & to_string (key (net_cursor)));
 			
@@ -112,6 +140,8 @@ is
 			splice_points (points, get_via_positions (net_cursor));
 
 			points.iterate (query_start_point'access);
+
+			update_element (module.nets, net_cursor, assign_airwires'access);
 		end query_net;
 
 
