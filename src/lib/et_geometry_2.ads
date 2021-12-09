@@ -320,6 +320,20 @@ package et_geometry_2 is
 	-- Returns the length of a line:
 	function get_length (line : in type_line)
 		return type_distance_positive;
+
+
+	-- Returns the length of the longest line.
+	-- If both have equal length, then the length of 
+	-- the second line will be returned:
+	function get_greatest_length (l1, l2 : in type_line)
+		return type_distance_positive;
+
+	-- Returns the longest of the given lines.
+	-- If both have equal length then l2 is returned:
+	function get_longest (l1, l2 : in type_line)
+		return type_line'class;
+
+
 	
 	-- Swaps start and end point of a line:
 	function reverse_line (line : in type_line) return type_line'class;

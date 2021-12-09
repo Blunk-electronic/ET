@@ -106,7 +106,21 @@ package body et_pcb is
 	end;
 
 	
+	procedure iterate (
+		airwires	: in pac_airwires.list;
+		process		: not null access procedure (position : in pac_airwires.cursor);
+		proceed		: not null access boolean)
+	is
+		use pac_airwires;
+		c : pac_airwires.cursor := airwires.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
+	
 	function package_position (position : in type_package_position) return string is
 	begin
 		return (" position" & to_string (type_point (position))

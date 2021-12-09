@@ -243,10 +243,27 @@ package et_pcb is
 -- Types for ELECTRIC !! conductor objects:
 
 
-	type type_airwire is new type_line with null record;
+	--type type_airwire is new type_line with null record;
 
-	package pac_airwires is new doubly_linked_lists (type_airwire);
+	--type type_airwire_node is new type_point with record
+		--processed : boolean := false;
+	--end record;
 
+	--package pac_airwire_nodes is new doubly_linked_lists (type_airwire_node);
+
+	
+
+	package pac_airwires is new doubly_linked_lists (type_line);
+
+	
+	-- Iterates the given list of airwires. Aborts the process when the
+	-- proceed-flag goes false:
+	procedure iterate (
+		airwires	: in pac_airwires.list;
+		process		: not null access procedure (position : in pac_airwires.cursor);
+		proceed		: not null access boolean);
+
+	
 	type type_airwires is record
 		lines	: pac_airwires.list;
 		hidden	: boolean := false;

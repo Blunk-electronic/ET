@@ -701,6 +701,34 @@ package body et_geometry_2 is
 	end get_length;
 
 
+	function get_greatest_length (l1, l2 : in type_line)
+		return type_distance_positive
+	is 
+		length_1 : constant type_distance_positive := get_length (l1);
+		length_2 : constant type_distance_positive := get_length (l2);
+	begin
+		if length_1 > length_2 then
+			return length_1;
+		else
+			return length_2;
+		end if;
+	end get_greatest_length;
+			
+
+	function get_longest (l1, l2 : in type_line)
+		return type_line'class
+	is
+		length_1 : constant type_distance_positive := get_length (l1);
+		length_2 : constant type_distance_positive := get_length (l2);
+	begin
+		if length_1 > length_2 then
+			return l1;
+		else
+			return l2;
+		end if;
+	end get_longest;
+	
+	
 	function reverse_line (line : in type_line) return type_line'class is 
 		result : type_line'class := line;
 	begin
