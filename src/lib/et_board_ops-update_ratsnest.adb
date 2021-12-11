@@ -77,12 +77,24 @@ is
 			end make_primary_airwire;
 
 
-			function get_nearest_primary_airwire (a_in : in pac_airwires.cursor) 
-				return pac_airwires.cursor
+			type type_nearest is record
+				cursor	: pac_airwires.cursor := pac_airwires.no_element;
+				already_connected : boolean := false; -- via secondary airwire
+			end record;
+			
+			
+			function get_nearest_primary_airwire (
+				a_in	: in pac_airwires.cursor)
+				--d_min	: in type_distance_positive := type_distance_positive'first) 
+				--return pac_airwires.cursor
+				return type_nearest
 			is 
 				smallest_distance : type_distance_positive := type_distance'last;
+
+				aw_tmp : type_line;
 				
-				nearest : pac_airwires.cursor := pac_airwires.no_element;
+				--nearest : pac_airwires.cursor := pac_airwires.no_element;
+				result : type_nearest; -- to be returned
 
 				procedure query_end_point (ca : in pac_airwires.cursor) is
 					d_tmp : type_distance_positive;
@@ -96,15 +108,25 @@ is
 						d_tmp := get_absolute (get_distance (element (a_in).end_point, element (ca).end_point));
 						--put_line (" end " & to_string (element (cp)) & " d " & to_string (d));
 
-						-- The distance must be shorter than the longest of the two
-						-- airwires:
+						-- The distance between the ends must be shorter than 
+						-- the longest of the two primary airwires:
 						if d_tmp < get_greatest_length (element (a_in), element (ca)) then
 							
 							-- Update smallest_distance if current distance (d_tmp) is
 							-- smaller than the old smallest_distance:
+							--if d_tmp > d_min and d_tmp < smallest_distance then
 							if d_tmp < smallest_distance then
-								smallest_distance := d_tmp;
-								nearest := ca;
+								
+								aw_tmp := type_line (make_line (element (a_in).end_point, element (ca).end_point));
+
+								--if not contains_airwire (airwires_to_add, aw_tmp) then
+								if contains_airwire (airwires_to_add, aw_tmp) then
+									result.already_connected := true; 
+									-- CS abort iteration ?
+								else									
+									smallest_distance := d_tmp;
+									result.cursor := ca;
+								end if;
 							end if;
 							
 						end if;
@@ -114,29 +136,46 @@ is
 
 			begin
 				airwires_primary.iterate (query_end_point'access);
-				return nearest;
+				return result;
 			end get_nearest_primary_airwire;
 			
 
 			
 			procedure query_airwire_primary (a : in pac_airwires.cursor) is
-				nearest : pac_airwires.cursor;
+				--nearest : pac_airwires.cursor;
+				nearest : type_nearest;
 				aw_tmp : type_line;
 			begin
 				nearest := get_nearest_primary_airwire (a);
 
-				if nearest /= pac_airwires.no_element then
-					aw_tmp := (type_line (get_longest (element (a), element (nearest))));
+				--if not nearest.already_connected and nearest.cursor /= pac_airwires.no_element then
+				if nearest.cursor /= pac_airwires.no_element then
+					-- near primary airwire found
+					--put_line ("1");
+
+					-- make secondary airwire:
+					aw_tmp := type_line (make_line (element (a).end_point, element (nearest.cursor).end_point));
+
+					airwires_to_add.append (aw_tmp);
+
+					-- if required, remove obsolete primary airwire:
+					aw_tmp := (type_line (get_longest (element (a), element (nearest.cursor))));
 					if not airwires_to_delete.contains (aw_tmp) then
 						airwires_to_delete.append (aw_tmp);
 					end if;
+					
+				else
+					-- no primary airwire found
+					
+					if nearest.already_connected then			
 
-					aw_tmp := type_line (make_line (element (a).end_point, element (nearest).end_point));
-
-					if not airwires_to_add.contains (aw_tmp) then
-						airwires_to_add.append (aw_tmp);
+						-- remove obsolete primary airwire:
+						aw_tmp := element (a);
+						if not airwires_to_delete.contains (aw_tmp) then
+							airwires_to_delete.append (aw_tmp);
+						end if;
+						
 					end if;
-
 				end if;
 			end query_airwire_primary;
 

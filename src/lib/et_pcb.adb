@@ -105,6 +105,32 @@ package body et_pcb is
 		return type_locked'value (locked);
 	end;
 
+
+	function contains_airwire (
+		airwires	: in pac_airwires.list;
+		airwire		: in type_line)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if airwires.contains (airwire) then
+			result := true;
+
+		-- The airwire could be reversed in the container
+		-- (means start and end point swapped):
+		elsif airwires.contains (type_line (reverse_line (airwire))) then
+			result := true;
+
+		else
+			result := false;
+		end if;
+
+		return result;
+	end contains_airwire;
+	
+	
+
+
 	
 	procedure iterate (
 		airwires	: in pac_airwires.list;
