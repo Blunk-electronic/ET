@@ -43,8 +43,6 @@ with et_text;					use et_text;
 
 package body et_pcb is
 
-	use pac_geometry_2;
-	
 
 
 	-- NET CLASSES
@@ -106,46 +104,6 @@ package body et_pcb is
 	end;
 
 
-	function contains_airwire (
-		airwires	: in pac_airwires.list;
-		airwire		: in type_line)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if airwires.contains (airwire) then
-			result := true;
-
-		-- The airwire could be reversed in the container
-		-- (means start and end point swapped):
-		elsif airwires.contains (type_line (reverse_line (airwire))) then
-			result := true;
-
-		else
-			result := false;
-		end if;
-
-		return result;
-	end contains_airwire;
-	
-	
-
-
-	
-	procedure iterate (
-		airwires	: in pac_airwires.list;
-		process		: not null access procedure (position : in pac_airwires.cursor);
-		proceed		: not null access boolean)
-	is
-		use pac_airwires;
-		c : pac_airwires.cursor := airwires.first;
-	begin
-		while c /= no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
 	
 	function package_position (position : in type_package_position) return string is
 	begin
@@ -174,6 +132,7 @@ package body et_pcb is
 
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
+	
 	procedure route_line_properties (
 		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in type_log_level)

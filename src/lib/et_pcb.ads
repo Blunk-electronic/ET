@@ -85,6 +85,9 @@ with et_assy_doc.boards;			use et_assy_doc.boards;
 with et_keepout.boards;				use et_keepout.boards;
 with et_pcb_contour;				use et_pcb_contour;
 
+with et_ratsnest;
+
+
 package et_pcb is
 	
 	use pac_geometry_brd;
@@ -239,50 +242,13 @@ package et_pcb is
 	end record;
 
 
-	
--- Types for ELECTRIC !! conductor objects:
-
-
-	--type type_airwire is new type_line with null record;
-
-	--type type_airwire_node is new type_point with record
-		--processed : boolean := false;
-	--end record;
-
-	--package pac_airwire_nodes is new doubly_linked_lists (type_airwire_node);
 
 	
 
-	package pac_airwires is new doubly_linked_lists (type_line);
-
-	-- Returns true if the container airwires contains the given
-	-- candidate airwire:
-	function contains_airwire (
-		airwires	: in pac_airwires.list;
-		airwire		: in type_line)
-		return boolean;
-	
-	
-	-- Iterates the given list of airwires. Aborts the process when the
-	-- proceed-flag goes false:
-	procedure iterate (
-		airwires	: in pac_airwires.list;
-		process		: not null access procedure (position : in pac_airwires.cursor);
-		proceed		: not null access boolean);
-
-	
-	type type_airwires is record
-		lines	: pac_airwires.list;
-		hidden	: boolean := false;
-	end record;
-
-	status_ratsnest_updated : constant string := "ratsnest updated";
-
-	airwire_line_width : constant type_distance_positive := 0.01;
 	
 	
 	type type_route is record
-		airwires	: type_airwires;
+		airwires	: et_ratsnest.type_airwires;
 		
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;

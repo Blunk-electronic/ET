@@ -60,6 +60,7 @@ with et_pcb_stack;
 with et_design_rules;
 with et_text;
 with et_meta;
+with et_ratsnest;					--use et_ratsnest;
 with et_exceptions;					use et_exceptions;
 
 package body et_canvas_board is
@@ -1284,7 +1285,7 @@ package body et_canvas_board is
 
 
 		procedure update is 
-			use et_pcb;
+			use et_ratsnest;
 		begin
 			case key is
 				when GDK_LC_r =>

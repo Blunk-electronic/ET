@@ -45,10 +45,12 @@ with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
+
 with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
 with et_display.board;				use et_display.board;
 with et_canvas_primitive_draw_ops;
+
 
 separate (et_canvas_board)
 
@@ -749,7 +751,8 @@ is
 	is
 
 		procedure draw_ratsnest is
-
+			use et_ratsnest;
+			
 			procedure query_net (n : in pac_nets.cursor) is 
 				use pac_airwires;
 				

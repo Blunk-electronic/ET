@@ -37,10 +37,10 @@
 
 with ada.strings;					use ada.strings;
 with ada.exceptions;
---with ada.containers.multiway_trees;
 with et_exceptions;					use et_exceptions;
-
+with et_ratsnest;					use et_ratsnest;
 --with et_routing;					use et_routing;
+
 
 separate (et_board_ops)
 
@@ -57,150 +57,24 @@ is
 		procedure query_net (net_cursor : in pac_nets.cursor) is
 
 			use pac_points;
-			points : pac_points.list;
+			nodes : pac_points.list;
 
 			use pac_airwires;
-			airwires_primary : pac_airwires.list;
-			airwires_to_add : pac_airwires.list;
-			airwires_to_delete : pac_airwires.list;
-
-
-			-- The common start point of all primary airwires:
-			root : type_point;
-			
-			procedure make_primary_airwire (p : in pac_points.cursor) is
-			begin
-				--if p /= points.first then
-				if element (p) /= root then
-					airwires_primary.append (type_line (make_line (root, element (p))));
-				end if;
-			end make_primary_airwire;
-
-
-			type type_nearest is record
-				cursor	: pac_airwires.cursor := pac_airwires.no_element;
-				already_connected : boolean := false; -- via secondary airwire
-			end record;
-			
-			
-			function get_nearest_primary_airwire (
-				a_in	: in pac_airwires.cursor)
-				--d_min	: in type_distance_positive := type_distance_positive'first) 
-				--return pac_airwires.cursor
-				return type_nearest
-			is 
-				smallest_distance : type_distance_positive := type_distance'last;
-
-				aw_tmp : type_line;
-				
-				--nearest : pac_airwires.cursor := pac_airwires.no_element;
-				result : type_nearest; -- to be returned
-
-				procedure query_end_point (ca : in pac_airwires.cursor) is
-					d_tmp : type_distance_positive;
-				begin
-					-- Query the end point of all primary airwires except the 
-					-- given airwire indicted by cursor a_in:
-					if a_in /= ca then
-
-						-- Get the distance from end point of a_in to the end point of the
-						-- candidate airwire indicated by cursor ca:
-						d_tmp := get_absolute (get_distance (element (a_in).end_point, element (ca).end_point));
-						--put_line (" end " & to_string (element (cp)) & " d " & to_string (d));
-
-						-- The distance between the ends must be shorter than 
-						-- the longest of the two primary airwires:
-						if d_tmp < get_greatest_length (element (a_in), element (ca)) then
-							
-							-- Update smallest_distance if current distance (d_tmp) is
-							-- smaller than the old smallest_distance:
-							--if d_tmp > d_min and d_tmp < smallest_distance then
-							if d_tmp < smallest_distance then
-								
-								aw_tmp := type_line (make_line (element (a_in).end_point, element (ca).end_point));
-
-								--if not contains_airwire (airwires_to_add, aw_tmp) then
-								if contains_airwire (airwires_to_add, aw_tmp) then
-									result.already_connected := true; 
-									-- CS abort iteration ?
-								else									
-									smallest_distance := d_tmp;
-									result.cursor := ca;
-								end if;
-							end if;
-							
-						end if;
-					end if;
-				end query_end_point;
-
-
-			begin
-				airwires_primary.iterate (query_end_point'access);
-				return result;
-			end get_nearest_primary_airwire;
-			
-
-			
-			procedure query_airwire_primary (a : in pac_airwires.cursor) is
-				--nearest : pac_airwires.cursor;
-				nearest : type_nearest;
-				aw_tmp : type_line;
-			begin
-				nearest := get_nearest_primary_airwire (a);
-
-				--if not nearest.already_connected and nearest.cursor /= pac_airwires.no_element then
-				if nearest.cursor /= pac_airwires.no_element then
-					-- near primary airwire found
-					--put_line ("1");
-
-					-- make secondary airwire:
-					aw_tmp := type_line (make_line (element (a).end_point, element (nearest.cursor).end_point));
-
-					airwires_to_add.append (aw_tmp);
-
-					-- if required, remove obsolete primary airwire:
-					aw_tmp := (type_line (get_longest (element (a), element (nearest.cursor))));
-					if not airwires_to_delete.contains (aw_tmp) then
-						airwires_to_delete.append (aw_tmp);
-					end if;
-					
-				else
-					-- no primary airwire found
-					
-					if nearest.already_connected then			
-
-						-- remove obsolete primary airwire:
-						aw_tmp := element (a);
-						if not airwires_to_delete.contains (aw_tmp) then
-							airwires_to_delete.append (aw_tmp);
-						end if;
-						
-					end if;
-				end if;
-			end query_airwire_primary;
-
-
-			
-			procedure remove_obsolete_primary_airwires is
-
-				procedure query_airwire (a : in pac_airwires.cursor) is
-					c : pac_airwires.cursor := airwires_primary.find (element (a));
-				begin
-					airwires_primary.delete (c);
-				end query_airwire;
-				
-			begin
-				airwires_to_delete.iterate (query_airwire'access);
-			end remove_obsolete_primary_airwires;
-
 
 			procedure assign_airwires (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
 				--aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
+				airwires : pac_airwires.list;
 			begin
-				net.route.airwires.lines := airwires_primary;
+				-- compute the ratsnest:
+				airwires := make_airwires (nodes);
+				
+				-- CS remove airwires where track segments are already laid out ?
+				
+				net.route.airwires.lines := airwires;
+
 			end assign_airwires;
 
 			
@@ -209,45 +83,21 @@ is
 			put_line ("net " & to_string (key (net_cursor)));
 			
 			-- get x/y of all terminals:
-			points := get_terminal_positions (module_cursor, net_cursor);
+			nodes := get_terminal_positions (module_cursor, net_cursor);
 
-			-- get x/y of all vias and append to points:
-			splice_points (points, get_via_positions (net_cursor));
+			-- get x/y of all vias and append their positions to nodes:
+			splice_points (nodes, get_via_positions (net_cursor));
 
-			-- make airwires between points
-			--points.iterate (query_start_point'access);
-			-- Now the container "airwires" contains the airwires of
-			-- clusters. But the clusters are not connected with other clusters yet.
-			
-
-			-- make airwires between clusters
-			--points.iterate (query_point'access);
-
-			-- make primary airwires (all of them originate at the same root point):
-			root := first_element (points);
-			points.iterate (make_primary_airwire'access);
-			
-			airwires_primary.iterate (query_airwire_primary'access);
-
-			remove_obsolete_primary_airwires;
-
-			pac_airwires.splice (
-				target		=> airwires_primary, 
-				before		=> pac_airwires.no_element,
-				source		=> airwires_to_add);
+			-- CS get x/y of track segments
+			null;
 			
 			update_element (module.nets, net_cursor, assign_airwires'access);
 		end query_net;
 
 
-
 		
 	begin -- query_module
-
 		module.nets.iterate (query_net'access);
-
-
-		
 	end query_module;
 
 	
