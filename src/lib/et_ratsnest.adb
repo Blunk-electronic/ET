@@ -86,24 +86,6 @@ package body et_ratsnest is
 
 
 
-
-	--airwires_primary : pac_airwires.list;
-	--airwires_to_add : pac_airwires.list;
-	--airwires_to_delete : pac_airwires.list;
-
-
-	-- The common start point of all primary airwires:
-	--root : type_point;
-	
-	--procedure make_primary_airwire (p : in pac_points.cursor) is
-	--begin
-		----if p /= points.first then
-		--if element (p) /= root then
-			--airwires_primary.append (type_line (make_line (root, element (p))));
-		--end if;
-	--end make_primary_airwire;
-
-
 	--type type_nearest (connected : boolean) -- via secondary airwire
 	--is record
 		--case connected is
@@ -250,49 +232,171 @@ package body et_ratsnest is
 
 
 	
-	--procedure remove_obsolete_primary_airwires is
-
-		--procedure query_airwire (a : in pac_airwires.cursor) is
-			--c : pac_airwires.cursor := airwires_primary.find (element (a));
-		--begin
-			--airwires_primary.delete (c);
-		--end query_airwire;
-		
-	--begin
-		--airwires_to_delete.iterate (query_airwire'access);
-	--end remove_obsolete_primary_airwires;
-
-
-	-- make airwires between points
-	--points.iterate (query_start_point'access);
-	-- Now the container "airwires" contains the airwires of
-	-- clusters. But the clusters are not connected with other clusters yet.
-	
-
-	-- make airwires between clusters
-	--points.iterate (query_point'access);
-
-	-- make primary airwires (all of them originate at the same root point):
-	--root := first_element (points);
-	--points.iterate (make_primary_airwire'access);
-	
-	--airwires_primary.iterate (query_airwire_primary'access);
-
-	--remove_obsolete_primary_airwires;
-
-	--pac_airwires.splice (
-		--target		=> airwires_primary, 
-		--before		=> pac_airwires.no_element,
-		--source		=> airwires_to_add);
-
-	
 	function make_airwires (
 		nodes	: in pac_points.list)
 		return pac_airwires.list
-	is
-		result : pac_airwires.list;
-	begin
+	is		
+		use pac_airwires;
+		result : pac_airwires.list := pac_airwires.empty_list; -- to be returned
+		
+		use pac_points;
+		start : type_point;
 
+		-- This is the list of unconneced nodes. It will become
+		-- shorter and shorter over time until it is empty.
+		-- Initially it is a copy of the given nodes:
+		nodes_isolated : pac_points.list := nodes;
+
+		-- This is the spann-graph that we are going to build.
+		-- Once a node gets linked (with an airwire), the the node
+		-- will be added to nodes_linked. So this list of nodes grows
+		-- over time until all given nodes have been added to the graph.
+		-- Initially it is empty:
+		nodes_linked : pac_points.list := pac_points.empty_list;
+		
+
+		-- Moves the given node from the list of isolated nodes to
+		-- the list of linked nodes:
+		procedure move_to_linked_nodes (node : in type_point) is
+			nc : pac_points.cursor;
+		begin
+			-- remove from isolated nodes:
+			nc := nodes_isolated.find (node);
+			nodes_isolated.delete (nc);
+
+			-- add to linked nodes:
+			nodes_linked.append (node);
+		end move_to_linked_nodes;
+
+
+		-- Creates an airwire beweeen the given two nodes and
+		-- appends it to the result:
+		procedure make_airwire (node_1, node_2 : in type_point) is
+			aw : type_line;
+		begin
+			-- CS make sure length is greater zero ?
+			aw := type_line (make_line (node_1, node_2));
+			result.append (aw);
+		end make_airwire;
+		
+		
+		-- Returns the node that is nearest to the given node.
+		-- It does not probe the distance of the given node to itself (which would be zero).
+		-- This function works according to principle 1 (P1).
+		-- It searches in the list of isolated nodes: 
+		function get_nearest_neighbor_of_node (node_in : in type_point)
+			return type_point
+		is
+			smallest_distance : type_distance_positive := type_distance'last;
+			node_nearest : type_point; -- to be returned
+			
+			procedure query_node (c : in pac_points.cursor) is
+				d_tmp : type_distance_positive;
+			begin
+				if element (c) /= node_in then
+					d_tmp := get_absolute (get_distance (element (c), node_in));
+
+					if d_tmp < smallest_distance then
+						smallest_distance := d_tmp;
+						node_nearest := element (c);
+					end if;
+				end if;
+			end query_node;
+			
+		begin
+			nodes_isolated.iterate (query_node'access);
+			return node_nearest;
+		end get_nearest_neighbor_of_node;
+		
+
+		-- Returns the node that is nearest to the current graph nodes_linked:
+		-- This function works according to principle 2 (P2):
+		function get_nearest_neighbor_of_graph
+			return type_point
+		is
+			node_nearest : type_point; -- to be returned
+			linked_total : constant count_type := nodes_linked.length;
+			
+			type type_neigbor is record
+				node		: type_point;
+				distance	: type_distance_positive := zero;
+				origin		: type_point;
+			end record;
+
+			type type_neigbors is array (1 .. linked_total) of type_neigbor;
+			neigbors : type_neigbors := (others => <>);
+
+			subtype type_neigbor_pointer is count_type range 1 .. linked_total + 1;
+			neigbor_pointer : type_neigbor_pointer := 1;
+
+			
+			procedure query_node_linked (c : in pac_points.cursor) is
+				neigbor : type_neigbor;
+			begin
+				neigbor.node := get_nearest_neighbor_of_node (element (c));
+				neigbor.distance := get_absolute (get_distance (element (c), neigbor.node));
+				neigbor.origin := element (c);
+
+				neigbors (neigbor_pointer) := neigbor;
+				neigbor_pointer := neigbor_pointer + 1;
+			end query_node_linked;
+
+
+			procedure find_nearest_among_neigbors is
+				smallest_distance : type_distance_positive := type_distance'last;
+				aw_tmp : type_line;
+			begin
+				for i in neigbors'first .. neigbors'last loop
+					if neigbors (i).distance < smallest_distance then
+						smallest_distance := neigbors (i).distance;
+						node_nearest := neigbors (i).node;
+
+						aw_tmp := type_line (make_line (neigbors (i).origin, neigbors (i).node));
+					end if;
+				end loop;
+
+				--make_airwire (aw_tmp.start_point, aw_tmp.end_point);
+				result.append (aw_tmp);
+			end find_nearest_among_neigbors;
+			
+			
+		begin
+			nodes_linked.iterate (query_node_linked'access);
+
+			find_nearest_among_neigbors;
+			
+			return node_nearest;
+		end get_nearest_neighbor_of_graph;
+
+
+		n : type_point;
+				
+	begin
+		
+		if nodes.length > 2 then
+
+			-- Set the start point of the SCN:
+			start := first_element (nodes_isolated);
+
+			-- Apply P1:
+			n := get_nearest_neighbor_of_node (start);
+
+			-- create the first fragment of the SCN:
+			move_to_linked_nodes (start);
+			move_to_linked_nodes (n);
+
+			-- create the first airwire
+			--make_airwire (start, n);
+			result.append ((start, n));
+
+
+			while not nodes_isolated.is_empty loop
+				n := get_nearest_neighbor_of_graph;
+
+				move_to_linked_nodes (n);
+			end loop;
+
+		end if;
 
 		return result;
 	end make_airwires;

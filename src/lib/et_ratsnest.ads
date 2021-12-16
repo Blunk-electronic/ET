@@ -104,11 +104,20 @@ package et_ratsnest is
 
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
+	-- GUI relevant only:
 	airwire_line_width : constant type_distance_positive := 0.01;
 
 
 	-- Constructs from a list of nodes a list of airwires.
-	-- The airwires are returned as a Shortest-Connection-Network (SCN).
+	-- The airwires are returned as a Shortest-Connection-Network (SCN)
+	-- or a spanning-subgraph. 
+	--  The given list of nodes must contain at least 2 nodes. Otherwise
+	-- no airwire will be returned.
+	--  CS: For the moment we assume that no node sits on top of another node,
+	-- means each node has a unique x/y position.
+	--  The algorithm used here bases on the article:
+	-- "Shortest Connection Networks And Some Generalizations"
+	-- written by R.C.PRIM, date 1957-05-08
 	function make_airwires (
 		nodes	: in pac_points.list)
 		return pac_airwires.list;
