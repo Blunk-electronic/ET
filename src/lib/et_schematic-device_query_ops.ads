@@ -47,7 +47,8 @@ with et_devices;				use et_devices;
 package et_schematic.device_query_ops is
 
 
-	-- Returns true if the given device is real.
+	-- Returns true if given device is real (means if it has a physical 
+	-- counterpart in the PCB layout):
 	function is_real (
 		device : in pac_devices_sch.cursor) 
 		return boolean;

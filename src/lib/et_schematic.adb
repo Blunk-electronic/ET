@@ -409,6 +409,9 @@ package body et_schematic is
 	end get_ports;
 
 
+
+
+	
 	procedure iterate (
 		devices	: in pac_devices_sch.map;
 		process	: not null access procedure (position : in pac_devices_sch.cursor);

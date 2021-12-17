@@ -77,6 +77,11 @@ is
 
 			end assign_airwires;
 
+
+			procedure query_node (c : in pac_points.cursor) is
+			begin
+				put_line (to_string (element (c)));
+			end query_node;
 			
 			
 		begin
@@ -85,6 +90,8 @@ is
 			-- get x/y of all terminals:
 			nodes := get_terminal_positions (module_cursor, net_cursor);
 
+			nodes.iterate (query_node'access);
+			
 			-- get x/y of all vias and append their positions to nodes:
 			splice_points (nodes, get_via_positions (net_cursor));
 

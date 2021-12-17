@@ -481,6 +481,8 @@ package et_schematic is
  		element_type	=> type_device_sch);
 
 
+	
+
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		devices	: in pac_devices_sch.map;

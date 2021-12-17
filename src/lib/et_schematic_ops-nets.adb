@@ -1478,7 +1478,13 @@ package body et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 	is 
 		use et_schematic.pac_nets;
+
+		-- The segment being processed.
+		-- Initially it is just a copy of the given bare segment. 
+		-- In the course of this procedure ports of devices, submodules 
+		-- and netchangers will be attached to it:
 		segment : type_net_segment := segment_new;
+		
 		point : et_coordinates.type_position;
 
 		type type_junction is record
@@ -1491,9 +1497,10 @@ package body et_schematic_ops.nets is
 		
 		use type_net_names;
 		net_names : type_net_names.list;
+
 		
-		function list_nets return string is 
 		-- Returns the content of net_names in a single string.
+		function list_nets return string is 
 			net_cursor : type_net_names.cursor := net_names.first;
 			use ada.strings.unbounded;
 			names : ada.strings.unbounded.unbounded_string;
@@ -1505,6 +1512,7 @@ package body et_schematic_ops.nets is
 			return to_string (names);
 		end;
 
+		
 		procedure collision (point : in et_coordinates.type_position) is begin
 			raise semantic_error_1 with
 				"ERROR: Net segment collides at" & to_string (position => point) 
@@ -1512,7 +1520,9 @@ package body et_schematic_ops.nets is
 		end collision;
 		
 		ports : type_ports;
+
 		
+		-- Attaches the ports to the segment being processed:
 		procedure assign_ports_to_segment is begin
 			pac_device_ports.union (segment.ports_devices, ports.devices);
 			pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
@@ -1528,9 +1538,9 @@ package body et_schematic_ops.nets is
 			strand : type_strand;
 			net : type_net;
 
-			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any foreign net names.
+			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			begin
 				if not is_empty (net_names) then
 					collision (point);
@@ -1619,18 +1629,19 @@ package body et_schematic_ops.nets is
 						
 		end create_net;
 
+		
 		procedure extend_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			attach_to_strand : boolean := false;
 
-			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any net names but the given net_name.
 			-- If net_names contains the given net_name, then the flag attach_to_strand
 			-- is set. The strand will be extended later by the segment specified by 
 			-- start_point and end_point.
+			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			begin
 				if is_empty (net_names) then -- no nets here
 					null;
@@ -1648,6 +1659,7 @@ package body et_schematic_ops.nets is
 			end evaluate_net_names;
 
 			use pac_strands;
+
 			
 			type type_which_strand is record
 				cursor				: pac_strands.cursor;
@@ -1657,6 +1669,7 @@ package body et_schematic_ops.nets is
 			strand_at_start : type_which_strand;
 			strand_at_end   : type_which_strand;
 
+			
 			-- Required to test whether the new segment will be a dead end
 			-- at its start or end point:
 			function dead_end (strand : in type_which_strand) return boolean is begin
@@ -1666,12 +1679,13 @@ package body et_schematic_ops.nets is
 					return false;
 				end if;
 			end dead_end;
+
 			
-			function which_strand (place : in et_coordinates.type_position) 
 			-- Returns a cursor to the strand at place and a flag whether to place
 			-- a junction at the given place.
-				return type_which_strand is
-
+			function which_strand (place : in et_coordinates.type_position) 
+				return type_which_strand 
+			is
 				result : type_which_strand; -- to be returned
 
 				procedure query_strands (
@@ -1681,8 +1695,8 @@ package body et_schematic_ops.nets is
 					net			: in type_net) is
 					segment_found : boolean := false;
 					
-					procedure query_segments (strand : in type_strand) is
 					-- Iterate segments until first match.
+					procedure query_segments (strand : in type_strand) is
 						use pac_net_segments;
 						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					begin
@@ -1725,6 +1739,7 @@ package body et_schematic_ops.nets is
 							next (segment_cursor);
 						end loop;
 					end query_segments;
+
 					
 				begin -- query_strands
 					result.cursor := net.strands.first;
@@ -1744,6 +1759,7 @@ package body et_schematic_ops.nets is
 						next (result.cursor);
 					end loop;
 				end query_strands;
+
 				
 			begin -- which_strand
 				query_element (
@@ -1753,42 +1769,68 @@ package body et_schematic_ops.nets is
 				return result;
 			end which_strand;
 
+			
 			procedure append_segment (strand : in out type_strand) is begin
 				pac_net_segments.append (strand.segments, segment);
 				set_strand_position (strand);
 			end append_segment;
+
 			
-			procedure extend_strand_start (
 			-- Locates the strand (indicated by strand_at_start)
 			-- and appends the new segment to it. 
+			procedure extend_strand_start (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-			begin
+				net			: in out type_net) 
+			is begin
 				pac_strands.update_element (
 					container	=> net.strands,
 					position	=> strand_at_start.cursor,
 					process		=> append_segment'access);
 			end extend_strand_start;
 
-			procedure extend_strand_end (
+			
 			-- Locates the strand (indicated by strand_at_end)
 			-- and appends the new segment to it. 
+			procedure extend_strand_end (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-			begin
+				net			: in out type_net) 
+			is begin
 				pac_strands.update_element (
 					container	=> net.strands,
 					position	=> strand_at_end.cursor,
 					process		=> append_segment'access);
 			end extend_strand_end;
+
 			
-			procedure create_strand (
 			-- Creates a new strand that contains the segment.
+			procedure create_strand (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				strand : type_strand;
+				net			: in out type_net) 
+			is
+				strand : type_strand; -- the new strand
 			begin				
-				-- insert segment in strand
+				-- look for any ports at start point of the new net segment
+				ports := ports_at_place (
+						module_name		=> module_name,
+						place			=> to_position (
+											sheet	=> sheet,
+											point	=> segment_new.start_point),
+						log_threshold	=> log_threshold + 2);
+
+				assign_ports_to_segment;
+
+				-- look for any ports at end point of the new net segment
+				ports := ports_at_place (
+						module_name		=> module_name,
+						place			=> to_position (
+											sheet => sheet,
+											point => segment_new.end_point),
+						log_threshold	=> log_threshold + 2);
+
+				assign_ports_to_segment;
+				
+
+				-- insert the given segment in the new strand
 				pac_net_segments.append (
 					container	=> strand.segments,
 					new_item	=> segment);
@@ -1803,17 +1845,18 @@ package body et_schematic_ops.nets is
 				pac_strands.append (
 					container	=> net.strands,
 					new_item	=> strand);
-				
+
 			end create_strand;
 
-			procedure merge_strands (
+			
 			-- Merges two strands indicated by strand_at_start and strand_at_end.
 			-- The strand_at_start will merge into strand_at_end.
 			-- strand_at_start will be gone in the end. All its segments will move to 
 			-- strand_at_end.
+			procedure merge_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-
+				net			: in out type_net) 
+			is
 				-- Get the segments of the strand that will be removed. These segments will
 				-- move into the final strand.
 				segments_source : pac_net_segments.list := element (strand_at_start.cursor).segments;
@@ -1942,7 +1985,8 @@ package body et_schematic_ops.nets is
 
 					-- collect ports at dead end or where a junction is to be placed:
 					if dead_end (strand_at_start) or junction_at_start_point.required then
-						-- look for any ports at start point of the new net segment
+						
+						-- look for any ports at start point of the new segment
 						ports := ports_at_place (
 								module_name		=> module_name,
 								place			=> to_position (
@@ -1977,14 +2021,14 @@ package body et_schematic_ops.nets is
 					
 					-- collect ports at dead end or where a junction is to be placed:
 					if dead_end (strand_at_end) or junction_at_end_point.required then
-						-- look for any ports at end point of the new net segment
-						-- The end point is just x/y. The sheet must be derived from the start point.
+
+						-- look for any ports at end point of the new segment
 						ports := ports_at_place (
 								module_name		=> module_name,
 								place			=> to_position (
 													sheet => sheet,
 													point => segment_new.end_point),
-								log_threshold	=> log_threshold);
+								log_threshold	=> log_threshold + 2);
 
 						assign_ports_to_segment;
 					end if;

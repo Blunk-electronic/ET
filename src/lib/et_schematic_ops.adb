@@ -8678,10 +8678,10 @@ package body et_schematic_ops is
 	end get_port_properties;
 
 	
-	function extend_ports (
 	-- Adds further properties to the given device ports.
 	-- Additional properties are electrical characteristics
 	-- and the terminal name).
+	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
 		return et_netlists.pac_device_ports_extended.set 
@@ -8720,14 +8720,15 @@ package body et_schematic_ops is
 		return ports_extended;
 	end extend_ports;
 
-	function port_direction (
+	
 	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
 	-- The submodule must exist in the module.
+	function port_direction (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string) -- clock_out
-		return et_submodules.type_netchanger_port_name is
-
+		return et_submodules.type_netchanger_port_name 
+	is
 		use et_submodules;
 		direction : type_netchanger_port_name; -- to be returned
 
@@ -8765,8 +8766,8 @@ package body et_schematic_ops is
 	end port_direction;
 
 	
-	function extend_ports (
 	-- Adds the port direction (master/slave) to the given submodule ports.
+	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_submodule_ports.set)
 		return et_netlists.pac_submodule_ports_extended.set 
@@ -8802,10 +8803,10 @@ package body et_schematic_ops is
 	end extend_ports;
 
 	
-	procedure make_netlists (
 	-- Generates the netlists of all assembly variants from the given top module.
 	-- If parameter "write_files" is true, then exports the netlists in files.
 	-- The netlist files are named after the module name and the variant name.
+	procedure make_netlists (
 		module_cursor 	: in pac_generic_modules.cursor;
 		write_files		: in boolean := false;
 		log_threshold	: in type_log_level) 
@@ -8838,15 +8839,15 @@ package body et_schematic_ops is
 				module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 				variant			: in pac_assembly_variant_name.bounded_string;
 				prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
-				offset			: in type_name_index) is
-
+				offset			: in type_name_index) 
+			is
 				use et_assembly_variants.pac_assembly_variants;
 				variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
 				
 				procedure query_nets (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in et_schematic.type_module) is
-
+					module		: in et_schematic.type_module) 
+				is
 					use et_schematic.pac_nets;
 					net_cursor_sch : et_schematic.pac_nets.cursor := module.nets.first;
 

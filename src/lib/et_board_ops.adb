@@ -1526,20 +1526,29 @@ package body et_board_ops is
 			device_cursor : pac_devices_sch.cursor;
 			terminal_position : type_point;
 		begin
-			port_properties := get_port_properties (
-				module_cursor	=> module_cursor,
-				device_name		=> element (d).device_name,
-				unit_name		=> element (d).unit_name,
-				port_name		=> element (d).port_name);
-
-			-- port_properties.terminal -- 14, H6
 			device_cursor := locate_device (module_cursor, element (d).device_name);
 
-			-- get x/y of the terminal:
-			terminal_position := type_point (get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
+			-- Only real devices have terminals. Virtual devices are ignored here:
+			if is_real (device_cursor) then
+				--put_line ("dev  " & to_string (element (d).device_name));
+				--put_line ("unit " & to_string (element (d).unit_name));
+				--put_line ("port " & to_string (element (d).port_name));
+				
+				port_properties := get_port_properties (
+					module_cursor	=> module_cursor,
+					device_name		=> element (d).device_name,
+					unit_name		=> element (d).unit_name,
+					port_name		=> element (d).port_name);
 
-			-- Add the terminal position to the result:
-			append (result, terminal_position);
+				-- port_properties.terminal -- 14, H6
+
+				-- get x/y of the terminal:
+				terminal_position := type_point (
+					get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
+
+				-- Add the terminal position to the result:
+				append (result, terminal_position);
+			end if;
 		end query_device;
 
 		
