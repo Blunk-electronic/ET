@@ -85,152 +85,7 @@ package body et_ratsnest is
 	end iterate;
 
 
-
-	--type type_nearest (connected : boolean) -- via secondary airwire
-	--is record
-		--case connected is
-			--when TRUE => null;
-			--when FALSE => cursor : pac_airwires.cursor := pac_airwires.no_element;
-		--end case;
-	--end record;
 	
-	
-	--function get_nearest_primary_airwire (
-		--a_in	: in pac_airwires.cursor)
-		--return type_nearest
-	--is 
-		--smallest_distance : type_distance_positive := type_distance'last;
-
-		--aw_tmp : type_line;
-
-		---- the elements of the return:
-		--connected : boolean := false;
-		--nearest_airwire : pac_airwires.cursor := pac_airwires.no_element;
-
-		----proceed : aliased boolean := true;
-		--something_found : boolean := false;
-
-		--length_min : type_distance_positive := zero;
-		----d_min : type_distance_positive := zero;
-
-		
-		--procedure query_end_point (ca : in pac_airwires.cursor) is
-			--d_tmp : type_distance_positive;
-		--begin
-			---- Query the end point of all primary airwires except the 
-			---- given airwire indicted by cursor a_in:
-			--if a_in /= ca then
-
-				---- Get the distance from end point of a_in to the end point of the
-				---- candidate airwire indicated by cursor ca:
-				--d_tmp := get_absolute (get_distance (element (a_in).end_point, element (ca).end_point));
-				----put_line (" end " & to_string (element (cp)) & " d " & to_string (d));
-
-				---- The distance between the ends must be shorter than 
-				---- the longest of the two primary airwires:
-				--if d_tmp < get_greatest_length (element (a_in), element (ca)) then
-
-					--something_found := true;
-					
-					---- Update smallest_distance if current distance (d_tmp) is
-					---- smaller than the old smallest_distance:
-					--if d_tmp > length_min and d_tmp < smallest_distance then
-						--smallest_distance := d_tmp;
-						--nearest_airwire := ca;
-					--end if;
-					
-				--end if;
-			--end if;
-		--end query_end_point;
-
-
-	--begin
-		--airwires_primary.iterate (query_end_point'access);
-
-		--if something_found then
-			
-			--aw_tmp := type_line (make_line (element (a_in).end_point, element (nearest_airwire).end_point));
-
-			--if contains_airwire (airwires_to_add, aw_tmp) then
-				
-				--length_min := get_length (aw_tmp);
-				--smallest_distance := type_distance_positive'last;
-				--something_found := false;
-				--airwires_primary.iterate (query_end_point'access);
-
-				--if something_found then
-					--if airwires_to_delete.contains (element (nearest_airwire)) then
-						--connected := true;
-					--end if;
-				--else
-					--connected := true;
-				--end if;
-				
-			--else
-				----return (connected => false, cursor => nearest_airwire);
-				----cursor := nearest_airwire;
-				--null;
-			--end if;
-
-		--else
-			----return (connected => false, cursor => pac_airwires.no_element);
-			--nearest_airwire := pac_airwires.no_element;
-		--end if;
-
-		
-		--if connected then
-			--return (connected => true);
-		--else
-			--return (connected => false, cursor => nearest_airwire);
-		--end if;
-	--end get_nearest_primary_airwire;
-	
-
-	
-	--procedure query_airwire_primary (a : in pac_airwires.cursor) is
-		--aw_tmp : type_line;
-	--begin
-		--put_line ("prim" & to_string (element (a)));
-		
-		--declare 
-			--nearest : type_nearest := get_nearest_primary_airwire (a);
-		--begin
-
-			--if nearest.connected then
-
-				--put_line ("is connected");
-				
-				---- remove obsolete primary airwire:
-				--aw_tmp := element (a);
-				--if not airwires_to_delete.contains (aw_tmp) then
-					--airwires_to_delete.append (aw_tmp);
-				--end if;
-				
-			--else
-
-				--if nearest.cursor = pac_airwires.no_element then
-					--null; -- keep primary airwire
-				--else
-					---- near primary airwire found
-					--put_line ("nearest " & to_string (element (nearest.cursor)));
-
-					---- make secondary airwire:
-					--aw_tmp := type_line (make_line (element (a).end_point, element (nearest.cursor).end_point));
-
-					--airwires_to_add.append (aw_tmp);
-
-					---- if required, remove obsolete primary airwire:
-					--aw_tmp := (type_line (get_longest (element (a), element (nearest.cursor))));
-					--if not airwires_to_delete.contains (aw_tmp) then
-						--airwires_to_delete.append (aw_tmp);
-					--end if;
-				--end if;
-				
-			--end if;
-		--end;
-	--end query_airwire_primary;
-
-
 	
 	function make_airwires (
 		nodes	: in pac_points.list)
@@ -243,11 +98,11 @@ package body et_ratsnest is
 		start : type_point;
 
 		-- This is the list of unconneced nodes. It will become
-		-- shorter and shorter over time until it is empty.
-		-- Initially it is a copy of the given nodes:
+		-- shorter and shorter over time until it is empty. As soon as
+		-- it is empty, the PRIM-algorithm ends:
 		nodes_isolated : pac_points.list := nodes;
 
-		-- This is the spann-graph that we are going to build.
+		-- These are the nodes of spann-graph that we are going to build.
 		-- Once a node gets linked (with an airwire), the the node
 		-- will be added to nodes_linked. So this list of nodes grows
 		-- over time until all given nodes have been added to the graph.
@@ -256,7 +111,8 @@ package body et_ratsnest is
 		
 
 		-- Moves the given node from the list of isolated nodes to
-		-- the list of linked nodes:
+		-- the list of linked nodes. So the list nodes_isolated gets
+		-- shorter by one node. The list nodes_linked gets longer by one node:
 		procedure move_to_linked_nodes (node : in type_point) is
 			nc : pac_points.cursor;
 		begin
@@ -269,20 +125,23 @@ package body et_ratsnest is
 		end move_to_linked_nodes;
 
 
-		-- Creates an airwire beweeen the given two nodes and
+		-- Creates an airwire between the given two nodes and
 		-- appends it to the result:
 		procedure make_airwire (node_1, node_2 : in type_point) is
 			aw : type_line;
 		begin
 			-- CS make sure length is greater zero ?
 			aw := type_line (make_line (node_1, node_2));
+
+			-- CS skip airwire if already in given list existing_airwires.
+			
 			result.append (aw);
 		end make_airwire;
 		
 		
 		-- Returns the node that is nearest to the given node.
 		-- It does not probe the distance of the given node to itself (which would be zero).
-		-- This function works according to principle 1 (P1).
+		-- This function works according to principle 1 (P1) of the PRIM-algorithm.
 		-- It searches in the list of isolated nodes: 
 		function get_nearest_neighbor_of_node (node_in : in type_point)
 			return type_point
@@ -293,9 +152,14 @@ package body et_ratsnest is
 			procedure query_node (c : in pac_points.cursor) is
 				d_tmp : type_distance_positive;
 			begin
+				-- ignore the given node. For others nodes: get the distance
+				-- from node_in to the candidate node:
 				if element (c) /= node_in then
 					d_tmp := get_absolute (get_distance (element (c), node_in));
 
+					-- Update the smallest distance and register the
+					-- candidate node if current distance is smaller than
+					-- the previous distance between the nodes:
 					if d_tmp < smallest_distance then
 						smallest_distance := d_tmp;
 						node_nearest := element (c);
@@ -304,32 +168,54 @@ package body et_ratsnest is
 			end query_node;
 			
 		begin
+			-- probe all nodes (except the given node):
 			nodes_isolated.iterate (query_node'access);
+
+			-- return the nearest node that has been found:
 			return node_nearest;
 		end get_nearest_neighbor_of_node;
 		
 
 		-- Returns the node that is nearest to the current graph nodes_linked:
-		-- This function works according to principle 2 (P2):
+		-- This function works according to principle 2 (P2) of the PRIM-algorithm.
+		-- The general workflow is as follows:
+		-- 1. For each node of the current graph search the nearest neigbor.
+		-- 2. Store the neigbor in an array.
+		-- 3. Find in the array the neigbor that is closest to the graph.
+		-- 4. Return that neigbor to the caller.
 		function get_nearest_neighbor_of_graph
 			return type_point
 		is
 			node_nearest : type_point; -- to be returned
+
+			-- The total number of nodes in the current graph. It is required
+			-- in order to set up the array, because for each node of the graph
+			-- there will be a nearest neigboring node:
 			linked_total : constant count_type := nodes_linked.length;
+
 			
+			-- The neigboring node to be stored in the array:
 			type type_neigbor is record
-				node		: type_point;
-				distance	: type_distance_positive := zero;
+				-- the neigboring node itself:
+				node		: type_point; 
+
+				-- the distance to the graph:
+				distance	: type_distance_positive := zero; 
+
+				-- the referencing node in the graph:
 				origin		: type_point;
 			end record;
 
+			-- Set up the array of neigboring nodes:
 			type type_neigbors is array (1 .. linked_total) of type_neigbor;
 			neigbors : type_neigbors := (others => <>);
 
+			-- Set up a pointer to the elements of the array:
 			subtype type_neigbor_pointer is count_type range 1 .. linked_total + 1;
-			neigbor_pointer : type_neigbor_pointer := 1;
+			pointer : type_neigbor_pointer := 1;
 
 			
+			-- Finds the nearest isolated neigbor of a linked node:
 			procedure query_node_linked (c : in pac_points.cursor) is
 				neigbor : type_neigbor;
 			begin
@@ -337,30 +223,42 @@ package body et_ratsnest is
 				neigbor.distance := get_absolute (get_distance (element (c), neigbor.node));
 				neigbor.origin := element (c);
 
-				neigbors (neigbor_pointer) := neigbor;
-				neigbor_pointer := neigbor_pointer + 1;
+				-- store neigbor in array:
+				neigbors (pointer) := neigbor;
+
+				-- prepare for next node:
+				pointer := pointer + 1; 
 			end query_node_linked;
 
 
+			-- Searches in array "neigbors" for the neigbor that has the smallest
+			-- distance to the graph.
+			-- Generates an airwire to that neigbor.
 			procedure find_nearest_among_neigbors is
 				smallest_distance : type_distance_positive := type_distance'last;
 				aw_tmp : type_line;
 			begin
 				for i in neigbors'first .. neigbors'last loop
+
+					-- Update the node_nearest if current neigbor is
+					-- closer than the previous distance to the graph.
 					if neigbors (i).distance < smallest_distance then
 						smallest_distance := neigbors (i).distance;
 						node_nearest := neigbors (i).node;
 
+						-- make an airwire from the node of the grap to
+						-- the neigboring node. If a closer neigbor has been
+						-- found, then aw_tmp will be overwritten accordingly:
 						aw_tmp := type_line (make_line (neigbors (i).origin, neigbors (i).node));
 					end if;
 				end loop;
 
-				--make_airwire (aw_tmp.start_point, aw_tmp.end_point);
 				result.append (aw_tmp);
 			end find_nearest_among_neigbors;
 			
 			
 		begin
+			-- Probe the nodes of the current graph:
 			nodes_linked.iterate (query_node_linked'access);
 
 			find_nearest_among_neigbors;
@@ -369,7 +267,7 @@ package body et_ratsnest is
 		end get_nearest_neighbor_of_graph;
 
 
-		n : type_point;
+		node_tmp : type_point;
 				
 	begin
 		
@@ -379,25 +277,32 @@ package body et_ratsnest is
 			start := first_element (nodes_isolated);
 
 			-- Apply P1:
-			n := get_nearest_neighbor_of_node (start);
+			node_tmp := get_nearest_neighbor_of_node (start);
 
 			-- create the first fragment of the SCN:
 			move_to_linked_nodes (start);
-			move_to_linked_nodes (n);
+			move_to_linked_nodes (node_tmp);
+
+			-- The list nodes_isolated has been shortened by two nodes.
+			-- The graph nodes_linked now contains two nodes.
 
 			-- create the first airwire
-			--make_airwire (start, n);
-			result.append ((start, n));
+			result.append ((start, node_tmp));
 
-
+			
+			-- As long as there are any isolated nodes, apply P2.
+			-- Each time P2 is applied
+			-- - nodes_isolated becomes shorter by on node.
+			-- - nodes_linked becomes longer by one node.
 			while not nodes_isolated.is_empty loop
-				n := get_nearest_neighbor_of_graph;
-
-				move_to_linked_nodes (n);
+				-- Apply P2:
+				node_tmp := get_nearest_neighbor_of_graph;
+				move_to_linked_nodes (node_tmp);
 			end loop;
 
 		end if;
 
+		-- Return the connection of airwires:
 		return result;
 	end make_airwires;
 	

@@ -90,6 +90,8 @@ is
 
 			-- CS get x/y of track segments
 			null;
+
+			-- CS remove redundant nodes
 			
 			update_element (module.nets, net_cursor, assign_airwires'access);
 		end query_net;
