@@ -41,6 +41,7 @@ with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 with et_symbols;
+with et_schematic_ops.netlists;
 
 separate (et_scripting)
 	
@@ -53,6 +54,7 @@ is
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
 	use et_schematic_ops.units;
+	use et_schematic_ops.netlists;
 	use et_coordinates;
 	use pac_geometry_sch;
 	use et_symbols.pac_text;
