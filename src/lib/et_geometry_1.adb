@@ -406,6 +406,25 @@ package body et_geometry_1 is
 			source	=> scratch);
 	end splice_points;
 	
+
+	procedure remove_redundant_points (
+		points : in out pac_points.list)
+	is
+		use pac_points;
+		target : pac_points.list;
+
+		procedure query_point (p : in pac_points.cursor) is begin
+			if not target.contains (element (p)) then
+				target.append (element (p));
+			end if;
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+
+		points := target;
+	end remove_redundant_points;
+
 	
 	function to_string (point : in type_point) return string is begin
 		return point_preamble

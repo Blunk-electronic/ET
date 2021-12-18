@@ -61,6 +61,28 @@ is
 
 			use pac_airwires;
 
+
+			virtual_airwires : pac_airwires.list;
+
+			procedure make_virtual_airwires is
+				use pac_conductor_lines;
+				procedure query_line (l : in pac_conductor_lines.cursor) is
+				begin
+					virtual_airwires.append (type_line (element (l)));
+				end query_line;
+
+				use pac_conductor_arcs;
+				procedure query_arc (a : in pac_conductor_arcs.cursor) is
+				begin
+					virtual_airwires.append ((element (a).start_point, element (a).end_point));
+				end query_arc;
+				
+			begin
+				iterate (element (net_cursor).route.lines, query_line'access);
+				iterate (element (net_cursor).route.arcs, query_arc'access);
+			end make_virtual_airwires;
+			
+
 			procedure assign_airwires (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -90,15 +112,17 @@ is
 			-- get x/y of all terminals:
 			nodes := get_terminal_positions (module_cursor, net_cursor);
 
-			nodes.iterate (query_node'access);
+			-- nodes.iterate (query_node'access); -- for debugging
 			
-			-- get x/y of all vias and append their positions to nodes:
+			-- Get x/y of all vias and append their positions to nodes:
 			splice_points (nodes, get_via_positions (net_cursor));
 
-			-- CS get x/y of track segments
-			null;
+			-- Get x/y track segments (start and end points)
+			-- and append their positions to nodes:
+			splice_points (nodes, get_track_ends (net_cursor));
 
-			-- CS remove redundant nodes
+			-- remove redundant/overlapping nodes
+			remove_redundant_points (nodes);
 			
 			update_element (module.nets, net_cursor, assign_airwires'access);
 		end query_net;

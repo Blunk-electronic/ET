@@ -1610,6 +1610,43 @@ package body et_board_ops is
 		return result;
 	end get_via_positions;
 	
+
+	function get_track_ends (
+		net_cursor : in et_schematic.pac_nets.cursor)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		use pac_conductor_lines;
+		procedure query_line (l : in pac_conductor_lines.cursor) is
+		begin
+			append (result, element (l).start_point);
+			append (result, element (l).end_point);
+		end query_line;
+
+		
+		use pac_conductor_arcs;
+		procedure query_arc (a : in pac_conductor_arcs.cursor) is
+		begin
+			append (result, element (a).start_point);
+			append (result, element (a).end_point);
+		end query_arc;
+
+		
+	begin
+		-- Query lines and arc segments:
+		iterate (element (net_cursor).route.lines, query_line'access);
+		iterate (element (net_cursor).route.arcs, query_arc'access);
+
+		-- The ends of segments frequently overlap with those of other
+		-- segments. This causes redundant points which must be removed:
+		remove_redundant_points (result);
+		
+		return result;
+	end get_track_ends;
+
+
 	
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1639,6 +1676,7 @@ package body et_board_ops is
 			process		=> do_it'access);
 
 	end set_grid;
+	
 
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;

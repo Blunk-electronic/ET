@@ -686,8 +686,11 @@ package et_geometry_1 is
 		points_source : in pac_points.list);
 
 
-	
-
+	-- Removes points which are stored multiple times
+	-- from the given list:
+	procedure remove_redundant_points (
+		points : in out pac_points.list);
+										  
 	
 private
 	
