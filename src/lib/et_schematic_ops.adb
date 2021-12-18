@@ -8679,8 +8679,9 @@ package body et_schematic_ops is
 
 	
 	-- Adds further properties to the given device ports.
+	-- Ignores ports of virtual devices (like GND symbols).
 	-- Additional properties are electrical characteristics
-	-- and the terminal name).
+	-- and the terminal name.
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
@@ -8694,25 +8695,31 @@ package body et_schematic_ops is
 		procedure query_ports (port_cursor : in pac_device_ports.cursor) is
 			port_sch		: type_device_port := element (port_cursor);
 			more_properties	: type_port_properties_access;
+			device_cursor	: pac_devices_sch.cursor;
 		begin
-			-- get further properties of the current port
-			more_properties := get_port_properties (
-				module_cursor	=> module_cursor, 
-				device_name		=> port_sch.device_name, 
-				unit_name		=> port_sch.unit_name,
-				port_name		=> port_sch.port_name);
-			
-			pac_device_ports_extended.insert (
-				container	=> ports_extended,
-				new_item	=> 
-					(
-					direction		=> more_properties.direction, -- CS
-					device			=> port_sch.device_name, -- IC1
-					port			=> port_sch.port_name, -- CE
-					terminal		=> more_properties.terminal,
-					characteristics => more_properties.properties)
-					);
-			
+			device_cursor := locate_device (module_cursor, element (port_cursor).device_name);
+
+			-- Get further properties of the current port if the device
+			-- is real (appears in PCB):
+			if is_real (device_cursor) then
+				
+				more_properties := get_port_properties (
+					module_cursor	=> module_cursor, 
+					device_name		=> port_sch.device_name, 
+					unit_name		=> port_sch.unit_name,
+					port_name		=> port_sch.port_name);
+				
+				pac_device_ports_extended.insert (
+					container	=> ports_extended,
+					new_item	=> 
+						(
+						direction		=> more_properties.direction, -- CS
+						device			=> port_sch.device_name, -- IC1
+						port			=> port_sch.port_name, -- CE
+						terminal		=> more_properties.terminal,
+						characteristics => more_properties.properties)
+						);
+			end if;
 		end query_ports;
 		
 	begin -- extend_ports

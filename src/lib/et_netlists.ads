@@ -75,7 +75,7 @@ package et_netlists is
 	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string;
 
 
-	-- For ERC of netlists the connected devices are modelled by this type:
+	-- For netlists the connected devices are modelled by this type:
 	type type_device_port_extended (direction : et_symbols.type_port_direction) is record
 		device			: type_device_name; -- IC4		
 		port			: et_symbols.pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
