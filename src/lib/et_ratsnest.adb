@@ -88,7 +88,8 @@ package body et_ratsnest is
 	
 	
 	function make_airwires (
-		nodes	: in pac_points.list)
+		nodes				: in pac_points.list;
+		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list
 	is		
 		use pac_airwires;
@@ -125,18 +126,16 @@ package body et_ratsnest is
 		end move_to_linked_nodes;
 
 
-		-- Creates an airwire between the given two nodes and
-		-- appends it to the result:
-		procedure make_airwire (node_1, node_2 : in type_point) is
-			aw : type_line;
-		begin
-			-- CS make sure length is greater zero ?
-			aw := type_line (make_line (node_1, node_2));
+		-- Appends the given airwire to the result if it
+		-- is not already in the given list of virtual_airwires:
+		procedure add_airwire (aw : in type_line) is begin
+			-- CS make sure length is greater zero ? Since we assume unique positions
+			-- of the given nodes, this check should not be required.
 
-			-- CS skip airwire if already in given list existing_airwires.
-			
-			result.append (aw);
-		end make_airwire;
+			if not contains_airwire (virtual_airwires, aw) then
+				result.append (aw);
+			end if;
+		end add_airwire;
 		
 		
 		-- Returns the node that is nearest to the given node.
@@ -253,7 +252,8 @@ package body et_ratsnest is
 					end if;
 				end loop;
 
-				result.append (aw_tmp);
+				-- Append the latest generated airwire to the result:
+				add_airwire (aw_tmp);
 			end find_nearest_among_neigbors;
 			
 			
@@ -269,9 +269,11 @@ package body et_ratsnest is
 
 		node_tmp : type_point;
 				
-	begin
-		
-		if nodes.length > 2 then
+	begin -- make_airwires
+
+		-- If there are at least two nodes then start constructing the SCN.
+		-- Otherwise return an empty list of airwires.
+		if nodes.length >= 2 then
 
 			-- Set the start point of the SCN:
 			start := first_element (nodes_isolated);
@@ -287,7 +289,7 @@ package body et_ratsnest is
 			-- The graph nodes_linked now contains two nodes.
 
 			-- create the first airwire
-			result.append ((start, node_tmp));
+			add_airwire ((start, node_tmp));
 
 			
 			-- As long as there are any isolated nodes, apply P2.

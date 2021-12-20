@@ -61,19 +61,24 @@ is
 
 			use pac_airwires;
 
-
+			-- The function make_airwires generates airwires between terminals,
+			-- vias and tracks. Each of them becomes a node.
+			-- Regarding tracks: The start and end points of tracks also
+			-- become nodes. But, an airwire between start and end of a single
+			-- track segment is useless and must be supressed. For this
+			-- reason we collect a list of such airwires in container virtual_airwires:
 			virtual_airwires : pac_airwires.list;
 
 			procedure make_virtual_airwires is
 				use pac_conductor_lines;
-				procedure query_line (l : in pac_conductor_lines.cursor) is
-				begin
+				use pac_conductor_arcs;
+				
+				procedure query_line (l : in pac_conductor_lines.cursor) is begin
+					--put_line ("virtual airwire: " & to_string (element (l)));
 					virtual_airwires.append (type_line (element (l)));
 				end query_line;
 
-				use pac_conductor_arcs;
-				procedure query_arc (a : in pac_conductor_arcs.cursor) is
-				begin
+				procedure query_arc (a : in pac_conductor_arcs.cursor) is begin
 					virtual_airwires.append ((element (a).start_point, element (a).end_point));
 				end query_arc;
 				
@@ -87,26 +92,22 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				--aw : type_airwire := (type_line (make_line (1.0, 1.0, 10.0, 10.0)) with null record);
 				airwires : pac_airwires.list;
 			begin
 				-- compute the ratsnest:
-				airwires := make_airwires (nodes);
-				
-				-- CS remove airwires where track segments are already laid out ?
-				
+				-- Make airwires from the list of nodes. Suppress the 
+				-- virtual airwires:
+				airwires := make_airwires (nodes, virtual_airwires);				
 				net.route.airwires.lines := airwires;
-
 			end assign_airwires;
 
 
-			procedure query_node (c : in pac_points.cursor) is
-			begin
+			procedure query_node (c : in pac_points.cursor) is begin
 				put_line (to_string (element (c)));
 			end query_node;
 			
 			
-		begin
+		begin -- query_net
 			put_line ("net " & to_string (key (net_cursor)));
 			
 			-- get x/y of all terminals:
@@ -123,10 +124,13 @@ is
 
 			-- remove redundant/overlapping nodes
 			remove_redundant_points (nodes);
+
+			-- Create from the tracks a list of virtual_airwires. These airwires
+			-- are later required in order to create the real airwires.
+			make_virtual_airwires;
 			
 			update_element (module.nets, net_cursor, assign_airwires'access);
 		end query_net;
-
 
 		
 	begin -- query_module
@@ -146,8 +150,6 @@ begin -- update_ratsnest
 	update_element (generic_modules, module_cursor, query_module'access);
 
 	log_indentation_down;
-		
-
 
 end update_ratsnest;
 	

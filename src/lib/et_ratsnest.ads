@@ -39,28 +39,10 @@
 --		- 
 
 with ada.text_io;				use ada.text_io;
---with ada.characters;			use ada.characters;
---with ada.characters.latin_1;
---with ada.characters.handling;	use ada.characters.handling;
-
---with ada.strings;				use ada.strings;
---with ada.strings.fixed;			use ada.strings.fixed;
---with ada.strings.maps;			use ada.strings.maps;
---with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-
 with ada.containers.doubly_linked_lists;
---with ada.containers.indefinite_doubly_linked_lists;
---with ada.containers.ordered_maps;
---with ada.containers.indefinite_ordered_maps;
---with ada.containers.ordered_sets;
-
---with et_general;
---with et_string_processing;		use et_string_processing;
---with et_logging;				use et_logging;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
---with et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 
 package et_ratsnest is
@@ -69,15 +51,6 @@ package et_ratsnest is
 	use pac_geometry_2;
 	
 
-	--type type_airwire is new type_line with null record;
-
-	--type type_airwire_node is new type_point with record
-		--processed : boolean := false;
-	--end record;
-
-	--package pac_airwire_nodes is new doubly_linked_lists (type_airwire_node);
-
-	
 
 	package pac_airwires is new doubly_linked_lists (type_line);
 
@@ -118,8 +91,12 @@ package et_ratsnest is
 	--  The algorithm used here bases on the article:
 	-- "Shortest Connection Networks And Some Generalizations"
 	-- written by R.C.PRIM, date 1957-05-08
+	--  Optionally a list of virtual airwires can be given. If this function
+	-- attempts to create an airwire that is already in virtual_airwires then
+	-- that particular airwire will be discarded and not appended to the return.
 	function make_airwires (
-		nodes	: in pac_points.list)
+		nodes				: in pac_points.list;
+		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list;
 	
 end et_ratsnest;
