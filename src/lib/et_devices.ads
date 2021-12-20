@@ -491,6 +491,12 @@ package et_devices is
 	devices : pac_devices_lib.map;
 
 
+	-- Returns true if the given device has a physical counterpart in 
+	-- the layout, means if it is not virtual:
+	function is_real (
+		device_cursor : in pac_devices_lib.cursor)
+		return boolean;
+
 	
 	-- When querying units of a device this type is required:
 	type type_device_units is record

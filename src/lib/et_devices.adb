@@ -721,6 +721,19 @@ package body et_devices is
 		--return d1 = d2;
 	--end equivalent_models;
 
+
+	function is_real (
+		device_cursor : in pac_devices_lib.cursor)
+		return boolean
+	is 
+		use pac_devices_lib;
+	begin
+		case element (device_cursor).appearance is
+			when VIRTUAL => return false;
+			when PCB => return true;
+		end case;
+	end is_real;
+
 	
 
 	
