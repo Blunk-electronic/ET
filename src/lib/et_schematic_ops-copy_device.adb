@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -48,13 +48,14 @@ procedure copy_device (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC45
 	destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
-	log_threshold	: in type_log_level) is
-
+	log_threshold	: in type_log_level)
+is
 	module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_module) is
+		module		: in out type_module) 
+	is
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
@@ -79,8 +80,8 @@ procedure copy_device (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
-		begin
+			device		: in out type_device_sch) 
+		is begin
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
@@ -115,11 +116,13 @@ procedure copy_device (
 			
 		end add_unit_internal;
 
+		
 		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
+			device		: in out type_device_sch) 
+		is
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
@@ -166,6 +169,7 @@ procedure copy_device (
 			end case;
 
 		end add_unit_external;
+
 		
 	begin -- query_devices
 		if contains (module.devices, device_name) then
@@ -287,6 +291,7 @@ procedure copy_device (
 			device_not_found (device_name);
 		end if;
 	end query_devices;
+
 	
 begin -- copy_device
 	log (text => "module " & to_string (module_name) &

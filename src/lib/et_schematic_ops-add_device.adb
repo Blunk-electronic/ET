@@ -299,6 +299,12 @@ is
 			ports			=> ports,
 			sheet			=> et_coordinates.sheet (destination),
 			log_threshold	=> log_threshold + 2);
+
+
+		-- Update the ratsnest if the added device is real:
+		if is_real (device_cursor_lib) then
+			update_ratsnest (module_cursor, log_threshold + 1);
+		end if;
 		
 		log_indentation_down;
 		log_indentation_down;
@@ -343,12 +349,6 @@ begin -- add_device
 		container	=> generic_modules,
 		position	=> module_cursor,
 		process		=> add'access);
-
-
-	-- Update the ratsnest if the added device is real:
-	if is_real (device_cursor_lib) then
-		update_ratsnest (module_cursor, log_threshold + 1);
-	end if;
 	
 	log_indentation_down;
 

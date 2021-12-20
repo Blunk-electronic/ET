@@ -441,9 +441,9 @@ package et_schematic_ops is
 		return type_device_name; -- C2
 
 	
-	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
+	procedure add_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
@@ -454,14 +454,15 @@ package et_schematic_ops is
 
 	-- CS procedure add_device that takes module cursor and model cursor
 	
-	procedure copy_device (
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.
+	procedure copy_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	
 	-- Returns the names of available units of the given device in the 
 	-- given generic module. "Available" means the unit exists and is
 	-- not already placed somewhere in the schematic:
