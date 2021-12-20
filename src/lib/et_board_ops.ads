@@ -101,38 +101,43 @@ package et_board_ops is
 	use pac_net_name;
 
 	
-	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 
 	-- corner of the drawing frame):
+	procedure move_board (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
+
 	
-	procedure add_layer (
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.							
+	procedure add_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level);
 
-	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
+	
 	-- Returns the total number of signal layers used by the given module.
+	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
 		return et_pcb_stack.type_signal_layer;
 
-	procedure test_layer (
+	
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
+	procedure test_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer);
+
 	
-	procedure delete_layer (
 	-- Deletes a signal layer in the board.
 	-- Renumbers the signal layers.							   
+	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level);
 
+	
 	-- Adds a non-electric device to the board:
 	procedure add_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -143,59 +148,68 @@ package et_board_ops is
 
 	-- CS procedure add_device with explicit device name like MH1
 	-- CS procedure copy_device
+
 	
-	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
+	procedure move_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
-	procedure rotate_device (
+	
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
+	procedure rotate_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
 
-	procedure delete_device (
+	
 	-- Deletes a non-electric device in the board layout.
+	-- Electric devices must be deleted in the schematic domain !
+	procedure delete_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level);
 
-	procedure rename_device (
+	
 	-- Renames a non-electric device in the board layout.
+	procedure rename_device (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level);
+
 	
-	procedure flip_device (
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
+	procedure flip_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 
-	procedure move_submodule (
+	
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
+	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
+
 	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
+	--     See comment in procedure query_submodules.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
@@ -258,6 +272,8 @@ package et_board_ops is
 -- RATSNEST / TRACKS / FREETRACKS
 
 
+	-- (Re)generates the ratsnest of all nets according to the current
+	-- positions of vias, tracks and terminals:
 	procedure update_ratsnest (
 		module_cursor	: in pac_generic_modules.cursor;
 		lth				: in type_log_level);

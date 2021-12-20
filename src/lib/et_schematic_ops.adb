@@ -3208,16 +3208,16 @@ package body et_schematic_ops is
 		
 		return placeholders;
 	end placeholders_of_package;
+
 	
 	procedure add_device (
-	-- Adds a device to the schematic. The unit is determined by the unit add levels.
-	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
 
+	
 	procedure copy_device (
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.

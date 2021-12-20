@@ -355,10 +355,9 @@ package body et_board_ops is
 		
 		log_indentation_down;
 	end add_device;
-		
+
+	
 	procedure move_device (
-	-- Moves a device in the board layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
@@ -374,10 +373,11 @@ package body et_board_ops is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
 
+			
 			procedure set_position ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				case coordinates is
 					when ABSOLUTE =>
 						set (point => device.position, position => point); 
@@ -390,10 +390,11 @@ package body et_board_ops is
 				end case;
 			end;
 
+			
 			procedure set_position ( -- of a non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) is
-			begin
+				device		: in out type_device_non_electric) 
+			is begin
 				case coordinates is
 					when ABSOLUTE =>
 						set (point => device.position, position => point); 
@@ -405,6 +406,7 @@ package body et_board_ops is
 						
 				end case;
 			end;
+
 			
 		begin -- query_devices
 
@@ -438,6 +440,7 @@ package body et_board_ops is
 				end if;
 			end if;
 		end query_devices;
+
 		
 	begin -- move_device
 		case coordinates is
@@ -460,17 +463,17 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end move_device;
 
+	
 	procedure rotate_device (
-	-- Rotates a device in the board layout.
-	-- Leaves x/y and face (top/bottom) as it is.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -482,8 +485,8 @@ package body et_board_ops is
 
 			procedure set_rotation ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				case coordinates is
 					when ABSOLUTE =>
 						set (device.position, rotation); -- preserve x/y and face
@@ -493,10 +496,11 @@ package body et_board_ops is
 				end case;
 			end;
 
+			
 			procedure set_rotation ( -- of a non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) is
-			begin
+				device		: in out type_device_non_electric) 
+			is begin
 				case coordinates is
 					when ABSOLUTE =>
 						set (device.position, rotation); -- preserve x/y and face
@@ -539,6 +543,7 @@ package body et_board_ops is
 			end if;
 
 		end query_devices;
+
 		
 	begin -- rotate_device
 		case coordinates is
@@ -561,15 +566,18 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end rotate_device;
 
+	
 	procedure delete_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- FD1
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -582,6 +590,7 @@ package body et_board_ops is
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- delete_device
 		log (text => "module " & to_string (module_name) &
@@ -598,18 +607,20 @@ package body et_board_ops is
 
 	end delete_device;
 
+	
 	procedure rename_device (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
-		log_threshold		: in type_log_level) is
-		
+		log_threshold		: in type_log_level) 
+	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			device_before, device_after : pac_devices_non_electric.cursor;
 
 			inserted : boolean;
@@ -645,6 +656,7 @@ package body et_board_ops is
 				device_not_found (device_name_before);
 			end if;
 		end query_devices;
+
 		
 	begin -- rename_device
 		log (text => "module " & to_string (module_name) &
@@ -664,14 +676,11 @@ package body et_board_ops is
 	
 	
 	procedure flip_device (
-	-- Flips a device in the board layout from top to bottom or vice versa.
-	-- Leaves x/y and rotation as it is.
-	-- Warns operator if device already on desired face of board.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -688,6 +697,7 @@ package body et_board_ops is
 				mirror (point => p.position, axis => Y);
 			end mirror_placeholder;
 
+			
 			procedure mirror_placeholders (phs : in out et_packages.pac_text_placeholders.list) is 
 				use et_packages.pac_text_placeholders;
 				cursor : et_packages.pac_text_placeholders.cursor := phs.first;
@@ -700,11 +710,12 @@ package body et_board_ops is
 					next (cursor);
 				end loop;
 			end mirror_placeholders;
+
 			
 			procedure flip ( -- electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-				
+				device		: in out type_device_sch) 
+			is				
 				face_before : constant type_face := get_face (device.position);
 			begin
 				if face_before /= face then
@@ -742,10 +753,11 @@ package body et_board_ops is
 				end if;
 			end flip;
 
+			
 			procedure flip ( -- non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) is
-				
+				device		: in out type_device_non_electric) 
+			is				
 				face_before : constant type_face := get_face (device.position);
 			begin
 				if face_before /= face then
@@ -782,7 +794,8 @@ package body et_board_ops is
 					log (WARNING, "package already on " & to_string (face) & " !");
 				end if;
 			end flip;
-				
+
+			
 		begin -- query_devices
 
 			-- Search the device first among the electric devices.
@@ -816,6 +829,7 @@ package body et_board_ops is
 
 			end if;
 		end query_devices;
+
 		
 	begin -- flip_device
 		log (text => "module " & to_string (module_name) &
@@ -830,24 +844,28 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
+
+		update_ratsnest (module_cursor, log_threshold + 1);		
 	end flip_device;
 
-	function get_position (
+	
 	-- Returns the position (x/y/rotation) of a submodule instance.
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
 	--  - The submodule instance must exist in the module.
+	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.pac_module_instance_name.bounded_string) -- OSC1
-		return type_position is
-		
+		return type_position 
+	is		
 		position : type_position := origin_zero_rotation; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 		begin
@@ -866,9 +884,10 @@ package body et_board_ops is
 		return position;
 	end get_position;
 
-	procedure move_submodule (
+	
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
+	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
@@ -877,16 +896,18 @@ package body et_board_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 
 			procedure move (
 				instance	: in et_general.pac_module_instance_name.bounded_string;
-				submodule	: in out et_submodules.type_submodule) is
-			begin
+				submodule	: in out et_submodules.type_submodule) 
+			is begin
 				case coordinates is
 					when ABSOLUTE =>
 						set (submodule.position_in_board, point);
@@ -918,6 +939,7 @@ package body et_board_ops is
 			end if;
 
 		end;
+
 		
 	begin -- move_submodule
 		case coordinates is
@@ -940,15 +962,14 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end move_submodule;
+
 	
 	procedure make_pick_and_place (
-	-- Exports a pick & place file from the given top module and assembly variant.
-	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
-	--     See comment in procedure query_submodules.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
@@ -979,11 +1000,12 @@ package body et_board_ops is
 							level => log_threshold + 1);
 					end if;
 				end;
+
 				
 				procedure query_devices (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_module) is
-
+					module		: in type_module) 
+				is
 					device_name : type_device_name;
 					inserted : boolean;
 

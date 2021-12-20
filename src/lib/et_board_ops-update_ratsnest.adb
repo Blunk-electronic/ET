@@ -108,7 +108,7 @@ is
 			
 			
 		begin -- query_net
-			put_line ("net " & to_string (key (net_cursor)));
+			log (text => "net " & to_string (key (net_cursor)), level => lth + 1);
 			
 			-- get x/y of all terminals:
 			nodes := get_terminal_positions (module_cursor, net_cursor);
@@ -122,6 +122,10 @@ is
 			-- and append their positions to nodes:
 			splice_points (nodes, get_track_ends (net_cursor));
 
+
+			-- CS submodules ?
+
+			
 			-- remove redundant/overlapping nodes
 			remove_redundant_points (nodes);
 

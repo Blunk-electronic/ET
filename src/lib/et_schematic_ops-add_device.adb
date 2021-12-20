@@ -42,8 +42,8 @@ procedure add_device (
 	device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 	variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
-	log_threshold	: in type_log_level) is
-	
+	log_threshold	: in type_log_level) 
+is	
 	use et_symbols;
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
@@ -54,7 +54,8 @@ procedure add_device (
 	
 	procedure add (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_module) is
+		module		: in out type_module) 
+	is
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 		inserted : boolean;
@@ -74,8 +75,8 @@ procedure add_device (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
-		begin
+			device		: in out type_device_sch) 
+		is begin
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
@@ -111,11 +112,13 @@ procedure add_device (
 			
 		end add_unit_internal;
 
+		
 		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
+			device		: in out type_device_sch) 
+		is
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
@@ -167,6 +170,7 @@ procedure add_device (
 
 		ports : et_symbols.pac_ports.map;
 		unit_name : et_devices.pac_unit_name.bounded_string;
+
 		
 	begin -- add
 		log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
@@ -213,6 +217,9 @@ procedure add_device (
 								));
 
 						-- CS check inserted flag ?
+
+						--update_ratsnest (module_cursor, log_threshold + 1);
+						
 						
 					else -- variant not available
 						log (ERROR, "package variant " & enclose_in_quotes (to_string (variant)) &
@@ -296,7 +303,8 @@ procedure add_device (
 		log_indentation_down;
 		log_indentation_down;
 	end add;
-		
+
+	
 begin -- add_device
 	if pac_package_variant_name.length (variant) > 0 then -- real device
 		log (text => "module " & to_string (module_name) &
