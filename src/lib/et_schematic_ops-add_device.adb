@@ -212,13 +212,13 @@ is
 								-- defined in the package.
 								-- Extract them from the device model and the variant:
 								text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
-								
+
+								-- Use default position in layout.
+								-- CS: do not place the package on top of others
 								others		=> <>
 								));
 
 						-- CS check inserted flag ?
-
-						--update_ratsnest (module_cursor, log_threshold + 1);
 						
 						
 					else -- variant not available
@@ -344,6 +344,12 @@ begin -- add_device
 		position	=> module_cursor,
 		process		=> add'access);
 
+
+	-- Update the ratsnest if the added device is real:
+	if is_real (device_cursor_lib) then
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end if;
+	
 	log_indentation_down;
 
 end add_device;

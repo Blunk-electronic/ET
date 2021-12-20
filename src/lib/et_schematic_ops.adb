@@ -50,8 +50,11 @@ with et_terminals;
 with et_packages;
 with et_device_rw;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_board_ops;					use et_board_ops;
+
 
 with et_canvas_schematic;
+
 
 package body et_schematic_ops is
 
