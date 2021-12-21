@@ -291,7 +291,7 @@ package body et_schematic_ops.units is
 				-- in deleting the port names from connected net segments.
 				device_cursor := find (module.devices, device_name); -- the device should be there
 
-				-- locate the unit, load current position, set new position
+				-- locate the unit, get its current position, set its new position
 				update_element (
 					container	=> module.devices,
 					position	=> device_cursor,
@@ -299,10 +299,13 @@ package body et_schematic_ops.units is
 				
 				log_indentation_up;
 
-				-- Fetch the ports of the unit to be moved.
+				-- Fetch the ports of the unit to be moved 
+				-- The x/y-positions of the ports are as defined in the symbol model.
 				ports := get_ports_of_unit (device_cursor, unit_name);
 
-				-- rotate_ports (ports_scratch, rotation_before);
+				-- Rotate the ports according to the rotation of the unit:
+				rotate_ports (ports, rot (position_of_unit_new));
+
 				
 				-- Delete the old ports of the targeted unit from module.nets
 				delete_ports (
