@@ -601,6 +601,7 @@ package body et_canvas_schematic_units is
 		pac_ports.iterate (ports, query_port'access);
 		
 	end find_attached_segments;
+
 	
 	-- Rotates a unit of a device by 90 degree clockwise. 
 	-- Disconnects the unit from attached net segments before the rotation.
@@ -619,7 +620,8 @@ package body et_canvas_schematic_units is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
@@ -712,6 +714,7 @@ package body et_canvas_schematic_units is
 
 				log_indentation_down;
 			end query_units;
+			
 
 		begin -- query_devices
 
@@ -770,10 +773,12 @@ package body et_canvas_schematic_units is
 				ports			=> ports_lib,
 				sheet			=> et_coordinates.sheet (position_of_unit),
 				log_threshold	=> log_threshold + 1);
-			
-			log_indentation_down;				
 
+			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
+			
+			log_indentation_down;
 		end query_devices;
+
 		
 	begin -- rotate_unit
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
@@ -791,6 +796,8 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;				
 	end rotate_unit;
+
+	
 	
 	procedure finalize_rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver

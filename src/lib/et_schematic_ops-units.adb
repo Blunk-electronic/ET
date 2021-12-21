@@ -548,6 +548,7 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 	end drag_net_segments;
 
+	
 	-- Tests whether the given unit ports at their individual location are movable. 
 	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
@@ -629,6 +630,7 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 	end movable_test;
 
+	
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
@@ -716,6 +718,7 @@ package body et_schematic_ops.units is
 
 		return result;
 	end movable;
+
 	
 	procedure drag_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -942,6 +945,7 @@ package body et_schematic_ops.units is
 			process		=> query_devices'access);
 
 	end drag_unit;
+
 	
 	procedure rotate_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -956,7 +960,8 @@ package body et_schematic_ops.units is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_schematic.pac_devices_sch;
 			device_cursor : et_schematic.pac_devices_sch.cursor;
 
@@ -1043,6 +1048,7 @@ package body et_schematic_ops.units is
 
 					end rotate_placeholders_absolute;
 					
+					
 					procedure rotate_placeholders_relative (rot : in type_rotation) is begin
 					-- Rotate position of placeholders around the unit origin. 
 					
@@ -1098,6 +1104,7 @@ package body et_schematic_ops.units is
 							rotate_placeholders_relative (rotation);
 					end case;
 				end rotate_unit;
+
 				
 			begin -- query_units
 				if contains (device.units, unit_name) then
@@ -1126,6 +1133,7 @@ package body et_schematic_ops.units is
 				end if;
 			end query_units;
 
+			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
@@ -1175,6 +1183,7 @@ package body et_schematic_ops.units is
 						log_threshold	=> log_threshold + 1);
 				end;
 
+				
 				-- Calculate the new positions of the unit ports.
 				case coordinates is
 					when ABSOLUTE =>
@@ -1194,12 +1203,15 @@ package body et_schematic_ops.units is
 					ports			=> ports_lib,
 					sheet			=> et_coordinates.sheet (position_of_unit),
 					log_threshold	=> log_threshold + 1);
+
+				update_ratsnest (module_cursor, log_threshold + 1);
 				
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- rotate_unit
 		case coordinates is
