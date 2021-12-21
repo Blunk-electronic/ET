@@ -124,7 +124,7 @@ package body et_schematic_ops.units is
 				log_indentation_up;
 
 				-- Fetch the ports of the unit to be deleted.
-				ports := ports_of_unit (device_cursor, unit_name);
+				ports := get_ports_of_unit (device_cursor, unit_name);
 				
 				-- Delete the ports of the targeted unit from module.nets
 				delete_ports (
@@ -172,8 +172,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-		
-	begin -- delete_unit
+	begin
 		log (text => "module " & to_string (module_name) &
 			 " deleting " & to_string (device_name) & " unit " & 
 			 to_string (unit_name) & " ...", level => log_threshold);
@@ -197,13 +196,14 @@ package body et_schematic_ops.units is
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_schematic.pac_devices_sch;
 			device_cursor : et_schematic.pac_devices_sch.cursor;
 
@@ -217,13 +217,15 @@ package body et_schematic_ops.units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
+				device		: in out type_device_sch) 
+			is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out et_schematic.type_unit) is
+					unit		: in out et_schematic.type_unit) 
+				is
 					use et_coordinates;
 				begin
 					case coordinates is
@@ -251,6 +253,7 @@ package body et_schematic_ops.units is
 							raise;
 					
 				end move_unit;
+
 				
 			begin -- query_units
 				if contains (device.units, unit_name) then
@@ -279,6 +282,7 @@ package body et_schematic_ops.units is
 				end if;
 			end query_units;
 
+			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
@@ -296,7 +300,9 @@ package body et_schematic_ops.units is
 				log_indentation_up;
 
 				-- Fetch the ports of the unit to be moved.
-				ports := ports_of_unit (device_cursor, unit_name);
+				ports := get_ports_of_unit (device_cursor, unit_name);
+
+				-- rotate_ports (ports_scratch, rotation_before);
 				
 				-- Delete the old ports of the targeted unit from module.nets
 				delete_ports (
@@ -317,12 +323,15 @@ package body et_schematic_ops.units is
 					ports			=> ports,
 					sheet			=> et_coordinates.sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
+
+				update_ratsnest (module_cursor, log_threshold + 1);
 				
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- move_unit
 		case coordinates is
@@ -335,7 +344,7 @@ package body et_schematic_ops.units is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by" & to_sheet_relative (sheet) & " sheet(s)" &
+					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
 		
@@ -349,6 +358,7 @@ package body et_schematic_ops.units is
 
 	end move_unit;
 
+	
 	-- Drags the net segments according to the given drag_list of a unit.
 	-- Changes the position of start or end points of segments.
 	-- Does NOT create new connections with segments if a port
@@ -851,7 +861,7 @@ package body et_schematic_ops.units is
 				
 				-- Fetch the ports of the unit to be moved. These are the default port positions
 				-- (relative to the symbol origin) as they are defined in the library model.
-				ports := ports_of_unit (device_cursor, unit_name);
+				ports := get_ports_of_unit (device_cursor, unit_name);
 				
 				-- Calculate the old and new positions of the unit ports:
 				ports_old := ports;
@@ -1132,7 +1142,7 @@ package body et_schematic_ops.units is
 				-- Fetch the ports of the unit to be rotated.
 				-- The coordinates here are the default positions (in the library model)
 				-- relative to the center of the units.
-				ports_lib := ports_of_unit (device_cursor, unit_name);
+				ports_lib := get_ports_of_unit (device_cursor, unit_name);
 				
 				ports_scratch := ports_lib;						 
 

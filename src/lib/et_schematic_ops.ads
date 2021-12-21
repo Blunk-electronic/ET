@@ -95,16 +95,18 @@ package et_schematic_ops is
 		positions 		: in pac_unit_positions.map;
 		log_threshold	: in type_log_level);
 
+	
 	-- Returns a map of ports of the given device and unit.
 	-- The coordinates of the ports are default xy-positions relative
-	-- to the center of the unit.
-	function ports_of_unit (
+	-- to the center of the unit as they are defined in the symbol model.
+	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.pac_ports.map;
 
 	
-	-- Deletes ports of the given device in nets.
+	-- Deletes ports of the given device in module.nets.
+	-- The port names are relevant here. Their x/x positions are irrelevant.
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
@@ -112,11 +114,13 @@ package et_schematic_ops is
 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level);
 
+	
 	-- Moves the given unit ports by given offset.
 	procedure move_ports ( -- CS move to et_symbols ?
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
 
+	
 	-- Inserts the given device ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
@@ -132,6 +136,7 @@ package et_schematic_ops is
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
+	
 	-- Rotates the given unit ports by given angle about the origin.
 	procedure rotate_ports ( -- CS move to et_symbols ?
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
@@ -155,6 +160,7 @@ package et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
+	
 	-- Returns the sheet/x/y position of the given device and port.
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -163,6 +169,7 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
+	
 	-- Returns the sheet/x/y position of the given submodule port.
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -171,6 +178,7 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
+	
 	-- Returns the sheet/x/y position of the given netchanger port.
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -179,6 +187,7 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
+	
 	-- Moves the name placeholder of the given unit.
 	procedure move_unit_placeholder (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -189,6 +198,7 @@ package et_schematic_ops is
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
+	
 	function default_text_positions (
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
@@ -196,6 +206,7 @@ package et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
 
+	
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is absolute.										  
@@ -247,18 +258,21 @@ package et_schematic_ops is
 		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 
+	
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
+	
 
 	-- Returns true if at given place a net segment starts or ends.
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position)
 		return boolean;
+	
 
 	procedure dragging_not_possible (
 		port 		: in string;
@@ -314,6 +328,7 @@ package et_schematic_ops is
 		device	: in type_device_name)
 		return boolean;
 
+	
 	-- Locates the given device in the given module and returns
 	-- the cursor to the device.
 	-- If the device does not exist, returns no_element.
@@ -322,6 +337,7 @@ package et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_devices_sch.cursor;
 
+	
 	-- Returns the cursor of the device model
 	-- for the given device in the module.
 	-- Raises exception if device does not exist.
@@ -329,6 +345,7 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor;
+
 	
 	-- Locates the given unit of the given device in the 
 	-- given module and returns the cursor to the unit.
@@ -339,6 +356,7 @@ package et_schematic_ops is
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
 		return et_schematic.pac_units.cursor;
+	
 
 	-- Returns true if the unit of the given device in the 
 	-- given module has been deployed somewhere.
@@ -350,6 +368,7 @@ package et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return boolean;
 
+	
 	-- Locates the given device in the given module and returns
 	-- the name of the device model (like 7400.dev).
 	-- Raises constraint error if the device does not exist.
@@ -358,6 +377,7 @@ package et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_device_model_file.bounded_string; -- 7400.dev
 
+	
 	-- Returns the package variants available for the
 	-- given device.
 	-- The device must be real. Otherwise constraint error rises.
@@ -365,6 +385,7 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_variants.map;
+
 	
 	-- Returns the name of the package variant name of the device.
 	-- Raises constraint error if the device does not exist.
@@ -374,6 +395,7 @@ package et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_package_variant_name.bounded_string; -- D, N
 
+	
 	-- Sets the package variant of a device.
 	-- Raises constraint error if the device does not exist.
 	-- Raises semantic error if the device is virtual.

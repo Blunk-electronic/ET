@@ -250,7 +250,7 @@ package body et_canvas_schematic_units is
 
 		begin -- query_devices
 			-- Fetch the ports of the unit to be deleted.
-			ports := ports_of_unit (unit.device, key (unit.unit));
+			ports := get_ports_of_unit (unit.device, key (unit.unit));
 
 			-- locate the unit, load position and then delete the targeted unit
 			update_element (
@@ -278,7 +278,7 @@ package body et_canvas_schematic_units is
 				delete (module.devices, unit.device);
 			end if;
 
-			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);			
+			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
 		end query_devices;
 		
 
@@ -509,6 +509,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_units_for_move;
 
+	
 	procedure find_attached_segments is
 		-- Device and unit name of the selected unit:
 		use pac_devices_sch;
@@ -531,7 +532,7 @@ package body et_canvas_schematic_units is
 			unit_position := element (su.unit).position;
 
 			-- Get the default port positions as defined in the library:
-			ports := ports_of_unit (su.device, key (su.unit));
+			ports := get_ports_of_unit (su.device, key (su.unit));
 
 			-- Calculate the port positions in the schematic before the drag:
 			rotate_ports (ports, rot (unit_position));
@@ -725,7 +726,7 @@ package body et_canvas_schematic_units is
 			-- Fetch the ports of the unit to be rotated.
 			-- The coordinates here are the default positions (in the library model)
 			-- relative to the center of the units.
-			ports_lib := ports_of_unit (unit.device, pac_units.key (unit.unit));
+			ports_lib := get_ports_of_unit (unit.device, pac_units.key (unit.unit));
 			
 			ports_scratch := ports_lib;						 
 

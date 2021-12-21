@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -57,10 +57,10 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
-	procedure move_unit (
 	-- Moves the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects unit ports with segment end or strart points AFTER the move.
+	procedure move_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A

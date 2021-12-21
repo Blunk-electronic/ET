@@ -360,6 +360,7 @@ package body et_schematic_ops is
 				begin -- query_strands
 					iterate (net.strands, query_strand'access);
 				end query_strands;
+
 				
 			begin -- query_net
 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
@@ -370,10 +371,12 @@ package body et_schematic_ops is
 					process		=> query_strands'access);
 				
 			end query_net;				
+
 			
 		begin -- query_nets
 			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
+		
 		
 	begin -- delete_ports
 		log (text => "deleting device ports in nets ...", level => log_threshold);
@@ -459,13 +462,11 @@ package body et_schematic_ops is
 	end delete_device;
 	
 	
-	function ports_of_unit (
-	-- Returns a map of ports of the given device and unit.
-	-- The coordinates of the ports are default xy-positions relative
-	-- to the center of the unit.
+	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.pac_ports.map is
+		return et_symbols.pac_ports.map 
+	is
 
 		use et_symbols;
 		ports : et_symbols.pac_ports.map; -- to be returned
@@ -473,12 +474,14 @@ package body et_schematic_ops is
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 
+		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) is
+			device	: in type_device_lib) 
+		is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
-		begin -- query_internal_units
+		begin
 			-- locate the given unit among the internal units
 			unit_cursor := find (device.units_internal, unit_name);
 
@@ -488,9 +491,11 @@ package body et_schematic_ops is
 			ports := element (unit_cursor).symbol.ports;
 		end query_internal_units;
 
+		
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) is
+			device	: in type_device_lib) 
+		is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -499,10 +504,11 @@ package body et_schematic_ops is
 			-- Appends the ports names of the external unit to the portlist to 
 			-- be returned.
 				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol ) is
-			begin -- query_symbol
+				symbol		: in type_symbol ) 
+			is begin
 				ports := symbol.ports;
 			end query_symbol;
+			
 			
 		begin -- query_external_units
 			-- locate the given unit among the external units
@@ -522,7 +528,8 @@ package body et_schematic_ops is
 			
 		end query_external_units;
 		
-	begin -- ports_of_unit
+		
+	begin -- get_ports_of_unit
 
 		-- Fetch the model name of the given device. 
 		model := pac_devices_sch.element (device_cursor).model;
@@ -559,7 +566,7 @@ package body et_schematic_ops is
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 		
-	end ports_of_unit;
+	end get_ports_of_unit;
 
 	
 	procedure move_ports (
@@ -623,7 +630,7 @@ package body et_schematic_ops is
 
 					-- Load the default xy-positions of ports relative to the center of the unit.
 					unit_name := key (unit_cursor);
-					ports := ports_of_unit (device_cursor, unit_name);
+					ports := get_ports_of_unit (device_cursor, unit_name);
 
 					-- If the unit has a port named port_name: 
 					if contains (ports, port_name) then -- port found
@@ -1987,7 +1994,7 @@ package body et_schematic_ops is
 							 pac_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
-						ports := ports_of_unit (
+						ports := get_ports_of_unit (
 							device_cursor	=> device_cursor,
 							unit_name		=> key (unit_cursor));
 
@@ -2851,7 +2858,7 @@ package body et_schematic_ops is
 					--log (text => "port " & pac_port_name.to_string (port_name));
 					
 					-- fetch the unit ports from the library model
-					ports := ports_of_unit (device_cursor, key (unit_cursor));
+					ports := get_ports_of_unit (device_cursor, key (unit_cursor));
 
 					-- if the unit has a port named port_name then we have
 					-- a match. no further search required.
@@ -2916,7 +2923,7 @@ package body et_schematic_ops is
 					if length (port_name) > 0 then -- search for port in unit
 
 						-- fetch the unit ports from the library model
-						ports := ports_of_unit (device_cursor, unit_name);
+						ports := get_ports_of_unit (device_cursor, unit_name);
 
 						if contains (ports, port_name) then
 							result := true;

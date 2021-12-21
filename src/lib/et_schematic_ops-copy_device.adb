@@ -239,7 +239,7 @@ is
 				log (text => "fetching relative port positions of internal unit " &
 					to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 2);
 				
-				ports := ports_of_unit (
+				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.int));
 
@@ -258,7 +258,7 @@ is
 				log (text => "fetching relative port positions of external unit " &
 					to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 2);
 
-				ports := ports_of_unit (
+				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.ext));
 
