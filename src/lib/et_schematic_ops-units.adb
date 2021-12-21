@@ -37,6 +37,8 @@
 --   ToDo: 
 
 with ada.exceptions;
+with et_board_ops;					use et_board_ops;
+
 
 package body et_schematic_ops.units is
 
@@ -49,11 +51,13 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_schematic.pac_devices_sch;
 			device_cursor : et_schematic.pac_devices_sch.cursor;
 
@@ -65,7 +69,8 @@ package body et_schematic_ops.units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
+				device		: in out type_device_sch) 
+			is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;
 			begin
@@ -87,6 +92,7 @@ package body et_schematic_ops.units is
 					unit_not_found (unit_name);
 				end if;
 			end query_units;
+
 			
 			units_invoked : boolean := true; -- goes false if no unit used anymore
 
@@ -99,6 +105,7 @@ package body et_schematic_ops.units is
 					units_invoked := false;
 				end if;
 			end query_number_of_invoked_units;
+			
 
 		begin -- query_devices
 			if contains (module.devices, device_name) then
@@ -138,12 +145,15 @@ package body et_schematic_ops.units is
 				if not units_invoked then
 					delete (module.devices, device_cursor);
 				end if;
+
+				update_ratsnest (module_cursor, log_threshold);
 				
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- delete_unit
 
@@ -154,12 +164,13 @@ package body et_schematic_ops.units is
 
 	end delete_unit;
 	
+	
 	procedure delete_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 	begin -- delete_unit
@@ -177,6 +188,7 @@ package body et_schematic_ops.units is
 			log_threshold	=> log_threshold + 1);
 
 	end delete_unit;
+	
 	
 	procedure move_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -68,6 +68,7 @@ with et_packages;
 
 with et_schematic;					use et_schematic;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_board_ops;					--use et_board_ops;
 
 with et_material;
 with et_meta;
@@ -209,8 +210,8 @@ package body et_canvas_schematic_units is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			
+			module		: in out type_module) 
+		is			
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
 			position_of_unit : pac_unit_positions.map;
@@ -219,8 +220,8 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				-- Load the single unit position and insert in container "position_of_unit"
 				pac_unit_positions.insert (
 					container	=> position_of_unit, 
@@ -234,16 +235,18 @@ package body et_canvas_schematic_units is
 				
 			end query_units;
 			
+			
 			units_invoked : boolean := true; -- goes false if no unit used anymore
 
 			procedure query_number_of_invoked_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) is
-			begin
+				device		: in type_device_sch) 
+			is begin
 				if length (device.units) = 0 then
 					units_invoked := false;
 				end if;
 			end query_number_of_invoked_units;
+			
 
 		begin -- query_devices
 			-- Fetch the ports of the unit to be deleted.
@@ -275,7 +278,9 @@ package body et_canvas_schematic_units is
 				delete (module.devices, unit.device);
 			end if;
 
+			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);			
 		end query_devices;
+		
 
 	begin -- delete_unit
 		log (text => "module " & to_string (key (module_cursor)) &
@@ -291,6 +296,7 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;				
 	end delete_unit;
+
 	
 	procedure finalize_delete (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -308,6 +314,7 @@ package body et_canvas_schematic_units is
 		
 		clear_proposed_units;
 	end finalize_delete;
+
 	
 	procedure delete_unit (point : in type_point) is 
 		use et_schematic_ops.units;
@@ -347,6 +354,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end delete_unit;
 
+	
 	procedure delete_selected_unit is
 		use et_schematic_ops.units;
 	begin
@@ -362,6 +370,7 @@ package body et_canvas_schematic_units is
 	end delete_selected_unit;
 	
 
+	
 -- MOVE/DRAG/ROTATE UNIT
 
 	procedure reset_unit_move is begin
@@ -369,6 +378,7 @@ package body et_canvas_schematic_units is
 		clear_proposed_units;
 	end reset_unit_move;
 
+	
 	procedure finalize_move (
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
@@ -408,9 +418,11 @@ package body et_canvas_schematic_units is
 		reset_unit_move;
 	end finalize_move;
 
+	
 	procedure reset_segments_being_dragged is begin
 		segments_being_dragged.clear;
 	end reset_segments_being_dragged;
+
 	
 	procedure finalize_drag (
 		destination		: in type_point;

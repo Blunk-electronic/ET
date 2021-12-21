@@ -128,6 +128,7 @@ package body et_schematic_ops is
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
 	end;
+
 	
 	procedure dragging_not_possible (
 		port 		: in string;
@@ -140,6 +141,7 @@ package body et_schematic_ops is
 			 console => true);
 		raise constraint_error;
 	end;
+
 	
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -171,6 +173,7 @@ package body et_schematic_ops is
 
 	end set_grid;
 
+	
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in type_grid;
@@ -196,6 +199,7 @@ package body et_schematic_ops is
 			process		=> do_it'access);
 
 	end set_grid;
+
 	
 	procedure log_unit_positions (
 		positions 		: in pac_unit_positions.map;
@@ -215,6 +219,7 @@ package body et_schematic_ops is
 		pac_unit_positions.iterate (positions, write'access);
 		log_indentation_down;
 	end;
+
 	
 	procedure log_package_position (
 	-- Writes the position of the package in the log file. If device is virtual, nothing happens.
@@ -234,6 +239,7 @@ package body et_schematic_ops is
 		end if;
 	end;
 
+	
 	function positions_of_units (
 	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
@@ -257,14 +263,15 @@ package body et_schematic_ops is
 
 		return positions;
 	end;
+
 	
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_symbols.pac_ports.map := et_symbols.pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
 		
 		procedure query_nets (
@@ -386,17 +393,19 @@ package body et_schematic_ops is
 
 		log_indentation_down;
 	end delete_ports;
+
 	
 	procedure delete_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
@@ -427,6 +436,8 @@ package body et_schematic_ops is
 					sheets			=> position_of_units, -- the sheets to look at
 					log_threshold	=> log_threshold + 1);
 
+				update_ratsnest (module_cursor, log_threshold + 1);
+				
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
@@ -446,6 +457,7 @@ package body et_schematic_ops is
 			process		=> query_devices'access);
 
 	end delete_device;
+	
 	
 	function ports_of_unit (
 	-- Returns a map of ports of the given device and unit.
@@ -549,6 +561,7 @@ package body et_schematic_ops is
 		
 	end ports_of_unit;
 
+	
 	procedure move_ports (
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
@@ -573,6 +586,7 @@ package body et_schematic_ops is
 	begin -- move_ports
 		iterate (ports, query_port'access);
 	end move_ports;
+
 	
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -677,6 +691,7 @@ package body et_schematic_ops is
 		return port_position;
 	end position;
 
+	
 	function position (
 	-- Returns the sheet/x/y position of the given submodule port.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -765,6 +780,7 @@ package body et_schematic_ops is
 		return port_position;
 	end position;
 
+	
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
@@ -1276,6 +1292,7 @@ package body et_schematic_ops is
 		
 	end move_unit_placeholder;
 
+	
 	procedure rotate_ports (
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		angle	: in et_coordinates.type_rotation) is -- 90
@@ -1301,6 +1318,7 @@ package body et_schematic_ops is
 		iterate (ports, query_port'access);
 	end rotate_ports;
 
+	
 	function default_text_positions (
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
