@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1358,8 +1358,7 @@ package body et_geometry_1 is
 			end if;
 
 			-- Compute new angle by adding current angle and given angle.
-			angle_out := angle_out + rotation;
-			--angle_out := add (angle_out, rotation);
+			angle_out := add (angle_out, rotation);
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_internal (angle_out), units_per_cycle);
