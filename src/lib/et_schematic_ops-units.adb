@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -631,7 +631,7 @@ package body et_schematic_ops.units is
 	end movable_test;
 
 	
-	function movable (
+	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
@@ -717,7 +717,7 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 
 		return result;
-	end movable;
+	end is_movable;
 
 	
 	procedure drag_unit (

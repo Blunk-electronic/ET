@@ -74,7 +74,7 @@ package et_schematic_ops.units is
 	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
 	-- CS: Might become obsolete once ports at the same x/y position are prevented.
-	function movable (
+	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
