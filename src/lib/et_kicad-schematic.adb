@@ -49,7 +49,7 @@ with et_kicad.pcb;				use et_kicad.pcb;
 
 package body et_kicad.schematic is
 
-	use et_nets.pac_net_name;
+	use et_net_names.pac_net_name;
 
 	use et_symbols.pac_geometry_2;
 	

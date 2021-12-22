@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -40,7 +40,7 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
-with et_nets;					use et_nets;
+with et_net_names;				use et_net_names;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

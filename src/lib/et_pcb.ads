@@ -62,7 +62,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
-with et_nets;					use et_nets;
+--with et_nets;					use et_nets;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
 with et_packages;				use et_packages;

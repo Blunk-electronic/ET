@@ -44,7 +44,7 @@ with ada.containers.ordered_sets;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_design_rules;			use et_design_rules;
-with et_nets;					use et_nets;
+with et_net_names;				use et_net_names;
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_devices;

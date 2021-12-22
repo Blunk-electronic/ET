@@ -51,7 +51,6 @@ package body et_routing is
 		terminal: in pac_terminals.cursor)
 		return type_get_terminal_clearance_result
 	is 
-		use et_nets;
 		use pac_net_name;
 
 		-- Get a cursor to the net connected with the terminal.

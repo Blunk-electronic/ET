@@ -63,7 +63,7 @@ with gtk.combo_box_text;			use gtk.combo_box_text;
 with glib;							use glib;
 with cairo;							use cairo;
 
-with et_nets;						use et_nets;
+with et_net_names;					use et_net_names;
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -51,7 +51,7 @@ with ada.containers.ordered_sets;
 
 with et_geometry;				use et_geometry;
 with et_schematic;				use et_schematic;
-with et_nets;					use et_nets;
+with et_net_names;				use et_net_names;
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_pcb;

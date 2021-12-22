@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -41,7 +41,7 @@ with gtk.window;					use gtk.window;
 with gtk.box;						use gtk.box;
 
 with et_general;					use et_general;
-with et_nets;						use et_nets;
+with et_net_names;					use et_net_names;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_schematic;
 

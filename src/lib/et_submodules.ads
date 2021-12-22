@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -53,7 +53,7 @@ with cairo;
 
 with et_logging;				use et_logging;
 with et_general;				use et_general;
-with et_nets;					use et_nets;
+with et_net_names;				use et_net_names;
 with et_text;
 with et_coordinates;			use et_coordinates;
 with et_pcb;
