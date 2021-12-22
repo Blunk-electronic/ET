@@ -55,7 +55,7 @@ with ada.containers.ordered_sets;
 with cairo;						--use cairo;
 
 with et_general;				use et_general;
---with et_nets;					use et_nets;
+with et_nets;					use et_nets;
 with et_net_names;				use et_net_names;
 with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
