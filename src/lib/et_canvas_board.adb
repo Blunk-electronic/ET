@@ -134,6 +134,7 @@ package body et_canvas_board is
 		
 	end init_via_place;
 
+	
 	-- This procedure should be called each time after the current active module 
 	-- changes. 
 	-- It removes all property bars (if being displayed) and
@@ -168,10 +169,12 @@ package body et_canvas_board is
 	procedure redraw_board is begin
 		redraw (canvas);
 	end redraw_board;
+
 	
 	procedure redraw_schematic is begin
 		et_canvas_schematic.redraw_schematic;
 	end redraw_schematic;
+	
 
 	procedure redraw is begin
 		redraw_schematic;
@@ -205,6 +208,7 @@ package body et_canvas_board is
 		return p;
 	end;
 
+	
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	
@@ -425,6 +429,7 @@ package body et_canvas_board is
 		set_grid (current_active_module, grid, log_threshold + 1);
 		redraw (canvas);
 	end set_grid_x;
+
 	
 	procedure set_grid_y (self : access gtk_entry_record'class) is
 		use et_board_ops;
@@ -716,57 +721,67 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	procedure draw_silk_screen (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
+	
 	procedure draw_assy_doc (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
+	
 	procedure draw_stop (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
+	
 	procedure draw_stencil (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
+
 	
 	procedure draw_keepout (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
+
 	
 	procedure draw_route_restrict (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	procedure draw_via_restrict (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	-- Draws objects in conductor layers (incl. vias):
 	procedure draw_conductors (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	procedure draw_packages (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
+
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -787,11 +802,13 @@ package body et_canvas_board is
 
 		use et_display.board;
 
+		
 		procedure draw_packages is begin
 			draw_packages (self, area_shifted, context, BOTTOM);
 			draw_packages (self, area_shifted, context, TOP);
 		end draw_packages;
 
+		
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
 				draw_silk_screen (self, area_shifted, context, BOTTOM);
@@ -802,6 +819,7 @@ package body et_canvas_board is
 			end if;
 		end draw_silkscreen;
 
+		
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
 				draw_assy_doc (self, area_shifted, context, BOTTOM);
@@ -812,6 +830,7 @@ package body et_canvas_board is
 			end if;
 		end draw_assy_doc;
 
+		
 		procedure draw_keepout is begin
 			if keepout_enabled (BOTTOM) then
 				draw_keepout (self, area_shifted, context, BOTTOM);
@@ -822,6 +841,7 @@ package body et_canvas_board is
 			end if;
 		end draw_keepout;
 
+		
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
 				draw_stop (self, area_shifted, context, BOTTOM);
@@ -832,6 +852,7 @@ package body et_canvas_board is
 			end if;
 		end draw_stop_mask;
 
+		
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
 				draw_stencil (self, area_shifted, context, BOTTOM);
@@ -842,12 +863,14 @@ package body et_canvas_board is
 			end if;
 		end draw_stencil;
 
+		
 		procedure draw_pcb_outline is begin
 			if outline_enabled then		
 				draw_outline (self, area_shifted, context);
 			end if;
 		end draw_pcb_outline;
 
+		
 		procedure draw_conductor_layers is begin
 			draw_route_restrict (self, area_shifted, context);
 			draw_via_restrict (self, area_shifted, context);
@@ -857,6 +880,7 @@ package body et_canvas_board is
 			-- CS unrouted
 		end draw_conductor_layers;
 
+		
 		procedure draw_board is begin
 			draw_packages;
 			draw_silkscreen;
@@ -957,6 +981,7 @@ package body et_canvas_board is
 		self.shift_area (cursor);		
 	end move_cursor;
 
+	
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
@@ -1057,6 +1082,7 @@ package body et_canvas_board is
 			
 	end draw_cursor;
 
+	
 	function get_grid (
 		self : not null access type_view)
 		return type_grid 
@@ -1075,6 +1101,7 @@ package body et_canvas_board is
 		return g;
 	end get_grid;
 
+	
 	function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame is
@@ -1084,6 +1111,7 @@ package body et_canvas_board is
 		return element (current_active_module).board.frame.frame;
 	end get_frame;
 
+	
 	function frame_height (
 		self : not null access type_view)
 		return type_distance_positive is 
@@ -1093,6 +1121,7 @@ package body et_canvas_board is
 		return type_distance_positive (element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
 
+	
 	function frame_width (
 		self : not null access type_view)
 		return type_distance_positive is 
@@ -1101,6 +1130,7 @@ package body et_canvas_board is
 	begin
 		return type_distance_positive (element (current_active_module).board.frame.frame.size.x);
 	end frame_width;
+
 	
 	function title_block_position (
 		self : not null access type_view)
@@ -1109,6 +1139,7 @@ package body et_canvas_board is
 		return self.get_frame.title_block_pcb.position;
 	end title_block_position;
 
+	
 	function board_origin (
 		self : not null access type_view)
 		return type_point is
@@ -1126,6 +1157,7 @@ package body et_canvas_board is
 		return to_string (verb);
 	end get_verb;
 
+	
 	function get_noun (
 		self	: not null access type_view)
 		return string is
@@ -1407,7 +1439,11 @@ package body et_canvas_board is
 				end if;
 		end case;
 
-		redraw;		
+		redraw;	
+		-- CS use redraw_board if only board affected
+		-- CS redraw after "enter" pressed
+
+		
 		update_mode_display (canvas);
 
 		
@@ -1492,7 +1528,9 @@ package body et_canvas_board is
 		end case;
 
 		redraw;
+		-- CS use redraw_board if only board affected
 
+		
 		exception when event: others =>
 			set_status (exception_message (event));
 

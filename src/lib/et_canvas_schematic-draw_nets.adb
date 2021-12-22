@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -57,6 +57,7 @@ is
 
 	use pac_proposed_segments;
 	use pac_proposed_labels;
+
 	
 	-- Draws the junctions of a segment:
 	procedure draw_junctions (
@@ -89,6 +90,7 @@ is
 
 	end draw_junctions;
 
+	
 	-- Draws the junctions of a segment:
 	procedure draw_junctions (
 		s : in type_net_segment)
@@ -156,6 +158,7 @@ is
 		end if;		
 	end is_selected;
 
+	
 	-- Draws a single net label:
 	procedure draw_label (
 		net		: in pac_net_name.bounded_string;
@@ -186,6 +189,7 @@ is
 		end case;
 	end draw_label;
 
+	
 	-- Draws a single net label that is being moved:
 	procedure draw_simple_label_being_moved (
 		net		: in pac_net_name.bounded_string;
@@ -215,6 +219,7 @@ is
 
 		--end case;
 	end draw_simple_label_being_moved;
+
 	
 	-- Draws labels that are NOT selected:
 	procedure draw_labels (
@@ -232,6 +237,7 @@ is
 		iterate (segment.labels, draw_fixed'access);
 	end draw_labels;
 
+	
 	-- Draws the net label being moved. If no net label
 	-- is being moved, nothing happens here:
 	procedure draw_label_being_moved is
@@ -308,6 +314,7 @@ is
 
 	end draw_label_being_moved;
 
+	
 	-- Draws the net label as indicated by variable selected_label:
 	procedure draw_selected_label (
 		net		: in pac_nets.cursor;
@@ -386,6 +393,7 @@ is
 			end if;
 		end if;		
 	end is_selected;
+
 	
 	-- We need a list of segments that have been drawn already.
 	-- Reason: While draggin/moving segments temporarily segments are drawn.
@@ -395,6 +403,7 @@ is
 	use pac_already_drawn_segments;
 	-- This list keeps record of already drawn segments:
 	already_drawn_segments : pac_already_drawn_segments.list;
+
 	
 	-- Draws the given net segment as it is according to module database
 	-- if it has not already been drawn.
@@ -417,6 +426,7 @@ is
 		end if;
 	end draw_fixed_segment;
 
+	
 	-- Draws a net segment.
 	-- Draws also possible junctions that may exist at start or end point
 	-- of the segment.
@@ -437,6 +447,7 @@ is
 		draw_labels (net, strand, segment);
 	end draw_preliminary_segment;
 
+	
 	-- Draws secondary nets which are attached to the primary net.
 	procedure draw_secondary_segments (
 		net_cursor			: in pac_nets.cursor;
@@ -450,7 +461,7 @@ is
 
 		-- the zone being dragged:
 		zone				: in type_line_zone)
-	is 		
+	is
 		
 		procedure query_segment (c : in pac_net_segments.cursor) is
 			secondary_segment : type_net_segment;
@@ -531,7 +542,8 @@ is
 			process		=> query_segment'access);
 		
 	end draw_secondary_segments;
-										 
+
+	
 	-- Draws the net segment being moved or dragged.
 	-- If we are dragging a segment, then other attached segments
 	-- will be dragged along.
@@ -740,6 +752,7 @@ is
 			segments_being_dragged.iterate (query_segment'access);
 		end if;
 	end draw_segment_being_dragged_along_with_unit;
+
 	
 	procedure query_nets (
 		module_name	: in pac_module_name.bounded_string;
@@ -834,6 +847,7 @@ is
 			end loop;
 		end query_strands_normal;
 
+		
 		-- Draws the whole net inclusive net labesl highlighted. 
 		-- This is the case when the verb VERB_SHOW is active.
 		procedure query_strands_show (
@@ -876,11 +890,13 @@ is
 			end loop;
 		end query_strands_show;
 
+		
 		-- A net can be drawn in "normal" mode or highlighted. This flag indicates
 		-- that a net has alredy been drawn highlighted so that it won't be drawn
 		-- again in "normal" mode.
 		net_already_drawn : boolean := false;
 
+		
 		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
 		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
 		procedure highlight_net is
@@ -916,6 +932,7 @@ is
 				end if;
 			end if;
 		end highlight_net;
+
 		
 	begin -- query_nets
 		set_color_nets (context.cr);

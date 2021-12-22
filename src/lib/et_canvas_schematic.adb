@@ -70,6 +70,7 @@ package body et_canvas_schematic is
 	procedure update_sheet_number_display is begin
 		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (current_active_sheet));
 	end update_sheet_number_display;
+
 	
 	procedure build_sheet_number_display is
 		spacing : gint;
@@ -86,25 +87,30 @@ package body et_canvas_schematic is
 		pack_start (box_sheet, cbox_sheet);
 	end build_sheet_number_display;
 
+	
 	procedure set_label_console is
 		text_before : constant string := label_console.get_text;
 	begin
 		label_console.set_text (text_before & label_console_text);
 	end set_label_console;
+
 	
 	procedure redraw_board is begin
 		et_canvas_board.redraw_board;
 	end redraw_board;
+
 	
 	procedure redraw_schematic is begin
 		redraw (canvas);
 	end redraw_schematic;
 
+	
 	procedure redraw is begin
 		redraw_schematic;
 		redraw_board;
 	end redraw;
 
+	
 	procedure next_module is
 		use pac_generic_modules;
 	begin
@@ -132,6 +138,7 @@ package body et_canvas_schematic is
 		redraw;
 	end next_module;
 
+	
 	procedure previous_module is
 		use pac_generic_modules;
 	begin
@@ -399,28 +406,33 @@ package body et_canvas_schematic is
 		context : type_draw_context;
 		area    : type_rectangle)	is separate;
 
+	
 	procedure draw_frame (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	procedure draw_tag_label (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		net		: in pac_net_name.bounded_string;
 		label	: in et_schematic.type_net_label) is separate;
+
 	
 	procedure draw_nets (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	procedure draw_texts (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	
 	-- Draws a single symbol of the given device:
 	procedure draw_symbol (
 		self			: not null access type_view;
@@ -443,6 +455,7 @@ package body et_canvas_schematic is
 		preview			: in boolean := false)
 		is separate;
 
+		
 	-- Draws all units:
 	procedure draw_units (
 		self	: not null access type_view;
@@ -456,8 +469,6 @@ package body et_canvas_schematic is
 		context : in type_draw_context)
 	is
 		use et_schematic;
-
-		type type_line is new et_symbols.pac_geometry_2.type_line with null record;
 		line : type_line;
 
 		procedure compute_route (s, e : in type_point) is 
@@ -544,6 +555,7 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
+
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -611,6 +623,7 @@ package body et_canvas_schematic is
 		
 	end draw_internal;
 
+	
 	procedure set_module (
 		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
@@ -2054,6 +2067,9 @@ package body et_canvas_schematic is
 		end case;
 
 		redraw;
+		-- CS use redraw_schematic if only schematic affected
+		-- CS redraw after "enter" pressed
+		
 		update_mode_display (canvas);
 
 		
@@ -2739,7 +2755,9 @@ package body et_canvas_schematic is
 		end case;
 
 		redraw;
+		-- CS use redraw_schematic if only schematic affected
 
+		
 		exception when event: others =>
 			set_status (exception_message (event));
 
