@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -67,12 +67,12 @@ package et_schematic_ops.nets is
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
 	
-	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
 	-- CS If a particular strand on a sheet is to be renamed, the argument "place"
 	-- must provide sheet and x/y start position of strand. 
 	-- CS: In the future x/y can be any point on any segment of the strand.
+	procedure rename_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	

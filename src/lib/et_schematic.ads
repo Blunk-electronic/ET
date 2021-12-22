@@ -319,6 +319,7 @@ package et_schematic is
 		class 	: et_pcb.pac_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
+	
 	-- A net junction is where segments and ports meet each other.	
 	type type_junctions is record
 		start_point	: boolean := false;
@@ -381,11 +382,13 @@ package et_schematic is
 	function get_first_segment (
 		strand_cursor	: in pac_strands.cursor)
 		return pac_net_segments.cursor;
-								   
+
+	
 	type type_net is new type_net_base with record
 		strands		: pac_strands.list;
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
 	end record;
+
 	
 	package pac_nets is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string,

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -39,7 +39,9 @@ with ada.strings;					use ada.strings;
 with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.exceptions;
 
+with et_board_ops;					use et_board_ops;
 with et_exceptions;					use et_exceptions;
+
 
 package body et_schematic_ops.nets is
 
@@ -109,19 +111,22 @@ package body et_schematic_ops.nets is
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_schematic.pac_nets;
 		net_cursor_old : pac_nets.cursor; -- points to the old net
 		net_cursor_new : pac_nets.cursor; -- points to the new net
 
+		use et_schematic.pac_strands;
+		
 		procedure create_net (
 		-- Creates a new empty net named net_name_after. 
 		-- Sets the cursor net_cursor_new to the new net.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			inserted : boolean;
 		begin
 			insert (
@@ -136,22 +141,38 @@ package body et_schematic_ops.nets is
 				position	=> net_cursor_new
 				);
 		end create_net;
+
 		
 		procedure rename_everywhere (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- backup the old net
 			net_old	: et_schematic.type_net := element (net_cursor_old);
 
 			procedure copy_net_content (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-			begin
-				net := net_old;
+				net			: in out et_schematic.type_net) -- target
+			is begin
+				
+				--net := net_old;
+				
+				splice (
+					target => net.strands, 
+					before => pac_strands.no_element,
+					source => net_old.strands);
+
+				--splice (
+					--target => net.route.lines, 
+					--before => pac_strands.no_element,
+					--source => net_old.route.lines);
+
+				
 			end copy_net_content;
 			
 		begin -- rename_everywhere
+			
+			-- CS check class and scope !
 			
 			-- delete the old net entirely:
 			delete (
@@ -166,20 +187,20 @@ package body et_schematic_ops.nets is
 			
 		end rename_everywhere;
 
+		
 		procedure rename_on_sheet (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- temporarily collection of strands
-			use et_schematic.pac_strands;
 			strands_on_sheet : et_schematic.pac_strands.list;
 			
 			procedure collect_strands (
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
 			-- Deletes the affected strands from the old net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-
+				net			: in out et_schematic.type_net) 
+			is
 				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 				strand : et_schematic.type_strand;
 			begin
@@ -215,17 +236,19 @@ package body et_schematic_ops.nets is
 				log_indentation_down;
 			end collect_strands;
 
+			
 			procedure move_strands (
 			-- Adds the collection of strands strands_on_sheet 
 			-- to the targeted net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-			begin
+				net			: in out et_schematic.type_net) 
+			is begin
 				splice (
 					target => net.strands,
 					source => strands_on_sheet,
 					before => pac_strands.no_element);
 			end;
+
 			
 		begin -- rename_on_sheet
 
@@ -261,10 +284,11 @@ package body et_schematic_ops.nets is
 			
 		end rename_on_sheet;
 
+		
 		procedure rename_strand (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use et_schematic.pac_strands;			
 			strand_temp : et_schematic.type_strand;
 			strand_found : boolean := false;
@@ -272,7 +296,8 @@ package body et_schematic_ops.nets is
 			procedure locate_strand (
 			-- Locates the strand that starts at place and stores it in strand_temp.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
+				net			: in out et_schematic.type_net) 
+			is
 				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 			begin
 				-- Find the strand that starts at the given position.
@@ -295,13 +320,15 @@ package body et_schematic_ops.nets is
 				end loop;
 			end locate_strand;
 
+			
 			procedure move_strand (
 			-- Moves strand_temp to the targeted net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-			begin
+				net			: in out et_schematic.type_net) 
+			is begin
 				append (net.strands, strand_temp);
 			end;
+
 			
 		begin -- rename_strand
 
@@ -333,9 +360,9 @@ package body et_schematic_ops.nets is
 			end if;
 			
 		end rename_strand;
-					
-	begin -- rename_net
+
 		
+	begin -- rename_net
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			 " renaming net " & to_string (net_name_before) &
 			 " to " & to_string (net_name_after),
@@ -356,7 +383,8 @@ package body et_schematic_ops.nets is
 		-- if there is no net named net_name_after, notify operator about a new
 		-- net being created. 
 		if net_cursor_new = pac_nets.no_element then
-			log (text => "creating new net " & to_string (net_name_after), level => log_threshold + 1);
+			log (text => "creating new net " & to_string (net_name_after),
+				 level => log_threshold + 1);
 
 			update_element (
 				container	=> generic_modules,
@@ -367,7 +395,7 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_up;
 
-		-- show where the renaming will be taking place:
+		-- log where the renaming will be taking place:
 		case scope is
 			when EVERYWHERE =>
 				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
@@ -394,10 +422,13 @@ package body et_schematic_ops.nets is
 					process		=> rename_strand'access);
 				
 		end case;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
 	end rename_net;
 
+	
 	procedure delete_net (
 	-- Deletes a net. The scope determines whether to delete a certain strand,
 	-- all strands on a certain sheet or on all sheets.
