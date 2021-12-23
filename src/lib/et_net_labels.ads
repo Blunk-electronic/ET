@@ -63,16 +63,21 @@ package et_net_labels is
 		TAG 	-- a lable that shows the net name, the sheet name and the row/column
 		);		-- where the net continues
 
+	
 	function to_string (appearance : in type_net_label_appearance) return string;
+	
 	function to_appearance (appearance : in string) return type_net_label_appearance;
+
 	
 	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
 	net_label_direction_default : constant type_net_label_direction := PASSIVE;
+
 	
 	function to_string (direction : in type_net_label_direction) return string;
 	function to_direction (direction : in string) return type_net_label_direction;
 
 	keyword_direction : constant string := "direction";
+
 	
 	type type_net_label_base is tagged record
 		-- The position of the label is absolute (relative to drawing origin):
