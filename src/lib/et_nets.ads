@@ -194,7 +194,11 @@ package et_nets is
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
 	end record;
 
-	
+
+	-- Merges net_2 into net_1.
+	procedure merge_nets (
+		net_1	: in out type_net;
+		net_2	: in type_net);
 	
 end et_nets;
 

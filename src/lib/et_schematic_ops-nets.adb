@@ -154,20 +154,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) -- target
 			is begin
-				
 				--net := net_old;
-				
-				splice (
-					target => net.strands, 
-					before => pac_strands.no_element,
-					source => net_old.strands);
-
-				--splice (
-					--target => net.route.lines, 
-					--before => pac_strands.no_element,
-					--source => net_old.route.lines);
-
-				
+				merge_nets (net, net_old);
 			end copy_net_content;
 			
 		begin -- rename_everywhere
@@ -179,7 +167,7 @@ package body et_schematic_ops.nets is
 				container	=> module.nets,
 				position	=> net_cursor_old);
 
-			-- copy the old net to the new net:
+			-- Merg the old net into the new net:
 			update_element (	
 				container	=> module.nets,
 				position	=> net_cursor_new,

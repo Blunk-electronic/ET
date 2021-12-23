@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -126,48 +126,8 @@ package body et_nets is
 		return result;
 	end segment_orientation;
 
-	
-	function get_first_segment (
-		strand_cursor	: in pac_strands.cursor)
-		return pac_net_segments.cursor
-	is
-		use pac_strands;
-		segment_cursor : pac_net_segments.cursor; -- to be returned
-
-		procedure query_segments (strand : in type_strand) is
-			use pac_net_segments;
-
-			segment_position : type_point := far_upper_right;
-			
-			procedure query_segment (c : in pac_net_segments.cursor) is begin
-				if element (c).start_point < segment_position then
-					segment_position := element (c).start_point;
-					segment_cursor := c;
-				end if;
-
-				if element (c).end_point < segment_position then
-					segment_position := element (c).end_point;
-					segment_cursor := c;
-				end if;
-			end query_segment;
-			
-		begin
-			iterate (strand.segments, query_segment'access);
-		end query_segments;
-		
-	begin
-		query_element (
-			position	=> strand_cursor,
-			process		=> query_segments'access);
-		
-		return segment_cursor;
-	end get_first_segment;
-
-
 
 	procedure set_strand_position (strand : in out type_strand) is
-	-- Calculates and sets the lowest x/y position of the given strand.
-	-- Leaves the sheet number of the strand as it is.
 		point_1, point_2 : type_point;
 	
 		use pac_net_segments;
@@ -207,6 +167,65 @@ package body et_nets is
 			position => point_1);
 
 	end set_strand_position;
+
+
+	
+	function get_first_segment (
+		strand_cursor	: in pac_strands.cursor)
+		return pac_net_segments.cursor
+	is
+		use pac_strands;
+		segment_cursor : pac_net_segments.cursor; -- to be returned
+
+		procedure query_segments (strand : in type_strand) is
+			use pac_net_segments;
+
+			segment_position : type_point := far_upper_right;
+			
+			procedure query_segment (c : in pac_net_segments.cursor) is begin
+				if element (c).start_point < segment_position then
+					segment_position := element (c).start_point;
+					segment_cursor := c;
+				end if;
+
+				if element (c).end_point < segment_position then
+					segment_position := element (c).end_point;
+					segment_cursor := c;
+				end if;
+			end query_segment;
+			
+		begin
+			iterate (strand.segments, query_segment'access);
+		end query_segments;
+		
+	begin
+		query_element (
+			position	=> strand_cursor,
+			process		=> query_segments'access);
+		
+		return segment_cursor;
+	end get_first_segment;
+
+
+
+
+	procedure merge_nets (
+		net_1	: in out type_net;
+		net_2	: in type_net)
+	is
+	begin
+				--splice (
+					--target => net.strands, 
+					--before => pac_strands.no_element,
+					--source => net_old.strands);
+
+				--splice (
+					--target => net.route.lines, 
+					--before => pac_strands.no_element,
+					--source => net_old.route.lines);
+
+		null;
+	end merge_nets;
 
 
 	
