@@ -47,6 +47,7 @@ with ada.containers.vectors;
 
 with et_general;				use et_general;
 with et_net_names;				use et_net_names;
+with et_nets;					use et_nets;
 with et_project;
 with et_geometry;				use et_geometry;
 with et_schematic;
@@ -478,7 +479,7 @@ package et_kicad.schematic is
 	-- Strands are collected in a list:
 	package type_strands is new doubly_linked_lists (type_strand);
 	
-	type type_net is new et_schematic.type_net_base with record 
+	type type_net is new type_net_base with record 
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands.list;
 		-- CS differential status

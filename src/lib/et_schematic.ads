@@ -91,6 +91,7 @@ package et_schematic is
 		family	=> et_text.to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
 	
 	-- A text/note in the schematic:
 	type type_text is new pac_text.type_text with record
@@ -105,9 +106,11 @@ package et_schematic is
 
 
 	
+	
 	-- Units can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (NO, X_AXIS, Y_AXIS);
 
+	
 	function to_string (
 		mirror	: in type_mirror;
 		verbose	: in boolean)
@@ -123,6 +126,7 @@ package et_schematic is
 	subtype type_appearance_schematic is et_symbols.type_appearance 
 		range et_symbols.VIRTUAL .. et_symbols.PCB;
 
+	
 	-- In a schematic we find units spread all over.
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
@@ -141,12 +145,14 @@ package et_schematic is
 		-- Via the unit position the sheet number can be obtained.
 	end record;
 
+	
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package pac_units is new indefinite_ordered_maps ( -- CS rename to pac_units
 		key_type		=> pac_unit_name.bounded_string,
 		element_type 	=> type_unit);
 
+	
 	-- Returns a string that tells the name and position of given unit.
 	function to_string (unit : in pac_units.cursor) return string;
 
@@ -157,6 +163,7 @@ package et_schematic is
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
 		element_type	=> et_coordinates.type_position); -- sheet, x, y
 
+	
 	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
 	--Returns a list of units and their coordinates in the schematic.	
 
@@ -209,188 +216,9 @@ package et_schematic is
 		end case;
 	end record;
 
-	
-
-	
-	-- This is the port of a device as it appears in a net segment:
-	type type_device_port is record
-		device_name	: type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		port_name	: et_symbols.pac_port_name.bounded_string;
-	end record;
-
-	function "<" (left, right : in type_device_port) return boolean;
-	package pac_device_ports is new ordered_sets (type_device_port);
-
-	-- Iterates the device ports. 
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		ports	: in pac_device_ports.set;
-		process	: not null access procedure (position : in pac_device_ports.cursor);
-		proceed	: not null access boolean);
 
 
-	
-	-- This is the port of a submodule:
-	type type_submodule_port is record
-		-- The instance of a certain submodule:
-		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
-		-- The net of the submodule is here the port name:
-		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-	end record;
-
-	function "<" (left, right : in type_submodule_port) return boolean;
-	package pac_submodule_ports is new ordered_sets (type_submodule_port);
-	
-
-	
-	
-	type type_net_label_appearance is (
-		SIMPLE,	-- a label that shows just the name of the net
-		TAG 	-- a lable that shows the net name, the sheet name and the row/column
-		);		-- where the net continues
-
-	function to_string (appearance : in type_net_label_appearance) return string;
-	function to_appearance (appearance : in string) return type_net_label_appearance;
-	
-	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
-	net_label_direction_default : constant type_net_label_direction := PASSIVE;
-	
-	function to_string (direction : in type_net_label_direction) return string;
-	function to_direction (direction : in string) return type_net_label_direction;
-
-	keyword_direction : constant string := "direction";
-	
-	type type_net_label_base is tagged record
-		-- The position of the label is absolute (relative to drawing origin):
-		position	: pac_geometry_sch.type_point;
-		
-        size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
-		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
-	end record;
-	
-	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
-		case appearance is
-			when TAG => 
-				direction		: type_net_label_direction := net_label_direction_default;
-
-				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
-				-- The rotation of the label should depend on the direction of the stub. 
-				-- The rotation is about its own position. 
-				-- However, the shown text inside the label (net name and coordinates) is always readable
-				-- from the front or from the right.
-				rotation_tag	: type_rotation_relative := pac_geometry_sch.zero_rotation;
-
-			when SIMPLE =>
-				-- The simple label can be read from the front or from the right.
-				-- Its rotation can be HORIZONTAL or VERTICAL (0 or 90 degrees):
-				rotation_simple	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
-		end case;
-	end record;
-
-	package pac_net_labels is new indefinite_doubly_linked_lists (type_net_label);
-
-
-	
-	-- GUI relevant only: The font of a net label:
-	net_label_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-
-	-- GUI relevant only: The alignment for simple labels:
-	net_label_alignment : constant et_text.type_text_alignment := (et_text.LEFT, et_text.BOTTOM);
-	
-	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
-	tag_label_box_line_width : constant type_distance_positive := 0.2;
-
-	-- GUI relevant only: The spacing between anchor point of tag label and net name:
-	tag_label_text_offset : constant type_distance_positive := 1.0;
-
-	-- GUI relevant only: The ratio of box height to text size of a tag label:
-	tag_label_height_to_size_ratio : constant type_distance_positive := 1.8;
-
-	
-	-- This is a net:
-	type type_net_base is tagged record
-		route	: et_pcb.type_route; -- routing information -> pcb related
-
-		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
-		class 	: et_pcb.pac_net_class_name.bounded_string := et_pcb.net_class_name_default;
-	end record;
-
-	
-	-- A net junction is where segments and ports meet each other.	
-	type type_junctions is record
-		start_point	: boolean := false;
-		end_point	: boolean := false;
-	end record;
-
-	
-	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
-	junction_radius : constant type_distance_positive := 0.5;
-	type type_junction_symbol is new pac_geometry_2.type_circle with null record;
-	junction_symbol : type_junction_symbol := (
-						radius 	=> junction_radius,
-						others	=> <>);
-	
-	net_line_width : constant et_symbols.type_line_width := et_symbols.port_line_width;	
-	
-	type type_net_segment is new pac_geometry_2.type_line with record
-		labels				: pac_net_labels.list;
-		junctions			: type_junctions;
-		ports_devices		: pac_device_ports.set;
-		ports_submodules	: pac_submodule_ports.set;
-		ports_netchangers	: et_netlists.pac_netchanger_ports.set;
-	end record;
-	
-	package pac_net_segments is new doubly_linked_lists (type_net_segment);
-	
-	function to_string (segment : in pac_net_segments.cursor) return string;
-	-- Returns a string that tells about start and end coordinates of the net segment.
-
-	-- A net segment may run in those directions:
-	type type_net_segment_orientation is (
-		HORIZONTAL,
-		VERTICAL,
-		SLOPING);
-
-	-- Returns the orientation of a net segment.
-	function segment_orientation (segment : in pac_net_segments.cursor) 
-		return type_net_segment_orientation;
-	
-	
-	-- A strand is a collection of net segments which belong to each other. 
-	-- Segments belong to each other because their start/end points meet.
-	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand.
-	type type_strand is record
-	-- NOTE: ET does not provide a name for a strand.
-	-- As a strand is part of a net, there is no need for individual strand names.
-		position	: et_coordinates.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
-		segments	: pac_net_segments.list;
-	end record;		
-	
-	procedure set_strand_position (strand : in out type_strand);
-	-- Calculates and sets the lowest x/y position of the given strand.	
-	-- Leaves the sheet number of the strand as it is.	
-
-	package pac_strands is new doubly_linked_lists (type_strand);
-
-	-- Returns a cursor to the segment that is
-	-- on the lowest x/y position of the given strand:
-	function get_first_segment (
-		strand_cursor	: in pac_strands.cursor)
-		return pac_net_segments.cursor;
-
-	
-	type type_net is new type_net_base with record
-		strands		: pac_strands.list;
-		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
-	end record;
-
-	
 	package pac_nets is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
@@ -414,6 +242,7 @@ package et_schematic is
 		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor;
+
 	
 	-- Returns a cursor to the strand that is
 	-- on the lowest sheet and lowest x/y position:
@@ -430,6 +259,7 @@ package et_schematic is
 		UP,		-- dead end points up
 		DOWN);	-- dead end points down
 
+	
 	type type_stub (is_stub : boolean) is record
 		case is_stub is
 			when TRUE => direction : type_stub_direction;
@@ -437,6 +267,7 @@ package et_schematic is
 		end case;
 	end record;
 
+	
 	-- Maps from stub direction to rotation:
 	function to_label_rotation (direction : in type_stub_direction)
 		return type_rotation;
