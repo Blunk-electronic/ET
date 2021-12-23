@@ -51,6 +51,7 @@ with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
+with et_nets;						use et_nets;
 with et_schematic;					
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
@@ -205,7 +206,7 @@ package et_canvas_schematic_units is
 	
 -- 	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
 	type type_segment_being_dragged is record
-		segment	: et_schematic.type_net_segment;
+		segment	: type_net_segment;
 		zone	: type_drag_zone;
 	end record;
 

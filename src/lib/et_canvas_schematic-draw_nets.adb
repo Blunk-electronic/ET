@@ -50,10 +50,11 @@ procedure draw_nets (
 	context : in type_draw_context) 
 is
 	use et_schematic;
-	use et_schematic.pac_nets;
-	use et_schematic.pac_strands;
-	use et_schematic.pac_net_segments;
-	use et_schematic.pac_net_labels;
+	use et_nets;
+	use pac_nets;
+	use pac_strands;
+	use pac_net_segments;
+	use pac_net_labels;
 
 	use pac_proposed_segments;
 	use pac_proposed_labels;
@@ -776,7 +777,7 @@ is
 				if strand.position.sheet = current_active_sheet then
 
 					-- set line width for net segments:
-					set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+					set_line_width (context.cr, type_view_coordinate (net_line_width));
 
 					-- First we draw selected segments or those being moved/dragged:
 					set_color_nets (context.cr, BRIGHT);
@@ -862,7 +863,7 @@ is
 				if strand.position.sheet = current_active_sheet then
 
 					-- set line width for net segments:
-					set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+					set_line_width (context.cr, type_view_coordinate (net_line_width));
 
 					set_color_nets (context.cr, BRIGHT);
 					

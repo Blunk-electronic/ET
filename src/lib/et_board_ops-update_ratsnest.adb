@@ -56,6 +56,7 @@ is
 
 		procedure query_net (net_cursor : in pac_nets.cursor) is
 
+			use et_nets;
 			use pac_points;
 			nodes : pac_points.list;
 

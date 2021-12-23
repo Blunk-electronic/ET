@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -545,8 +545,9 @@ is
 	
 	-- nets
 	net_name	: pac_net_name.bounded_string; -- motor_on_off
-	net			: et_schematic.type_net;
+	net			: et_nets.type_net;
 
+	
 	procedure read_net is
 		kw : constant string := f (line, 1);
 	begin
@@ -579,10 +580,12 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_net;
-	
-	strands : et_schematic.pac_strands.list;
-	strand	: et_schematic.type_strand;
 
+	
+	strands : et_nets.pac_strands.list;
+	strand	: et_nets.type_strand;
+
+	
 	procedure read_strand is
 		kw : constant string := f (line, 1);
 	begin
@@ -597,9 +600,11 @@ is
 		end if;
 	end read_strand;
 	
-	net_segments : et_schematic.pac_net_segments.list;
-	net_segment	: et_schematic.type_net_segment;
-	net_junctions : et_schematic.type_junctions;
+	
+	net_segments : et_nets.pac_net_segments.list;
+	net_segment	: et_nets.type_net_segment;
+	net_junctions : et_nets.type_junctions;
+
 	
 	procedure set_junction (place : in string) is begin
 		if f (line, 2) = keyword_start then
@@ -610,6 +615,7 @@ is
 			net_junctions.end_point := true;
 		end if;
 	end set_junction;
+
 	
 	procedure read_net_segment is
 		kw : constant string := f (line, 1);
@@ -634,18 +640,20 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_net_segment;
+
 	
-	net_labels				: et_schematic.pac_net_labels.list;
-	net_label 				: et_schematic.type_net_label_base;
+	net_labels				: et_net_labels.pac_net_labels.list;
+	net_label 				: et_net_labels.type_net_label_base;
 	net_label_rotation		: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
-	net_label_appearance	: et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
+	net_label_appearance	: et_net_labels.type_net_label_appearance := et_net_labels.type_net_label_appearance'first;
 
 	-- The net label direction is relevant if appearance is TAG:
-	net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
+	net_label_direction : et_net_labels.type_net_label_direction := et_net_labels.type_net_label_direction'first;
 
 	
 	procedure read_label is
 		use et_coordinates;	
+		use et_net_labels;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -673,11 +681,11 @@ is
 
 		elsif kw = keyword_appearance then -- appearance tag/simple
 			expect_field_count (line, 2);
-			net_label_appearance := et_schematic.to_appearance (f (line, 2));
+			net_label_appearance := to_appearance (f (line, 2));
 
-		elsif kw = et_schematic.keyword_direction then -- direction input/output
+		elsif kw = et_net_labels.keyword_direction then -- direction input/output
 			expect_field_count (line, 2);
-			net_label_direction := et_schematic.to_direction (f (line, 2));
+			net_label_direction := to_direction (f (line, 2));
 			
 		else
 			invalid_keyword (kw);
@@ -686,15 +694,16 @@ is
 
 
 	
-	net_device_port : et_schematic.type_device_port;
-	net_device_ports : et_schematic.pac_device_ports.set;
+	net_device_port : et_nets.type_device_port;
+	net_device_ports : et_nets.pac_device_ports.set;
 
-	net_submodule_port : et_schematic.type_submodule_port;
-	net_submodule_ports : et_schematic.pac_submodule_ports.set;
+	net_submodule_port : et_nets.type_submodule_port;
+	net_submodule_ports : et_nets.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 
+	
 	-- read port parameters
 	-- NOTE: A device, submodule or netchanger port is defined by a
 	-- single line.
@@ -703,6 +712,7 @@ is
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
 		use et_symbols;
+		use et_nets;
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_device then -- device R1 port 1
@@ -715,14 +725,14 @@ is
 
 				-- Insert port in port collection of device ports. First make sure it is
 				-- not already in the net segment.
-				if et_schematic.pac_device_ports.contains (net_device_ports, net_device_port) then
+				if pac_device_ports.contains (net_device_ports, net_device_port) then
 					log (ERROR, "device " & to_string (net_device_port.device_name) &
 						" port " & to_string (net_device_port.port_name) & 
 						" already in net segment !", console => true);
 					raise constraint_error;
 				end if;
 
-				et_schematic.pac_device_ports.insert (net_device_ports, net_device_port); 
+				pac_device_ports.insert (net_device_ports, net_device_port); 
 
 			else
 				invalid_keyword (f (line, 3));
@@ -738,14 +748,14 @@ is
 
 				-- Insert submodule port in collection of submodule ports. First make sure it is
 				-- not already in the net segment.
-				if et_schematic.pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
+				if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
 					log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
 						" port " & to_string (net_submodule_port.port_name) & 
 						" already in net segment !", console => true);
 					raise constraint_error;
 				end if;
 				
-				et_schematic.pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
+				pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
 
 				-- clean up for next submodule port
 				net_submodule_port := (others => <>);
@@ -4953,33 +4963,34 @@ is
 			
 			procedure build_net_label is
 				use et_symbols.pac_text;
+				use et_net_labels;
 			begin
 				case stack.parent is
 					when SEC_LABELS =>
 
 						-- insert label in label collection
 						case net_label_appearance is
-							when et_schematic.SIMPLE =>
+							when SIMPLE =>
 
 								-- insert a simple label
-								et_schematic.pac_net_labels.append (
+								pac_net_labels.append (
 									container	=> net_labels,
 									new_item	=> (
 										net_label with
-										appearance		=> et_schematic.SIMPLE,
+										appearance		=> SIMPLE,
 										rotation_simple	=> snap (net_label_rotation)
 										));
 
 								-- CS warn about parameter "direction" being ignored
 								
-							when et_schematic.TAG =>
+							when TAG =>
 
 								-- insert a tag label
-								et_schematic.pac_net_labels.append (
+								pac_net_labels.append (
 									container	=> net_labels,
 									new_item	=> (
 										net_label with 
-										appearance		=> et_schematic.TAG,
+										appearance		=> TAG,
 										direction		=> net_label_direction,
 										rotation_tag	=> net_label_rotation
 										));
@@ -4989,8 +5000,8 @@ is
 						-- clean up for next label
 						net_label := (others => <>);
 						net_label_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
-						net_label_appearance := et_schematic.type_net_label_appearance'first;
-						net_label_direction := et_schematic.type_net_label_direction'first;
+						net_label_appearance := type_net_label_appearance'first;
+						net_label_direction := type_net_label_direction'first;
 
 					when others => invalid_section;
 				end case;
@@ -5076,7 +5087,7 @@ is
 
 							-- insert strand collection in net
 							net.strands := strands;
-							et_schematic.pac_strands.clear (strands); -- clean up for next strand collection
+							et_nets.pac_strands.clear (strands); -- clean up for next strand collection
 
 						when others => invalid_section;
 					end case;
@@ -5105,7 +5116,7 @@ is
 								-- and overwrite previous x/y position. 
 								-- So the calculated position takes precedence over the position found in 
 								-- the module file.
-								et_schematic.set_strand_position (strand);
+								et_nets.set_strand_position (strand);
 
 								-- Issue warning about this mismatch:
 								if type_point (strand.position) /= position_found_in_module_file then
@@ -5119,7 +5130,7 @@ is
 							end;
 							
 							-- insert strand in collection of strands
-							et_schematic.pac_strands.append (
+							et_nets.pac_strands.append (
 								container	=> strands,
 								new_item	=> strand);
 
@@ -5137,7 +5148,7 @@ is
 							strand.segments := net_segments;
 
 							-- clean up for next segment collection
-							et_schematic.pac_net_segments.clear (net_segments);
+							et_nets.pac_net_segments.clear (net_segments);
 							
 						when others => invalid_section;
 					end case;
@@ -5153,7 +5164,7 @@ is
 							net_junctions := (others => <>);
 							
 							-- insert segment in segment collection
-							et_schematic.pac_net_segments.append (
+							et_nets.pac_net_segments.append (
 								container	=> net_segments,
 								new_item	=> net_segment);
 
@@ -5171,7 +5182,7 @@ is
 							net_segment.labels := net_labels;
 
 							-- clean up for next label collection
-							et_schematic.pac_net_labels.clear (net_labels);
+							et_net_labels.pac_net_labels.clear (net_labels);
 
 						when others => invalid_section;
 					end case;
@@ -5198,8 +5209,8 @@ is
 							net_segment.ports_netchangers := net_netchanger_ports;
 							
 							-- clean up for next port collections (of another net segment)
-							et_schematic.pac_device_ports.clear (net_device_ports);
-							et_schematic.pac_submodule_ports.clear (net_submodule_ports);
+							et_nets.pac_device_ports.clear (net_device_ports);
+							et_nets.pac_submodule_ports.clear (net_submodule_ports);
 							et_netlists.pac_netchanger_ports.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>

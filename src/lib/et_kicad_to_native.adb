@@ -45,6 +45,8 @@ with gnat.directory_operations;
 with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
+with et_nets;
+with et_net_labels;
 with et_schematic;
 
 with et_geometry;				use et_geometry;
@@ -2755,6 +2757,7 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end copy_components;
 
+		
 		procedure copy_nets is
 			use et_schematic;
 			
@@ -2772,8 +2775,8 @@ package body et_kicad_to_native is
 			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.
 			-- As a strand is part of a net, there is no need for individual strand names.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-
+				net			: in out et_nets.type_net) 
+			is
 				use et_kicad.schematic.type_strands;
 				kicad_strands : et_kicad.schematic.type_strands.list := element (kicad_net_cursor).strands;
 				kicad_strand_cursor : et_kicad.schematic.type_strands.cursor := kicad_strands.first;
@@ -2782,27 +2785,27 @@ package body et_kicad_to_native is
 				kicad_segments : et_kicad.schematic.type_net_segments.list;
 				kicad_segment_cursor : et_kicad.schematic.type_net_segments.cursor;
 
-				use et_schematic.pac_strands;
-				strands_native : et_schematic.pac_strands.list;
-				strand_native : et_schematic.type_strand;
+				use et_nets.pac_strands;
+				strands_native : et_nets.pac_strands.list;
+				strand_native : et_nets.type_strand;
 			
-				use et_schematic.pac_net_segments;
-				net_segments_native : et_schematic.pac_net_segments.list;
-				net_segment_native : et_schematic.type_net_segment;
+				use et_nets.pac_net_segments;
+				net_segments_native : et_nets.pac_net_segments.list;
+				net_segment_native : et_nets.type_net_segment;
 
-				use et_schematic.pac_net_labels;
-				use et_schematic.pac_device_ports;
+				use et_net_labels.pac_net_labels;
+				use et_nets.pac_device_ports;
 				
 				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
 				-- CS: Labels placed at 180 or 270 degree are rotated to 0 or 90 degree. This might
 				-- cause the labels to shift to the right or up.
-					return et_schematic.pac_net_labels.list 
+					return et_net_labels.pac_net_labels.list 
 				is
 					use et_symbols.pac_text;
 					
-					labels : et_schematic.pac_net_labels.list; -- to be returned
+					labels : et_net_labels.pac_net_labels.list; -- to be returned
 
 					use et_kicad.schematic.type_simple_labels;
 					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
@@ -2864,10 +2867,10 @@ package body et_kicad_to_native is
 						simple_label_position := element (simple_label_cursor).coordinates;
 						move_by (simple_label_position, offset);
 
-						et_schematic.pac_net_labels.append (
+						et_net_labels.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance		=> et_schematic.SIMPLE,
+								appearance		=> et_net_labels.SIMPLE,
 								position		=> simple_label_position,
 								rotation_simple	=> to_rotation (rk => element (simple_label_cursor).rotation),
 								size			=> element (simple_label_cursor).size,
@@ -2884,10 +2887,10 @@ package body et_kicad_to_native is
 							label => et_kicad.schematic.type_net_label (element (tag_label_cursor))),
 							 level => log_threshold + 5);
 
-						et_schematic.pac_net_labels.append (
+						et_net_labels.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance		=> et_schematic.TAG,
+								appearance		=> et_net_labels.TAG,
 								position		=> element (tag_label_cursor).coordinates,
 								rotation_tag	=> element (tag_label_cursor).rotation,
 								size			=> element (tag_label_cursor).size,
@@ -2902,6 +2905,7 @@ package body et_kicad_to_native is
 					return labels;
 				end tag_and_simple_labels;
 
+				
 				function read_net_junctions (segment : in et_kicad.schematic.type_net_segment)
 				-- Iterates junctions of segment. Tests if they sit on start or end point
 				-- and sets the corresponding flag in the native junctions of the native segment.
@@ -2910,8 +2914,9 @@ package body et_kicad_to_native is
 				-- are reduced to a single junction (without warning).
 				-- CS: NOTE: Misleading warnings may be issued here due to improper junction processing
 				-- in procedure et_kicad.schematic.process_junctions.
-					return et_schematic.type_junctions is
-					junctions : et_schematic.type_junctions; -- to be returned
+					return et_nets.type_junctions 
+				is
+					junctions : et_nets.type_junctions; -- to be returned
 
 					use et_coordinates.pac_geometry_sch;
 					use et_kicad_coordinates;
@@ -2946,17 +2951,18 @@ package body et_kicad_to_native is
 					log_indentation_down;
 					return junctions;
 				end read_net_junctions;
+
 				
 				function read_ports (segment : in et_kicad.schematic.type_net_segment)
 				-- Returns the component ports connected with the given net segment.
-					return et_schematic.pac_device_ports.set is
-
+					return et_nets.pac_device_ports.set 
+				is
 					use et_kicad.schematic;
 					use et_kicad.schematic.type_ports_with_reference;
 					port_cursor_kicad	: type_ports_with_reference.cursor;
 					all_ports_of_net	: type_ports_with_reference.set;
 					
-					ports_of_segment : et_schematic.pac_device_ports.set; -- to be returned
+					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
 
 					use et_coordinates;
 					use pac_geometry_sch;
@@ -3025,7 +3031,7 @@ package body et_kicad_to_native is
 											scope		=> et_kicad_coordinates.XY),
 									 level => log_threshold + 5);
 								
-								et_schematic.pac_device_ports.insert (
+								et_nets.pac_device_ports.insert (
 									container	=> ports_of_segment,
 									new_item	=> (
 										device_name	=> element (port_cursor_kicad).reference,
@@ -3041,6 +3047,7 @@ package body et_kicad_to_native is
 					return ports_of_segment;
 				end read_ports;
 
+				
 			begin -- insert_strands
 				log_indentation_up;
 				
@@ -3079,10 +3086,10 @@ package body et_kicad_to_native is
 						net_segment_native.ports_devices := read_ports (element (kicad_segment_cursor));
 
 						-- there are no ports of submodules
-						net_segment_native.ports_submodules := pac_submodule_ports.empty_set;
+						net_segment_native.ports_submodules := et_nets.pac_submodule_ports.empty_set;
 						
 						-- Collect native net segment in list net_segments_native.
-						et_schematic.pac_net_segments.append (
+						et_nets.pac_net_segments.append (
 							container	=> net_segments_native,
 							new_item	=> net_segment_native);
 
@@ -3099,7 +3106,7 @@ package body et_kicad_to_native is
 					et_coordinates.set_sheet (strand_native.position, et_kicad_coordinates.sheet (element (kicad_strand_cursor).position));
 
 					-- calculate lowest x/y of native strand
-					et_schematic.set_strand_position (strand_native);
+					et_nets.set_strand_position (strand_native);
 
 
 					
@@ -3107,7 +3114,7 @@ package body et_kicad_to_native is
 					clear (net_segments_native);
 					
 					-- collect native strand (incl. segments) in list strands_native
-					et_schematic.pac_strands.append (
+					et_nets.pac_strands.append (
 						container	=> strands_native,
 						new_item	=> strand_native);
 					
@@ -3119,10 +3126,11 @@ package body et_kicad_to_native is
 				log_indentation_down;
 			end insert_strands;
 
+			
 			procedure copy_layout_stuff (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-			begin -- copy_layout_stuff
+				net			: in out et_nets.type_net) 
+			is begin
 				log_indentation_up;
 
 				log (text => "class" & et_pcb.to_string (element (kicad_net_cursor).class), level => log_threshold + 3);
@@ -3134,7 +3142,8 @@ package body et_kicad_to_native is
 				
 				log_indentation_down;
 			end copy_layout_stuff;
-											
+
+			
 		begin -- copy_nets
 			-- loop in kicad nets
 			while kicad_net_cursor /= et_kicad.schematic.type_nets.no_element loop
@@ -3167,6 +3176,7 @@ package body et_kicad_to_native is
 				next (kicad_net_cursor);
 			end loop;
 		end copy_nets;
+		
 
 		procedure copy_frames is
 		-- Converts the kicad drawing frame templates (schematic and layout) to native templates.

@@ -418,7 +418,7 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		net		: in pac_net_name.bounded_string;
-		label	: in et_schematic.type_net_label) is separate;
+		label	: in type_net_label) is separate;
 
 	
 	procedure draw_nets (
@@ -468,7 +468,7 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context)
 	is
-		use et_schematic;
+		use et_nets;
 		line : type_line;
 
 		procedure compute_route (s, e : in type_point) is 

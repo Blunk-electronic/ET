@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1880,11 +1880,13 @@ package body et_kicad.schematic is
 		-- CS: exception handler
 	end to_relative_rotation;
 
+	
 	function to_direction (text_in : in string) 
-		return et_schematic.type_net_label_direction is
+		return type_net_label_direction 
+	is
 	-- Converts the direction of a label to a type_label_direction. 
 	-- CS: currently case sensitive ! Use dedicated type for input parameter.
-		use et_schematic;		
+		--use et_schematic;		
 		d_out : type_net_label_direction := input;
 	begin
 		if text_in = schematic_keyword_label_dir_input then

@@ -1543,8 +1543,9 @@ package body et_board_ops is
 
 		port_properties : type_port_properties_access;
 
-		
+		use et_nets;
 		use pac_device_ports;
+		
 		procedure query_device (d : in pac_device_ports.cursor) is
 			device_cursor : pac_devices_sch.cursor;
 			terminal_position : type_point;
@@ -1809,6 +1810,8 @@ package body et_board_ops is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
+			use et_nets;
+			
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
@@ -1903,7 +1906,8 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-
+			use et_nets;
+			
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
@@ -2224,11 +2228,13 @@ package body et_board_ops is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
+			use et_nets;
+			
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-			begin
+				net			: in out type_net) 
+			is begin
 				append (
 					container	=> net.route.arcs,
 					new_item	=> arc);
@@ -2279,6 +2285,7 @@ package body et_board_ops is
 
 	end draw_track_arc;
 
+	
 	procedure place_via (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -2293,6 +2300,8 @@ package body et_board_ops is
 		is
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
+			use et_nets;
+			
 			procedure locate_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
@@ -2461,6 +2470,8 @@ package body et_board_ops is
 			-- A net belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
+			use et_nets;
+			
 			procedure ripup (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
@@ -4614,6 +4625,8 @@ package body et_board_ops is
 		net_name		: in pac_net_name.bounded_string := no_name)
 	is
 		use ada.tags;
+		use et_nets;
+		
 		
 		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
@@ -4674,6 +4687,7 @@ package body et_board_ops is
 			p : type_solid_route := 
 				type_solid_route (polygon);
 
+
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -4692,6 +4706,7 @@ package body et_board_ops is
 			
 		end route_solid;
 
+		
 		procedure route_hatched (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 

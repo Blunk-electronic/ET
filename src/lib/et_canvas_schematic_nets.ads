@@ -51,6 +51,8 @@ use et_coordinates.pac_geometry_sch;
 with et_text;
 with et_project.modules;			use et_project.modules;
 with et_symbols;
+with et_net_labels;					use et_net_labels;
+with et_nets;						use et_nets;
 with et_schematic;					use et_schematic;
 with et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
@@ -210,9 +212,10 @@ package et_canvas_schematic_nets is
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
-		segment			: in et_schematic.type_net_segment;
+		segment			: in type_net_segment;
 		log_threshold	: in type_log_level);
 
+	
 	-- Returns true if the given point qualifies as start or end point
 	-- of a net segment.
 	-- The point is considered as suitable if:

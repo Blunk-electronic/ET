@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -173,14 +173,18 @@ package body et_project.modules is
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in pac_generic_modules.cursor;
 		port	: in et_netlists.type_port_netchanger)
-		return boolean is
+		return boolean 
+	is
 		result : boolean := false; -- to be returned. goes true on the first (and only) match.
 
+		use et_nets;
 		use et_schematic;
+		
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -261,11 +265,13 @@ package body et_project.modules is
 		module		: in pac_generic_modules.cursor;
 		net			: in et_schematic.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 
-		return boolean is
+		return boolean 
+	is
 		
 		result : boolean := false; -- to be returned. goes true on the first
 		-- suitable netchanger found.
 
+		use et_nets;
 		use et_schematic;
 		
 		procedure query_strands (

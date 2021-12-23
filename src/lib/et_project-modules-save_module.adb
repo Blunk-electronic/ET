@@ -329,21 +329,25 @@ is
 		log_indentation_down;
 		
 	end query_layer_stack;
-		
+
+	
 	procedure query_nets is
 		use et_symbols.pac_text;
-		use type et_schematic.type_net;
+		use et_nets;
+		use et_net_labels;
 		use et_schematic.pac_nets;
 		use et_pcb;
 
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
-			net			: in et_schematic.type_net) is
+			net			: in type_net) 
+		is
 			use et_schematic;
 			use pac_strands;
 			use et_coordinates.pac_geometry_sch;
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
+			
 			procedure query_segments (strand : in type_strand) is
 				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -353,6 +357,7 @@ is
 
 				use et_netlists;
 				use pac_netchanger_ports;
+
 				
 				procedure query_labels (segment : in type_net_segment) is
 					use pac_net_labels;
@@ -380,11 +385,11 @@ is
 							write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 
 							write (keyword => keyword_appearance, parameters =>
-								et_schematic.to_string (appearance => element (label_cursor).appearance));
+								to_string (appearance => element (label_cursor).appearance));
 							
 							-- a tag label also indicates a signal direction
 							if element (label_cursor).appearance = TAG then
-								write (keyword => et_schematic.keyword_direction, parameters => to_string (element (label_cursor).direction));
+								write (keyword => et_net_labels.keyword_direction, parameters => to_string (element (label_cursor).direction));
 							end if;
 							
 							section_mark (section_label, FOOTER);
@@ -394,6 +399,7 @@ is
 					end if;
 				end query_labels;
 
+				
 				procedure query_junctions (segment : in type_net_segment) is begin
 					if segment.junctions.start_point then
 						write (keyword => keyword_junction, parameters => keyword_start);
@@ -403,6 +409,7 @@ is
 						write (keyword => keyword_junction, parameters => keyword_end);
 					end if;
 				end query_junctions;
+
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_symbols;
@@ -418,6 +425,7 @@ is
 					end loop;
 				end query_device_ports;
 
+				
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
 					port_cursor : pac_submodule_ports.cursor := segment.ports_submodules.first;
@@ -433,6 +441,7 @@ is
 						next (port_cursor);
 					end loop;
 				end query_submodule_ports;
+
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
 					use et_symbols;
@@ -450,6 +459,7 @@ is
 					end loop;
 				end query_netchanger_ports;
 
+				
 			begin -- query_segments
 				section_mark (section_segments, HEADER);
 				while segment_cursor /= pac_net_segments.no_element loop
@@ -500,7 +510,7 @@ is
 		procedure query_route (
 		-- This is about routed tracks/traces and zones in the board:
 			net_name	: in pac_net_name.bounded_string;
-			net			: in et_schematic.type_net) 
+			net			: in type_net) 
 		is
 			use et_board_shapes_and_text;
 			use pac_geometry_2;

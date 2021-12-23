@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -505,6 +505,8 @@ is
 	
 	-- Fills polygons that are connected with a net:
 	procedure signal_polygons is
+		use et_nets;
+		
 		use pac_nets;
 		use pac_solid_route;
 		use pac_hatched_route;

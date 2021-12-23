@@ -50,6 +50,7 @@ with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
 with et_project;
 with et_geometry;				use et_geometry;
+with et_net_labels;				use et_net_labels;
 with et_schematic;
 with et_terminals;
 with et_packages;
@@ -386,7 +387,7 @@ package et_kicad.schematic is
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
-	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
+	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: pac_geometry_sch.type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: pac_net_name.bounded_string;
@@ -394,18 +395,18 @@ package et_kicad.schematic is
         width		: et_symbols.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
-			when et_schematic.TAG => 
-				direction	: et_schematic.type_net_label_direction;
+			when TAG => 
+				direction	: et_net_labels.type_net_label_direction;
 				global		: boolean; -- CS: use only one flag. true -> hierachic, false -> global
 				hierarchic	: boolean;
-			when et_schematic.SIMPLE => null;
+			when SIMPLE => null;
 		end case;
 	end record;
 
-	type type_net_label_simple is new type_net_label (label_appearance => et_schematic.SIMPLE);
+	type type_net_label_simple is new type_net_label (label_appearance => SIMPLE);
 	package type_simple_labels is new doubly_linked_lists (type_net_label_simple);
 	
-	type type_net_label_tag is new type_net_label (label_appearance => et_schematic.TAG);
+	type type_net_label_tag is new type_net_label (label_appearance => TAG);
 	package type_tag_labels is new doubly_linked_lists (type_net_label_tag);
 
 	procedure write_label_properties (label : in type_net_label);

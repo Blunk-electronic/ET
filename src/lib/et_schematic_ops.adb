@@ -4373,8 +4373,8 @@ package body et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_submodules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -4385,7 +4385,7 @@ package body et_schematic_ops is
 		-- The ports allowed here are the ports-to-be-dragged itself.
 			location 			: in et_coordinates.type_position; -- only sheet number matters
 			netchanger_ports	: in et_submodules.type_netchanger_ports) -- x/y of master and slave port
-			is			
+		is			
 
 			procedure test_point (
 				point		: in et_coordinates.type_position; -- sheet/x/y -- the point to be probed
@@ -4395,7 +4395,7 @@ package body et_schematic_ops is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use et_schematic.pac_submodule_ports;
+				use et_nets.pac_submodule_ports;
 				use pac_device_ports;
 				use pac_netchanger_ports;
 			begin

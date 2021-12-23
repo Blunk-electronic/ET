@@ -50,6 +50,8 @@ with et_terminals;				use et_terminals;
 with et_devices;
 with et_packages;
 with et_schematic;
+with et_nets;						use et_nets;
+
 with et_schematic_ops;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;

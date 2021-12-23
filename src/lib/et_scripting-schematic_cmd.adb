@@ -42,6 +42,9 @@ with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 with et_symbols;
 with et_schematic_ops.netlists;
+with et_net_labels;						use et_net_labels;
+with et_nets;							use et_nets;
+
 
 separate (et_scripting)
 	
@@ -311,6 +314,7 @@ is
 	is
 		use et_schematic;
 		use pac_nets;
+		
 		use pac_strands;
 		
 		use et_canvas_schematic_nets;
@@ -1541,13 +1545,13 @@ is
 																y => to_distance (f (9)))),
 
 									rotation			=> to_rotation (f (10)), -- 0 / 90
-									appearance 			=> et_schematic.SIMPLE,
+									appearance 			=> et_net_labels.SIMPLE,
 
 									-- A simple label does not indicate the direction
 									-- of information flow. But this procedure call requires a
 									-- direction. So we just pass direction PASSIVE. It has no 
 									-- further meaning.
-									direction			=> et_schematic.PASSIVE,
+									direction			=> PASSIVE,
 
 									log_threshold		=> log_threshold + 1);
 
@@ -1563,10 +1567,10 @@ is
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
 
-									appearance 			=> et_schematic.TAG,
+									appearance 			=> TAG,
 
 									-- A tag label requires specification of signal direction:
-									direction			=> et_schematic.to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
+									direction			=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
 
 									log_threshold		=> log_threshold + 1);
 								

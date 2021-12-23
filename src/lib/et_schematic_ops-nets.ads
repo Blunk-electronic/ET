@@ -36,7 +36,10 @@
 --
 --   ToDo: 
 
+
+with et_net_labels;					use et_net_labels;
 with et_pcb;
+
 
 package et_schematic_ops.nets is
 
@@ -162,9 +165,10 @@ package et_schematic_ops.nets is
 		net_cursor		: in out pac_nets.cursor;
 		sheet			: in type_sheet;
 		net_name		: in pac_net_name.bounded_string;
-		segment_new		: in et_schematic.type_net_segment;
+		segment_new		: in type_net_segment;
 		log_threshold	: in type_log_level);
 
+	
 	-- See description for procedure insert_segment.
 	procedure insert_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -230,9 +234,10 @@ package et_schematic_ops.nets is
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 
 		-- The direction is relevant for tag labels only:
-		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
+	
 	procedure delete_net_label (
 	-- Deletes a label.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -240,6 +245,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 	-- CS procedure move_net_label
+
 	
 	-- Queries the position of the given net. If a stub is at the
 	-- given position returns the direction of the stub.

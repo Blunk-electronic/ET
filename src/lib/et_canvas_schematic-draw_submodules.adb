@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -45,6 +45,7 @@ with et_submodules;				use et_submodules;
 with et_display.schematic;
 
 separate (et_canvas_schematic)
+
 
 procedure draw_submodules (
 	self	: not null access type_view;

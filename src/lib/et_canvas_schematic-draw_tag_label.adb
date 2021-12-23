@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -42,9 +42,9 @@ procedure draw_tag_label (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
 	net		: in pac_net_name.bounded_string;
-	label	: in et_schematic.type_net_label)
+	label	: in type_net_label)
 is
-	use et_schematic;
+	--use et_schematic;
 	
 	content : pac_text_content.bounded_string := to_content (to_string (net));
 	-- CS append to content the position of the net on the next sheet (strand position)

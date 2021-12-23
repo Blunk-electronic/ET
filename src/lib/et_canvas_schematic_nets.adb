@@ -70,7 +70,7 @@ package body et_canvas_schematic_nets is
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) 
+				net			: in out type_net) 
 			is				
 				procedure query_segments (strand : in out type_strand) is
 				begin
@@ -149,7 +149,7 @@ package body et_canvas_schematic_nets is
 		return pac_net_name.bounded_string
 	is
 		net : pac_net_name.bounded_string; -- like N$56
-		cursor : et_schematic.pac_nets.cursor;
+		cursor : pac_nets.cursor;
 
 		-- This flag goes true once a suitable net
 		-- name has been found:
@@ -164,7 +164,7 @@ package body et_canvas_schematic_nets is
 			net := to_anonymous_net_name (i); -- N$1, N$2, ...
 			cursor := locate_net (module, net);
 
-			if cursor = et_schematic.pac_nets.no_element then -- not located
+			if cursor = pac_nets.no_element then -- not located
 				candiate_found := true;
 				exit;
 			end if;
@@ -453,7 +453,7 @@ package body et_canvas_schematic_nets is
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
-		segment			: in et_schematic.type_net_segment;
+		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
 		start_point : constant et_coordinates.type_position := to_position (segment.start_point, sheet);
@@ -464,8 +464,8 @@ package body et_canvas_schematic_nets is
 		segments_at_start_point : pac_proposed_segments.list;
 		segments_at_end_point	: pac_proposed_segments.list;
 
-		use et_schematic.pac_nets;
-		net_cursor	: et_schematic.pac_nets.cursor;
+		use pac_nets;
+		net_cursor	: pac_nets.cursor;
 
 		net_name_auto_generated	: pac_net_name.bounded_string; -- N$234
 		net_name_start, net_name_end : pac_net_name.bounded_string;
