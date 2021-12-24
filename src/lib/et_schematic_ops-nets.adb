@@ -154,7 +154,6 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) -- target
 			is begin
-				--net := net_old;
 				merge_nets (net, net_old);
 			end copy_net_content;
 			
@@ -180,6 +179,8 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			-- CS: implement operations required for layout !
+			
 			-- temporarily collection of strands
 			strands_on_sheet : pac_strands.list;
 			
@@ -277,6 +278,8 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			-- CS: implement operations required for layout !
+			
 			use pac_strands;			
 			strand_temp : type_strand;
 			strand_found : boolean := false;
@@ -418,17 +421,13 @@ package body et_schematic_ops.nets is
 
 	
 	procedure delete_net (
-	-- Deletes a net. The scope determines whether to delete a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand. See comment in procedure locate_strand.
+		-- See comment in procedure locate_strand.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use pac_nets;
@@ -438,8 +437,8 @@ package body et_schematic_ops.nets is
 		
 		procedure delete_everywhere (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			delete (
 				container	=> module.nets,
 				position	=> net_cursor);
@@ -447,8 +446,9 @@ package body et_schematic_ops.nets is
 
 		procedure delete_on_sheet (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
+			
 			procedure delete_strands_of_sheet (
 			-- Removes the affected strands from the net.
 				net_name	: in pac_net_name.bounded_string;
@@ -492,8 +492,8 @@ package body et_schematic_ops.nets is
 
 		procedure delete_strand (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_strands;			
 
 			strand_found : boolean := false;
@@ -501,7 +501,8 @@ package body et_schematic_ops.nets is
 			procedure locate_strand (
 			-- Locates the strand that starts at place.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 			begin
 				-- Find the strand that starts at the given position.
@@ -540,9 +541,9 @@ package body et_schematic_ops.nets is
 			end if;
 			
 		end delete_strand;
-					
-	begin -- delete_net
+
 		
+	begin -- delete_net		
 		log (text => "module " & to_string (module_name) &
 			 " deleting net " & to_string (net_name),
 			level => log_threshold);
@@ -587,17 +588,19 @@ package body et_schematic_ops.nets is
 					process		=> delete_strand'access);
 				
 		end case;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
 	end delete_net;
+
 	
 	procedure delete_segment (
-	-- Deletes a segment of a net.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use pac_nets;
@@ -612,8 +615,9 @@ package body et_schematic_ops.nets is
 
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
+			
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
 				net_name	: in pac_net_name.bounded_string;
@@ -701,7 +705,8 @@ package body et_schematic_ops.nets is
 			end if;
 			
 		end query_net;
-							
+
+		
 	begin -- delete_segment
 		log (text => "module " & to_string (module_name) &
 			 " deleting in net " & to_string (net_name) &
@@ -725,10 +730,13 @@ package body et_schematic_ops.nets is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_net'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
 	end delete_segment;
 
+	
 	function no_ports (ports : in type_ports) return boolean is
 		result : boolean := true;
 		use pac_device_ports;

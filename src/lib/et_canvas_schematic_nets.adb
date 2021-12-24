@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -50,6 +50,7 @@ with et_canvas_schematic;			use et_canvas_schematic;
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;
 with et_netlists;
+with et_board_ops;
 
 package body et_canvas_schematic_nets is
 
@@ -65,7 +66,8 @@ package body et_canvas_schematic_nets is
 		
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
@@ -121,6 +123,8 @@ package body et_canvas_schematic_nets is
 		clear_proposed_segments;
 
 		reset_request_clarification;
+
+		et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
 		
 		set_status (status_delete);
 		
@@ -133,16 +137,19 @@ package body et_canvas_schematic_nets is
 		return key (ss.net);
 	end selected_net;
 
+	
 	function get_strand_position return et_coordinates.type_position is
 		ss : constant type_selected_segment := element (selected_segment);
 	begin
 		return element (ss.strand).position;
 	end get_strand_position;
-		
+
+	
 	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
 		selected_segment := pac_proposed_segments.no_element;
 	end clear_proposed_segments;
+
 	
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
@@ -176,6 +183,7 @@ package body et_canvas_schematic_nets is
 		
 		return net;
 	end lowest_available_anonymous_net;
+
 	
 	function first_net (segments : in pac_proposed_segments.list) 
 		return pac_net_name.bounded_string -- RESET_N, MASTER_CLOCK
@@ -197,6 +205,7 @@ package body et_canvas_schematic_nets is
 		return net;
 	end first_net;
 
+	
 	function more_than_one (segments : in pac_proposed_segments.list) return boolean is 
 	begin
 		if length (segments) > 1 then
@@ -238,6 +247,7 @@ package body et_canvas_schematic_nets is
 		return result;
 	end all_belong_to_same_net;
 
+	
 	function between_start_and_end_point_of_sloping_segment (
 		point		: in type_point;
 		segments	: in pac_proposed_segments.list)
@@ -343,6 +353,7 @@ package body et_canvas_schematic_nets is
 			end loop;
 		end query_nets;
 
+		
 	begin -- collect_segments
 		log (text => "looking up net segments at" & to_string (place) 
 			 & " catch zone" & to_string (catch_zone), level => log_threshold);
@@ -599,6 +610,8 @@ package body et_canvas_schematic_nets is
 		if not is_empty (net_name_end) and not is_empty (net_name_start) then
 			extend_net (net_name_start);
 		end if;
+
+		--et_board_ops.update_ratsnest (module, log_threshold + 1);
 		
 		log_indentation_down;
 	end insert_net_segment;
@@ -969,6 +982,7 @@ package body et_canvas_schematic_nets is
 		selected_label := pac_proposed_labels.no_element;
 	end reset_label;
 
+	
 	-- This function collects net labels of a certain category
 	-- inside the catch zone around a place.
 	function collect_labels (
@@ -1207,11 +1221,13 @@ package body et_canvas_schematic_nets is
 		
 	end delete_selected_label;
 
+	
 	function to_string (cat : in type_label_category) return string is 
 		use ada.characters.handling;
 	begin
 		return to_lower (type_label_category'image (cat));
 	end to_string;
+
 	
 	procedure delete_selected_label is begin
 		log (text => "deleting net label after clarification ...", level => log_threshold);
@@ -1388,6 +1404,7 @@ package body et_canvas_schematic_nets is
 			position	=> module_cursor,
 			process		=> query_nets'access);
 	end place_label;
+
 	
 	procedure finalize_place_label (
 		destination		: in type_point;
@@ -1428,6 +1445,7 @@ package body et_canvas_schematic_nets is
 
 	end finalize_place_label;
 
+	
 	procedure find_labels (
 		point		: in type_point;
 		category	: in type_label_category)
@@ -1468,6 +1486,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end find_labels;
 
+	
 	procedure move_selected_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_selected_label;
@@ -1540,6 +1559,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;				
 
 	end move_selected_label;
+
 	
 	procedure finalize_move_label (
 		destination		: in type_point;

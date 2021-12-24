@@ -84,13 +84,14 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 	-- CS procedure rename_net that takes a module cursor
+
 	
-	procedure delete_net (
 	-- Deletes a net. The scope determines whether to delete a certain strand,
 	-- all strands on a certain sheet or on all sheets.
 	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
 	-- must provide sheet and x/y start position of strand. In the future x/y can be
 	-- any point on any segment of the strand.
+	procedure delete_net (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
