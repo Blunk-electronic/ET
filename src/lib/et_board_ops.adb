@@ -1549,11 +1549,14 @@ package body et_board_ops is
 		procedure query_device (d : in pac_device_ports.cursor) is
 			device_cursor : pac_devices_sch.cursor;
 			terminal_position : type_point;
+
+			--use et_symbols;
 		begin
 			device_cursor := locate_device (module_cursor, element (d).device_name);
 
 			-- Only real devices have terminals. Virtual devices are ignored here:
 			if is_real (device_cursor) then
+				--put_line ("");
 				--put_line ("dev  " & to_string (element (d).device_name));
 				--put_line ("unit " & to_string (element (d).unit_name));
 				--put_line ("port " & to_string (element (d).port_name));

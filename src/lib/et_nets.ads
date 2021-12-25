@@ -102,6 +102,10 @@ package et_nets is
 	function "<" (left, right : in type_device_port) return boolean;
 	package pac_device_ports is new ordered_sets (type_device_port);
 
+
+	function to_string (port : in type_device_port) return string;
+
+
 	
 	-- Iterates the device ports. 
 	-- Aborts the process when the proceed-flag goes false:

@@ -211,25 +211,33 @@ package body et_schematic is
 			use pac_device_ports;
 
 			use et_netlists;
-			use pac_netchanger_ports;
-			
+			use pac_netchanger_ports;			
 			use pac_submodule_ports;
-
-			procedure query_devices (device_cursor : in pac_device_ports.cursor) is
+			
 			-- Inserts the device/port in result.devices. Skips the device/port
 			-- according to the given assembly variant.
-			begin
+			procedure query_devices (device_cursor : in pac_device_ports.cursor) is begin
 				if et_assembly_variants.is_mounted (
 					device		=> element (device_cursor).device_name, -- IC4, R101
 					variant		=> variant) 
 				then
+					--put_line (to_string (element (device_cursor)));
+					
 					insert (
 						container	=> result.devices,
 						new_item	=> element (device_cursor));
 				end if;
+
+				exception
+					when event: others =>
+						raise constraint_error with to_string (element (device_cursor))
+						--put_line (to_string (element (device_cursor))
+						& " already in set !";
+						
 			end query_devices;
+
 			
-		begin -- query_segments
+		begin
 			-- Collect device ports of segment according to given assembly variant.
 			iterate (element (segment_cursor).ports_devices, query_devices'access);
 
@@ -238,13 +246,15 @@ package body et_schematic is
 			union (result.netchangers, element (segment_cursor).ports_netchangers);
 			union (result.submodules, element (segment_cursor).ports_submodules);
 		end query_segments;
+
 		
-		procedure query_strands (strand_cursor : in pac_strands.cursor) is 
-		begin
+		procedure query_strands (strand_cursor : in pac_strands.cursor) is begin
 			iterate (element (strand_cursor).segments, query_segments'access);
 		end query_strands;
-	
+
+		
 	begin
+		--put_line ("net " & to_string (key (net)));		
 		iterate (element (net).strands, query_strands'access);
 		return result;
 	end get_ports;

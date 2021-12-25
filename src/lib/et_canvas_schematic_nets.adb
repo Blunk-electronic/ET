@@ -519,7 +519,7 @@ package body et_canvas_schematic_nets is
 		end extend_net;
 		
 	begin -- insert_net_segment
-		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
+		log (text => "adding net segment on sheet " & to_sheet (sheet) & to_string (segment), 
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -611,7 +611,7 @@ package body et_canvas_schematic_nets is
 			extend_net (net_name_start);
 		end if;
 
-		--et_board_ops.update_ratsnest (module, log_threshold + 1);
+		et_board_ops.update_ratsnest (module, log_threshold + 1);
 		
 		log_indentation_down;
 	end insert_net_segment;

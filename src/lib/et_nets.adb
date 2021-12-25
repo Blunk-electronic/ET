@@ -45,18 +45,34 @@ package body et_nets is
 
 	function "<" (left, right : in type_device_port) return boolean is
 		use et_symbols.pac_port_name;
+		use et_devices.pac_unit_name;
 	begin
+		-- compare device names:
 		if left.device_name < right.device_name then
 			return true;
 			
 		elsif left.device_name = right.device_name then
+
 			
-			if left.port_name < right.port_name then
+			-- compare unit names:
+			if left.unit_name < right.unit_name then
 				return true;
+				
+			elsif left.unit_name = right.unit_name then
+
+
+				-- compare port names:
+				if left.port_name < right.port_name then
+					return true;
+				else
+					return false;
+				end if;
+
 			else
 				return false;
 			end if;
 
+			
 		else
 			return false;
 		end if;
@@ -80,6 +96,13 @@ package body et_nets is
 	end;
 
 
+	function to_string (port : in type_device_port) return string is begin
+		return "device " & to_string (port.device_name)
+			& " unit " & et_devices.to_string (port.unit_name)
+			& " port " & et_symbols.to_string (port.port_name);
+	end to_string;
+
+	
 	procedure iterate (
 		ports	: in pac_device_ports.set;
 		process	: not null access procedure (position : in pac_device_ports.cursor);
