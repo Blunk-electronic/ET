@@ -200,9 +200,11 @@ package et_nets is
 
 
 	-- Merges net_2 into net_1.
+	-- NOTE: All strands, tracks, vias, fill-zones and cutout-areas 
+	-- of net_2 are deleted.
 	procedure merge_nets (
 		net_1	: in out type_net;
-		net_2	: in type_net);
+		net_2	: in out type_net);
 	
 end et_nets;
 

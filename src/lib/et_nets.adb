@@ -239,10 +239,9 @@ package body et_nets is
 
 	procedure merge_nets (
 		net_1	: in out type_net;
-		net_2	: in type_net)
+		net_2	: in out type_net)
 	is
 		use pac_strands;
-		net_2_copy : type_net := net_2;
 
 		use et_conductor_segment.boards;
 		use pac_conductor_lines;
@@ -263,7 +262,7 @@ package body et_nets is
 		splice (
 			target => net_1.strands, 
 			before => pac_strands.no_element,
-			source => net_2_copy.strands);
+			source => net_2.strands);
 
 		-- BOARD:
 		
@@ -271,36 +270,36 @@ package body et_nets is
 		splice (
 			target => net_1.route.lines, 
 			before => pac_conductor_lines.no_element,
-			source => net_2_copy.route.lines);
+			source => net_2.route.lines);
 
 		-- conductor arcs:
 		splice (
 			target => net_1.route.arcs, 
 			before => pac_conductor_arcs.no_element,
-			source => net_2_copy.route.arcs);
+			source => net_2.route.arcs);
 
 		-- vias:
 		splice (
 			target => net_1.route.vias, 
 			before => pac_vias.no_element,
-			source => net_2_copy.route.vias);
+			source => net_2.route.vias);
 
 		-- polygons/fill zones:
 		splice (
 			target => net_1.route.polygons.solid, 
 			before => pac_solid_route.no_element,
-			source => net_2_copy.route.polygons.solid);
+			source => net_2.route.polygons.solid);
 		
 		splice (
 			target => net_1.route.polygons.hatched, 
 			before => pac_hatched_route.no_element,
-			source => net_2_copy.route.polygons.hatched);
+			source => net_2.route.polygons.hatched);
 
 		-- cutout areas:
 		splice (
 			target => net_1.route.cutouts, 
 			before => pac_conductor_cutouts.no_element,
-			source => net_2_copy.route.cutouts);
+			source => net_2.route.cutouts);
 
 		
 	end merge_nets;

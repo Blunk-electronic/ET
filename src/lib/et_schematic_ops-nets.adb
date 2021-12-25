@@ -179,14 +179,12 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			-- CS: implement operations required for layout !
-			
 			-- temporarily collection of strands
 			strands_on_sheet : pac_strands.list;
 			
-			procedure collect_strands (
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
 			-- Deletes the affected strands from the old net.
+			procedure collect_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -226,9 +224,9 @@ package body et_schematic_ops.nets is
 			end collect_strands;
 
 			
-			procedure move_strands (
 			-- Adds the collection of strands strands_on_sheet 
 			-- to the targeted net.
+			procedure move_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
@@ -278,14 +276,11 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			-- CS: implement operations required for layout !
-			
-			use pac_strands;			
 			strand_temp : type_strand;
 			strand_found : boolean := false;
 
-			procedure locate_strand (
 			-- Locates the strand that starts at place and stores it in strand_temp.
+			procedure locate_strand (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -312,8 +307,8 @@ package body et_schematic_ops.nets is
 			end locate_strand;
 
 			
-			procedure move_strand (
 			-- Moves strand_temp to the targeted net.
+			procedure move_strand (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
