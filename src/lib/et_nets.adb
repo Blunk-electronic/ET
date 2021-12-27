@@ -118,6 +118,22 @@ package body et_nets is
 	end iterate;
 
 
+
+	procedure iterate (
+		segments	: in pac_net_segments.list;
+		process		: not null access procedure (position : in pac_net_segments.cursor);
+		proceed		: not null access boolean)
+	is
+		use pac_net_segments;
+		c : pac_net_segments.cursor := segments.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
 	
 
 	function to_string (segment : in pac_net_segments.cursor) return string is
@@ -155,6 +171,23 @@ package body et_nets is
 	end segment_orientation;
 
 
+	
+	procedure iterate (
+		strands	: in pac_strands.list;
+		process	: not null access procedure (position : in pac_strands.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_strands;
+		c : pac_strands.cursor := strands.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	procedure set_strand_position (strand : in out type_strand) is
 		point_1, point_2 : type_point;
 	
@@ -236,6 +269,115 @@ package body et_nets is
 
 
 
+	function get_sheet (
+		strand_cursor	: in pac_strands.cursor)
+		return type_sheet
+	is 
+		use pac_strands;
+	begin
+		return sheet (element (strand_cursor).position);
+	end get_sheet;
+		
+
+	
+
+	function on_segment (
+		segment_cursor	: in pac_net_segments.cursor;
+		point			: in type_point)
+		return boolean
+	is 
+		use pac_net_segments;
+	begin
+		return on_line (point, element (segment_cursor));
+	end on_segment;
+	
+	
+
+	function on_strand (
+		strand_cursor	: in pac_strands.cursor;
+		place			: in et_coordinates.type_position)
+		return boolean
+	is
+		-- This flag goes false if the given point is
+		-- on the given strand:
+		proceed : aliased boolean := true;
+
+		use pac_strands;
+		use pac_net_segments;
+		
+		procedure query_segment (s : in pac_net_segments.cursor) is begin
+			if on_segment (s, type_point (place)) then
+				proceed := false; -- abort iteration
+			end if;
+		end query_segment;
+		
+	begin
+		-- The sheet number of strand and point must match:
+		if get_sheet (strand_cursor) = sheet (place) then
+
+			-- Probe the segments of the strand:
+			iterate (
+				segments	=> element (strand_cursor).segments, 
+				process		=> query_segment'access,
+				proceed		=> proceed'access);
+
+		end if;
+
+		-- Return false if sheet numbers do not match 
+		-- or if point is not on any segment of the given strand:
+		return (not proceed);
+	end on_strand;
+
+
+
+	function get_strand (
+		net		: in type_net;
+		place	: in et_coordinates.type_position)
+		return pac_strands.cursor
+	is
+		use pac_strands;
+		result : pac_strands.cursor := pac_strands.no_element;
+
+		proceed : aliased boolean := true;
+
+		procedure query_strand (s : in pac_strands.cursor) is begin
+			if on_strand (s, place) then
+				proceed := false;
+				result := s;
+			end if;
+		end query_strand;
+		
+	begin
+		iterate (net.strands, query_strand'access, proceed'access);
+
+		return result;
+	end get_strand;
+
+	
+
+	procedure merge_strand (
+		net		: in out type_net;
+		strand	: in type_strand)
+	is
+		use pac_strands;
+	begin
+		append (net.strands, strand);
+	end merge_strand;
+
+	
+
+	procedure merge_strands (
+		net		: in out type_net;
+		strands	: in out pac_strands.list)
+	is 
+		use pac_strands;
+	begin
+		splice (
+			target	=> net.strands,
+			before	=> pac_strands.no_element,
+			source	=> strands);
+	end merge_strands;
+	
 
 	procedure merge_nets (
 		net_1	: in out type_net;

@@ -141,9 +141,18 @@ package et_nets is
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 
 
+	-- Iterates the net segments. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		segments	: in pac_net_segments.list;
+		process		: not null access procedure (position : in pac_net_segments.cursor);
+		proceed		: not null access boolean);
+
+
 	
-	function to_string (segment : in pac_net_segments.cursor) return string;
+		
 	-- Returns a string that tells about start and end coordinates of the net segment.
+	function to_string (segment : in pac_net_segments.cursor) return string;
 
 	
 	-- A net segment may run in those directions:
@@ -177,13 +186,22 @@ package et_nets is
 
 	package pac_strands is new doubly_linked_lists (type_strand);
 
+
+	-- Iterates the strands. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		strands	: in pac_strands.list;
+		process	: not null access procedure (position : in pac_strands.cursor);
+		proceed	: not null access boolean);
+
+
 	
-	procedure set_strand_position (strand : in out type_strand);
+	
 	-- Calculates and sets the lowest x/y position of the given strand.	
 	-- Leaves the sheet number of the strand as it is.	
+	procedure set_strand_position (strand : in out type_strand);
 
-	--package pac_strands is new doubly_linked_lists (type_strand);
-
+	
 	-- Returns a cursor to the segment that is
 	-- on the lowest x/y position of the given strand:
 	function get_first_segment (
@@ -191,6 +209,25 @@ package et_nets is
 		return pac_net_segments.cursor;
 
 
+	-- Returns the sheet number of the given strand:
+	function get_sheet (
+		strand_cursor	: in pac_strands.cursor)
+		return type_sheet;
+	
+	
+	-- Returns true if the given point is on the given
+	-- net segment:
+	function on_segment (
+		segment_cursor	: in pac_net_segments.cursor;
+		point			: in type_point)
+		return boolean;
+
+	
+	-- Returns true if the given point is on the given strand:
+	function on_strand (
+		strand_cursor	: in pac_strands.cursor;
+		place			: in et_coordinates.type_position)
+		return boolean;
 	
 
 	type type_net is new type_net_base with record
@@ -199,6 +236,27 @@ package et_nets is
 	end record;
 
 
+	-- Returns the cursor to the strand at the given place.
+	-- If no strand found then the return is no_element:
+	function get_strand (
+		net		: in type_net;
+		place	: in et_coordinates.type_position)
+		return pac_strands.cursor;
+	
+
+	-- Appends a strand to the strands of net:
+	procedure merge_strand (
+		net		: in out type_net;
+		strand	: in type_strand);
+	
+
+	-- Merges strands into the strands of net
+	-- NOTE: The given list of strands will be cleared:
+	procedure merge_strands (
+		net		: in out type_net;
+		strands	: in out pac_strands.list);
+	
+	
 	-- Merges net_2 into net_1.
 	-- NOTE: All strands, tracks, vias, fill-zones and cutout-areas 
 	-- of net_2 are deleted.

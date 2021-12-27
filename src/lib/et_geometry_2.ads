@@ -584,8 +584,7 @@ package et_geometry_2 is
 		line	: in type_line)
 		return boolean; 
 
-	-- Returns true if the given point on on
-	-- on the given line.
+	-- Returns true if the given point is on the given line.
 	function on_line (
 		point	: in type_point;
 		line	: in type_line)

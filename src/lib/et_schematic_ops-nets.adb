@@ -119,16 +119,17 @@ package body et_schematic_ops.nets is
 		net_cursor_old : pac_nets.cursor; -- points to the old net
 		net_cursor_new : pac_nets.cursor; -- points to the new net
 
+		new_net_created : boolean := false;
+		
 		use pac_strands;
 		
-		procedure create_net (
 		-- Creates a new empty net named net_name_after. 
 		-- Sets the cursor net_cursor_new to the new net.
+		-- Sets the flag new_net_created to true.
+		procedure create_net (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			inserted : boolean;
-		begin
+		is begin
 			insert (
 				container	=> module.nets,
 				key			=> net_name_after,
@@ -137,7 +138,7 @@ package body et_schematic_ops.nets is
 				-- CS: It could be reasonable to assume the scope of the old net.
 				new_item	=> (others => <>),
 				
-				inserted	=> inserted,
+				inserted	=> new_net_created,
 				position	=> net_cursor_new
 				);
 		end create_net;
@@ -179,7 +180,8 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			-- temporarily collection of strands
+			-- Temporarily collection of affected strands on
+			-- the sheet:
 			strands_on_sheet : pac_strands.list;
 			
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
@@ -189,18 +191,17 @@ package body et_schematic_ops.nets is
 				net			: in out type_net) 
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
-				strand : type_strand;
 			begin
 				log (text => "collecting strands of net " 
 					 & to_string (net_name) & " ...", level => log_threshold + 1);
 				
 				log_indentation_up;
 				
-				-- Look at the strands that are on the targeted sheet.
+				-- Collect the strands that are on the targeted sheet.
 				while strand_cursor /= pac_strands.no_element loop
 					
 					if sheet (element (strand_cursor).position) = sheet (place) then
-
+						
 						-- append strand to temporarily collection of strands on this sheet
 						append (strands_on_sheet, element (strand_cursor));
 
@@ -230,11 +231,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
-				splice (
-					target => net.strands,
-					source => strands_on_sheet,
-					before => pac_strands.no_element);
-			end;
+				merge_strands (net, strands_on_sheet);
+			end move_strands;
 
 			
 		begin -- rename_on_sheet
@@ -252,9 +250,11 @@ package body et_schematic_ops.nets is
 				log (WARNING, "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
 					 ". Check net name and sheet number !");
 
-				-- A net without strands is useless. So the just created net must be discarded.
-				log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
-				delete (module.nets, net_cursor_new);
+				if new_net_created then
+					-- A net without strands is useless. So the just created net must be discarded.
+					log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
+					delete (module.nets, net_cursor_new);
+				end if;
 				
 			else
 				-- move strands to new net
@@ -276,34 +276,30 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			-- The affected strand:
 			strand_temp : type_strand;
+			
 			strand_found : boolean := false;
 
-			-- Locates the strand that starts at place and stores it in strand_temp.
+			-- Locates the strand at place and stores it in strand_temp.
 			procedure locate_strand (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
+				strand_cursor : pac_strands.cursor;
 			begin
-				-- Find the strand that starts at the given position.
-				while strand_cursor /= pac_strands.no_element loop
-					if element (strand_cursor).position = place then
-						-- CS: if place is not exactly the start position of the strand,
-						-- search for any other point on the strand instead.
+				strand_cursor := get_strand (net, place);
+				
+				if strand_cursor /= pac_strands.no_element then
 
-						-- fetch strand from old net
-						strand_temp := element (strand_cursor);
+					-- fetch strand from old net
+					strand_temp := element (strand_cursor);
 
-						-- delete strand in old net
-						delete (net.strands, strand_cursor);
+					-- delete strand in old net
+					delete (net.strands, strand_cursor);
 
-						strand_found := true;
-						-- no need for further searching
-						exit;
-					end if;
-					next (strand_cursor);
-				end loop;
+					strand_found := true;
+				end if;				
 			end locate_strand;
 
 			
@@ -312,8 +308,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
-				append (net.strands, strand_temp);
-			end;
+				merge_strand (net, strand_temp);
+			end move_strand;
 
 			
 		begin -- rename_strand
@@ -324,13 +320,19 @@ package body et_schematic_ops.nets is
 				position	=> net_cursor_old,
 				process		=> locate_strand'access);
 
+			
 			if not strand_found then
 				log (WARNING, "strand not found at" & to_string (position => place) &
 					 ". Check net name and position !");
 
-				-- A net without strands is useless. So the just created net must be discarded.
-				log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
-				delete (module.nets, net_cursor_new);
+				if new_net_created then
+					-- A net without strands is useless. So the just created net 
+					-- must be discarded.
+					log (text => "deleting net " & to_string (net_name_after),
+						 level => log_threshold + 1);
+					
+					delete (module.nets, net_cursor_new);
+				end if;
 				
 			else -- strand found
 				-- move strand_temp to the targeted net
@@ -350,8 +352,8 @@ package body et_schematic_ops.nets is
 		
 	begin -- rename_net
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			 " renaming net " & to_string (net_name_before) &
-			 " to " & to_string (net_name_after),
+			 " renaming net " & enclose_in_quotes (to_string (net_name_before)) &
+			 " to " & enclose_in_quotes (to_string (net_name_after)),
 			level => log_threshold);
 
 		-- locate module
