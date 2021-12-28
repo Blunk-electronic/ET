@@ -244,6 +244,20 @@ package et_nets is
 		return pac_strands.cursor;
 	
 
+	-- Returns a list of strands of the given net on the 
+	-- given sheet:
+	function get_strands (
+		net		: in type_net;
+		sheet	: in type_sheet)
+		return pac_strands.list;
+
+
+	-- Deletes the given list of strands in the given net:
+	procedure delete_strands (
+		net		: in out type_net;
+		strands	: in pac_strands.list);
+
+	
 	-- Appends a strand to the strands of net:
 	procedure merge_strand (
 		net		: in out type_net;

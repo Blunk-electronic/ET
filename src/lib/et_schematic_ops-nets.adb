@@ -181,7 +181,7 @@ package body et_schematic_ops.nets is
 			module		: in out type_module) 
 		is
 			-- Temporarily collection of affected strands on
-			-- the sheet:
+			-- the given sheet (of the net to be renamed):
 			strands_on_sheet : pac_strands.list;
 			
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
@@ -189,39 +189,18 @@ package body et_schematic_ops.nets is
 			procedure collect_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-			begin
+			is begin
 				log (text => "collecting strands of net " 
-					 & to_string (net_name) & " ...", level => log_threshold + 1);
+					 & enclose_in_quotes (to_string (net_name)) & " ...",
+					 level => log_threshold + 1);
 				
-				log_indentation_up;
-				
-				-- Collect the strands that are on the targeted sheet.
-				while strand_cursor /= pac_strands.no_element loop
-					
-					if sheet (element (strand_cursor).position) = sheet (place) then
-						
-						-- append strand to temporarily collection of strands on this sheet
-						append (strands_on_sheet, element (strand_cursor));
+				strands_on_sheet := get_strands (net, sheet (place));
 
-						log (text => "strand at" & to_string (element (strand_cursor).position),
-							 level => log_threshold + 2);
+				log (text => "deleting strands of net " 
+					 & enclose_in_quotes (to_string (net_name)) & " ...",
+					 level => log_threshold + 1);
 
-						-- delete strand in old net
-						delete (net.strands, strand_cursor);
-						
-						-- strand_cursor points no to no_element.
-						-- So we must reset it to the first strand in the net.
-						-- This causes this loop to start anew.
-						strand_cursor := net.strands.first;
-					else
-						next (strand_cursor);
-					end if;
-					
-				end loop;
-
-				log_indentation_down;
+				delete_strands (net, strands_on_sheet);
 			end collect_strands;
 
 			
@@ -237,7 +216,8 @@ package body et_schematic_ops.nets is
 			
 		begin -- rename_on_sheet
 
-			-- collect strands in old net
+			-- Collect strands of old net in strands_on_sheet.
+			-- Remove strands from old net:
 			update_element (
 				container	=> module.nets,
 				position	=> net_cursor_old,
@@ -247,7 +227,7 @@ package body et_schematic_ops.nets is
 			-- - from an attempt to rename on a sheet that does not exist 
 			-- - from the fact that the targeted sheet does not contain the targeted net 
 			if is_empty (strands_on_sheet) then
-				log (WARNING, "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
+				log (WARNING, "No strands have been renamed on sheet" & to_sheet (sheet (place)) &
 					 ". Check net name and sheet number !");
 
 				if new_net_created then

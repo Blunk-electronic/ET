@@ -353,6 +353,53 @@ package body et_nets is
 		return result;
 	end get_strand;
 
+
+
+	function get_strands (
+		net		: in type_net;
+		sheet	: in type_sheet)
+		return pac_strands.list
+	is
+		use pac_strands;
+		result : pac_strands.list;
+
+		procedure query_strand (s : in pac_strands.cursor) is begin
+			if get_sheet (s) = sheet then
+				result.append (element (s));
+			end if;
+		end query_strand;
+	
+	begin
+		iterate (net.strands, query_strand'access);
+
+		return result;
+	end get_strands;
+
+
+
+	procedure delete_strands (
+		net		: in out type_net;
+		strands	: in pac_strands.list)
+	is
+		use pac_strands;
+		c : pac_strands.cursor := strands.first;
+
+		procedure query_strand (s : in pac_strands.cursor) is
+			strand_to_delete : type_strand := element (s);
+			cursor : pac_strands.cursor;
+		begin
+			cursor := find (net.strands, strand_to_delete);
+			if cursor /= pac_strands.no_element then
+				delete (net.strands, cursor);
+			else
+				put_line ("WARNING: Delete strands: Strand not found in net !");
+				-- CS more details ?
+			end if;
+		end query_strand;
+		
+	begin
+		iterate (strands, query_strand'access);
+	end delete_strands;
 	
 
 	procedure merge_strand (
