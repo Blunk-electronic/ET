@@ -339,16 +339,20 @@ package body et_schematic_ops.units is
 	begin -- move_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to sheet" & to_sheet (sheet) &
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " moving " & enclose_in_quotes (to_string (device_name)) 
+					& " unit " & enclose_in_quotes (to_string (unit_name)) 
+					& " to sheet" & to_sheet (sheet) 
+					& to_string (point),
+					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " moving " & enclose_in_quotes (to_string (device_name))
+					& " unit " & enclose_in_quotes (to_string (unit_name)) 
+					& " by " & to_sheet_relative (sheet) & " sheet(s)" 
+					& to_string (point),
+					level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -372,11 +376,13 @@ package body et_schematic_ops.units is
 		module			: in pac_generic_modules.cursor;-- the module
 		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
 		sheet			: in type_sheet;				-- the sheet to look at
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 				use pac_nets;
@@ -699,7 +705,7 @@ package body et_schematic_ops.units is
 			end if;
 		end test_point;
 		
-	begin -- movable
+	begin -- is_movable
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 

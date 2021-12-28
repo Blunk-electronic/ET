@@ -426,7 +426,8 @@ package body et_schematic_ops.nets is
 			procedure delete_strands_of_sheet (
 			-- Removes the affected strands from the net.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				strand_count_before : count_type := length (net.strands);
 			begin
@@ -463,6 +464,7 @@ package body et_schematic_ops.nets is
 			end if;
 			
 		end delete_on_sheet;
+		
 
 		procedure delete_strand (
 			module_name	: in pac_module_name.bounded_string;
@@ -516,8 +518,8 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_net		
-		log (text => "module " & to_string (module_name) &
-			 " deleting net " & to_string (net_name),
+		log (text => "module " & enclose_in_quotes (to_string (module_name))
+			& " deleting net " & enclose_in_quotes (to_string (net_name)),
 			level => log_threshold);
 
 		-- locate module
@@ -591,7 +593,8 @@ package body et_schematic_ops.nets is
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
@@ -676,9 +679,9 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_segment
-		log (text => "module " & to_string (module_name) &
-			 " deleting in net " & to_string (net_name) &
-			 " segment at" & to_string (position => place),
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+			& " deleting in net " & enclose_in_quotes (to_string (net_name))
+			& " segment at" & enclose_in_quotes (to_string (position => place)),
 			level => log_threshold);
 
 		-- locate module
@@ -965,6 +968,7 @@ package body et_schematic_ops.nets is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
+				
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : pac_net_segments.cursor;
@@ -972,6 +976,7 @@ package body et_schematic_ops.nets is
 
 					zone : type_line_zone;
 
+					
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
 						-- In case absolute movement is required we need these values:
 						dx : constant type_distance := get_distance (type_point (point_of_attack), destination, X);
@@ -1051,12 +1056,14 @@ package body et_schematic_ops.nets is
 						
 					end move_targeted_segment;
 
+					
 					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
 					-- This procedure moves the start/end points of segments that are connected
 					-- with the target_segment_before.
 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := connected_segment;
+
 						
 						procedure copy_start_point is begin
 							if connected_segment.start_point = target_segment_before.start_point then
@@ -1084,6 +1091,7 @@ package body et_schematic_ops.nets is
 							end if;
 						end;
 
+						
 						procedure copy_end_point is begin
 							if connected_segment.start_point = target_segment_before.end_point then
 
@@ -1109,6 +1117,7 @@ package body et_schematic_ops.nets is
 
 							end if;
 						end;
+
 						
 					begin -- move_connected_segment
 						case zone is
@@ -1129,6 +1138,7 @@ package body et_schematic_ops.nets is
 						end case;
 					end move_connected_segment;
 
+					
 					procedure connect_ports (segment : in out type_net_segment) is
 					-- Looks up ports of devices, netchangers or submodules that are 
 					-- to be connected with the segment. The place where ports are
@@ -1149,6 +1159,7 @@ package body et_schematic_ops.nets is
 							pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
 							et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
 						end append_portlists;
+
 						
 					begin -- connect_ports
 						case zone is
@@ -1200,6 +1211,7 @@ package body et_schematic_ops.nets is
 								append_portlists;
 						end case;
 					end connect_ports;						
+
 					
 				begin -- query_segments
 					-- MOVE TARGETED SEGMENT
@@ -1290,6 +1302,7 @@ package body et_schematic_ops.nets is
 						process		=> connect_ports'access);
 					
 				end query_segments;
+
 				
 			begin -- query_strands
 				
@@ -1318,8 +1331,9 @@ package body et_schematic_ops.nets is
 				end if;
 				
 			end query_strands;
-		
-		begin -- query_net
+
+			
+		begin
 
 			-- query the affected strands
 			update_element (
@@ -1333,20 +1347,18 @@ package body et_schematic_ops.nets is
 	begin -- drag_segment
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " 
-					& enclose_in_quotes (to_string (module_name))
-					& " dragging net " 
-					& enclose_in_quotes (to_string (net_name))
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " dragging net " & enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => point_of_attack)
-					& " to" & to_string (destination), level => log_threshold);
+					& " to" & to_string (destination),
+					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " 
-					& enclose_in_quotes (to_string (module_name))
-					& " dragging net " 
-					& enclose_in_quotes (to_string (net_name))
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " dragging net " & enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => point_of_attack)
-					& " by" & to_string (destination), level => log_threshold);
+					& " by" & to_string (destination),
+					level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -1366,6 +1378,8 @@ package body et_schematic_ops.nets is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_net'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
 	end drag_segment;
@@ -1384,7 +1398,8 @@ package body et_schematic_ops.nets is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
 				net : type_net := element (net_cursor);

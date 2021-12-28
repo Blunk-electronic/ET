@@ -788,8 +788,8 @@ package body et_canvas_schematic_nets is
 	
 	procedure finalize_drag (
 		destination		: in type_point;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		net_name : pac_net_name.bounded_string;
 		point_of_attack : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
 	begin

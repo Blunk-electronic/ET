@@ -106,10 +106,12 @@ package et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
-	
-	function no_ports (ports : in type_ports) return boolean;
-	-- Returns true if the given record of ports is completely emtpty.
 
+	
+	-- Returns true if the given record of ports is completely emtpty.
+	function no_ports (ports : in type_ports) return boolean;
+
+	
 	-- Tests whether the zone of a net segment is movable.
 	-- Returns true if movable, returns falso otherwise.
 	function movable (
@@ -120,12 +122,14 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level) 
 		return boolean;
 
+	
 	-- Moves the net labels of a segment.
 	-- CS: Currently moves only the tag labels
 	procedure move_net_labels (
 		segment_before	: in type_net_segment;		-- the segment before the move
 		segment_after	: in out type_net_segment;	-- the segment after the move
 		zone			: in type_line_zone);		-- the zone being moved
+
 	
 	-- Drags a segment of a net.
 	-- If the segment meets a port, then the port will be connected with the net.

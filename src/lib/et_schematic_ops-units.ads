@@ -47,6 +47,7 @@ package et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
+	
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from the module.
