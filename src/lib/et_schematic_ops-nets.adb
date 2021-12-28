@@ -193,7 +193,7 @@ package body et_schematic_ops.nets is
 					 & enclose_in_quotes (to_string (net_name)) & " ...",
 					 level => log_threshold + 1);
 				
-				strands_on_sheet := get_strands (net, sheet (place));
+				strands_on_sheet := get_strands (net, get_sheet (place));
 
 				log (text => "deleting strands of net " 
 					 & enclose_in_quotes (to_string (net_name)) & " ...",
@@ -226,7 +226,7 @@ package body et_schematic_ops.nets is
 			-- - from an attempt to rename on a sheet that does not exist 
 			-- - from the fact that the targeted sheet does not contain the targeted net 
 			if is_empty (strands_on_sheet) then
-				log (WARNING, "No strands have been renamed on sheet" & to_sheet (sheet (place)) &
+				log (WARNING, "No strands have been renamed on sheet" & to_sheet (get_sheet (place)) &
 					 ". Check net name and sheet number !");
 
 				if new_net_created then
@@ -373,7 +373,7 @@ package body et_schematic_ops.nets is
 					process		=> rename_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -432,7 +432,7 @@ package body et_schematic_ops.nets is
 			begin
 				-- Look at the strands that are on the targeted sheet.
 				while strand_cursor /= pac_strands.no_element loop
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 						delete (net.strands, strand_cursor);
 					end if;
 					next (strand_cursor);
@@ -444,7 +444,7 @@ package body et_schematic_ops.nets is
 				-- This simple check is a compare of the number of strands before with the
 				-- number of strands after the deletion:
 				if length (net.strands) = strand_count_before then -- nothing deleted
-					log (WARNING, "no strands have been deleted on sheet" & to_sheet (sheet (place)) &
+					log (WARNING, "no strands have been deleted on sheet" & to_sheet (get_sheet (place)) &
 						". Check net name and sheet number !");
 				end if;
 			end;
@@ -544,7 +544,7 @@ package body et_schematic_ops.nets is
 					process		=> delete_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -631,7 +631,7 @@ package body et_schematic_ops.nets is
 				-- as soon as a segment has been found.
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 
 						-- signal the calling unit that a strand has been found:
 						strand_found := true;
@@ -645,7 +645,6 @@ package body et_schematic_ops.nets is
 						-- remove the now useless strand entirely.
 						if is_empty (element (strand_cursor).segments) then
 							delete (net.strands, strand_cursor);
-							null;
 						end if;
 						
  					end if;
@@ -833,14 +832,14 @@ package body et_schematic_ops.nets is
 			when START_POINT =>
 				point := to_position (
 						point => segment.start_point,
-						sheet => sheet (point_of_attack));
+						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the start point
 				
 			when END_POINT =>
 				point := to_position (
 						point => segment.end_point,
-						sheet => sheet (point_of_attack));
+						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the end point
 				
@@ -850,7 +849,7 @@ package body et_schematic_ops.nets is
 				-- If start point is movable, then the end point must be checked too.
 				point := to_position (
 						point => segment.start_point,
-						sheet => sheet (point_of_attack));
+						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the start point
 
@@ -858,7 +857,7 @@ package body et_schematic_ops.nets is
 				if result = true then
 					point := to_position (
 							point => segment.end_point,
-							sheet => sheet (point_of_attack));
+							sheet => get_sheet (point_of_attack));
 
 					search_ports; -- sets result to false if a port is connected with the end point
 				end if;
@@ -1159,7 +1158,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.start_point,
-													sheet => sheet (point_of_attack)),
+													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1171,7 +1170,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.end_point,
-													sheet => sheet (point_of_attack)),
+													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1183,7 +1182,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.start_point,
-													sheet => sheet (point_of_attack)),
+													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1194,7 +1193,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.end_point,
-													sheet => sheet (point_of_attack)),
+													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 								
@@ -1298,7 +1297,7 @@ package body et_schematic_ops.nets is
 				-- as soon as a segment has been found.
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
-					if sheet (element (strand_cursor).position) = sheet (point_of_attack) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (point_of_attack) then
 
 						-- signal the calling unit that a strand has been found:
 						strand_found := true;
@@ -1424,7 +1423,7 @@ package body et_schematic_ops.nets is
 				while not match and strand_cursor /= pac_strands.no_element loop
 
 					-- Look at strands on the given sheet only:
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 						log_indentation_up;
@@ -1736,7 +1735,7 @@ package body et_schematic_ops.nets is
 					-- Iterate strands. Cancel prematurely once a segment has been found.
 					-- Look at strands on the relevant sheet only.
 					while result.cursor /= pac_strands.no_element loop
-						if et_coordinates.sheet (element (result.cursor).position) = et_coordinates.sheet (place) then
+						if get_sheet (element (result.cursor).position) = get_sheet (place) then
 
 							pac_strands.query_element (
 								position	=> result.cursor,
@@ -2162,7 +2161,7 @@ package body et_schematic_ops.nets is
 		log_indentation_up;
 
 		insert_segment (
-			module_cursor, net_cursor, sheet (start_point),
+			module_cursor, net_cursor, get_sheet (start_point),
 			net_name, segment, log_threshold + 1);
 
 
@@ -2638,7 +2637,7 @@ package body et_schematic_ops.nets is
 				while (not segment_found) and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 						--log ("net " & to_string (key (net_cursor)), log_threshold + 1);
 						--log_indentation_up;
 						
@@ -2808,7 +2807,7 @@ package body et_schematic_ops.nets is
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (segment_position) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (segment_position) then
 
 						update_element (
 							container	=> net.strands,
@@ -2936,7 +2935,7 @@ package body et_schematic_ops.nets is
 				while not label_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (position) then
 
 						update_element (
 							container	=> net.strands,
@@ -3056,7 +3055,7 @@ package body et_schematic_ops.nets is
 			while strand_cursor /= pac_strands.no_element loop
 				
 				-- We are interested in strands on the given sheet only:
-				if element (strand_cursor).position.sheet = sheet (position) then
+				if get_sheet (element (strand_cursor).position) = get_sheet (position) then
 
 					query_element (
 						position	=> strand_cursor,

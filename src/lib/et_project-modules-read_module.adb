@@ -1830,7 +1830,7 @@ is
 				pos : constant et_coordinates.type_position := to_position (line, 2);
 			begin
 				schematic_text.position := type_point (pos);
-				schematic_text.sheet := sheet (pos);
+				schematic_text.sheet := get_sheet (pos);
 			end;
 
 		elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
@@ -5120,7 +5120,7 @@ is
 
 								-- Issue warning about this mismatch:
 								if type_point (strand.position) /= position_found_in_module_file then
-									log (WARNING, affected_line (line) & "Sheet" & to_sheet (sheet (strand.position))
+									log (WARNING, affected_line (line) & "Sheet" & to_sheet (get_sheet (strand.position))
 										 & " net " 
 										 & to_string (net_name) & ": Lowest x/y position of strand invalid !");
 									log (text => " Found " & to_string (point => position_found_in_module_file));

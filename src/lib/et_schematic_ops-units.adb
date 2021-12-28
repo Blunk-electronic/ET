@@ -324,7 +324,7 @@ package body et_schematic_ops.units is
 					device			=> device_name,
 					unit			=> unit_name,
 					ports			=> ports,
-					sheet			=> et_coordinates.sheet (position_of_unit_new),
+					sheet			=> get_sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
 
 				update_ratsnest (module_cursor, log_threshold + 1);
@@ -494,7 +494,7 @@ package body et_schematic_ops.units is
 						while strand_cursor /= pac_strands.no_element loop
 							
 							-- We pick out only the strands on the targeted sheet:
-							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+							if get_sheet (element (strand_cursor).position) = sheet then
 								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 								log_indentation_up;
@@ -575,8 +575,8 @@ package body et_schematic_ops.units is
 		begin
 			-- assemble the point to be probed
 			point := to_position (
-						point	=> element (port_cursor).position,
-						sheet	=> sheet (location));
+				point	=> element (port_cursor).position,
+				sheet	=> get_sheet (location));
 			
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
@@ -656,8 +656,8 @@ package body et_schematic_ops.units is
 		begin
 			-- assemble the point to be probed
 			point := to_position (
-						point	=> element (port_cursor).position,
-						sheet	=> sheet (location));
+				point	=> element (port_cursor).position,
+				sheet	=> get_sheet (location));
 			
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
@@ -809,7 +809,7 @@ package body et_schematic_ops.units is
 
 					-- Load the current sheet number where the unit is.
 					-- NOTE: The sheet number does not change in drag operations.
-					sheet : type_sheet := et_coordinates.sheet (unit.position);
+					sheet : type_sheet := get_sheet (unit.position);
 				begin
 					-- Set new x/y position. 
 					-- Preserve sheet number and rotation.
@@ -898,7 +898,7 @@ package body et_schematic_ops.units is
 				drag_net_segments (
 					module			=> module_cursor,
 					drag_list		=> make_drag_list (ports_old, ports_new),
-					sheet			=> et_coordinates.sheet (position_of_unit_new), -- or position_of_unit_old
+					sheet			=> get_sheet (position_of_unit_new), -- or position_of_unit_old
 					log_threshold	=> log_threshold + 1);
 
 				-- The drag operation might result in new port-to-net connections.
@@ -911,7 +911,7 @@ package body et_schematic_ops.units is
 					device			=> device_name,
 					unit			=> unit_name,
 					ports			=> ports_new,
-					sheet			=> et_coordinates.sheet (position_of_unit_new),
+					sheet			=> get_sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;
@@ -1201,7 +1201,7 @@ package body et_schematic_ops.units is
 					device			=> device_name,
 					unit			=> unit_name,
 					ports			=> ports_lib,
-					sheet			=> et_coordinates.sheet (position_of_unit),
+					sheet			=> get_sheet (position_of_unit),
 					log_threshold	=> log_threshold + 1);
 
 				update_ratsnest (module_cursor, log_threshold + 1);

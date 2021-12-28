@@ -80,7 +80,7 @@ package body et_schematic is
 			while c /= pac_strands.no_element loop
 
 				-- Probe strands on the given sheet only:
-				if et_coordinates.sheet (element (c).position) = sheet then
+				if get_sheet (element (c).position) = sheet then
 
 					if element (c).position < strand_position then
 						strand_position := element (c).position;

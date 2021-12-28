@@ -774,7 +774,7 @@ is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
 				-- draw nets of the active sheet only:
-				if strand.position.sheet = current_active_sheet then
+				if get_sheet (strand.position) = current_active_sheet then
 
 					-- set line width for net segments:
 					set_line_width (context.cr, type_view_coordinate (net_line_width));
@@ -860,7 +860,7 @@ is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
 				-- draw nets of the active sheet only:
-				if strand.position.sheet = current_active_sheet then
+				if get_sheet (strand.position) = current_active_sheet then
 
 					-- set line width for net segments:
 					set_line_width (context.cr, type_view_coordinate (net_line_width));

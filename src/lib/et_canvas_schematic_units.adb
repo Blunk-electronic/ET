@@ -115,7 +115,7 @@ package body et_canvas_schematic_units is
 				while unit_cursor /= pac_units.no_element loop
 					
 					-- We are interested in units on the given sheet only:
-					if sheet (element (unit_cursor).position) = sheet (place) then
+					if get_sheet (element (unit_cursor).position) = get_sheet (place) then
 
 						log (text => "probing unit " & to_string (unit_cursor),
 							level => log_threshold + 1);
@@ -575,7 +575,7 @@ package body et_canvas_schematic_units is
 					end query_segment;
 					
 				begin -- query_strand
-					if sheet (element (s).position) = current_active_sheet then
+					if get_sheet (element (s).position) = current_active_sheet then
 						iterate (element (s).segments, query_segment'access);
 					end if;
 				end query_strand;
@@ -771,7 +771,7 @@ package body et_canvas_schematic_units is
 				device			=> key (unit.device),
 				unit			=> key (unit.unit),
 				ports			=> ports_lib,
-				sheet			=> et_coordinates.sheet (position_of_unit),
+				sheet			=> get_sheet (position_of_unit),
 				log_threshold	=> log_threshold + 1);
 
 			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
@@ -1569,7 +1569,7 @@ package body et_canvas_schematic_units is
 					move_by (placeholder_position, to_distance_relative (element (unit_cursor).position));
 
 					-- Add the sheet information to the position:
-					pos_abs := to_position (placeholder_position, sheet (place));
+					pos_abs := to_position (placeholder_position, get_sheet (place));
 					
 					--log (text => to_string (pos_abs), level => log_threshold + 1);
 
@@ -1588,7 +1588,7 @@ package body et_canvas_schematic_units is
 				while unit_cursor /= pac_units.no_element loop
 					
 					-- We are interested in units on the given sheet only:
-					if sheet (element (unit_cursor).position) = sheet (place) then
+					if get_sheet (element (unit_cursor).position) = get_sheet (place) then
 
 						log (text => "probing unit " & to_string (unit_cursor),
 							level => log_threshold + 1);

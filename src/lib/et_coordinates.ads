@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -170,11 +170,19 @@ package et_coordinates is
 
 
 	function to_string (position : in type_position) return string;
-	
-	function sheet (position : in type_position) return type_sheet;
 
-	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
-	-- Sets the sheet number in given position.
+
+	-- Returns the sheet number of the given position:
+	function get_sheet (
+		position	: in type_position) 
+		return type_sheet;
+
+
+	-- Sets the sheet number in given position:
+	procedure set_sheet (
+		position	: in out type_position;
+		sheet		: in type_sheet);
+
 
 
 	

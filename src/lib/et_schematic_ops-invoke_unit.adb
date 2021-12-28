@@ -254,7 +254,7 @@ procedure invoke_unit (
 				device			=> device_name,
 				unit			=> unit_name,
 				ports			=> ports,
-				sheet			=> et_coordinates.sheet (destination),
+				sheet			=> get_sheet (destination),
 				log_threshold	=> log_threshold + 2);
 
 			log_indentation_down;

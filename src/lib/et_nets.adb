@@ -275,7 +275,7 @@ package body et_nets is
 	is 
 		use pac_strands;
 	begin
-		return sheet (element (strand_cursor).position);
+		return get_sheet (element (strand_cursor).position);
 	end get_sheet;
 		
 
@@ -313,7 +313,7 @@ package body et_nets is
 		
 	begin
 		-- The sheet number of strand and point must match:
-		if get_sheet (strand_cursor) = sheet (place) then
+		if get_sheet (strand_cursor) = get_sheet (place) then
 
 			-- Probe the segments of the strand:
 			iterate (

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -50,7 +50,7 @@ package body et_schematic_rw is
 		
 	begin
 		return keyword_sheet
-			& to_sheet (sheet (pos)) 
+			& to_sheet (get_sheet (pos)) 
 			& text;
 	end position;
 

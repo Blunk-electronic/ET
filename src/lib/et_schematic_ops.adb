@@ -640,9 +640,9 @@ package body et_schematic_ops is
 
 						port_cursor := find (ports, port_name);
 						port_position := et_coordinates.to_position (
-									sheet	=> sheet (unit_position), -- the sheet where the unit is
-									point	=> element (port_cursor).position -- default xy pos of port
-									);														 
+							sheet	=> get_sheet (unit_position), -- the sheet where the unit is
+							point	=> element (port_cursor).position -- default xy pos of port
+							);														 
 
 						-- Calculate the absolute port position in schematic by
 						-- first rotating port_xy, and then moving port_xy:
@@ -743,7 +743,7 @@ package body et_schematic_ops is
 					-- Assemble the port_position to be returned:
 					port_position := to_position (
 						point	=> port_xy,
-						sheet	=> sheet (submod_position)
+						sheet	=> get_sheet (submod_position)
 						);
 
 				else
@@ -841,7 +841,7 @@ package body et_schematic_ops is
 				-- Assemble the port_position to be returned:
 				port_position := to_position (
 					point	=> port_xy,
-					sheet	=> sheet (nc_position)
+					sheet	=> get_sheet (nc_position)
 					);
 				
 				log_indentation_down;				
@@ -1100,7 +1100,7 @@ package body et_schematic_ops is
 						while strand_cursor /= pac_strands.no_element loop
 
 							-- We pick out only the strands on the targeted sheet:
-							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+							if get_sheet (element (strand_cursor).position) = sheet then
 								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 								log_indentation_up;
@@ -1791,7 +1791,7 @@ package body et_schematic_ops is
 -- 						while strand_cursor /= pac_strands.no_element loop
 -- 							
 -- 							-- We pick out only the strands on the targeted sheet:
--- 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+-- 							if get_sheet (element (strand_cursor).position) = sheet then
 -- 								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 -- 
 -- 								log_indentation_up;
@@ -1900,7 +1900,7 @@ package body et_schematic_ops is
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 
 						query_element (
 							position	=> strand_cursor,
@@ -1989,7 +1989,7 @@ package body et_schematic_ops is
 					unit_position := element (unit_cursor).position;
 
 					-- Look at units on the given sheet of place:
-					if sheet (unit_position) = sheet (place) then
+					if get_sheet (unit_position) = get_sheet (place) then
 						log (text => "device " & to_string (key (device_cursor)) & " unit " &
 							 pac_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
@@ -2055,7 +2055,7 @@ package body et_schematic_ops is
 				submodule_position := element (submodule_cursor).position;
 
 				-- Look at submodules on the given sheet of place:
-				if sheet (submodule_position) = sheet (place) then
+				if get_sheet (submodule_position) = get_sheet (place) then
 					log (text => "submodule " & to_string (key (submodule_cursor)), level => log_threshold + 1);
 					log_indentation_up;
 
@@ -2078,7 +2078,7 @@ package body et_schematic_ops is
 				netchanger_position := element (netchanger_cursor).position_sch;
 
 				-- Look at netchangers on the given sheet of place:
-				if sheet (netchanger_position) = sheet (place) then
+				if get_sheet (netchanger_position) = get_sheet (place) then
 					log (text => "netchanger " & et_submodules.to_string (key (netchanger_cursor)), level => log_threshold + 1);
 					log_indentation_up;	
 					
@@ -3421,7 +3421,7 @@ package body et_schematic_ops is
 				use pac_unit_names;
 			begin
 				-- If the unit is on the given sheet then append it to the result:
-				if et_coordinates.sheet (element (c).position) = sheet then
+				if get_sheet (element (c).position) = sheet then
 					log (text => "unit " & et_devices.to_string (key (c)) & " on sheet.",
 						level => log_threshold + 2);
 					
@@ -3569,7 +3569,7 @@ package body et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_sheet
 	is begin		
-		return et_coordinates.sheet (position (module, device, unit));
+		return get_sheet (position (module, device, unit));
 	end sheet;
 		
 	
@@ -3726,7 +3726,7 @@ package body et_schematic_ops is
 					while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 						-- We pick out only the strands on the targeted sheet:
-						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+						if get_sheet (element (strand_cursor).position) = sheet then
 							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
 
 							log_indentation_up;
@@ -3830,7 +3830,7 @@ package body et_schematic_ops is
 				module			=> module_cursor,
 				index			=> index,
 				ports			=> ports,
-				sheet			=> sheet (place),
+				sheet			=> get_sheet (place),
 				log_threshold	=> log_threshold + 1);
 			
 		end query_netchangers;
@@ -3941,7 +3941,7 @@ package body et_schematic_ops is
 			begin -- query_strands
 				while not all_ports_deleted and strand_cursor /= pac_strands.no_element loop
 
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+					if get_sheet (element (strand_cursor).position) = sheet then
 
 						update_element (
 							container	=> net.strands,
@@ -4021,7 +4021,7 @@ package body et_schematic_ops is
 					index			=> index,
 
 					-- Get sheet number from location:
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					
 					log_threshold	=> log_threshold + 1);
 
@@ -4111,7 +4111,7 @@ package body et_schematic_ops is
 					index			=> index,
 
 					-- Get sheet number from location:
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					
 					log_threshold	=> log_threshold + 1);
 
@@ -4148,7 +4148,7 @@ package body et_schematic_ops is
 					module			=> module_cursor,
 					index			=> index,
 					ports			=> ports,
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;
@@ -4292,7 +4292,7 @@ package body et_schematic_ops is
 				while strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+					if get_sheet (element (strand_cursor).position) = sheet then
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
@@ -4448,7 +4448,7 @@ package body et_schematic_ops is
 				(
 				point		=> to_position (
 								point => netchanger_ports.master,
-								sheet => sheet (location)),
+								sheet => get_sheet (location)),
 				port_name	=> MASTER
 				);
 
@@ -4457,7 +4457,7 @@ package body et_schematic_ops is
 				(
 				point		=> to_position (
 								point => netchanger_ports.slave,
-								sheet => sheet (location)),
+								sheet => get_sheet (location)),
 				port_name	=> SLAVE
 				);
 		
@@ -4530,7 +4530,7 @@ package body et_schematic_ops is
 					module			=> module_cursor,
 					ports_before	=> ports_old,
 					ports_after		=> ports_new,
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					log_threshold	=> log_threshold + 1);
 
 				-- The drag operation might result in new port-to-net connections.
@@ -4543,7 +4543,7 @@ package body et_schematic_ops is
 					module			=> module_cursor,
 					index			=> index,
 					ports			=> ports_new,
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;
@@ -4630,7 +4630,7 @@ package body et_schematic_ops is
 					index			=> index,
 
 					-- Get sheet number from location:
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					
 					log_threshold	=> log_threshold + 1);
 				
@@ -4658,7 +4658,7 @@ package body et_schematic_ops is
 					module			=> module_cursor,
 					index			=> index,
 					ports			=> ports_new,
-					sheet			=> et_coordinates.sheet (location),
+					sheet			=> get_sheet (location),
 					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;
@@ -4877,7 +4877,7 @@ package body et_schematic_ops is
 				while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (position) then
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
@@ -5064,7 +5064,7 @@ package body et_schematic_ops is
 		-- 3. set sheet number as given by submodule_position:
 		set_sheet (
 			position	=> port_position,
-			sheet		=> sheet (submodule_position));
+			sheet		=> get_sheet (submodule_position));
 
 		-- port_position is now ready to insert the submodule port in the nets:
 		insert_port (
@@ -5144,7 +5144,7 @@ package body et_schematic_ops is
 				while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (position) then
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
@@ -5352,7 +5352,7 @@ package body et_schematic_ops is
 						-- absolute port position must be built:
 						port_position := to_position (
 									point	=> port.position, -- relative x/y to submodule position
-									sheet	=> sheet (submodule_position));
+									sheet	=> get_sheet (submodule_position));
 
 						move_by (
 							point	=> port_position,
@@ -5555,7 +5555,7 @@ package body et_schematic_ops is
 				while strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (pos_before) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (pos_before) then
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
@@ -5597,7 +5597,7 @@ package body et_schematic_ops is
 
 	begin -- drag_net_segments
 		log (text => "dragging net segments with submodule ports on sheet" & 
-			 to_sheet (sheet (pos_before)) & " ...", level => log_threshold);
+			 to_sheet (get_sheet (pos_before)) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (
@@ -5719,7 +5719,7 @@ package body et_schematic_ops is
 					-- BACKUP THE PORT POSITION BEFORE THE DRAG OPERATION:
 					port_position_before := to_position (
 								point	=> port.position, -- relative x/y to submodule position
-								sheet	=> sheet (submodule_position)); -- same sheet as submodule box
+								sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
 					move_by (
 						point	=> port_position_before,
@@ -5768,7 +5768,7 @@ package body et_schematic_ops is
 						-- absolute port position must be built:
 						port_position_after := to_position (
 									point	=> port.position, -- relative x/y to submodule position
-									sheet	=> sheet (submodule_position)); -- same sheet as submodule box
+									sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
 						move_by (
 							point	=> port_position_after,
@@ -5918,7 +5918,7 @@ package body et_schematic_ops is
 				while strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (position) then
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
@@ -6085,7 +6085,7 @@ package body et_schematic_ops is
 					position := to_position 
 							(
 							point	=> element (port_cursor).position,
-							sheet	=> et_coordinates.sheet (submodule_position_after)
+							sheet	=> get_sheet (submodule_position_after)
 							);
 
 					-- insert the port
@@ -6247,7 +6247,7 @@ package body et_schematic_ops is
 
 							drag.after := to_position (
 								point	=> point,
-								sheet	=> sheet (submodule.position));
+								sheet	=> get_sheet (submodule.position));
 
 						when RELATIVE =>
 
@@ -6413,7 +6413,7 @@ package body et_schematic_ops is
 					position := to_position 
 							(
 							point	=> element (port_cursor).position,
-							sheet	=> et_coordinates.sheet (element (submod_cursor).position)
+							sheet	=> get_sheet (element (submod_cursor).position)
 							);
 
 					-- insert the port
@@ -6530,7 +6530,7 @@ package body et_schematic_ops is
 					position := to_position 
 							(
 							point	=> element (port_cursor).position,
-							sheet	=> et_coordinates.sheet (submodule_old.position)
+							sheet	=> get_sheet (submodule_old.position)
 							);
 
 					-- insert the port
@@ -7554,7 +7554,7 @@ package body et_schematic_ops is
 			procedure update_index is begin
 			-- Detects when the sheet number changes. In this case
 			-- resets the index_on_sheet so that the indexing starts anew.
-				sheet_now := sheet (key (cursor));
+				sheet_now := get_sheet (key (cursor));
 
 				if sheet_now = sheet_before then -- no change
 					index_on_sheet := index_on_sheet + 1;

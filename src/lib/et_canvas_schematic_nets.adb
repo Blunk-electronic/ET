@@ -334,7 +334,7 @@ package body et_canvas_schematic_nets is
 				while strand_cursor /= pac_strands.no_element loop
 
 					-- We are interested in strands on the given sheet only:
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 						query_element (strand_cursor, query_segments'access);
 					end if;
 
@@ -1083,7 +1083,7 @@ package body et_canvas_schematic_nets is
 				while strand_cursor /= pac_strands.no_element loop
 
 					-- We are interested in strands on the given sheet only:
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
 						query_element (strand_cursor, query_segments'access);
 					end if;
 
@@ -1126,7 +1126,7 @@ package body et_canvas_schematic_nets is
 		log_threshold	: in type_log_level)
 	is 
 		use pac_net_labels;
-		label_position_sheet : constant type_sheet := sheet (element (label.strand).position);
+		label_position_sheet : constant type_sheet := get_sheet (element (label.strand).position);
 		
 		-- This flag goes true once the first net label that equals the given label
 		-- has been found t. All iterations are cancelled as soon as it goes true.
@@ -1181,7 +1181,7 @@ package body et_canvas_schematic_nets is
 				while not label_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if sheet (element (strand_cursor).position) = label_position_sheet then
+					if get_sheet (element (strand_cursor).position) = label_position_sheet then
 
 						update_element (
 							container	=> net.strands,

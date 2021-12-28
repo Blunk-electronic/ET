@@ -282,7 +282,7 @@ procedure draw_units (
 			-- 2. The unit is being moved from one sheet to another sheet.
 			
 			-- CASE 1: We draw units which are on the active sheet:
-			if element (unit_cursor).position.sheet = current_active_sheet then
+			if get_sheet (element (unit_cursor).position) = current_active_sheet then
 				
 				-- The default brightness is NORMAL. If the unit is selected then
 				-- the brightness will be increased:

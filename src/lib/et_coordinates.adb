@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -192,14 +192,19 @@ package body et_coordinates is
 			& to_string (get_y (position));
 	end to_string;
 
-	function sheet (position : in type_position) return type_sheet is
-	begin
+	
+	function get_sheet (
+		position	: in type_position) 
+		return type_sheet 
+	is begin
 		return position.sheet;
-	end sheet;
+	end get_sheet;
 
-	procedure set_sheet (position : in out type_position; sheet : in type_sheet) is
-	-- Sets the sheet number in given position.
-	begin
+	
+	procedure set_sheet (
+		position	: in out type_position;
+		sheet		: in type_sheet) 
+	is begin
 		position.sheet := sheet;
 	end set_sheet;
 

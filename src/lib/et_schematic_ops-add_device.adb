@@ -297,7 +297,7 @@ is
 			device			=> next_name,
 			unit			=> unit_name,
 			ports			=> ports,
-			sheet			=> et_coordinates.sheet (destination),
+			sheet			=> get_sheet (destination),
 			log_threshold	=> log_threshold + 2);
 
 
