@@ -43,8 +43,10 @@ with et_pcb;
 
 package et_schematic_ops.nets is
 
+	use et_coordinates;
 	use pac_generic_modules;	
 	use et_symbols.pac_geometry_2;
+
 	
 	type type_net_scope is (
 		STRAND,

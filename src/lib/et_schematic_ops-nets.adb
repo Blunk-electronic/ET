@@ -47,6 +47,10 @@ package body et_schematic_ops.nets is
 
 	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
+	use pac_net_segments;
+	use pac_strands;
+	use pac_nets;
+
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
@@ -62,7 +66,6 @@ package body et_schematic_ops.nets is
 		return boolean 
 	is
 		dist : type_distance_point_line;
-		use pac_net_segments;
 	begin
 		dist := get_distance (
 			point 		=> point,
@@ -84,7 +87,6 @@ package body et_schematic_ops.nets is
 		return boolean 
 	is
 		dist : type_distance_point_line;
-		use pac_net_segments;
 	begin
 		dist := get_distance (
 			point 		=> point,
@@ -115,13 +117,10 @@ package body et_schematic_ops.nets is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor_old : pac_nets.cursor; -- points to the old net
 		net_cursor_new : pac_nets.cursor; -- points to the new net
 
 		new_net_created : boolean := false;
-		
-		use pac_strands;
 		
 		-- Creates a new empty net named net_name_after. 
 		-- Sets the cursor net_cursor_new to the new net.
@@ -407,10 +406,8 @@ package body et_schematic_ops.nets is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
-		use pac_strands;
 		
 		procedure delete_everywhere (
 			module_name	: in pac_module_name.bounded_string;
@@ -471,8 +468,6 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_strands;			
-
 			strand_found : boolean := false;
 
 			procedure locate_strand (
@@ -580,10 +575,8 @@ package body et_schematic_ops.nets is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
-		use pac_strands;
 
 		procedure no_segment is begin
 			log (WARNING, "segment not found at" & to_string (position => place) &
@@ -602,8 +595,7 @@ package body et_schematic_ops.nets is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
-				use pac_net_segments;				
-				
+
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin
@@ -954,10 +946,8 @@ package body et_schematic_ops.nets is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
-		use pac_strands;
 
 		procedure no_segment is begin
 			log (WARNING, "No segment found at" & to_string (position => point_of_attack) &
@@ -971,12 +961,11 @@ package body et_schematic_ops.nets is
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given point_of_attack.
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
-				use pac_net_segments;				
-				
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : pac_net_segments.cursor;
@@ -1392,7 +1381,6 @@ package body et_schematic_ops.nets is
 		nets : type_net_names.list; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		procedure query_module (
@@ -1400,7 +1388,6 @@ package body et_schematic_ops.nets is
 			module		: in type_module) is
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
-				use pac_strands;
 				net : type_net := element (net_cursor);
 
 				-- once a segment has been found at place, this flag goes true:
@@ -1409,7 +1396,6 @@ package body et_schematic_ops.nets is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
-					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin -- query_segments
 					while segment_cursor /= pac_net_segments.no_element loop
@@ -1485,8 +1471,6 @@ package body et_schematic_ops.nets is
 		segment_new		: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		use pac_nets;
-
 		-- The segment being processed.
 		-- Initially it is just a copy of the given bare segment. 
 		-- In the course of this procedure ports of devices, submodules 
@@ -1666,8 +1650,6 @@ package body et_schematic_ops.nets is
 				end if;
 			end evaluate_net_names;
 
-			use pac_strands;
-
 			
 			type type_which_strand is record
 				cursor				: pac_strands.cursor;
@@ -1705,7 +1687,6 @@ package body et_schematic_ops.nets is
 					
 					-- Iterate segments until first match.
 					procedure query_segments (strand : in type_strand) is
-						use pac_net_segments;
 						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					begin
 						while segment_cursor /= pac_net_segments.no_element loop
@@ -2158,7 +2139,6 @@ package body et_schematic_ops.nets is
 	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 		segment : type_net_segment;
 
@@ -2198,7 +2178,6 @@ package body et_schematic_ops.nets is
 		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
 		log_threshold	: in type_log_level)
 	is
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -2271,7 +2250,6 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		procedure query_nets (
@@ -2328,8 +2306,6 @@ package body et_schematic_ops.nets is
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level) 
 	is
-		use et_coordinates;
-		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being checked
 
 		segment_found : boolean := false; -- goes true if a net segment has been found to place the junction at
@@ -2338,20 +2314,15 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				use et_coordinates;
-				
-				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					old_segment : type_net_segment; -- here a backup of the old segment lives
 					old_segment_orientation : type_net_segment_orientation; -- horizontal, vertical, sloped
@@ -2749,22 +2720,20 @@ package body et_schematic_ops.nets is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- This flag goes true once the first segment of the targeted net at
 			-- the targeted sheet has been found.
 			segment_found : boolean := false; -- to be returned
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is				
 				strand_cursor : pac_strands.cursor := net.strands.first;
+
 				
 				procedure query_segments (strand : in out type_strand) is
-					use pac_net_segments;
-
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure attach_label (segment : in out type_net_segment) is 
@@ -2906,12 +2875,12 @@ package body et_schematic_ops.nets is
 		
 	end place_net_label;
 
+	
 	procedure delete_net_label (
-	-- Deletes a label.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		position		: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		-- This flag goes true once the targeted net label
@@ -2920,21 +2889,17 @@ package body et_schematic_ops.nets is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
-			use pac_nets;
+			module		: in out type_module) 
+		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use pac_net_segments;
-
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in out type_net_segment) is 
@@ -3030,10 +2995,6 @@ package body et_schematic_ops.nets is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 		net_cursor : pac_nets.cursor; -- points to the net
 		
-		use et_coordinates;
-		use pac_nets;
-		use pac_strands;
-
 		ports : type_ports;
 		
 		stub_found : boolean := false;
@@ -3046,7 +3007,6 @@ package body et_schematic_ops.nets is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
-				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 				segment_counter : natural := 0;
