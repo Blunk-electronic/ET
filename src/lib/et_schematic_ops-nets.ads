@@ -137,17 +137,21 @@ package et_schematic_ops.nets is
 		destination		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+
+	
 	package type_net_names is new doubly_linked_lists (
 		element_type	=> pac_net_name.bounded_string,
 		"="				=> pac_net_name."=");
 
 	-- Returns lists of nets that cross the given place.
-	function nets_at_place (
+	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return type_net_names.list;
 
+
+	
 	-- Inserts a net segment in the module.
 	-- 1. If the start or end point of the new segment
 	--    meets a port then the port will be connected with the segment.
@@ -188,18 +192,19 @@ package et_schematic_ops.nets is
 
 	
 	
-	procedure set_scope (
 	-- Sets the scope of a net.
+	procedure set_scope (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 
-	procedure place_junction (
+	
 	-- Places a net junction at the given position.
 	-- If the junction is to be placed between start and end point of a segment, then the segment 
 	-- is split in two new segments with the junction between them.
 	-- If there is no net segment at the given position, no junction is placed and warning issued.
+	procedure place_junction (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level);

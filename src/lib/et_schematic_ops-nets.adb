@@ -1383,7 +1383,7 @@ package body et_schematic_ops.nets is
 	end drag_segment;
 
 	
-	function nets_at_place (
+	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
@@ -1458,8 +1458,8 @@ package body et_schematic_ops.nets is
 			iterate (module.nets, query_nets'access);
 		end query_module;
 		
-	begin -- nets_at_place
-		log (text => "module " & to_string (module_name) &
+	begin
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			 " locating nets at" & to_string (position => place),
 			 level => log_threshold);
 
@@ -1474,7 +1474,7 @@ package body et_schematic_ops.nets is
 
 		log_indentation_down;
 		return nets;
-	end nets_at_place;
+	end get_nets_at_place;
 
 	
 	procedure insert_segment (
@@ -1563,7 +1563,7 @@ package body et_schematic_ops.nets is
 					sheet => sheet,
 					point => segment_new.start_point);
 			
-			net_names := nets_at_place (
+			net_names := get_nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
 					log_threshold	=> log_threshold);
@@ -1575,7 +1575,7 @@ package body et_schematic_ops.nets is
 					sheet => sheet,
 					point => segment_new.end_point);
 			
-			net_names := nets_at_place (
+			net_names := get_nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
 					log_threshold	=> log_threshold);
@@ -1928,7 +1928,7 @@ package body et_schematic_ops.nets is
 					sheet => sheet,
 					point => segment_new.start_point);
 
-			net_names := nets_at_place (
+			net_names := get_nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
 					log_threshold	=> log_threshold);
@@ -1940,7 +1940,7 @@ package body et_schematic_ops.nets is
 					sheet => sheet,
 					point => segment_new.end_point);
 			
-			net_names := nets_at_place (
+			net_names := get_nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
 					log_threshold	=> log_threshold);
@@ -2263,11 +2263,11 @@ package body et_schematic_ops.nets is
 
 	
 	procedure set_scope (
-	-- Sets the scope of a net.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_netlists.type_net_scope; -- local/global
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -2276,14 +2276,16 @@ package body et_schematic_ops.nets is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure set (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-			begin
+				net			: in out type_net) 
+			is begin
 				net.scope := scope;
 			end set;
+
 			
 		begin -- query_nets
 			pac_nets.update_element (
@@ -2292,6 +2294,7 @@ package body et_schematic_ops.nets is
 				process		=> set'access);
 
 		end query_nets;
+
 		
 	begin -- set_scope
 		log (text => "module " & to_string (module_name) &
@@ -2312,19 +2315,19 @@ package body et_schematic_ops.nets is
 				position	=> module_cursor,
 				process		=> query_nets'access);
 
+			-- CS update_ratsnest (module_cursor, log_threshold + 1)
 		else
 			net_not_found (net_name);
 		end if;
 	end set_scope;
 
+
+	
 	procedure place_junction (
-	-- Places a net junction at the given position.
-	-- If the junction is to be placed between start and end point of a segment, then the segment 
-	-- is split in two new segments with the junction between them.
-	-- If there is no net segment at the given position, no junction is placed and warning issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		use et_coordinates;
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being checked
@@ -2333,13 +2336,15 @@ package body et_schematic_ops.nets is
 	
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 				use et_coordinates;
 				
 				use pac_strands;
@@ -2350,10 +2355,12 @@ package body et_schematic_ops.nets is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					old_segment : type_net_segment; -- here a backup of the old segment lives
 					old_segment_orientation : type_net_segment_orientation; -- horizontal, vertical, sloped
+
 					
 					procedure insert_two_new_segments is
 						segment_1, segment_2 : type_net_segment;
 
+						
 						procedure update_labels is
 							use pac_net_labels;
 
@@ -2392,6 +2399,7 @@ package body et_schematic_ops.nets is
 							end case;
 							log_indentation_down;
 						end update_labels;
+
 						
 						procedure update_device_ports is 
 						-- Queries the positions of the device ports in the old_segment. 
@@ -2442,6 +2450,7 @@ package body et_schematic_ops.nets is
 							log_indentation_down;
 						end update_device_ports;
 
+						
 						procedure update_submodule_ports is 
 						-- Queries the positions of the submodule ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
@@ -2490,6 +2499,7 @@ package body et_schematic_ops.nets is
 							log_indentation_down;
 						end update_submodule_ports;
 
+						
 						procedure update_netchanger_ports is 
 						-- Queries the positions of the netchanger ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
@@ -2531,6 +2541,7 @@ package body et_schematic_ops.nets is
 								
 								log_indentation_down;
 							end query_ports;
+
 							
 						begin -- update_netchanger_ports
 							log (text => "updating netchanger ports ...", level => log_threshold + 1);
@@ -2539,6 +2550,7 @@ package body et_schematic_ops.nets is
 							iterate (old_segment.ports_netchangers, query_ports'access);
 							log_indentation_down;
 						end update_netchanger_ports;
+
 						
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
@@ -2571,13 +2583,16 @@ package body et_schematic_ops.nets is
 							new_item	=> segment_2);
 					end insert_two_new_segments;
 
+					
 					procedure junction_at_start_point (segment : in out type_net_segment) is begin
 						segment.junctions.start_point := true;
 					end;
 
+					
 					procedure junction_at_end_point (segment : in out type_net_segment) is begin
 						segment.junctions.end_point := true;
 					end;
+
 					
 				begin -- query_segments
 					while segment_cursor /= pac_net_segments.no_element loop
@@ -2646,7 +2661,8 @@ package body et_schematic_ops.nets is
 					end loop;
 
 				end query_segments;
-					
+
+				
 			begin -- query_strands
 				while (not segment_found) and strand_cursor /= pac_strands.no_element loop
 					
@@ -2669,6 +2685,7 @@ package body et_schematic_ops.nets is
 					next (strand_cursor);
 				end loop;
 			end query_strands;
+
 			
 		begin -- query_nets
 			while (not segment_found) and net_cursor /= pac_nets.no_element loop
@@ -2682,8 +2699,9 @@ package body et_schematic_ops.nets is
 			end loop;
 		end query_nets;
 
+		
 	begin -- place_junction
-		log (text => "module " & to_string (module_name) & " placing junction at" &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) & " placing junction at" &
 			 to_string (position => place) & " ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -2695,6 +2713,9 @@ package body et_schematic_ops.nets is
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
 		if not segment_found then
 			log (WARNING, "attempt to place junction in the void. Junction not placed !");
 		end if;
@@ -2855,7 +2876,7 @@ package body et_schematic_ops.nets is
 		module_cursor := locate_module (module_name);
 
 		-- collect names of nets that cross the given segment_position
-		nets := nets_at_place (module_name, segment_position, log_threshold + 1);
+		nets := get_nets_at_place (module_name, segment_position, log_threshold + 1);
 
 		case length (nets) is
 			when 0 =>
