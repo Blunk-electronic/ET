@@ -726,8 +726,8 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		function make_drag_list ( 
@@ -735,7 +735,8 @@ package body et_schematic_ops.units is
 		-- The resulting drag list tells which port is to be moved from old to new position.
 			ports_old : in et_symbols.pac_ports.map;
 			ports_new : in et_symbols.pac_ports.map) 
-			return type_drags_of_ports.map is
+			return type_drags_of_ports.map 
+		is
 			use type_drags_of_ports;
 			drag_list : type_drags_of_ports.map;
 
@@ -763,10 +764,12 @@ package body et_schematic_ops.units is
 			
 			return drag_list;
 		end make_drag_list;
+
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
@@ -780,7 +783,8 @@ package body et_schematic_ops.units is
 
 			procedure query_unit_location (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) is
+				device		: in type_device_sch) 
+			is
 				use pac_units;
 				unit_cursor : pac_units.cursor;
 			begin
@@ -794,10 +798,12 @@ package body et_schematic_ops.units is
 					unit_not_found (unit_name);
 				end if;
 			end query_unit_location;
+
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
+				device		: in out type_device_sch) 
+			is
 				use pac_units;
 				unit_cursor : pac_units.cursor;
 
@@ -920,20 +926,23 @@ package body et_schematic_ops.units is
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- drag_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" &
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
+					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
+					 & " to" & to_string (point), 
+					 level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by" & 
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
+					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
+					 & " by" & to_string (point), 
+					 level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -944,6 +953,7 @@ package body et_schematic_ops.units is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end drag_unit;
 
 	
@@ -955,7 +965,6 @@ package body et_schematic_ops.units is
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) 
 	is
-
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -979,8 +988,8 @@ package body et_schematic_ops.units is
 
 				procedure rotate_unit (
 					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) is
-
+					unit	: in out type_unit) 
+				is
 					preamble : constant string := " placeholder now at";
 					
 					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
@@ -1216,15 +1225,19 @@ package body et_schematic_ops.units is
 	begin -- rotate_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" rotating " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" & to_string (rotation), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " rotating " & enclose_in_quotes (to_string (device_name)) 
+					& " unit " & enclose_in_quotes (to_string (unit_name)) 
+					& " to" & to_string (rotation),
+					level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
-					log (text => "module " & to_string (module_name) &
-						" rotating " & to_string (device_name) & " unit " & 
-						to_string (unit_name) & " by" & to_string (rotation), level => log_threshold);
+					log (text => "module " & enclose_in_quotes (to_string (module_name))
+						& " rotating " & enclose_in_quotes (to_string (device_name)) 
+						& " unit " & enclose_in_quotes (to_string (unit_name))
+						& " by" & to_string (rotation), 
+						level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -1238,6 +1251,8 @@ package body et_schematic_ops.units is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end rotate_unit;
 	
 end et_schematic_ops.units;
