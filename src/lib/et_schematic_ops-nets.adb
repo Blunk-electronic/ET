@@ -877,6 +877,7 @@ package body et_schematic_ops.nets is
 		return result;
 	end movable;
 
+	
 	procedure move_net_labels (
 		segment_before	: in type_net_segment;
 		segment_after	: in out type_net_segment;
@@ -941,6 +942,7 @@ package body et_schematic_ops.nets is
 		end loop;
 		
 	end move_net_labels;
+
 	
 	procedure drag_segment (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -948,8 +950,8 @@ package body et_schematic_ops.nets is
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_point; -- x/y, the new position 
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use pac_nets;
@@ -1338,6 +1340,7 @@ package body et_schematic_ops.nets is
 				process		=> query_strands'access);
 			
 		end query_net;
+
 		
 	begin -- drag_segment
 		case coordinates is
@@ -1379,6 +1382,7 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end drag_segment;
 
+	
 	function nets_at_place (
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
@@ -2159,8 +2163,8 @@ package body et_schematic_ops.nets is
 		segment : type_net_segment;
 
 	begin -- insert_net
-		log (text => "module " & to_string (module_name) &
-			" inserting net " & to_string (net_name) &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" inserting net " & enclose_in_quotes (to_string (net_name)) &
 			" segment from" & to_string (position => start_point) &
 			" to" & to_string (end_point), level => log_threshold);
 		
@@ -2181,8 +2185,10 @@ package body et_schematic_ops.nets is
 			module_cursor, net_cursor, sheet (start_point),
 			net_name, segment, log_threshold + 1);
 
-		log_indentation_down;
+
+		update_ratsnest (module_cursor, log_threshold + 2);
 		
+		log_indentation_down;		
 	end insert_net;
 
 
