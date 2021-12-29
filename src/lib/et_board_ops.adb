@@ -126,21 +126,21 @@ package body et_board_ops is
 			process		=> set_origin'access);
 
 	end move_board;
+
 	
 	procedure add_layer (
-	-- Adds a signal layer to the board.
-	-- Renumbers the signal layers.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_geometry;
 		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_pcb_stack.package_layers;
 		begin
 			append (module.board.stack.layers, layer);
@@ -162,8 +162,8 @@ package body et_board_ops is
 		
 	end add_layer;
 
+	
 	function layer_count (module_cursor	: in et_project.modules.pac_generic_modules.cursor) 
-	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer 
 	is
 		use package_layers;
@@ -171,9 +171,8 @@ package body et_board_ops is
 		return last_index (element (module_cursor).board.stack.layers) + 1;
 	end;
 
+	
 	procedure test_layer (
-	-- Tests whether the given layer is allowed according to current layer stack
-	-- of the given board.
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer) 
 	is
@@ -186,17 +185,15 @@ package body et_board_ops is
 			raise constraint_error;
 		end if;
 	end;
+
 	
 	procedure delete_layer (
-	-- Deletes a signal layer in the board.
-	-- Renumbers the signal layers.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_signal_layer;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use et_geometry;
 		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
@@ -209,7 +206,7 @@ package body et_board_ops is
 
 			old_stack : package_layers.vector := element (module_cursor).board.stack.layers;
 			new_stack : package_layers.vector;
-		begin -- delete
+		begin
 			-- The bottom layer can not be deleted:
 			if layer = layers_used then
 				log (WARNING, "The bottom layer" & to_string (layer) & " can not be deleted !");
@@ -230,6 +227,7 @@ package body et_board_ops is
 				module.board.stack.layers := new_stack;
 			end if;
 		end delete;
+
 		
 	begin -- delete_layer
 		log (text => "module " & to_string (module_name) &
@@ -273,8 +271,8 @@ package body et_board_ops is
 		package_model	: in et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		package_cursor_lib : et_packages.pac_packages_lib.cursor;
@@ -1404,12 +1402,10 @@ package body et_board_ops is
 
 	
 	function locate_device (
-	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_name		: in type_device_name)
 		return pac_devices_sch.cursor 
 	is
-
 		device_cursor : pac_devices_sch.cursor;
 		
 		procedure query_devices (
@@ -1673,8 +1669,8 @@ package body et_board_ops is
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			module.board.grid := grid;
 		end;
 		
@@ -1697,12 +1693,13 @@ package body et_board_ops is
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in type_grid;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
+		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			module.board.grid := grid;
 		end;
 		
@@ -1872,6 +1869,7 @@ package body et_board_ops is
 	begin
 		iterate (layers, query_layer'access);
 	end;
+
 	
 	procedure draw_route_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1948,6 +1946,7 @@ package body et_board_ops is
 		
 	end draw_route_restrict_arc;
 
+	
 	procedure draw_route_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
@@ -1985,6 +1984,7 @@ package body et_board_ops is
 		
 	end draw_route_restrict_circle;
 
+	
 	procedure delete_route_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
@@ -1995,7 +1995,8 @@ package body et_board_ops is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module)
+		is
 			use et_pcb;
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
@@ -2068,6 +2069,7 @@ package body et_board_ops is
 	end delete_route_restrict;
 
 	
+	
 -- VIA RESTRICT
 
 	procedure draw_via_restrict_line (
@@ -2107,11 +2109,12 @@ package body et_board_ops is
 		
 	end draw_via_restrict_line;
 
+	
 	procedure draw_via_restrict_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_via_restrict_arc;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_via_restrict_arcs;
@@ -2144,10 +2147,12 @@ package body et_board_ops is
 		
 	end draw_via_restrict_arc;
 
+	
 	procedure draw_via_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_via_restrict_circle;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -2303,6 +2308,7 @@ package body et_board_ops is
 
 	end draw_outline;
 
+	
 	procedure draw_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		hole			: in type_polygon;
@@ -2410,6 +2416,7 @@ package body et_board_ops is
 				no_segment_found (point, accuracy);
 			end if;			
 		end delete;
+
 		
 	begin -- delete_outline
 		log (text => "module " & to_string (module_name) 
@@ -2499,6 +2506,7 @@ package body et_board_ops is
 
 	end draw_silk_screen_line;
 
+	
 	procedure draw_silk_screen_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -2545,6 +2553,7 @@ package body et_board_ops is
 
 	end draw_silk_screen_arc;
 
+	
 	procedure draw_silk_screen_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
