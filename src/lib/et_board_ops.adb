@@ -49,7 +49,6 @@ with et_numbering;
 with et_symbols;
 with et_packages;
 with et_conductor_polygons;			use et_conductor_polygons;
-with et_conductor_segment;
 with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
 with et_pcb_rw.device_packages;
 with et_conventions;
@@ -60,12 +59,8 @@ with et_routing;
 
 package body et_board_ops is
 
-	use et_project.modules.pac_generic_modules;
-	use et_schematic;
-	use et_pcb_stack;
+	use pac_generic_modules;
 
-	-- CS use pac_generic_modules; and clean up
-	
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 	use pac_nets;

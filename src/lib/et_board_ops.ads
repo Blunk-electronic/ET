@@ -54,7 +54,7 @@ with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_project.modules;		use et_project.modules;
-with et_schematic;
+with et_schematic;				use et_schematic;
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;

@@ -39,34 +39,14 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.tags;
 
-with et_netlists;
-with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
-with et_submodules;
-with et_numbering;
-with et_symbols;
-with et_packages;
-with et_conductor_polygons;			use et_conductor_polygons;
-with et_conductor_segment;
-with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
-with et_pcb_rw.device_packages;
-with et_conventions;
 with et_exceptions;					use et_exceptions;
-
-with et_routing;
 
 
 package body et_board_ops.tracks is
 
-	use et_project.modules.pac_generic_modules;
-	use et_schematic;
-	use et_pcb_stack;
-
-	-- CS use pac_generic_modules; and clean up
-	
-	use pac_devices_sch;
-	use pac_devices_non_electric;
+	use pac_generic_modules;
 	use pac_nets;
 
 
