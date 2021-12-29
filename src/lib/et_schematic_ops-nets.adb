@@ -2684,26 +2684,44 @@ package body et_schematic_ops.nets is
 			end loop;
 		end query_nets;
 
+
+		use type_net_names;
+		nets_at_place : type_net_names.list;
+		
 		
 	begin -- place_junction
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) & " placing junction at" &
-			 to_string (position => place) & " ...", level => log_threshold);
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+			& " placing junction at" & to_string (position => place) 
+			& " ...", 
+			level => log_threshold);
+		
 		log_indentation_up;
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_nets'access);
+
+		-- Figure out how many nets are crossing the given place:
+		nets_at_place := get_nets_at_place (module_name, place, log_threshold + 1);
 
 		
-		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		if not segment_found then
-			log (WARNING, "attempt to place junction in the void. Junction not placed !");
-		end if;
+		case length (nets_at_place) is
+			when 0 =>
+				log (WARNING, "Attempt to place junction in the void rejected !");
+
+			when 1 =>
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> query_nets'access);
+
+			
+				update_ratsnest (module_cursor, log_threshold + 1);
+
+			when others =>
+				raise semantic_error_1 with
+					"ERROR: Attempt to connect different nets via a junction rejected !";
+		end case;
 		
 		log_indentation_down;
 	end place_junction;
