@@ -72,6 +72,7 @@ package et_net_names is
 
 	no_name : constant pac_net_name.bounded_string := to_bounded_string ("");
 
+
 	
 	
 	procedure check_net_name_length (net : in string);
@@ -103,6 +104,8 @@ package et_net_names is
 	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
 
+
+	
 -- INDEXED NETS
 
 	-- Sometimes a list of net names along with an index is

@@ -51,6 +51,19 @@ package body et_schematic_ops.nets is
 	use pac_strands;
 	use pac_nets;
 
+
+	function net_exists (
+		net_cursor : in pac_nets.cursor) 
+		return boolean 
+	is begin
+		if net_cursor = pac_nets.no_element then
+			return false;
+		else 
+			return true;
+		end if;
+	end;
+
+
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),

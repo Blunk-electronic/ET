@@ -36,6 +36,7 @@
 --
 
 package body et_net_names is
+
 	
 	procedure check_net_name_length (net : in string) is begin
 		if net'length > net_name_length_max then
@@ -46,6 +47,7 @@ package body et_net_names is
 		end if;
 	end check_net_name_length;
 
+	
 	procedure check_net_name_characters (
 		net			: in pac_net_name.bounded_string;
 		characters	: in character_set := net_name_characters) 

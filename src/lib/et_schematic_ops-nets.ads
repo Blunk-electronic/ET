@@ -47,6 +47,11 @@ package et_schematic_ops.nets is
 	use pac_generic_modules;	
 	use et_symbols.pac_geometry_2;
 
+
+	function net_exists (
+		net_cursor : in pac_nets.cursor) 
+		return boolean;
+
 	
 	type type_net_scope is (
 		STRAND,
