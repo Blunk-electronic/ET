@@ -1389,9 +1389,9 @@ package body et_schematic_ops.nets is
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
-		return type_net_names.list 
+		return pac_net_names.list 
 	is
-		nets : type_net_names.list; -- to be returned
+		nets : pac_net_names.list; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -1424,7 +1424,7 @@ package body et_schematic_ops.nets is
 							match := true; -- signals the calling unit to cancel the search
 
 							-- store net name in return value
-							type_net_names.append (nets, key (net_cursor));
+							pac_net_names.append (nets, key (net_cursor));
 
 							exit; -- no need to search for more segments in this strand
 						end if;
@@ -1501,17 +1501,17 @@ package body et_schematic_ops.nets is
 		junction_at_start_point : type_junction;
 		junction_at_end_point	: type_junction;
 		
-		use type_net_names;
-		net_names : type_net_names.list;
+		use pac_net_names;
+		net_names : pac_net_names.list;
 
 		
 		-- Returns the content of net_names in a single string.
 		function list_nets return string is 
-			net_cursor : type_net_names.cursor := net_names.first;
+			net_cursor : pac_net_names.cursor := net_names.first;
 			use ada.strings.unbounded;
 			names : ada.strings.unbounded.unbounded_string;
 		begin
-			while net_cursor /= type_net_names.no_element loop
+			while net_cursor /= pac_net_names.no_element loop
 				names := names & to_string (element (net_cursor)) & space;
 				next (net_cursor);
 			end loop;
@@ -2685,8 +2685,8 @@ package body et_schematic_ops.nets is
 		end query_nets;
 
 
-		use type_net_names;
-		nets_at_place : type_net_names.list;
+		use pac_net_names;
+		nets_at_place : pac_net_names.list;
 		
 		
 	begin -- place_junction
@@ -2746,8 +2746,8 @@ package body et_schematic_ops.nets is
 				" No label placed ! Specify another position and try again.");
 		end;
 		
-		use type_net_names;
-		nets : type_net_names.list;
+		use pac_net_names;
+		nets : pac_net_names.list;
 		net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 
 		procedure query_nets (

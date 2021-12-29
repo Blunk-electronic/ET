@@ -145,16 +145,13 @@ package et_schematic_ops.nets is
 
 
 	
-	package type_net_names is new doubly_linked_lists (
-		element_type	=> pac_net_name.bounded_string,
-		"="				=> pac_net_name."=");
 
 	-- Returns lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
-		return type_net_names.list;
+		return pac_net_names.list;
 
 
 	
