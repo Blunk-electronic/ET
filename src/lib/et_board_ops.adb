@@ -2403,7 +2403,8 @@ package body et_board_ops is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> locate_module'access);
-		
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end place_via;
 		
 	
@@ -2530,15 +2531,15 @@ package body et_board_ops is
 			end if;
 
 		end ripup_named_track;
+
 		
 	begin -- ripup_track_segment
 		log (text => "module " & to_string (module_name) &
-				freetrack (net_name) &
-				" ripping up segment" &
-				" in layer" & to_string (layer) &
-				" at" & to_string (point) &
-				" accuracy" & to_string (accuracy),
-				
+			freetrack (net_name) &
+			" ripping up segment" &
+			" in layer " & to_string (layer) &
+			" at" & to_string (point) &
+			" accuracy" & to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -2560,10 +2561,12 @@ package body et_board_ops is
 				position	=> module_cursor,
 				process		=> ripup_named_track'access);
 
+			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 		
 	end ripup_track_segment;
 
+	
 	
 -- ROUTE RESTRICT
 
