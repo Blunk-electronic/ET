@@ -87,19 +87,19 @@ package et_board_ops.tracks is
 	
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
-	procedure draw_track_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level);
+	--procedure draw_track_line (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
+		--line			: in type_conductor_line;
+		--log_threshold	: in type_log_level);
 
 	
-	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
+	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -111,12 +111,12 @@ package et_board_ops.tracks is
 		log_threshold	: in type_log_level);
 
 	
-	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
+	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -129,11 +129,11 @@ package et_board_ops.tracks is
 		log_threshold	: in type_log_level);
 
 	
-	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends at the given point.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
+	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -144,12 +144,12 @@ package et_board_ops.tracks is
 		log_threshold	: in type_log_level);
 
 	
-	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track runs into the 
 	-- given direction and ends after the given number of notches along the given axis.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
+	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;

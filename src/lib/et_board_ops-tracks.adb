@@ -214,60 +214,56 @@ package body et_board_ops.tracks is
 				process		=> add_freetrack'access);
 
 		else
-
 			add_named_track (module_cursor, net_name, line);
+
+			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 
 	end draw_track_line;
 
 	
-	procedure draw_track_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in pac_nets.cursor; -- reset_n
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level) 
-	is
+	--procedure draw_track_line (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--net_cursor		: in pac_nets.cursor; -- reset_n
+		--line			: in type_conductor_line;
+		--log_threshold	: in type_log_level) 
+	--is
 
-		procedure add_named_track (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is
-			use et_nets;
+		--procedure add_named_track (
+			--module_name	: in pac_module_name.bounded_string;
+			--module		: in out type_module) 
+		--is
+			--use et_nets;
 			
-			procedure add (
-			-- Appends the track to the net.
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				use pac_conductor_lines;
-			begin
-				append (
-					container	=> net.route.lines,
-					new_item	=> line);
-			end add;
+			--procedure add (
+			---- Appends the track to the net.
+				--net_name	: in pac_net_name.bounded_string;
+				--net			: in out type_net) 
+			--is
+				--use pac_conductor_lines;
+			--begin
+				--append (
+					--container	=> net.route.lines,
+					--new_item	=> line);
+			--end add;
 
-		begin -- add_named_track
-			pac_nets.update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> add'access);
-		end add_named_track;
+		--begin -- add_named_track
+			--pac_nets.update_element (
+				--container	=> module.nets,
+				--position	=> net_cursor,
+				--process		=> add'access);
+		--end add_named_track;
 
-	begin -- draw_track_line
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> add_named_track'access);
+	--begin -- draw_track_line
+		--update_element (
+			--container	=> generic_modules,
+			--position	=> module_cursor,
+			--process		=> add_named_track'access);
 
-	end draw_track_line;
+	--end draw_track_line;
 
 	
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track ends
-	-- after the given length in given direction.
-	-- If the terminal is a THT type, then the track may start at any signal layer.
-	-- If the terminal is a SMT type, then the track may start at either the top or bottom
-	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -287,6 +283,7 @@ package body et_board_ops.tracks is
 		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
+
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -308,6 +305,7 @@ package body et_board_ops.tracks is
 					distance	=> length));
 			
 		end make_line;
+
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -327,16 +325,13 @@ package body et_board_ops.tracks is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
-		
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
+
 
 	
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track ends
-	-- after the given number of notches along the given axis.
-	-- If the terminal is a THT type, then the track may start at any signal layer.
-	-- If the terminal is a SMT type, then the track may start at either the top or bottom
-	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -357,6 +352,7 @@ package body et_board_ops.tracks is
 		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
+
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -375,6 +371,7 @@ package body et_board_ops.tracks is
 			-- CS
 			
 		end make_line;
+
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -397,14 +394,12 @@ package body et_board_ops.tracks is
 
 		add_named_track (module_cursor, net_name, line);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
+	
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track ends at the given point.
-	-- If the terminal is a THT type, then the track may start at any signal layer.
-	-- If the terminal is a SMT type, then the track may start at either the top or bottom
-	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -423,6 +418,7 @@ package body et_board_ops.tracks is
 		line : type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
+
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -438,6 +434,7 @@ package body et_board_ops.tracks is
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 		end make_line;
+
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -457,16 +454,12 @@ package body et_board_ops.tracks is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
-		
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track runs into the 
-	-- given direction and ends after the given number of notches along the given axis.
-	-- If the terminal is a THT type, then the track may start at any signal layer.
-	-- If the terminal is a SMT type, then the track may start at either the top or bottom
-	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -504,6 +497,7 @@ package body et_board_ops.tracks is
 			-- CS
 			
 		end make_line;
+
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -525,6 +519,7 @@ package body et_board_ops.tracks is
 
 		add_named_track (module_cursor, net_name, line);
 
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
@@ -537,6 +532,7 @@ package body et_board_ops.tracks is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_conductor_arcs;
+
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
@@ -546,6 +542,7 @@ package body et_board_ops.tracks is
 				container	=> module.board.conductors.arcs,
 				new_item	=> arc);
 		end;
+
 		
 		procedure add_named_track (
 			module_name	: in pac_module_name.bounded_string;
@@ -579,6 +576,7 @@ package body et_board_ops.tracks is
 			end if;
 
 		end add_named_track;
+
 		
 	begin -- draw_track_arc
 		log (text => "module " & to_string (module_name) &
@@ -607,6 +605,7 @@ package body et_board_ops.tracks is
 				position	=> module_cursor,
 				process		=> add_named_track'access);
 
+			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 
 	end draw_track_arc;
