@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -541,6 +541,7 @@ package body et_geometry_2.polygons is
 		end if;
 		
 	end transpose_polygon;
+
 	
 	function to_polygon (
 		arguments : in type_fields_of_line) -- line 0 0 line 160 0 line 160 80 line 0 80
@@ -775,6 +776,7 @@ package body et_geometry_2.polygons is
 		return result;
 	end get_boundaries;
 	
+	
 	function to_string (
 		gaps : in pac_polygon_gaps.list) 
 		return string 
@@ -802,6 +804,7 @@ package body et_geometry_2.polygons is
 
 		return to_string (result);
 	end to_string;
+
 	
 	function is_closed (
 		polygon	: in type_polygon_base)
@@ -882,6 +885,7 @@ package body et_geometry_2.polygons is
 		end if;
 	end is_closed;
 	
+	
 	procedure move_by (
 		polygon	: in out type_polygon_base;
 		offset	: in type_distance_relative) 
@@ -927,6 +931,7 @@ package body et_geometry_2.polygons is
 		end if;
 	end move_by;
 
+	
 	procedure mirror (
 		polygon	: in out type_polygon_base;
 		axis	: in type_axis_2d) 
@@ -972,6 +977,7 @@ package body et_geometry_2.polygons is
 		end if;
 	end mirror;
 
+	
 	procedure rotate_by (
 		polygon		: in out type_polygon_base;
 		rotation	: in type_rotation) 

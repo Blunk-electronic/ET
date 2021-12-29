@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -59,6 +59,7 @@ package et_geometry_2.polygons is
 	-- On the other hand, a polygon may consist of lines and arcs. In that
 	-- case no circle is allowed:
 	type type_polygon_segment_shape is (LINE, ARC);
+
 	
 	type type_polygon_segment (shape : type_polygon_segment_shape) is record
 		case shape is
@@ -68,6 +69,7 @@ package et_geometry_2.polygons is
 	end record;
 	
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
+
 	
 	type type_polygon_segments (circular : boolean := false) is record
 		case circular is
@@ -75,11 +77,13 @@ package et_geometry_2.polygons is
 			when FALSE	=> segments : pac_polygon_segments.list;
 		end case;
 	end record;
+	
 
 	type type_polygon_base is abstract tagged record -- CS rename to type_polygon ?
 		contours	: type_polygon_segments;
 	end record;
 
+	
 	-- Returns the segments of a polygon in human readable form:
 	function to_string (
 		polygon	: in type_polygon_base)
@@ -94,6 +98,7 @@ package et_geometry_2.polygons is
 		polygon		: in type_polygon_base;
 		reference	: in type_point)
 		return type_point;
+	
 
 	-- Returns the distance from the given reference point to
 	-- to the nearest point on the polygon edges.
@@ -120,20 +125,25 @@ package et_geometry_2.polygons is
 		polygon		: in out type_polygon_base;
 		segments	: in type_polygon_segments);
 	
+	
 	procedure delete_segments (
 		polygon : in out type_polygon_base);
+	
 
 	procedure append_segment (
 		polygon	: in out type_polygon_base;
 		segment	: in type_polygon_segment);
+	
 
 	procedure set_circle (
 		polygon	: in out type_polygon_base;
 		circle	: in type_circle'class);
+	
 		
 	function get_segments (
 		polygon : in type_polygon_base) 
 		return type_polygon_segments;
+	
 
 	-- Returns 1 if the polygon contours consist of just a single circle.
 	-- Returns the number of segments if the contours consist of lines
@@ -174,16 +184,19 @@ package et_geometry_2.polygons is
 		arguments : in type_fields_of_line)
 		return type_polygon_base'class;
 	
+	
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
 		polygon		: in type_polygon_base;
 		line_width	: in type_distance_positive)
 		return type_boundaries;
+	
 
 	-- A polygon must have a properly closed outline.
 	-- The outline check returns a list of points (where the gaps are):
 	package pac_polygon_gaps is new doubly_linked_lists (type_point); 
 
+	
 	-- Returns the points where gaps of a polygon outline begin:
 	function to_string (
 		gaps : in pac_polygon_gaps.list)
@@ -211,16 +224,19 @@ package et_geometry_2.polygons is
 	function is_closed (
 		polygon	: in type_polygon_base)
 		return type_polygon_status;
+	
 
 	-- Moves a polygon by the given offset. 
 	procedure move_by (
 		polygon	: in out type_polygon_base;
 		offset	: in type_distance_relative);
+	
 
 	-- Mirrors a polygon along the given axis.
 	procedure mirror (
 		polygon	: in out type_polygon_base;
 		axis	: in type_axis_2d);
+	
 
 	-- Rotates a polygon about the origin by the given rotation.
 	procedure rotate_by (
@@ -255,6 +271,7 @@ package et_geometry_2.polygons is
 		end case;
 	end record;
 	
+	
 	-- The procedure shrinks or expands the given polygon.
 	-- CS: Largely incomplete !!!
 	procedure offset_polygon (
@@ -284,6 +301,7 @@ package et_geometry_2.polygons is
 		end case;
 	end record;
 
+	
 	-- The intersection of a probe line with the polygon side can
 	-- be described as:
 	type type_probe_line_intersection is record
@@ -309,6 +327,7 @@ package et_geometry_2.polygons is
 	package pac_probe_line_intersections is new
 		doubly_linked_lists (type_probe_line_intersection);
 
+		
 		
 	type type_inside_polygon_query_result is record
 		-- the point where the probe line has started:
@@ -349,6 +368,7 @@ package et_geometry_2.polygons is
 				-- the lowest x and lowest y are)
 		);
 
+	
 	-- When the lower left corner is to be found, then
 	-- the result of such a search operation is formed by
 	-- this type:
@@ -357,6 +377,7 @@ package et_geometry_2.polygons is
 		status	: type_lower_left_corner_status := REAL;
 	end record;
 
+	
 	-- Searches the lower left corner of a polygon:
 	function get_lower_left_corner (
 		polygon	: in type_polygon_base)
