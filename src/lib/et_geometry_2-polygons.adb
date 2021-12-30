@@ -1032,37 +1032,47 @@ package body et_geometry_2.polygons is
 		return type_polygon_scale'value (scale);
 	end to_scale;
 
+
+
+		--function offset_line (
+			--line		: in type_line;
+			--distance	: in type_distance)
+			--return type_line_vector;
+
 	
-	procedure offset_polygon (
-		polygon		: in out type_polygon_base;
-		offset		: in type_offset) 
+	
+	
+	procedure scale_polygon (
+		polygon	: in out type_polygon_base;
+		scale	: in type_polygon_scale) 
 	is
 		use pac_polygon_segments;
 
+		
 		function scale_point (point	: in type_point) return type_point is
-			x_new : type_distance := get_x (point) * type_distance (offset.scale);
-			y_new : type_distance := get_y (point) * type_distance (offset.scale);
+			x_new : type_distance := get_x (point) * scale;
+			y_new : type_distance := get_y (point) * scale;
 		begin
 			return type_point (set (x_new, y_new));
 		end scale_point;
 
-		procedure offset_segment (c : in pac_polygon_segments.cursor) is
-			procedure do_line (s : in out type_polygon_segment) is begin 
-				case offset.style is
-					when BY_DISTANCE => null; -- CS
-					
-					when BY_SCALE => null;
-						s.segment_line.start_point	:= scale_point (s.segment_line.start_point);
-						s.segment_line.end_point	:= scale_point (s.segment_line.end_point);
+		
+		
+		procedure do_segment (c : in pac_polygon_segments.cursor) is
 
-				end case;
+			
+			procedure do_line (s : in out type_polygon_segment) is begin 
+				s.segment_line.start_point	:= scale_point (s.segment_line.start_point);
+				s.segment_line.end_point	:= scale_point (s.segment_line.end_point);
 			end;
+
 			
 			procedure do_arc (s : in out type_polygon_segment) is begin
 				null; -- CS
 			end;
 
-		begin -- offset_segment
+			
+		begin
 			case element (c).shape is
 				
 				when LINE =>
@@ -1078,7 +1088,62 @@ package body et_geometry_2.polygons is
 						process		=> do_arc'access);
 
 			end case;
-		end offset_segment;
+		end do_segment;
+
+		
+	begin
+
+		if polygon.contours.circular then
+
+			-- scale the single circle that forms the polygon:
+			-- CS change radius of  polygon.contours.circle
+			null;
+		else
+			polygon.contours.segments.iterate (do_segment'access);
+		end if;
+		
+	end scale_polygon;
+
+	
+
+	procedure offset_polygon (
+		polygon		: in out type_polygon_base;
+		offset		: in type_distance) 
+	is
+		use pac_polygon_segments;
+
+		
+		procedure do_segment (c : in pac_polygon_segments.cursor) is
+
+			
+			procedure do_line (s : in out type_polygon_segment) is begin 
+
+					null;
+			end;
+
+			
+			procedure do_arc (s : in out type_polygon_segment) is begin
+				null; -- CS
+			end;
+
+			
+		begin
+			case element (c).shape is
+				
+				when LINE =>
+					update_element (
+						container	=> polygon.contours.segments,
+						position	=> c,
+						process		=> do_line'access);
+
+				when ARC =>
+					update_element (
+						container	=> polygon.contours.segments,
+						position	=> c,
+						process		=> do_arc'access);
+
+			end case;
+		end do_segment;
 
 		
 	begin -- offset_polygon
@@ -1089,12 +1154,11 @@ package body et_geometry_2.polygons is
 			-- CS change radius of  polygon.contours.circle
 			null;
 		else
-			-- move lines and arcs:
-			polygon.contours.segments.iterate (offset_segment'access);
+			polygon.contours.segments.iterate (do_segment'access);
 		end if;
 		
 	end offset_polygon;
-	
+
 	
 -- 		function to_corner_easing (easing : in string) return type_corner_easing is begin
 -- 			return type_corner_easing'value (easing);

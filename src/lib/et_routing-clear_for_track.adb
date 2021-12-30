@@ -776,7 +776,7 @@ is
 										begin
 											offset_polygon (
 												polygon		=> om, 
-												offset		=> (style => BY_DISTANCE, distance => element (c).width_inner_layers));
+												offset		=> element (c).width_inner_layers);
 											
 											oln := om;
 										end;

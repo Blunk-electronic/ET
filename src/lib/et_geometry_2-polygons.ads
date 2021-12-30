@@ -257,26 +257,33 @@ package et_geometry_2.polygons is
 
 	polygon_scale_default : constant type_polygon_scale := 1.0;
 
+	
 	function to_string (scale : in type_polygon_scale) return string;
 	function to_scale (scale : in string) return type_polygon_scale;
-	
-	type type_offset_style is (
-		BY_DISTANCE,
-		BY_SCALE);
 
-	type type_offset (style : type_offset_style) is record
-		case style is
-			when BY_DISTANCE	=> distance	: type_distance;
-			when BY_SCALE		=> scale 	: type_polygon_scale;
-		end case;
-	end record;
+
+	procedure scale_polygon (
+		polygon	: in out type_polygon_base;
+		scale	: in type_polygon_scale);
+
+	
+	--type type_offset_style is (
+		--BY_DISTANCE,
+		--BY_SCALE);
+
+	--type type_offset (style : type_offset_style) is record
+		--case style is
+			--when BY_DISTANCE	=> distance	: type_distance;
+			--when BY_SCALE		=> scale 	: type_polygon_scale;
+		--end case;
+	--end record;
 	
 	
 	-- The procedure shrinks or expands the given polygon.
 	-- CS: Largely incomplete !!!
 	procedure offset_polygon (
 		polygon		: in out type_polygon_base;
-		offset		: in type_offset);
+		offset		: in type_distance);
 
 	
 

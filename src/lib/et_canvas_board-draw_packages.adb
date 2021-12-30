@@ -2929,9 +2929,7 @@ is
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
-											offset		=> (
-												style		=> BY_DISTANCE,
-												distance	=> get_stop_mask_expansion)); -- from DRU
+											offset		=> get_stop_mask_expansion); -- from DRU
 
 										-- compute final position of expanded stop mask opening
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
@@ -2965,9 +2963,9 @@ is
 										-- copy solder pad contours and shrink according to shrink_factor
 										stencil_contours := (type_polygon_base (pad_outline_in) with null record);
 										
-										offset_polygon (
+										scale_polygon (
 											polygon		=> stencil_contours,
-											offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
+											scale		=> stencil_in.shrink_factor);
 
 										-- compute final position of shrinked stencil opening
 										move_contours (pad_pos, stencil_contours, flip, package_position);
@@ -3063,9 +3061,7 @@ is
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
-											offset		=> (
-												style 		=> BY_DISTANCE,
-												distance	=> get_stop_mask_expansion));  -- from DRU
+											offset		=> get_stop_mask_expansion);  -- from DRU
 
 										-- compute final position of expanded stop mask opening
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
@@ -3120,7 +3116,7 @@ is
 						
 						offset_polygon (
 							polygon		=> pad_outline_inner_layers, 
-							offset		=> (style => BY_DISTANCE, distance => restring_width));
+							offset		=> restring_width);
 
 						-- move the conductor frame to its final position:
 						pad_pos := pad_pos_in;  -- get initial pad position
