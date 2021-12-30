@@ -48,12 +48,13 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_2.polygons is
 
+	use pac_polygon_segments;
 
+	
 	function to_string (
 		polygon	: in type_polygon_base)
 		return string
 	is
-		use pac_polygon_segments;
 		use ada.strings.unbounded;
 		
 		result : unbounded_string := to_unbounded_string ("polygon:");
@@ -88,8 +89,6 @@ package body et_geometry_2.polygons is
 		reference	: in type_point)
 		return type_point
 	is
-		use pac_polygon_segments;
-	
 		result : type_point := origin;
 		
 		d1 : type_distance_positive := zero;
@@ -158,8 +157,6 @@ package body et_geometry_2.polygons is
 		point	: in type_point)
 		return type_distance_polar
 	is
-		use pac_polygon_segments;
-	
 		result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
 		
 		procedure update (d : in type_distance_polar) is begin
@@ -185,6 +182,7 @@ package body et_geometry_2.polygons is
 			end case;
 		end query_segment;
 
+		
 	begin -- get_shortest_distance
 		if polygon.contours.circular then
 			result := get_shortest_distance (point, polygon.contours.circle);
@@ -230,6 +228,7 @@ package body et_geometry_2.polygons is
 		return p;
 	end get_left_end;
 
+	
 	function get_right_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
@@ -260,6 +259,7 @@ package body et_geometry_2.polygons is
 		return p;
 	end get_right_end;
 
+	
 	function get_lower_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
@@ -290,6 +290,7 @@ package body et_geometry_2.polygons is
 		return p;
 	end get_lower_end;
 
+	
 	function get_upper_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
@@ -370,11 +371,13 @@ package body et_geometry_2.polygons is
 		polygon.contours := segments;
 	end load_segments;
 
+	
 	procedure delete_segments (polygon : in out type_polygon_base) 
 	is begin
 		polygon.contours := (others => <>);
 	end delete_segments;			
 
+	
 	procedure append_segment (
 		polygon	: in out type_polygon_base;
 		segment	: in type_polygon_segment)
@@ -384,6 +387,7 @@ package body et_geometry_2.polygons is
 		polygon.contours.segments.append (segment);			
 	end append_segment;
 
+	
 	procedure set_circle (
 		polygon	: in out type_polygon_base;
 		circle	: in type_circle'class)
@@ -401,12 +405,11 @@ package body et_geometry_2.polygons is
 		return polygon.contours;
 	end get_segments;
 
+
 	function get_segments_total (
 		polygon : in type_polygon_base)
 		return count_type
-	is 
-		use pac_polygon_segments;
-	begin
+	is begin
 		if polygon.contours.circular then
 			return 1;
 		else
@@ -497,8 +500,7 @@ package body et_geometry_2.polygons is
 			set (Y, new_y, point);
 		end move;
 
-		use pac_polygon_segments;
-
+		
 		procedure move_segment (c : in pac_polygon_segments.cursor) is
 
 			procedure do_line (s : in out type_polygon_segment) is begin 
@@ -529,6 +531,7 @@ package body et_geometry_2.polygons is
 
 			end case;
 		end move_segment;
+
 		
 	begin -- transpose_polygon			
 		if polygon.contours.circular then
@@ -572,7 +575,6 @@ package body et_geometry_2.polygons is
 
 		end_point_previous : type_point;
 
-		use pac_polygon_segments;
 		
 		procedure update_end_point (s : in out type_polygon_segment) is begin
 			case s.shape is
@@ -742,7 +744,6 @@ package body et_geometry_2.polygons is
 
 		half_width : constant type_distance_positive := line_width * 0.5;
 		
-		use pac_polygon_segments;
 
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 			case element (c).shape is
@@ -753,6 +754,7 @@ package body et_geometry_2.polygons is
 					union (result, get_boundaries (element (c).segment_arc, zero));
 			end case;						
 		end query_segment;
+
 		
 	begin -- get_boundaries
 		if polygon.contours.circular then
@@ -810,8 +812,6 @@ package body et_geometry_2.polygons is
 		polygon	: in type_polygon_base)
 		return type_polygon_status 
 	is
-		use pac_polygon_segments;
-
 		-- Goes false once a gap has been detected:
 		closed : boolean := true;
 
@@ -890,7 +890,6 @@ package body et_geometry_2.polygons is
 		polygon	: in out type_polygon_base;
 		offset	: in type_distance_relative) 
 	is
-		use pac_polygon_segments;
 
 		procedure move_segment (c : in pac_polygon_segments.cursor) is
 
@@ -936,7 +935,6 @@ package body et_geometry_2.polygons is
 		polygon	: in out type_polygon_base;
 		axis	: in type_axis_2d) 
 	is
-		use pac_polygon_segments;
 
 		procedure mirror_segment (c : in pac_polygon_segments.cursor) is
 
@@ -982,7 +980,6 @@ package body et_geometry_2.polygons is
 		polygon		: in out type_polygon_base;
 		rotation	: in type_rotation) 
 	is
-		use pac_polygon_segments;
 
 		procedure rotate_segment (c : in pac_polygon_segments.cursor) is
 
@@ -1011,6 +1008,7 @@ package body et_geometry_2.polygons is
 
 			end case;
 		end rotate_segment;
+
 		
 	begin -- rotate_by
 		if polygon.contours.circular then
@@ -1034,20 +1032,12 @@ package body et_geometry_2.polygons is
 
 
 
-		--function offset_line (
-			--line		: in type_line;
-			--distance	: in type_distance)
-			--return type_line_vector;
-
-	
 	
 	
 	procedure scale_polygon (
 		polygon	: in out type_polygon_base;
 		scale	: in type_polygon_scale) 
 	is
-		use pac_polygon_segments;
-
 		
 		function scale_point (point	: in type_point) return type_point is
 			x_new : type_distance := get_x (point) * scale;
@@ -1110,8 +1100,14 @@ package body et_geometry_2.polygons is
 		polygon		: in out type_polygon_base;
 		offset		: in type_distance) 
 	is
-		use pac_polygon_segments;
 
+		--function offset_line (
+			--line		: in type_line;
+			--distance	: in type_distance)
+			--return type_line_vector;
+
+	
+		
 		
 		procedure do_segment (c : in pac_polygon_segments.cursor) is
 
@@ -1420,7 +1416,6 @@ package body et_geometry_2.polygons is
 		end query_arc;
 
 		
-		use pac_polygon_segments;
 		
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 			case element (c).shape is					
