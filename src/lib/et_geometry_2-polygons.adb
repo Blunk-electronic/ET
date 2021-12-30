@@ -1101,20 +1101,50 @@ package body et_geometry_2.polygons is
 		offset		: in type_distance) 
 	is
 
-		--function offset_line (
-			--line		: in type_line;
-			--distance	: in type_distance)
-			--return type_line_vector;
+		function offset_line (
+			line : in type_line)
+			return type_line_vector
+		is
+			line_new : type_line := line;
 
+			center : type_point := get_center (line);
+			line_direction : type_rotation := get_direction (line);
+			dir_scratch : type_rotation;
+			
+			test_point : type_point;
+
+			tp_status : type_inside_polygon_query_result;
+
+			procedure set_test_point is begin
+				dir_scratch := add (line_direction, +90.0);
+				test_point := type_point (move (center, dir_scratch, type_distance_positive'first));
+			end set_test_point;
+
+		begin
+			
+			dir_scratch := add (line_direction, +90.0);
+			test_point := type_point (move (center, dir_scratch, type_distance_positive'first));
+			tp_status := in_polygon_status (polygon, test_point);
+
+			if tp_status.status = INSIDE then
+				move_by (line_new, add (line_direction, -90.0), offset);
+			else
+				move_by (line_new, add (line_direction, +90.0), offset);
+			end if;
+
+
+			return to_line_vector (line_new);
+		end offset_line;
 	
 		
 		
 		procedure do_segment (c : in pac_polygon_segments.cursor) is
 
 			
-			procedure do_line (s : in out type_polygon_segment) is begin 
-
-					null;
+			procedure do_line (s : in out type_polygon_segment) is 
+				lv : type_line_vector := offset_line (s.segment_line);
+			begin 
+				put_line ("lv " & to_string (lv));
 			end;
 
 			
