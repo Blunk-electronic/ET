@@ -1106,70 +1106,56 @@ package body et_geometry_2.polygons is
 			return type_line_vector
 		is
 			line_new : type_line := line;
-
 			center : type_point := get_center (line);
 			line_direction : type_rotation := get_direction (line);
-			dir_scratch : type_rotation;
-			
+			dir_scratch : type_rotation;			
 			test_point : type_point;
-
 			tp_status : type_inside_polygon_query_result;
 
-			procedure set_test_point is begin
-				dir_scratch := add (line_direction, +90.0);
-				test_point := type_point (move (center, dir_scratch, type_distance_positive'first));
-			end set_test_point;
-
 		begin
-			
 			dir_scratch := add (line_direction, +90.0);
-			test_point := type_point (move (center, dir_scratch, type_distance_positive'first));
+			test_point := type_point (move (center, dir_scratch, type_distance'small));
+			--put_line ("tp " & to_string (test_point));
 			tp_status := in_polygon_status (polygon, test_point);
 
 			if tp_status.status = INSIDE then
+				--put_line ("inside");
 				move_by (line_new, add (line_direction, -90.0), offset);
 			else
+				--put_line ("outside");
 				move_by (line_new, add (line_direction, +90.0), offset);
 			end if;
-
 
 			return to_line_vector (line_new);
 		end offset_line;
 	
+
+		package pac_line_vectors is new doubly_linked_lists (type_line_vector);
+		use pac_line_vectors;
+		line_vectors : pac_line_vectors.list;
 		
 		
 		procedure do_segment (c : in pac_polygon_segments.cursor) is
-
-			
-			procedure do_line (s : in out type_polygon_segment) is 
-				lv : type_line_vector := offset_line (s.segment_line);
-			begin 
-				put_line ("lv " & to_string (lv));
-			end;
-
-			
-			procedure do_arc (s : in out type_polygon_segment) is begin
-				null; -- CS
-			end;
-
-			
+			lv_tmp : type_line_vector;			
 		begin
 			case element (c).shape is
 				
 				when LINE =>
-					update_element (
-						container	=> polygon.contours.segments,
-						position	=> c,
-						process		=> do_line'access);
+					lv_tmp := offset_line (element (c).segment_line);
+					--put_line ("lv " & to_string (lv_tmp));
+					line_vectors.append (lv_tmp);
 
 				when ARC =>
-					update_element (
-						container	=> polygon.contours.segments,
-						position	=> c,
-						process		=> do_arc'access);
+					null; -- CS
 
 			end case;
 		end do_segment;
+
+
+		procedure query_line (c : in pac_line_vectors.cursor) is
+		begin
+			put_line ("lv " & to_string (element (c)));
+		end query_line;
 
 		
 	begin -- offset_polygon
@@ -1182,6 +1168,9 @@ package body et_geometry_2.polygons is
 		else
 			polygon.contours.segments.iterate (do_segment'access);
 		end if;
+
+
+		line_vectors.iterate (query_line'access);
 		
 	end offset_polygon;
 
