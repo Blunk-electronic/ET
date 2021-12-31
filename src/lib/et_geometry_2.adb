@@ -125,9 +125,9 @@ package body et_geometry_2 is
 	is begin
 		--return " x" & to_string (v.x) & " y" & to_string (v.y);
 		return 
-			" x" & type_float_internal'image (v.x) &
-			" y" & type_float_internal'image (v.y);
-		--& " z" & to_string (v.z);
+			" x " & type_float_internal'image (v.x) &
+			" y " & type_float_internal'image (v.y);
+		--& " z " & to_string (v.z);
 	end to_string;
 
 	

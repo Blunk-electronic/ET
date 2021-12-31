@@ -212,6 +212,7 @@ package et_geometry_2 is
 		v_direction	: type_vector; -- direction vector of line
 	end record;
 
+	
 	function to_string (
 		lv : in type_line_vector)
 		return string;
