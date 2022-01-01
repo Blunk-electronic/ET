@@ -1152,9 +1152,53 @@ package body et_geometry_2.polygons is
 		end do_segment;
 
 
-		procedure query_line (c : in pac_line_vectors.cursor) is
+		polygon_segments_new : type_polygon_segments := (circular => false, others => <>);
+		
+		INIT, LS, LE : type_point;
+		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
+
+		
+		procedure query_line (cp : in pac_line_vectors.cursor) is
+			-- cp is the primary cursor that points to the current line.
+			
+			-- The secondary cursor that points to the line that is
+			-- before the candidate line:
+			cs : pac_line_vectors.cursor;
+
 		begin
-			put_line ("lv " & to_string (element (c)));
+			--put_line ("lv " & to_string (element (cp)));
+
+			if cp = line_vectors.first then
+				cs := line_vectors.last;
+				I := get_intersection (element (cp), element (cs));
+
+				LS := to_point (I.intersection.vector);
+				INIT := LS;
+
+				
+			else
+				cs := previous (cp);
+				I := get_intersection (element (cp), element (cs));
+
+				LE := to_point (I.intersection.vector);
+
+				-- line complete. append to new segments:
+				polygon_segments_new.segments.append (
+					(shape => LINE, segment_line => (LS, LE)));
+
+
+				if cp = line_vectors.last then
+
+					polygon_segments_new.segments.append (
+						(shape => LINE, segment_line => (LE, INIT)));
+
+				end if;
+
+				
+				-- The end point of this line will be the 
+				-- start point of the next line (irrelevant for last line vector):
+				LS := LE;
+			end if;
 		end query_line;
 
 		
@@ -1169,9 +1213,16 @@ package body et_geometry_2.polygons is
 			polygon.contours.segments.iterate (do_segment'access);
 		end if;
 
-
+		-- Compute the intersections of the line_vectors.
+		-- The intersections become the start and end points
+		-- of the new line-segments:
 		line_vectors.iterate (query_line'access);
-		
+
+		polygon.contours := polygon_segments_new;
+
+		if not is_closed (polygon).closed then
+			raise constraint_error with "Polygon NOT closed !";
+		end if;
 	end offset_polygon;
 
 	
