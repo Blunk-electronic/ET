@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -42,6 +42,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_geometry_2.polygons;
+with et_geometry_2.polygons.clipping;
 with et_design_rules;			use et_design_rules;
 with et_logging;				use et_logging;
 
@@ -57,8 +58,12 @@ package et_board_shapes_and_text is
 
 	package pac_polygons is new pac_geometry_2.polygons;
 	use pac_polygons;
-		
-		
+
+	
+	package pac_polygon_clipping is new pac_polygons.clipping;
+	--use pac_polygon_clipping;
+
+	
 
 	type type_text_parameters is record
 		size_min 		: type_distance_positive;

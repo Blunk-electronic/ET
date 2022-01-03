@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              GEOMETRY 2                                  --
+--                      GEOMETRY 2 / POLYGONS                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -273,18 +273,6 @@ package et_geometry_2.polygons is
 		offset		: in type_distance);
 
 
-	-- Polygon Clipping
-	-- Weiler-Atherton
-	-- https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm/
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf
-	
-	-- Two-Ears Theorem by Gary H. Meisters
-	
-	-- Sutherland–Hodgman Algorithm
-	-- https://www.tutorialandexample.com/polygon-clipping/
-
 
 	-- In order to get the status of a point relative to
 	-- a polygon we need this stuff:
@@ -390,8 +378,8 @@ package et_geometry_2.polygons is
 
 
 	type type_polygon is new type_polygon_base with null record;
-	
 
+	
 end et_geometry_2.polygons;
 
 -- Soli Deo Gloria

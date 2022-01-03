@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              GEOMETRY 2                                  --
+--                      GEOMETRY 2 / POLYGONS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -1635,6 +1635,7 @@ package body et_geometry_2.polygons is
 	end get_lower_left_corner;
 	
 
+	
 end et_geometry_2.polygons;
 
 -- Soli Deo Gloria
