@@ -245,10 +245,6 @@ package et_geometry_2.polygons is
 
 	
 
-	-- POLYGON OFFSETTING:
-	-- See:
-	-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
-	-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
 
 	type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
 	for type_polygon_scale'small use 0.1;
@@ -268,9 +264,6 @@ package et_geometry_2.polygons is
 		scale	: in type_polygon_scale);
 
 	
-	procedure offset_polygon (
-		polygon		: in out type_polygon_base;
-		offset		: in type_distance);
 
 
 

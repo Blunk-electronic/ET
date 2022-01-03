@@ -49,6 +49,7 @@ procedure offset is
 
 	use pac_geometry_2;
 	use pac_polygons;
+	use pac_polygon_offsetting;
 
 	P : type_polygon;
 

@@ -685,6 +685,7 @@ is
 
 				procedure query_terminals is
 					use pac_terminals;
+					use pac_polygon_offsetting;
 
 					procedure query_terminal (c : in pac_terminals.cursor) is
 						use et_schematic_ops;

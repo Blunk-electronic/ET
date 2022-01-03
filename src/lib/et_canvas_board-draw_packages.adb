@@ -95,6 +95,7 @@ is
 		use et_board_shapes_and_text;
 		use pac_geometry_2;	
 		use pac_polygons;
+		use pac_polygon_offsetting;
 		use pac_text_fab;
 
 		use pac_packages_lib;

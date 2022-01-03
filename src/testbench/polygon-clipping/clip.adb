@@ -65,7 +65,7 @@ begin
 	
 	P := type_polygon (to_polygon (F));
 
-	offset_polygon (P, 1.0);
+	--offset_polygon (P, 1.0);
 	
 	put_line (to_string (P));
 	
