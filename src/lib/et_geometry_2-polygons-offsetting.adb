@@ -56,7 +56,7 @@ package body et_geometry_2.polygons.offsetting is
 		polygon		: in out type_polygon_base'class;
 		offset		: in type_distance) 
 	is
-
+		
 		function offset_line (
 			line : in type_line)
 			return type_line_vector
@@ -102,7 +102,9 @@ package body et_geometry_2.polygons.offsetting is
 					line_vectors.append (lv_tmp);
 
 				when ARC =>
-					null; -- CS
+					null; 
+					-- CS: scale arc
+					-- CS: render arc to a list of lines instead ?
 
 			end case;
 		end do_segment;
@@ -162,23 +164,27 @@ package body et_geometry_2.polygons.offsetting is
 
 		if polygon.contours.circular then
 
-			-- scale the single circle that forms the polygon:
-			-- CS change radius of  polygon.contours.circle
-			null;
+			polygon.contours.circle.radius := polygon.contours.circle.radius + offset;
+
+			-- CS: render circle to a list of lines instead ?
+			
 		else
 			polygon.contours.segments.iterate (do_segment'access);
+
+			-- Compute the intersections of the line_vectors.
+			-- The intersections become the start and end points
+			-- of the new line-segments:
+			line_vectors.iterate (query_line'access);
+
+			polygon.contours := polygon_segments_new;
+
+			if not is_closed (polygon).closed then
+				raise constraint_error with "Polygon NOT closed !";
+			end if;
+
 		end if;
 
-		-- Compute the intersections of the line_vectors.
-		-- The intersections become the start and end points
-		-- of the new line-segments:
-		line_vectors.iterate (query_line'access);
 
-		polygon.contours := polygon_segments_new;
-
-		if not is_closed (polygon).closed then
-			raise constraint_error with "Polygon NOT closed !";
-		end if;
 	end offset_polygon;
 
 	
