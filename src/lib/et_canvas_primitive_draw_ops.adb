@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -78,6 +78,8 @@ package body pac_draw is
 		boundaries	: in type_boundaries)
 		return type_rectangle 
 	is begin
+		--put_line (to_string (boundaries));
+		
 		return (
 			-- The bounding box origin is the upper left corner.
 			-- The box position in x is the smallest_x.

@@ -2871,6 +2871,7 @@ is
 					end if;
 				end draw_name_tht;
 
+				
 				-- This procedure draws the SMT pad, the stop mask, the stencil and 
 				-- the terminal name. The terminal name will be drawn only when
 				-- the signal layer is enabled.
@@ -2943,7 +2944,7 @@ is
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
-								
+
 								pac_draw_fab.draw_polygon (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
@@ -3058,7 +3059,7 @@ is
 										
 										-- copy solder pad contours and expand according to DRU
 										stop_mask_contours := (type_polygon_base (pad_outline_in) with null record);
-										
+
 										offset_polygon (
 											polygon		=> stop_mask_contours,
 											offset		=> get_stop_mask_expansion);  -- from DRU
@@ -3067,6 +3068,7 @@ is
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 										
 									when USER_SPECIFIC =>
+										
 										-- compute position of user specific stop mask contours:
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
@@ -3074,7 +3076,7 @@ is
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
-
+								
 								-- draw the outer contour of the stop mask opening
 								pac_draw_fab.draw_polygon (
 									area		=> in_area,
@@ -3252,6 +3254,7 @@ is
 
 								draw_name_tht (to_string (key (c)), t.position);
 						end case;
+
 						
 					when SMT =>
 						case t.face is
@@ -3264,8 +3267,9 @@ is
 				end case;
 				
 			end query_terminal;
+
 			
-		begin -- draw_terminals
+		begin
 			element (package_cursor).terminals.iterate (query_terminal'access);
 		end draw_terminals;
 
@@ -3291,6 +3295,7 @@ is
 				end if;
 			end if;
 		end draw_package_origin;
+
 		
 	begin -- draw_package
 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
@@ -3312,6 +3317,7 @@ is
 	end draw_package;
 
 	use et_schematic;
+
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
