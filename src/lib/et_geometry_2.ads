@@ -254,6 +254,7 @@ package et_geometry_2 is
 		EXISTS,
 		OVERLAP);
 
+	
 	-- In general an intersection is composed of a 
 	-- location vector, where the two objects meet,
 	-- and and the angle at which they intersect:
@@ -261,9 +262,11 @@ package et_geometry_2 is
 		vector	: type_vector; -- location vector
 		angle	: type_rotation := zero_rotation;
 	end record;
+
 	
 	function to_string (intersection : in type_intersection)
 		return string;
+
 	
 	-- When finding intersections of two lines this type is required:
 	type type_intersection_of_two_lines (
@@ -301,10 +304,12 @@ package et_geometry_2 is
 
 	type type_line is new type_line_base with null record;
 
+	
 	function make_line (
 		start_x, start_y, end_x, end_y : in type_distance)
 		return type_line'class;
 
+	
 	function make_line (
 		start_point, end_point : in type_point)
 		return type_line'class;
@@ -329,6 +334,7 @@ package et_geometry_2 is
 	function get_greatest_length (l1, l2 : in type_line)
 		return type_distance_positive;
 
+	
 	-- Returns the longest of the given lines.
 	-- If both have equal length then l2 is returned:
 	function get_longest (l1, l2 : in type_line)
@@ -348,13 +354,16 @@ package et_geometry_2 is
 		VERTICAL,
 		FALLING);
 
+	
 	function to_string (direction : in type_line_direction)
 		return string;
+
 	
 	-- Returns the direction of a line:
 	function get_direction (line : in type_line)
 		return type_line_direction;
 
+	
 	-- Converts the angle of a tangent to a
 	-- line direction.
 	function get_tangent_direction (angle : in type_tangent_angle)
@@ -393,13 +402,19 @@ package et_geometry_2 is
 		candidate_line	: in type_line)
 		return type_intersection_of_two_lines;
 
+	
+	function get_intersection (
+		line_1, line_2 : in type_line)
+		return type_intersection_of_two_lines;
 
+	
 	
 	-- Returns the location vector of the start point of a line:
 	function start_vector ( -- CS rename to get_start_vector
 		line	: in type_line)
 		return type_vector;
 
+	
 	-- Returns the location vector of the end point of a line:
 	function end_vector ( -- CS rename to get_end_vector
 		line	: in type_line)

@@ -45,12 +45,19 @@ with ada.characters.handling;	use ada.characters.handling;
 with et_exceptions;				use et_exceptions;
 
 
-
 package body et_geometry_2.polygons.clipping is
 
 	use pac_polygon_segments;
 
 
+	function to_string (intersection : in type_intersection)
+		return string
+	is begin
+		return to_string (intersection.point) 
+			& " " & type_direction'image (intersection.direction);
+	end to_string;
+
+	
 
 	function clip (
 		polygon_A	: in type_polygon'class;
@@ -59,12 +66,37 @@ package body et_geometry_2.polygons.clipping is
 	is
 		result : pac_clipped.list;
 
-		intersection_nodes : pac_intersection_nodes.list;
+		intersections : pac_intersections.list;
 		
 		
 		procedure query_A_segment (a : in pac_polygon_segments.cursor) is
+
+			procedure query_B_segment (b : in pac_polygon_segments.cursor) is
+				I2L : type_intersection_of_two_lines := get_intersection (
+				   element (a).segment_line, element (b).segment_line);
+
+				p : type_point;
+				Q : type_inside_polygon_query_result;
+				IAB : type_intersection;
+			begin
+				if I2L.status = EXISTS then
+					p := to_point (I2L.intersection.vector);
+
+					Q := in_polygon_status (polygon_A, element (b).segment_line.start_point);
+					
+					if Q.status = INSIDE then
+						IAB := (P, EXITING);
+					else
+						IAB := (P, ENTERING);
+					end if;
+
+					intersections.append (IAB);
+					put_line (to_string (IAB));
+				end if;
+			end query_B_segment;
+			
 		begin
-			null;
+			polygon_B.contours.segments.iterate (query_B_segment'access);
 		end query_A_segment;
 
 		

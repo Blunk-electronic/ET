@@ -60,8 +60,12 @@ package et_geometry_2.polygons.clipping is
 	-- https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf
 
 	type type_direction is private;
-	type type_intersection_node is private;
+	type type_intersection is private;
 
+
+	function to_string (intersection : in type_intersection)
+		return string;
+	
 	
 	-- Clips polygon A by polygon B.
 	function clip (
@@ -69,7 +73,8 @@ package et_geometry_2.polygons.clipping is
 		polygon_B	: in type_polygon'class) -- the clipping polygon
 		return pac_clipped.list;
 
-	
+
+
 		
 	-- Two-Ears Theorem by Gary H. Meisters
 	
@@ -77,14 +82,14 @@ package et_geometry_2.polygons.clipping is
 	-- https://www.tutorialandexample.com/polygon-clipping/
 
 private
-	type type_direction is (INSIDE, OUTSIDE);
+	type type_direction is (ENTERING, EXITING);
 
-	type type_intersection_node is record
+	type type_intersection is record
 		point		: type_point;
 		direction	: type_direction;
 	end record;
 
-	package pac_intersection_nodes is new doubly_linked_lists (type_intersection_node);
+	package pac_intersections is new doubly_linked_lists (type_intersection);
 
 	
 end et_geometry_2.polygons.clipping;

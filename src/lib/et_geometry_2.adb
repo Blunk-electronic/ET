@@ -893,6 +893,60 @@ package body et_geometry_2 is
 
 	end get_intersection;
 
+
+
+	function get_intersection (
+		line_1, line_2 : in type_line)
+		return type_intersection_of_two_lines
+	is
+		lv_1 : constant type_line_vector := to_line_vector (line_1);
+		lv_2 : constant type_line_vector := to_line_vector (line_2);
+
+		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
+		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
+
+		status : type_intersection_status_of_two_lines;
+		intersection : type_intersection;
+		
+	begin
+		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
+			--status := NOT_EXISTENT;
+
+		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
+			status := OVERLAP;
+			
+		elsif int_A.status = EXISTS and int_B.status = EXISTS then
+
+			-- double check: location vectors must match !
+			if int_A.intersection.vector = int_B.intersection.vector then
+				status := EXISTS;
+				intersection.vector := int_A.intersection.vector;
+				intersection.angle := int_A.intersection.angle;
+			else
+				raise constraint_error with "Intersection points mismatch !";
+			end if;
+
+		else
+			status := NOT_EXISTENT;
+		end if;
+
+
+		case status is
+			when NOT_EXISTENT =>
+				return (status => NOT_EXISTENT);
+
+			when OVERLAP =>
+				return (status => OVERLAP);
+
+			when EXISTS =>
+				return (
+					status			=> EXISTS,
+					intersection	=> intersection);	   
+		end case;
+
+	end get_intersection;
+	
+	
 	
 	function start_vector (
 		line	: in type_line)

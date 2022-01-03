@@ -51,23 +51,35 @@ procedure clip is
 	use pac_polygons;
 	use pac_polygon_clipping;
 
-	P : type_polygon;
+	A, B: type_polygon;
 
-	S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	C : pac_clipped.list;
+	
+
+	SA : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	SB : string := "line 80 10 line 150 10 line 150 20 line 80 20";
+	
 	F : type_fields_of_line;
 
-	--O : type_offset := (style => BY_DISTANCE, distance => 1.0);
 begin
 
 	F := read_line (
-		line			=> S, 
+		line			=> SA, 
 		comment_mark	=> "#");
 	
-	P := type_polygon (to_polygon (F));
+	A := type_polygon (to_polygon (F));
+	put_line ("A: " & to_string (A));
 
-	--offset_polygon (P, 1.0);
+	F := read_line (
+		line			=> SB, 
+		comment_mark	=> "#");
 	
-	put_line (to_string (P));
+	B := type_polygon (to_polygon (F));
+	put_line ("B: " & to_string (B));
+
+
+	C := clip (A, B);
+	--put_line ("C: " & to_string (C));
 	
 end clip;
 
