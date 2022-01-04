@@ -82,15 +82,20 @@ package et_geometry_2.polygons.clipping is
 	-- https://www.tutorialandexample.com/polygon-clipping/
 
 private
-	type type_direction is (ENTERING, EXITING);
+	type type_direction is (ENTERING, LEAVING);
 
 	type type_intersection is record
 		point		: type_point;
 		direction	: type_direction;
+		edge_A		: type_line;
+		edge_B		: type_line;
 	end record;
 
 	package pac_intersections is new doubly_linked_lists (type_intersection);
-
+	use pac_intersections;
+	
+	--package pac_vertices is new doubly_linked_lists (type_point);
+	--use pac_vertices;
 	
 end et_geometry_2.polygons.clipping;
 

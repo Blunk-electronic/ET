@@ -679,6 +679,10 @@ package et_geometry_1 is
 
 	package pac_points is new doubly_linked_lists (type_point);
 
+
+	-- Returns a human readable string of points:
+	function to_string (points : in pac_points.list) return string;
+
 	
 	-- Appends all points of source to the target.
 	procedure splice_points (
@@ -691,6 +695,14 @@ package et_geometry_1 is
 	procedure remove_redundant_points (
 		points : in out pac_points.list);
 										  
+
+	-- Sorts the given list of points by their distance to
+	-- the given reference point. The first point in the result
+	-- will be the one closest to the reference point:
+	procedure sort_by_distance (
+		points 		: in out pac_points.list;
+		reference	: in type_point'class);
+	
 	
 private
 	

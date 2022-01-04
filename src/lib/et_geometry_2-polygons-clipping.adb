@@ -85,9 +85,9 @@ package body et_geometry_2.polygons.clipping is
 					Q := in_polygon_status (polygon_A, element (b).segment_line.start_point);
 					
 					if Q.status = INSIDE then
-						IAB := (P, EXITING);
+						IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
 					else
-						IAB := (P, ENTERING);
+						IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
 					end if;
 
 					intersections.append (IAB);
@@ -99,11 +99,70 @@ package body et_geometry_2.polygons.clipping is
 			polygon_B.contours.segments.iterate (query_B_segment'access);
 		end query_A_segment;
 
+
+		vertices_A, vertices_B : pac_points.list;
+
+		
+
+		function get_intersections_on_edge (
+			edge	: in type_line;
+			AB		: in boolean) -- true -> polygon_A, false => polygon_B
+			return pac_points.list
+		is 
+			result : pac_points.list;
+
+			
+			procedure query_intersection (i : in pac_intersections.cursor) is
+			begin
+				case AB is
+					when TRUE =>
+						if element (i).edge_A = edge then
+							result.append (element (i).point);
+						end if;
+
+					when FALSE =>
+						if element (i).edge_B = edge then
+							result.append (element (i).point);
+						end if;
+				end case;
+			end query_intersection;
+
+			
+		begin
+
+			intersections.iterate (query_intersection'access);
+
+			sort_by_distance (result, edge.start_point);
+			return result;
+		end get_intersections_on_edge;
+
+		
+
+		procedure make_vertices_A is
+
+			procedure query_segment (s : in pac_polygon_segments.cursor) is
+				ip : pac_points.list;
+			begin
+				vertices_A.append (element (s).segment_line.start_point);
+				ip := get_intersections_on_edge (element (s).segment_line, true);
+				pac_points.splice (target => vertices_A, before => pac_points.no_element, source => ip);
+				vertices_A.append (element (s).segment_line.end_point);
+			end query_segment;
+			
+		begin
+			polygon_A.contours.segments.iterate (query_segment'access);
+		end make_vertices_A;
+		
 		
 	begin
 
-
+		-- Find intersections between the two polygons:
 		polygon_A.contours.segments.iterate (query_A_segment'access);
+
+
+		make_vertices_A;
+		put_line (to_string (vertices_A));
+		
 		return result;
 	end clip;
 
