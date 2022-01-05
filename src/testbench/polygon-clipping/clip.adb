@@ -56,8 +56,11 @@ procedure clip is
 	C : pac_clipped.list;
 	
 
-	SA : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	SB : string := "line 80 10 line 150 10 line 150 20 line 80 20";
+	-- to be clipped:
+	SA : string := "line 80 10 line 150 10 line 150 20 line 80 20";
+
+	-- clipping:
+	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	
 	F : type_fields_of_line;
 
@@ -68,14 +71,14 @@ begin
 		comment_mark	=> "#");
 	
 	A := type_polygon (to_polygon (F));
-	put_line ("A: " & to_string (A));
+	--put_line ("A: " & to_string (A));
 
 	F := read_line (
 		line			=> SB, 
 		comment_mark	=> "#");
 	
 	B := type_polygon (to_polygon (F));
-	put_line ("B: " & to_string (B));
+	--put_line ("B: " & to_string (B));
 
 
 	C := clip (A, B);
