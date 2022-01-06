@@ -74,7 +74,7 @@ package et_geometry_2.polygons.clipping is
 		return pac_clipped.list;
 
 
-
+	
 		
 	-- Two-Ears Theorem by Gary H. Meisters
 	
@@ -82,10 +82,18 @@ package et_geometry_2.polygons.clipping is
 	-- https://www.tutorialandexample.com/polygon-clipping/
 
 private
-	type type_direction is (ENTERING, LEAVING);
+	type type_direction is (
+		-- The edge of the clipped polygon (A) 
+		-- enters the clipping polygon (B):
+		ENTERING, 
 
+		-- The edge of the clipped polygon (A)
+		-- leaves the clipping polygon (B): 
+		LEAVING);
+
+	
 	type type_intersection is record
-		point		: type_point;
+		position	: type_point;
 		direction	: type_direction;
 		edge_A		: type_line;
 		edge_B		: type_line;
@@ -94,8 +102,36 @@ private
 	package pac_intersections is new doubly_linked_lists (type_intersection);
 	use pac_intersections;
 	
-	--package pac_vertices is new doubly_linked_lists (type_point);
-	--use pac_vertices;
+
+	-- The category of a vertex:
+	type type_category is (
+		-- A vertex as it is a part of the original polygon:
+		NORMAL,	
+
+		-- The vertex is an intersection of two edges of the A and B polygon:
+		INTERSECTION);
+
+	
+	
+	type type_vertex is record
+		position	: type_point;
+		category	: type_category;
+		direction	: type_direction; -- don't care if category is NORMAL
+	end record;
+
+	
+	package pac_vertices is new doubly_linked_lists (type_vertex);
+	use pac_vertices;
+
+
+	function is_entering (v : pac_vertices.cursor) return boolean;
+	function is_leaving (v : pac_vertices.cursor) return boolean;
+
+
+	-- Converts a list of vertices to a polygon:
+	function to_polygon (vertices : in pac_vertices.list)
+		return type_polygon;
+
 	
 end et_geometry_2.polygons.clipping;
 
