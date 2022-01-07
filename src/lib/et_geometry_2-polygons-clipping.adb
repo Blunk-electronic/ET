@@ -260,17 +260,21 @@ package body et_geometry_2.polygons.clipping is
 		end find_intersections;
 		
 
+		-- Returns the intersection points on a given edge.
+		-- Orders the points by their distance to the start point of 
+		-- the edge (nearest first).
+		-- The parameter AB determines whether to look for intersections
+		-- on edges of the A or the B polygon:
 		function get_intersections_on_edge (
 			edge	: in type_line;
-			AB		: in boolean) -- true -> polygon_A, false => polygon_B
+			AB		: in type_AB_polygon)
 			return pac_vertices.list
 		is 
 			result : pac_vertices.list;
-
 			
 			procedure query_intersection (i : in pac_intersections.cursor) is begin
 				case AB is
-					when TRUE =>
+					when A =>
 						if element (i).edge_A = edge then
 							result.append (new_item => (
 								position	=> element (i).position,
@@ -278,7 +282,7 @@ package body et_geometry_2.polygons.clipping is
 								direction	=> element (i).direction));
 						end if;
 
-					when FALSE =>
+					when B =>
 						if element (i).edge_B = edge then
 							result.append (new_item => (
 								position	=> element (i).position,
@@ -288,7 +292,6 @@ package body et_geometry_2.polygons.clipping is
 						end if;
 				end case;
 			end query_intersection;
-
 			
 		begin
 			intersections.iterate (query_intersection'access);
@@ -299,22 +302,31 @@ package body et_geometry_2.polygons.clipping is
 
 
 		
-
+		-- These are the lists of vertices and intersections
+		-- in counter-clockwise order for polygon A and B:
 		vertices_A, vertices_B : pac_vertices.list;
 		
 
+		-- Fills container vertices_A counter-clockwise with the vertices of polygon A
+		-- and the intersections (leaving or entering) with polygon B:
 		procedure make_vertices_A is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
-				ip : pac_vertices.list;
+				v_list : pac_vertices.list;
 			begin
+				-- The start point of the candidate polygon segment is
+				-- always a regular vertex:
 				vertices_A.append (new_item => (
 					position	=> element (s).segment_line.start_point,
-					category	=> NORMAL,
+					category	=> REGULAR,
 					direction	=> ENTERING)); -- don't care
-				
-				ip := get_intersections_on_edge (element (s).segment_line, true);
-				splice (target => vertices_A, before => pac_vertices.no_element, source => ip);
+
+				-- Get the vertices (on the current edge) that follow
+				-- after the start point:
+				v_list := get_intersections_on_edge (element (s).segment_line, A);
+
+				-- Append the vertices to container vertices_A:
+				splice (target => vertices_A, before => pac_vertices.no_element, source => v_list);
 			end query_segment;
 			
 		begin
@@ -322,18 +334,26 @@ package body et_geometry_2.polygons.clipping is
 		end make_vertices_A;
 		
 
+		-- Fills container vertices_B counter-clockwise with the vertices of polygon B
+		-- and the intersections (leaving or entering) with polygon A:
 		procedure make_vertices_B is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
-				ip : pac_vertices.list;
+				v_list : pac_vertices.list;
 			begin
+				-- The start point of the candidate polygon segment is
+				-- always a regular vertex:
 				vertices_B.append (new_item => (
 					position	=> element (s).segment_line.start_point,
-					category	=> NORMAL,
+					category	=> REGULAR,
 					direction	=> ENTERING)); -- don't care
 				
-				ip := get_intersections_on_edge (element (s).segment_line, false);
-				splice (target => vertices_B, before => pac_vertices.no_element, source => ip);
+				-- Get the vertices (on the current edge) that follow
+				-- after the start point:
+				v_list := get_intersections_on_edge (element (s).segment_line, B);
+
+				-- Append the vertices to container vertices_B:
+				splice (target => vertices_B, before => pac_vertices.no_element, source => v_list);
 			end query_segment;
 			
 		begin
@@ -466,10 +486,10 @@ package body et_geometry_2.polygons.clipping is
 		if not is_empty (intersections) then
 		
 			make_vertices_A;
-			--put_line ("A: " & to_string (vertices_A));
+			put_line ("A: " & to_string (vertices_A));
 
 			make_vertices_B;
-			--put_line ("B: " & to_string (vertices_B));
+			put_line ("B: " & to_string (vertices_B));
 
 
 

@@ -88,6 +88,9 @@ package et_geometry_2.polygons.clipping is
 
 
 private
+	type type_AB_polygon is (A, B);
+	
+	
 	type type_direction is (
 		-- The edge of the clipped polygon (A) 
 		-- enters the clipping polygon (B):
@@ -112,17 +115,17 @@ private
 	-- The category of a vertex:
 	type type_category is (
 		-- A vertex as it is a part of the original polygon:
-		NORMAL,	
+		REGULAR,
 
 		-- The vertex is an intersection of two edges of the A and B polygon:
 		INTERSECTION);
 
 	
 	
-	type type_vertex is record
+	type type_vertex is record -- CS discriminant should be category
 		position	: type_point;
 		category	: type_category;
-		direction	: type_direction; -- don't care if category is NORMAL
+		direction	: type_direction; -- don't care if category is REGULAR
 	end record;
 
 	
