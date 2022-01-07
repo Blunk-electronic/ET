@@ -182,31 +182,29 @@ package body et_geometry_2.polygons.clipping is
 	function to_polygon (vertices : in pac_vertices.list)
 		return type_polygon
 	is
-		result : type_polygon;
-
-		start : boolean := true;
-		l : type_line;
+		result : type_polygon;		
 		
-		procedure query_vertex (v : in pac_vertices.cursor) is begin
-			if start then
-				l.start_point := element (v).position;
-				start := false;
-			else
-				l.end_point := element (v).position;
-				start := true;
+		procedure query_vertex (v : in pac_vertices.cursor) is 
+			edge : type_line;
+		begin
+			-- The candidate vertex becomes the end of 
+			-- the edge:
+			edge.end_point := element (v).position;
 
-				append (result.contours.segments, (LINE, l));
+			-- The vertex before the candidate vertex 
+			-- will be the start of the edge:
+			if v = vertices.first then
+				edge.start_point := element (vertices.last).position;
+			else
+				edge.start_point := element (previous (v)).position;
 			end if;
+			
+			append (result.contours.segments, (LINE, edge));
 		end query_vertex;
 		
-			
 	begin
+		-- Convert the list of vertices to a list of lines (or edges):
 		vertices.iterate (query_vertex'access);
-
-		l.start_point := last_element (vertices).position;
-		l.end_point := first_element (vertices).position;
-		
-		append (result.contours.segments, (LINE, l));
 		return result;
 	end to_polygon;
 
@@ -221,39 +219,45 @@ package body et_geometry_2.polygons.clipping is
 
 		intersections : pac_intersections.list;
 		
-		
-		procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
-			procedure query_B_segment (b : in pac_polygon_segments.cursor) is
-				I2L : type_intersection_of_two_lines := get_intersection (
-				   element (a).segment_line, element (b).segment_line);
-
-				p : type_point;
-				Q : type_inside_polygon_query_result;
-				IAB : type_intersection;
-			begin
-				if I2L.status = EXISTS then
-					p := to_point (I2L.intersection.vector);
-
-					Q := in_polygon_status (polygon_B, element (a).segment_line.start_point);
-					
-					if Q.status = INSIDE then
-						IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
-					else
-						IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
-					end if;
-
-					intersections.append (IAB);
-					--put_line (to_string (IAB));
-				end if;
-			end query_B_segment;
+		-- Seaches for intersections of the given two polygons
+		-- and stores them in container "intersection".
+		-- If there are no intersections then "intersections" stays empty:
+		procedure find_intersections is
 			
-		begin			
-			polygon_B.contours.segments.iterate (query_B_segment'access);
-		end query_A_segment;
+			procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
+				procedure query_B_segment (b : in pac_polygon_segments.cursor) is
+					I2L : type_intersection_of_two_lines := get_intersection (
+					element (a).segment_line, element (b).segment_line);
 
+					p : type_point;
+					Q : type_inside_polygon_query_result;
+					IAB : type_intersection;
+				begin
+					if I2L.status = EXISTS then
+						p := to_point (I2L.intersection.vector);
 
+						Q := in_polygon_status (polygon_B, element (a).segment_line.start_point);
+						
+						if Q.status = INSIDE then
+							IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
+						else
+							IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
+						end if;
+
+						intersections.append (IAB);
+						--put_line (to_string (IAB));
+					end if;
+				end query_B_segment;
+				
+			begin			
+				polygon_B.contours.segments.iterate (query_B_segment'access);
+			end query_A_segment;
+
+		begin
+			polygon_A.contours.segments.iterate (query_A_segment'access);
+		end find_intersections;
 		
 
 		function get_intersections_on_edge (
@@ -341,7 +345,8 @@ package body et_geometry_2.polygons.clipping is
 		vertice_A_cursor : pac_vertices.cursor;
 
 		-- Returns a cursor to the first entering intersection in
-		-- vertices_A:
+		-- vertices_A.
+		-- If no entering intersection found, returns no_element:
 		function get_first_entering return pac_vertices.cursor is
 			v : pac_vertices.cursor := vertices_A.first;
 		begin
@@ -449,40 +454,52 @@ package body et_geometry_2.polygons.clipping is
 		end get_until_entering;
 
 
-		v_tmp : type_vertex;
 		vertices_tmp_1, vertices_tmp_2 : pac_vertices.list;
 		
 	begin
 
-		-- Find intersections between the two polygons:
-		polygon_A.contours.segments.iterate (query_A_segment'access);
+		-- Find intersections of the given two polygons:
+		find_intersections;
+
+		-- If there are intersections then the actual work begins.
+		-- Otherwise do nothing and return an empty list of polygons:
+		if not is_empty (intersections) then
+		
+			make_vertices_A;
+			--put_line ("A: " & to_string (vertices_A));
+
+			make_vertices_B;
+			--put_line ("B: " & to_string (vertices_B));
 
 
-		make_vertices_A;
-		--put_line ("A: " & to_string (vertices_A));
 
-		make_vertices_B;
-		--put_line ("B: " & to_string (vertices_B));
+			vertice_A_cursor := get_first_entering;
+			--put_line ("first entering " & to_string (element (vertice_A_cursor)));
 
+			-- Traverse vertices_A until no more entering vertex
+			-- can be found:
+			while vertice_A_cursor /= pac_vertices.no_element loop
 
-		vertice_A_cursor := get_first_entering;
+				vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
+				vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+				splice (
+					target	=> vertices_tmp_1, 
+					before	=> pac_vertices.no_element, 
+					source 	=> vertices_tmp_2);
 
-		--put_line ("first entering " & to_string (element (vertice_A_cursor)));
+				--put_line (to_string (vertices_tmp_1));
 
+				-- Append the sub-polygon to the result:
+				result.append (to_polygon (vertices_tmp_1));
+				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
-		v_tmp := element (vertice_A_cursor);
+				-- Get the next entering vertex from vertices_A.
+				-- In case there is no entering vertex any more, then this
+				-- loop will be the last:
+				vertice_A_cursor := get_first_entering;
+			end loop;
 
-		vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
-		vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-		splice (
-			target	=> vertices_tmp_1, 
-			before	=> pac_vertices.no_element, 
-			source 	=> vertices_tmp_2);
-
-		--put_line (to_string (vertices_tmp_1));
-
-		--result.append (to_polygon (vertices_tmp_1));
-		put_line (to_string (to_polygon (vertices_tmp_1)));
+		end if;
 		
 		return result;
 	end clip;

@@ -32,6 +32,21 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+--  Description:
+--
+-- 	This package bases on the Weiler-Atherton algorithm. Find basics here:
+-- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
+--
+--  Other approaches of interest could be:
+--  - Two-Ears Theorem by Gary H. Meisters
+--  - Sutherland–Hodgman Algorithm
+--  - <https://www.tutorialandexample.com/polygon-clipping>
+--
+--
 --   history of changes:
 --
 
@@ -45,19 +60,12 @@ with et_geometry_1;
 with et_string_processing;		use et_string_processing;
 
 
-
 generic
 	
 package et_geometry_2.polygons.clipping is
 	
 	package pac_clipped is new doubly_linked_lists (type_polygon);
 
-	-- Polygon Clipping
-	-- Weiler-Atherton
-	-- https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm/
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf
-	-- https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf
 
 	type type_direction is private;
 	type type_intersection is private;
@@ -68,18 +76,16 @@ package et_geometry_2.polygons.clipping is
 	
 	
 	-- Clips polygon A by polygon B.
+	-- If there are intersections of the two polygons, then the
+	-- return is an empty list.
+	-- CS: What if a polygon is completely inside the other ?
 	function clip (
 		polygon_A	: in type_polygon'class; -- the clipped polygon
 		polygon_B	: in type_polygon'class) -- the clipping polygon
 		return pac_clipped.list;
 
+	
 
-	
-		
-	-- Two-Ears Theorem by Gary H. Meisters
-	
-	-- Sutherland–Hodgman Algorithm
-	-- https://www.tutorialandexample.com/polygon-clipping/
 
 private
 	type type_direction is (

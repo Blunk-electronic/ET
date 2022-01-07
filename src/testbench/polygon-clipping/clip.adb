@@ -53,6 +53,7 @@ procedure clip is
 
 	A, B: type_polygon;
 
+	use pac_clipped;
 	C : pac_clipped.list;
 	
 
@@ -64,6 +65,11 @@ procedure clip is
 	
 	F : type_fields_of_line;
 
+	procedure query_polygon (p : in pac_clipped.cursor) is begin
+		put_line ("C: " & to_string (element (p)));
+	end query_polygon;
+		
+		
 begin
 
 	F := read_line (
@@ -82,7 +88,7 @@ begin
 
 
 	C := clip (A, B);
-	--put_line ("C: " & to_string (C));
+	C.iterate (query_polygon'access);
 	
 end clip;
 
