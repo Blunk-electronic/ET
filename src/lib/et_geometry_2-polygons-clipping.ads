@@ -128,14 +128,16 @@ private
 
 	
 	
-	type type_vertex is record -- CS discriminant should be category
+	type type_vertex (category : type_category) is record
 		position	: type_point;
-		category	: type_category;
-		direction	: type_direction; -- don't care if category is REGULAR
+		case category is
+			when INTERSECTION =>	direction	: type_direction;
+			when REGULAR => 		null;
+		end case;
 	end record;
 
 	
-	package pac_vertices is new doubly_linked_lists (type_vertex);
+	package pac_vertices is new indefinite_doubly_linked_lists (type_vertex);
 	use pac_vertices;
 
 

@@ -80,22 +80,29 @@ package body et_geometry_2.polygons.clipping is
 				& trim (to_string (get_x (element (v).position)), left)
 				& "/"
 				& trim (to_string (get_y (element (v).position)), left)
-				& " " & type_category'image (element (v).category)
-				& " " & type_direction'image (element (v).direction);
+				& " " & type_category'image (element (v).category);
+
+			if element (v).category = INTERSECTION then
+				result := result & " " & type_direction'image (element (v).direction);
+			end if;
+
+			result := result & ".";
 		end query_vertex;
 			
 	begin
 		vertices.iterate (query_vertex'access);
-
 		return to_string (result);
 	end to_string;
 
 
 	
 	function is_entering (v : pac_vertices.cursor) return boolean is begin
-		if element (v).category = INTERSECTION 
-		and element (v).direction = ENTERING then
-			return true;
+		if element (v).category = INTERSECTION then
+			if element (v).direction = ENTERING then
+				return true;
+			else
+				return false;
+			end if;
 		else
 			return false;
 		end if;
@@ -103,9 +110,12 @@ package body et_geometry_2.polygons.clipping is
 
 	
 	function is_leaving (v : pac_vertices.cursor) return boolean is begin
-		if element (v).category = INTERSECTION 
-		and element (v).direction = LEAVING then
-			return true;
+		if element (v).category = INTERSECTION then
+			if element (v).direction = LEAVING then
+				return true;
+			else
+				return false;
+			end if;
 		else
 			return false;
 		end if;
@@ -118,7 +128,8 @@ package body et_geometry_2.polygons.clipping is
 		reference	: in type_point)
 	is
 		type type_item is record
-			vertex		: type_vertex;
+			-- We will be sorting intersections only (no regular vertices):
+			vertex		: type_vertex (category => INTERSECTION);
 			distance	: type_distance_positive;
 		end record;
 
@@ -358,9 +369,8 @@ package body et_geometry_2.polygons.clipping is
 				-- The start point of the candidate polygon segment is
 				-- always a regular vertex:
 				vertices_A.append (new_item => (
-					position	=> element (s).segment_line.start_point,
 					category	=> REGULAR,
-					direction	=> ENTERING)); -- don't care
+					position	=> element (s).segment_line.start_point));
 
 				-- Get the vertices (on the current edge) that follow
 				-- after the start point:
@@ -385,9 +395,8 @@ package body et_geometry_2.polygons.clipping is
 				-- The start point of the candidate polygon segment is
 				-- always a regular vertex:
 				vertices_B.append (new_item => (
-					position	=> element (s).segment_line.start_point,
 					category	=> REGULAR,
-					direction	=> ENTERING)); -- don't care
+					position	=> element (s).segment_line.start_point));
 				
 				-- Get the vertices (on the current edge) that follow
 				-- after the start point:
