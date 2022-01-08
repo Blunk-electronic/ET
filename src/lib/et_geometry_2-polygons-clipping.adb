@@ -217,27 +217,40 @@ package body et_geometry_2.polygons.clipping is
 	is
 		result : pac_clipped.list;
 
+		
 		intersections : pac_intersections.list;
 		
-
 		-- Seaches for intersections of the given two polygons
 		-- and stores them in container "intersection".
+		-- An intersection is where the edge of polygon A intersects
+		-- an edge of polygon B. The intersection has direction "entering"
+		-- if the start point of the edge (of polygon A) is outside of polygon B.
+		-- In other words, if polygon A enters polygon B.
 		-- If there are no intersections then "intersections" stays empty:
 		procedure find_intersections is
 			
 			procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
 				procedure query_B_segment (b : in pac_polygon_segments.cursor) is
+					-- Compute the point of intersection:
 					I2L : type_intersection_of_two_lines := get_intersection (
-					element (a).segment_line, element (b).segment_line);
+						element (a).segment_line, element (b).segment_line);
 
 					p : type_point;
 					Q : type_inside_polygon_query_result;
+
+					-- The fully specified intersection of the two edges:
 					IAB : type_intersection;
 				begin
 					if I2L.status = EXISTS then
+						-- The two edges do intersect at point p:
 						p := to_point (I2L.intersection.vector);
 
+						-- Depending on the inside/outside status of the start point of edge A
+						-- we set the direction of the intersection.
+						-- As supportive information the affected edges are also stored in IAB.
+						-- This information serves later to create two separate lists of vertices
+						-- for the A and the B polygon:
 						Q := in_polygon_status (polygon_B, element (a).segment_line.start_point);
 						
 						if Q.status = INSIDE then
@@ -252,15 +265,19 @@ package body et_geometry_2.polygons.clipping is
 				end query_B_segment;
 				
 			begin			
+				-- Traverse the edges of polygon B:
 				polygon_B.contours.segments.iterate (query_B_segment'access);
 			end query_A_segment;
 
 		begin
+			-- Traverse the edges of polygon A:
 			polygon_A.contours.segments.iterate (query_A_segment'access);
 		end find_intersections;
 		
 
 		-- Returns the intersection points on a given edge.
+		-- Searches in list "intersections" using the supportive information
+		-- of affected edges (see specs of type_intersection and proc find_intersections).
 		-- Orders the points by their distance to the start point of 
 		-- the edge (nearest first).
 		-- The parameter AB determines whether to look for intersections
@@ -292,11 +309,35 @@ package body et_geometry_2.polygons.clipping is
 						end if;
 				end case;
 			end query_intersection;
+
+
+			--procedure render_multiple_entering is
+				--c : pac_vertices.cursor := result.first;
+
+				--procedure change_direction (v : in out type_vertex) is begin
+					--v.direction := LEAVING;
+				--end;
+				
+			--begin
+				--while c /= pac_vertices.no_element loop
+
+					--if c /= result.first then
+						--if element (c).direction = ENTERING
+						--and element (previous (c)).direction = ENTERING then
+							--result.update_element (c, change_direction'access);
+						--end if;
+					--end if;
+					
+					--next (c);
+				--end loop;
+			--end render_multiple_entering;
+			
 			
 		begin
 			intersections.iterate (query_intersection'access);
+			sort_by_distance (result, edge.start_point);			
 
-			sort_by_distance (result, edge.start_point);
+			--render_multiple_entering;
 			return result;
 		end get_intersections_on_edge;
 

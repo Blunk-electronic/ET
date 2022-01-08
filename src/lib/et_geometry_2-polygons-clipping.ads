@@ -88,6 +88,9 @@ package et_geometry_2.polygons.clipping is
 
 
 private
+
+	-- An indicator that tells whether it is about the
+	-- A or the B polygon:
 	type type_AB_polygon is (A, B);
 	
 	
@@ -102,8 +105,11 @@ private
 
 	
 	type type_intersection is record
-		position	: type_point;
-		direction	: type_direction;
+		position	: type_point; 	  -- x/y
+		direction	: type_direction; -- Whether an edge of A enters or leaves B.
+
+		-- This is supportive information. It helps
+		-- to find the edges that intersect:
 		edge_A		: type_line;
 		edge_B		: type_line;
 	end record;
