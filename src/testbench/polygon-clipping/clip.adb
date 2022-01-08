@@ -57,15 +57,24 @@ procedure clip is
 	C : pac_clipped.list;
 	
 
-	-- to be clipped:
-	--SA : string := "line 80 10 line 150 10 line 150 20 line 80 20";
-	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
-	SA : string := "line 0 0 line 10 0 line 10 10 line 0 10";
+	-- A: to be clipped
+	-- B: clipping
 	
-	-- clipping:
+	--SA : string := "line 80 10 line 150 10 line 150 20 line 80 20";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	-- ok
+	
+	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
 	--SB : string := "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5";
-	SB : string := "line 2 -1 line 3 -1 line 3 11 line 2 11";
+	-- ok
+	
+	SA : string := "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50";
+	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	-- ok
+
+	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
+	--SB : string := "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5";
+
 	
 	F : type_fields_of_line;
 

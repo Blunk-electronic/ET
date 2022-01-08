@@ -284,8 +284,25 @@ package body et_geometry_2.polygons.clipping is
 			-- Traverse the edges of polygon A:
 			polygon_A.contours.segments.iterate (query_A_segment'access);
 		end find_intersections;
-		
 
+
+		procedure update_intersection (v : in pac_vertices.cursor) is
+
+			procedure change_direction (i : in out type_intersection) is begin
+				i.direction := LEAVING;
+			end;
+		
+			c : pac_intersections.cursor := intersections.first;
+		begin
+			while c /= pac_intersections.no_element loop
+				if element (c).position = element (v).position then
+					intersections.update_element (c, change_direction'access);
+				end if;
+				next (c);
+			end loop;
+		end update_intersection;
+
+		
 		-- Returns the intersection points on a given edge.
 		-- Searches in list "intersections" using the supportive information
 		-- of affected edges (see specs of type_intersection and proc find_intersections).
@@ -321,34 +338,38 @@ package body et_geometry_2.polygons.clipping is
 				end case;
 			end query_intersection;
 
+			
+			procedure render_multiple_entering is
+				c : pac_vertices.cursor := result.first;
 
-			--procedure render_multiple_entering is
-				--c : pac_vertices.cursor := result.first;
-
-				--procedure change_direction (v : in out type_vertex) is begin
-					--v.direction := LEAVING;
-				--end;
+				procedure change_direction (v : in out type_vertex) is begin
+					v.direction := LEAVING;
+				end;
 				
-			--begin
-				--while c /= pac_vertices.no_element loop
+			begin
+				while c /= pac_vertices.no_element loop
 
-					--if c /= result.first then
-						--if element (c).direction = ENTERING
-						--and element (previous (c)).direction = ENTERING then
-							--result.update_element (c, change_direction'access);
-						--end if;
-					--end if;
+					if c /= result.first then
+						if element (c).direction = ENTERING
+						and element (previous (c)).direction = ENTERING then
+							result.update_element (c, change_direction'access);
+							update_intersection (c);
+						end if;
+					end if;
 					
-					--next (c);
-				--end loop;
-			--end render_multiple_entering;
+					next (c);
+				end loop;
+			end render_multiple_entering;
 			
 			
 		begin
 			intersections.iterate (query_intersection'access);
 			sort_by_distance (result, edge.start_point);			
 
-			--render_multiple_entering;
+			if AB = A then
+				render_multiple_entering;
+			end if;
+			
 			return result;
 		end get_intersections_on_edge;
 
@@ -470,6 +491,10 @@ package body et_geometry_2.polygons.clipping is
 			-- Remove the vertices from vertices_A:
 			v := entering;
 			vertices_A.delete (position => v, count => length (result));
+
+			-- The first the result is not required because
+			-- this is where we have started:
+			result.delete_first;
 			
 			return result;
 		end get_until_leaving;
@@ -515,16 +540,17 @@ package body et_geometry_2.polygons.clipping is
 			v := leaving;
 			vertices_B.delete (position => v, count => length (result));
 
-			-- The first and the last vertex of the result are 
-			-- not required:
+			-- The first the result is not required because
+			-- this is where we have started:
 			result.delete_first;
-			result.delete_last;
 			
 			return result;
 		end get_until_entering;
 
 
 		vertices_tmp_1, vertices_tmp_2 : pac_vertices.list;
+		
+		v_start : type_vertex (category => INTERSECTION);
 		
 	begin
 
@@ -536,10 +562,10 @@ package body et_geometry_2.polygons.clipping is
 		if not is_empty (intersections) then
 		
 			make_vertices_A;
-			put_line ("A: " & to_string (vertices_A));
+			--put_line ("A: " & to_string (vertices_A));
 
 			make_vertices_B;
-			put_line ("B: " & to_string (vertices_B));
+			--put_line ("B: " & to_string (vertices_B));
 
 
 
@@ -550,14 +576,35 @@ package body et_geometry_2.polygons.clipping is
 			-- can be found:
 			while vertice_A_cursor /= pac_vertices.no_element loop
 
+				v_start := element (vertice_A_cursor);
+
 				vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
 				vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-				splice (
-					target	=> vertices_tmp_1, 
-					before	=> pac_vertices.no_element, 
-					source 	=> vertices_tmp_2);
+				
+				loop
+					-- CS counter to prevent indefinite looping
+					
+					splice (
+						target	=> vertices_tmp_1,
+						before	=> pac_vertices.no_element, 
+						source 	=> vertices_tmp_2);
 
-				--put_line (to_string (vertices_tmp_1));
+					if last_element (vertices_tmp_1) = v_start then
+						exit;
+					else
+						vertice_A_cursor := get_first_entering;
+						vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
+
+						splice (
+							target	=> vertices_tmp_1, 
+							before	=> pac_vertices.no_element, 
+							source 	=> vertices_tmp_2);
+
+						vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+
+					end if;
+				end loop;
+					
 
 				-- Append the sub-polygon to the result:
 				result.append (to_polygon (vertices_tmp_1));
