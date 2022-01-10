@@ -918,12 +918,14 @@ package body et_geometry_2 is
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
 			-- double check: location vectors must match !
-			if int_A.intersection.vector = int_B.intersection.vector then
+			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = zero then
 				status := EXISTS;
 				intersection.vector := int_A.intersection.vector;
 				intersection.angle := int_A.intersection.angle;
 			else
-				raise constraint_error with "Intersection points mismatch !";
+				raise constraint_error with 
+					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
+					& to_string (int_B.intersection.vector);
 			end if;
 
 		else

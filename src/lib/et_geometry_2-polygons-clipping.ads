@@ -41,6 +41,12 @@
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
 --
+--  The Weiler-Atherton algorithm has been extended/improved here to handle
+--  this special case:
+--  An edge of the clipped polygon (A) runs entirely through the whole 
+--  clipping polygon (B). Both vertices (start and end point) of the edge are 
+--  outside the clipping polygon.
+
 --  Other approaches of interest could be:
 --  - Two-Ears Theorem by Gary H. Meisters
 --  - Sutherland–Hodgman Algorithm
@@ -63,7 +69,9 @@ with et_string_processing;		use et_string_processing;
 generic
 	
 package et_geometry_2.polygons.clipping is
-	
+
+	-- The result of a polygon clipping operation is a list
+	-- of polygons:
 	package pac_clipped is new doubly_linked_lists (type_polygon);
 
 

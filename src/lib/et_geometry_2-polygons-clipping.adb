@@ -250,9 +250,12 @@ package body et_geometry_2.polygons.clipping is
 					p : type_point;
 					Q : type_inside_polygon_query_result;
 
-					-- The fully specified intersection of the two edges:
+					-- The fully specified intersection of edge A and B:
 					IAB : type_intersection;
 				begin
+					-- There is nothing to do if
+					-- - the two edges do not intersect each other
+					-- - they run parallel and overlap each other
 					if I2L.status = EXISTS then
 						-- The two edges do intersect at point p:
 						p := to_point (I2L.intersection.vector);
@@ -286,6 +289,12 @@ package body et_geometry_2.polygons.clipping is
 		end find_intersections;
 
 
+		-- Recursively changes the direction of an 
+		-- intersection (in list "intersection") to "leaving".
+		-- Identifies the targeted intersection by the position of the given
+		-- vertex. 
+		-- CS: Assumes the position of the intersection is unique. Means there is
+		-- no other intersection having the same x/y coordinates.
 		procedure update_intersection (v : in pac_vertices.cursor) is
 
 			procedure change_direction (i : in out type_intersection) is begin
@@ -297,6 +306,7 @@ package body et_geometry_2.polygons.clipping is
 			while c /= pac_intersections.no_element loop
 				if element (c).position = element (v).position then
 					intersections.update_element (c, change_direction'access);
+					exit;
 				end if;
 				next (c);
 			end loop;
@@ -338,8 +348,12 @@ package body et_geometry_2.polygons.clipping is
 				end case;
 			end query_intersection;
 
-			
-			procedure render_multiple_entering is
+
+			-- Iterates the vertices in "result" and detect successive
+			-- entering points. Changes the direction of the intersection
+			-- to "leaving". Changes direction of the affected intersection
+			-- in the list "intersection".
+			procedure render_successive_enterings is
 				c : pac_vertices.cursor := result.first;
 
 				procedure change_direction (v : in out type_vertex) is begin
@@ -347,6 +361,7 @@ package body et_geometry_2.polygons.clipping is
 				end;
 				
 			begin
+				-- Iterate all elements of "result":
 				while c /= pac_vertices.no_element loop
 
 					if c /= result.first then
@@ -359,15 +374,21 @@ package body et_geometry_2.polygons.clipping is
 					
 					next (c);
 				end loop;
-			end render_multiple_entering;
+			end render_successive_enterings;
 			
 			
 		begin
 			intersections.iterate (query_intersection'access);
 			sort_by_distance (result, edge.start_point);			
 
+			-- After sorting the intersections there may two 
+			-- successive entering intersections. This special case arises when
+			-- An edge of the clipped polygon (A) runs through the whole clipping polygon (B).
+			-- Both vertices (start and end point) of the edge are outside the clipping polygon.
+			-- Two successive entering intersections are not correct. So the second
+			-- intersection must be rendered to "leaving".
 			if AB = A then
-				render_multiple_entering;
+				render_successive_enterings;
 			end if;
 			
 			return result;
@@ -381,7 +402,10 @@ package body et_geometry_2.polygons.clipping is
 		
 
 		-- Fills container vertices_A counter-clockwise with the vertices of polygon A
-		-- and the intersections (leaving or entering) with polygon B:
+		-- and the intersections (leaving or entering) with polygon B.
+		-- MUST BE CALLED BEFORE procedure make_vertices_B because here the the
+		-- list "intersections" is updated in order to handle special case 1 (see
+		-- comments in header of package specs):
 		procedure make_vertices_A is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
@@ -396,6 +420,7 @@ package body et_geometry_2.polygons.clipping is
 				-- Get the vertices (on the current edge) that follow
 				-- after the start point:
 				v_list := get_intersections_on_edge (element (s).segment_line, A);
+				-- Function get_intersections_on_edge has updated the "intersections".
 
 				-- Append the vertices to container vertices_A:
 				splice (target => vertices_A, before => pac_vertices.no_element, source => v_list);
@@ -547,12 +572,16 @@ package body et_geometry_2.polygons.clipping is
 			return result;
 		end get_until_entering;
 
-
+		
+		-- Temporarily collections of vertices and intersections:
 		vertices_tmp_1, vertices_tmp_2 : pac_vertices.list;
 		
+		-- The start point when walking along the vertices_A is
+		-- always an intersection:
 		v_start : type_vertex (category => INTERSECTION);
+
 		
-	begin
+	begin -- clip
 
 		-- Find intersections of the given two polygons:
 		find_intersections;
@@ -561,7 +590,7 @@ package body et_geometry_2.polygons.clipping is
 		-- Otherwise do nothing and return an empty list of polygons:
 		if not is_empty (intersections) then
 		
-			make_vertices_A;
+			make_vertices_A; -- MUST be called BEFORE make_vertices_B !
 			--put_line ("A: " & to_string (vertices_A));
 
 			make_vertices_B;
