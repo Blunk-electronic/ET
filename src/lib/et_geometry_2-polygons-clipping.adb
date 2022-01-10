@@ -574,11 +574,18 @@ package body et_geometry_2.polygons.clipping is
 
 		
 		-- Temporarily collections of vertices and intersections:
-		vertices_tmp_1, vertices_tmp_2 : pac_vertices.list;
+		vertices_tmp_1 : pac_vertices.list; -- primary collection
+		vertices_tmp_2 : pac_vertices.list; -- secondary collection
 		
 		-- The start point when walking along the vertices_A is
 		-- always an intersection:
 		v_start : type_vertex (category => INTERSECTION);
+
+
+		-- This is a safety measure to prevent indefinite looping.
+		-- CS: Increase upper limit if required:
+		subtype type_safety_counter is natural range 0 .. 100;
+		safety_counter : type_safety_counter := 0;
 
 		
 	begin -- clip
@@ -597,7 +604,7 @@ package body et_geometry_2.polygons.clipping is
 			--put_line ("B: " & to_string (vertices_B));
 
 
-
+			-- Go to the first entering intersection in vertices_A:
 			vertice_A_cursor := get_first_entering;
 			--put_line ("first entering " & to_string (element (vertice_A_cursor)));
 
@@ -605,32 +612,67 @@ package body et_geometry_2.polygons.clipping is
 			-- can be found:
 			while vertice_A_cursor /= pac_vertices.no_element loop
 
+				-- A sub-polygon starts at v_start. When walking along the
+				-- edges of polygon A or B we will eventually get back to 
+				-- the start point v_start. The current sub-polygon is then complete.
 				v_start := element (vertice_A_cursor);
 
+				-- Walk along the vertices (and intersections) of polygon A until
+				-- a leaving intersection:
 				vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
+				-- Now we have the intersections and vertices from after the start point 
+				-- to (and including) the leaving intersection L.
+
+				-- Find the very leaving intersection L in polygon B and walk
+				-- along the vertices (and intersections) of polygon B until
+				-- an entering intersection:
 				vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+
 				
 				loop
-					-- CS counter to prevent indefinite looping
+					-- safety measure to prevent forever-looping:
+					safety_counter := safety_counter + 1;
+					if safety_counter = type_safety_counter'last then
+						raise constraint_error with "safety counter overrun !";
+					end if;
 					
-					splice (
-						target	=> vertices_tmp_1,
-						before	=> pac_vertices.no_element, 
-						source 	=> vertices_tmp_2);
 
+					-- Splice the intersections and vertices of A and B.
+					-- Collect everything in the primary collection:
+					splice (
+						target	=> vertices_tmp_1, -- primary
+						before	=> pac_vertices.no_element, 
+						source 	=> vertices_tmp_2); -- will be emptied
+
+					-- If we have reached the start point then the sub-polygon
+					-- is complete.
 					if last_element (vertices_tmp_1) = v_start then
 						exit;
 					else
+						-- In order to handle the special case as described in the
+						-- header of the package specification this stuff is required
+						-- as an extension of the Weiler-Atherton algorithm:
+						-- If sub-polygon is not complete, then again go to the first
+						-- entering intersection of polygon A:
 						vertice_A_cursor := get_first_entering;
+
+						-- Get the intersections and vertices until
+						-- the a leaving intersection in polygon A:
 						vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
 
+						-- Append the intersection (and vertices) to the primary
+						-- collection:
 						splice (
-							target	=> vertices_tmp_1, 
+							target	=> vertices_tmp_1, -- primary
 							before	=> pac_vertices.no_element, 
-							source 	=> vertices_tmp_2);
+							source 	=> vertices_tmp_2); -- will be emtied
 
+						-- Switch to polygon B and get intersections
+						-- until (and including) an entering intersection
+						-- into the secondary collection. The secondary collection
+						-- will be appended to the primary one once this loop
+						-- starts again:
 						vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-
 					end if;
 				end loop;
 					
