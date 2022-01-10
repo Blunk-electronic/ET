@@ -382,9 +382,8 @@ package body et_geometry_2.polygons.clipping is
 			sort_by_distance (result, edge.start_point);			
 
 			-- After sorting the intersections there may two 
-			-- successive entering intersections. This special case arises when
-			-- An edge of the clipped polygon (A) runs through the whole clipping polygon (B).
-			-- Both vertices (start and end point) of the edge are outside the clipping polygon.
+			-- successive entering intersections. This special case arises
+			-- in case of the STC. See package specification header.
 			-- Two successive entering intersections are not correct. So the second
 			-- intersection must be rendered to "leaving".
 			if AB = A then
@@ -404,7 +403,7 @@ package body et_geometry_2.polygons.clipping is
 		-- Fills container vertices_A counter-clockwise with the vertices of polygon A
 		-- and the intersections (leaving or entering) with polygon B.
 		-- MUST BE CALLED BEFORE procedure make_vertices_B because here the the
-		-- list "intersections" is updated in order to handle special case 1 (see
+		-- list "intersections" is updated in order to handle the STC (see
 		-- comments in header of package specs):
 		procedure make_vertices_A is
 
@@ -649,8 +648,8 @@ package body et_geometry_2.polygons.clipping is
 					if last_element (vertices_tmp_1) = v_start then
 						exit;
 					else
-						-- In order to handle the special case as described in the
-						-- header of the package specification this stuff is required
+						-- In order to handle the STC (see header of the package specification)
+						-- this stuff is required
 						-- as an extension of the Weiler-Atherton algorithm:
 						-- If sub-polygon is not complete, then again go to the first
 						-- entering intersection of polygon A:

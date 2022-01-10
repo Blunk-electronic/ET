@@ -42,7 +42,7 @@
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
 --
 --  The Weiler-Atherton algorithm has been extended/improved here to handle
---  this special case:
+--  this special case. We call it the "Shot-Through-Case" or just STC:
 --  An edge of the clipped polygon (A) runs entirely through the whole 
 --  clipping polygon (B). Both vertices (start and end point) of the edge are 
 --  outside the clipping polygon.
