@@ -80,12 +80,12 @@ procedure clip is
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	-- ok
 
-	--SA : string := "line 0 0 line 50 0 line 50 50 line 0 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	SA : string := "line 0 0 line 50 0 line 50 50 line 0 50";
+	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	-- nogo
 
-	SA : string := "line 40 -10 line 50 -10 line 50 110 line 40 110";
-	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	--SA : string := "line 40 -10 line 50 -10 line 50 110 line 40 110";
+	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	-- ok
 
 

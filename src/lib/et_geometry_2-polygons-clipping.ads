@@ -124,8 +124,21 @@ private
 
 	package pac_intersections is new doubly_linked_lists (type_intersection);
 	use pac_intersections;
-	
 
+	
+	--function contains (
+		--intersections	: in pac_intersections.list;
+		--intersection	: in type_intersection)
+		--return boolean;
+
+	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
+	
+	function count (
+		intersections	: in pac_intersections.list;
+		intersection	: in type_intersection)
+		return type_redundant_intersection_count;
+
+	
 	-- The category of a vertex:
 	type type_category is (
 		-- A vertex as it is a part of the original polygon:
