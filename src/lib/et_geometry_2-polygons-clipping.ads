@@ -164,8 +164,15 @@ private
 
 	function is_entering (v : pac_vertices.cursor) return boolean;
 	function is_leaving (v : pac_vertices.cursor) return boolean;
+	function is_regular (v : pac_vertices.cursor) return boolean;
+	
+	
+	-- Returns true if x/y of the given two vertices are equal:
+	function same_position (
+		vertex_1, vertex_2 : in pac_vertices.cursor)
+		return boolean;
 
-
+	
 	-- Converts a list of vertices to a polygon:
 	function to_polygon (vertices : in pac_vertices.list)
 		return type_polygon;

@@ -59,34 +59,42 @@ procedure clip is
 
 	-- A: to be clipped
 	-- B: clipping
+
+	--SA : string := "line 50 0 line 100 0 line 101 50 line 50 50";
+	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	-- nogo
+
+	SA : string := "line 50 0 line 101 0 line 101 50 line 50 50";
+	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+
 	
 	--SA : string := "line 80 10 line 150 10 line 150 20 line 80 20";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- ok
+	-- go
 	
 	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
 	--SB : string := "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5";
-	-- ok
+	-- go
 	
 	--SA : string := "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- ok
+	-- go
 
 	--SA : string := "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- ok
+	-- go
 
 	--SA : string := "line 30 0 line 50 0 line 50 50 line 30 50";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- ok
+	-- go
 
-	SA : string := "line 0 0 line 50 0 line 50 50 line 0 50";
-	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- nogo
+	--SA : string := "line 0 0 line 50 0 line 50 50 line 0 50";
+	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	-- go
 
 	--SA : string := "line 40 -10 line 50 -10 line 50 110 line 40 110";
 	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- ok
+	-- go
 
 
 	
