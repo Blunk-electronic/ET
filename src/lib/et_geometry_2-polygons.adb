@@ -1135,8 +1135,8 @@ package body et_geometry_2.polygons is
 	
 
 	
-	function to_string (status : in type_point_status) return string is begin
-		return type_point_status'image (status);
+	function to_string (status : in type_location) return string is begin
+		return type_location'image (status);
 	end to_string;
 
 	

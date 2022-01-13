@@ -314,15 +314,15 @@ package et_geometry_2.polygons is
 		doubly_linked_lists (type_probe_line_intersection);
 
 
-	--type type_point_status is private;
 
-	type type_point_status is (
+	-- The location of a point relative to a polygon:
+	type type_location is (
 		OUTSIDE,
 		INSIDE,
 		ON_EDGE);
 
 	
-	function to_string (status : in type_point_status) return string;
+	function to_string (status : in type_location) return string;
 
 		
 		
@@ -330,7 +330,7 @@ package et_geometry_2.polygons is
 		-- The point where the probe line has started:
 		start			: type_point; 
 
-		status			: type_point_status := OUTSIDE;		
+		status			: type_location := OUTSIDE;		
 
 		-- The intersections of the probe line with the polygon edges:
 		intersections	: pac_probe_line_intersections.list;
@@ -386,14 +386,6 @@ package et_geometry_2.polygons is
 
 
 	type type_polygon is new type_polygon_base with null record;
-
-	
---private
-
-	--type type_point_status is (
-		--OUTSIDE,
-		--INSIDE,
-		--ON_EDGE);
 
 	
 end et_geometry_2.polygons;
