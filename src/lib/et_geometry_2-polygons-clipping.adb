@@ -342,7 +342,7 @@ package body et_geometry_2.polygons.clipping is
 						element (a).segment_line, element (b).segment_line);
 
 					p : type_point;
-					Q : type_inside_polygon_query_result;
+					IPQ1, IPQ2 : type_inside_polygon_query_result;
 
 					-- The fully specified intersection of edge A and B:
 					IAB : type_intersection;
@@ -354,24 +354,34 @@ package body et_geometry_2.polygons.clipping is
 						-- The two edges do intersect at point p:
 						p := to_point (I2L.intersection.vector);
 
-						put_line ("A " & to_string (element (a).segment_line));
-						put_line ("B " & to_string (element (b).segment_line));
+						--put_line ("A " & to_string (element (a).segment_line));
+						--put_line ("B " & to_string (element (b).segment_line));
 						
 						-- Depending on the inside/outside status of the start point of edge A
 						-- we set the direction of the intersection.
 						-- As supportive information the affected edges are also stored in IAB.
 						-- This information serves later to create two separate lists of vertices
 						-- for the A and the B polygon:
-						Q := in_polygon_status (polygon_B, element (a).segment_line.start_point);
+						IPQ1 := in_polygon_status (polygon_B, element (a).segment_line.start_point);
 						
-						if Q.status = INSIDE then
-							IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
-						else -- OUTSIDE OR ON EDGE
-							IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
-						end if;
+						case IPQ1.status is
+							when INSIDE =>
+								IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
+								
+							when OUTSIDE =>
+								IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
+
+							when ON_EDGE =>
+								IPQ2 := in_polygon_status (polygon_B, element (a).segment_line.end_point);
+								if IPQ2.status = OUTSIDE then
+									IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
+								else
+									IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
+								end if;
+						end case;
 
 						intersections.append (IAB);
-						put_line (to_string (IAB));
+						--put_line (to_string (IAB));
 					end if;
 				end query_B_segment;
 				
@@ -777,6 +787,17 @@ package body et_geometry_2.polygons.clipping is
 		
 	begin -- clip
 
+		-- Both polygons must have vertices and edges.
+		-- Otherwise raise exception:
+		if get_segments_total (polygon_A) = 0 then
+			raise constraint_error with "Polygon A has no verices !";
+		end if;
+
+		if get_segments_total (polygon_B) = 0 then
+			raise constraint_error with "Polygon B has no verices !";
+		end if;
+
+		
 		-- Find intersections of the given two polygons:
 		find_intersections;
 
@@ -785,13 +806,13 @@ package body et_geometry_2.polygons.clipping is
 		if not is_empty (intersections) then
 		
 			make_vertices_A; -- MUST be called BEFORE make_vertices_B !
-			new_line;
-			put_line ("vertices A: " & to_string (vertices_A));
+			--new_line;
+			--put_line ("vertices A: " & to_string (vertices_A));
 
 			make_vertices_B;
-			new_line;
-			put_line ("vertices B: " & to_string (vertices_B));
-			new_line;
+			--new_line;
+			--put_line ("vertices B: " & to_string (vertices_B));
+			--new_line;
 
 			-- Go to the first entering intersection in vertices_A:
 			vertice_A_cursor := get_first_entering;

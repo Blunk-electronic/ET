@@ -38,7 +38,7 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
-with ada.strings.unbounded;
+with ada.strings.unbounded;		use ada.strings.unbounded;
 
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -51,84 +51,227 @@ procedure clip is
 	use pac_polygons;
 	use pac_polygon_clipping;
 
-	A, B: type_polygon;
 
 	use pac_clipped;
-	C : pac_clipped.list;
+	EXP : pac_clipped.list;
 	
 
 	-- A: to be clipped
 	-- B: clipping
 
-	--SA : string := "line 50 0 line 100 0 line 101 50 line 50 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- nogo
+	type type_test is record
+		A, B	: unbounded_string;
+		result_expected : pac_clipped.list;
+		result_actual : pac_clipped.list;
+	end record;
 
-	SA : string := "line 50 0 line 101 0 line 101 50 line 50 50";
-	SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	type type_test_array is array (1..10) of type_test;
+	set : type_test_array;
 
-	
-	--SA : string := "line 80 10 line 150 10 line 150 20 line 80 20";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
-	
-	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
-	--SB : string := "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5";
-	-- go
-	
-	--SA : string := "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
+	subtype type_index is natural range 0 .. type_test_array'last;
+	idx : type_index := 0;
 
-	--SA : string := "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
-
-	--SA : string := "line 30 0 line 50 0 line 50 50 line 30 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
-
-	--SA : string := "line 0 0 line 50 0 line 50 50 line 0 50";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
-
-	--SA : string := "line 40 -10 line 50 -10 line 50 110 line 40 110";
-	--SB : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	-- go
+	procedure next_index is begin
+		idx := idx + 1;
+	end next_index;
 
 
-	
-	--SA : string := "line 0 0 line 1 0 line 1 1 line 0 1";
-	--SB : string := "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5";
+	errors : natural := 0;
 
-	
-	F : type_fields_of_line;
-
-	procedure query_polygon (p : in pac_clipped.cursor) is begin
-		put_line ("C: " & to_string (element (p)));
-	end query_polygon;
+	procedure count_error is begin
+		errors := errors + 1;
+	end count_error;
 		
+
+
+
+	
+	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	
+
+
+
+	procedure add_to_expect (
+		clipped : in out pac_clipped.list;
+		s		: in string)
+	is
+		F : type_fields_of_line;
+	begin
+		F := read_line (line => s, comment_mark => "#");
+		clipped.append (type_polygon (to_polygon (F)));
+	end add_to_expect;
+	
+	
+	procedure make_set (
+		A, B	: in string;
+		expect	: in pac_clipped.list)
+	is begin
+		next_index;
+		set (idx).A := to_unbounded_string (A);
+		set (idx).B := to_unbounded_string (B);
+		set (idx).result_expected := expect;
+	end;
 		
+	
+	procedure make_test is 
+		F	: type_fields_of_line;
+		A, B: type_polygon;
+
+		procedure query_polygon (p : in pac_clipped.cursor) is begin
+			put_line (to_string (element (p)));
+		end query_polygon;
+
+	begin
+		for i in set'first .. idx loop
+
+			F := read_line (line => to_string (set(i).A), comment_mark => "#");
+			A := type_polygon (to_polygon (F));
+			--put_line ("A: " & to_string (A));
+
+			F := read_line (line => to_string (set(i).B), comment_mark => "#");
+			B := type_polygon (to_polygon (F));
+			--put_line ("B: " & to_string (B));
+
+			set (i).result_actual := clip (A, B);
+
+			if set (i).result_actual /= set (i).result_expected then
+				new_line;
+				put_line ("ERROR ! Test No.:" & type_index'image (idx));
+				new_line;
+				put_line ("A: " & to_string (A));
+				new_line;
+				put_line ("B: " & to_string (B));
+				new_line;
+				
+				put_line ("EXPECTED:");
+				set(i).result_expected.iterate (query_polygon'access);
+				new_line;
+				
+				put_line ("FOUND:");
+				set (i).result_actual.iterate (query_polygon'access);
+
+				count_error;
+			end if;
+		end loop;
+			
+	end make_test;
+
+	
 begin
 
-	F := read_line (
-		line			=> SA, 
-		comment_mark	=> "#");
+	EXP.clear;
+	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
-	A := type_polygon (to_polygon (F));
-	--put_line ("A: " & to_string (A));
+	make_set (
+		A => "line 50 0 line 100 0 line 100 50 line 50 50",
+		B => B_default,
+		expect => EXP);
+	-- go
 
-	F := read_line (
-		line			=> SB, 
-		comment_mark	=> "#");
 	
-	B := type_polygon (to_polygon (F));
-	--put_line ("B: " & to_string (B));
+	EXP.clear;
+	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+
+	make_set (
+		A => "line 50 0 line 101 0 line 101 50 line 50 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+	
+	EXP.clear;
+	add_to_expect (EXP, "line 100 20 line 80 20 line 80 10 line 100 10");
+	
+	make_set (
+		A => "line 80 10 line 150 10 line 150 20 line 80 20",
+		B => B_default,
+		expect => EXP);
+	-- go
 
 
-	C := clip (A, B);
-	--C := clip (B, A);
-	C.iterate (query_polygon'access);
+	EXP.clear;
+	add_to_expect (EXP, "line 1 0.5 line 1 1 line 0.5 1 line 0.5 0.5");
+	
+	make_set (
+		A => "line 0 0 line 1 0 line 1 1 line 0 1",
+		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
+		expect => EXP);
+	-- go
+
+	
+
+	EXP.clear;
+	add_to_expect (EXP, "line 100 50 line 80 50 line 80 0 line 100 0");
+	add_to_expect (EXP, "line 60 0 line 60 50 line 40 50 line 40 0");
+	
+	make_set (
+		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+	EXP.clear;
+	add_to_expect (EXP, "line 43.3333333333 0 line 100 42.5 line 100 57.5 " 
+				   & "line 43.3333333333 100 line 20.8333333333 100 line 25 50 line 20.8333333333 0");
+	
+	make_set (
+		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+	
+
+	EXP.clear;
+	add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
+	
+	make_set (
+		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+	
+	EXP.clear;
+	add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
+	
+	make_set (
+		A => "line 0 0 line 50 0 line 50 50 line 0 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+	EXP.clear;
+	add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
+	
+	make_set (
+		A => "line 30 0 line 50 0 line 50 50 line 30 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+
+
+	EXP.clear;
+	add_to_expect (EXP, "line 100 0 line 100 0 line 101 50 line 100 50 line 50 50 line 50 0 line 100 0");
+	
+	make_set (
+		A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		B => B_default,
+		expect => EXP);
+	-- nogo
+
+	
+	
+	make_test;
+
+	new_line;
+	put_line ("ERRORS total:" & natural'image (errors));
+
 	
 end clip;
 
