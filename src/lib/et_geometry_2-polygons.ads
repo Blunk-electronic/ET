@@ -313,16 +313,31 @@ package et_geometry_2.polygons is
 	package pac_probe_line_intersections is new
 		doubly_linked_lists (type_probe_line_intersection);
 
+
+	--type type_point_status is private;
+
+	type type_point_status is (
+		OUTSIDE,
+		INSIDE,
+		ON_EDGE);
+
+	
+	function to_string (status : in type_point_status) return string;
+
 		
 		
 	type type_inside_polygon_query_result is record
-		-- the point where the probe line has started:
+		-- The point where the probe line has started:
 		start			: type_point; 
 
 		status			: type_point_status := OUTSIDE;		
 
-		-- the intersections of the probe line with the polygon edges:
+		-- The intersections of the probe line with the polygon edges:
 		intersections	: pac_probe_line_intersections.list;
+
+		-- The shortest distance of the start point (of the probe line)
+		-- to the polygon:
+		distance		: type_distance_polar;
 	end record;
 
 	
@@ -371,6 +386,14 @@ package et_geometry_2.polygons is
 
 
 	type type_polygon is new type_polygon_base with null record;
+
+	
+--private
+
+	--type type_point_status is (
+		--OUTSIDE,
+		--INSIDE,
+		--ON_EDGE);
 
 	
 end et_geometry_2.polygons;

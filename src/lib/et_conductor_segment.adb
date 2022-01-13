@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -155,7 +155,8 @@ package body et_conductor_segment is
 			end if;			
 		end build_polygon;
 
-		distance : type_distance_polar;
+		--distance : type_distance_polar;
+		ipq : type_inside_polygon_query_result;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
@@ -167,17 +168,19 @@ package body et_conductor_segment is
 		end if;
 
 		
-		distance := get_shortest_distance (polygon, point);
+		--distance := get_shortest_distance (polygon, point);
+		ipq := in_polygon_status (polygon, point);
 
 		--put_line ("p" & to_string (point));
 		--put_line ("d" & to_string (get_absolute (distance)));
 
-		case in_polygon_status (polygon, point).status is
+		case ipq.status is
 			when INSIDE =>
-				result := - get_absolute (distance);
+				result := - get_absolute (ipq.distance);
 				
-			when OUTSIDE =>
-				result := get_absolute (distance);
+			when OUTSIDE | ON_EDGE =>
+				result := get_absolute (ipq.distance);
+
 		end case;
 		
 		return result;
@@ -306,19 +309,21 @@ package body et_conductor_segment is
 			polygon.contours := s;
 		end build_polygon;
 
-		distance : type_distance_polar;
+		--distance : type_distance_polar;
+		ipq : type_inside_polygon_query_result;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
 
-		distance := get_shortest_distance (polygon, point);
+		--distance := get_shortest_distance (polygon, point);
+		ipq := in_polygon_status (polygon, point);
 
-		case in_polygon_status (polygon, point).status is
+		case ipq.status is
 			when INSIDE =>
-				result := - get_absolute (distance);
+				result := - get_absolute (ipq.distance);
 				
-			when OUTSIDE =>
-				result := get_absolute (distance);
+			when OUTSIDE | ON_EDGE =>
+				result := get_absolute (ipq.distance);
 		end case;
 		
 		return result;

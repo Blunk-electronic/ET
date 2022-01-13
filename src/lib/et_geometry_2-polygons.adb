@@ -1135,6 +1135,9 @@ package body et_geometry_2.polygons is
 	
 
 	
+	function to_string (status : in type_point_status) return string is begin
+		return type_point_status'image (status);
+	end to_string;
 
 	
 	
@@ -1155,22 +1158,30 @@ package body et_geometry_2.polygons is
 		end query_intersection;
 
 	begin
-		case i.status is
-			when OUTSIDE =>
+		--case i.status is
+			--when OUTSIDE =>
+				--result := to_unbounded_string ("Point" 
+					--& to_string (i.start) 
+					--& " is OUTSIDE of polygon. ");
+
+			--when INSIDE =>
+				--result := to_unbounded_string ("Point" 
+					--& to_string (i.start)
+					--& " is INSIDE polygon. ");
+
+			--when ON_EDGE =>
 				result := to_unbounded_string ("Point" 
 					& to_string (i.start) 
-					& " is OUTSIDE of polygon. ");
+					& " is " & to_string (i.status) & " of polygon. ");
 
-			when INSIDE =>
-				result := to_unbounded_string ("Point" 
-					& to_string (i.start)
-					& " is INSIDE polygon. ");
-		end case;
+		--end case;
 
+		result := result & "Distance to polygon: " & to_string (i.distance) & ".";
+				
 		if is_empty (i.intersections) then
-			result := result & "no intersections";
+			result := result & "No intersections with probe line.";
 		else
-			result := result & "intersection(s) x/angle:";
+			result := result & "Intersection(s) with probe line (x/angle):";
 		end if;
 		
 		iterate (i.intersections, query_intersection'access);
@@ -1478,6 +1489,16 @@ package body et_geometry_2.polygons is
 			--put_line ("outside");
 		end if;
 
+
+		-- Compute the distance of the given point to the polygon.
+		-- If the distance is zero then the given point lies on
+		-- a vertex or on an edge:
+		result.distance := get_shortest_distance (polygon, point);
+
+		if get_absolute (result.distance) = zero then
+			result.status := ON_EDGE;
+		end if;
+		
 		return result;
 	end in_polygon_status;
 
@@ -1499,7 +1520,7 @@ package body et_geometry_2.polygons is
 			when INSIDE =>
 				result.status := REAL;
 				
-			when OUTSIDE => -- or on edge of polygon
+			when OUTSIDE | ON_EDGE =>
 				result.status := VIRTUAL;
 		end case;
 		
