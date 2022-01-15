@@ -337,51 +337,94 @@ package body et_geometry_2.polygons.clipping is
 			procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
 				procedure query_B_segment (b : in pac_polygon_segments.cursor) is
+					
 					-- Compute the point of intersection:
 					I2L : type_intersection_of_two_lines := get_intersection (
 						element (a).segment_line, element (b).segment_line);
 
-					p : type_point;
-					IPQ1, IPQ2 : type_inside_polygon_query_result;
+					SP : type_point;
+					IPQ : type_inside_polygon_query_result;
 
 					-- The fully specified intersection of edge A and B:
 					IAB : type_intersection;
+
+					procedure collect_intersection is begin
+						intersections.append (IAB);
+						put_line ("Intersection: " & to_string (IAB));
+						--new_line;
+					end collect_intersection;
+					
 				begin
 					-- There is nothing to do if
 					-- - the two edges do not intersect each other
 					-- - they run parallel and overlap each other
 					if I2L.status = EXISTS then
-						-- The two edges do intersect at point p:
-						p := to_point (I2L.intersection.vector);
 
 						--put_line ("A " & to_string (element (a).segment_line));
 						--put_line ("B " & to_string (element (b).segment_line));
+
 						
-						-- Depending on the inside/outside status of the start point of edge A
-						-- we set the direction of the intersection.
-						-- As supportive information the affected edges are also stored in IAB.
-						-- This information serves later to create two separate lists of vertices
-						-- for the A and the B polygon:
-						IPQ1 := in_polygon_status (polygon_B, element (a).segment_line.start_point);
-						
-						case IPQ1.status is
-							when INSIDE =>
-								IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
+						-- CASE 1:
+						-- A-line.START lies on B-line.START.
+						-- Or in other words: vertex of A lies on a vertex of B:
+						if element (a).segment_line.start_point = element (b).segment_line.start_point then
+							SP := element (a).segment_line.start_point;
+
+							-- Where does the end point of the A-line lie ?
+							IPQ := in_polygon_status (polygon_B, element (a).segment_line.end_point);
+
+							case IPQ.status is
+								when OUTSIDE =>  -- A-line ends outside polygon B
+									IAB := (SP, LEAVING, element (a).segment_line, element (b).segment_line);
+									collect_intersection;
+									
+								when INSIDE =>   -- A-line ends inside polygon B
+									IAB := (SP, ENTERING, element (a).segment_line, element (b).segment_line);
+									collect_intersection;
+									
+								when ON_EDGE => null;
+							end case;
+
+
+						else
+							-- CASE 2:
+							-- If intersection lies on the start or end point 
+							-- of the B-line: ignore this intersection
+							SP := to_point (I2L.intersection.vector);
+							
+							if SP = element (b).segment_line.start_point 
+							or SP = element (b).segment_line.end_point then
+								null; -- ignore
+							else
+
+								-- CASE 3:
+								-- The two edges do intersect somewhere else:
+
+								-- Depending on the inside/outside status of the start point of edge A
+								-- we set the direction of the intersection.
+								-- As supportive information the affected edges are also stored in IAB.
+								-- This information serves later to create two separate lists of vertices
+								-- for the A and the B polygon:
+								IPQ := in_polygon_status (polygon_B, element (a).segment_line.start_point);
 								
-							when OUTSIDE =>
-								IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
+								case IPQ.status is
+									when INSIDE =>
+										IAB := (SP, LEAVING, element (a).segment_line, element (b).segment_line);
+										collect_intersection;
+										
+									when OUTSIDE | ON_EDGE =>
+										IAB := (SP, ENTERING, element (a).segment_line, element (b).segment_line);
+										collect_intersection;
+										
+									--when ON_EDGE => 
+										--raise constraint_error with "start point of A-line on edge of B";
+										-- already handled in CASE 2
+										-- CS should never happen
+								end case;
+							end if;
+							
+						end if;
 
-							when ON_EDGE =>
-								IPQ2 := in_polygon_status (polygon_B, element (a).segment_line.end_point);
-								if IPQ2.status = OUTSIDE then
-									IAB := (P, LEAVING, element (a).segment_line, element (b).segment_line);
-								else
-									IAB := (P, ENTERING, element (a).segment_line, element (b).segment_line);
-								end if;
-						end case;
-
-						intersections.append (IAB);
-						--put_line (to_string (IAB));
 					end if;
 				end query_B_segment;
 				
@@ -609,8 +652,8 @@ package body et_geometry_2.polygons.clipping is
 			
 		begin
 			polygon_A.contours.segments.iterate (query_segment'access);
-			delete_regular_after_intersection (vertices_A);
-			delete_regular_before_intersection (vertices_A);
+			--delete_regular_after_intersection (vertices_A);
+			--delete_regular_before_intersection (vertices_A);
 		end make_vertices_A;
 		
 
@@ -649,8 +692,8 @@ package body et_geometry_2.polygons.clipping is
 			
 		begin
 			polygon_B.contours.segments.iterate (query_segment'access);
-			delete_regular_after_intersection (vertices_B);
-			delete_regular_before_intersection (vertices_B);
+			--delete_regular_after_intersection (vertices_B);
+			--delete_regular_before_intersection (vertices_B);
 		end make_vertices_B;
 
 

@@ -89,7 +89,10 @@ procedure clip is
 	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	
 
-
+	procedure init_test is begin
+		EXP.clear;
+	end init_test;
+		
 
 	procedure add_to_expect (
 		clipped : in out pac_clipped.list;
@@ -123,7 +126,8 @@ procedure clip is
 
 	begin
 		for i in set'first .. idx loop
-
+			put_line ("TEST:" & natural'image (i));
+			
 			F := read_line (line => to_string (set(i).A), comment_mark => "#");
 			A := type_polygon (to_polygon (F));
 			--put_line ("A: " & to_string (A));
@@ -159,7 +163,8 @@ procedure clip is
 	
 begin
 
-	EXP.clear;
+	-- TEST 1:
+	init_test;
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
 	make_set (
@@ -168,8 +173,9 @@ begin
 		expect => EXP);
 	-- go
 
-	
-	EXP.clear;
+
+	-- TEST 2:
+	init_test;
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 
 	make_set (
@@ -179,7 +185,8 @@ begin
 	-- go
 
 	
-	EXP.clear;
+	-- TEST 3:
+	init_test;
 	add_to_expect (EXP, "line 100 20 line 80 20 line 80 10 line 100 10");
 	
 	make_set (
@@ -189,7 +196,8 @@ begin
 	-- go
 
 
-	EXP.clear;
+	-- TEST 4:
+	init_test;
 	add_to_expect (EXP, "line 1 0.5 line 1 1 line 0.5 1 line 0.5 0.5");
 	
 	make_set (
@@ -200,7 +208,8 @@ begin
 
 	
 
-	EXP.clear;
+	-- TEST 5:
+	init_test;
 	add_to_expect (EXP, "line 100 50 line 80 50 line 80 0 line 100 0");
 	add_to_expect (EXP, "line 60 0 line 60 50 line 40 50 line 40 0");
 	
@@ -211,7 +220,8 @@ begin
 	-- go
 
 
-	EXP.clear;
+	-- TEST 6:
+	init_test;
 	add_to_expect (EXP, "line 43.3333333333 0 line 100 42.5 line 100 57.5 " 
 				   & "line 43.3333333333 100 line 20.8333333333 100 line 25 50 line 20.8333333333 0");
 	
@@ -223,46 +233,46 @@ begin
 
 	
 
-	EXP.clear;
-	add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
+	--EXP.clear;
+	--add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
 	
-	make_set (
-		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
-		B => B_default,
-		expect => EXP);
-	-- go
+	--make_set (
+		--A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
+		--B => B_default,
+		--expect => EXP);
+	---- go
 
 
 	
-	EXP.clear;
-	add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
+	--EXP.clear;
+	--add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
 	
-	make_set (
-		A => "line 0 0 line 50 0 line 50 50 line 0 50",
-		B => B_default,
-		expect => EXP);
-	-- go
+	--make_set (
+		--A => "line 0 0 line 50 0 line 50 50 line 0 50",
+		--B => B_default,
+		--expect => EXP);
+	---- go
 
 
-	EXP.clear;
-	add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
+	--EXP.clear;
+	--add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
 	
-	make_set (
-		A => "line 30 0 line 50 0 line 50 50 line 30 50",
-		B => B_default,
-		expect => EXP);
-	-- go
+	--make_set (
+		--A => "line 30 0 line 50 0 line 50 50 line 30 50",
+		--B => B_default,
+		--expect => EXP);
+	---- go
 
 
 
 
-	EXP.clear;
-	add_to_expect (EXP, "line 100 0 line 100 0 line 101 50 line 100 50 line 50 50 line 50 0 line 100 0");
+	--EXP.clear;
+	--add_to_expect (EXP, "line 100 0 line 100 0 line 101 50 line 100 50 line 50 50 line 50 0 line 100 0");
 	
-	make_set (
-		A => "line 50 0 line 100 0 line 101 50 line 50 50",
-		B => B_default,
-		expect => EXP);
+	--make_set (
+		--A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		--B => B_default,
+		--expect => EXP);
 	-- nogo
 
 	
