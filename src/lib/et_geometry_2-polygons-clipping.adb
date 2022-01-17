@@ -95,32 +95,6 @@ package body et_geometry_2.polygons.clipping is
 	end to_string;
 
 
-	--function contains (
-		--intersections	: in pac_intersections.list;
-		--intersection	: in type_intersection)
-		--return boolean
-	--is
-		--result : boolean := false;
-
-		--procedure query_intersection (i : in type_intersection) is begin
-			--if i.position = intersection.position
-			--and i.direction = intersection.direction then
-				--result := true;
-			--end if;
-		--end query_intersection;
-		
-		--i_cursor : pac_intersections.cursor := intersections.first;
-	--begin
-		--while i_cursor /= pac_intersections.no_element loop
-			--query_element (i_cursor, query_intersection'access);
-
-			--if result = true then exit; end if;
-			
-			--next (i_cursor);
-		--end loop;
-		
-		--return result;
-	--end contains;
 
 	function count (
 		intersections	: in pac_intersections.list;
@@ -621,39 +595,24 @@ package body et_geometry_2.polygons.clipping is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
 				v_list : pac_vertices.list;
-				--use_start_point : boolean := true;
 			begin
 				-- Get the intersections (on the current edge) that follow
 				-- after the start point:
 				v_list := get_intersections_on_edge (element (s).segment_line, A);
 				-- Function get_intersections_on_edge has updated the "intersections".
 
-				-- If there are intersections, then the first of them can have the 
-				-- same position as the start_point of the edge. This happens when
-				-- the start point of the edge lies on an edge of the other polygon.
-				-- In this case we discard this regular vertex so that just the
-				-- intersection is left there instead:
-				--if not v_list.is_empty then
-					--if v_list.first_element.position = element (s).segment_line.start_point then
-						--use_start_point := false;
-					--end if;
-				--end if;
-
-				--if use_start_point then
-					vertices_A.append (new_item => (
-						category	=> REGULAR,
-						position	=> element (s).segment_line.start_point));
-				--end if;
+				vertices_A.append (new_item => (
+					category	=> REGULAR,
+					position	=> element (s).segment_line.start_point));
 				
 				-- Append the vertices to container vertices_A:
 				splice (target => vertices_A, before => pac_vertices.no_element, source => v_list);
-
 			end query_segment;
 			
 		begin
 			polygon_A.contours.segments.iterate (query_segment'access);
 			--delete_regular_after_intersection (vertices_A);
-			--delete_regular_before_intersection (vertices_A);
+			delete_regular_before_intersection (vertices_A);
 		end make_vertices_A;
 		
 
@@ -663,28 +622,14 @@ package body et_geometry_2.polygons.clipping is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
 				v_list : pac_vertices.list;
-				--use_start_point : boolean := true;
 			begin
 				-- Get the intersections (on the current edge) that follow
 				-- after the start point:
 				v_list := get_intersections_on_edge (element (s).segment_line, B);
 
-				-- If there are intersections, then the first of them can have the 
-				-- same position as the start_point of the edge. This happens when
-				-- the start point of the edge lies on an edge of the other polygon.
-				-- In this case we discard this regular vertex so that just the
-				-- intersection is left there instead:
-				--if not v_list.is_empty then
-					--if v_list.first_element.position = element (s).segment_line.start_point then
-						--use_start_point := false;
-					--end if;
-				--end if;
-				
-				--if use_start_point then
-					vertices_B.append (new_item => (
-						category	=> REGULAR,
-						position	=> element (s).segment_line.start_point));
-				--end if;
+				vertices_B.append (new_item => (
+					category	=> REGULAR,
+					position	=> element (s).segment_line.start_point));
 
 				-- Append the vertices to container vertices_B:
 				splice (target => vertices_B, before => pac_vertices.no_element, source => v_list);
@@ -693,7 +638,7 @@ package body et_geometry_2.polygons.clipping is
 		begin
 			polygon_B.contours.segments.iterate (query_segment'access);
 			--delete_regular_after_intersection (vertices_B);
-			--delete_regular_before_intersection (vertices_B);
+			delete_regular_before_intersection (vertices_B);
 		end make_vertices_B;
 
 
@@ -849,17 +794,17 @@ package body et_geometry_2.polygons.clipping is
 		if not is_empty (intersections) then
 		
 			make_vertices_A; -- MUST be called BEFORE make_vertices_B !
-			--new_line;
-			--put_line ("vertices A: " & to_string (vertices_A));
+			new_line;
+			put_line ("vertices A: " & to_string (vertices_A));
 
 			make_vertices_B;
-			--new_line;
-			--put_line ("vertices B: " & to_string (vertices_B));
-			--new_line;
+			new_line;
+			put_line ("vertices B: " & to_string (vertices_B));
+			new_line;
 
 			-- Go to the first entering intersection in vertices_A:
 			vertice_A_cursor := get_first_entering;
-			--put_line ("first entering " & to_string (element (vertice_A_cursor)));
+			--put_line ("first entering: " & to_string (element (vertice_A_cursor)));
 
 			-- Traverse vertices_A until no more entering vertex
 			-- can be found:

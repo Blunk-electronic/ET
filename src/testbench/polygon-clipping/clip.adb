@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..10) of type_test;
+	type type_test_array is array (1..12) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -233,46 +233,71 @@ begin
 
 	
 
-	--EXP.clear;
-	--add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
+	-- TEST 7:
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
 	
-	--make_set (
-		--A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
+		B => B_default,
+		expect => EXP);
+	-- go
 
 
 	
-	--EXP.clear;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
+	-- TEST 8:
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
 	
-	--make_set (
-		--A => "line 0 0 line 50 0 line 50 50 line 0 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 0 0 line 50 0 line 50 50 line 0 50",
+		B => B_default,
+		expect => EXP);
+	-- go
 
 
-	--EXP.clear;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
+	-- TEST 9:
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
 	
-	--make_set (
-		--A => "line 30 0 line 50 0 line 50 50 line 30 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 30 0 line 50 0 line 50 50 line 30 50",
+		B => B_default,
+		expect => EXP);
+	-- go
 
 
 
-
-	--EXP.clear;
-	--add_to_expect (EXP, "line 100 0 line 100 0 line 101 50 line 100 50 line 50 50 line 50 0 line 100 0");
+	-- TEST 10:
+	init_test;
+	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
-	--make_set (
-		--A => "line 50 0 line 100 0 line 101 50 line 50 50",
-		--B => B_default,
-		--expect => EXP);
+	make_set (
+		A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+	-- TEST 11:
+	init_test;
+	add_to_expect (EXP, "line 100 0 line 80 20 line 80 40 line 100 40 line 100 60 line 50 60 line 50 0");
+	
+	make_set (
+		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
+		B => B_default,
+		expect => EXP);
+	-- go
+
+
+	-- TEST 12:
+	init_test;
+	add_to_expect (EXP, "line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50 line 50 0");
+	
+	make_set (
+		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
+		B => B_default,
+		expect => EXP);
 	-- nogo
 
 	
