@@ -126,7 +126,9 @@ procedure clip is
 
 	begin
 		for i in set'first .. idx loop
+			new_line;
 			put_line ("TEST:" & natural'image (i));
+			put_line ("-------------");
 			
 			F := read_line (line => to_string (set(i).A), comment_mark => "#");
 			A := type_polygon (to_polygon (F));
@@ -153,6 +155,12 @@ procedure clip is
 				
 				put_line ("FOUND:");
 				set (i).result_actual.iterate (query_polygon'access);
+
+				-- repeat test in debug mode so that details are shown:
+				new_line;
+				put_line ("DEBUG DETAILS:");
+				put_line ("--------------");
+				set (i).result_actual := clip (A, B, true);
 
 				count_error;
 			end if;
@@ -303,7 +311,7 @@ begin
 
 	-- TEST 13:
 	init_test;
-	add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
+	add_to_expect (EXP, "line 100 100 line 0 0 line 100 1");
 	
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",

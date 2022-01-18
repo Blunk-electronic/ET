@@ -87,9 +87,11 @@ package et_geometry_2.polygons.clipping is
 	-- If there are intersections of the two polygons, then the
 	-- return is an empty list.
 	-- CS: What if a polygon is completely inside the other ?
+	-- If debug is true then a lot of debug messages is output.
 	function clip (
 		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class) -- the clipping polygon
+		polygon_B	: in type_polygon'class; -- the clipping polygon
+		debug		: in boolean := false)
 		return pac_clipped.list;
 
 	
@@ -133,12 +135,15 @@ private
 		return boolean;
 	
 
-	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
 	
+	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
+
+	-- Returns the number of redundant intersections:
 	function count (
 		intersections	: in pac_intersections.list;
 		intersection	: in type_intersection)
 		return type_redundant_intersection_count;
+
 
 	
 	-- The category of a vertex:

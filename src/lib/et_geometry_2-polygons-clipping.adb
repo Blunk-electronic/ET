@@ -286,7 +286,8 @@ package body et_geometry_2.polygons.clipping is
 
 	function clip (
 		polygon_A	: in type_polygon'class;
-		polygon_B	: in type_polygon'class)
+		polygon_B	: in type_polygon'class;
+		debug		: in boolean := false)
 		return pac_clipped.list
 	is
 		result : pac_clipped.list;
@@ -366,8 +367,9 @@ package body et_geometry_2.polygons.clipping is
 
 					procedure collect_intersection is begin
 						intersections.append (IAB);
-						--put_line ("Intersection: " & to_string (IAB));
-						--new_line;
+						if debug then
+							put_line ("intersection: " & to_string (IAB));
+						end if;
 					end collect_intersection;
 					
 				begin
@@ -575,26 +577,26 @@ package body et_geometry_2.polygons.clipping is
 		-- then we got a regular vertex right AFTER an intersection. Both have 
 		-- the same x/y-position. The regular vertex must be deleted 
 		-- so that just the intersection is left:
-		procedure delete_regular_after_intersection (
-			vertices : in out pac_vertices.list)
-		is
-			c : pac_vertices.cursor := vertices.first;
-		begin
-			while c /= pac_vertices.no_element loop
+		--procedure delete_regular_after_intersection (
+			--vertices : in out pac_vertices.list)
+		--is
+			--c : pac_vertices.cursor := vertices.first;
+		--begin
+			--while c /= pac_vertices.no_element loop
 
-				if c = vertices.first then
-					if same_position (vertices.last, c) then
-						vertices.delete (c);
-					end if;
-				else
-					if same_position (previous (c), c) then
-						vertices.delete (c);
-					end if;
-				end if;
+				--if c = vertices.first then
+					--if same_position (vertices.last, c) then
+						--vertices.delete (c);
+					--end if;
+				--else
+					--if same_position (previous (c), c) then
+						--vertices.delete (c);
+					--end if;
+				--end if;
 				
-				next (c);
-			end loop;
-		end delete_regular_after_intersection;
+				--next (c);
+			--end loop;
+		--end delete_regular_after_intersection;
 
 
 		-- When the start point of an edge lies on an edge of the other polygon
@@ -833,17 +835,26 @@ package body et_geometry_2.polygons.clipping is
 		if not is_empty (intersections) then
 		
 			make_vertices_A; -- MUST be called BEFORE make_vertices_B !
-			new_line;
-			put_line ("vertices A: " & to_string (vertices_A));
-
+			
+			if debug then
+				new_line;
+				put_line ("vertices A: " & to_string (vertices_A));
+			end if;
+			
 			make_vertices_B;
-			new_line;
-			put_line ("vertices B: " & to_string (vertices_B));
-			new_line;
+
+			if debug then
+				new_line;
+				put_line ("vertices B: " & to_string (vertices_B));
+			end if;
 
 			-- Go to the first entering intersection in vertices_A:
 			vertice_A_cursor := get_first_entering;
-			--put_line ("first entering: " & to_string (element (vertice_A_cursor)));
+
+			if debug then
+				new_line;
+				put_line ("first entering: " & to_string (element (vertice_A_cursor)));
+			end if;
 
 			-- Traverse vertices_A until no more entering vertex
 			-- can be found:
