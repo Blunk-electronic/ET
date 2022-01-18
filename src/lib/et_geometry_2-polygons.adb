@@ -60,12 +60,22 @@ package body et_geometry_2.polygons is
 		result : unbounded_string := to_unbounded_string ("polygon:");
 
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+
+			-- We output the start points only (for arcs in addition the center).
+			-- Because: The end point of a segment is always the start point of the
+			-- next segment.
+			
 			case element (c).shape is
 				when LINE =>
-					result := result & space & to_unbounded_string (to_string (element (c).segment_line));
+					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
+					result := result & space
+						& to_unbounded_string ("line start:" & to_string (element (c).segment_line.start_point));
 					
 				when ARC =>
-					result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
+					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
+					result := result & space 
+						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
+						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
 					
 			end case;
 		end query_segment;
