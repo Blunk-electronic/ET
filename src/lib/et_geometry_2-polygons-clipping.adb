@@ -95,7 +95,23 @@ package body et_geometry_2.polygons.clipping is
 	end to_string;
 
 
+	function are_redundant (
+		i1, i2 : in pac_intersections.cursor)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if element (i1).position = element (i2).position then
+			if element (i1).direction = element (i2).direction then
+				result := true;
+			end if;
+		end if;
 
+		return result;
+	end are_redundant;
+
+
+	
 	function count (
 		intersections	: in pac_intersections.list;
 		intersection	: in type_intersection)
@@ -281,22 +297,48 @@ package body et_geometry_2.polygons.clipping is
 
 		-- Removes redundant intersections from list "intersections" so
 		-- that none of them is left:
-		procedure remove_redundant_intersections is
-			i_list_new : pac_intersections.list;
+		--procedure remove_redundant_intersections is
+			--i_list_new : pac_intersections.list;
 
-			procedure query_intersection (i : in pac_intersections.cursor) is begin
-				if count (intersections, element (i)) = 2 then
-					null;
-				else
-					i_list_new.append (element (i));
-				end if;
-			end query_intersection;
+			--procedure query_intersection (i : in pac_intersections.cursor) is begin
+				--if count (intersections, element (i)) = 2 then
+					--null;
+				--else
+					--i_list_new.append (element (i));
+				--end if;
+			--end query_intersection;
 			
+		--begin
+			--intersections.iterate (query_intersection'access);
+			--intersections := i_list_new;
+		--end remove_redundant_intersections;
+
+		
+		-- Removes successive redundant intersections from 
+		-- list "intersections" so that only one of them is left:
+		procedure remove_redundant_intersections is
+			c : pac_intersections.cursor := intersections.first;
+			i_list_new : pac_intersections.list;
 		begin
-			intersections.iterate (query_intersection'access);
+			--put_line ("removing redundant intersections ...");
+			while c /= pac_intersections.no_element loop
+				--put_line (to_string (element (c)));
+				
+				if c /= intersections.last then
+					if not are_redundant (next (c), c) then
+						i_list_new.append (element (c));
+					end if;
+				else
+					if not are_redundant (intersections.first, c) then
+						i_list_new.append (element (c));
+					end if;
+				end if;
+				
+				next (c);
+			end loop;			
+
 			intersections := i_list_new;
 		end remove_redundant_intersections;
-
 
 		
 		-- Seaches for intersections of the given two polygons
@@ -324,7 +366,7 @@ package body et_geometry_2.polygons.clipping is
 
 					procedure collect_intersection is begin
 						intersections.append (IAB);
-						put_line ("Intersection: " & to_string (IAB));
+						--put_line ("Intersection: " & to_string (IAB));
 						--new_line;
 					end collect_intersection;
 					
@@ -363,11 +405,15 @@ package body et_geometry_2.polygons.clipping is
 						else
 							-- CASE 2:
 							-- If intersection lies on the start or end point 
-							-- of the B-line: ignore this intersection
+							-- of the B-line and 
+							-- if start or end point of A-line lies on the edge of
+							-- polygon B: ignore this intersection
 							SP := to_point (I2L.intersection.vector);
 							
-							if SP = element (b).segment_line.start_point 
-							or SP = element (b).segment_line.end_point then
+							if (SP = element (b).segment_line.start_point or SP = element (b).segment_line.end_point) 
+							and (in_polygon_status (polygon_B, element (a).segment_line.start_point).status = ON_EDGE
+								or in_polygon_status (polygon_B, element (a).segment_line.end_point).status = ON_EDGE)
+							then
 								null; -- ignore
 							else
 
@@ -390,10 +436,6 @@ package body et_geometry_2.polygons.clipping is
 										IAB := (SP, ENTERING, element (a).segment_line, element (b).segment_line);
 										collect_intersection;
 										
-									--when ON_EDGE => 
-										--raise constraint_error with "start point of A-line on edge of B";
-										-- already handled in CASE 2
-										-- CS should never happen
 								end case;
 							end if;
 							
@@ -411,9 +453,6 @@ package body et_geometry_2.polygons.clipping is
 			-- Traverse the edges of polygon A:
 			polygon_A.contours.segments.iterate (query_A_segment'access);
 
-			-- When vertices of the two polygons lie on each other then it may
-			-- happen that an intersection occurs twice in "intersections".
-			-- Such redundant intersections must BOTH be removed from the list:
 			remove_redundant_intersections;
 		end find_intersections;
 

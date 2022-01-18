@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..12) of type_test;
+	type type_test_array is array (1..13) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -140,7 +140,7 @@ procedure clip is
 
 			if set (i).result_actual /= set (i).result_expected then
 				new_line;
-				put_line ("ERROR ! Test No.:" & type_index'image (idx));
+				put_line ("ERROR ! Test No.:" & type_index'image (i));
 				new_line;
 				put_line ("A: " & to_string (A));
 				new_line;
@@ -298,8 +298,17 @@ begin
 		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
 		B => B_default,
 		expect => EXP);
-	-- nogo
+	-- go
 
+
+	-- TEST 13:
+	init_test;
+	add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
+	
+	make_set (
+		A => "line -5 -5 line 105 -5 line 105 105",
+		B => B_default,
+		expect => EXP);
 	
 	
 	make_test;

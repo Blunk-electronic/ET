@@ -125,11 +125,13 @@ private
 	package pac_intersections is new doubly_linked_lists (type_intersection);
 	use pac_intersections;
 
+
+	-- Returns true if the given intersection have equal
+	-- position and direction:
+	function are_redundant (
+		i1, i2 : in pac_intersections.cursor)
+		return boolean;
 	
-	--function contains (
-		--intersections	: in pac_intersections.list;
-		--intersection	: in type_intersection)
-		--return boolean;
 
 	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
 	
