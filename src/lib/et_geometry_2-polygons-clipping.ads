@@ -82,6 +82,12 @@ package et_geometry_2.polygons.clipping is
 	function to_string (intersection : in type_intersection)
 		return string;
 	
+
+	function all_vertices_of_A_inside_B (
+		polygon_A	: in type_polygon'class; -- the clipped polygon
+		polygon_B	: in type_polygon'class) -- the clipping polygon
+		return boolean;
+	
 	
 	-- Clips polygon A by polygon B.
 	-- If there are intersections of the two polygons, then the
@@ -128,6 +134,19 @@ private
 	use pac_intersections;
 
 
+	-- Returns true if x/y of the given two intersections are equal:
+	function same_position (
+		intersection_1, intersection_2 : in pac_intersections.cursor)
+		return boolean;
+
+	
+	-- Removes from the given list of intersections those where
+	-- polygon A touches polygon B:
+	function get_real_intersections (
+		intersections	: in pac_intersections.list)
+		return pac_intersections.list;
+
+	
 	-- Returns true if the given intersection have equal
 	-- position and direction:
 	function are_redundant (
@@ -138,7 +157,9 @@ private
 	
 	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
 
-	-- Returns the number of redundant intersections:
+	-- Returns the number of redundant intersections.
+	-- intersections are redundant if their position and direction 
+	-- are equally:
 	function count (
 		intersections	: in pac_intersections.list;
 		intersection	: in type_intersection)

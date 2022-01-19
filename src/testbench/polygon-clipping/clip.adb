@@ -311,7 +311,7 @@ begin
 
 	-- TEST 13:
 	init_test;
-	add_to_expect (EXP, "line 100 100 line 0 0 line 100 1");
+	add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
 	
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",

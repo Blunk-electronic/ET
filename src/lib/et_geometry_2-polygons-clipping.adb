@@ -95,6 +95,67 @@ package body et_geometry_2.polygons.clipping is
 	end to_string;
 
 
+
+	function same_position (
+		intersection_1, intersection_2 : in pac_intersections.cursor)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if element (intersection_1).position = element (intersection_2).position then
+			result := true;
+		end if;
+
+		return result;
+	end same_position;
+
+	
+
+	function get_real_intersections (
+		intersections	: in pac_intersections.list)
+		return pac_intersections.list
+	is
+		result : pac_intersections.list;
+
+		procedure compare_position_and_direction (
+			i1, i2 : in pac_intersections.cursor)
+		is begin
+			-- The two intersections in question must have
+			-- same x/y position and differing direction, means
+			-- one is an entering and the other is a leaving one.
+			if same_position (i1, i2)
+			and element (i1).direction /= element (i2).direction
+			then 
+				null; -- A touches B -> skip this intersection
+			else
+				-- is real -> collect this intersection
+				result.append (element (i1)); 
+				--put_line ("real intersection:" & to_string (element (i1)));
+			end if;
+		end compare_position_and_direction;
+				
+		procedure query_intersection (
+			c : in pac_intersections.cursor) 
+		is begin
+			-- CS: We assume that leaving and entering points of
+			-- a touch-point follow each other in the given 
+			-- list of intersection. So we always look at the 
+			-- predecessor of the candidate intersection (indicated by 
+			-- cursor c):
+			if c = intersections.first then
+				compare_position_and_direction (c, intersections.last);
+			else
+				compare_position_and_direction (c, previous (c));
+			end if;
+		end query_intersection;
+		
+	begin
+		intersections.iterate (query_intersection'access);
+		return result;
+	end get_real_intersections;
+
+
+	
 	function are_redundant (
 		i1, i2 : in pac_intersections.cursor)
 		return boolean
@@ -284,6 +345,19 @@ package body et_geometry_2.polygons.clipping is
 
 	
 
+	function all_vertices_of_A_inside_B (
+		polygon_A	: in type_polygon'class; -- the clipped polygon
+		polygon_B	: in type_polygon'class) -- the clipping polygon
+		return boolean
+	is
+		result : boolean := true;
+	begin
+		-- CS
+		return result;
+	end all_vertices_of_A_inside_B;
+	
+	
+	
 	function clip (
 		polygon_A	: in type_polygon'class;
 		polygon_B	: in type_polygon'class;
@@ -808,11 +882,157 @@ package body et_geometry_2.polygons.clipping is
 		v_start : type_vertex (category => INTERSECTION);
 
 
-		-- This is a safety measure to prevent indefinite looping.
-		-- CS: Increase upper limit if required:
-		subtype type_safety_counter is natural range 0 .. 100;
-		safety_counter : type_safety_counter := 0;
 
+		
+
+		type type_overlap_status is (
+			A_INSIDE_B,
+			A_CLIPPED_BY_B,
+			A_OUTSIDE_B);
+
+		overlap_status : type_overlap_status;
+
+
+		procedure set_overlap_status is
+			real_intersections : constant pac_intersections.list := 
+				get_real_intersections (intersections);
+		begin
+			case real_intersections.length is
+				when 0 => -- no real intersections at all
+					-- A is either completely inside or outside B:
+					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
+						overlap_status := A_INSIDE_B;
+					else
+						overlap_status := A_OUTSIDE_B;
+					end if;
+					
+				when 1 => raise constraint_error; -- CS should never happen
+
+				when others =>
+					overlap_status := A_CLIPPED_BY_B;
+
+			end case;
+		end set_overlap_status;
+
+		
+
+		procedure do_clipping is 
+
+			-- This is a safety measure to prevent indefinite looping.
+			-- CS: Increase upper limit if required:
+			subtype type_safety_counter is natural range 0 .. 100;
+			safety_counter : type_safety_counter := 0;
+
+		begin
+			-- If there are intersections then the actual work begins.
+			-- Otherwise do nothing and return an empty list of polygons:
+			if not is_empty (intersections) then
+			
+				make_vertices_A; -- MUST be called BEFORE make_vertices_B !
+				
+				if debug then
+					new_line;
+					put_line ("vertices A: " & to_string (vertices_A));
+				end if;
+				
+				make_vertices_B;
+
+				if debug then
+					new_line;
+					put_line ("vertices B: " & to_string (vertices_B));
+				end if;
+
+				-- Go to the first entering intersection in vertices_A:
+				vertice_A_cursor := get_first_entering;
+
+				if debug then
+					new_line;
+					put_line ("first entering: " & to_string (element (vertice_A_cursor)));
+				end if;
+
+				-- Traverse vertices_A until no more entering vertex
+				-- can be found:
+				while vertice_A_cursor /= pac_vertices.no_element loop
+
+					-- A sub-polygon starts at v_start. When walking along the
+					-- edges of polygon A or B we will eventually get back to 
+					-- the start point v_start. The current sub-polygon is then complete.
+					v_start := element (vertice_A_cursor);
+
+					-- Walk along the vertices (and intersections) of polygon A until
+					-- a leaving intersection:
+					vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
+					-- Now we have the intersections and vertices from after the start point 
+					-- to (and including) the leaving intersection L.
+
+					-- Find the very leaving intersection L in polygon B and walk
+					-- along the vertices (and intersections) of polygon B until
+					-- an entering intersection:
+					vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+
+					
+					loop
+						-- safety measure to prevent forever-looping:
+						safety_counter := safety_counter + 1;
+						if safety_counter = type_safety_counter'last then
+							raise constraint_error with "safety counter overrun !";
+						end if;
+						
+
+						-- Splice the intersections and vertices of A and B.
+						-- Collect everything in the primary collection:
+						splice (
+							target	=> vertices_tmp_1, -- primary
+							before	=> pac_vertices.no_element, 
+							source 	=> vertices_tmp_2); -- will be emptied
+
+						-- If we have reached the start point then the sub-polygon
+						-- is complete.
+						if last_element (vertices_tmp_1) = v_start then
+							exit;
+						else
+							-- In order to handle the STC (see header of the package specification)
+							-- this stuff is required
+							-- as an extension of the Weiler-Atherton algorithm:
+							-- If sub-polygon is not complete, then again go to the first
+							-- entering intersection of polygon A:
+							vertice_A_cursor := get_first_entering;
+
+							-- Get the intersections and vertices until
+							-- the a leaving intersection in polygon A:
+							vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
+
+							-- Append the intersection (and vertices) to the primary
+							-- collection:
+							splice (
+								target	=> vertices_tmp_1, -- primary
+								before	=> pac_vertices.no_element, 
+								source 	=> vertices_tmp_2); -- will be emtied
+
+							-- Switch to polygon B and get intersections
+							-- until (and including) an entering intersection
+							-- into the secondary collection. The secondary collection
+							-- will be appended to the primary one once this loop
+							-- starts again:
+							vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+						end if;
+					end loop;
+						
+
+					-- Append the sub-polygon to the result:
+					result.append (to_polygon (vertices_tmp_1));
+					--put_line (to_string (to_polygon (vertices_tmp_1)));
+
+					-- Get the next entering vertex from vertices_A.
+					-- In case there is no entering vertex any more, then this
+					-- loop will be the last:
+					vertice_A_cursor := get_first_entering;
+				end loop;
+
+			end if;
+		end do_clipping;
+		
+		
 		
 	begin -- clip
 
@@ -830,113 +1050,24 @@ package body et_geometry_2.polygons.clipping is
 		-- Find intersections of the given two polygons:
 		find_intersections;
 
-		-- If there are intersections then the actual work begins.
-		-- Otherwise do nothing and return an empty list of polygons:
-		if not is_empty (intersections) then
-		
-			make_vertices_A; -- MUST be called BEFORE make_vertices_B !
-			
-			if debug then
-				new_line;
-				put_line ("vertices A: " & to_string (vertices_A));
-			end if;
-			
-			make_vertices_B;
 
-			if debug then
-				new_line;
-				put_line ("vertices B: " & to_string (vertices_B));
-			end if;
+		set_overlap_status;
+		case overlap_status is
+			when A_OUTSIDE_B => 
+				-- Nothing to do. Return an empty list:
+				null; 
 
-			-- Go to the first entering intersection in vertices_A:
-			vertice_A_cursor := get_first_entering;
+			when A_INSIDE_B => 
+				-- Polygon A is completely inside B. So the result
+				-- is just polygon A:
+				result.append (type_polygon (polygon_A));
 
-			if debug then
-				new_line;
-				put_line ("first entering: " & to_string (element (vertice_A_cursor)));
-			end if;
-
-			-- Traverse vertices_A until no more entering vertex
-			-- can be found:
-			while vertice_A_cursor /= pac_vertices.no_element loop
-
-				-- A sub-polygon starts at v_start. When walking along the
-				-- edges of polygon A or B we will eventually get back to 
-				-- the start point v_start. The current sub-polygon is then complete.
-				v_start := element (vertice_A_cursor);
-
-				-- Walk along the vertices (and intersections) of polygon A until
-				-- a leaving intersection:
-				vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
-				-- Now we have the intersections and vertices from after the start point 
-				-- to (and including) the leaving intersection L.
-
-				-- Find the very leaving intersection L in polygon B and walk
-				-- along the vertices (and intersections) of polygon B until
-				-- an entering intersection:
-				vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-
-				
-				loop
-					-- safety measure to prevent forever-looping:
-					safety_counter := safety_counter + 1;
-					if safety_counter = type_safety_counter'last then
-						raise constraint_error with "safety counter overrun !";
-					end if;
-					
-
-					-- Splice the intersections and vertices of A and B.
-					-- Collect everything in the primary collection:
-					splice (
-						target	=> vertices_tmp_1, -- primary
-						before	=> pac_vertices.no_element, 
-						source 	=> vertices_tmp_2); -- will be emptied
-
-					-- If we have reached the start point then the sub-polygon
-					-- is complete.
-					if last_element (vertices_tmp_1) = v_start then
-						exit;
-					else
-						-- In order to handle the STC (see header of the package specification)
-						-- this stuff is required
-						-- as an extension of the Weiler-Atherton algorithm:
-						-- If sub-polygon is not complete, then again go to the first
-						-- entering intersection of polygon A:
-						vertice_A_cursor := get_first_entering;
-
-						-- Get the intersections and vertices until
-						-- the a leaving intersection in polygon A:
-						vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
-
-						-- Append the intersection (and vertices) to the primary
-						-- collection:
-						splice (
-							target	=> vertices_tmp_1, -- primary
-							before	=> pac_vertices.no_element, 
-							source 	=> vertices_tmp_2); -- will be emtied
-
-						-- Switch to polygon B and get intersections
-						-- until (and including) an entering intersection
-						-- into the secondary collection. The secondary collection
-						-- will be appended to the primary one once this loop
-						-- starts again:
-						vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-					end if;
-				end loop;
-					
-
-				-- Append the sub-polygon to the result:
-				result.append (to_polygon (vertices_tmp_1));
-				--put_line (to_string (to_polygon (vertices_tmp_1)));
-
-				-- Get the next entering vertex from vertices_A.
-				-- In case there is no entering vertex any more, then this
-				-- loop will be the last:
-				vertice_A_cursor := get_first_entering;
-			end loop;
-
-		end if;
-		
+			when A_CLIPPED_BY_B => 
+				-- Do the actual clipping work:
+				do_clipping;
+		end case;
+	
+	
 		return result;
 	end clip;
 
