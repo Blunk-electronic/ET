@@ -83,6 +83,9 @@ package et_geometry_2.polygons.clipping is
 		return string;
 	
 
+	-- Returns true if all vertices of polygon A lie
+	-- inside polygon B. If a vertex lies on an edge
+	-- of polygon A then it is regarded as inside.
 	function all_vertices_of_A_inside_B (
 		polygon_A	: in type_polygon'class; -- the clipped polygon
 		polygon_B	: in type_polygon'class) -- the clipping polygon
@@ -90,9 +93,7 @@ package et_geometry_2.polygons.clipping is
 	
 	
 	-- Clips polygon A by polygon B.
-	-- If there are intersections of the two polygons, then the
-	-- return is an empty list.
-	-- CS: What if a polygon is completely inside the other ?
+	-- If the two polygons do not overlap, then the return is an empty list.
 	-- If debug is true then a lot of debug messages is output.
 	function clip (
 		polygon_A	: in type_polygon'class; -- the clipped polygon

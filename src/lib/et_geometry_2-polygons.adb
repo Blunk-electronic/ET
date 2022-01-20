@@ -50,6 +50,21 @@ package body et_geometry_2.polygons is
 
 	use pac_polygon_segments;
 
+
+	procedure iterate (
+		segments	: in pac_polygon_segments.list;
+		process		: not null access procedure (position : in pac_polygon_segments.cursor);
+		proceed		: not null access boolean)
+	is
+		c : pac_polygon_segments.cursor := segments.first;
+	begin
+		while c /= pac_polygon_segments.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
 	
 	function to_string (
 		polygon	: in type_polygon_base)

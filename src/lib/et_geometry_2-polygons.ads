@@ -53,9 +53,9 @@ package et_geometry_2.polygons is
 	-- IMPORTANT NOTE: 
 	-- In contrast to the common definition of a polygon, a polygon
 	-- in this world is described as a finite number of elements 
-	-- like lines, arcs and even circles that form a polygonal circuit.
-	-- In this world a polygon may consist of just a single circle.
-	-- In that case no other segments are allowed.
+	-- like lines, arcs or a single circle that form a polygonal circuit.
+	-- If a polygon consist of just a single circle then no other 
+	-- segments are allowed.
 	-- On the other hand, a polygon may consist of lines and arcs. In that
 	-- case no circle is allowed:
 	type type_polygon_segment_shape is (LINE, ARC);
@@ -70,6 +70,14 @@ package et_geometry_2.polygons is
 	
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
 
+	
+	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		segments	: in pac_polygon_segments.list;
+		process		: not null access procedure (position : in pac_polygon_segments.cursor);
+		proceed		: not null access boolean);
+
+	
 	
 	type type_polygon_segments (circular : boolean := false) is record
 		case circular is

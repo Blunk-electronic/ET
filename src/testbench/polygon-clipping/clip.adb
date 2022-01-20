@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..14) of type_test;
+	type type_test_array is array (1..17) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -328,7 +328,39 @@ begin
 		B => B_default,
 		expect => EXP);
 
+
+	-- TEST 15:
+	init_test;
+	-- we expect nothing as the polygons do not overlap
 	
+	make_set (
+		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
+		B => B_default,
+		expect => EXP);
+
+
+	-- TEST 16:
+	init_test;
+	-- we expect nothing as the polygons do not overlap
+	
+	make_set (
+		A => "line 200 10 line 250 10 line 250 50",
+		B => B_default,
+		expect => EXP);
+
+
+
+	-- TEST 17:
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
+	
+	make_set (
+		A => "line 70 0 line 90 -20 line 120 50 line 100 70",
+		B => B_default,
+		expect => EXP);
+
+	
+	---------------------	
 	make_test;
 
 	new_line;

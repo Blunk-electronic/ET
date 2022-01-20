@@ -42,6 +42,9 @@ with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with ada.exceptions; 			use ada.exceptions;
+with gnat.source_info;
+
 with et_exceptions;				use et_exceptions;
 
 
@@ -350,10 +353,45 @@ package body et_geometry_2.polygons.clipping is
 		polygon_B	: in type_polygon'class) -- the clipping polygon
 		return boolean
 	is
-		result : boolean := true;
+		proceed : aliased boolean := true;
+
+		-- Query the start point of segment of polygon A.
+		-- The segment is indicated by cursor c.
+		-- Aborts the iteration on the first vertex that is
+		-- outside polygon B.
+		procedure query_segment (c : in pac_polygon_segments.cursor) is
+			IPQ : type_inside_polygon_query_result;
+		begin
+			case element (c).shape is
+				when LINE =>
+					IPQ := in_polygon_status (polygon_B, element (c).segment_line.start_point);
+					
+					if IPQ.status = OUTSIDE then
+						proceed := false; -- abort iteration
+					end if;
+					
+				when ARC =>
+					IPQ := in_polygon_status (polygon_B, element (c).segment_arc.start_point);
+					
+					if IPQ.status = OUTSIDE then
+						proceed := false; -- abort iteration
+					end if;
+
+			end case;
+		end query_segment;
+		
 	begin
-		-- CS
-		return result;
+		--if polygon_A.contours.circular then
+			--null; -- CS
+		--else
+			iterate (
+				segments	=> polygon_A.contours.segments,
+				process		=> query_segment'access,
+				proceed		=> proceed'access);
+			
+			--end if;
+			
+		return proceed;
 	end all_vertices_of_A_inside_B;
 	
 	
@@ -912,6 +950,10 @@ package body et_geometry_2.polygons.clipping is
 					overlap_status := A_CLIPPED_BY_B;
 
 			end case;
+
+			if debug then
+				put_line ("overlap status: " & type_overlap_status'image (overlap_status));
+			end if;
 		end set_overlap_status;
 
 		
@@ -1069,6 +1111,25 @@ package body et_geometry_2.polygons.clipping is
 	
 	
 		return result;
+
+
+
+		--exception
+			----when event: operator_error =>
+				----put_line(exception_message(event));
+			--when event: constraint_error =>
+				----put_line ("Constraint error occured !");
+				--put_line (exception_information (event));
+				--put_line (exception_message (event));
+
+				--put_line (gnat.source_info.file & " :" & integer'image (gnat.source_info.line));
+				
+				--raise;
+				
+			--when others =>
+				--put_line ("Other error occured !");
+				--raise;
+		
 	end clip;
 
 	
