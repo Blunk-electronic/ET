@@ -90,6 +90,7 @@ package et_geometry_2.polygons.clipping is
 		polygon_A	: in type_polygon'class; -- the clipped polygon
 		polygon_B	: in type_polygon'class) -- the clipping polygon
 		return boolean;
+	-- CS move to et_geometry_2.polygons
 	
 	
 	-- Clips polygon A by polygon B.

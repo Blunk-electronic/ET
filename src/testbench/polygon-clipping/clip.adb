@@ -138,8 +138,10 @@ procedure clip is
 			B := type_polygon (to_polygon (F));
 			--put_line ("B: " & to_string (B));
 
-			set (i).result_actual := clip (A, B);
-
+			--set (i).result_actual := clip (A, B);
+			set (i).result_actual := clip (A, B, true);
+			
+			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
 				new_line;
 				put_line ("ERROR ! Test No.:" & type_index'image (i));
@@ -164,8 +166,14 @@ procedure clip is
 
 				count_error;
 			end if;
+		
 		end loop;
-			
+
+		
+		--exception
+			--when others => null;
+
+		
 	end make_test;
 
 	
@@ -355,7 +363,7 @@ begin
 	add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
 	
 	make_set (
-		A => "line 70 0 line 90 -20 line 120 50 line 100 70",
+		A => "line 70 0 line 110 -20 line 120 0 line 110 70",
 		B => B_default,
 		expect => EXP);
 

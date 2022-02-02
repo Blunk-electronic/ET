@@ -1553,6 +1553,340 @@ package body et_geometry_2.polygons is
 	end get_lower_left_corner;
 	
 
+
+	function is_vertex (
+		polygon	: in type_polygon_base;
+		point	: in type_point)
+		return boolean
+	is
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE =>
+					if element (c).segment_line.start_point = point then
+						proceed := false;
+					end if;
+					
+				when ARC =>
+					if element (c).segment_arc.start_point = point then
+						proceed := false;
+					end if;
+			
+			end case;
+		end query_segment;
+		
+	begin
+		iterate (
+			segments	=> polygon.contours.segments,
+			process		=> query_segment'access,
+			proceed		=> proceed'access);
+
+		return not proceed;
+	end is_vertex;
+
+
+	procedure toggle_direction (
+		d : in out type_intersection_direction) 
+	is begin
+		case d is
+			when ENTERING => d := LEAVING;
+			when LEAVING => d := ENTERING;
+		end case;
+	end toggle_direction;
+	
+
+	procedure sort_by_distance (
+		intersections	: in out pac_line_edge_intersections.list;
+		reference		: in type_point)
+	is
+		type type_item is record
+			intersection: type_intersection_line_edge;
+			distance	: type_distance_positive;
+		end record;
+
+		
+		function "<" (left, right : in type_item) return boolean is begin
+			if left.distance < right.distance then
+				return true;
+			else
+				return false;
+			end if;
+		end;
+	
+			
+		package pac_items is new doubly_linked_lists (type_item);
+		use pac_items;
+		
+		items : pac_items.list;
+
+
+		use pac_line_edge_intersections;
+		
+		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
+			d : type_distance_polar;
+		begin
+			d := get_distance (type_point (reference), element (i).place);
+			
+			items.append (new_item => (
+				intersection	=> element (i),
+				distance		=> get_absolute (d)));
+		end query_intersection;
+
+		
+
+		package pac_sorting is new pac_items.generic_sorting;
+		use pac_sorting;
+		
+
+		procedure query_item (i : in pac_items.cursor) is begin
+			intersections.append (element (i).intersection);
+		end query_item;
+		
+		
+	begin
+		-- Collect intersections and their distance to the reference
+		-- in list "items":
+		intersections.iterate (query_intersection'access);
+
+		-- Sort items by distance to reference:
+		sort (items);
+
+		-- The old intersections are no longer required:
+		intersections.clear;
+		-- New intersections will be appended here.
+		
+
+		-- Traverse items and append them one by one to the
+		-- list of intersections:
+		items.iterate (query_item'access);
+	end sort_by_distance;
+
+	
+
+	function get_line_to_polygon_status (
+		polygon	: in type_polygon_base;
+		line	: in type_line)
+		return type_line_to_polygon_status
+	is
+		result : type_line_to_polygon_status;
+
+		
+		procedure set_line_start is 
+			IPQ : type_inside_polygon_query_result;
+		begin
+			if is_vertex (polygon, line.start_point) then
+				result.start_point := IS_VERTEX;
+			else
+				IPQ := in_polygon_status (polygon, line.start_point);
+				
+				case IPQ.status is
+					when INSIDE => 
+						result.start_point := INSIDE;
+
+					when OUTSIDE => 
+						result.start_point := OUTSIDE;
+
+					when ON_EDGE => 
+						result.start_point := ON_EDGE;
+
+				end case;
+			end if;
+		end set_line_start;
+
+		
+		procedure set_line_end is 
+			IPQ : type_inside_polygon_query_result;
+		begin
+			if is_vertex (polygon, line.end_point) then
+				result.end_point := IS_VERTEX;
+			else
+				IPQ := in_polygon_status (polygon, line.end_point);
+				
+				case IPQ.status is
+					when INSIDE => 
+						result.end_point := INSIDE;
+
+					when OUTSIDE => 
+						result.end_point := OUTSIDE;
+
+					when ON_EDGE => 
+						result.end_point := ON_EDGE;
+
+				end case;
+			end if;
+		end set_line_end;
+
+
+		
+		procedure find_intersections is
+			
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+				case element (c).shape is
+					when polygons.LINE =>
+						declare
+							I2L : constant type_intersection_of_two_lines := get_intersection (
+								element (c).segment_line, line);
+
+							IP : type_point;
+						begin
+							if I2L.status = EXISTS then
+								IP := to_point (I2L.intersection.vector);
+								
+								if IP = line.start_point 
+								or IP = line.end_point
+								or IP = element (c).segment_line.start_point	
+								or IP = element (c).segment_line.end_point
+								then
+									null; -- skip this intersection point
+								else
+									result.intersections.append ((place => IP, edge => c, others => <>));
+								end if;
+							end if;
+						end;
+						
+					when ARC =>
+						null; -- CS
+						
+				end case;
+			end query_segment;
+
+
+		begin
+			polygon.contours.segments.iterate (query_segment'access);
+		end find_intersections;
+
+
+		procedure set_entering_leaving is
+			-- NOTE: This procedure assumes that there ARE intersections
+			-- with the polygon.
+
+			-- The direction to be assigned to a particular intersection.
+			-- Its status toggles once an intersection has been processed:
+			dir : type_intersection_direction;
+
+			use pac_line_edge_intersections;
+			ic : pac_line_edge_intersections.cursor := result.intersections.first;
+
+			procedure set_direction (i : in out type_intersection_line_edge) is begin
+				i.direction := dir;
+				toggle_direction (dir); -- prepare for next intersection
+			end set_direction;
+				
+		begin
+			-- Set the initial direction. It depends on the location of the
+			-- start point of the given line:
+			case result.start_point is
+				when OUTSIDE =>
+					-- The next intersection after the start point
+					-- must be entering:
+					dir := ENTERING; 
+										
+				when INSIDE | ON_EDGE | IS_VERTEX =>
+					-- If the start point is somewhere else then
+					-- the next intersection must be leaving:
+					dir := LEAVING;
+
+			end case;
+
+			-- Iterate through the intersections and assign each of 
+			-- them a new direction:
+			while ic /= pac_line_edge_intersections.no_element loop
+				result.intersections.update_element (ic, set_direction'access);				
+				next (ic);
+			end loop;
+		end set_entering_leaving;
+
+		
+	begin
+
+		set_line_start;
+		set_line_end;
+
+		find_intersections;
+
+		-- If there are intersections then they must be sorted and their
+		-- direction set:
+		if not result.intersections.is_empty then
+			sort_by_distance (result.intersections, line.start_point);
+			set_entering_leaving;
+		end if;
+		
+		return result;
+	end get_line_to_polygon_status;
+
+
+	
+	--function runs_through_inner_area (
+		--polygon	: in type_polygon_base;
+		--line	: in type_line)
+		--return boolean
+	--is
+		--result : boolean := false;
+		
+		--IPQ : type_inside_polygon_query_result;
+		
+		--proceed : aliased boolean := true;
+
+		--procedure query_segment (c : in pac_polygon_segments.cursor) is
+		--begin
+			--case element (c).shape is
+				--when polygons.LINE =>
+					--declare
+						--I2L : type_intersection_of_two_lines := get_intersection (
+							--element (c).segment_line, line);
+					--begin
+						--if I2L.status = EXISTS then
+							--proceed := false;
+							--result := true;
+						--end if;
+					--end;
+					
+				--when ARC =>
+					--null; -- CS
+					
+			--end case;
+		--end query_segment;
+
+		
+	--begin
+		--IPQ_start := in_polygon_status (polygon, line.start_point);
+		--IPQ_end   := in_polygon_status (polygon, line.end_point);
+
+		--case IPQ_start.status is
+			--when INSIDE => result := true;
+
+			--when ON_EDGE =>
+				--case IPQ_end.status is
+					--when INSIDE => result := true;
+					--when OUTSIDE | ON_EDGE => 
+						--iterate (
+							--segments	=> polygon.contours.segments,
+							--process		=> query_segment'access,
+							--proceed		=> proceed'access);
+
+				--end case;
+
+			--when OUTSIDE =>
+				--case IPQ_end.status is
+					--when INSIDE => result := true;
+					--when OUTSIDE | ON_EDGE => 
+						--iterate (
+							--segments	=> polygon.contours.segments,
+							--process		=> query_segment'access,
+							--proceed		=> proceed'access);
+
+				--end case;
+
+		--end case;
+				
+
+
+		--return proceed; -- CS
+	--end runs_through_inner_area;
+	
+
+
 	
 end et_geometry_2.polygons;
 

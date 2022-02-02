@@ -358,8 +358,7 @@ package et_geometry_2.polygons is
 
 	
 	-- Detects whether the given point is inside or outside
-	-- the polygon. The point is regarded as "outside" if
-	-- it sits exactly on the edge of the polygon.
+	-- the polygon of whether the point lies on an edge:
 	function in_polygon_status (
 		polygon		: in type_polygon_base;	
 		point		: in type_point)
@@ -393,6 +392,83 @@ package et_geometry_2.polygons is
 		return type_lower_left_corner;
 
 
+	-- Returns true if the given point is a vertex
+	-- of the given polygon:
+	function is_vertex (
+		polygon	: in type_polygon_base;
+		point	: in type_point)
+		return boolean;
+
+		
+	type type_line_end is (
+		ON_EDGE,
+		INSIDE,
+		OUTSIDE,
+		IS_VERTEX);
+
+	type type_intersection_direction is (
+		ENTERING,
+		LEAVING);
+
+	
+	procedure toggle_direction (
+		d : in out type_intersection_direction);
+
+	
+	type type_intersection_line_edge is record
+		place		: type_point; 	  -- x/y
+		edge		: pac_polygon_segments.cursor;
+		direction	: type_intersection_direction := ENTERING;
+	end record;
+
+	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
+
+
+	-- Sorts the list of intersections by the distance of the intersections
+	-- to the given reference point. Nearest comes first:
+	procedure sort_by_distance (
+		intersections	: in out pac_line_edge_intersections.list;
+		reference		: in type_point);
+	
+		
+	--type type_line_end_position (status : type_line_end := OUTSIDE) is record
+		--case status is
+			--when ON_EDGE =>
+				---- CS ? edge	: pac_polygon_segments.cursor;
+				----place	: type_point;
+
+			--when INSIDE | OUTSIDE => null;
+
+			--when IS_VERTEX => null;				
+				---- CS ? edge_1	: pac_polygon_segments.cursor;
+				---- CS ? edge_2	: pac_polygon_segments.cursor;
+		--end case;
+	--end record;
+								   
+		
+	type type_line_to_polygon_status is record
+		start_point, end_point : type_line_end := OUTSIDE;
+		intersections : pac_line_edge_intersections.list;
+	end record;
+	
+
+
+	function get_line_to_polygon_status (
+		polygon	: in type_polygon_base;
+		line	: in type_line)
+		return type_line_to_polygon_status;
+
+	
+	-- Returns true if the given line runs through the 
+	-- inner area of the given polygon.
+	-- If the line just touches an edge or a vertex
+	-- from outside then it is regarded as not-crossing.
+	--function runs_through_inner_area (
+		--polygon	: in type_polygon_base;
+		--line	: in type_line)
+		--return boolean;
+
+	
 	type type_polygon is new type_polygon_base with null record;
 
 	
