@@ -173,7 +173,7 @@ procedure get_status is
 	--end make_test;
 
 	default_polygon : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
-
+	P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
 	
 	procedure print_status (status : in type_line_to_polygon_status) is
 		use pac_line_edge_intersections;
@@ -182,9 +182,9 @@ procedure get_status is
 			use pac_polygon_segments;
 			EC : pac_polygon_segments.cursor := element (i).edge;
 		begin
-			put_line ("place :" & to_string (element (i).place));
-			put_line ("edge  :" & to_string (element (EC).segment_line));
-			put_line ("drctn :" & type_intersection_direction'image (element (i).direction));
+			put_line ("place : " & to_string (element (i).place));
+			put_line ("edge  : " & to_string (element (EC).segment_line));
+			put_line ("drctn : " & type_intersection_direction'image (element (i).direction));
 			new_line;
 		end;
 	
@@ -192,19 +192,44 @@ procedure get_status is
 		put_line ("STATUS:");
 		put_line ("line start point is: " & type_line_end'image (status.start_point));
 		put_line ("intersections:");
-		status.intersections.iterate (query_intersection'access);
-		put_line ("line end   point is: " & type_line_end'image (status.end_point));
+		if status.intersections.is_empty then
+			put_line (" none");
+			put_line (" line center is : " & type_line_center'image (status.center_point));
+		else
+			status.intersections.iterate (query_intersection'access);
+		end if;
+		put_line ("line end point is: " & type_line_end'image (status.end_point));
 	end print_status;
+
+
+	procedure do_test is begin
+		put_line ("-----------");
+		put_line (to_string (L));
+		
+		S := get_line_to_polygon_status (P, L);
+		print_status (S);
+	end do_test;
 	
 begin
 
 	-- TEST 1:
-	make_polygon (default_polygon);
+	--make_polygon (default_polygon);
 
-	L := type_line (make_line (-10.0, 50.0, 110.0, 50.0));
-		
-	S := get_line_to_polygon_status (P, L);
-	print_status (S);
+	--L := type_line (make_line (-10.0, 50.0, 110.0, 50.0)); -- go
+	--L := type_line (make_line (10.0, 50.0, 110.0, 50.0)); -- go
+	--L := type_line (make_line (0.0, 0.0, 50.0, 50.0)); -- go
+	--L := type_line (make_line (0.0, 0.0, 100.0, 100.0)); -- go
+	--L := type_line (make_line (0.0, 0.0, 110.0, 110.0)); -- go
+	--L := type_line (make_line (-10.0, -10.0, 110.0, 110.0)); -- go
+	--L := type_line (make_line (0.0, 0.0, 100.0, 0.0)); -- ok
+	--L := type_line (make_line (0.0, 0.0, 200.0, 0.0)); -- ok
+	--L := type_line (make_line (0.0, 0.0, 200.0, 1.0)); -- ok
+	--do_test;
+
+	make_polygon (P1);
+	L := type_line (make_line (100.0, 100.0, 0.0, 100.0)); --
+	do_test;
+
 	
 	---- TEST 2:
 	--init_test;

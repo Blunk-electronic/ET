@@ -328,7 +328,8 @@ package et_geometry_2.polygons is
 		OUTSIDE,
 		INSIDE,
 		ON_EDGE);
-
+	-- CS unify with type_line_end and type_line_center
+	
 	
 	function to_string (status : in type_location) return string;
 
@@ -406,6 +407,9 @@ package et_geometry_2.polygons is
 		OUTSIDE,
 		IS_VERTEX);
 
+	subtype type_line_center is type_line_end range ON_EDGE .. OUTSIDE;
+
+	
 	type type_intersection_direction is (
 		ENTERING,
 		LEAVING);
@@ -444,11 +448,14 @@ package et_geometry_2.polygons is
 				---- CS ? edge_2	: pac_polygon_segments.cursor;
 		--end case;
 	--end record;
-								   
+
 		
 	type type_line_to_polygon_status is record
 		start_point, end_point : type_line_end := OUTSIDE;
 		intersections : pac_line_edge_intersections.list;
+		
+		center_point : type_line_center := OUTSIDE;		
+		-- NOTE: Valid only if there are NO intersections !
 	end record;
 	
 

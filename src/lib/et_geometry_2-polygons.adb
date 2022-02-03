@@ -1670,7 +1670,7 @@ package body et_geometry_2.polygons is
 		return type_line_to_polygon_status
 	is
 		result : type_line_to_polygon_status;
-
+		line_center : type_point;
 		
 		procedure set_line_start is 
 			IPQ : type_inside_polygon_query_result;
@@ -1735,7 +1735,7 @@ package body et_geometry_2.polygons is
 								
 								if IP = line.start_point 
 								or IP = line.end_point
-								or IP = element (c).segment_line.start_point	
+								--or IP = element (c).segment_line.start_point	
 								or IP = element (c).segment_line.end_point
 								then
 									null; -- skip this intersection point
@@ -1805,9 +1805,23 @@ package body et_geometry_2.polygons is
 
 		find_intersections;
 
+		-- If there are no intersections then the location of the 
+		-- center of the given line tells whether the line runs
+		-- inside or outside the polygon.
+		if result.intersections.is_empty then
+			line_center := get_center (line);
+
+			put_line ("center" & to_string (line_center));
+			
+			case in_polygon_status (polygon, line_center).status is
+				when INSIDE => result.center_point := INSIDE;
+				when OUTSIDE => result.center_point := OUTSIDE;
+				when ON_EDGE => result.center_point := ON_EDGE;
+			end case;
+			
+		else
 		-- If there are intersections then they must be sorted and their
 		-- direction set:
-		if not result.intersections.is_empty then
 			sort_by_distance (result.intersections, line.start_point);
 			set_entering_leaving;
 		end if;
