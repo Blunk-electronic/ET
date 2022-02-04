@@ -68,7 +68,9 @@ procedure get_status is
 	end;
 	
 	
-	P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
+	--P0 : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	--P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
+	P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
 	
 	procedure print_status (status : in type_inside_polygon_query_result) is
 		use pac_probe_line_intersections;
@@ -78,7 +80,7 @@ procedure get_status is
 			put_line ("x-pos : " & type_float_internal'image (element (i).x_position));
 			--put_line ("edge  : " & to_string (element (EC).segment_line));
 			--put_line ("drctn : " & type_intersection_direction'image (element (i).direction));
-			new_line;
+			--new_line;
 		end;
 	
 	begin
@@ -105,11 +107,8 @@ procedure get_status is
 	
 begin
 
-	-- TEST 1:
-	--make_polygon (default_polygon);
-
-	make_polygon (P1);
-	T := type_point (set (50.0, 100.0)); --
+	make_polygon (P_u_shaped);
+	T := type_point (set (101.0, 100.0)); --
 	do_test;
 	
 	

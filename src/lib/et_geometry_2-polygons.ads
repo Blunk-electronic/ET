@@ -335,7 +335,7 @@ package et_geometry_2.polygons is
 
 		
 		
-	type type_inside_polygon_query_result is record
+	type type_inside_polygon_query_result is record  -- CS rename to type_point_to_polygon_status
 		-- The point where the probe line has started:
 		start			: type_point; 
 
@@ -364,7 +364,7 @@ package et_geometry_2.polygons is
 		polygon		: in type_polygon_base;	
 		point		: in type_point)
 		return type_inside_polygon_query_result;
-
+	-- CS rename to get_point_to_polygon_status
 
 	
 	-- For finding the lower left corner of a polygon this type

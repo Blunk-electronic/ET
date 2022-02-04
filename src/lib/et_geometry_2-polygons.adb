@@ -1446,14 +1446,15 @@ package body et_geometry_2.polygons is
 				pac_probe_line_intersections.generic_sorting;
 			
 			use pac_probe_line_intersections_sorting;
-			c : pac_probe_line_intersections.cursor;
+			--c : pac_probe_line_intersections.cursor;
 		begin
 			sort (result.intersections);
 
-			-- for testing/verifying only:				
+			-- for testing/verifying only:
+			--put_line ("with redundant intersections:");
 			--c := result.intersections.first;				
 			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (to_string (element (c).x_position));
+				--put_line (type_float_internal'image (element (c).x_position));
 				--next (c);
 			--end loop;
 
@@ -1461,24 +1462,25 @@ package body et_geometry_2.polygons is
 			-- If x-positions differ by type_distance'small then we
 			-- treat them as redundant.
 			-- Remove redundant x-positions:
-			c := result.intersections.first;
-			while c /= pac_probe_line_intersections.no_element loop
+			--c := result.intersections.first;
+			--while c /= pac_probe_line_intersections.no_element loop
 
-				if c /= result.intersections.first then
-					if abs (element (c).x_position - element (previous (c)).x_position)
-						<= type_distance'small 
-					then
-						delete (result.intersections, c);
-					end if;
-				end if;
+				--if c /= result.intersections.first then
+					--if abs (element (c).x_position - element (previous (c)).x_position)
+						--<= type_distance'small 
+					--then
+						--delete (result.intersections, c);
+					--end if;
+				--end if;
 					
-				next (c);
-			end loop;
+				--next (c);
+			--end loop;
 
 			-- for testing/verifying only:
-			--c := result.intersections.first;				
+			--put_line ("without redundant intersections:");
+			--c := result.intersections.first;		
 			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (to_string (element (c).x_position));
+				--put_line (type_float_internal'image (element (c).x_position));
 				--next (c);
 			--end loop;
 
@@ -1496,7 +1498,8 @@ package body et_geometry_2.polygons is
 
 		
 		-- The x-values are not sorted yet. We need them sorted with the
-		-- smallest x first and redundant x-positions removed:
+		-- smallest x first
+		-- CS: and redundant x-positions removed: -- no longer required
 		sort_x_values;
 
 		-- get the total number of intersections
