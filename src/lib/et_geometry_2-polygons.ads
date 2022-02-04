@@ -427,7 +427,15 @@ package et_geometry_2.polygons is
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
 
-
+	
+	-- Returns true if the given list of line-edge-intersections contains
+	-- the a line-edge-intersection that lies on the given place:
+	function contains (
+		intersections	: in pac_line_edge_intersections.list;
+		place			: in type_point)
+		return boolean;
+	
+		
 	-- Sorts the list of intersections by the distance of the intersections
 	-- to the given reference point. Nearest comes first:
 	procedure sort_by_distance (

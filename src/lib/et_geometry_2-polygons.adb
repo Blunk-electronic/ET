@@ -1597,8 +1597,31 @@ package body et_geometry_2.polygons is
 			when LEAVING => d := ENTERING;
 		end case;
 	end toggle_direction;
-	
 
+
+	function contains (
+		intersections	: in pac_line_edge_intersections.list;
+		place			: in type_point)
+		return boolean
+	is
+		result : boolean := false;
+
+		use pac_line_edge_intersections;
+		c : pac_line_edge_intersections.cursor := intersections.first;
+	begin
+		while c /= pac_line_edge_intersections.no_element loop
+			if element (c).place = place then
+				result := true;
+				exit;
+			end if;
+			
+			next (c);
+		end loop;
+
+		return result;
+	end contains;
+
+	
 	procedure sort_by_distance (
 		intersections	: in out pac_line_edge_intersections.list;
 		reference		: in type_point)
@@ -1739,11 +1762,15 @@ package body et_geometry_2.polygons is
 								if IP = line.start_point 
 								or IP = line.end_point
 								--or IP = element (c).segment_line.start_point	
-								or IP = element (c).segment_line.end_point
+								--or IP = element (c).segment_line.end_point
 								then
-									null; -- skip this intersection point
+									null; -- skip this intersection point entirely
 								else
-									result.intersections.append ((place => IP, edge => c, others => <>));
+									-- Collect this intersection point if it has
+									-- not already been collected:
+									if not contains (result.intersections, IP) then
+										result.intersections.append ((place => IP, edge => c, others => <>));
+									end if;
 								end if;
 							end if;
 						end;
@@ -1814,7 +1841,7 @@ package body et_geometry_2.polygons is
 		if result.intersections.is_empty then
 			line_center := get_center (line);
 
-			put_line ("center" & to_string (line_center));
+			--put_line ("center" & to_string (line_center));
 			
 			case in_polygon_status (polygon, line_center).status is
 				when INSIDE => result.center_point := INSIDE;
