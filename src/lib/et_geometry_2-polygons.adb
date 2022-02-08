@@ -64,6 +64,21 @@ package body et_geometry_2.polygons is
 		end loop;
 	end iterate;
 
+
+
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		edge	: in type_line)
+		return pac_polygon_segments.cursor
+	is
+		result : pac_polygon_segments.cursor;
+		segment : type_polygon_segment := (shape => LINE, segment_line => edge);
+	begin
+		result := polygon.contours.segments.find (segment);
+		return result;
+	end get_segment_edge;
+	
+
 	
 	
 	function to_string (
@@ -1781,7 +1796,6 @@ package body et_geometry_2.polygons is
 				end case;
 			end query_segment;
 
-
 		begin
 			polygon.contours.segments.iterate (query_segment'access);
 		end find_intersections;
@@ -1797,13 +1811,80 @@ package body et_geometry_2.polygons is
 
 			use pac_line_edge_intersections;
 			ic : pac_line_edge_intersections.cursor := result.intersections.first;
+			ic_bak : pac_line_edge_intersections.cursor;
+			delete_first : boolean := false;
+			delete_intersection : boolean := false;
+			
+			procedure set_direction (i : in out type_intersection_line_edge) is
+				-- A supportive point required in case the intersection
+				-- is a vertex. This point comes after the intersection towards
+				-- the end point of the given line:
+				SP : type_point;
 
-			procedure set_direction (i : in out type_intersection_line_edge) is begin
-				i.direction := dir;
-				toggle_direction (dir); -- prepare for next intersection
-			end set_direction;
+				-- The status of the supportive point tells whether
+				-- it is inside the polygon:
+				IPS : type_inside_polygon_query_result;
+
 				
-		begin
+				procedure do_it is begin
+					i.direction := dir;
+
+					-- prepare for next intersection:
+					toggle_direction (dir); 
+					delete_intersection := false;
+				end do_it;
+
+				
+			begin -- set_direction
+
+				-- If the intersection lies not on a vertex, then
+				-- the direction can be set according to the current
+				-- value in variable "dir". 
+				-- If the intersection lies exactly on a vertex then
+				-- a supportive point right after the intersection is required.
+				-- This supportive point helps to confirm whether the
+				-- candidate intersection is truly entering or leaving.
+				-- If the status can not be confirmed then the flag
+				-- "delete_intersection" is set, so that it will be
+				-- deleted later from the list.
+				
+				if is_vertex (polygon, i.place) then
+					SP := get_nearest (line, i.place);
+					IPS := in_polygon_status (polygon, SP);
+					
+					case dir is
+						when ENTERING =>
+							if IPS.status = INSIDE then 
+								-- confirmed: intersection is truly entering
+								do_it;
+							else
+								-- supportive point is NOT inside.
+								-- intersection is NOT entering
+								-- and must be removed from the list:
+								delete_intersection := true;
+							end if;
+
+						when LEAVING =>
+							if IPS.status = OUTSIDE then 
+								-- confirmed: intersection is truly leaving
+								do_it;
+							else
+								-- supportive point is NOT outside.
+								-- intersection is NOT leaving
+								-- and must be removed from the list:
+								delete_intersection := true;
+							end if;
+
+					end case;
+					
+				else -- intersection is not a vertex
+					do_it;
+				end if;
+			end set_direction;
+
+			
+		begin -- set_entering_leaving
+			
 			-- Set the initial direction. It depends on the location of the
 			-- start point of the given line:
 			case result.start_point is
@@ -1822,13 +1903,50 @@ package body et_geometry_2.polygons is
 			-- Iterate through the intersections and assign each of 
 			-- them a new direction:
 			while ic /= pac_line_edge_intersections.no_element loop
-				result.intersections.update_element (ic, set_direction'access);				
-				next (ic);
+				result.intersections.update_element (ic, set_direction'access);
+
+				-- If the candidate intersection has not been confirmed by
+				-- procedure set_direction then we delete it here:
+				if delete_intersection then
+
+					-- Detect whether we are about to delete
+					-- the first intersection:
+					if ic = result.intersections.first then
+						delete_first := true;
+					else
+						-- In case a deletion is required, then the
+						-- cursor to the element before the candidate intersection
+						-- must be saved. 
+						-- Why ? The delete command (see below) resets the 
+						-- main cursor "ic" to no_element:
+						ic_bak := previous (ic);
+					end if;
+
+					-- Delete the candidate intersection:
+					result.intersections.delete (ic);
+					-- Now the main cursor "ic" points to no_element !
+
+					if delete_first then
+						-- Since we have deleted the first intersection,
+						-- the list has now another first element.
+						-- So the main cursor must be set to that first intersection:
+						ic := result.intersections.first;
+						delete_first := false;
+					else
+						-- Restore the main cursor:
+						ic := ic_bak;
+						next (ic);
+					end if;
+
+				else
+					next (ic);
+				end if;
+				
 			end loop;
 		end set_entering_leaving;
 
 		
-	begin
+	begin -- get_line_to_polygon_status
 
 		set_line_start;
 		set_line_end;

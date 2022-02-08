@@ -69,7 +69,7 @@ package et_geometry_2.polygons is
 	end record;
 	
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
-
+	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -77,7 +77,7 @@ package et_geometry_2.polygons is
 		process		: not null access procedure (position : in pac_polygon_segments.cursor);
 		proceed		: not null access boolean);
 
-	
+
 	
 	type type_polygon_segments (circular : boolean := false) is record
 		case circular is
@@ -90,6 +90,17 @@ package et_geometry_2.polygons is
 	type type_polygon_base is abstract tagged record -- CS rename to type_polygon ?
 		contours	: type_polygon_segments;
 	end record;
+
+	
+	-- Returns the cursor to the given edge of the
+	-- given polygon. If the edge does not exist, then the
+	-- return is no_element.
+	-- If the polygon consist of just a circle then an exception is raised:
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		edge	: in type_line)
+		return pac_polygon_segments.cursor;
+	
 
 	
 	-- Returns the segments of a polygon in human readable form:

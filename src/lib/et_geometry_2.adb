@@ -857,6 +857,33 @@ package body et_geometry_2 is
 
 	end get_center;
 
+
+	function get_nearest (
+		line	: in type_line;
+		point	: in type_point;
+		after	: in boolean := true)
+		return type_point
+	is
+		result : type_point;
+		d : constant type_distance_polar := get_distance (line.start_point, line.end_point);
+	begin
+		if after then -- move forward
+			result := type_point (move (
+				point		=> point,
+				direction	=> + get_angle (d),
+				distance	=> type_distance'small));
+			
+		else -- move backward
+			result := type_point (move (
+				point		=> point,
+				direction	=> - get_angle (d),
+				distance	=> type_distance'small));
+
+		end if;
+		return result;
+	end get_nearest;
+
+	
 	
 	function get_intersection (
 		probe_line		: in type_line_vector;
