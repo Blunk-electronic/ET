@@ -1809,6 +1809,16 @@ package body et_geometry_2.polygons is
 			-- Its status toggles once an intersection has been processed:
 			dir : type_intersection_direction;
 
+
+			-- This is a supportive point right after a given point
+			-- on the given line towards the end of the given line:
+			SP : type_point;
+
+			-- The status of the supportive point tells whether
+			-- it is inside the polygon:
+			IPS : type_inside_polygon_query_result;
+
+			
 			use pac_line_edge_intersections;
 			ic : pac_line_edge_intersections.cursor := result.intersections.first;
 			ic_bak : pac_line_edge_intersections.cursor;
@@ -1816,15 +1826,6 @@ package body et_geometry_2.polygons is
 			delete_intersection : boolean := false;
 			
 			procedure set_direction (i : in out type_intersection_line_edge) is
-				-- A supportive point required in case the intersection
-				-- is a vertex. This point comes after the intersection towards
-				-- the end point of the given line:
-				SP : type_point;
-
-				-- The status of the supportive point tells whether
-				-- it is inside the polygon:
-				IPS : type_inside_polygon_query_result;
-
 				
 				procedure do_it is begin
 					i.direction := dir;
@@ -1889,15 +1890,30 @@ package body et_geometry_2.polygons is
 			-- start point of the given line:
 			case result.start_point is
 				when OUTSIDE =>
-					-- The next intersection after the start point
-					-- must be entering:
+					-- The intersection after the start point
+					-- is entering:
 					dir := ENTERING; 
 										
-				when INSIDE | ON_EDGE | IS_VERTEX =>
-					-- If the start point is somewhere else then
-					-- the next intersection must be leaving:
+				when INSIDE =>
+					-- The intersection after the start point
+					-- is leaving:
 					dir := LEAVING;
 
+				when ON_EDGE | IS_VERTEX =>
+					-- The status of the point right after the
+					-- start point (of the given line) tells whether
+					-- the line enters or leaves the polygon:
+					SP := get_nearest (line, line.start_point);
+					IPS := in_polygon_status (polygon, SP);
+
+					-- If the line is entering then the intersection
+					-- after the start point is leaving:
+					if IPS.status = INSIDE then
+						dir := LEAVING;
+					else
+						dir := ENTERING;
+					end if;
+					
 			end case;
 
 			-- Iterate through the intersections and assign each of 

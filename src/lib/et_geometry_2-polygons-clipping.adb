@@ -465,264 +465,166 @@ package body et_geometry_2.polygons.clipping is
 			
 			procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
-				--procedure query_B_segment (b : in pac_polygon_segments.cursor) is
-					
-					---- Compute the point of intersection:
-					--I2L : type_intersection_of_two_lines := get_intersection (
-						--element (a).segment_line, element (b).segment_line);
+				-- The fully specified intersection of edge A and B:
+				--IAB : type_intersection;
 
-					---- If an intersection exists, then this will be the actual point
-					---- where edge A and edge B meet each other:
-					--IP : type_point;
-
-					--type type_IP_on_edge is (ON_START, BETWEEEN, ON_END);
-					
-					--type type_IP_on_edge_A is new type_IP_on_edge;
-					--ip_on_edge_a : type_IP_on_edge_A;
-					
-					--type type_IP_on_edge_B is new type_IP_on_edge;
-					--ip_on_edge_b : type_IP_on_edge_B;
-
-					
-					--A_start : constant type_point := element (a).segment_line.start_point;
-					--A_end   : constant type_point := element (a).segment_line.end_point;
-
-					--B_start : constant type_point := element (b).segment_line.start_point;
-					--B_end   : constant type_point := element (b).segment_line.end_point;
-
-					
-					---- The inside/outside/on_edge status of the end point of edge A:
-					--IPS_A_END : constant type_inside_polygon_query_result :=
-						--in_polygon_status (polygon_B, A_end);
-
-					---- The inside/outside/on_edge status of the start point of edge A:
-					--IPS_A_START : constant type_inside_polygon_query_result :=
-						--in_polygon_status (polygon_B, A_start);
-
-					
-					---- The fully specified intersection of edge A and B:
-					--IAB : type_intersection;
-
-					--procedure collect_intersection is begin
-						--intersections.append (IAB);
-						--if debug then
-							--put_line ("intersection: " & to_string (IAB));
-						--end if;
-					--end collect_intersection;
-					
-				--begin
-					---- There is nothing to do if
-					---- - the two edges do not intersect each other
-					---- - they run parallel and overlap each other
-					--if I2L.status = EXISTS then
-
-						----put_line ("A " & to_string (element (a).segment_line));
-						----put_line ("B " & to_string (element (b).segment_line));
-						
-						--IP := to_point (I2L.intersection.vector);
-
-						--if IP = A_start then
-							--ip_on_edge_a := ON_START;
-						--elsif IP = A_end then
-							--ip_on_edge_a := ON_END;
-						--else
-							--ip_on_edge_a := BETWEEEN;
-						--end if;
-
-
-						--if IP = B_start then
-							--ip_on_edge_b := ON_START;
-						--elsif IP = B_end then
-							--ip_on_edge_b := ON_END;
-						--else
-							--ip_on_edge_b := BETWEEEN;
-						--end if;
-
-
-						---- CASE 1: most frequently 
-						--if ip_on_edge_a = BETWEEEN and ip_on_edge_b = BETWEEEN then
-							--null;
-							----case IPS_A_START.status is
-								----when OUTSIDE =>
-									----IAB := (IP, ENTERING, element (a).segment_line, element (b).segment_line);
-									----collect_intersection;
-											
-								----when INSIDE =>
-									----IAB := (IP, LEAVING, element (a).segment_line, element (b).segment_line);
-									----collect_intersection;
-
-								----when ON_EDGE =>
-									----raise constraint_error;
-
-							----end case;
-
-						--else
-							--case ip_on_edge_A is
-								--when ON_START =>
-									--null;
-									----case ip_on_edge_B is
-										----when ON_START =>
-											----case IPS_A_END.status is
-												----when OUTSIDE =>
-													----IAB := (IP, LEAVING, element (a).segment_line, element (b).segment_line);
-													----collect_intersection;
-
-												----when INSIDE =>
-													----IAB := (IP, ENTERING, element (a).segment_line, element (b).segment_line);
-													----collect_intersection;
-
-												----when ON_EDGE =>
-													----raise constraint_error; -- CS should never happen
-											----end case;
-
-											
-										----when ON_END =>
-											----null; -- ignore
-
-										----when BETWEEEN =>
-											----null;
-									----end case;
-
-			
-								--when ON_END =>
-									--null; -- ignore
-
-									
-								--when BETWEEEN =>
-
-									--case ip_on_edge_B is
-										--when ON_START =>
-											--null;
-					
-										--when ON_END =>
-											--null;
-
-										--when BETWEEEN =>
-											--null; -- already handled
-									--end case;
-
-							--end case;
-									
-							----case IPS_A_START.status is
-								----when OUTSIDE =>
-									----case IPS_A_END.status is
-										----when OUTSIDE =>
-											----IAB := (IP, ENTERING, element (a).segment_line, element (b).segment_line);
-											----collect_intersection;
-
-										----when INSIDE =>
-											----IAB := (IP, ENTERING, element (a).segment_line, element (b).segment_line);
-											----collect_intersection;
-
-										----when ON_EDGE =>
-											----null;
-									----end case;
-											
-								----when INSIDE =>
-									----case IPS_A_END.status is
-										----when OUTSIDE =>
-											----null;
-
-										----when INSIDE =>
-											----null;
-
-										----when ON_EDGE =>
-											----null;
-									----end case;
-
-
-								----when ON_EDGE =>
-									----case IPS_A_END.status is
-										----when OUTSIDE =>
-											----null;
-
-										----when INSIDE =>
-											----null;
-
-										----when ON_EDGE =>
-											----null;
-									----end case;
-							----end case;
-
-							
-							--null;
-						--end if;
-								
-						---- CASE 1:
-						---- A-line.START lies on B-line.START.
-						---- Or in other words: vertex of A lies on a vertex of B:
-						----if A_start = B_start then
-							----SP := element (a).segment_line.start_point;
-
-							------ Where does the end point of the A-line lie ?
-							----IPQ := in_polygon_status (polygon_B, element (a).segment_line.end_point);
-
-							----case IPQ.status is
-								----when OUTSIDE =>  -- A-line ends outside polygon B
-									----IAB := (SP, LEAVING, element (a).segment_line, element (b).segment_line);
-									----collect_intersection;
-									
-								----when INSIDE =>   -- A-line ends inside polygon B
-									----IAB := (SP, ENTERING, element (a).segment_line, element (b).segment_line);
-									----collect_intersection;
-									
-								----when ON_EDGE => null;
-							----end case;
-
-
-						----else
-							------ CASE 2:
-							------ If intersection lies on the start or end point 
-							------ of the B-line and 
-							------ if start or end point of A-line lies on the edge of
-							------ polygon B: ignore this intersection
-							----SP := to_point (I2L.intersection.vector);
-							
-							----if (SP = element (b).segment_line.start_point or SP = element (b).segment_line.end_point) 
-							----and (in_polygon_status (polygon_B, element (a).segment_line.start_point).status = ON_EDGE
-								----or in_polygon_status (polygon_B, element (a).segment_line.end_point).status = ON_EDGE)
-							----then
-								----null; -- ignore
-							----else
-
-								------ CASE 3:
-								------ The two edges do intersect somewhere else:
-
-								------ Depending on the inside/outside status of the start point of edge A
-								------ we set the direction of the intersection.
-								------ As supportive information the affected edges are also stored in IAB.
-								------ This information serves later to create two separate lists of vertices
-								------ for the A and the B polygon:
-								----IPQ := in_polygon_status (polygon_B, element (a).segment_line.start_point);
-								
-								----case IPQ.status is
-									----when INSIDE =>
-										----IAB := (SP, LEAVING, element (a).segment_line, element (b).segment_line);
-										----collect_intersection;
-										
-									----when OUTSIDE | ON_EDGE =>
-										----IAB := (SP, ENTERING, element (a).segment_line, element (b).segment_line);
-										----collect_intersection;
-										
-								----end case;
-							----end if;
-							
-						----end if;
-
+				procedure collect_intersections is begin
+					null;
+					--intersections.append (IAB);
+					--if debug then
+						--put_line ("intersection: " & to_string (IAB));
 					--end if;
-				--end query_B_segment;
+				end collect_intersections;
 
-				LP_STS : constant type_line_to_polygon_status := 
+				--procedure use_end_point_as_leaving_intersection is begin
+					--null;
+				--end;
+
+
+				--procedure use_end_point_as_entering_intersection is begin
+					--null;
+				--end;
+
+				
+				LPS : constant type_line_to_polygon_status := 
 					get_line_to_polygon_status (polygon_B, element (a).segment_line);
 				
 			begin			
-				-- Traverse the edges of polygon B:
-				--polygon_B.contours.segments.iterate (query_B_segment'access);
 
-				--case LP_STS.start_point is
-					--when OUTSIDE
-				--end case;
-				null;
+				case LPS.start_point is
+					when OUTSIDE =>
+						case LPS.end_point is
+							when OUTSIDE =>
+								if LPS.intersections.is_empty then
+									-- edge passes the polygon
+									null;
+								else
+									-- edge runs through the polygon
+									collect_intersections;
+								end if;
+								
+							when INSIDE =>
+								if LPS.intersections.is_empty then
+									-- CS: should never happen
+									raise constraint_error;
+								else
+									-- edge runs from outside to inside
+									collect_intersections;
+								end if;
+
+							when ON_EDGE =>
+								if LPS.intersections.is_empty then
+									-- edge comes from outside, does not
+									-- cross any edge of the polygon and ends 
+									-- on edge of polygon:
+									--use_end_point_as_entering_intersection;
+									null; -- CS ?
+								else
+									-- edge comes from outside, 
+									-- crosses one or more edges of the polygon and ends 
+									-- on edge of polygon:
+									collect_intersections;
+									--use_end_point_as_leaving_intersection;
+									null; -- CS ?
+								end if;
+								
+							when IS_VERTEX =>
+								if LPS.intersections.is_empty then
+									-- edge comes from outside, does not
+									-- cross any edge of the polygon and ends 
+									-- on a vertex of polygon:
+									--use_end_point_as_entering_intersection;
+									null; -- CS ?
+								else
+									-- edge comes from outside, 
+									-- crosses one or more edges of the polygon and ends 
+									-- on a vertex of polygon:
+									collect_intersections;
+									--use_end_point_as_leaving_intersection;
+									null; -- CS ?
+								end if;
+							
+						end case;
+
+						
+					when INSIDE =>
+						case LPS.end_point is
+							when OUTSIDE =>
+								if LPS.intersections.is_empty then
+									-- CS: should never happen
+									raise constraint_error;
+								else
+									-- edge runs from inside to outside of the polygon:
+									collect_intersections;
+								end if;
+
+							when INSIDE =>
+								if LPS.intersections.is_empty then
+									-- edge is completely inside the polygon
+									-- without touching the polygon edges or vertices:
+									null;
+								else
+									-- edge starts and ends inside 
+									collect_intersections;
+								end if;
+
+							when ON_EDGE =>
+								if LPS.intersections.is_empty then
+									-- edge starts inside and ends on an edge of the polygon
+									--use_end_point_as_leaving_intersection;
+									null; -- CS ?
+								else
+									-- edge starts inside and ends on edge
+									collect_intersections;
+								end if;
+
+							when IS_VERTEX =>
+								if LPS.intersections.is_empty then
+									-- edge starts inside and ends on a vertex of the polygon
+									null; -- CS ?
+								else
+									-- edge starts inside and ends on vertex
+									collect_intersections;
+								end if;
+
+						end case;
+
+						
+					when ON_EDGE =>
+						case LPS.end_point is
+							when OUTSIDE =>
+								null; -- CS ?
+								
+							when INSIDE =>
+								null; -- CS ?
+								
+							when ON_EDGE =>
+								null; -- CS ?
+								
+							when IS_VERTEX =>
+								null; -- CS ?
+								
+						end case;
+
+						
+					when IS_VERTEX =>
+						case LPS.end_point is
+							when OUTSIDE =>
+								null; -- CS ?
+								
+							when INSIDE =>
+								null; -- CS ?
+								
+							when ON_EDGE =>
+								null; -- CS ?
+								
+							when IS_VERTEX =>
+								null; -- CS ?
+								
+						end case;
+
+				end case;
+
 			end query_A_segment;
 
 		begin
