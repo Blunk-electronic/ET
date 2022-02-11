@@ -1184,7 +1184,7 @@ package body et_geometry_2.polygons is
 	
 	
 	function to_string (
-		i : in type_inside_polygon_query_result)
+		i : in type_point_to_polygon_status)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -1231,10 +1231,10 @@ package body et_geometry_2.polygons is
 
 
 	
-	function in_polygon_status (
+	function get_point_to_polygon_status (
 		polygon		: in type_polygon_base;	
 		point		: in type_point)
-		return type_inside_polygon_query_result 
+		return type_point_to_polygon_status 
 	is
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
@@ -1260,7 +1260,7 @@ package body et_geometry_2.polygons is
 		--    - odd -> point is inside the polygon area
 		--    - zero or even -> point is outside the polygon area
 		
-		result : type_inside_polygon_query_result := (start => point, others => <>);
+		result : type_point_to_polygon_status := (start => point, others => <>);
 
 		line_pre : constant type_line := (
 				start_point	=> point,
@@ -1502,7 +1502,8 @@ package body et_geometry_2.polygons is
 		end sort_x_values;
 
 		
-	begin -- in_polygon_status
+	begin -- get_point_to_polygon_status
+		
 		--put_line ("Y-threshold:" & to_string (y_threshold));
 		
 		if polygon.contours.circular then
@@ -1543,7 +1544,7 @@ package body et_geometry_2.polygons is
 		end if;
 		
 		return result;
-	end in_polygon_status;
+	end get_point_to_polygon_status;
 
 	
 
@@ -1559,7 +1560,7 @@ package body et_geometry_2.polygons is
 		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
 		-- figure out whether the point is real or virtual:
-		case in_polygon_status (polygon, result.point).status is
+		case get_point_to_polygon_status (polygon, result.point).status is
 			when INSIDE =>
 				result.status := REAL;
 				
@@ -1715,12 +1716,12 @@ package body et_geometry_2.polygons is
 		line_center : type_point;
 		
 		procedure set_line_start is 
-			IPQ : type_inside_polygon_query_result;
+			IPQ : type_point_to_polygon_status;
 		begin
 			if is_vertex (polygon, line.start_point) then
 				result.start_point := (position => IS_VERTEX, others => <>);
 			else
-				IPQ := in_polygon_status (polygon, line.start_point);
+				IPQ := get_point_to_polygon_status (polygon, line.start_point);
 				
 				case IPQ.status is
 					when INSIDE => 
@@ -1738,12 +1739,12 @@ package body et_geometry_2.polygons is
 
 		
 		procedure set_line_end is 
-			IPQ : type_inside_polygon_query_result;
+			IPQ : type_point_to_polygon_status;
 		begin
 			if is_vertex (polygon, line.end_point) then
 				result.end_point := IS_VERTEX;
 			else
-				IPQ := in_polygon_status (polygon, line.end_point);
+				IPQ := get_point_to_polygon_status (polygon, line.end_point);
 				
 				case IPQ.status is
 					when INSIDE => 
@@ -1817,7 +1818,7 @@ package body et_geometry_2.polygons is
 
 			-- The status of the supportive point tells whether
 			-- it is inside the polygon:
-			IPS : type_inside_polygon_query_result;
+			IPS : type_point_to_polygon_status;
 
 			
 			use pac_line_edge_intersections;
@@ -1852,7 +1853,7 @@ package body et_geometry_2.polygons is
 				
 				if is_vertex (polygon, i.place) then
 					SP := get_nearest (line, i.place);
-					IPS := in_polygon_status (polygon, SP);
+					IPS := get_point_to_polygon_status (polygon, SP);
 					
 					case dir is
 						when ENTERING =>
@@ -1905,7 +1906,7 @@ package body et_geometry_2.polygons is
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
 					SP := get_nearest (line, line.start_point);
-					IPS := in_polygon_status (polygon, SP);
+					IPS := get_point_to_polygon_status (polygon, SP);
 					
 					-- If the line is entering then the intersection
 					-- after the start point is leaving:
@@ -1922,7 +1923,7 @@ package body et_geometry_2.polygons is
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
 					SP := get_nearest (line, line.start_point);
-					IPS := in_polygon_status (polygon, SP);
+					IPS := get_point_to_polygon_status (polygon, SP);
 					
 					-- If the line is entering then the intersection
 					-- after the start point is leaving:
@@ -1998,7 +1999,7 @@ package body et_geometry_2.polygons is
 
 			--put_line ("center" & to_string (line_center));
 			
-			case in_polygon_status (polygon, line_center).status is
+			case get_point_to_polygon_status (polygon, line_center).status is
 				when INSIDE => result.center_point := INSIDE;
 				when OUTSIDE => result.center_point := OUTSIDE;
 				when ON_EDGE => result.center_point := ON_EDGE;
@@ -2023,7 +2024,7 @@ package body et_geometry_2.polygons is
 	--is
 		--result : boolean := false;
 		
-		--IPQ : type_inside_polygon_query_result;
+		--IPQ : type_point_to_polygon_status;
 		
 		--proceed : aliased boolean := true;
 
@@ -2049,8 +2050,8 @@ package body et_geometry_2.polygons is
 
 		
 	--begin
-		--IPQ_start := in_polygon_status (polygon, line.start_point);
-		--IPQ_end   := in_polygon_status (polygon, line.end_point);
+		--IPQ_start := get_point_to_polygon_status (polygon, line.start_point);
+		--IPQ_end   := get_point_to_polygon_status (polygon, line.end_point);
 
 		--case IPQ_start.status is
 			--when INSIDE => result := true;

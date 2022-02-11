@@ -66,13 +66,13 @@ package body et_geometry_2.polygons.offsetting is
 			line_direction : type_rotation := get_direction (line);
 			dir_scratch : type_rotation;			
 			test_point : type_point;
-			tp_status : type_inside_polygon_query_result;
+			tp_status : type_point_to_polygon_status;
 
 		begin
 			dir_scratch := add (line_direction, +90.0);
 			test_point := type_point (move (center, dir_scratch, type_distance'small));
 			--put_line ("tp " & to_string (test_point));
-			tp_status := in_polygon_status (polygon, test_point);
+			tp_status := get_point_to_polygon_status (polygon, test_point);
 
 			if tp_status.status = INSIDE then
 				--put_line ("inside");

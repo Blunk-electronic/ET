@@ -291,7 +291,7 @@ package et_geometry_2.polygons is
 	-- The general approach is:
 	-- A ray that starts at point and travels in zero degees 
 	-- may intersect the polygon edges.
-	-- The result of such a query is the type_inside_polygon_query_result
+	-- The result of such a query is the type_point_to_polygon_status
 	-- that contains a status flag (inside/outside) and a list
 	-- of x values where the ray intersects the polygon. For completeness
 	-- the original point where the probe line has started is also provided.
@@ -346,7 +346,7 @@ package et_geometry_2.polygons is
 
 		
 		
-	type type_inside_polygon_query_result is record  -- CS rename to type_point_to_polygon_status
+	type type_point_to_polygon_status is record
 		-- The point where the probe line has started:
 		start			: type_point; 
 
@@ -365,17 +365,17 @@ package et_geometry_2.polygons is
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
-		i : in type_inside_polygon_query_result)
+		i : in type_point_to_polygon_status)
 		return string;
 
 	
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge:
-	function in_polygon_status (
+	function get_point_to_polygon_status (
 		polygon		: in type_polygon_base;	
 		point		: in type_point)
-		return type_inside_polygon_query_result;
-	-- CS rename to get_point_to_polygon_status
+		return type_point_to_polygon_status;
+
 
 	
 	-- For finding the lower left corner of a polygon this type
@@ -469,7 +469,7 @@ package et_geometry_2.polygons is
 	--end record;
 
 	type type_start_point (position : type_line_end := OUTSIDE) is record
-	--type type_start_point (position : type_line_end) is record
+	--type type_start_point (position : type_line_e	nd) is record
 		case position is
 			when OUTSIDE | INSIDE => null;
 			when ON_EDGE =>

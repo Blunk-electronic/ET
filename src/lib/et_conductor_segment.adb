@@ -156,7 +156,7 @@ package body et_conductor_segment is
 		end build_polygon;
 
 		--distance : type_distance_polar;
-		ipq : type_inside_polygon_query_result;
+		ipq : type_point_to_polygon_status;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
@@ -169,7 +169,7 @@ package body et_conductor_segment is
 
 		
 		--distance := get_shortest_distance (polygon, point);
-		ipq := in_polygon_status (polygon, point);
+		ipq := get_point_to_polygon_status (polygon, point);
 
 		--put_line ("p" & to_string (point));
 		--put_line ("d" & to_string (get_absolute (distance)));
@@ -310,13 +310,13 @@ package body et_conductor_segment is
 		end build_polygon;
 
 		--distance : type_distance_polar;
-		ipq : type_inside_polygon_query_result;
+		ipq : type_point_to_polygon_status;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
 
 		--distance := get_shortest_distance (polygon, point);
-		ipq := in_polygon_status (polygon, point);
+		ipq := get_point_to_polygon_status (polygon, point);
 
 		case ipq.status is
 			when INSIDE =>
