@@ -468,9 +468,25 @@ package et_geometry_2.polygons is
 		--end case;
 	--end record;
 
+	type type_start_point (position : type_line_end := OUTSIDE) is record
+	--type type_start_point (position : type_line_end) is record
+		case position is
+			when OUTSIDE | INSIDE => null;
+			when ON_EDGE =>
+				edge				: pac_polygon_segments.cursor;
+				direction_on_edge	: type_intersection_direction;
+
+			when IS_VERTEX =>
+				-- CS ? edge_1, edge_2		: pac_polygon_segments.cursor;
+				direction_on_vertex	: type_intersection_direction;
+		end case;
+	end record;
+	
 		
 	type type_line_to_polygon_status is record
-		start_point, end_point : type_line_end := OUTSIDE;
+		start_point : type_start_point;
+
+		end_point : type_line_end := OUTSIDE;
 		intersections : pac_line_edge_intersections.list;
 		
 		center_point : type_line_center := OUTSIDE;		
