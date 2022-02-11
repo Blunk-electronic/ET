@@ -178,7 +178,7 @@ package body et_conductor_segment is
 			when INSIDE =>
 				result := - get_absolute (ipq.distance);
 				
-			when OUTSIDE | ON_EDGE =>
+			when OUTSIDE | ON_EDGE | ON_VERTEX =>
 				result := get_absolute (ipq.distance);
 
 		end case;
@@ -322,7 +322,7 @@ package body et_conductor_segment is
 			when INSIDE =>
 				result := - get_absolute (ipq.distance);
 				
-			when OUTSIDE | ON_EDGE =>
+			when OUTSIDE | ON_EDGE | ON_VERTEX =>
 				result := get_absolute (ipq.distance);
 		end case;
 		

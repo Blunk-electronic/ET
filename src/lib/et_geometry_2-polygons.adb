@@ -79,6 +79,39 @@ package body et_geometry_2.polygons is
 	end get_segment_edge;
 	
 
+
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		point	: in type_point)
+		return pac_polygon_segments.cursor
+	is
+		result : pac_polygon_segments.cursor;
+
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE => 
+					if on_line (point, element (c).segment_line) then
+						result := c;
+						proceed := false; -- abort iteration
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+		end query_segment;
+		
+	begin
+		if is_vertex (polygon, point) then
+			raise constraint_error with "Point is a vertex !";
+		else
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_segment_edge;
+
 	
 	
 	function to_string (
@@ -1501,6 +1534,9 @@ package body et_geometry_2.polygons is
 
 		end sort_x_values;
 
+
+		edge_1, edge_2 : pac_polygon_segments.cursor;
+
 		
 	begin -- get_point_to_polygon_status
 		
@@ -1534,13 +1570,31 @@ package body et_geometry_2.polygons is
 		end if;
 
 
-		-- Compute the distance of the given point to the polygon.
-		-- If the distance is zero then the given point lies on
-		-- a vertex or on an edge:
-		result.distance := get_shortest_distance (polygon, point);
+		-- Figure out whether the given point is a vertex, whether
+		-- it lies on an edge or whether it lies somewhere else:
+		if is_vertex (polygon, point) then
+			result.status := ON_VERTEX;
+			-- NOTE: result.distance is zero by default
 
-		if get_absolute (result.distance) = zero then
-			result.status := ON_EDGE;
+			-- CS edge_1 and edge_2
+		else
+			edge_1 := get_segment_edge (polygon, point);
+
+			if edge_1 /= pac_polygon_segments.no_element then
+				result.status := ON_EDGE;
+				-- NOTE: result.distance is zero by default
+			else
+				-- Point is somewhere else.
+				
+				-- Compute the distance of the given point to the polygon.
+				-- If the distance is zero then the given point lies on
+				-- a vertex or on an edge:
+				result.distance := get_shortest_distance (polygon, point);
+			end if;
+			
+			--if get_absolute (result.distance) = zero then
+				--result.status := ON_EDGE;
+			--end if;
 		end if;
 		
 		return result;
@@ -1564,7 +1618,7 @@ package body et_geometry_2.polygons is
 			when INSIDE =>
 				result.status := REAL;
 				
-			when OUTSIDE | ON_EDGE =>
+			when OUTSIDE | ON_EDGE | ON_VERTEX =>
 				result.status := VIRTUAL;
 		end case;
 		
@@ -1719,7 +1773,7 @@ package body et_geometry_2.polygons is
 			IPQ : type_point_to_polygon_status;
 		begin
 			if is_vertex (polygon, line.start_point) then
-				result.start_point := (position => IS_VERTEX, others => <>);
+				result.start_point := (position => ON_VERTEX, others => <>);
 			else
 				IPQ := get_point_to_polygon_status (polygon, line.start_point);
 				
@@ -1733,6 +1787,9 @@ package body et_geometry_2.polygons is
 					when ON_EDGE => 
 						result.start_point := (position => ON_EDGE, others => <>);
 
+					when ON_VERTEX => 
+						result.start_point := (position => ON_VERTEX, others => <>);
+						
 				end case;
 			end if;
 		end set_line_start;
@@ -1742,7 +1799,7 @@ package body et_geometry_2.polygons is
 			IPQ : type_point_to_polygon_status;
 		begin
 			if is_vertex (polygon, line.end_point) then
-				result.end_point := IS_VERTEX;
+				result.end_point := ON_VERTEX;
 			else
 				IPQ := get_point_to_polygon_status (polygon, line.end_point);
 				
@@ -1756,6 +1813,9 @@ package body et_geometry_2.polygons is
 					when ON_EDGE => 
 						result.end_point := ON_EDGE;
 
+					when ON_VERTEX => 
+						result.end_point := ON_VERTEX;
+						
 				end case;
 			end if;
 		end set_line_end;
@@ -1918,7 +1978,7 @@ package body et_geometry_2.polygons is
 						dir := ENTERING;
 					end if;
 
-				when IS_VERTEX =>
+				when ON_VERTEX =>
 					-- The status of the point right after the
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
@@ -2002,7 +2062,7 @@ package body et_geometry_2.polygons is
 			case get_point_to_polygon_status (polygon, line_center).status is
 				when INSIDE => result.center_point := INSIDE;
 				when OUTSIDE => result.center_point := OUTSIDE;
-				when ON_EDGE => result.center_point := ON_EDGE;
+				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;
 			end case;
 			
 		else

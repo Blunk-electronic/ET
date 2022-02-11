@@ -528,7 +528,7 @@ package body et_geometry_2.polygons.clipping is
 									null; -- CS ?
 								end if;
 								
-							when IS_VERTEX =>
+							when ON_VERTEX =>
 								if LPS.intersections.is_empty then
 									-- edge comes from outside, does not
 									-- cross any edge of the polygon and ends 
@@ -578,7 +578,7 @@ package body et_geometry_2.polygons.clipping is
 									collect_intersections;
 								end if;
 
-							when IS_VERTEX =>
+							when ON_VERTEX =>
 								if LPS.intersections.is_empty then
 									-- edge starts inside and ends on a vertex of the polygon
 									null; -- CS ?
@@ -601,13 +601,13 @@ package body et_geometry_2.polygons.clipping is
 							when ON_EDGE =>
 								null; -- CS ?
 								
-							when IS_VERTEX =>
+							when ON_VERTEX =>
 								null; -- CS ?
 								
 						end case;
 
 						
-					when IS_VERTEX =>
+					when ON_VERTEX =>
 						case LPS.end_point is
 							when OUTSIDE =>
 								null; -- CS ?
@@ -618,7 +618,7 @@ package body et_geometry_2.polygons.clipping is
 							when ON_EDGE =>
 								null; -- CS ?
 								
-							when IS_VERTEX =>
+							when ON_VERTEX =>
 								null; -- CS ?
 								
 						end case;

@@ -102,6 +102,20 @@ package et_geometry_2.polygons is
 		return pac_polygon_segments.cursor;
 	
 
+	-- Returns the cursor to the edge
+	-- where the given point lies on.
+	-- If the given point is a vertex then an
+	-- exception is raised.
+	-- If the polygon consists of just a circle then an
+	-- exception is raised.
+	-- If the given point does not lie on an edge then
+	-- the return is no_element:
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		point	: in type_point)
+		return pac_polygon_segments.cursor;
+
+	
 	
 	-- Returns the segments of a polygon in human readable form:
 	function to_string (
@@ -336,16 +350,17 @@ package et_geometry_2.polygons is
 
 	-- The location of a point relative to a polygon:
 	type type_location is (
-		OUTSIDE,
+		ON_EDGE,
 		INSIDE,
-		ON_EDGE);
-	-- CS unify with type_line_end and type_line_center
+		OUTSIDE,
+		ON_VERTEX);
 	
 	
 	function to_string (status : in type_location) return string;
 
 		
 		
+	--type type_point_to_polygon_status (status : type_location) is record
 	type type_point_to_polygon_status is record
 		-- The point where the probe line has started:
 		start			: type_point; 
@@ -412,13 +427,13 @@ package et_geometry_2.polygons is
 		return boolean;
 
 		
-	type type_line_end is (
-		ON_EDGE,
-		INSIDE,
-		OUTSIDE,
-		IS_VERTEX);
+	--type type_line_end is (
+		--ON_EDGE,
+		--INSIDE,
+		--OUTSIDE,
+		--IS_VERTEX);
 
-	subtype type_line_center is type_line_end range ON_EDGE .. OUTSIDE;
+	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
 
 	
 	type type_intersection_direction is (
@@ -468,7 +483,7 @@ package et_geometry_2.polygons is
 		--end case;
 	--end record;
 
-	type type_start_point (position : type_line_end := OUTSIDE) is record
+	type type_start_point (position : type_location := OUTSIDE) is record
 	--type type_start_point (position : type_line_e	nd) is record
 		case position is
 			when OUTSIDE | INSIDE => null;
@@ -476,7 +491,7 @@ package et_geometry_2.polygons is
 				edge				: pac_polygon_segments.cursor;
 				direction_on_edge	: type_intersection_direction;
 
-			when IS_VERTEX =>
+			when ON_VERTEX =>
 				-- CS ? edge_1, edge_2		: pac_polygon_segments.cursor;
 				direction_on_vertex	: type_intersection_direction;
 		end case;
@@ -486,7 +501,7 @@ package et_geometry_2.polygons is
 	type type_line_to_polygon_status is record
 		start_point : type_start_point;
 
-		end_point : type_line_end := OUTSIDE;
+		end_point : type_location := OUTSIDE;
 		intersections : pac_line_edge_intersections.list;
 		
 		center_point : type_line_center := OUTSIDE;		
