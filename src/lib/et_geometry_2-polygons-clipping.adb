@@ -359,24 +359,27 @@ package body et_geometry_2.polygons.clipping is
 		-- The segment is indicated by cursor c.
 		-- Aborts the iteration on the first vertex that is
 		-- outside polygon B.
-		procedure query_segment (c : in pac_polygon_segments.cursor) is
-			IPQ : type_point_to_polygon_status;
-		begin
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
-					IPQ := get_point_to_polygon_status (polygon_B, element (c).segment_line.start_point);
-					
-					if IPQ.status = OUTSIDE then
-						proceed := false; -- abort iteration
-					end if;
+					declare
+						IPQ : constant type_point_to_polygon_status :=
+							get_point_to_polygon_status (polygon_B, element (c).segment_line.start_point);
+					begin
+						if IPQ.status = OUTSIDE then
+							proceed := false; -- abort iteration
+						end if;
+					end;
 					
 				when ARC =>
-					IPQ := get_point_to_polygon_status (polygon_B, element (c).segment_arc.start_point);
-					
-					if IPQ.status = OUTSIDE then
-						proceed := false; -- abort iteration
-					end if;
-
+					declare
+						IPQ : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon_B, element (c).segment_arc.start_point);
+					begin
+						if IPQ.status = OUTSIDE then
+							proceed := false; -- abort iteration
+						end if;
+					end;
 			end case;
 		end query_segment;
 		

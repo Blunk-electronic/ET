@@ -51,6 +51,20 @@ package body et_geometry_2.polygons is
 	use pac_polygon_segments;
 
 
+	function to_string (
+		segment	: in type_polygon_segment)
+		return string
+	is begin
+		case segment.shape is
+			when LINE =>
+				return ("line segment: " & to_string (segment.segment_line));
+
+			when ARC =>
+				return ("arc segment: " & to_string (segment.segment_arc));
+		end case;
+	end to_string;
+
+
 	procedure iterate (
 		segments	: in pac_polygon_segments.list;
 		process		: not null access procedure (position : in pac_polygon_segments.cursor);
@@ -86,7 +100,6 @@ package body et_geometry_2.polygons is
 		return pac_polygon_segments.cursor
 	is
 		result : pac_polygon_segments.cursor;
-
 		proceed : aliased boolean := true;
 
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
@@ -102,6 +115,7 @@ package body et_geometry_2.polygons is
 		end query_segment;
 		
 	begin
+		-- Make sure the given point is NOT a vertex:
 		if is_vertex (polygon, point) then
 			raise constraint_error with "Point is a vertex !";
 		else
@@ -111,6 +125,66 @@ package body et_geometry_2.polygons is
 		-- CS exception message if polygon consists of just a circle.
 		return result;
 	end get_segment_edge;
+
+
+
+	function get_neigboring_edges (
+		polygon	: in type_polygon_base;
+		vertex	: in type_point)
+		return type_neigboring_edges
+	is
+		result : type_neigboring_edges;
+		proceed : aliased boolean := true;
+
+		end_found, start_found : boolean := false;
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			put_line ("test: " & to_string (element (c)));
+			
+			case element (c).shape is
+			
+				when LINE => 
+					if element (c).segment_line.end_point = vertex then
+						put_line ("end");
+						result.edge_1 := c;
+						end_found := true;
+					end if;
+
+					if element (c).segment_line.start_point = vertex then
+						put_line ("start");
+						result.edge_2 := c;
+						start_found := true;
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+
+			-- Abort iteration once start and end point have been found
+			-- ("proceed" is low-active):
+			proceed := not (end_found and start_found);
+			
+		end query_segment;
+
+	begin
+		-- Make sure the given point IS a vertex:
+		if is_vertex (polygon, vertex) then
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		else
+			raise constraint_error with "Point is a vertex !";
+		end if;
+
+		-- Safety check:
+		-- Two edges must have been found. Otherwise raise exception:
+		if result.edge_1 = pac_polygon_segments.no_element 
+		or result.edge_2 = pac_polygon_segments.no_element
+		then
+			raise constraint_error with "Search for neigboring edges incomplete !";
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_neigboring_edges;
+
 
 	
 	
@@ -1292,9 +1366,17 @@ package body et_geometry_2.polygons is
 		-- 2. The number of intersections after the start point then tells us:
 		--    - odd -> point is inside the polygon area
 		--    - zero or even -> point is outside the polygon area
-		
-		result : type_point_to_polygon_status := (start => point, others => <>);
 
+		-- These are the components of the return value.
+		-- In the end of this function they will be assembled 
+		-- to the actual return:
+		result_status : type_location;
+		result_intersections : pac_probe_line_intersections.list;
+		result_distance : type_distance_polar;
+		result_edge : pac_polygon_segments.cursor;
+		result_neigboring_edges : type_neigboring_edges;
+
+		
 		line_pre : constant type_line := (
 				start_point	=> point,
 				end_point	=> type_point (set (get_x (point) + 1.0, get_y (point))));
@@ -1327,7 +1409,7 @@ package body et_geometry_2.polygons is
 			-- point then we ignore it:
 			if xi >= type_float_internal (get_x (point)) then
 				
-				append (result.intersections, (
+				append (result_intersections, (
 					x_position	=> xi,
 					angle		=> intersection.angle,
 					segment		=> segment));
@@ -1496,7 +1578,7 @@ package body et_geometry_2.polygons is
 			use pac_probe_line_intersections_sorting;
 			--c : pac_probe_line_intersections.cursor;
 		begin
-			sort (result.intersections);
+			sort (result_intersections);
 
 			-- for testing/verifying only:
 			--put_line ("with redundant intersections:");
@@ -1534,9 +1616,6 @@ package body et_geometry_2.polygons is
 
 		end sort_x_values;
 
-
-		edge_1, edge_2 : pac_polygon_segments.cursor;
-
 		
 	begin -- get_point_to_polygon_status
 		
@@ -1555,17 +1634,17 @@ package body et_geometry_2.polygons is
 		sort_x_values;
 
 		-- get the total number of intersections
-		it := pac_probe_line_intersections.length (result.intersections);
+		it := pac_probe_line_intersections.length (result_intersections);
 		--put_line ("intersections total:" & count_type'image (it));
 		
 		-- If the total number of intersections is an odd number, then the given point
 		-- is inside the polygon.
 		-- If the total is even, then the point is outside the polygon.
 		if (it rem 2) = 1 then
-			result.status := INSIDE;
+			result_status := INSIDE;
 			--put_line ("inside");
 		else 
-			result.status := OUTSIDE;
+			result_status := OUTSIDE;
 			--put_line ("outside");
 		end if;
 
@@ -1573,15 +1652,16 @@ package body et_geometry_2.polygons is
 		-- Figure out whether the given point is a vertex, whether
 		-- it lies on an edge or whether it lies somewhere else:
 		if is_vertex (polygon, point) then
-			result.status := ON_VERTEX;
+			result_status := ON_VERTEX;
 			-- NOTE: result.distance is zero by default
 
-			-- CS edge_1 and edge_2
+			-- Get the edges that meet on the given point:
+			result_neigboring_edges := get_neigboring_edges (polygon, point);
 		else
-			edge_1 := get_segment_edge (polygon, point);
+			result_edge := get_segment_edge (polygon, point);
 
-			if edge_1 /= pac_polygon_segments.no_element then
-				result.status := ON_EDGE;
+			if result_edge /= pac_polygon_segments.no_element then
+				result_status := ON_EDGE;
 				-- NOTE: result.distance is zero by default
 			else
 				-- Point is somewhere else.
@@ -1589,15 +1669,29 @@ package body et_geometry_2.polygons is
 				-- Compute the distance of the given point to the polygon.
 				-- If the distance is zero then the given point lies on
 				-- a vertex or on an edge:
-				result.distance := get_shortest_distance (polygon, point);
+				result_distance := get_shortest_distance (polygon, point);
 			end if;
 			
-			--if get_absolute (result.distance) = zero then
-				--result.status := ON_EDGE;
-			--end if;
 		end if;
+
+
+		-- Assemble the return:
+		case result_status is
+			when INSIDE =>
+				return (INSIDE, point, result_intersections, result_distance);
+					
+			when OUTSIDE =>
+				return (OUTSIDE, point, result_intersections, result_distance);
+				
+			when ON_EDGE =>
+				return (ON_EDGE, point, result_intersections, result_edge);
+				
+			when ON_VERTEX =>
+				return (ON_VERTEX, point, result_intersections, result_neigboring_edges);
+				
+		end case;
 		
-		return result;
+		--return result;
 	end get_point_to_polygon_status;
 
 	
@@ -1770,12 +1864,13 @@ package body et_geometry_2.polygons is
 		line_center : type_point;
 		
 		procedure set_line_start is 
-			IPQ : type_point_to_polygon_status;
+			IPQ : constant type_point_to_polygon_status := 
+				get_point_to_polygon_status (polygon, line.start_point);
 		begin
-			if is_vertex (polygon, line.start_point) then
-				result.start_point := (position => ON_VERTEX, others => <>);
-			else
-				IPQ := get_point_to_polygon_status (polygon, line.start_point);
+			--if is_vertex (polygon, line.start_point) then
+				--result.start_point := (position => ON_VERTEX, others => <>);
+			--else
+				--IPQ := get_point_to_polygon_status (polygon, line.start_point);
 				
 				case IPQ.status is
 					when INSIDE => 
@@ -1785,23 +1880,32 @@ package body et_geometry_2.polygons is
 						result.start_point := (position => OUTSIDE);
 
 					when ON_EDGE => 
-						result.start_point := (position => ON_EDGE, others => <>);
+						result.start_point := (
+							position	=> ON_EDGE, 
+							edge		=> IPQ.edge,
+							others 		=> <>);
 
 					when ON_VERTEX => 
-						result.start_point := (position => ON_VERTEX, others => <>);
+						result.start_point := (
+							position	=> ON_VERTEX, 
+							--edge_1		=> IPQ.edge_1,
+							--edge_2		=> IPQ.edge_2,
+							others 		=> <>);
+
 						
 				end case;
-			end if;
+			--end if;
 		end set_line_start;
 
 		
 		procedure set_line_end is 
-			IPQ : type_point_to_polygon_status;
+			IPQ : constant type_point_to_polygon_status := 
+				get_point_to_polygon_status (polygon, line.end_point);
 		begin
-			if is_vertex (polygon, line.end_point) then
-				result.end_point := ON_VERTEX;
-			else
-				IPQ := get_point_to_polygon_status (polygon, line.end_point);
+			--if is_vertex (polygon, line.end_point) then
+				--result.end_point := ON_VERTEX;
+			--else
+				--IPQ := get_point_to_polygon_status (polygon, line.end_point);
 				
 				case IPQ.status is
 					when INSIDE => 
@@ -1817,7 +1921,7 @@ package body et_geometry_2.polygons is
 						result.end_point := ON_VERTEX;
 						
 				end case;
-			end if;
+			--end if;
 		end set_line_end;
 
 
@@ -1878,7 +1982,7 @@ package body et_geometry_2.polygons is
 
 			-- The status of the supportive point tells whether
 			-- it is inside the polygon:
-			IPS : type_point_to_polygon_status;
+			--IPS : type_point_to_polygon_status;
 
 			
 			use pac_line_edge_intersections;
@@ -1913,32 +2017,39 @@ package body et_geometry_2.polygons is
 				
 				if is_vertex (polygon, i.place) then
 					SP := get_nearest (line, i.place);
-					IPS := get_point_to_polygon_status (polygon, SP);
-					
-					case dir is
-						when ENTERING =>
-							if IPS.status = INSIDE then 
-								-- confirmed: intersection is truly entering
-								do_it;
-							else
-								-- supportive point is NOT inside.
-								-- intersection is NOT entering
-								-- and must be removed from the list:
-								delete_intersection := true;
-							end if;
 
-						when LEAVING =>
-							if IPS.status = OUTSIDE then 
-								-- confirmed: intersection is truly leaving
-								do_it;
-							else
-								-- supportive point is NOT outside.
-								-- intersection is NOT leaving
-								-- and must be removed from the list:
-								delete_intersection := true;
-							end if;
+					declare
+						-- The status of the supportive point tells whether
+						-- it is inside the polygon:
+						IPS : constant type_point_to_polygon_status :=
+							get_point_to_polygon_status (polygon, SP);
 
-					end case;
+					begin
+						case dir is
+							when ENTERING =>
+								if IPS.status = INSIDE then 
+									-- confirmed: intersection is truly entering
+									do_it;
+								else
+									-- supportive point is NOT inside.
+									-- intersection is NOT entering
+									-- and must be removed from the list:
+									delete_intersection := true;
+								end if;
+
+							when LEAVING =>
+								if IPS.status = OUTSIDE then 
+									-- confirmed: intersection is truly leaving
+									do_it;
+								else
+									-- supportive point is NOT outside.
+									-- intersection is NOT leaving
+									-- and must be removed from the list:
+									delete_intersection := true;
+								end if;
+
+						end case;
+					end;
 					
 				else -- intersection is not a vertex
 					do_it;
@@ -1966,38 +2077,50 @@ package body et_geometry_2.polygons is
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
 					SP := get_nearest (line, line.start_point);
-					IPS := get_point_to_polygon_status (polygon, SP);
-					
-					-- If the line is entering then the intersection
-					-- after the start point is leaving:
-					if IPS.status = INSIDE then
-						result.start_point.direction_on_edge := ENTERING;
-						dir := LEAVING;
-					else
-						result.start_point.direction_on_edge := LEAVING;
-						dir := ENTERING;
-					end if;
 
+					declare
+						IPS : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon, SP);
+					begin
+						-- If the line is entering then the intersection
+						-- after the start point is leaving:
+						if IPS.status = INSIDE then
+							result.start_point.direction_on_edge := ENTERING;
+							dir := LEAVING;
+						else
+							result.start_point.direction_on_edge := LEAVING;
+							dir := ENTERING;
+						end if;
+					end;
+					
 				when ON_VERTEX =>
 					-- The status of the point right after the
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
 					SP := get_nearest (line, line.start_point);
-					IPS := get_point_to_polygon_status (polygon, SP);
-					
-					-- If the line is entering then the intersection
-					-- after the start point is leaving:
-					if IPS.status = INSIDE then
-						result.start_point.direction_on_vertex := ENTERING;
-						dir := LEAVING;
-					else
-						result.start_point.direction_on_vertex := LEAVING;
-						dir := ENTERING;
-					end if;
 
+					declare
+						IPS : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon, SP);
+					begin
+						-- If the line is entering then the intersection
+						-- after the start point is leaving:
+						if IPS.status = INSIDE then
+							result.start_point.direction_on_vertex := ENTERING;
+							-- CS result.start_point.edge_1 := IPS.edge_1
+							-- CS result.start_point.edge_2 := IPS.edge_2
+							dir := LEAVING;
+						else
+							result.start_point.direction_on_vertex := LEAVING;
+							-- CS result.start_point.edge_1 := IPS.edge_1
+							-- CS result.start_point.edge_2 := IPS.edge_2
+							dir := ENTERING;
+						end if;
+					end;
 					
 			end case;
 
+			
 			-- Iterate through the intersections and assign each of 
 			-- them a new direction:
 			while ic /= pac_line_edge_intersections.no_element loop

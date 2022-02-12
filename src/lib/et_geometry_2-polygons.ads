@@ -67,8 +67,17 @@ package et_geometry_2.polygons is
 			when ARC	=> segment_arc  : type_arc;
 		end case;
 	end record;
+
+
+	function to_string (
+		segment	: in type_polygon_segment)
+		return string;
 	
+
+	-- IMPORTANT: The segments of the polygon are assumend to be
+	-- ordered counter-clock-wise !
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
+	
 	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
@@ -114,6 +123,27 @@ package et_geometry_2.polygons is
 		polygon	: in type_polygon_base;
 		point	: in type_point)
 		return pac_polygon_segments.cursor;
+
+	
+
+	type type_neigboring_edges is record
+		-- The edge segment before a vertex:
+		edge_1 : pac_polygon_segments.cursor;
+
+		-- The edge segment after a vertex:
+		edge_2 : pac_polygon_segments.cursor;
+	end record;
+
+	-- Returns the cursors to the two neigboring
+	-- edges of the given vertex.
+	-- The given point must be a vertex. Otherwise an exception is raised.
+	-- If the polygon consists of just a circle then an
+	-- exception is raised.
+	function get_neigboring_edges (
+		polygon	: in type_polygon_base;
+		vertex	: in type_point)
+		return type_neigboring_edges;
+
 
 	
 	
@@ -360,19 +390,41 @@ package et_geometry_2.polygons is
 
 		
 		
-	--type type_point_to_polygon_status (status : type_location) is record
-	type type_point_to_polygon_status is record
+	--type type_point_to_polygon_status is record
+		---- The point where the probe line has started:
+		--start			: type_point; 
+
+		--status			: type_location := OUTSIDE;		
+
+		---- The intersections of the probe line with the polygon edges:
+		--intersections	: pac_probe_line_intersections.list;
+
+		---- The shortest distance of the start point (of the probe line)
+		---- to the polygon:
+		--distance		: type_distance_polar;
+	--end record;
+
+
+	type type_point_to_polygon_status (status : type_location) is record
 		-- The point where the probe line has started:
 		start			: type_point; 
-
-		status			: type_location := OUTSIDE;		
 
 		-- The intersections of the probe line with the polygon edges:
 		intersections	: pac_probe_line_intersections.list;
 
-		-- The shortest distance of the start point (of the probe line)
-		-- to the polygon:
-		distance		: type_distance_polar;
+		case status is
+			when OUTSIDE | INSIDE =>
+				-- The shortest distance of the start point (of the probe line)
+				-- to the polygon:
+				distance		: type_distance_polar;
+				
+			when ON_EDGE =>
+				edge : pac_polygon_segments.cursor;
+
+			when ON_VERTEX =>
+				edges : type_neigboring_edges;
+
+		end case;
 	end record;
 
 	

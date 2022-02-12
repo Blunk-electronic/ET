@@ -55,8 +55,6 @@ procedure get_status is
 	P : type_polygon;
 	T : type_point;
 	
-	S : type_inside_polygon_query_result;
-	
 
 	procedure make_polygon (
 		s : in string)
@@ -71,9 +69,12 @@ procedure get_status is
 	--P0 : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	--P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
 	P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
+
+
 	
-	procedure print_status (status : in type_inside_polygon_query_result) is
+	procedure print_status (PPS : in type_point_to_polygon_status) is
 		use pac_probe_line_intersections;
+		use pac_polygon_segments;
 		
 		procedure query_intersection (i : in pac_probe_line_intersections.cursor) is 
 		begin
@@ -85,14 +86,27 @@ procedure get_status is
 	
 	begin
 		put_line ("STATUS:");
-		put_line ("probe line start : " & to_string (status.start));
-		put_line ("point status: " & type_location'image (status.status));
+		put_line ("probe line start : " & to_string (PPS.start));
+		put_line ("point status: " & type_location'image (PPS.status));
 		put_line ("intersections:");
-		if status.intersections.is_empty then
+		if PPS.intersections.is_empty then
 			put_line (" none");
 		else
-			status.intersections.iterate (query_intersection'access);
+			PPS.intersections.iterate (query_intersection'access);
 		end if;
+
+		case PPS.status is
+			when INSIDE | OUTSIDE =>
+				put_line ("distance to polygon: " & to_string (PPS.distance));
+
+			when ON_EDGE =>
+				put_line (to_string (element (PPS.edge)));
+				
+			when ON_VERTEX =>
+				put_line ("edge 1: " & to_string (element (PPS.edges.edge_1)));
+				put_line ("edge 2: " & to_string (element (PPS.edges.edge_2)));
+				
+		end case;
 	end print_status;
 
 
@@ -100,15 +114,21 @@ procedure get_status is
 		put_line ("-----------");
 		put_line ("point:" & to_string (T));
 		put_line (to_string (P));
-		
-		S := in_polygon_status (P, T);
-		print_status (S);
+
+		declare
+			S : type_point_to_polygon_status := get_point_to_polygon_status (P, T);
+		begin
+			print_status (S);
+		end;
 	end do_test;
 	
 begin
 
 	make_polygon (P_u_shaped);
-	T := type_point (set (101.0, 100.0)); --
+	-- T := type_point (set (-10.0, 99.0)); -- go
+	--T := type_point (set (0.0, 99.0)); -- go
+	--T := type_point (set (0.0, 100.0)); -- go
+	T := type_point (set (0.0, 0.0)); -- go
 	do_test;
 	
 	
