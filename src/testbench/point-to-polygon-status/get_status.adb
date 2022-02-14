@@ -86,8 +86,8 @@ procedure get_status is
 	
 	begin
 		put_line ("STATUS:");
-		put_line ("probe line start : " & to_string (PPS.start));
-		put_line ("point status: " & type_location'image (PPS.status));
+		put_line ("probe line start: " & to_string (PPS.start));
+		put_line ("point is: " & type_location'image (PPS.status));
 		put_line ("intersections:");
 		if PPS.intersections.is_empty then
 			put_line (" none");
@@ -128,7 +128,8 @@ begin
 	-- T := type_point (set (-10.0, 99.0)); -- go
 	--T := type_point (set (0.0, 99.0)); -- go
 	--T := type_point (set (0.0, 100.0)); -- go
-	T := type_point (set (0.0, 0.0)); -- go
+	--T := type_point (set (0.0, 0.0)); -- go
+	T := type_point (set (1.0, 1.0)); -- go
 	do_test;
 	
 	

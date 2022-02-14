@@ -139,19 +139,19 @@ package body et_geometry_2.polygons is
 		end_found, start_found : boolean := false;
 		
 		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			put_line ("test: " & to_string (element (c)));
+			--put_line ("test: " & to_string (element (c)));
 			
 			case element (c).shape is
 			
 				when LINE => 
 					if element (c).segment_line.end_point = vertex then
-						put_line ("end");
+						--put_line ("end");
 						result.edge_1 := c;
 						end_found := true;
 					end if;
 
 					if element (c).segment_line.start_point = vertex then
-						put_line ("start");
+						--put_line ("start");
 						result.edge_2 := c;
 						start_found := true;
 					end if;
@@ -1655,7 +1655,7 @@ package body et_geometry_2.polygons is
 			result_status := ON_VERTEX;
 			-- NOTE: result.distance is zero by default
 
-			-- Get the edges that meet on the given point:
+			-- Get the edges that meet at the given point:
 			result_neigboring_edges := get_neigboring_edges (polygon, point);
 		else
 			result_edge := get_segment_edge (polygon, point);
@@ -1691,7 +1691,6 @@ package body et_geometry_2.polygons is
 				
 		end case;
 		
-		--return result;
 	end get_point_to_polygon_status;
 
 	
