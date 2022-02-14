@@ -536,15 +536,24 @@ package et_geometry_2.polygons is
 	--end record;
 
 	type type_start_point (position : type_location := OUTSIDE) is record
-	--type type_start_point (position : type_line_e	nd) is record
 		case position is
 			when OUTSIDE | INSIDE => null;
+			
 			when ON_EDGE =>
+				-- The edge where the start point lies on:
 				edge				: pac_polygon_segments.cursor;
+
+				-- The direction of the line: Whether it is
+				-- entering or leaving the polygon at the start point:
 				direction_on_edge	: type_intersection_direction;
 
 			when ON_VERTEX =>
-				-- CS ? edge_1, edge_2		: pac_polygon_segments.cursor;
+				-- The two neigboring edges that are 
+				-- connected by the start point:
+				edges				: type_neigboring_edges;
+
+				-- The direction of the line: Whether it is
+				-- entering or leaving the polygon at the start point:
 				direction_on_vertex	: type_intersection_direction;
 		end case;
 	end record;
