@@ -656,7 +656,11 @@ package body et_geometry_2 is
 			start_point => type_point (set (start_x, start_y)),
 			end_point	=> type_point (set (end_x, end_y)));
 
-		return line;
+		if get_length (line) > type_distance'small then
+			return line;
+		else
+			raise constraint_error with "Line has zero length !";
+		end if;
 	end make_line;
 
 
@@ -668,7 +672,11 @@ package body et_geometry_2 is
 	begin
 		line := (start_point, end_point);
 
-		return line;
+		if get_length (line) > type_distance'small then
+			return line;
+		else
+			raise constraint_error with "Line has zero length !";
+		end if;
 	end make_line;
 
 	
@@ -683,6 +691,8 @@ package body et_geometry_2 is
 			end_point	=> type_point (round (line.end_point)));
 
 		return r;
+
+		-- CS length check as in function make_line ?
 	end round;
 
 	
@@ -690,6 +700,8 @@ package body et_geometry_2 is
 	is begin
 		line.start_point := type_point (round (line.start_point));
 		line.end_point := type_point (round (line.end_point));
+
+		-- CS length check as in function make_line ?
 	end round;
 
 
@@ -861,25 +873,26 @@ package body et_geometry_2 is
 	function get_nearest (
 		line	: in type_line;
 		point	: in type_point;
-		after	: in boolean := true)
+		place	: in type_nearest := AFTER)
 		return type_point
 	is
 		result : type_point;
 		d : constant type_distance_polar := get_distance (line.start_point, line.end_point);
 	begin
-		if after then -- move forward
-			result := type_point (move (
-				point		=> point,
-				direction	=> + get_angle (d),
-				distance	=> type_distance'small));
-			
-		else -- move backward
-			result := type_point (move (
-				point		=> point,
-				direction	=> - get_angle (d),
-				distance	=> type_distance'small));
+		case place is
+			when AFTER => -- move forward in direction of line
+				result := type_point (move (
+					point		=> point,
+					direction	=> get_angle (d),
+					distance	=> type_distance'small));
 
-		end if;
+			when BEFORE => -- move backward in opposite direction
+				result := type_point (move (
+					point		=> point,
+					direction	=> add (get_angle (d), 180.0),
+					distance	=> type_distance'small));
+
+		end case;
 		return result;
 	end get_nearest;
 
@@ -1486,7 +1499,7 @@ package body et_geometry_2 is
 
 		procedure compute_intersection is 
 			distance : type_float_internal;
-			th : constant type_float_internal := 1.0E-10; -- CS refine or set dynamically ?
+			th : constant type_float_internal := 1.0E-11; -- CS refine or set dynamically ?
 		begin
 			-- Compute the point of intersection: The intersection of a line that runs
 			-- from the given location vector perpendicular to the given line.
@@ -1676,7 +1689,7 @@ package body et_geometry_2 is
 		return boolean
 	is
 		distance : type_distance_point_line;
-		th : constant type_float_internal := 1.0E-10; -- CS refine or set dynamically ?
+		th : constant type_float_internal := 1.0E-11; -- CS refine or set dynamically ?
 	begin
 		distance := get_distance (vector, line, WITH_END_POINTS);
 		

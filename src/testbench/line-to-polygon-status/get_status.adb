@@ -99,32 +99,43 @@ procedure get_status is
 	P_staircase_inside : constant string := "line 90 0 line 100 0 line 100 100 line 0 100 "
 											& "line 0 20 line 80 20 line 80 10 line 90 10";
 	
-	procedure print_status (status : in type_line_to_polygon_status) is
+	procedure print_status (LPS : in type_line_to_polygon_status) is
 		use pac_line_edge_intersections;
+		use pac_polygon_segments;
 		
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
-			use pac_polygon_segments;
 			EC : pac_polygon_segments.cursor := element (i).edge;
 		begin
-			put_line ("place : " & to_string (element (i).place));
-			put_line ("edge  : " & to_string (element (EC).segment_line));
-			put_line ("drctn : " & type_intersection_direction'image (element (i).direction));
+			put_line (" place : " & to_string (element (i).place));
+			put_line (" edge  : " & to_string (element (EC).segment_line));
+			put_line (" drctn : " & type_intersection_direction'image (element (i).direction));
 			new_line;
 		end;
 	
 	begin
 		--put_line ("STATUS:");
-		put_line ("line start point is: " & type_location'image (status.start_point.position));
-		-- CS more properties 
+		put_line ("line start point is: " & type_location'image (LPS.start_point.position));
+		case LPS.start_point.position is
+			when ON_EDGE =>
+				put_line (" on edge: " & to_string (element (LPS.start_point.edge)));
+				put_line (" drctn  : " & type_intersection_direction'image (LPS.start_point.direction_on_edge));
+
+			when ON_VERTEX =>
+				put_line (" edge 1: " & to_string (element (LPS.start_point.edges.edge_1)));
+				put_line (" edge 2: " & to_string (element (LPS.start_point.edges.edge_2)));
+				put_line (" drctn  : " & type_intersection_direction'image (LPS.start_point.direction_on_vertex));
+
+			when others => null;
+		end case;
 		
 		put_line ("intersections:");
-		if status.intersections.is_empty then
+		if LPS.intersections.is_empty then
 			put_line (" none");
-			put_line (" line center is : " & type_line_center'image (status.center_point));
+			put_line (" line center is : " & type_line_center'image (LPS.center_point));
 		else
-			status.intersections.iterate (query_intersection'access);
+			LPS.intersections.iterate (query_intersection'access);
 		end if;
-		put_line ("line end point is: " & type_location'image (status.end_point));
+		put_line ("line end point is: " & type_location'image (LPS.end_point));
 		new_line;
 	end print_status;
 
@@ -449,12 +460,35 @@ begin
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	
 	set_expect (
-		start_point		=> (ON_VERTEX, start_point_neigbors, ENTERING), 
+		start_point		=> (ON_VERTEX, start_point_neigbors, LEAVING), 
 		end_point		=> OUTSIDE, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list); -- empty
 
 	do_test;
+
+
+
+
+	L := type_line (make_line (10.0, 10.0, 110.0, 10.0));
+
+	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	append_expected_intersection (90.0, 10.0, ENTERING, edge);
+
+	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	append_expected_intersection (100.0, 10.0, LEAVING, edge);
+
+	start_point_neigbors := get_neigboring_edges (P, L.start_point);
+	
+	set_expect (
+		start_point		=> (ON_VERTEX, start_point_neigbors, LEAVING), 
+		end_point		=> OUTSIDE, 
+		--center_point	=> INSIDE,
+		intersections	=> I_list); -- empty
+
+	do_test;
+
+
 
 	
 	--L := type_line (make_line (0.0, 100.0, 100.0, 100.0)); -- go

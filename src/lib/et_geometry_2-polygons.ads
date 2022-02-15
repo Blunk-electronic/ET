@@ -191,8 +191,9 @@ package et_geometry_2.polygons is
 	
 	procedure delete_segments (
 		polygon : in out type_polygon_base);
-	
 
+
+	
 	procedure append_segment (
 		polygon	: in out type_polygon_base;
 		segment	: in type_polygon_segment);

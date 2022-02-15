@@ -129,7 +129,9 @@ begin
 	--T := type_point (set (0.0, 99.0)); -- go
 	--T := type_point (set (0.0, 100.0)); -- go
 	--T := type_point (set (0.0, 0.0)); -- go
-	T := type_point (set (1.0, 1.0)); -- go
+	--T := type_point (set (1.0, 1.0)); -- go
+	T := type_point (set (9.9999999999, 10.0000000000)); -- go
+	
 	do_test;
 	
 	

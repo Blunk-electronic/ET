@@ -116,6 +116,7 @@ package body et_geometry_2.polygons is
 		
 	begin
 		-- Make sure the given point is NOT a vertex:
+		-- CS: Maybe no need if caller cares for this check.
 		if is_vertex (polygon, point) then
 			raise constraint_error with "Point is a vertex !";
 		else
@@ -530,6 +531,15 @@ package body et_geometry_2.polygons is
 		segment	: in type_polygon_segment)
 	is begin
 		-- CS check discriminant and issue helpful error message ?
+
+		-- CS length check for line:
+		--if get_length (line) > type_distance'small then
+			--return line;
+		--else
+			--raise constraint_error with "Line has zero length !";
+		--end if;
+
+		-- CS length check for arc:		
 		
 		polygon.contours.segments.append (segment);			
 	end append_segment;
@@ -697,6 +707,10 @@ package body et_geometry_2.polygons is
 		arguments : in type_fields_of_line) -- line 0 0 line 160 0 line 160 80 line 0 80
 		return type_polygon_base'class
 	is
+		-- CS: to do:
+		-- - length check for lines and arc segments
+		-- - merge neigboring line segments that run in the same direction
+		
 		result : type_polygon; -- will be converted back to class type on return
 		-- NOTE: The default discriminant if the result makes it a
 		-- polygon consisting of lines an arcs.
@@ -1966,8 +1980,12 @@ package body et_geometry_2.polygons is
 			dir : type_intersection_direction;
 
 			-- This is a supportive point right after a given point
-			-- on the given line towards the end of the given line:
-			SP : type_point;
+			-- on the given line towards or beyond the end of the given line:
+			SP_after : type_point;
+
+			-- This is a supportive point right before a given point
+			-- on the given line towards or beyond the start of the given line:
+			SP_before : type_point;
 			
 			use pac_line_edge_intersections;
 			ic : pac_line_edge_intersections.cursor := result.intersections.first;
@@ -2010,13 +2028,13 @@ package body et_geometry_2.polygons is
 				-- deleted later from the list.
 				
 				if is_vertex (polygon, i.place) then
-					SP := get_nearest (line, i.place);
+					SP_after := get_nearest (line, i.place);
 
 					declare
 						-- The status of the supportive point tells whether
 						-- it is inside the polygon:
 						PPS : constant type_point_to_polygon_status :=
-							get_point_to_polygon_status (polygon, SP);
+							get_point_to_polygon_status (polygon, SP_after);
 
 					begin
 						case dir is
@@ -2069,11 +2087,13 @@ package body et_geometry_2.polygons is
 					-- The status of the point right after the
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
-					SP := get_nearest (line, line.start_point);
+					SP_after := get_nearest (line, line.start_point);
 
+					-- CS: Probably not all cases handled here !
+					
 					declare
 						PPS : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon, SP);
+							get_point_to_polygon_status (polygon, SP_after);
 					begin
 						-- If the line is entering then the intersection
 						-- right after the start point is leaving:
@@ -2094,29 +2114,49 @@ package body et_geometry_2.polygons is
 
 						end case;
 					end;
+
 					
 				when ON_VERTEX =>
-					-- The status of the point right after the
+					-- The status of the points right before or after the
 					-- start point (of the given line) tells whether
 					-- the line is entering or leaving the polygon:
-					SP := get_nearest (line, line.start_point);
+					SP_after := get_nearest (line, line.start_point, AFTER);
+					SP_before := get_nearest (line, line.start_point, BEFORE);
 
 					declare
-						PPS : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon, SP);
+						PPS_after : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon, SP_after);
+
+						PPS_before : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon, SP_before);
+
 					begin
-						case PPS.status is
-							when INSIDE | ON_EDGE =>
+						--put_line ("after " & to_string (SP_after));
+						--put_line ("before" & to_string (SP_before));
+						
+						case PPS_after.status is
+							when INSIDE =>
 								result.start_point.direction_on_vertex := ENTERING;
-								--result.start_point.edges := PPS.edges;
 
 								-- If the line is entering, then the intersection
 								-- right after the start point is leaving:
 								dir := LEAVING;
 
+							when ON_EDGE =>
+								case PPS_before.status is
+									when INSIDE =>
+										result.start_point.direction_on_vertex := LEAVING;
+										dir := ENTERING;
+
+									when OUTSIDE =>
+										result.start_point.direction_on_vertex := ENTERING;
+										dir := LEAVING;
+
+									when others => raise constraint_error; -- CS ?
+								end case;								
+								
 							when OUTSIDE | ON_VERTEX =>
 								result.start_point.direction_on_vertex := LEAVING;
-								--result.start_point.edges := PPS.edges;
 
 								-- If the line is leaving, then the intersection
 								-- right after the start point is entering:

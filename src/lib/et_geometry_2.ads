@@ -387,6 +387,10 @@ package et_geometry_2 is
 		return type_point;
 
 
+
+	
+	type type_nearest is (BEFORE, AFTER);
+	
 	-- Returns the nearest point after/before
 	-- a given point on the given line.
 	-- The argument "after" determines whether to return
@@ -394,8 +398,10 @@ package et_geometry_2 is
 	function get_nearest (
 		line	: in type_line;
 		point	: in type_point;
-		after	: in boolean := true)
+		place	: in type_nearest := AFTER)
 		return type_point;
+
+
 
 	
 	-- Tests whether the given probe_line intersects the given 
