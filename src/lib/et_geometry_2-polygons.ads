@@ -406,7 +406,7 @@ package et_geometry_2.polygons is
 	--end record;
 
 
-	type type_point_to_polygon_status (status : type_location) is record
+	type type_point_to_polygon_status (status : type_location) is record -- CS rename to location
 		-- The point where the probe line has started:
 		start			: type_point; 
 
@@ -496,6 +496,34 @@ package et_geometry_2.polygons is
 	
 	procedure toggle_direction (
 		d : in out type_intersection_direction);
+
+
+
+	
+	type type_point_of_contact (is_intersection : boolean) is record
+		case is_intersection is
+			when TRUE =>
+				direction : type_intersection_direction;
+
+			when FALSE =>
+				null;
+		end case;
+	end record;
+
+	-- Returns the direction of a supposed intersection of
+	-- the given line on the given point.
+	-- The given point:
+	-- - must lie on the given line,
+	-- - must lie on an edge or a vertex of the given polygon
+	-- If the given point is an intersection, then its direction is
+	-- returned.
+	function get_direction (
+		polygon	: in type_polygon_base;
+		line	: in type_line;
+		point	: in type_point)
+		return type_point_of_contact;
+
+
 
 	
 	type type_intersection_line_edge is record

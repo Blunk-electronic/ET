@@ -1776,6 +1776,89 @@ package body et_geometry_2.polygons is
 	end toggle_direction;
 
 
+
+	function get_direction (
+		polygon	: in type_polygon_base;
+		line	: in type_line;
+		point	: in type_point)
+		return type_point_of_contact
+	is
+		result_is_intersection : boolean := false;
+		result_direction : type_intersection_direction;
+
+		-- This is a supportive point right after a given point
+		-- on the given line towards or beyond the end of the given line:
+		SP_after : type_point;
+
+		-- This is a supportive point right before a given point
+		-- on the given line towards or beyond the start of the given line:
+		SP_before : type_point;
+
+	begin
+		SP_before := get_nearest (line, point, BEFORE);
+		SP_after := get_nearest (line, point, AFTER);
+
+		declare
+			PPS_before : constant type_location := 
+				get_point_to_polygon_status (polygon, SP_before).status;
+
+			PPS_after : constant type_location := 
+				get_point_to_polygon_status (polygon, SP_after).status;
+		begin
+			case PPS_before is
+				when OUTSIDE =>
+					case PPS_after is
+						when OUTSIDE => 
+							-- not an intersection but just a touch point
+							null;
+							
+						when INSIDE | ON_EDGE | ON_VERTEX =>
+							result_is_intersection := true;
+							result_direction := ENTERING;
+					end case;
+
+
+				when INSIDE =>
+					case PPS_after is
+						when INSIDE => 
+							-- not an intersection but just a touch point
+							null;
+							
+						when OUTSIDE | ON_EDGE | ON_VERTEX =>
+							result_is_intersection := true;
+							result_direction := LEAVING;
+					end case;
+
+
+				when ON_EDGE | ON_VERTEX =>
+					case PPS_after is
+						when OUTSIDE => 
+							result_is_intersection := true;
+							result_direction := LEAVING;
+							
+						when INSIDE =>
+							result_is_intersection := true;
+							result_direction := ENTERING;
+
+						when others =>
+							raise constraint_error; -- CS ?
+					end case;
+
+			end case;
+		end;
+
+		
+		case result_is_intersection is
+			when TRUE =>
+				return (is_intersection => TRUE, direction => result_direction);
+
+			when FALSE =>
+				return (is_intersection => FALSE);
+		end case;
+	end get_direction;
+	
+
+	
 	function contains (
 		intersections	: in pac_line_edge_intersections.list;
 		place			: in type_point)
