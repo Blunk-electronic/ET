@@ -1798,6 +1798,11 @@ package body et_geometry_2.polygons is
 		SP_before := get_nearest (line, point, BEFORE);
 		SP_after := get_nearest (line, point, AFTER);
 
+		-- NOTE:
+		-- CS: The supportive points are by type_distance'small away from
+		-- the given point. In some cases this distance could be too much.
+		-- A more accurate approach (basing on float types) should be implemented.
+
 		declare
 			PPS_before : constant type_location := 
 				get_point_to_polygon_status (polygon, SP_before).location;

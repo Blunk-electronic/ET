@@ -536,19 +536,7 @@ package et_geometry_2.polygons is
 		reference		: in type_point);
 	
 		
-	--type type_line_end_position (status : type_line_end := OUTSIDE) is record
-		--case status is
-			--when ON_EDGE =>
-				---- CS ? edge	: pac_polygon_segments.cursor;
-				----place	: type_point;
 
-			--when INSIDE | OUTSIDE => null;
-
-			--when IS_VERTEX => null;				
-				---- CS ? edge_1	: pac_polygon_segments.cursor;
-				---- CS ? edge_2	: pac_polygon_segments.cursor;
-		--end case;
-	--end record;
 
 	type type_start_point (location : type_location := OUTSIDE) is record
 		case location is
@@ -592,15 +580,6 @@ package et_geometry_2.polygons is
 		return type_line_to_polygon_status;
 
 	
-	-- Returns true if the given line runs through the 
-	-- inner area of the given polygon.
-	-- If the line just touches an edge or a vertex
-	-- from outside then it is regarded as not-crossing.
-	--function runs_through_inner_area (
-		--polygon	: in type_polygon_base;
-		--line	: in type_line)
-		--return boolean;
-
 	
 	type type_polygon is new type_polygon_base with null record;
 
