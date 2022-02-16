@@ -53,6 +53,8 @@ procedure get_status is
 	use pac_polygons;
 	use pac_polygon_clipping;
 
+	errors : natural := 0;
+	
 	-- The polygon under test:
 	P : type_polygon;
 
@@ -114,8 +116,8 @@ procedure get_status is
 	
 	begin
 		--put_line ("STATUS:");
-		put_line ("line start point is: " & type_location'image (LPS.start_point.position));
-		case LPS.start_point.position is
+		put_line ("line start point is: " & type_location'image (LPS.start_point.location));
+		case LPS.start_point.location is
 			when ON_EDGE =>
 				put_line (" on edge: " & to_string (element (LPS.start_point.edge)));
 				put_line (" drctn  : " & type_intersection_direction'image (LPS.start_point.direction_on_edge));
@@ -184,6 +186,7 @@ procedure get_status is
 		--else
 
 		if S_actual /= S_expect then
+			errors := errors + 1;
 			put_line ("ERROR !!!");
 			put_line ("expected:");
 			print_status (S_expect);
@@ -264,7 +267,7 @@ begin
 	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
 	append_expected_intersection (100.0, 100.0, LEAVING, edge);
 	set_expect (
-		start_point		=> (position => OUTSIDE), 
+		start_point		=> (location => OUTSIDE), 
 		end_point		=> OUTSIDE, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list);
@@ -293,7 +296,7 @@ begin
 	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
 	append_expected_intersection (100.0, 50.0, LEAVING, edge);
 	set_expect (
-		start_point		=> (position => OUTSIDE), 
+		start_point		=> (location => OUTSIDE), 
 		end_point		=> OUTSIDE, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list);
@@ -305,7 +308,7 @@ begin
 	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
 	append_expected_intersection (100.0, 50.0, LEAVING, edge);
 	set_expect (
-		start_point		=> (position => INSIDE),
+		start_point		=> (location => INSIDE),
 		end_point		=> OUTSIDE, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list);
@@ -315,7 +318,7 @@ begin
 
 	L := type_line (make_line (-10.0, 10.0, 10.0, -10.0));
 	set_expect (
-		start_point		=> (position => OUTSIDE), 
+		start_point		=> (location => OUTSIDE), 
 		end_point		=> OUTSIDE, 
 		--center_point	=> ON_EDGE,
 		intersections	=> I_list); -- empty
@@ -328,7 +331,7 @@ begin
 
 	L := type_line (make_line (-10.0, 60.0, 60.0, -10.0));
 	set_expect (
-		start_point		=> (position => OUTSIDE),
+		start_point		=> (location => OUTSIDE),
 		end_point		=> OUTSIDE, 
 		--center_point	=> ON_EDGE,
 		intersections	=> I_list); -- empty
@@ -338,7 +341,7 @@ begin
 
 	L := type_line (make_line (40.0, 60.0, 60.0, 40.0));
 	set_expect (
-		start_point		=> (position => INSIDE),
+		start_point		=> (location => INSIDE),
 		end_point		=> INSIDE, 
 		--center_point	=> ON_EDGE,
 		intersections	=> I_list); -- empty
@@ -349,7 +352,7 @@ begin
 
 	L := type_line (make_line (40.0, 60.0, 61.0, 40.0));
 	set_expect (
-		start_point		=> (position => INSIDE),
+		start_point		=> (location => INSIDE),
 		end_point		=> INSIDE, 
 		center_point	=> INSIDE,
 		intersections	=> I_list); -- empty
@@ -362,7 +365,7 @@ begin
 	make_polygon (P_staircase_inside);
 	L := type_line (make_line (70.0, 30.0, 95.0, 5.0));
 	set_expect (
-		start_point		=> (position => INSIDE),
+		start_point		=> (location => INSIDE),
 		end_point		=> INSIDE, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list); -- empty
@@ -373,7 +376,7 @@ begin
 	make_polygon (P_staircase_inside);
 	L := type_line (make_line (70.0, 30.0, 100.0, 0.0));
 	set_expect (
-		start_point		=> (position => INSIDE),
+		start_point		=> (location => INSIDE),
 		end_point		=> ON_VERTEX, 
 		--center_point	=> INSIDE,
 		intersections	=> I_list); -- empty
@@ -520,6 +523,7 @@ begin
 
 	
 
+	put_line ("ERRORS:" & natural'image (errors));
 	
 end get_status;
 
