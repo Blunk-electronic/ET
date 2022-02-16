@@ -156,7 +156,7 @@ package body et_conductor_segment is
 		end build_polygon;
 
 		--distance : type_distance_polar;
-		ipq : type_point_to_polygon_status;
+		--ipq : type_point_to_polygon_status;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
@@ -169,19 +169,23 @@ package body et_conductor_segment is
 
 		
 		--distance := get_shortest_distance (polygon, point);
-		ipq := get_point_to_polygon_status (polygon, point);
+		declare
+			ipq : constant type_point_to_polygon_status :=
+				get_point_to_polygon_status (polygon, point);
 
-		--put_line ("p" & to_string (point));
-		--put_line ("d" & to_string (get_absolute (distance)));
+		begin
+			--put_line ("p" & to_string (point));
+			--put_line ("d" & to_string (get_absolute (distance)));
 
-		case ipq.status is
-			when INSIDE =>
-				result := - get_absolute (ipq.distance);
-				
-			when OUTSIDE | ON_EDGE | ON_VERTEX =>
-				result := get_absolute (ipq.distance);
+			case ipq.location is
+				when INSIDE =>
+					result := - get_absolute (ipq.distance);
+					
+				when OUTSIDE | ON_EDGE | ON_VERTEX =>
+					result := get_absolute (ipq.distance);
 
-		end case;
+			end case;
+		end;
 		
 		return result;
 	end get_shortest_distance;
@@ -310,21 +314,25 @@ package body et_conductor_segment is
 		end build_polygon;
 
 		--distance : type_distance_polar;
-		ipq : type_point_to_polygon_status;
+		--ipq : type_point_to_polygon_status;
 	begin
 		-- build a polygon from the given segment:
 		build_polygon;
 
 		--distance := get_shortest_distance (polygon, point);
-		ipq := get_point_to_polygon_status (polygon, point);
-
-		case ipq.status is
-			when INSIDE =>
-				result := - get_absolute (ipq.distance);
-				
-			when OUTSIDE | ON_EDGE | ON_VERTEX =>
-				result := get_absolute (ipq.distance);
-		end case;
+		
+		declare
+			ipq : constant type_point_to_polygon_status :=
+				get_point_to_polygon_status (polygon, point);
+		begin
+			case ipq.location is
+				when INSIDE =>
+					result := - get_absolute (ipq.distance);
+					
+				when OUTSIDE | ON_EDGE | ON_VERTEX =>
+					result := get_absolute (ipq.distance);
+			end case;
+		end;
 		
 		return result;
 	end get_shortest_distance;

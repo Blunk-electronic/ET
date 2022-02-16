@@ -1333,7 +1333,7 @@ package body et_geometry_2.polygons is
 			--when ON_EDGE =>
 				result := to_unbounded_string ("Point" 
 					& to_string (i.start) 
-					& " is " & to_string (i.status) & " of polygon. ");
+					& " is " & to_string (i.location) & " of polygon. ");
 
 		--end case;
 
@@ -1721,7 +1721,7 @@ package body et_geometry_2.polygons is
 		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
 		-- figure out whether the point is real or virtual:
-		case get_point_to_polygon_status (polygon, result.point).status is
+		case get_point_to_polygon_status (polygon, result.point).location is
 			when INSIDE =>
 				result.status := REAL;
 				
@@ -1800,10 +1800,10 @@ package body et_geometry_2.polygons is
 
 		declare
 			PPS_before : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_before).status;
+				get_point_to_polygon_status (polygon, SP_before).location;
 
 			PPS_after : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_after).status;
+				get_point_to_polygon_status (polygon, SP_after).location;
 		begin
 			case PPS_before is
 				when OUTSIDE =>
@@ -1963,22 +1963,22 @@ package body et_geometry_2.polygons is
 			PPS : constant type_point_to_polygon_status := 
 				get_point_to_polygon_status (polygon, line.start_point);
 		begin
-			case PPS.status is
+			case PPS.location is
 				when INSIDE => 
-					result.start_point := (position => INSIDE);
+					result.start_point := (location => INSIDE);
 
 				when OUTSIDE => 
-					result.start_point := (position => OUTSIDE);
+					result.start_point := (location => OUTSIDE);
 
 				when ON_EDGE => 
 					result.start_point := (
-						position	=> ON_EDGE, 
+						location	=> ON_EDGE, 
 						edge		=> PPS.edge,
 						others 		=> <>); -- direction will be set later
 
 				when ON_VERTEX => 
 					result.start_point := (
-						position	=> ON_VERTEX, 
+						location	=> ON_VERTEX, 
 						edges		=> PPS.edges,
 						others 		=> <>); -- direction will be set later
 					
@@ -1990,7 +1990,7 @@ package body et_geometry_2.polygons is
 			PPS : constant type_point_to_polygon_status := 
 				get_point_to_polygon_status (polygon, line.end_point);
 		begin
-			case PPS.status is
+			case PPS.location is
 				when INSIDE => 
 					result.end_point := INSIDE;
 
@@ -2094,7 +2094,7 @@ package body et_geometry_2.polygons is
 			
 			-- In case the start point of the line lies on an edge or on a vertex
 			-- then set the direction of this intersection:
-			case result.start_point.position is
+			case result.start_point.location is
 				when OUTSIDE | INSIDE =>
 					null; -- not an intersection -> nothing to do
 					
@@ -2180,7 +2180,7 @@ package body et_geometry_2.polygons is
 
 			--put_line ("center" & to_string (line_center));
 			
-			case get_point_to_polygon_status (polygon, line_center).status is
+			case get_point_to_polygon_status (polygon, line_center).location is
 				when INSIDE => result.center_point := INSIDE;
 				when OUTSIDE => result.center_point := OUTSIDE;
 				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;

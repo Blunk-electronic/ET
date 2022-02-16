@@ -366,7 +366,7 @@ package body et_geometry_2.polygons.clipping is
 						IPQ : constant type_point_to_polygon_status :=
 							get_point_to_polygon_status (polygon_B, element (c).segment_line.start_point);
 					begin
-						if IPQ.status = OUTSIDE then
+						if IPQ.location = OUTSIDE then
 							proceed := false; -- abort iteration
 						end if;
 					end;
@@ -376,7 +376,7 @@ package body et_geometry_2.polygons.clipping is
 						IPQ : constant type_point_to_polygon_status := 
 							get_point_to_polygon_status (polygon_B, element (c).segment_arc.start_point);
 					begin
-						if IPQ.status = OUTSIDE then
+						if IPQ.location = OUTSIDE then
 							proceed := false; -- abort iteration
 						end if;
 					end;
@@ -494,7 +494,7 @@ package body et_geometry_2.polygons.clipping is
 				
 			begin			
 
-				case LPS.start_point.position is
+				case LPS.start_point.location is
 					when OUTSIDE =>
 						case LPS.end_point is
 							when OUTSIDE =>

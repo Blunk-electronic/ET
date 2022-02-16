@@ -391,29 +391,16 @@ package et_geometry_2.polygons is
 
 		
 		
-	--type type_point_to_polygon_status is record
-		---- The point where the probe line has started:
-		--start			: type_point; 
-
-		--status			: type_location := OUTSIDE;		
-
-		---- The intersections of the probe line with the polygon edges:
-		--intersections	: pac_probe_line_intersections.list;
-
-		---- The shortest distance of the start point (of the probe line)
-		---- to the polygon:
-		--distance		: type_distance_polar;
-	--end record;
 
 
-	type type_point_to_polygon_status (status : type_location) is record -- CS rename to location
+	type type_point_to_polygon_status (location : type_location) is record
 		-- The point where the probe line has started:
 		start			: type_point; 
 
 		-- The intersections of the probe line with the polygon edges:
 		intersections	: pac_probe_line_intersections.list;
 
-		case status is
+		case location is
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
 				-- to the polygon:
@@ -563,8 +550,8 @@ package et_geometry_2.polygons is
 		--end case;
 	--end record;
 
-	type type_start_point (position : type_location := OUTSIDE) is record
-		case position is
+	type type_start_point (location : type_location := OUTSIDE) is record
+		case location is
 			when OUTSIDE | INSIDE => null;
 			
 			when ON_EDGE =>

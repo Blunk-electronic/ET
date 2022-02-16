@@ -76,7 +76,7 @@ package body et_geometry_2.polygons.offsetting is
 				tp_status : constant type_point_to_polygon_status :=
 					get_point_to_polygon_status (polygon, test_point);
 			begin
-				if tp_status.status = INSIDE then
+				if tp_status.location = INSIDE then
 					--put_line ("inside");
 					move_by (line_new, add (line_direction, -90.0), offset);
 				else
