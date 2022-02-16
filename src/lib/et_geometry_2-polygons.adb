@@ -2057,27 +2057,14 @@ package body et_geometry_2.polygons is
 		procedure set_entering_leaving is
 			-- NOTE: This procedure assumes that there ARE intersections
 			-- with the polygon.
-
-			-- The direction to be assigned to a particular intersection.
-			-- Its status toggles once an intersection has been processed:
-			dir : type_intersection_direction;
-
-			-- This is a supportive point right after a given point
-			-- on the given line towards or beyond the end of the given line:
-			SP_after : type_point;
-
-			-- This is a supportive point right before a given point
-			-- on the given line towards or beyond the start of the given line:
-			SP_before : type_point;
 			
 			use pac_line_edge_intersections;
 			ic : pac_line_edge_intersections.cursor := result.intersections.first;
 			ic_bak : pac_line_edge_intersections.cursor;
 			delete_first : boolean := false;
-
 			
-			-- Is set in case an intersection is erroneously mistaken and
-			-- must be removed:
+			-- This flag is set in case an intersection is erroneously mistaken
+			-- as such:
 			delete_intersection : boolean := false;
 
 			-- This procedure:
@@ -2087,165 +2074,42 @@ package body et_geometry_2.polygons is
 			--   This erroneous intersection will later be removed from the
 			--   list of intersections:			
 			procedure set_direction (i : in out type_intersection_line_edge) is
+				POC : constant type_point_of_contact := get_direction (polygon, line, i.place);
+			begin
+				-- If the given supposed intersection can not be confirmed as such
+				-- then the intersection is erroneous and the flag "delete_intersection" is set,
+				-- so that it will be deleted from the list later.
 				
-				procedure do_it is begin
-					i.direction := dir;
-
-					-- prepare for next intersection:
-					toggle_direction (dir); 
+				if POC.is_intersection then -- intersection confirmed
+					i.direction := POC.direction;
 					delete_intersection := false;
-				end do_it;
-
-				
-			begin -- set_direction
-
-				-- If the intersection does not lie on a vertex, then
-				-- the direction can be set according to the current
-				-- value in variable "dir". 
-				-- If the intersection lies exactly on a vertex then
-				-- a supportive point right after the intersection is required.
-				-- This supportive point helps to confirm whether the
-				-- candidate intersection is truly entering or leaving.
-				-- If the status can not be confirmed then the intersection is erroneous
-				-- and the flag "delete_intersection" is set, so that it will be
-				-- deleted later from the list.
-				
-				if is_vertex (polygon, i.place) then
-					SP_after := get_nearest (line, i.place);
-
-					declare
-						-- The status of the supportive point tells whether
-						-- it is inside the polygon:
-						PPS : constant type_point_to_polygon_status :=
-							get_point_to_polygon_status (polygon, SP_after);
-
-					begin
-						case dir is
-							when ENTERING =>
-								if PPS.status = INSIDE then 
-									-- confirmed: intersection is truly entering
-									do_it;
-								else
-									-- supportive point is NOT inside.
-									-- intersection is NOT entering
-									-- and must be removed from the list:
-									delete_intersection := true;
-								end if;
-
-							when LEAVING =>
-								if PPS.status = OUTSIDE then 
-									-- confirmed: intersection is truly leaving
-									do_it;
-								else
-									-- supportive point is NOT outside.
-									-- intersection is NOT leaving
-									-- and must be removed from the list:
-									delete_intersection := true;
-								end if;
-
-						end case;
-					end;
-					
-				else -- intersection is not a vertex
-					do_it;
-				end if;
+				else
+					-- not confirmed -> must be removed
+					delete_intersection := true;
+				end if;	
 			end set_direction;
 
 			
 		begin -- set_entering_leaving
 			
-			-- Set the initial direction:
+			-- In case the start point of the line lies on an edge or on a vertex
+			-- then set the direction of this intersection:
 			case result.start_point.position is
-				when OUTSIDE =>
-					-- The intersection right after the start point
-					-- is entering:
-					dir := ENTERING; 
-										
-				when INSIDE =>
-					-- The intersection right after the start point
-					-- is leaving:
-					dir := LEAVING;
-
-				when ON_EDGE =>
-					-- The status of the point right after the
-					-- start point (of the given line) tells whether
-					-- the line is entering or leaving the polygon:
-					SP_after := get_nearest (line, line.start_point);
-
-					-- CS: Probably not all cases handled here !
+				when OUTSIDE | INSIDE =>
+					null; -- not an intersection -> nothing to do
 					
+				when ON_EDGE =>
 					declare
-						PPS : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon, SP_after);
+						POC : constant type_point_of_contact := get_direction (polygon, line, line.start_point);
 					begin
-						-- If the line is entering then the intersection
-						-- right after the start point is leaving:
-						case PPS.status is
-							when INSIDE | ON_EDGE =>
-								result.start_point.direction_on_edge := ENTERING;
-
-								-- If the line is entering, then the intersection
-								-- right after the start point is leaving:
-								dir := LEAVING;
-
-							when OUTSIDE | ON_VERTEX =>
-								result.start_point.direction_on_edge := LEAVING;
-
-								-- If the line is leaving, then the intersection
-								-- right after the start point is entering:
-								dir := ENTERING;
-
-						end case;
+						result.start_point.direction_on_edge := POC.direction;
 					end;
-
 					
 				when ON_VERTEX =>
-					-- The status of the points right before or after the
-					-- start point (of the given line) tells whether
-					-- the line is entering or leaving the polygon:
-					SP_after := get_nearest (line, line.start_point, AFTER);
-					SP_before := get_nearest (line, line.start_point, BEFORE);
-
 					declare
-						PPS_after : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon, SP_after);
-
-						PPS_before : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon, SP_before);
-
+						POC : constant type_point_of_contact := get_direction (polygon, line, line.start_point);
 					begin
-						--put_line ("after " & to_string (SP_after));
-						--put_line ("before" & to_string (SP_before));
-						
-						case PPS_after.status is
-							when INSIDE =>
-								result.start_point.direction_on_vertex := ENTERING;
-
-								-- If the line is entering, then the intersection
-								-- right after the start point is leaving:
-								dir := LEAVING;
-
-							when ON_EDGE =>
-								case PPS_before.status is
-									when INSIDE =>
-										result.start_point.direction_on_vertex := LEAVING;
-										dir := ENTERING;
-
-									when OUTSIDE =>
-										result.start_point.direction_on_vertex := ENTERING;
-										dir := LEAVING;
-
-									when others => raise constraint_error; -- CS ?
-								end case;								
-								
-							when OUTSIDE | ON_VERTEX =>
-								result.start_point.direction_on_vertex := LEAVING;
-
-								-- If the line is leaving, then the intersection
-								-- right after the start point is entering:
-								dir := ENTERING;
-
-						end case;
+						result.start_point.direction_on_vertex := POC.direction;
 					end;
 					
 			end case;

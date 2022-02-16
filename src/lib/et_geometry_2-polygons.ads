@@ -480,11 +480,6 @@ package et_geometry_2.polygons is
 		return boolean;
 
 		
-	--type type_line_end is (
-		--ON_EDGE,
-		--INSIDE,
-		--OUTSIDE,
-		--IS_VERTEX);
 
 	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
 
@@ -499,7 +494,11 @@ package et_geometry_2.polygons is
 
 
 
-	
+
+	-- When a line intersects an edge of a polygon,
+	-- or when a line runs through a vertex of a polygon
+	-- then this type tells whether it is a real intersection
+	-- or just a touch point:
 	type type_point_of_contact (is_intersection : boolean) is record
 		case is_intersection is
 			when TRUE =>

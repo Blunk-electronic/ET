@@ -491,7 +491,27 @@ begin
 
 
 	
-	--L := type_line (make_line (0.0, 100.0, 100.0, 100.0)); -- go
+	L := type_line (make_line (0.0, 100.0, 100.0, 100.0));
+
+	edge := get_segment_edge (P, type_line (make_line (10.0, 10.0, 10.0, 100.0)));
+	append_expected_intersection (10.0, 100.0, LEAVING, edge);
+
+	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	append_expected_intersection (90.0, 100.0, ENTERING, edge);
+	
+	start_point_neigbors := get_neigboring_edges (P, L.start_point);
+	
+	set_expect (
+		start_point		=> (ON_VERTEX, start_point_neigbors, ENTERING), 
+		end_point		=> ON_VERTEX, 
+		--center_point	=> INSIDE,
+		intersections	=> I_list); -- empty
+
+	do_test;
+
+
+
+	
 	--L := type_line (make_line (5.0, 100.0, 100.0, 100.0)); -- go
 	--L := type_line (make_line (5.0, 100.0, 95.0, 100.0)); -- go
 	--L := type_line (make_line (-10.0, 50.0, 110.0, 50.0)); -- go
