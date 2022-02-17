@@ -53,22 +53,13 @@ package body et_geometry_2.polygons.clipping is
 	use pac_polygon_segments;
 	use pac_points;
 	use pac_vertices;
-	
-
-	function to_string (intersection : in type_intersection)
-		return string
-	is begin
-		return to_string (intersection.position) 
-			& " " & type_direction'image (intersection.direction);
-	end to_string;
-
 
 	
 	function to_string (vertex : in type_vertex)
 		return string
 	is begin
 		return to_string (vertex.position) 
-			& " " & type_direction'image (vertex.direction);
+			& " " & type_intersection_direction'image (vertex.direction);
 	end to_string;
 
 	
@@ -86,7 +77,7 @@ package body et_geometry_2.polygons.clipping is
 				& " " & type_category'image (element (v).category);
 
 			if element (v).category = INTERSECTION then
-				result := result & " " & type_direction'image (element (v).direction);
+				result := result & " " & type_intersection_direction'image (element (v).direction);
 			end if;
 
 			result := result & ".";
@@ -346,57 +337,7 @@ package body et_geometry_2.polygons.clipping is
 		return result;
 	end to_polygon;
 
-	
 
-	function all_vertices_of_A_inside_B (
-		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class) -- the clipping polygon
-		return boolean
-	is
-		proceed : aliased boolean := true;
-
-		-- Query the start point of segment of polygon A.
-		-- The segment is indicated by cursor c.
-		-- Aborts the iteration on the first vertex that is
-		-- outside polygon B.
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			case element (c).shape is
-				when LINE =>
-					declare
-						IPQ : constant type_point_to_polygon_status :=
-							get_point_to_polygon_status (polygon_B, element (c).segment_line.start_point);
-					begin
-						if IPQ.location = OUTSIDE then
-							proceed := false; -- abort iteration
-						end if;
-					end;
-					
-				when ARC =>
-					declare
-						IPQ : constant type_point_to_polygon_status := 
-							get_point_to_polygon_status (polygon_B, element (c).segment_arc.start_point);
-					begin
-						if IPQ.location = OUTSIDE then
-							proceed := false; -- abort iteration
-						end if;
-					end;
-			end case;
-		end query_segment;
-		
-	begin
-		--if polygon_A.contours.circular then
-			--null; -- CS
-		--else
-			iterate (
-				segments	=> polygon_A.contours.segments,
-				process		=> query_segment'access,
-				proceed		=> proceed'access);
-			
-			--end if;
-			
-		return proceed;
-	end all_vertices_of_A_inside_B;
-	
 	
 	
 	function clip (
@@ -474,6 +415,11 @@ package body et_geometry_2.polygons.clipping is
 
 				procedure collect_intersections is begin
 					null;
+
+					-- LPS list of type_intersection_line_edge
+					-- to
+					-- list of type_intersection
+					
 					--intersections.append (IAB);
 					--if debug then
 						--put_line ("intersection: " & to_string (IAB));
@@ -483,30 +429,33 @@ package body et_geometry_2.polygons.clipping is
 
 				
 				procedure use_start_point_as_intersection is 
-					-- The fully specified intersection of edge A and B:
+					-- The intersection of edge A and B:
 					IAB : type_intersection;
-
 				begin
-					null;
+					IAB.position := element (a).segment_line.start_point;
+					IAB.edge_A := element (a).segment_line;
 					
-					--IAB.position := element (a).segment_line.start_point;
-					--IAB.edge_A := a;
-					
-					--case LPS.start_point.location is
-						--when ON_EDGE =>
-							--IAB.direction := LPS.start_point.direction_on_edge;
+					case LPS.start_point.location is
+						when ON_EDGE =>
+							IAB.direction := LPS.start_point.direction_on_edge;
 
-							---- Get the touched B-edge at the start point:
-							--IAB.edge_B := LPS.start_point.edge; 
-							
-						--when ON_VERTEX =>
-							--IAB.direction := LPS.start_point.direction_on_vertex;
+							-- Get the touched B-edge at the start point:
+							IAB.edge_B := element (LPS.start_point.edge).segment_line; 
 
-							---- Get the touched B-edge that starts at the start point:
-							--IAB.edge_B := LPS.start_point.edges.edge_2;
+							-- collect intersection:
+							intersections.append (IAB);
 							
-						--when others => raise constraint_error; -- CS should never happen
-					--end case;
+						when ON_VERTEX =>
+							IAB.direction := LPS.start_point.direction_on_vertex;
+
+							-- Get the touched B-edge that starts at the start point:
+							IAB.edge_B := element (LPS.start_point.edges.edge_2).segment_line;
+							
+							-- collect intersection:
+							intersections.append (IAB);
+
+						when others => raise constraint_error; -- CS should never happen
+					end case;
 				end use_start_point_as_intersection;
 
 

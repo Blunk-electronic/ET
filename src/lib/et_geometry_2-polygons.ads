@@ -470,11 +470,18 @@ package et_geometry_2.polygons is
 
 		
 
-	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
+
 
 	
+	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
+	
 	type type_intersection_direction is (
-		ENTERING,
+		-- The edge of the clipped polygon (A) 
+		-- enters the clipping polygon (B):
+		ENTERING, 
+
+		-- The edge of the clipped polygon (A)
+		-- leaves the clipping polygon (B): 
 		LEAVING);
 
 	
@@ -592,6 +599,41 @@ package et_geometry_2.polygons is
 	
 	
 	type type_polygon is new type_polygon_base with null record;
+
+
+private
+	-- An indicator that tells whether it is about the
+	-- A or the B polygon:
+	type type_AB_polygon is (A, B);
+
+
+	type type_intersection is record
+		position	: type_point; 	  -- x/y
+		direction	: type_intersection_direction; -- Whether an edge of A enters or leaves B.
+
+		-- This is supportive information. It helps
+		-- to find the edges that intersect:
+		edge_A		: type_line;
+		edge_B		: type_line;
+	end record;
+
+	
+	function to_string (intersection : in type_intersection)
+		return string;
+
+	
+	package pac_intersections is new doubly_linked_lists (type_intersection);
+	use pac_intersections;
+
+
+	-- Returns true if all vertices of polygon A lie
+	-- inside polygon B. If a vertex lies on an edge
+	-- of polygon A then it is regarded as inside.
+	function all_vertices_of_A_inside_B (
+		polygon_A	: in type_polygon'class; -- the clipped polygon
+		polygon_B	: in type_polygon'class) -- the clipping polygon
+		return boolean;
+
 
 	
 end et_geometry_2.polygons;

@@ -74,24 +74,6 @@ package et_geometry_2.polygons.clipping is
 	-- of polygons:
 	package pac_clipped is new doubly_linked_lists (type_polygon);
 
-
-	type type_direction is private;
-	type type_intersection is private;
-
-
-	function to_string (intersection : in type_intersection)
-		return string;
-	
-
-	-- Returns true if all vertices of polygon A lie
-	-- inside polygon B. If a vertex lies on an edge
-	-- of polygon A then it is regarded as inside.
-	function all_vertices_of_A_inside_B (
-		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class) -- the clipping polygon
-		return boolean;
-	-- CS move to et_geometry_2.polygons
-	
 	
 	-- Clips polygon A by polygon B.
 	-- If the two polygons do not overlap, then the return is an empty list.
@@ -102,38 +84,8 @@ package et_geometry_2.polygons.clipping is
 		debug		: in boolean := false)
 		return pac_clipped.list;
 
-	
-
 
 private
-
-	-- An indicator that tells whether it is about the
-	-- A or the B polygon:
-	type type_AB_polygon is (A, B);
-	
-	
-	type type_direction is (
-		-- The edge of the clipped polygon (A) 
-		-- enters the clipping polygon (B):
-		ENTERING, 
-
-		-- The edge of the clipped polygon (A)
-		-- leaves the clipping polygon (B): 
-		LEAVING);
-
-	
-	type type_intersection is record
-		position	: type_point; 	  -- x/y
-		direction	: type_direction; -- Whether an edge of A enters or leaves B.
-
-		-- This is supportive information. It helps
-		-- to find the edges that intersect:
-		edge_A		: type_line;
-		edge_B		: type_line;
-	end record;
-
-	package pac_intersections is new doubly_linked_lists (type_intersection);
-	use pac_intersections;
 
 
 	-- Returns true if x/y of the given two intersections are equal:
@@ -182,7 +134,7 @@ private
 	type type_vertex (category : type_category) is record
 		position	: type_point;
 		case category is
-			when INTERSECTION =>	direction	: type_direction;
+			when INTERSECTION =>	direction	: type_intersection_direction;
 			when REGULAR => 		null;
 		end case;
 	end record;

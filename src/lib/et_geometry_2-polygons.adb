@@ -1411,7 +1411,7 @@ package body et_geometry_2.polygons is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_intersection; -- incl. point and angle
+			intersection: in et_geometry_2.type_intersection; -- incl. point and angle
 			segment		: in type_intersected_segment;
 			center		: in type_point := origin;
 			radius		: in type_distance_positive := zero)
@@ -2228,6 +2228,64 @@ package body et_geometry_2.polygons is
 	end get_line_to_polygon_status;
 
 
+
+	function to_string (intersection : in type_intersection)
+		return string
+	is begin
+		return to_string (intersection.position) 
+			& " " & type_intersection_direction'image (intersection.direction);
+	end to_string;
+
+	
+
+	function all_vertices_of_A_inside_B (
+		polygon_A	: in type_polygon'class; -- the clipped polygon
+		polygon_B	: in type_polygon'class) -- the clipping polygon
+		return boolean
+	is
+		proceed : aliased boolean := true;
+
+		-- Query the start point of segment of polygon A.
+		-- The segment is indicated by cursor c.
+		-- Aborts the iteration on the first vertex that is
+		-- outside polygon B.
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE =>
+					declare
+						IPQ : constant type_point_to_polygon_status :=
+							get_point_to_polygon_status (polygon_B, element (c).segment_line.start_point);
+					begin
+						if IPQ.location = OUTSIDE then
+							proceed := false; -- abort iteration
+						end if;
+					end;
+					
+				when ARC =>
+					declare
+						IPQ : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon_B, element (c).segment_arc.start_point);
+					begin
+						if IPQ.location = OUTSIDE then
+							proceed := false; -- abort iteration
+						end if;
+					end;
+			end case;
+		end query_segment;
+		
+	begin
+		--if polygon_A.contours.circular then
+			--null; -- CS
+		--else
+			iterate (
+				segments	=> polygon_A.contours.segments,
+				process		=> query_segment'access,
+				proceed		=> proceed'access);
+			
+			--end if;
+			
+		return proceed;
+	end all_vertices_of_A_inside_B;
 
 	
 end et_geometry_2.polygons;
