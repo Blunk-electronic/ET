@@ -1997,17 +1997,23 @@ package body et_geometry_2.polygons is
 		begin
 			case PPS.location is
 				when INSIDE => 
-					result.end_point := INSIDE;
+					result.end_point := (location => INSIDE);
 
 				when OUTSIDE => 
-					result.end_point := OUTSIDE;
+					result.end_point := (location => OUTSIDE);
 
 				when ON_EDGE => 
-					result.end_point := ON_EDGE;
+					result.end_point := (
+						location	=> ON_EDGE, 
+						edge		=> PPS.edge,
+						others 		=> <>); -- direction will be set later
 
 				when ON_VERTEX => 
-					result.end_point := ON_VERTEX;
-					
+					result.end_point := (
+						location	=> ON_VERTEX, 
+						edges		=> PPS.edges,
+						others 		=> <>); -- direction will be set later
+		
 			end case;
 		end set_line_end;
 
@@ -2060,9 +2066,6 @@ package body et_geometry_2.polygons is
 
 
 		procedure set_entering_leaving is
-			-- NOTE: This procedure assumes that there ARE intersections
-			-- with the polygon.
-			
 			use pac_line_edge_intersections;
 			ic : pac_line_edge_intersections.cursor := result.intersections.first;
 			ic_bak : pac_line_edge_intersections.cursor;
@@ -2098,7 +2101,7 @@ package body et_geometry_2.polygons is
 		begin -- set_entering_leaving
 			
 			-- In case the start point of the line lies on an edge or on a vertex
-			-- then set the direction of this intersection:
+			-- then assign the direction of this intersection:
 			case result.start_point.location is
 				when OUTSIDE | INSIDE =>
 					null; -- not an intersection -> nothing to do
@@ -2116,12 +2119,33 @@ package body et_geometry_2.polygons is
 					begin
 						result.start_point.direction_on_vertex := POC.direction;
 					end;
-					
 			end case;
 
+			-- In case the end point of the line lies on an edge or on a vertex
+			-- then assign the direction of this intersection:
+			case result.end_point.location is
+				when OUTSIDE | INSIDE =>
+					null; -- not an intersection -> nothing to do
+					
+				when ON_EDGE =>
+					declare
+						POC : constant type_point_of_contact := get_direction (polygon, line, line.end_point);
+					begin
+						result.end_point.direction_on_edge := POC.direction;
+					end;
+					
+				when ON_VERTEX =>
+					declare
+						POC : constant type_point_of_contact := get_direction (polygon, line, line.end_point);
+					begin
+						result.end_point.direction_on_vertex := POC.direction;
+					end;
+					
+			end case;
 			
 			-- Iterate through the intersections and assign each of 
-			-- them a definite direction:
+			-- them a definite direction. If no intersections exist then
+			-- nothing happens here:
 			while ic /= pac_line_edge_intersections.no_element loop
 				result.intersections.update_element (ic, set_direction'access);
 
@@ -2179,7 +2203,7 @@ package body et_geometry_2.polygons is
 		-- If there are no intersections between start and end point
 		-- then the location of the 
 		-- center of the given line tells whether the line runs
-		-- inside or outside the polygon.
+		-- completely inside or outside the polygon.
 		if result.intersections.is_empty then
 			line_center := get_center (line);
 
@@ -2191,12 +2215,14 @@ package body et_geometry_2.polygons is
 				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;
 			end case;
 			
-		else
-		-- If there are intersections then they must be sorted and their
-		-- direction set:
-			sort_by_distance (result.intersections, line.start_point);
-			set_entering_leaving;
 		end if;
+
+		-- Sort intersections by their distance to the start point.
+		sort_by_distance (result.intersections, line.start_point);
+		
+		-- Assign directions of start and end point and the intersections
+		-- betweeen start and end:
+		set_entering_leaving;
 		
 		return result;
 	end get_line_to_polygon_status;

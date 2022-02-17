@@ -537,37 +537,45 @@ package et_geometry_2.polygons is
 	
 		
 
-
-	type type_start_point (location : type_location := OUTSIDE) is record
+	-- When a line runs through a polygon, then the start and end point
+	-- can lie inside, outside, on a vertex or on an edge. Depending
+	-- on this location the start or end point gets more properties.
+	-- This type is applied to both the start and the end point of the line,
+	-- despite of the confusing name "type_line_end":
+	type type_line_end (location : type_location := OUTSIDE) is record
 		case location is
 			when OUTSIDE | INSIDE => null;
 			
 			when ON_EDGE =>
-				-- The edge where the start point lies on:
+				-- The edge where the line starts or ends:
 				edge				: pac_polygon_segments.cursor;
 
 				-- The direction of the line: Whether it is
-				-- entering or leaving the polygon at the start point:
+				-- entering or leaving the polygon on the start or end point:
 				direction_on_edge	: type_intersection_direction;
 
 			when ON_VERTEX =>
 				-- The two neigboring edges that are 
-				-- connected by the start point:
+				-- connected by the start or end point:
 				edges				: type_neigboring_edges;
 
 				-- The direction of the line: Whether it is
-				-- entering or leaving the polygon at the start point:
+				-- entering or leaving the polygon at the start or end point:
 				direction_on_vertex	: type_intersection_direction;
 		end case;
 	end record;
 	
 		
 	type type_line_to_polygon_status is record
-		start_point : type_start_point;
+		-- The properties of the start and end point of the line:
+		start_point	: type_line_end;
+		end_point	: type_line_end;
 
-		end_point : type_location := OUTSIDE;
+		-- The intersections with the polygon BETWEEN start and 
+		-- end point of the line:
 		intersections : pac_line_edge_intersections.list;
-		
+
+		-- The location of the center of the line:
 		center_point : type_line_center := OUTSIDE;		
 		-- NOTE: Valid only if there are NO intersections !
 	end record;

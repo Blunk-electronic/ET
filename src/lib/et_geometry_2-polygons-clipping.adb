@@ -496,7 +496,7 @@ package body et_geometry_2.polygons.clipping is
 
 				case LPS.start_point.location is
 					when OUTSIDE =>
-						case LPS.end_point is
+						case LPS.end_point.location is
 							when OUTSIDE =>
 								if LPS.intersections.is_empty then
 									-- edge passes the polygon
@@ -551,7 +551,7 @@ package body et_geometry_2.polygons.clipping is
 
 						
 					when INSIDE =>
-						case LPS.end_point is
+						case LPS.end_point.location is
 							when OUTSIDE =>
 								if LPS.intersections.is_empty then
 									-- CS: should never happen
@@ -594,7 +594,7 @@ package body et_geometry_2.polygons.clipping is
 
 						
 					when ON_EDGE =>
-						case LPS.end_point is
+						case LPS.end_point.location is
 							when OUTSIDE =>
 								null; -- CS ?
 								
@@ -611,7 +611,7 @@ package body et_geometry_2.polygons.clipping is
 
 						
 					when ON_VERTEX =>
-						case LPS.end_point is
+						case LPS.end_point.location is
 							when OUTSIDE =>
 								null; -- CS ?
 								
