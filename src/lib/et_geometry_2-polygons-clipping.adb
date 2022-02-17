@@ -468,8 +468,9 @@ package body et_geometry_2.polygons.clipping is
 			
 			procedure query_A_segment (a : in pac_polygon_segments.cursor) is
 
-				-- The fully specified intersection of edge A and B:
-				--IAB : type_intersection;
+				-- The status of the A-edge relative to polygon B:
+				LPS : constant type_line_to_polygon_status := 
+					get_line_to_polygon_status (polygon_B, element (a).segment_line);
 
 				procedure collect_intersections is begin
 					null;
@@ -479,18 +480,37 @@ package body et_geometry_2.polygons.clipping is
 					--end if;
 				end collect_intersections;
 
-				--procedure use_end_point_as_leaving_intersection is begin
-					--null;
-				--end;
-
-
-				--procedure use_end_point_as_entering_intersection is begin
-					--null;
-				--end;
 
 				
-				LPS : constant type_line_to_polygon_status := 
-					get_line_to_polygon_status (polygon_B, element (a).segment_line);
+				procedure use_start_point_as_intersection is 
+					-- The fully specified intersection of edge A and B:
+					IAB : type_intersection;
+
+				begin
+					null;
+					
+					--IAB.position := element (a).segment_line.start_point;
+					--IAB.edge_A := a;
+					
+					--case LPS.start_point.location is
+						--when ON_EDGE =>
+							--IAB.direction := LPS.start_point.direction_on_edge;
+
+							---- Get the touched B-edge at the start point:
+							--IAB.edge_B := LPS.start_point.edge; 
+							
+						--when ON_VERTEX =>
+							--IAB.direction := LPS.start_point.direction_on_vertex;
+
+							---- Get the touched B-edge that starts at the start point:
+							--IAB.edge_B := LPS.start_point.edges.edge_2;
+							
+						--when others => raise constraint_error; -- CS should never happen
+					--end case;
+				end use_start_point_as_intersection;
+
+
+				
 				
 			begin			
 
@@ -520,15 +540,12 @@ package body et_geometry_2.polygons.clipping is
 									-- edge comes from outside, does not
 									-- cross any edge of the polygon and ends 
 									-- on edge of polygon:
-									--use_end_point_as_entering_intersection;
-									null; -- CS ?
+									null;
 								else
 									-- edge comes from outside, 
 									-- crosses one or more edges of the polygon and ends 
 									-- on edge of polygon:
 									collect_intersections;
-									--use_end_point_as_leaving_intersection;
-									null; -- CS ?
 								end if;
 								
 							when ON_VERTEX =>
@@ -536,15 +553,12 @@ package body et_geometry_2.polygons.clipping is
 									-- edge comes from outside, does not
 									-- cross any edge of the polygon and ends 
 									-- on a vertex of polygon:
-									--use_end_point_as_entering_intersection;
-									null; -- CS ?
+									null;
 								else
 									-- edge comes from outside, 
 									-- crosses one or more edges of the polygon and ends 
 									-- on a vertex of polygon:
 									collect_intersections;
-									--use_end_point_as_leaving_intersection;
-									null; -- CS ?
 								end if;
 							
 						end case;
@@ -574,19 +588,20 @@ package body et_geometry_2.polygons.clipping is
 							when ON_EDGE =>
 								if LPS.intersections.is_empty then
 									-- edge starts inside and ends on an edge of the polygon
-									--use_end_point_as_leaving_intersection;
-									null; -- CS ?
+									null;
 								else
-									-- edge starts inside and ends on edge
+									-- edge starts inside, crosses one or more edges of the polygon
+									-- and ends on edge
 									collect_intersections;
 								end if;
 
 							when ON_VERTEX =>
 								if LPS.intersections.is_empty then
 									-- edge starts inside and ends on a vertex of the polygon
-									null; -- CS ?
+									null; 
 								else
-									-- edge starts inside and ends on vertex
+									-- edge starts inside, crosses one or more edges of the polygon
+									-- and ends on a vertex
 									collect_intersections;
 								end if;
 
@@ -594,35 +609,102 @@ package body et_geometry_2.polygons.clipping is
 
 						
 					when ON_EDGE =>
+						use_start_point_as_intersection;
+						
 						case LPS.end_point.location is
 							when OUTSIDE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on edge and ends outside
+									-- without crossing any edges or vertices
+									null;
+								else
+									-- edge starts on edge, crosses one or more edges of the polygon
+									-- and ends outside
+									collect_intersections;
+								end if;
 								
 							when INSIDE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on edge and ends inside
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on edge, crosses one or more edges of the polygon
+									-- and ends inside
+									collect_intersections;
+								end if;
 								
 							when ON_EDGE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on edge and ends on edge
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on edge, crosses one or more edges of the polygon
+									-- and ends on edge
+									collect_intersections;
+								end if;
 								
 							when ON_VERTEX =>
-								null; -- CS ?
-								
+								if LPS.intersections.is_empty then
+									-- edge starts on edge and ends on vertex
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on edge, crosses one or more edges of the polygon
+									-- and ends on vertex
+									collect_intersections;
+								end if;
 						end case;
 
 						
 					when ON_VERTEX =>
+						use_start_point_as_intersection;
+						
 						case LPS.end_point.location is
 							when OUTSIDE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on vertex and ends outside
+									-- without crossing any edges or vertices
+									null;
+								else
+									-- edge starts on vertex, crosses one or more edges of the polygon
+									-- and ends outside
+									collect_intersections;
+								end if;
 								
 							when INSIDE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on vertex and ends inside
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on vertex, crosses one or more edges of the polygon
+									-- and ends inside
+									collect_intersections;
+								end if;
 								
 							when ON_EDGE =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on vertex and ends on edge
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on vertex, crosses one or more edges of the polygon
+									-- and ends on edge
+									collect_intersections;
+								end if;
 								
 							when ON_VERTEX =>
-								null; -- CS ?
+								if LPS.intersections.is_empty then
+									-- edge starts on vertex and ends on vertex
+									-- without crossing any edges or verices
+									null;
+								else
+									-- edge starts on vertex, crosses one or more edges of the polygon
+									-- and ends on vertex
+									collect_intersections;
+								end if;
 								
 						end case;
 

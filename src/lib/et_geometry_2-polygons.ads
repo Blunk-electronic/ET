@@ -127,10 +127,12 @@ package et_geometry_2.polygons is
 	
 
 	type type_neigboring_edges is record
-		-- The edge segment before a vertex:
+		-- The edge segment before a vertex.
+		-- This edge ENDS on the vertex:
 		edge_1 : pac_polygon_segments.cursor;
 
 		-- The edge segment after a vertex:
+		-- This edge STARTS on the vertex:
 		edge_2 : pac_polygon_segments.cursor;
 	end record;
 
