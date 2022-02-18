@@ -413,17 +413,25 @@ package body et_geometry_2.polygons.clipping is
 				LPS : constant type_line_to_polygon_status := 
 					get_line_to_polygon_status (polygon_B, element (a).segment_line);
 
-				procedure collect_intersections is begin
-					null;
+				
+				procedure collect_intersections is 
 
-					-- LPS list of type_intersection_line_edge
-					-- to
-					-- list of type_intersection
-					
-					--intersections.append (IAB);
-					--if debug then
-						--put_line ("intersection: " & to_string (IAB));
-					--end if;
+					procedure query_intersection (i : in pac_line_edge_intersections.cursor) is
+						use pac_line_edge_intersections;
+						b_edge : pac_polygon_segments.cursor := element (i).edge;
+					begin
+						intersections.append ((
+							type_intersection_base (element (i)) with
+							edge_A => element (a).segment_line,
+							edge_B => element (b_edge).segment_line));
+
+						if debug then
+							put_line ("intersection: " & to_string (intersections.last_element));
+						end if;
+					end query_intersection;
+
+				begin
+					LPS.intersections.iterate (query_intersection'access);
 				end collect_intersections;
 
 
