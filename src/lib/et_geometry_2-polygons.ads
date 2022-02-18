@@ -520,11 +520,15 @@ package et_geometry_2.polygons is
 
 
 
-	
-	type type_intersection_line_edge is record
-		place		: type_point; 	  -- x/y
-		edge		: pac_polygon_segments.cursor;
+
+	type type_intersection_base is tagged record
+		position	: type_point; 	  -- x/y
 		direction	: type_intersection_direction := ENTERING;
+	end record;
+
+	
+	type type_intersection_line_edge is new type_intersection_base with record
+		edge		: pac_polygon_segments.cursor;
 	end record;
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
@@ -607,10 +611,7 @@ private
 	type type_AB_polygon is (A, B);
 
 
-	type type_intersection is record
-		position	: type_point; 	  -- x/y
-		direction	: type_intersection_direction; -- Whether an edge of A enters or leaves B.
-
+	type type_intersection is new type_intersection_base with record
 		-- This is supportive information. It helps
 		-- to find the edges that intersect:
 		edge_A		: type_line;

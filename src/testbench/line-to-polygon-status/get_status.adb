@@ -111,7 +111,7 @@ procedure get_status is
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
 			EC : pac_polygon_segments.cursor := element (i).edge;
 		begin
-			put_line (" place : " & to_string (element (i).place));
+			put_line (" place : " & to_string (element (i).position));
 			put_line (" edge  : " & to_string (element (EC).segment_line));
 			put_line (" drctn : " & type_intersection_direction'image (element (i).direction));
 			new_line;
@@ -170,7 +170,7 @@ procedure get_status is
 	is 
 		p : type_point := type_point (set (x, y));
 	begin
-		I_list.append ((place => p, direction => direction, edge => edge));
+		I_list.append ((position => p, direction => direction, edge => edge));
 	end append_expected_intersection;
 	
 
@@ -217,11 +217,35 @@ procedure get_status is
 
 	
 begin
-
+	-- for the basic tests we use the rectangular default polygon:
 	make_polygon (default_polygon);
+
+
+	
+	-- the line it is about:
+	L := type_line (make_line (50.0, 0.0, 60.0, 0.0));
+
+	-- the intersected edge of the polygon:
+	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+
+	-- expect the start and end point (of the line) to lie on these edges:
+	start_point_edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+	end_point_edge := start_point_edge;
+
+	set_expect (
+		start_point		=> (ON_EDGE, start_point_edge, ENTERING),
+		end_point		=> (ON_EDGE, end_point_edge, LEAVING),
+		center_point	=> ON_EDGE,
+		intersections	=> I_list);
+
+	do_test;
+
+	
 	
 	L := type_line (make_line (0.0, 0.0, 110.0, 110.0));
 	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+
+	-- expect the intersection: on x/y, with direction, affected edge:
 	append_expected_intersection (100.0, 100.0, LEAVING, edge);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	set_expect (
@@ -232,6 +256,7 @@ begin
 	do_test;
 	
 
+	
 	L := type_line (make_line (0.0, 0.0, 200.0, 0.0));
 	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
 	append_expected_intersection (100.0, 0.0, LEAVING, edge);

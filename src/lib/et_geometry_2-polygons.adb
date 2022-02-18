@@ -1845,8 +1845,18 @@ package body et_geometry_2.polygons is
 							result_is_intersection := true;
 							result_direction := ENTERING;
 
-						when others =>
-							raise constraint_error; -- CS ?
+						when ON_EDGE | ON_VERTEX =>
+							-- line runs parallel to an edge
+							if point = line.start_point then
+								result_is_intersection := true;
+								result_direction := ENTERING;
+								
+							elsif point = line.end_point then
+								result_is_intersection := true;
+								result_direction := LEAVING;
+							else
+								raise constraint_error; -- CS
+							end if;
 					end case;
 
 			end case;
@@ -1875,7 +1885,7 @@ package body et_geometry_2.polygons is
 		c : pac_line_edge_intersections.cursor := intersections.first;
 	begin
 		while c /= pac_line_edge_intersections.no_element loop
-			if element (c).place = place then
+			if element (c).position = place then
 				result := true;
 				exit;
 			end if;
@@ -1917,7 +1927,7 @@ package body et_geometry_2.polygons is
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
 			d : type_distance_polar;
 		begin
-			d := get_distance (type_point (reference), element (i).place);
+			d := get_distance (type_point (reference), element (i).position);
 			
 			items.append (new_item => (
 				intersection	=> element (i),
@@ -2047,7 +2057,7 @@ package body et_geometry_2.polygons is
 									-- Collect this intersection point if it has
 									-- not already been collected yet:
 									if not contains (result.intersections, IP) then
-										result.intersections.append ((place => IP, edge => c, others => <>));
+										result.intersections.append ((position => IP, edge => c, others => <>));
 										-- The direction will be set later.
 									end if;
 								end if;
@@ -2082,7 +2092,7 @@ package body et_geometry_2.polygons is
 			--   This erroneous intersection will later be removed from the
 			--   list of intersections:			
 			procedure set_direction (i : in out type_intersection_line_edge) is
-				POC : constant type_point_of_contact := get_direction (polygon, line, i.place);
+				POC : constant type_point_of_contact := get_direction (polygon, line, i.position);
 			begin
 				-- If the given supposed intersection can not be confirmed as such
 				-- then the intersection is erroneous and the flag "delete_intersection" is set,
@@ -2234,6 +2244,7 @@ package body et_geometry_2.polygons is
 	is begin
 		return to_string (intersection.position) 
 			& " " & type_intersection_direction'image (intersection.direction);
+			-- CS output A and B edge ?
 	end to_string;
 
 	
