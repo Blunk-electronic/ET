@@ -420,13 +420,16 @@ package body et_geometry_2.polygons.clipping is
 						use pac_line_edge_intersections;
 						b_edge : pac_polygon_segments.cursor := element (i).edge;
 					begin
-						intersections.append ((
-							type_intersection_base (element (i)) with
-							edge_A => element (a).segment_line,
-							edge_B => element (b_edge).segment_line));
+						-- Ignore intersection if edge A runs "parallel" to edge B:
+						if not lines_overlap (element (a).segment_line, element (b_edge).segment_line) then
+							intersections.append ((
+								type_intersection_base (element (i)) with
+								edge_A => element (a).segment_line,
+								edge_B => element (b_edge).segment_line));
 
-						if debug then
-							put_line ("intersection: " & to_string (intersections.last_element));
+							if debug then
+								put_line ("intersection: " & to_string (intersections.last_element));
+							end if;
 						end if;
 					end query_intersection;
 
@@ -450,26 +453,30 @@ package body et_geometry_2.polygons.clipping is
 							-- Get the touched B-edge at the start point:
 							IAB.edge_B := element (LPS.start_point.edge).segment_line; 
 
-							-- collect intersection:
-							intersections.append (IAB);
+							-- Ignore intersection if edge A runs "parallel" to edge B:
+							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
+								-- collect intersection:
+								intersections.append (IAB);
+							end if;
 							
 						when ON_VERTEX =>
 							IAB.direction := LPS.start_point.direction_on_vertex;
 
 							-- Get the touched B-edge that starts at the start point:
 							IAB.edge_B := element (LPS.start_point.edges.edge_2).segment_line;
-							
-							-- collect intersection:
-							intersections.append (IAB);
+
+							-- Ignore intersection if edge A runs "parallel" to edge B:
+							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
+								-- collect intersection:
+								intersections.append (IAB);
+							end if;
 
 						when others => raise constraint_error; -- CS should never happen
 					end case;
 				end use_start_point_as_intersection;
-
-
 				
 				
-			begin			
+			begin -- query_A_segment
 
 				case LPS.start_point.location is
 					when OUTSIDE =>
@@ -776,9 +783,9 @@ package body et_geometry_2.polygons.clipping is
 			-- in case of the STC. See package specification header.
 			-- Two successive entering intersections are not correct. So the second
 			-- intersection must be rendered to "leaving".
-			if AB = A then
-				render_successive_enterings;
-			end if;
+			--if AB = A then
+				--render_successive_enterings;
+			--end if;
 			
 			return result;
 		end get_intersections_on_edge;
@@ -1187,11 +1194,11 @@ package body et_geometry_2.polygons.clipping is
 		-- Both polygons must have vertices and edges.
 		-- Otherwise raise exception:
 		if get_segments_total (polygon_A) = 0 then
-			raise constraint_error with "Polygon A has no verices !";
+			raise constraint_error with "Polygon A has no vertices !";
 		end if;
 
 		if get_segments_total (polygon_B) = 0 then
-			raise constraint_error with "Polygon B has no verices !";
+			raise constraint_error with "Polygon B has no vertices !";
 		end if;
 
 		
