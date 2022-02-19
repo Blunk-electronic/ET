@@ -250,8 +250,16 @@ package et_geometry_2 is
 	
 	
 	type type_intersection_status_of_two_lines is (
+		-- The two lines do NOT intersect each other:
 		NOT_EXISTENT,
+
+		-- The two lines DO intersect each other:
 		EXISTS,
+
+		-- The two lines are parallel to each other.
+		-- They overlap each other. 
+		-- One line lies exactly on the other. 
+		-- The distance between them is zero everywhere:
 		OVERLAP);
 
 	
@@ -419,10 +427,22 @@ package et_geometry_2 is
 		candidate_line	: in type_line)
 		return type_intersection_of_two_lines;
 
-	
+
+	-- Tests whether the given two lines intersect or overlap
+	-- each other. 
+	-- Independend of start and end points, both lines are regarded as infinitely
+	-- long beyond their start and end points:
 	function get_intersection (
 		line_1, line_2 : in type_line)
 		return type_intersection_of_two_lines;
+
+	
+	-- Returns true if the given two lines overlap each other.
+	-- Independend of start and end points, both lines are regarded as infinitely
+	-- long beyond their start and end points:
+	function lines_overlap (
+		line_1, line_2 : in type_line)
+		return boolean;
 
 	
 	

@@ -508,6 +508,7 @@ package body et_geometry_2 is
 		-- location vector and angle of intersection to be returned:			
 		i : type_intersection;
 
+		
 		function exists_intersection return boolean is
 			v1, v2 : type_vector;
 		begin
@@ -534,6 +535,7 @@ package body et_geometry_2 is
 			end if;
 		end exists_intersection;
 
+		
 		function lines_overlap return boolean is
 			a, b, distance : type_float_internal;
 			v1 : type_vector;
@@ -565,7 +567,8 @@ package body et_geometry_2 is
 				return false; -- not parallel -> hence no overlap
 			end if;
 		end lines_overlap;
-			
+
+		
 	begin -- get_intersection
 		--put_line ("");
 		--put_line ("line_1 start" & to_string (to_point (line_1.v_start)) & " direction" & to_string (to_point (line_1.v_direction)));
@@ -988,6 +991,21 @@ package body et_geometry_2 is
 
 	end get_intersection;
 	
+
+
+	function lines_overlap (
+		line_1, line_2 : in type_line)
+		return boolean
+	is
+		I2L : constant type_intersection_of_two_lines :=
+			get_intersection (line_1, line_2);
+	begin
+		if I2L.status = OVERLAP then
+			return true;
+		else
+			return false;
+		end if;
+	end lines_overlap;
 	
 	
 	function start_vector (
