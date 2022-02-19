@@ -1794,10 +1794,29 @@ package body et_geometry_2.polygons is
 		-- on the given line towards or beyond the start of the given line:
 		SP_before : type_point;
 
+		-- These flags indicate that the given point lies
+		-- directly on the start or end point of the given line:
+		point_on_start, point_on_end : boolean := false;
+		
 	begin
+		if point = line.start_point then
+			point_on_start := true;
+		end if;
+
+		if point = line.end_point then
+			point_on_end := true;
+		end if;
+
+		-- Safety check:
+		if point_on_start and point_on_end then
+			raise constraint_error; -- CS should never happen
+		end if;
+		
+		
 		SP_before := get_nearest (line, point, BEFORE);
 		SP_after := get_nearest (line, point, AFTER);
 
+		
 		-- NOTE:
 		-- CS: The supportive points are by type_distance'small away from
 		-- the given point. In some cases this distance could be too much.
@@ -1812,10 +1831,22 @@ package body et_geometry_2.polygons is
 		begin
 			case PPS_before is
 				when OUTSIDE =>
+					--put_line ("before " & to_string (SP_before));
+					--put_line ("after  " & to_string (SP_after));
+					
 					case PPS_after is
 						when OUTSIDE => 
-							-- not an intersection but just a touch point
-							null;
+							if point_on_start then
+								result_is_intersection := true;
+								result_direction := LEAVING;
+								
+							elsif point_on_end then
+								result_is_intersection := true;
+								result_direction := ENTERING;
+							else
+								-- not an intersection but just a touch point
+								null;
+							end if;
 							
 						when INSIDE | ON_EDGE | ON_VERTEX =>
 							result_is_intersection := true;
@@ -1826,8 +1857,17 @@ package body et_geometry_2.polygons is
 				when INSIDE =>
 					case PPS_after is
 						when INSIDE => 
-							-- not an intersection but just a touch point
-							null;
+							if point_on_start then
+								result_is_intersection := true;
+								result_direction := ENTERING;
+								
+							elsif point_on_end then
+								result_is_intersection := true;
+								result_direction := LEAVING;
+							else
+								-- not an intersection but just a touch point
+								null;
+							end if;
 							
 						when OUTSIDE | ON_EDGE | ON_VERTEX =>
 							result_is_intersection := true;
@@ -1847,11 +1887,11 @@ package body et_geometry_2.polygons is
 
 						when ON_EDGE | ON_VERTEX =>
 							-- line runs parallel to an edge
-							if point = line.start_point then
+							if point_on_start then
 								result_is_intersection := true;
 								result_direction := ENTERING;
 								
-							elsif point = line.end_point then
+							elsif point_on_end then
 								result_is_intersection := true;
 								result_direction := LEAVING;
 							else
