@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..17) of type_test;
+	type type_test_array is array (1..19) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -180,7 +180,7 @@ procedure clip is
 begin
 
 	-- TEST 1:
-	init_test;
+	--init_test;
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
 	make_set (
@@ -190,6 +190,7 @@ begin
 	-- go
 
 
+	
 	-- TEST 2:
 	init_test;
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
@@ -289,13 +290,14 @@ begin
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
 	make_set (
-		A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		--A => "line 50 0 line 100 0 line 101 50 line 50 50", -- nogo
+		A => "line 50 0 line 100 0 line 150 50 line 50 50", -- go
 		B => B_default,
 		expect => EXP);
 	-- go
 
 
-	-- TEST 11:
+	---- TEST 11:
 	init_test;
 	add_to_expect (EXP, "line 100 0 line 80 20 line 80 40 line 100 40 line 100 60 line 50 60 line 50 0");
 	
@@ -339,7 +341,7 @@ begin
 
 	-- TEST 15:
 	init_test;
-	-- we expect nothing as the polygons do not overlap
+	-- we expect nothing because the polygons do not overlap
 	
 	make_set (
 		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
@@ -349,7 +351,7 @@ begin
 
 	-- TEST 16:
 	init_test;
-	-- we expect nothing as the polygons do not overlap
+	-- we expect nothing because the polygons do not overlap
 	
 	make_set (
 		A => "line 200 10 line 250 10 line 250 50",
@@ -360,10 +362,32 @@ begin
 
 	-- TEST 17:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
+	add_to_expect (EXP, "line 100 50 line 50 0 line 100 0");
 	
 	make_set (
-		A => "line 70 0 line 110 -20 line 120 0 line 110 70",
+		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
+		B => B_default,
+		expect => EXP);
+
+
+	
+	-- TEST 18:
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 50 50 line 25 50 line 0 0");
+	
+	make_set (
+		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
+		B => B_default,
+		expect => EXP);
+
+
+	
+	-- TEST 19:
+	init_test;
+	add_to_expect (EXP, "line 90 0 line 80 10 line 20 10 line 10 0");
+	
+	make_set (
+		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
 		B => B_default,
 		expect => EXP);
 

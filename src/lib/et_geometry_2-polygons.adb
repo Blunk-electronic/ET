@@ -1829,10 +1829,11 @@ package body et_geometry_2.polygons is
 			PPS_after : constant type_location := 
 				get_point_to_polygon_status (polygon, SP_after).location;
 		begin
+			put_line ("before " & to_string (SP_before));
+			put_line ("after  " & to_string (SP_after));
+
 			case PPS_before is
 				when OUTSIDE =>
-					--put_line ("before " & to_string (SP_before));
-					--put_line ("after  " & to_string (SP_after));
 					
 					case PPS_after is
 						when OUTSIDE => 

@@ -881,19 +881,21 @@ package body et_geometry_2 is
 	is
 		result : type_point;
 		d : constant type_distance_polar := get_distance (line.start_point, line.end_point);
+
+		m : constant type_distance_positive := 10.0;
 	begin
 		case place is
 			when AFTER => -- move forward in direction of line
 				result := type_point (move (
 					point		=> point,
 					direction	=> get_angle (d),
-					distance	=> type_distance'small));
+					distance	=> m * type_distance'small));
 
 			when BEFORE => -- move backward in opposite direction
 				result := type_point (move (
 					point		=> point,
 					direction	=> add (get_angle (d), 180.0),
-					distance	=> type_distance'small));
+					distance	=> m * type_distance'small));
 
 		end case;
 		return result;

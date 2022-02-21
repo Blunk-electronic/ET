@@ -240,6 +240,7 @@ begin
 
 	do_test;
 
+
 	
 	
 	L := type_line (make_line (0.0, 0.0, 110.0, 110.0));
@@ -560,6 +561,26 @@ begin
 
 
 
+
+
+	make_polygon (default_polygon);
+	--L := type_line (make_line (100.0, 0.0, 101.0, 50.0));
+	L := type_line (make_line (100.0, 0.0, 150.0, 50.0));
+
+	-- the intersected edge of the polygon:
+	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+
+	-- expect the start and end point (of the line) to lie on these edges:
+	start_point_neigbors := get_neigboring_edges (P, L.start_point);
+
+	set_expect (
+		start_point		=> (ON_VERTEX, start_point_neigbors, LEAVING),
+		end_point		=> (location => OUTSIDE), 
+		intersections	=> I_list);
+
+	do_test;
+
+	
 	
 	--L := type_line (make_line (5.0, 100.0, 100.0, 100.0)); -- go
 	--L := type_line (make_line (5.0, 100.0, 95.0, 100.0)); -- go

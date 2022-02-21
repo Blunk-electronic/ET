@@ -117,6 +117,8 @@ package body et_geometry_2.polygons.clipping is
 			-- The two intersections in question must have
 			-- same x/y position and differing direction, means
 			-- one is an entering and the other is a leaving one.
+			-- On this x/y position we have no real intersection
+			-- but just a touch point:
 			if same_position (i1, i2)
 			and element (i1).direction /= element (i2).direction
 			then 
@@ -351,25 +353,6 @@ package body et_geometry_2.polygons.clipping is
 		
 		intersections : pac_intersections.list;
 
-
-		-- Removes redundant intersections from list "intersections" so
-		-- that none of them is left:
-		--procedure remove_redundant_intersections is
-			--i_list_new : pac_intersections.list;
-
-			--procedure query_intersection (i : in pac_intersections.cursor) is begin
-				--if count (intersections, element (i)) = 2 then
-					--null;
-				--else
-					--i_list_new.append (element (i));
-				--end if;
-			--end query_intersection;
-			
-		--begin
-			--intersections.iterate (query_intersection'access);
-			--intersections := i_list_new;
-		--end remove_redundant_intersections;
-
 		
 		-- Removes successive redundant intersections from 
 		-- list "intersections" so that only one of them is left:
@@ -457,6 +440,10 @@ package body et_geometry_2.polygons.clipping is
 							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
 								-- collect intersection:
 								intersections.append (IAB);
+
+								if debug then
+									put_line ("intersection (start on edge): " & to_string (intersections.last_element));
+								end if;
 							end if;
 							
 						when ON_VERTEX =>
@@ -469,12 +456,65 @@ package body et_geometry_2.polygons.clipping is
 							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
 								-- collect intersection:
 								intersections.append (IAB);
+
+								if debug then
+									put_line ("intersection (start on vertex): " & to_string (intersections.last_element));
+								end if;
 							end if;
 
+							
 						when others => raise constraint_error; -- CS should never happen
 					end case;
 				end use_start_point_as_intersection;
 				
+
+				procedure use_end_point_as_intersection is 
+					-- The intersection of edge A and B:
+					IAB : type_intersection;
+				begin
+					IAB.position := element (a).segment_line.end_point;
+					IAB.edge_A := element (a).segment_line;
+					
+					case LPS.end_point.location is
+						when ON_EDGE =>
+							IAB.direction := LPS.end_point.direction_on_edge;
+
+							-- Get the touched B-edge at the end point:
+							IAB.edge_B := element (LPS.end_point.edge).segment_line; 
+
+							-- Ignore intersection if edge A runs "parallel" to edge B:
+							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
+								-- collect intersection:
+								intersections.append (IAB);
+
+								if debug then
+									put_line ("intersection (end on edge): " & to_string (intersections.last_element));
+								end if;
+							end if;
+							
+						when ON_VERTEX =>
+							IAB.direction := LPS.end_point.direction_on_vertex;
+
+							-- Get the touched B-edge that starts at the end point:
+							--IAB.edge_B := element (LPS.end_point.edges.edge_2).segment_line;
+
+							-- Get the touched B-edge that ends at the end point:
+							IAB.edge_B := element (LPS.end_point.edges.edge_1).segment_line;
+
+							-- Ignore intersection if edge A runs "parallel" to edge B:
+							if not lines_overlap (element (a).segment_line, IAB.edge_B) then
+								-- collect intersection:
+								intersections.append (IAB);
+
+								if debug then
+									put_line ("intersection (end on vertex): " & to_string (intersections.last_element));
+								end if;
+							end if;
+
+						when others => raise constraint_error; -- CS should never happen
+					end case;
+				end use_end_point_as_intersection;
+			
 				
 			begin -- query_A_segment
 
@@ -499,7 +539,10 @@ package body et_geometry_2.polygons.clipping is
 									collect_intersections;
 								end if;
 
+								
 							when ON_EDGE =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge comes from outside, does not
 									-- cross any edge of the polygon and ends 
@@ -511,8 +554,11 @@ package body et_geometry_2.polygons.clipping is
 									-- on edge of polygon:
 									collect_intersections;
 								end if;
+
 								
 							when ON_VERTEX =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge comes from outside, does not
 									-- cross any edge of the polygon and ends 
@@ -549,7 +595,10 @@ package body et_geometry_2.polygons.clipping is
 									collect_intersections;
 								end if;
 
+								
 							when ON_EDGE =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts inside and ends on an edge of the polygon
 									null;
@@ -559,7 +608,10 @@ package body et_geometry_2.polygons.clipping is
 									collect_intersections;
 								end if;
 
+								
 							when ON_VERTEX =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts inside and ends on a vertex of the polygon
 									null; 
@@ -597,8 +649,11 @@ package body et_geometry_2.polygons.clipping is
 									-- and ends inside
 									collect_intersections;
 								end if;
+
 								
 							when ON_EDGE =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts on edge and ends on edge
 									-- without crossing any edges or verices
@@ -608,8 +663,11 @@ package body et_geometry_2.polygons.clipping is
 									-- and ends on edge
 									collect_intersections;
 								end if;
+
 								
 							when ON_VERTEX =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts on edge and ends on vertex
 									-- without crossing any edges or verices
@@ -647,8 +705,11 @@ package body et_geometry_2.polygons.clipping is
 									-- and ends inside
 									collect_intersections;
 								end if;
+
 								
 							when ON_EDGE =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts on vertex and ends on edge
 									-- without crossing any edges or verices
@@ -658,8 +719,11 @@ package body et_geometry_2.polygons.clipping is
 									-- and ends on edge
 									collect_intersections;
 								end if;
+
 								
 							when ON_VERTEX =>
+								use_end_point_as_intersection;
+								
 								if LPS.intersections.is_empty then
 									-- edge starts on vertex and ends on vertex
 									-- without crossing any edges or verices
@@ -673,7 +737,7 @@ package body et_geometry_2.polygons.clipping is
 						end case;
 
 				end case;
-
+				
 			end query_A_segment;
 
 		begin
@@ -802,26 +866,26 @@ package body et_geometry_2.polygons.clipping is
 		-- then we got a regular vertex right AFTER an intersection. Both have 
 		-- the same x/y-position. The regular vertex must be deleted 
 		-- so that just the intersection is left:
-		--procedure delete_regular_after_intersection (
-			--vertices : in out pac_vertices.list)
-		--is
-			--c : pac_vertices.cursor := vertices.first;
-		--begin
-			--while c /= pac_vertices.no_element loop
+		procedure delete_regular_after_intersection (
+			vertices : in out pac_vertices.list)
+		is
+			c : pac_vertices.cursor := vertices.first;
+		begin
+			while c /= pac_vertices.no_element loop
 
-				--if c = vertices.first then
-					--if same_position (vertices.last, c) then
-						--vertices.delete (c);
-					--end if;
-				--else
-					--if same_position (previous (c), c) then
-						--vertices.delete (c);
-					--end if;
-				--end if;
+				if c = vertices.first then
+					if same_position (vertices.last, c) then
+						vertices.delete (c);
+					end if;
+				else
+					if same_position (previous (c), c) then
+						vertices.delete (c);
+					end if;
+				end if;
 				
-				--next (c);
-			--end loop;
-		--end delete_regular_after_intersection;
+				next (c);
+			end loop;
+		end delete_regular_after_intersection;
 
 
 		-- When the start point of an edge lies on an edge of the other polygon
@@ -877,7 +941,7 @@ package body et_geometry_2.polygons.clipping is
 			
 		begin
 			polygon_A.contours.segments.iterate (query_segment'access);
-			--delete_regular_after_intersection (vertices_A);
+			delete_regular_after_intersection (vertices_A);
 			delete_regular_before_intersection (vertices_A);
 		end make_vertices_A;
 		
@@ -903,7 +967,7 @@ package body et_geometry_2.polygons.clipping is
 			
 		begin
 			polygon_B.contours.segments.iterate (query_segment'access);
-			--delete_regular_after_intersection (vertices_B);
+			delete_regular_after_intersection (vertices_B);
 			delete_regular_before_intersection (vertices_B);
 		end make_vertices_B;
 

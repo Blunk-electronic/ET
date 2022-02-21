@@ -95,7 +95,7 @@ private
 
 	
 	-- Removes from the given list of intersections those where
-	-- polygon A touches polygon B:
+	-- polygon A touches polygon B.
 	function get_real_intersections (
 		intersections	: in pac_intersections.list)
 		return pac_intersections.list;
