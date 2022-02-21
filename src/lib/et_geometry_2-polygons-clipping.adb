@@ -809,47 +809,10 @@ package body et_geometry_2.polygons.clipping is
 				end case;
 			end query_intersection;
 
-
-			-- Iterates the vertices in "result" and detect successive
-			-- entering points. Changes the direction of the intersection
-			-- to "leaving". Changes direction of the affected intersection
-			-- in the list "intersection".
-			procedure render_successive_enterings is
-				c : pac_vertices.cursor := result.first;
-
-				procedure change_direction (v : in out type_vertex) is begin
-					v.direction := LEAVING;
-				end;
-				
-			begin
-				-- Iterate all elements of "result":
-				while c /= pac_vertices.no_element loop
-
-					if c /= result.first then
-						if element (c).direction = ENTERING
-						and element (previous (c)).direction = ENTERING then
-							result.update_element (c, change_direction'access);
-							update_intersection (c);
-						end if;
-					end if;
-					
-					next (c);
-				end loop;
-			end render_successive_enterings;
-			
 			
 		begin
 			intersections.iterate (query_intersection'access);
 			sort_by_distance (result, edge.start_point);			
-
-			-- After sorting the intersections there may two 
-			-- successive entering intersections. This special case arises
-			-- in case of the STC. See package specification header.
-			-- Two successive entering intersections are not correct. So the second
-			-- intersection must be rendered to "leaving".
-			--if AB = A then
-				--render_successive_enterings;
-			--end if;
 			
 			return result;
 		end get_intersections_on_edge;
@@ -917,10 +880,7 @@ package body et_geometry_2.polygons.clipping is
 		
 		
 		-- Fills container vertices_A counter-clockwise with the vertices of polygon A
-		-- and the intersections (leaving or entering) with polygon B.
-		-- MUST BE CALLED BEFORE procedure make_vertices_B because here the the
-		-- list "intersections" gets recursively updated in order to handle the STC (see
-		-- comments in header of package specs):
+		-- and the intersections (leaving or entering) with polygon B:
 		procedure make_vertices_A is
 
 			procedure query_segment (s : in pac_polygon_segments.cursor) is
@@ -1210,6 +1170,8 @@ package body et_geometry_2.polygons.clipping is
 						if last_element (vertices_tmp_1) = v_start then
 							exit;
 						else
+							--  CS: This comment is obsolete ? Rework !
+							
 							-- In order to handle the STC (see header of the package specification)
 							-- this stuff is required
 							-- as an extension of the Weiler-Atherton algorithm:
