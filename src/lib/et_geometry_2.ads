@@ -55,6 +55,10 @@ package et_geometry_2 is
 	use pac_geometry_1;
 	use pac_functions_distance;
 
+
+	rounding_threshold : constant type_float_internal := 1.0E-17;
+	
+	
 	type type_point_status is (
 		OUTSIDE,	-- point is outside a certain area
 		INSIDE);	-- point is inside a certain area
@@ -90,6 +94,14 @@ package et_geometry_2 is
 	function to_string (
 		v	: in type_vector)
 		return string;
+
+
+	function set (
+		x : in type_float_internal;
+		y : in type_float_internal;
+		z : in type_float_internal := 0.0)
+		return type_vector;
+	
 	
 	function get_x (
 		v	: in type_vector)
@@ -101,6 +113,12 @@ package et_geometry_2 is
 
 	function get_z (
 		v	: in type_vector)
+		return type_float_internal;
+
+
+	function get_distance_total (
+		v_1	: in type_vector;
+		v_2	: in type_vector)
 		return type_float_internal;
 
 	
@@ -382,7 +400,7 @@ package et_geometry_2 is
 	-- If the start/end point of the candidate line is ABOVE-OR-ON the 
 	-- threshold AND if the end/start point of the candidate line is BELOW the
 	-- threshold then we consider the line to be threshold-crossing.
-	function crosses_threshold (
+	function crosses_threshold ( -- CS remove ?
 		line		: in type_line;	
 		y_threshold	: in type_distance)
 		return boolean;
@@ -630,14 +648,13 @@ package et_geometry_2 is
 		return type_distance_point_line;
 
 	
-	-- Returns true if the given location vector points
-	-- on the given line.
+	-- Returns true if the given location vector lies on the given line.
 	function on_line (
 		vector	: in type_vector;
 		line	: in type_line)
 		return boolean; 
 
-	-- Returns true if the given point is on the given line.
+	-- Returns true if the given point lies on the given line.
 	function on_line (
 		point	: in type_point;
 		line	: in type_line)
@@ -650,7 +667,13 @@ package et_geometry_2 is
 		point	: in type_point;
 		line	: in type_line)
 		return type_distance_polar;
-		
+
+	
+	function get_shortest_distance (
+		point	: in type_vector;
+		line	: in type_line)
+		return type_float_internal;
+
 	
 -- ARC
 	type type_arc_base is abstract tagged record  -- CS should be private ?
@@ -692,11 +715,18 @@ package et_geometry_2 is
 		arc		: in type_arc)
 		return type_distance_polar;
 
+
+	-- CS: INCOMPLETE !!! Returns always zero currently.
+	function get_shortest_distance (
+		point	: in type_vector;
+		arc		: in type_arc)
+		return type_float_internal;
+
 	
 	-- If start/end point of the candidate arc is ABOVE-OR-ON the 
 	-- threshold AND if the end/start point of the candidate arc is BELOW the
 	-- threshold then we consider the arc to be threshold-crossing.
-	function crosses_threshold (
+	function crosses_threshold ( -- CS remove ?
 		arc			: in type_arc;
 		y_threshold	: in type_distance)
 		return boolean;
@@ -894,6 +924,15 @@ package et_geometry_2 is
 		point	: in type_point;
 		circle	: in type_circle)
 		return type_distance_polar;
+
+
+	-- CS: INCOMPLETE !!! Returns always zero currently.
+	function get_shortest_distance (
+		point	: in type_vector;
+		circle	: in type_circle)
+		return type_float_internal;
+
+
 	
 	-- Moves a circle by the given offset. 
 	procedure move_by (
@@ -986,6 +1025,7 @@ package et_geometry_2 is
 		circle	: in type_circle)
 		return type_intersection_of_line_and_circle;
 
+	
 	type type_ordered_line_circle_intersections is record
 		-- The start point of the line that intersects the circle.
 		-- The start point must be outside the circle.
@@ -996,6 +1036,18 @@ package et_geometry_2 is
 		exit_point	: type_intersection;
 	end record;
 
+	
+	type type_ordered_line_circle_intersections_2 is record
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point	: type_vector;
+
+		-- The point where the line enters and exits the circle:
+		entry_point	: type_intersection;
+		exit_point	: type_intersection;
+	end record;
+
+	
 	-- Sorts the intersections of a line with an arc or a circle in the order
 	-- as they occur as the line crosses the circle or the arc:
 	-- start point of line, entry point, exit point.
@@ -1011,7 +1063,17 @@ package et_geometry_2 is
 		intersections	: in type_intersection_of_line_and_circle)
 		return type_ordered_line_circle_intersections;
 	
-		
+
+	function order_intersections (
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point		: in type_vector;
+
+		intersections	: in type_intersection_of_line_and_circle)
+		return type_ordered_line_circle_intersections_2;
+
+	
+	
 	function to_string (line : in type_line) return string;
 	-- Returns the start and end point of the given line as string.
 

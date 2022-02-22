@@ -54,6 +54,7 @@ procedure get_status is
 
 	P : type_polygon;
 	T : type_point;
+	V : type_vector;
 	
 
 	procedure make_polygon (
@@ -66,13 +67,13 @@ procedure get_status is
 	end;
 	
 	
-	--P0 : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	P_square : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	--P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
-	P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
+	--P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
 
 
 	
-	procedure print_status (PPS : in type_point_to_polygon_status) is
+	procedure print_status (PPS : in type_point_to_polygon_status_2) is
 		use pac_probe_line_intersections;
 		use pac_polygon_segments;
 		
@@ -87,7 +88,7 @@ procedure get_status is
 	begin
 		put_line ("STATUS:");
 		put_line ("probe line start: " & to_string (PPS.start));
-		put_line ("point is: " & type_location'image (PPS.status));
+		put_line ("point is: " & type_location'image (PPS.location));
 		put_line ("intersections:");
 		if PPS.intersections.is_empty then
 			put_line (" none");
@@ -95,7 +96,7 @@ procedure get_status is
 			PPS.intersections.iterate (query_intersection'access);
 		end if;
 
-		case PPS.status is
+		case PPS.location is
 			when INSIDE | OUTSIDE =>
 				put_line ("distance to polygon: " & to_string (PPS.distance));
 
@@ -112,11 +113,13 @@ procedure get_status is
 
 	procedure do_test is begin
 		put_line ("-----------");
-		put_line ("point:" & to_string (T));
+		--put_line ("point:" & to_string (T));
+		put_line ("vector:" & to_string (V));
 		put_line (to_string (P));
 
 		declare
-			S : type_point_to_polygon_status := get_point_to_polygon_status (P, T);
+			--S : type_point_to_polygon_status := get_point_to_polygon_status (P, T);
+			S : type_point_to_polygon_status_2 := get_point_to_polygon_status_2 (P, V);
 		begin
 			print_status (S);
 		end;
@@ -124,13 +127,21 @@ procedure get_status is
 	
 begin
 
-	make_polygon (P_u_shaped);
+	--make_polygon (P_u_shaped);
+	make_polygon (P_square);
 	-- T := type_point (set (-10.0, 99.0)); -- go
 	--T := type_point (set (0.0, 99.0)); -- go
 	--T := type_point (set (0.0, 100.0)); -- go
 	--T := type_point (set (0.0, 0.0)); -- go
 	--T := type_point (set (1.0, 1.0)); -- go
-	T := type_point (set (9.9999999999, 10.0000000000)); -- go
+	--T := type_point (set (9.9999999999, 10.0000000000)); -- go
+	
+	--V := set (-10.0, 10.0000000000); -- go
+	--V := set (0.0, 0.0); -- go
+	--V := set (0.0, 20.0000000000); -- go
+	--V := set (0.00000000001, 20.0000000000); -- go
+	--V := set (1.0E-12, 20.0000000000); -- go
+	V := set (1.0E-16, 20.0000000000); -- go
 	
 	do_test;
 	

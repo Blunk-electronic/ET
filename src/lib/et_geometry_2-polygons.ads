@@ -111,6 +111,12 @@ package et_geometry_2.polygons is
 		return pac_polygon_segments.cursor;
 	
 
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return pac_polygon_segments.cursor;
+
+	
 	-- Returns the cursor to the edge
 	-- where the given point lies on.
 	-- If the given point is a vertex then an
@@ -173,6 +179,10 @@ package et_geometry_2.polygons is
 		point	: in type_point)
 		return type_distance_polar;
 
+	function get_shortest_distance (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return type_float_internal;
 
 	
 	
@@ -417,6 +427,29 @@ package et_geometry_2.polygons is
 		end case;
 	end record;
 
+
+	type type_point_to_polygon_status_2 (location : type_location) is record
+		-- The point where the probe line has started:
+		start			: type_vector; 
+
+		-- The intersections of the probe line with the polygon edges:
+		intersections	: pac_probe_line_intersections.list;
+
+		case location is
+			when OUTSIDE | INSIDE =>
+				-- The shortest distance of the start point (of the probe line)
+				-- to the polygon:
+				distance		: type_float_internal;
+				
+			when ON_EDGE =>
+				edge : pac_polygon_segments.cursor;
+
+			when ON_VERTEX =>
+				edges : type_neigboring_edges;
+
+		end case;
+	end record;
+
 	
 		
 	
@@ -433,6 +466,12 @@ package et_geometry_2.polygons is
 		point		: in type_point)
 		return type_point_to_polygon_status;
 
+	-- Detects whether the given point is inside or outside
+	-- the polygon of whether the point lies on an edge:
+	function get_point_to_polygon_status_2 (
+		polygon		: in type_polygon_base;	
+		point		: in type_vector)
+		return type_point_to_polygon_status_2;
 
 	
 	-- For finding the lower left corner of a polygon this type
@@ -468,7 +507,11 @@ package et_geometry_2.polygons is
 		point	: in type_point)
 		return boolean;
 
-		
+	function is_vertex (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return boolean;
+
 
 
 

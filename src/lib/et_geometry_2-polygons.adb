@@ -128,7 +128,42 @@ package body et_geometry_2.polygons is
 	end get_segment_edge;
 
 
+	function get_segment_edge (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return pac_polygon_segments.cursor
+	is
+		result : pac_polygon_segments.cursor;
+		proceed : aliased boolean := true;
 
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE => 
+					if on_line (point, element (c).segment_line) then
+						result := c;
+						proceed := false; -- abort iteration
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+		end query_segment;
+		
+	begin
+		-- Make sure the given point is NOT a vertex:
+		-- CS: Maybe no need if caller cares for this check.
+		if is_vertex (polygon, point) then
+			raise constraint_error with "Point is a vertex !";
+		else
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_segment_edge;
+
+
+
+	
 	function get_neigboring_edges (
 		polygon	: in type_polygon_base;
 		vertex	: in type_point)
@@ -187,7 +222,64 @@ package body et_geometry_2.polygons is
 	end get_neigboring_edges;
 
 
+	function get_neigboring_edges (
+		polygon	: in type_polygon_base;
+		vertex	: in type_vector)
+		return type_neigboring_edges
+	is
+		result : type_neigboring_edges;
+		proceed : aliased boolean := true;
+
+		end_found, start_found : boolean := false;
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			--put_line ("test: " & to_string (element (c)));
+			
+			case element (c).shape is
+			
+				when LINE => 
+					if to_vector (element (c).segment_line.end_point) = vertex then
+						--put_line ("end");
+						result.edge_1 := c;
+						end_found := true;
+					end if;
+
+					if to_vector (element (c).segment_line.start_point) = vertex then
+						--put_line ("start");
+						result.edge_2 := c;
+						start_found := true;
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+
+			-- Abort iteration once start and end point have been found
+			-- ("proceed" is low-active):
+			proceed := not (end_found and start_found);
+			
+		end query_segment;
+
+	begin
+		-- Make sure the given point IS a vertex:
+		if is_vertex (polygon, vertex) then
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		else
+			raise constraint_error with "Point is a vertex !";
+		end if;
+
+		-- Safety check:
+		-- Two edges must have been found. Otherwise raise exception:
+		if result.edge_1 = pac_polygon_segments.no_element 
+		or result.edge_2 = pac_polygon_segments.no_element
+		then
+			raise constraint_error with "Search for neigboring edges incomplete !";
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_neigboring_edges;
 	
+
 	
 	function to_string (
 		polygon	: in type_polygon_base)
@@ -345,6 +437,50 @@ package body et_geometry_2.polygons is
 
 
 
+	function get_shortest_distance (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return type_float_internal
+	is
+		result : type_float_internal := type_float_internal'last;
+		
+		procedure update (d : in type_float_internal) is begin
+			--put_line (to_string (d));
+			if d < result then
+				result := d;
+			end if;
+		end update;
+
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is
+			s : constant type_polygon_segment := element (c);
+		begin
+			case s.shape is
+				when LINE =>
+					--put_line (to_string (s.segment_line));
+					update (get_shortest_distance (point, s.segment_line));
+
+				when ARC =>
+					--put_line (to_string (s.segment_arc));
+					update (get_shortest_distance (point, s.segment_arc));
+					
+			end case;
+		end query_segment;
+
+		
+	begin -- get_shortest_distance
+		if polygon.contours.circular then
+			result := get_shortest_distance (point, polygon.contours.circle);
+		else
+			polygon.contours.segments.iterate (query_segment'access);				
+		end if;			
+
+		--set_absolute (result, type_distance (round (get_absolute (result))));
+		
+		return result;
+	end get_shortest_distance;
+
+	
 	
 	function get_left_end (
 		line		: in type_line;
@@ -1400,6 +1536,7 @@ package body et_geometry_2.polygons is
 		-- For segments that end or start exactly on the Y value of the probe line
 		-- we define a threshold:
 		y_threshold : constant type_distance := get_y (point);
+
 		
 		-- This is the variable for the number of intersections detected.
 		-- From this number we will later deduce the position of the given point,
@@ -1707,6 +1844,413 @@ package body et_geometry_2.polygons is
 		
 	end get_point_to_polygon_status;
 
+
+
+	function get_point_to_polygon_status_2 (
+		polygon		: in type_polygon_base;	
+		point		: in type_vector) -- CS rename to vector ?
+		return type_point_to_polygon_status_2 
+	is
+		-- This function bases on the algorithm published at
+		-- <http://www.alienryderflex.com/polygon//>
+		-- The algorithm has further been extended to detect intersections
+		-- with arcs and even circles.
+
+		-- A probe line will be formed which starts at the given point
+		-- and runs to the right (direction zero degree).
+		-- The places, after the given start point, where the probe line 
+		-- intersects the polygon edges are returned in a list.
+		-- If a segment of the polygon crosses the imaginary probe line,
+		-- then it is regarded as intersection.
+		-- NOTE: A line segment that runs exactly along the probe line
+		-- is NOT regarded as "crossing" the probe line.
+		
+		-- The approach to detect whether the given point lies inside or outside 
+		-- the polygon area is as follows:
+		-- 1. Build a probe line (starting at point) that runs at zero degrees
+		--    to the right. The probe line divides the area in two: an upper half and a
+		--    lower half. Special situations arise if objects start or end exactly at
+		--    the probe line.
+		-- 2. The number of intersections after the start point then tells us:
+		--    - odd -> point is inside the polygon area
+		--    - zero or even -> point is outside the polygon area
+
+		-- These are the components of the return value.
+		-- In the end of this function they will be assembled 
+		-- to the actual return:
+		result_status : type_location;
+		result_intersections : pac_probe_line_intersections.list;
+		result_distance : type_float_internal := 0.0;
+		result_edge : pac_polygon_segments.cursor;
+		result_neigboring_edges : type_neigboring_edges;
+
+		--vertex : constant type_point := to_point (point);
+		
+		--line_pre : constant type_line := (
+				--start_point	=> point,
+				--end_point	=> type_point (set (get_x (point) + 1.0, get_y (point))));
+		
+		--probe_line : constant type_line_vector := to_line_vector (line_pre);
+		probe_line : constant type_line_vector := (
+			v_start => point,
+			v_direction => (1.0, 0.0, 0.0));
+
+		-- For segments that end or start exactly on the Y value of the probe line
+		-- we define a threshold:
+		y_threshold : constant type_float_internal := get_y (point);
+
+
+		function crosses_threshold (
+			line		: in type_line;	
+			y_threshold	: in type_float_internal)
+			return boolean
+		is begin
+			if	
+				type_float_internal (get_y (line.start_point)) >= y_threshold and 
+				type_float_internal (get_y (line.end_point))   <  y_threshold then
+				return true;
+				
+			elsif
+				type_float_internal (get_y (line.end_point))   >= y_threshold and 
+				type_float_internal (get_y (line.start_point)) <  y_threshold then
+				return true;
+				
+			else
+				return false;
+			end if;
+		end crosses_threshold;
+
+
+		function crosses_threshold (
+			arc			: in type_arc;
+			y_threshold	: in type_float_internal)
+			return boolean
+		is begin
+			if	
+				type_float_internal (get_y (arc.start_point)) >= y_threshold and 
+				type_float_internal (get_y (arc.end_point))   <  y_threshold then
+				return true;
+				
+			elsif
+				type_float_internal (get_y (arc.end_point))   >= y_threshold and 
+				type_float_internal (get_y (arc.start_point)) <  y_threshold then
+				return true;
+				
+			else
+				return false;
+			end if;
+		end crosses_threshold;
+
+		
+		-- This is the variable for the number of intersections detected.
+		-- From this number we will later deduce the position of the given point,
+		-- means whether it is inside or outside the polygon:
+		it : count_type := 0;
+
+		use pac_probe_line_intersections;
+
+		
+		-- This procedure collects the intersection in the return value.
+		procedure collect_intersection (
+			intersection: in et_geometry_2.type_intersection; -- incl. point and angle
+			segment		: in type_intersected_segment;
+			center		: in type_point := origin;
+			radius		: in type_distance_positive := zero)
+		is 
+			xi : constant type_float_internal := get_x (intersection.vector);
+		begin
+			-- The intersection will be collected if it is ON or
+			-- AFTER the given start point. If it is before the start
+			-- point then we ignore it:
+			--if xi >= type_float_internal (get_x (point)) then
+			if xi >= get_x (point) then
+				
+				append (result_intersections, (
+					x_position	=> xi,
+					angle		=> intersection.angle,
+					segment		=> segment));
+
+			end if;
+		end collect_intersection;
+
+		
+		procedure query_line (l : in type_line) is 
+			-- Find out whether there is an intersection of the probe line
+			-- and the candidate edge of the polygon.
+			i : constant type_intersection_of_two_lines := 
+				get_intersection (probe_line, l);
+			
+		begin
+			--put_line ("##");		
+			--put_line (to_string (l));
+			
+			if i.status = EXISTS then
+				put_line ("exists");
+				put_line (to_string (l));
+				--put_line (to_string (y_threshold));
+				--put_line (to_string (i.intersection.vector));
+
+				-- If the candidate line segment crosses the y_threshold then 
+				-- count the intersection:
+				if crosses_threshold (l, y_threshold) then
+					--put_line ("crosses threshold");
+					
+					-- Add the intersection to the result:
+					collect_intersection (i.intersection, (LINE, l));
+				end if;
+			end if;				
+		end query_line;
+
+
+		
+		procedure query_arc (a : in type_arc) is
+			a_norm : constant type_arc := type_arc (normalize_arc (a));
+			
+			-- the radius of the arc:
+			radius : constant type_distance_positive := get_radius_start (a_norm);
+			
+			-- Find out whether there is an intersection of the probe line
+			-- and the candidate arc of the polygon.
+			i : constant type_intersection_of_line_and_circle := 
+				get_intersection (probe_line, a_norm);
+
+			-- In case we get two intersections (which speaks for a secant)
+			-- then they need to be ordered according to their distance to
+			-- the start point of the probe line (starts at given point);
+			ordered_intersections : type_ordered_line_circle_intersections_2;
+
+			
+			procedure count_two is begin
+				-- Add the two intersections to the result:
+				collect_intersection (
+					intersection	=> ordered_intersections.entry_point,
+					segment			=> (ARC, a_norm));
+
+				collect_intersection (
+					intersection	=> ordered_intersections.exit_point,	
+					segment			=> (ARC, a_norm));
+
+			end count_two;
+
+			
+		begin -- query_arc
+			--put_line ("##");
+			--put_line (to_string (a_norm));
+			
+			case i.status is
+				when NONE_EXIST => null;
+					--put_line ("none");
+				
+				when ONE_EXISTS =>
+					--put_line ("one");
+					
+					case i.tangent_status is
+						when TANGENT => null; -- not counted
+						
+						when SECANT =>
+							--put_line ("secant");
+							
+							if crosses_threshold (a_norm, y_threshold) then
+								--put_line ("ct");
+								
+								-- The line intersects the arc at one point.
+								-- Start and end point of the arc are opposide 
+								-- of each other with the probe line betweeen them:
+
+								collect_intersection (
+									intersection	=> i.intersection,	
+									segment			=> (ARC, a_norm));
+								
+							end if;
+					end case;
+
+				when TWO_EXIST =>
+					--put_line ("two");
+					--put_line ("i1" & to_string (i.intersection_1));
+					--put_line ("i2" & to_string (i.intersection_2));
+					
+					-- Order the intersections by their distance to the start point
+					-- of the probe line:
+					ordered_intersections := order_intersections (
+						start_point		=> point,
+						intersections	=> i);
+
+					count_two;
+										
+			end case;
+		end query_arc;
+
+		
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is					
+				when LINE	=> query_line (element (c).segment_line);
+				when ARC	=> query_arc (element (c).segment_arc);
+			end case;
+		end query_segment;
+
+		
+		procedure query_circle (c : in type_circle) is
+			-- Find out whether there is an intersection of the probe line
+			-- and the candidate circle of the polygon.
+			i : constant type_intersection_of_line_and_circle := 
+				get_intersection (probe_line, c);
+
+			-- In case we get two intersections (which speaks for a secant)
+			-- then they need to be ordered according to their distance to
+			-- the start point of the probe line (starts at given point);
+			ordered_intersections : type_ordered_line_circle_intersections_2;
+		begin				
+			case i.status is
+				when NONE_EXIST | ONE_EXISTS => null;
+					-- NOTE: If the probe line is a tangent to the
+					-- circle, then we threat this NOT as intersection.
+				
+				when TWO_EXIST =>
+					-- The probe line intersects the circle at two points:
+
+					-- Order the intersections by their distance to the start point:
+					ordered_intersections := order_intersections (
+						start_point		=> point,
+						intersections	=> i);
+
+					
+					-- Add the intersections to the result:
+					collect_intersection (
+						intersection	=> ordered_intersections.entry_point,	
+						segment			=> (CIRCLE, c));
+
+					collect_intersection (
+						intersection	=> ordered_intersections.exit_point,	
+						segment			=> (CIRCLE, c));
+
+			end case;
+		end query_circle;
+
+		
+		procedure sort_x_values is
+			package pac_probe_line_intersections_sorting is new 
+				pac_probe_line_intersections.generic_sorting;
+			
+			use pac_probe_line_intersections_sorting;
+			--c : pac_probe_line_intersections.cursor;
+		begin
+			sort (result_intersections);
+
+			-- for testing/verifying only:
+			--put_line ("with redundant intersections:");
+			--c := result.intersections.first;				
+			--while c /= pac_probe_line_intersections.no_element loop
+				--put_line (type_float_internal'image (element (c).x_position));
+				--next (c);
+			--end loop;
+
+			
+			-- If x-positions differ by type_distance'small then we
+			-- treat them as redundant.
+			-- Remove redundant x-positions:
+			--c := result.intersections.first;
+			--while c /= pac_probe_line_intersections.no_element loop
+
+				--if c /= result.intersections.first then
+					--if abs (element (c).x_position - element (previous (c)).x_position)
+						--<= type_distance'small 
+					--then
+						--delete (result.intersections, c);
+					--end if;
+				--end if;
+					
+				--next (c);
+			--end loop;
+
+			-- for testing/verifying only:
+			--put_line ("without redundant intersections:");
+			--c := result.intersections.first;		
+			--while c /= pac_probe_line_intersections.no_element loop
+				--put_line (type_float_internal'image (element (c).x_position));
+				--next (c);
+			--end loop;
+
+		end sort_x_values;
+
+		
+	begin -- get_point_to_polygon_status
+		
+		--put_line ("Y-threshold:" & to_string (y_threshold));
+		
+		if polygon.contours.circular then
+			query_circle (polygon.contours.circle);
+		else
+			polygon.contours.segments.iterate (query_segment'access);
+		end if;
+
+		
+		-- The x-values are not sorted yet. We need them sorted with the
+		-- smallest x first
+		-- CS: and redundant x-positions removed: -- no longer required
+		sort_x_values;
+
+		-- get the total number of intersections
+		it := pac_probe_line_intersections.length (result_intersections);
+		--put_line ("intersections total:" & count_type'image (it));
+		
+		-- If the total number of intersections is an odd number, then the given point
+		-- is inside the polygon.
+		-- If the total is even, then the point is outside the polygon.
+		if (it rem 2) = 1 then
+			result_status := INSIDE;
+			--put_line ("inside");
+		else 
+			result_status := OUTSIDE;
+			--put_line ("outside");
+		end if;
+
+
+		-- Figure out whether the given point is a vertex, whether
+		-- it lies on an edge or whether it lies somewhere else:
+		if is_vertex (polygon, point) then
+			result_status := ON_VERTEX;
+			-- NOTE: result.distance is zero by default
+
+			-- Get the edges that meet at the given point:
+			result_neigboring_edges := get_neigboring_edges (polygon, point);
+		else
+			result_edge := get_segment_edge (polygon, point);
+
+			if result_edge /= pac_polygon_segments.no_element then
+				result_status := ON_EDGE;
+				-- NOTE: result.distance is zero by default
+			else
+				-- Point is somewhere else.
+				
+				-- Compute the distance of the given point to the polygon.
+				-- If the distance is zero then the given point lies on
+				-- a vertex or on an edge:
+				result_distance := get_shortest_distance (polygon, point); 
+			end if;
+			
+		end if;
+
+
+		-- Assemble the return:
+		case result_status is
+			when INSIDE =>
+				return (INSIDE, point, result_intersections, result_distance);
+					
+			when OUTSIDE =>
+				return (OUTSIDE, point, result_intersections, result_distance);
+				
+			when ON_EDGE =>
+				return (ON_EDGE, point, result_intersections, result_edge);
+				
+			when ON_VERTEX =>
+				return (ON_VERTEX, point, result_intersections, result_neigboring_edges);
+				
+		end case;
+		
+	end get_point_to_polygon_status_2;
+
+
 	
 
 	function get_lower_left_corner (
@@ -1766,6 +2310,38 @@ package body et_geometry_2.polygons is
 	end is_vertex;
 
 
+	function is_vertex (
+		polygon	: in type_polygon_base;
+		point	: in type_vector)
+		return boolean
+	is
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE =>
+					if to_vector (element (c).segment_line.start_point) = point then
+						proceed := false;
+					end if;
+					
+				when ARC =>
+					if to_vector (element (c).segment_arc.start_point) = point then
+						proceed := false;
+					end if;
+			
+			end case;
+		end query_segment;
+		
+	begin
+		iterate (
+			segments	=> polygon.contours.segments,
+			process		=> query_segment'access,
+			proceed		=> proceed'access);
+
+		return not proceed;
+	end is_vertex;
+
+	
 	procedure toggle_direction (
 		d : in out type_intersection_direction) 
 	is begin

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -62,20 +62,28 @@ with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
 
+	
 	function to_string (face : in type_face) return string is begin
 		return latin_1.space & to_lower (type_face'image (face));
 	end to_string;
 
+	
 	function to_face (face : in string) return type_face is begin
 		return type_face'value (face);
 	end to_face;
 
+	
 	procedure flip (face : in out type_face) is begin
 		case face is 
 			when TOP => face := BOTTOM;
 			when BOTTOM => face := TOP;
 		end case;
 	end flip;
+
+
+	function to_string (f : in type_float_internal) return string is begin
+		return type_float_internal'image (f);
+	end;
 
 	
 	function to_string (p : in type_package_position) return string is begin
