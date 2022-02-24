@@ -250,7 +250,7 @@ package body et_geometry_2.polygons.clipping is
 		type type_item is record
 			-- We will be sorting intersections only (no regular vertices):
 			vertex		: type_vertex (category => INTERSECTION);
-			distance	: type_distance_positive;
+			distance	: type_float_internal_positive;
 		end record;
 
 		
@@ -270,13 +270,13 @@ package body et_geometry_2.polygons.clipping is
 
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is 
-			d : type_distance_polar;
+			d : type_float_internal_positive;
 		begin
-			d := get_distance (type_point (reference), type_point (element (v).position));
+			d := get_distance_total (reference, element (v).position);
 			
 			items.append (new_item => (
 				vertex		=> element (v),
-				distance	=> get_absolute (d)));
+				distance	=> d));
 		end query_vertex;
 
 		
@@ -320,14 +320,14 @@ package body et_geometry_2.polygons.clipping is
 		begin
 			-- The candidate vertex becomes the end of 
 			-- the edge:
-			edge.end_point := element (v).position;
+			edge.end_point := to_point (element (v).position);
 
 			-- The vertex before the candidate vertex 
 			-- will be the start of the edge:
 			if v = vertices.first then
-				edge.start_point := element (vertices.last).position;
+				edge.start_point := to_point (element (vertices.last).position);
 			else
-				edge.start_point := element (previous (v)).position;
+				edge.start_point := to_point (element (previous (v)).position);
 			end if;
 			
 			append (result.contours.segments, (LINE, edge));
@@ -426,7 +426,7 @@ package body et_geometry_2.polygons.clipping is
 					-- The intersection of edge A and B:
 					IAB : type_intersection;
 				begin
-					IAB.position := element (a).segment_line.start_point;
+					IAB.position := to_vector (element (a).segment_line.start_point);
 					IAB.edge_A := element (a).segment_line;
 					
 					case LPS.start_point.location is
@@ -472,7 +472,7 @@ package body et_geometry_2.polygons.clipping is
 					-- The intersection of edge A and B:
 					IAB : type_intersection;
 				begin
-					IAB.position := element (a).segment_line.end_point;
+					IAB.position := to_vector (element (a).segment_line.end_point);
 					IAB.edge_A := element (a).segment_line;
 					
 					case LPS.end_point.location is
@@ -755,22 +755,22 @@ package body et_geometry_2.polygons.clipping is
 		-- vertex. 
 		-- CS: Assumes the position of the intersection is unique. Means there is
 		-- no other intersection having the same x/y coordinates.
-		procedure update_intersection (v : in pac_vertices.cursor) is
+		--procedure update_intersection (v : in pac_vertices.cursor) is
 
-			procedure change_direction (i : in out type_intersection) is begin
-				i.direction := LEAVING;
-			end;
+			--procedure change_direction (i : in out type_intersection) is begin
+				--i.direction := LEAVING;
+			--end;
 		
-			c : pac_intersections.cursor := intersections.first;
-		begin
-			while c /= pac_intersections.no_element loop
-				if element (c).position = element (v).position then
-					intersections.update_element (c, change_direction'access);
-					exit;
-				end if;
-				next (c);
-			end loop;
-		end update_intersection;
+			--c : pac_intersections.cursor := intersections.first;
+		--begin
+			--while c /= pac_intersections.no_element loop
+				--if element (c).position = element (v).position then
+					--intersections.update_element (c, change_direction'access);
+					--exit;
+				--end if;
+				--next (c);
+			--end loop;
+		--end update_intersection;
 
 		
 		-- Returns the intersection points on a given edge.
@@ -893,7 +893,7 @@ package body et_geometry_2.polygons.clipping is
 
 				vertices_A.append (new_item => (
 					category	=> REGULAR,
-					position	=> element (s).segment_line.start_point));
+					position	=> to_vector (element (s).segment_line.start_point)));
 				
 				-- Append the vertices to container vertices_A:
 				splice (target => vertices_A, before => pac_vertices.no_element, source => v_list);
@@ -919,7 +919,7 @@ package body et_geometry_2.polygons.clipping is
 
 				vertices_B.append (new_item => (
 					category	=> REGULAR,
-					position	=> element (s).segment_line.start_point));
+					position	=> to_vector (element (s).segment_line.start_point)));
 
 				-- Append the vertices to container vertices_B:
 				splice (target => vertices_B, before => pac_vertices.no_element, source => v_list);

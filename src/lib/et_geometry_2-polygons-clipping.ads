@@ -133,7 +133,7 @@ private
 	
 	
 	type type_vertex (category : type_category) is record
-		position	: type_point;
+		position	: type_vector;
 		case category is
 			when INTERSECTION =>	direction	: type_intersection_direction;
 			when REGULAR => 		null;

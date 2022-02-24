@@ -94,7 +94,6 @@ package et_pcb_coordinates is
 
 	type type_float_internal is digits 18;
 
-	function to_string (f : in type_float_internal) return string;
 	
 		
 	-- Angle or rotation is in mathematical sense, means:

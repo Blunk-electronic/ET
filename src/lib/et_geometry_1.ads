@@ -56,7 +56,14 @@ generic
 
 
 package et_geometry_1 is
-		
+
+	function to_string (f : in type_float_internal) return string;
+	
+	subtype type_float_internal_positive is type_float_internal range 0.0 .. type_float_internal'last;
+
+	rounding_threshold : constant type_float_internal := 1.0E-17;
+	
+	
 	zero 		: constant type_distance := 0.0;
 	far_left	: constant type_distance := axis_min;
 	far_right	: constant type_distance := axis_max;

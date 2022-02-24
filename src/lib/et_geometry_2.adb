@@ -123,14 +123,39 @@ package body et_geometry_2 is
 		v	: in type_vector)
 		return string
 	is begin
-		--return " x" & to_string (v.x) & " y" & to_string (v.y);
 		return 
-			" x " & type_float_internal'image (v.x) &
-			" y " & type_float_internal'image (v.y);
-		--& " z " & to_string (v.z);
+			  " x: " & to_string (v.x) 
+			& " y: " & to_string (v.y)
+			& " z: " & to_string (v.z);
 	end to_string;
 
 
+	function equals (
+		left, right : in type_vector)
+		return boolean 
+	is
+		lx : type_float_internal := get_x (left);
+		ly : type_float_internal := get_y (left);
+		lz : type_float_internal := get_z (left);
+
+		rx : type_float_internal := get_x (right);
+		ry : type_float_internal := get_y (right);
+		rz : type_float_internal := get_z (right);
+	begin
+		--put_line ("left: " & to_string (left));
+		--put_line ("right:" & to_string (right));
+		
+		if  abs (lx - rx) <= rounding_threshold
+		and abs (ly - ry) <= rounding_threshold
+		and abs (lz - rz) <= rounding_threshold
+		then
+			return true;
+		else
+			return false;
+		end if;
+	end equals;
+
+	
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;
@@ -169,7 +194,7 @@ package body et_geometry_2 is
 	function get_distance_total (
 		v_1	: in type_vector;
 		v_2	: in type_vector)
-		return type_float_internal
+		return type_float_internal_positive
 	is 
 		dx : constant type_float_internal := abs (v_2.x - v_1.x);
 		dy : constant type_float_internal := abs (v_2.y - v_1.y);
@@ -182,7 +207,7 @@ package body et_geometry_2 is
 	function get_distance_total (
 		point	: in type_point;
 		vector	: in type_vector)
-		return type_float_internal
+		return type_float_internal_positive
 	is 
 		pv : constant type_vector := to_vector (point);
 		
@@ -638,6 +663,7 @@ package body et_geometry_2 is
 
 				i.angle := get_angle_of_itersection (line_1, line_2);
 
+				--put_line ("get_intersection: " & to_string (i.vector));
 				return (status => EXISTS, intersection => i);
 			else
 
@@ -903,28 +929,38 @@ package body et_geometry_2 is
 
 	function get_nearest (
 		line	: in type_line;
-		point	: in type_point;
+		point	: in type_vector;
 		place	: in type_nearest := AFTER)
-		return type_point
+		return type_vector
 	is
-		result : type_point;
+		result : type_vector := point;
 		d : constant type_distance_polar := get_distance (line.start_point, line.end_point);
 
-		m : constant type_distance_positive := 10.0;
+		--m : constant type_distance_positive := 10.0;
 	begin
 		case place is
 			when AFTER => -- move forward in direction of line
-				result := type_point (move (
-					point		=> point,
+				--result := type_point (move (
+					--point		=> point,
+					--direction	=> get_angle (d),
+					--distance	=> m * type_distance'small));
+
+				move_by (
+					v			=> result,
 					direction	=> get_angle (d),
-					distance	=> m * type_distance'small));
+					distance	=> type_float_internal (type_distance'small));
 
 			when BEFORE => -- move backward in opposite direction
-				result := type_point (move (
-					point		=> point,
-					direction	=> add (get_angle (d), 180.0),
-					distance	=> m * type_distance'small));
+				--result := type_point (move (
+					--point		=> point,
+					--direction	=> add (get_angle (d), 180.0),
+					--distance	=> m * type_distance'small));
 
+				move_by (
+					v			=> result,
+					direction	=> add (get_angle (d), 180.0),
+					distance	=> type_float_internal (type_distance'small));
+				
 		end case;
 		return result;
 	end get_nearest;

@@ -164,13 +164,13 @@ procedure get_status is
 
 
 	procedure append_expected_intersection (
-		x, y		: in type_distance;
+		x, y		: in type_float_internal;
 		direction	: in type_intersection_direction;
 		edge		: in pac_polygon_segments.cursor)
 	is 
-		p : type_point := type_point (set (x, y));
+		v : type_vector := set (x, y);
 	begin
-		I_list.append ((position => p, direction => direction, edge => edge));
+		I_list.append ((position => v, direction => direction, edge => edge));
 	end append_expected_intersection;
 	
 
@@ -194,15 +194,8 @@ procedure get_status is
 		
 		S_actual := get_line_to_polygon_status (P, L);
 
-		--if S_actual.start_point = S_expect.start_point
-		--and S_actual.end_point = S_expect.end_point
-		--and S_actual.center_point = S_expect.center_point
-		--and S_actual.intersections = S_expect.intersections
-		--then
-			--null;
-		--else
-
-		if S_actual /= S_expect then
+		--if S_actual /= S_expect then
+		if not equals (S_actual, S_expect) then
 			errors := errors + 1;
 			put_line ("ERROR !!!");
 			put_line ("expected:");
@@ -371,7 +364,7 @@ begin
 	do_test;
 
 
------------	
+-------------	
 	make_polygon (P_1_shaped);
 
 	L := type_line (make_line (-10.0, 60.0, 60.0, -10.0));
@@ -564,8 +557,8 @@ begin
 
 
 	make_polygon (default_polygon);
-	--L := type_line (make_line (100.0, 0.0, 101.0, 50.0));
-	L := type_line (make_line (100.0, 0.0, 150.0, 50.0));
+	L := type_line (make_line (100.0, 0.0, 100.001, 50.0));
+	--L := type_line (make_line (100.0, 0.0, 150.0, 50.0));
 
 	-- the intersected edge of the polygon:
 	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));

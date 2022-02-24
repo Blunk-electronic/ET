@@ -558,14 +558,15 @@ package et_geometry_2.polygons is
 	function get_direction (
 		polygon	: in type_polygon_base;
 		line	: in type_line;
-		point	: in type_point)
+		point	: in type_vector)
 		return type_point_of_contact;
 
 
 
 
 	type type_intersection_base is tagged record
-		position	: type_point; 	  -- x/y
+		--position	: type_point; 	  -- x/y
+		position	: type_vector;
 		direction	: type_intersection_direction := ENTERING;
 	end record;
 
@@ -576,12 +577,14 @@ package et_geometry_2.polygons is
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
 
+	-- CS iterator procedure for pac_line_edge_intersections
+	
 	
 	-- Returns true if the given list of line-edge-intersections contains
-	-- the a line-edge-intersection that lies on the given place:
+	-- a line-edge-intersection that lies on the given place:
 	function contains (
 		intersections	: in pac_line_edge_intersections.list;
-		place			: in type_point)
+		place			: in type_vector)
 		return boolean;
 	
 		
@@ -637,6 +640,12 @@ package et_geometry_2.polygons is
 	end record;
 	
 
+	-- Returns true if the given two statuses are equal.
+	-- The x,y,z components of intersections are regarded as equal if
+	-- their difference is less or equal the rounding_threshold:
+	function equals (left, right : in type_line_to_polygon_status)
+		return boolean;
+	
 
 	function get_line_to_polygon_status (
 		polygon	: in type_polygon_base;

@@ -1985,8 +1985,8 @@ package body et_geometry_2.polygons is
 			--put_line (to_string (l));
 			
 			if i.status = EXISTS then
-				put_line ("exists");
-				put_line (to_string (l));
+				--put_line ("exists");
+				--put_line (to_string (l));
 				--put_line (to_string (y_threshold));
 				--put_line (to_string (i.intersection.vector));
 
@@ -2356,7 +2356,7 @@ package body et_geometry_2.polygons is
 	function get_direction (
 		polygon	: in type_polygon_base;
 		line	: in type_line;
-		point	: in type_point)
+		point	: in type_vector)
 		return type_point_of_contact
 	is
 		result_is_intersection : boolean := false;
@@ -2364,22 +2364,22 @@ package body et_geometry_2.polygons is
 
 		-- This is a supportive point right after a given point
 		-- on the given line towards or beyond the end of the given line:
-		SP_after : type_point;
+		SP_after : type_vector;
 
 		-- This is a supportive point right before a given point
 		-- on the given line towards or beyond the start of the given line:
-		SP_before : type_point;
+		SP_before : type_vector;
 
 		-- These flags indicate that the given point lies
 		-- directly on the start or end point of the given line:
 		point_on_start, point_on_end : boolean := false;
 		
 	begin
-		if point = line.start_point then
+		if point = to_vector (line.start_point) then
 			point_on_start := true;
 		end if;
 
-		if point = line.end_point then
+		if point = to_vector (line.end_point) then
 			point_on_end := true;
 		end if;
 
@@ -2387,7 +2387,7 @@ package body et_geometry_2.polygons is
 		if point_on_start and point_on_end then
 			raise constraint_error; -- CS should never happen
 		end if;
-		
+
 		
 		SP_before := get_nearest (line, point, BEFORE);
 		SP_after := get_nearest (line, point, AFTER);
@@ -2400,13 +2400,13 @@ package body et_geometry_2.polygons is
 
 		declare
 			PPS_before : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_before).location;
+				get_point_to_polygon_status_2 (polygon, SP_before).location;
 
 			PPS_after : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_after).location;
+				get_point_to_polygon_status_2 (polygon, SP_after).location;
 		begin
-			put_line ("before " & to_string (SP_before));
-			put_line ("after  " & to_string (SP_after));
+			--put_line ("before " & to_string (SP_before));
+			--put_line ("after  " & to_string (SP_after));
 
 			case PPS_before is
 				when OUTSIDE =>
@@ -2493,7 +2493,7 @@ package body et_geometry_2.polygons is
 	
 	function contains (
 		intersections	: in pac_line_edge_intersections.list;
-		place			: in type_point)
+		place			: in type_vector)
 		return boolean
 	is
 		result : boolean := false;
@@ -2520,7 +2520,8 @@ package body et_geometry_2.polygons is
 	is
 		type type_item is record
 			intersection: type_intersection_line_edge;
-			distance	: type_distance_positive;
+			--distance	: type_distance_positive;
+			distance	: type_float_internal_positive;
 		end record;
 
 		
@@ -2542,13 +2543,13 @@ package body et_geometry_2.polygons is
 		use pac_line_edge_intersections;
 		
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
-			d : type_distance_polar;
+			d : type_float_internal_positive;
 		begin
-			d := get_distance (type_point (reference), element (i).position);
+			d := get_distance_total (reference, element (i).position);
 			
 			items.append (new_item => (
 				intersection	=> element (i),
-				distance		=> get_absolute (d)));
+				distance		=> d));
 		end query_intersection;
 
 		
@@ -2582,6 +2583,46 @@ package body et_geometry_2.polygons is
 
 	
 
+	function equals (left, right : in type_line_to_polygon_status)
+		return boolean
+	is
+		result : boolean := true;
+
+		use pac_line_edge_intersections;
+		cr : pac_line_edge_intersections.cursor := right.intersections.first;
+		
+		procedure query_left (cl : in pac_line_edge_intersections.cursor) is
+			i_left  : type_intersection_line_edge := element (cl);
+			i_right : type_intersection_line_edge := element (cr);
+		begin
+			--if element (i_left.edge) = element (i_right.edge) 
+			if i_left.edge = i_right.edge				
+			and	i_left.direction = i_right.direction
+			and equals (i_left.position, i_right.position)
+			then			
+				null;
+			else
+				result := false;
+				-- CS use special iterator procedure to abort on first mismatch
+			end if;
+			
+			next (cr);
+		end query_left;
+		
+	begin
+		if 	left.start_point 	= right.start_point
+		and left.end_point		= right.end_point
+		and left.center_point	= right.center_point
+		then
+			left.intersections.iterate (query_left'access);
+		else
+			result := false;
+		end if;
+
+		return result;
+	end equals;
+	
+	
 	function get_line_to_polygon_status (
 		polygon	: in type_polygon_base;
 		line	: in type_line)
@@ -2673,8 +2714,9 @@ package body et_geometry_2.polygons is
 								else
 									-- Collect this intersection point if it has
 									-- not already been collected yet:
-									if not contains (result.intersections, IP) then
-										result.intersections.append ((position => IP, edge => c, others => <>));
+									if not contains (result.intersections, I2L.intersection.vector) then
+										result.intersections.append ((
+											position => I2L.intersection.vector, edge => c, others => <>));
 										-- The direction will be set later.
 									end if;
 								end if;
@@ -2735,14 +2777,16 @@ package body et_geometry_2.polygons is
 					
 				when ON_EDGE =>
 					declare
-						POC : constant type_point_of_contact := get_direction (polygon, line, line.start_point);
+						POC : constant type_point_of_contact := 
+							get_direction (polygon, line, to_vector (line.start_point));
 					begin
 						result.start_point.direction_on_edge := POC.direction;
 					end;
 					
 				when ON_VERTEX =>
 					declare
-						POC : constant type_point_of_contact := get_direction (polygon, line, line.start_point);
+						POC : constant type_point_of_contact := 
+							get_direction (polygon, line, to_vector (line.start_point));
 					begin
 						result.start_point.direction_on_vertex := POC.direction;
 					end;
@@ -2756,14 +2800,16 @@ package body et_geometry_2.polygons is
 					
 				when ON_EDGE =>
 					declare
-						POC : constant type_point_of_contact := get_direction (polygon, line, line.end_point);
+						POC : constant type_point_of_contact := 
+							get_direction (polygon, line, to_vector (line.end_point));
 					begin
 						result.end_point.direction_on_edge := POC.direction;
 					end;
 					
 				when ON_VERTEX =>
 					declare
-						POC : constant type_point_of_contact := get_direction (polygon, line, line.end_point);
+						POC : constant type_point_of_contact := 
+							get_direction (polygon, line, to_vector (line.end_point));
 					begin
 						result.end_point.direction_on_vertex := POC.direction;
 					end;

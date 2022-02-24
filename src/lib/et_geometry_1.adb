@@ -48,6 +48,10 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_1 is
 
+	function to_string (f : in type_float_internal) return string is begin
+		return type_float_internal'image (f);
+	end;
+	
 
 	function get_info (editor: in string)
 		return string 
@@ -151,11 +155,13 @@ package body et_geometry_1 is
 	is
 		use pac_distance_io;
 		
-		d1 : type_distance := type_distance (f);
+		d1 : type_distance;
 		d2 : type_float_internal;
 
 		f1 : constant type_float_internal := 5.0 * type_float_internal (type_distance'small);
 	begin
+		d1 := type_distance (f);
+		
 		d2 := 10.0 * abs (f - type_float_internal (d1));
 		
 		if f < 0.0 then
@@ -189,7 +195,11 @@ package body et_geometry_1 is
 			--end;
 		--end if;
 
-		
+
+		exception when event: others =>
+			put_line ("f: " & to_string (f));
+			raise;
+
 	end to_distance;
 	
 

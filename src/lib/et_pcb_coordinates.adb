@@ -81,9 +81,6 @@ package body et_pcb_coordinates is
 	end flip;
 
 
-	function to_string (f : in type_float_internal) return string is begin
-		return type_float_internal'image (f);
-	end;
 
 	
 	function to_string (p : in type_package_position) return string is begin

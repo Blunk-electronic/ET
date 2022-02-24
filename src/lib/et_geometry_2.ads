@@ -55,8 +55,6 @@ package et_geometry_2 is
 	use pac_geometry_1;
 	use pac_functions_distance;
 
-
-	rounding_threshold : constant type_float_internal := 1.0E-17;
 	
 	
 	type type_point_status is (
@@ -96,6 +94,14 @@ package et_geometry_2 is
 		return string;
 
 
+	-- Returns true if the given two location vectors are equal.
+	-- The x,y,z components are regarded as equal if their difference
+	-- is less or equal the rounding_threshold:
+	function equals (
+		left, right : in type_vector)
+		return boolean;
+
+
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;
@@ -119,13 +125,13 @@ package et_geometry_2 is
 	function get_distance_total (
 		v_1	: in type_vector;
 		v_2	: in type_vector)
-		return type_float_internal;
+		return type_float_internal_positive;
 
 	
 	function get_distance_total (
 		point	: in type_point;
 		vector	: in type_vector)
-		return type_float_internal;
+		return type_float_internal_positive;
 	
 	
 	-- Returns the distance of location vector_one to vector_two.	
@@ -140,6 +146,7 @@ package et_geometry_2 is
 	function get_distance (
 		vector_one, vector_two : in type_vector)
 		return type_distance_polar;
+
 	
 	-- Moves the given vector by given offset.
 	-- Leaves z unchanged.
@@ -148,13 +155,15 @@ package et_geometry_2 is
 		offset	: in type_distance_relative)
 		return type_vector;
 
+	
 	-- Moves a location vector into given direction
 	-- by given distance. Leaves z unchanged.
 	procedure move_by (
 		v			: in out type_vector;
 		direction	: in type_rotation;
-		distance	: in type_float_internal);
-									
+		distance	: in type_float_internal); -- CS type_float_internal_positive ?
+
+	
 	function to_vector (
 		point	: in type_point)
 		return type_vector;
@@ -423,9 +432,9 @@ package et_geometry_2 is
 	-- a point before or after the given point:
 	function get_nearest (
 		line	: in type_line;
-		point	: in type_point;
+		point	: in type_vector;
 		place	: in type_nearest := AFTER)
-		return type_point;
+		return type_vector;
 
 
 
