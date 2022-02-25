@@ -2685,7 +2685,6 @@ package body et_geometry_2.polygons is
 			end case;
 		end set_line_end;
 
-
 		
 		procedure find_intersections is
 			
@@ -2708,8 +2707,6 @@ package body et_geometry_2.polygons is
 								-- of the given line the the candidate edge is to be skipped:
 								if IP = line.start_point 
 								or IP = line.end_point
-								--or IP = element (c).segment_line.start_point	
-								--or IP = element (c).segment_line.end_point
 								then
 									null; -- skip this intersection point entirely
 								else
@@ -2719,20 +2716,12 @@ package body et_geometry_2.polygons is
 									I_rounded := round (
 										vector		=> I2L.intersection.vector, 
 										accuracy	=> 17);
-									
-									--if not contains (result.intersections, I2L.intersection.vector) then
-										--result.intersections.append ((
-											--position => I2L.intersection.vector, edge => c, others => <>));
-										---- The direction will be set later.
-									--end if;
 
 									if not contains (result.intersections, I_rounded) then
 										result.intersections.append ((
 											position => I_rounded, edge => c, others => <>));
 										-- The direction will be set later.
 									end if;
-
-									
 								end if;
 							end if;
 						end;

@@ -747,31 +747,6 @@ package body et_geometry_2.polygons.clipping is
 			remove_redundant_intersections;
 		end find_intersections;
 
-
-		
-		-- Recursively changes the direction of an 
-		-- intersection (in list "intersection") to "leaving".
-		-- Identifies the targeted intersection by the position of the given
-		-- vertex. 
-		-- CS: Assumes the position of the intersection is unique. Means there is
-		-- no other intersection having the same x/y coordinates.
-		--procedure update_intersection (v : in pac_vertices.cursor) is
-
-			--procedure change_direction (i : in out type_intersection) is begin
-				--i.direction := LEAVING;
-			--end;
-		
-			--c : pac_intersections.cursor := intersections.first;
-		--begin
-			--while c /= pac_intersections.no_element loop
-				--if element (c).position = element (v).position then
-					--intersections.update_element (c, change_direction'access);
-					--exit;
-				--end if;
-				--next (c);
-			--end loop;
-		--end update_intersection;
-
 		
 		-- Returns the intersection points on a given edge.
 		-- Searches in list "intersections" using the supportive information
@@ -889,7 +864,6 @@ package body et_geometry_2.polygons.clipping is
 				-- Get the intersections (on the current edge) that follow
 				-- after the start point:
 				v_list := get_intersections_on_edge (element (s).segment_line, A);
-				-- Function get_intersections_on_edge has updated the "intersections".
 
 				vertices_A.append (new_item => (
 					category	=> REGULAR,
