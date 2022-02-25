@@ -290,8 +290,7 @@ begin
 	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
 	
 	make_set (
-		--A => "line 50 0 line 100 0 line 101 50 line 50 50", -- nogo
-		A => "line 50 0 line 100 0 line 150 50 line 50 50", -- go
+		A => "line 50 0 line 100 0 line 101 50 line 50 50",
 		B => B_default,
 		expect => EXP);
 	-- go

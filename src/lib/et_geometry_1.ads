@@ -62,7 +62,22 @@ package et_geometry_1 is
 	subtype type_float_internal_positive is type_float_internal range 0.0 .. type_float_internal'last;
 
 	rounding_threshold : constant type_float_internal := 1.0E-17;
+
+
+	-- The number of decimal places when rounding or type_float_internal
+	-- is required:
+	subtype type_rounding_accuracy is positive 
+		range 1 .. type_float_internal'digits;
 	
+	procedure round (
+		f : in out type_float_internal;	-- the number to be rounded
+		a : in type_rounding_accuracy);	-- the accuracy, the number of decimal places
+
+	function round (
+		f : in type_float_internal;
+		a : in type_rounding_accuracy)
+		return type_float_internal;
+
 	
 	zero 		: constant type_distance := 0.0;
 	far_left	: constant type_distance := axis_min;

@@ -2696,6 +2696,7 @@ package body et_geometry_2.polygons is
 							I2L : constant type_intersection_of_two_lines := get_intersection (
 								element (c).segment_line, line);
 
+							I_rounded : type_vector;
 							IP : type_point;
 						begin
 							-- We are interested in an edge that DOES intersect in some way
@@ -2714,11 +2715,24 @@ package body et_geometry_2.polygons is
 								else
 									-- Collect this intersection point if it has
 									-- not already been collected yet:
-									if not contains (result.intersections, I2L.intersection.vector) then
+
+									I_rounded := round (
+										vector		=> I2L.intersection.vector, 
+										accuracy	=> 17);
+									
+									--if not contains (result.intersections, I2L.intersection.vector) then
+										--result.intersections.append ((
+											--position => I2L.intersection.vector, edge => c, others => <>));
+										---- The direction will be set later.
+									--end if;
+
+									if not contains (result.intersections, I_rounded) then
 										result.intersections.append ((
-											position => I2L.intersection.vector, edge => c, others => <>));
+											position => I_rounded, edge => c, others => <>));
 										-- The direction will be set later.
 									end if;
+
+									
 								end if;
 							end if;
 						end;

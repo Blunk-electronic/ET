@@ -48,6 +48,35 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_1 is
 
+
+	procedure round (
+		f : in out type_float_internal;
+		a : in type_rounding_accuracy)
+	is 
+		base : constant type_float_internal := 10.0;
+	begin
+		--put_line ("given   :" & type_float_internal'image (f));
+		--put_line ("accuracy:" & positive'image (a));
+
+		f := type_float_internal'rounding (f * base**a) * base**(-a); 
+		
+		--put_line ("rounded :" & type_float_internal'image (f));
+		--new_line;
+	end round;
+
+
+	function round (
+		f : in type_float_internal;
+		a : in type_rounding_accuracy)
+		return type_float_internal
+	is 
+		base : constant type_float_internal := 10.0;
+	begin
+		return type_float_internal'rounding (f * base**a) * base**(-a); 
+	end round;
+
+
+	
 	function to_string (f : in type_float_internal) return string is begin
 		return type_float_internal'image (f);
 	end;

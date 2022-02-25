@@ -101,7 +101,22 @@ package et_geometry_2 is
 		left, right : in type_vector)
 		return boolean;
 
+	-- Rounds the x,y,z components of a vector
+	-- to the given number of decimal places:
+	procedure round (
+		vector	: in out type_vector;
+		accuracy: in type_rounding_accuracy);
+	
+	-- Rounds the x,y,z components of a vector
+	-- to the given number of decimal places:
+	function round (
+		vector	: in type_vector;
+		accuracy: in type_rounding_accuracy)
+		return type_vector;
+	
 
+
+	
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;

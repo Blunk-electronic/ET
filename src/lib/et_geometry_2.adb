@@ -155,7 +155,29 @@ package body et_geometry_2 is
 		end if;
 	end equals;
 
+
+	procedure round (
+		vector	: in out type_vector;
+		accuracy: in type_rounding_accuracy)
+	is begin
+		round (vector.x, accuracy);
+		round (vector.y, accuracy);
+		round (vector.z, accuracy);	
+	end round;
 	
+
+	function round (
+		vector	: in type_vector;
+		accuracy: in type_rounding_accuracy)
+		return type_vector
+	is begin
+		return (
+			round (vector.x, accuracy),
+			round (vector.y, accuracy),
+			round (vector.z, accuracy));
+	end round;
+
+			
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;
