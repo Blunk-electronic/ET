@@ -2558,7 +2558,84 @@ package body et_geometry_2.polygons is
 	end to_string;
 
 	
+	function same_position (
+		intersection_1, intersection_2 : in pac_intersections.cursor)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if element (intersection_1).position = element (intersection_2).position then
+			result := true;
+		end if;
 
+		return result;
+	end same_position;
+
+
+	function get_real_intersections (
+		intersections	: in pac_intersections.list)
+		return pac_intersections.list
+	is
+		result : pac_intersections.list;
+
+		procedure compare_position_and_direction (
+			i1, i2 : in pac_intersections.cursor)
+		is begin
+			-- The two intersections in question must have
+			-- same x/y position and differing direction, means
+			-- one is an entering and the other is a leaving one.
+			-- On this x/y position we have no real intersection
+			-- but just a touch point:
+			if same_position (i1, i2)
+			and element (i1).direction /= element (i2).direction
+			then 
+				null; -- A touches B -> skip this intersection
+			else
+				-- is real -> collect this intersection
+				result.append (element (i1)); 
+				--put_line ("real intersection:" & to_string (element (i1)));
+			end if;
+		end compare_position_and_direction;
+				
+		procedure query_intersection (
+			c : in pac_intersections.cursor) 
+		is begin
+			-- CS: We assume that leaving and entering points of
+			-- a touch-point follow each other in the given 
+			-- list of intersection. So we always look at the 
+			-- predecessor of the candidate intersection (indicated by 
+			-- cursor c):
+			if c = intersections.first then
+				compare_position_and_direction (c, intersections.last);
+			else
+				compare_position_and_direction (c, previous (c));
+			end if;
+		end query_intersection;
+		
+	begin
+		intersections.iterate (query_intersection'access);
+		return result;
+	end get_real_intersections;
+
+
+	function are_redundant (
+		i1, i2 : in pac_intersections.cursor)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if element (i1).position = element (i2).position then
+			if element (i1).direction = element (i2).direction then
+				result := true;
+			end if;
+		end if;
+
+		return result;
+	end are_redundant;
+	
+
+
+	
 	function all_vertices_of_A_inside_B (
 		polygon_A	: in type_polygon'class; -- the clipped polygon
 		polygon_B	: in type_polygon'class) -- the clipping polygon
@@ -2607,6 +2684,63 @@ package body et_geometry_2.polygons is
 			
 		return proceed;
 	end all_vertices_of_A_inside_B;
+
+
+
+	function is_entering (v : pac_vertices.cursor) return boolean is begin
+		if element (v).category = INTERSECTION then
+			if element (v).direction = ENTERING then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end is_entering;
+
+	
+	function is_leaving (v : pac_vertices.cursor) return boolean is begin
+		if element (v).category = INTERSECTION then
+			if element (v).direction = LEAVING then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end is_leaving;
+
+
+	function is_regular (v : pac_vertices.cursor) return boolean is begin
+		if element (v).category = REGULAR then
+			return true;
+		else
+			return false;
+		end if;
+	end is_regular;
+
+	
+
+	function same_position (
+		vertex_1, vertex_2 : in pac_vertices.cursor)
+		return boolean
+	is 
+		result : boolean := false;
+	begin
+		if not is_regular (vertex_1) and is_regular (vertex_2) then
+			
+			if element (vertex_1).position = element (vertex_2).position then
+				result := true;
+			end if;
+		end if;
+			
+		return result;
+	end same_position;
+	
+
+
 
 	
 end et_geometry_2.polygons;

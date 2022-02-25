@@ -87,73 +87,8 @@ package et_geometry_2.polygons.clipping is
 
 
 private
-
-
-	-- Returns true if x/y of the given two intersections are equal:
-	function same_position (
-		intersection_1, intersection_2 : in pac_intersections.cursor)
-		return boolean;
-
-	
-	-- Removes from the given list of intersections those where
-	-- polygon A touches polygon B.
-	function get_real_intersections (
-		intersections	: in pac_intersections.list)
-		return pac_intersections.list;
-
-	
-	-- Returns true if the given intersection have equal
-	-- position and direction:
-	function are_redundant (
-		i1, i2 : in pac_intersections.cursor)
-		return boolean;
 	
 
-	
-	subtype type_redundant_intersection_count is natural range 0 .. 2; -- CS correct ?
-
-	-- Returns the number of redundant intersections.
-	-- intersections are redundant if their position and direction 
-	-- are equally:
-	function count (
-		intersections	: in pac_intersections.list;
-		intersection	: in type_intersection)
-		return type_redundant_intersection_count;
-
-
-	
-	-- The category of a vertex:
-	type type_category is (
-		-- A vertex as it is a part of the original polygon:
-		REGULAR,
-
-		-- The vertex is an intersection of two edges of the A and B polygon:
-		INTERSECTION);
-
-	
-	
-	type type_vertex (category : type_category) is record
-		position	: type_vector;
-		case category is
-			when INTERSECTION =>	direction	: type_intersection_direction;
-			when REGULAR => 		null;
-		end case;
-	end record;
-
-	
-	package pac_vertices is new indefinite_doubly_linked_lists (type_vertex);
-	use pac_vertices;
-
-
-	function is_entering (v : pac_vertices.cursor) return boolean;
-	function is_leaving (v : pac_vertices.cursor) return boolean;
-	function is_regular (v : pac_vertices.cursor) return boolean;
-	
-	
-	-- Returns true if x/y of the given two vertices are equal:
-	function same_position (
-		vertex_1, vertex_2 : in pac_vertices.cursor)
-		return boolean;
 
 	
 	-- Converts a list of vertices to a polygon:
