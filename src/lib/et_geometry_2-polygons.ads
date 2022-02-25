@@ -403,7 +403,7 @@ package et_geometry_2.polygons is
 
 
 
-	type type_point_to_polygon_status_2 (location : type_location) is record
+	type type_point_to_polygon_status (location : type_location) is record
 		-- The point where the probe line has started:
 		start			: type_vector; 
 
@@ -430,17 +430,17 @@ package et_geometry_2.polygons is
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
-		i : in type_point_to_polygon_status_2)
+		i : in type_point_to_polygon_status)
 		return string;
 
 	
 
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge:
-	function get_point_to_polygon_status_2 (
+	function get_point_to_polygon_status (
 		polygon		: in type_polygon_base;	
 		point		: in type_vector)
-		return type_point_to_polygon_status_2;
+		return type_point_to_polygon_status;
 
 	
 	-- For finding the lower left corner of a polygon this type

@@ -1441,7 +1441,7 @@ package body et_geometry_2.polygons is
 	
 	
 	function to_string (
-		i : in type_point_to_polygon_status_2)
+		i : in type_point_to_polygon_status)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -1490,10 +1490,10 @@ package body et_geometry_2.polygons is
 
 
 
-	function get_point_to_polygon_status_2 (
+	function get_point_to_polygon_status (
 		polygon		: in type_polygon_base;	
 		point		: in type_vector) -- CS rename to vector ?
-		return type_point_to_polygon_status_2 
+		return type_point_to_polygon_status 
 	is
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
@@ -1892,7 +1892,7 @@ package body et_geometry_2.polygons is
 				
 		end case;
 		
-	end get_point_to_polygon_status_2;
+	end get_point_to_polygon_status;
 
 
 	
@@ -1909,7 +1909,7 @@ package body et_geometry_2.polygons is
 		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
 		-- figure out whether the point is real or virtual:
-		case get_point_to_polygon_status_2 (polygon, to_vector (result.point)).location is
+		case get_point_to_polygon_status (polygon, to_vector (result.point)).location is
 			when INSIDE =>
 				result.status := REAL;
 				
@@ -2044,10 +2044,10 @@ package body et_geometry_2.polygons is
 
 		declare
 			PPS_before : constant type_location := 
-				get_point_to_polygon_status_2 (polygon, SP_before).location;
+				get_point_to_polygon_status (polygon, SP_before).location;
 
 			PPS_after : constant type_location := 
-				get_point_to_polygon_status_2 (polygon, SP_after).location;
+				get_point_to_polygon_status (polygon, SP_after).location;
 		begin
 			--put_line ("before " & to_string (SP_before));
 			--put_line ("after  " & to_string (SP_after));
@@ -2277,8 +2277,8 @@ package body et_geometry_2.polygons is
 		line_center : type_point;
 		
 		procedure set_line_start is 
-			PPS : constant type_point_to_polygon_status_2 := 
-				get_point_to_polygon_status_2 (polygon, to_vector (line.start_point));
+			PPS : constant type_point_to_polygon_status := 
+				get_point_to_polygon_status (polygon, to_vector (line.start_point));
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -2304,8 +2304,8 @@ package body et_geometry_2.polygons is
 
 		
 		procedure set_line_end is 
-			PPS : constant type_point_to_polygon_status_2 := 
-				get_point_to_polygon_status_2 (polygon, to_vector (line.end_point));
+			PPS : constant type_point_to_polygon_status := 
+				get_point_to_polygon_status (polygon, to_vector (line.end_point));
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -2529,7 +2529,7 @@ package body et_geometry_2.polygons is
 
 			--put_line ("center" & to_string (line_center));
 			
-			case get_point_to_polygon_status_2 (polygon, to_vector (line_center)).location is
+			case get_point_to_polygon_status (polygon, to_vector (line_center)).location is
 				when INSIDE => result.center_point := INSIDE;
 				when OUTSIDE => result.center_point := OUTSIDE;
 				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;
@@ -2574,8 +2574,8 @@ package body et_geometry_2.polygons is
 			case element (c).shape is
 				when LINE =>
 					declare
-						IPQ : constant type_point_to_polygon_status_2 :=
-							get_point_to_polygon_status_2 (polygon_B, to_vector (element (c).segment_line.start_point));
+						IPQ : constant type_point_to_polygon_status :=
+							get_point_to_polygon_status (polygon_B, to_vector (element (c).segment_line.start_point));
 					begin
 						if IPQ.location = OUTSIDE then
 							proceed := false; -- abort iteration
@@ -2584,8 +2584,8 @@ package body et_geometry_2.polygons is
 					
 				when ARC =>
 					declare
-						IPQ : constant type_point_to_polygon_status_2 := 
-							get_point_to_polygon_status_2 (polygon_B, to_vector (element (c).segment_arc.start_point));
+						IPQ : constant type_point_to_polygon_status := 
+							get_point_to_polygon_status (polygon_B, to_vector (element (c).segment_arc.start_point));
 					begin
 						if IPQ.location = OUTSIDE then
 							proceed := false; -- abort iteration

@@ -73,7 +73,7 @@ procedure get_status is
 
 
 	
-	procedure print_status (PPS : in type_point_to_polygon_status_2) is
+	procedure print_status (PPS : in type_point_to_polygon_status) is
 		use pac_probe_line_intersections;
 		use pac_polygon_segments;
 		
@@ -119,7 +119,7 @@ procedure get_status is
 
 		declare
 			--S : type_point_to_polygon_status := get_point_to_polygon_status (P, T);
-			S : type_point_to_polygon_status_2 := get_point_to_polygon_status_2 (P, V);
+			S : type_point_to_polygon_status := get_point_to_polygon_status (P, V);
 		begin
 			print_status (S);
 		end;

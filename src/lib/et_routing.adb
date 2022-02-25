@@ -169,7 +169,7 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 			procedure query_outline is begin
-				if get_point_to_polygon_status_2 (
+				if get_point_to_polygon_status (
 					module.board.contours.outline, to_vector (point)).location = OUTSIDE 
 				then
 					--log (text => "outside", level => lth + 1);
@@ -184,7 +184,7 @@ package body et_routing is
 				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
 			begin
 				while c /= pac_pcb_cutouts.no_element loop
-					if get_point_to_polygon_status_2 (
+					if get_point_to_polygon_status (
 						element (c), to_vector (point)).location = INSIDE 
 					then
 						if log_category >= HIGH then
