@@ -401,31 +401,6 @@ package et_geometry_2.polygons is
 	
 	function to_string (status : in type_location) return string;
 
-		
-		
-
-
-	type type_point_to_polygon_status (location : type_location) is record
-		-- The point where the probe line has started:
-		start			: type_point; 
-
-		-- The intersections of the probe line with the polygon edges:
-		intersections	: pac_probe_line_intersections.list;
-
-		case location is
-			when OUTSIDE | INSIDE =>
-				-- The shortest distance of the start point (of the probe line)
-				-- to the polygon:
-				distance		: type_distance_polar;
-				
-			when ON_EDGE =>
-				edge : pac_polygon_segments.cursor;
-
-			when ON_VERTEX =>
-				edges : type_neigboring_edges;
-
-		end case;
-	end record;
 
 
 	type type_point_to_polygon_status_2 (location : type_location) is record
@@ -455,16 +430,10 @@ package et_geometry_2.polygons is
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
-		i : in type_point_to_polygon_status)
+		i : in type_point_to_polygon_status_2)
 		return string;
 
 	
-	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge:
-	function get_point_to_polygon_status (
-		polygon		: in type_polygon_base;	
-		point		: in type_point)
-		return type_point_to_polygon_status;
 
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge:

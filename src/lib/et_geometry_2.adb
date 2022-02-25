@@ -3704,44 +3704,44 @@ package body et_geometry_2 is
 	end get_intersection;
 
 
-	function order_intersections (
-		-- The start point of the line that intersects the circle.
-		-- The start point must be outside the circle and will
-		-- be passed through to the result unchanged.
-		start_point		: in type_point;
+	--function order_intersections (
+		---- The start point of the line that intersects the circle.
+		---- The start point must be outside the circle and will
+		---- be passed through to the result unchanged.
+		--start_point		: in type_point;
 
-		intersections	: in type_intersection_of_line_and_circle)
-		return type_ordered_line_circle_intersections
-	is
-		result : type_ordered_line_circle_intersections := 
-			(start_point => start_point, others => <>); -- pass start point through
+		--intersections	: in type_intersection_of_line_and_circle)
+		--return type_ordered_line_circle_intersections
+	--is
+		--result : type_ordered_line_circle_intersections := 
+			--(start_point => start_point, others => <>); -- pass start point through
 
-		i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
+		--i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
 
-		d1, d2 : type_float_internal;
-	begin
-		-- the distance from start point to intersection point 1:
-		d1 := get_distance_total (start_point, i.intersection_1.vector);
+		--d1, d2 : type_float_internal;
+	--begin
+		---- the distance from start point to intersection point 1:
+		--d1 := get_distance_total (start_point, i.intersection_1.vector);
 
-		-- the distance from start point to intersection point 2:
-		d2 := get_distance_total (start_point, i.intersection_2.vector);
+		---- the distance from start point to intersection point 2:
+		--d2 := get_distance_total (start_point, i.intersection_2.vector);
 
-		if d1 < d2 then -- point ip1 is closer to start point that ip2
-			result.entry_point := i.intersection_1;
-			result.exit_point  := i.intersection_2;
+		--if d1 < d2 then -- point ip1 is closer to start point that ip2
+			--result.entry_point := i.intersection_1;
+			--result.exit_point  := i.intersection_2;
 			
-		elsif d1 > d2 then -- point ip2 is closer to start point than ip1
-			result.entry_point := i.intersection_2;
-			result.exit_point  := i.intersection_1;
+		--elsif d1 > d2 then -- point ip2 is closer to start point than ip1
+			--result.entry_point := i.intersection_2;
+			--result.exit_point  := i.intersection_1;
 
-		else -- point ip1 has same distance to start point as ip2
-			--put_line (to_string (d1)); put_line (to_string (d2));
-			--put_line (to_string (ip1)); put_line (to_string (ip2));
-			raise constraint_error;
-		end if;
+		--else -- point ip1 has same distance to start point as ip2
+			----put_line (to_string (d1)); put_line (to_string (d2));
+			----put_line (to_string (ip1)); put_line (to_string (ip2));
+			--raise constraint_error;
+		--end if;
 			
-		return result;
-	end order_intersections;
+		--return result;
+	--end order_intersections;
 
 
 	function order_intersections (

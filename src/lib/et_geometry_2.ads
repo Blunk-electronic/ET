@@ -1050,15 +1050,15 @@ package et_geometry_2 is
 		return type_intersection_of_line_and_circle;
 
 	
-	type type_ordered_line_circle_intersections is record
-		-- The start point of the line that intersects the circle.
-		-- The start point must be outside the circle.
-		start_point	: type_point;
+	--type type_ordered_line_circle_intersections is record
+		---- The start point of the line that intersects the circle.
+		---- The start point must be outside the circle.
+		--start_point	: type_point;
 
-		-- The point where the line enters and exits the circle:
-		entry_point	: type_intersection;
-		exit_point	: type_intersection;
-	end record;
+		---- The point where the line enters and exits the circle:
+		--entry_point	: type_intersection;
+		--exit_point	: type_intersection;
+	--end record;
 
 	
 	type type_ordered_line_circle_intersections_2 is record
@@ -1079,13 +1079,13 @@ package et_geometry_2 is
 	-- otherwise a constraint error will be raised.
 	-- If the given intersections have same distance to start point then
 	-- a constraint error will be raised.
-	function order_intersections (
-		-- The start point of the line that intersects the circle.
-		-- The start point must be outside the circle.
-		start_point		: in type_point;
+	--function order_intersections (
+		---- The start point of the line that intersects the circle.
+		---- The start point must be outside the circle.
+		--start_point		: in type_point;
 
-		intersections	: in type_intersection_of_line_and_circle)
-		return type_ordered_line_circle_intersections;
+		--intersections	: in type_intersection_of_line_and_circle)
+		--return type_ordered_line_circle_intersections;
 	
 
 	function order_intersections (

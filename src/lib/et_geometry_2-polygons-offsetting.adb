@@ -73,8 +73,8 @@ package body et_geometry_2.polygons.offsetting is
 			--put_line ("tp " & to_string (test_point));
 
 			declare
-				tp_status : constant type_point_to_polygon_status :=
-					get_point_to_polygon_status (polygon, test_point);
+				tp_status : constant type_point_to_polygon_status_2 :=
+					get_point_to_polygon_status_2 (polygon, to_vector (test_point));
 			begin
 				if tp_status.location = INSIDE then
 					--put_line ("inside");

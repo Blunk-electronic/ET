@@ -170,8 +170,8 @@ package body et_conductor_segment is
 		
 		--distance := get_shortest_distance (polygon, point);
 		declare
-			ipq : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon, point);
+			ipq : constant type_point_to_polygon_status_2 :=
+				get_point_to_polygon_status_2 (polygon, to_vector (point));
 
 		begin
 			--put_line ("p" & to_string (point));
@@ -179,10 +179,10 @@ package body et_conductor_segment is
 
 			case ipq.location is
 				when INSIDE =>
-					result := - get_absolute (ipq.distance);
+					result := - to_distance (ipq.distance);
 					
 				when OUTSIDE | ON_EDGE | ON_VERTEX =>
-					result := get_absolute (ipq.distance);
+					result := + to_distance (ipq.distance);
 
 			end case;
 		end;
@@ -322,15 +322,15 @@ package body et_conductor_segment is
 		--distance := get_shortest_distance (polygon, point);
 		
 		declare
-			ipq : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon, point);
+			ipq : constant type_point_to_polygon_status_2 :=
+				get_point_to_polygon_status_2 (polygon, to_vector (point));
 		begin
 			case ipq.location is
 				when INSIDE =>
-					result := - get_absolute (ipq.distance);
+					result := - to_distance (ipq.distance);
 					
 				when OUTSIDE | ON_EDGE | ON_VERTEX =>
-					result := get_absolute (ipq.distance);
+					result := + to_distance (ipq.distance);
 			end case;
 		end;
 		

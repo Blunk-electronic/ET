@@ -72,6 +72,8 @@ package et_symbols is
 	use pac_geometry_2;
 
 	package pac_polygons is new pac_geometry_2.polygons;
+	-- This package is never used in schematic. But it is mandatory
+	-- for the instantiation of the primitive draw operations package.
 
 	
 	

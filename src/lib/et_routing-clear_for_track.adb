@@ -166,7 +166,7 @@ is
 				log_indentation_up;
 			end if;
 
-			if get_point_to_polygon_status (fill_zone.outline, start_point).location = INSIDE then
+			if get_point_to_polygon_status_2 (fill_zone.outline, to_vector (start_point)).location = INSIDE then
 
 				if log_category >= HIGH then
 					log (text => "point is in fill zone", level => lth + 1);
@@ -225,7 +225,7 @@ is
 						log_indentation_up;
 					end if;
 						
-					if get_point_to_polygon_status (element (c), start_point).location = OUTSIDE then
+					if get_point_to_polygon_status_2 (element (c), to_vector (start_point)).location = OUTSIDE then
 
 						if log_category >= HIGH then
 							log (text => "point is outside global cutout area", level => lth + 1);
@@ -746,7 +746,7 @@ is
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
 															
-							if get_point_to_polygon_status (oln, start_point).location = OUTSIDE then
+							if get_point_to_polygon_status_2 (oln, to_vector (start_point)).location = OUTSIDE then
 								distance := get_absolute (get_shortest_distance (oln, start_point));
 								test_distance (distance, lth + 4);
 							else
@@ -812,7 +812,7 @@ is
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
 
-							if get_point_to_polygon_status (oln, start_point).location = OUTSIDE then
+							if get_point_to_polygon_status_2 (oln, to_vector (start_point)).location = OUTSIDE then
 								distance := get_absolute (get_shortest_distance (oln, start_point));
 								test_distance (distance, lth + 4);
 							else
