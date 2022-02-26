@@ -41,13 +41,6 @@
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
 --  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
 --
---  CS: This comment is obsolete ?
---  The Weiler-Atherton algorithm has been extended/improved here to handle
---  this special case. We call it the "Shot-Through-Case" or just STC:
---  An edge of the clipped polygon (A) runs entirely through the whole 
---  clipping polygon (B). Both vertices (start and end point) of the edge are 
---  outside the clipping polygon.
-
 --  Other approaches of interest could be:
 --  - Two-Ears Theorem by Gary H. Meisters
 --  - Sutherland–Hodgman Algorithm
@@ -57,14 +50,14 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+--with ada.text_io;				use ada.text_io;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+--with ada.containers.indefinite_doubly_linked_lists;
 
-with et_geometry;				use et_geometry;
-with et_geometry_1;
-with et_string_processing;		use et_string_processing;
+--with et_geometry;				use et_geometry;
+--with et_geometry_1;
+--with et_string_processing;		use et_string_processing;
 
 
 generic
@@ -85,15 +78,6 @@ package et_geometry_2.polygons.clipping is
 		debug		: in boolean := false)
 		return pac_clipped.list;
 
-
-private
-	
-
-
-	
-	-- Converts a list of vertices to a polygon:
-	function to_polygon (vertices : in pac_vertices.list)
-		return type_polygon;
 
 	
 end et_geometry_2.polygons.clipping;

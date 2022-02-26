@@ -2548,6 +2548,7 @@ package body et_geometry_2.polygons is
 	end get_line_to_polygon_status;
 
 
+	
 
 	function to_string (intersection : in type_intersection)
 		return string
@@ -2741,6 +2742,35 @@ package body et_geometry_2.polygons is
 	
 
 
+	function to_polygon (vertices : in pac_vertices.list)
+		return type_polygon'class
+	is
+		result : type_polygon;
+		
+		procedure query_vertex (v : in pac_vertices.cursor) is 
+			edge : type_line;
+		begin
+			-- The candidate vertex becomes the end of 
+			-- the edge:
+			edge.end_point := to_point (element (v).position);
+
+			-- The vertex before the candidate vertex 
+			-- will be the start of the edge:
+			if v = vertices.first then
+				edge.start_point := to_point (element (vertices.last).position);
+			else
+				edge.start_point := to_point (element (previous (v)).position);
+			end if;
+			
+			append (result.contours.segments, (LINE, edge));
+		end query_vertex;
+		
+	begin
+		-- Convert the list of vertices to a list of lines (or edges):
+		vertices.iterate (query_vertex'access);
+
+		return result;
+	end to_polygon;
 
 	
 end et_geometry_2.polygons;

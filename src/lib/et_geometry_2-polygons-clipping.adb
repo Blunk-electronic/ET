@@ -160,34 +160,34 @@ package body et_geometry_2.polygons.clipping is
 
 
 
-	function to_polygon (vertices : in pac_vertices.list)
-		return type_polygon
-	is
-		result : type_polygon;		
+	--function to_polygon (vertices : in pac_vertices.list)
+		--return type_polygon
+	--is
+		--result : type_polygon;		
 		
-		procedure query_vertex (v : in pac_vertices.cursor) is 
-			edge : type_line;
-		begin
-			-- The candidate vertex becomes the end of 
-			-- the edge:
-			edge.end_point := to_point (element (v).position);
+		--procedure query_vertex (v : in pac_vertices.cursor) is 
+			--edge : type_line;
+		--begin
+			---- The candidate vertex becomes the end of 
+			---- the edge:
+			--edge.end_point := to_point (element (v).position);
 
-			-- The vertex before the candidate vertex 
-			-- will be the start of the edge:
-			if v = vertices.first then
-				edge.start_point := to_point (element (vertices.last).position);
-			else
-				edge.start_point := to_point (element (previous (v)).position);
-			end if;
+			---- The vertex before the candidate vertex 
+			---- will be the start of the edge:
+			--if v = vertices.first then
+				--edge.start_point := to_point (element (vertices.last).position);
+			--else
+				--edge.start_point := to_point (element (previous (v)).position);
+			--end if;
 			
-			append (result.contours.segments, (LINE, edge));
-		end query_vertex;
+			--append (result.contours.segments, (LINE, edge));
+		--end query_vertex;
 		
-	begin
-		-- Convert the list of vertices to a list of lines (or edges):
-		vertices.iterate (query_vertex'access);
-		return result;
-	end to_polygon;
+	--begin
+		---- Convert the list of vertices to a list of lines (or edges):
+		--vertices.iterate (query_vertex'access);
+		--return result;
+	--end to_polygon;
 
 
 	
@@ -1025,7 +1025,7 @@ package body et_geometry_2.polygons.clipping is
 						
 
 					-- Append the sub-polygon to the result:
-					result.append (to_polygon (vertices_tmp_1));
+					result.append (type_polygon (to_polygon (vertices_tmp_1)));
 					--put_line (to_string (to_polygon (vertices_tmp_1)));
 
 					-- Get the next entering vertex from vertices_A.

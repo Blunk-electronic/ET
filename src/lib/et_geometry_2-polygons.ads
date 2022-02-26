@@ -626,6 +626,9 @@ package et_geometry_2.polygons is
 	type type_polygon is new type_polygon_base with null record;
 
 
+
+
+	
 private
 	-- An indicator that tells whether it is about the
 	-- A or the B polygon when a clip or union operation is
@@ -718,6 +721,9 @@ private
 		return boolean;
 	
 
+	-- Converts a list of vertices to a polygon:
+	function to_polygon (vertices : in pac_vertices.list)
+		return type_polygon'class;
 
 	
 end et_geometry_2.polygons;
