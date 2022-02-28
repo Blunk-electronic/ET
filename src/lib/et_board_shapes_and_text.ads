@@ -43,7 +43,9 @@ with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_geometry_2.polygons;
 with et_geometry_2.polygons.clipping;
+with et_geometry_2.polygons.union;
 with et_geometry_2.polygons.offsetting;
+
 with et_design_rules;			use et_design_rules;
 with et_logging;				use et_logging;
 
@@ -62,6 +64,7 @@ package et_board_shapes_and_text is
 
 	
 	package pac_polygon_clipping is new pac_polygons.clipping;
+	package pac_polygon_union is new pac_polygons.union;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
 	

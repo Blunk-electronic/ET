@@ -2687,6 +2687,111 @@ package body et_geometry_2.polygons is
 	end all_vertices_of_A_inside_B;
 
 
+	
+	function to_string (vertex : in type_vertex)
+		return string
+	is begin
+		return to_string (vertex.position) 
+			& " " & type_intersection_direction'image (vertex.direction);
+	end to_string;
+
+
+
+	function to_string (vertices : in pac_vertices.list) 
+		return string 
+	is
+		use ada.strings.unbounded;
+		
+		result : unbounded_string;
+		
+		procedure query_vertex (v : in pac_vertices.cursor) is begin
+			result := result & " " 
+				& trim (to_string (get_x (element (v).position)), left)
+				& "/"
+				& trim (to_string (get_y (element (v).position)), left)
+				& " " & type_category'image (element (v).category);
+
+			if element (v).category = INTERSECTION then
+				result := result & " " & type_intersection_direction'image (element (v).direction);
+			end if;
+
+			result := result & ".";
+		end query_vertex;
+			
+	begin
+		vertices.iterate (query_vertex'access);
+		return to_string (result);
+	end to_string;
+
+
+
+	procedure sort_by_distance (
+		vertices	: in out pac_vertices.list;
+		reference	: in type_point)
+	is
+		type type_item is record
+			-- We will be sorting intersections only (no regular vertices):
+			vertex		: type_vertex (category => INTERSECTION);
+			distance	: type_float_internal_positive;
+		end record;
+
+		
+		function "<" (left, right : in type_item) return boolean is begin
+			if left.distance < right.distance then
+				return true;
+			else
+				return false;
+			end if;
+		end;
+	
+			
+		package pac_items is new doubly_linked_lists (type_item);
+		use pac_items;
+		
+		items : pac_items.list;
+
+		
+		procedure query_vertex (v : in pac_vertices.cursor) is 
+			d : type_float_internal_positive;
+		begin
+			d := get_distance_total (reference, element (v).position);
+			
+			items.append (new_item => (
+				vertex		=> element (v),
+				distance	=> d));
+		end query_vertex;
+
+		
+
+		package pac_sorting is new pac_items.generic_sorting;
+		use pac_sorting;
+		
+
+		procedure query_item (i : in pac_items.cursor) is begin
+			vertices.append (element (i).vertex);
+		end query_item;
+		
+		
+	begin
+		-- Collect vertices and their distance to the reference
+		-- in list "items":
+		vertices.iterate (query_vertex'access);
+
+		-- Sort items by distance to reference:
+		sort (items);
+
+		-- The old vertices are no longer required:
+		vertices.clear;
+		-- New vertices will be appended here.
+		
+
+		-- Traverse items and append them one by one to the
+		-- list of vertices:
+		items.iterate (query_item'access);
+	end sort_by_distance;
+
+
+	
 
 	function is_entering (v : pac_vertices.cursor) return boolean is begin
 		if element (v).category = INTERSECTION then

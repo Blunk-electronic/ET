@@ -704,9 +704,22 @@ private
 		end case;
 	end record;
 
+
+	function to_string (vertex : in type_vertex)
+		return string;
+
 	
 	package pac_vertices is new indefinite_doubly_linked_lists (type_vertex);
 	use pac_vertices;
+
+
+	function to_string (vertices : in pac_vertices.list) 
+		return string;
+
+
+	procedure sort_by_distance (
+		vertices	: in out pac_vertices.list;
+		reference	: in type_point);
 
 	
 
