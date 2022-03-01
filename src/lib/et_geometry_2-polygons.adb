@@ -3440,6 +3440,35 @@ package body et_geometry_2.polygons is
 		return vertices;
 	end get_vertices;
 
+
+	function get_first (
+		direction	: in type_intersection_direction;
+		vertices	: in pac_vertices.list)
+		return pac_vertices.cursor
+	is
+		v : pac_vertices.cursor := vertices.first;
+	begin
+		while v /= pac_vertices.no_element loop
+
+			case direction is
+				when ENTERING =>
+					if is_entering (v) then
+						exit;
+					end if;
+
+				when LEAVING =>
+					if is_leaving (v) then
+						exit;
+					end if;
+			end case;
+			
+			next (v);
+		end loop;
+
+		return v;
+	end get_first;
+
+	
 	
 end et_geometry_2.polygons;
 

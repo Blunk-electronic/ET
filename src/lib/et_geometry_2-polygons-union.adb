@@ -76,22 +76,6 @@ package body et_geometry_2.polygons.union is
 		
 		vertice_A_cursor : pac_vertices.cursor;
 
-		-- Returns a cursor to the first entering intersection in
-		-- vertices_A.
-		-- If no entering intersection found, returns no_element:
-		function get_first_entering return pac_vertices.cursor is
-			v : pac_vertices.cursor := vertices_A.first;
-		begin
-			while v /= pac_vertices.no_element loop
-				if is_entering (v) then
-					exit;
-				end if;
-				next (v);
-			end loop;
-
-			return v;
-		end get_first_entering;
-
 
 		-- Returns the vertices (in vertices_A) from the entering vertex 
 		-- to the next leaving vertex. The vertices are removed from

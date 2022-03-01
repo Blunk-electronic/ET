@@ -796,6 +796,16 @@ private
 		intersections	: in pac_intersections.list;
 		AB				: in type_AB_polygon)
 		return pac_vertices.list;
+
+	
+	-- Returns a cursor to the first entering/leaving intersection in
+	-- given list of vertices.
+	-- If no entering intersection found, returns no_element:
+	function get_first (
+		direction	: in type_intersection_direction;
+		vertices	: in pac_vertices.list)
+		return pac_vertices.cursor;
+	
 	
 end et_geometry_2.polygons;
 

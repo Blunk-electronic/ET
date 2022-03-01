@@ -72,22 +72,6 @@ package body et_geometry_2.polygons.clipping is
 		
 		vertice_A_cursor : pac_vertices.cursor;
 
-		-- Returns a cursor to the first entering intersection in
-		-- vertices_A.
-		-- If no entering intersection found, returns no_element:
-		function get_first_entering return pac_vertices.cursor is
-			v : pac_vertices.cursor := vertices_A.first;
-		begin
-			while v /= pac_vertices.no_element loop
-				if is_entering (v) then
-					exit;
-				end if;
-				next (v);
-			end loop;
-
-			return v;
-		end get_first_entering;
-
 
 		-- Returns the vertices (in vertices_A) from the entering vertex 
 		-- to the next leaving vertex. The vertices are removed from
@@ -225,7 +209,7 @@ package body et_geometry_2.polygons.clipping is
 				end if;
 
 				-- Go to the first entering intersection in vertices_A:
-				vertice_A_cursor := get_first_entering;
+				vertice_A_cursor := get_first (ENTERING, vertices_A);
 
 				if debug then
 					new_line;
@@ -280,7 +264,7 @@ package body et_geometry_2.polygons.clipping is
 							-- as an extension of the Weiler-Atherton algorithm:
 							-- If sub-polygon is not complete, then again go to the first
 							-- entering intersection of polygon A:
-							vertice_A_cursor := get_first_entering;
+							vertice_A_cursor := get_first (ENTERING, vertices_A);
 
 							-- Get the intersections and vertices until
 							-- the a leaving intersection in polygon A:
@@ -310,7 +294,7 @@ package body et_geometry_2.polygons.clipping is
 					-- Get the next entering vertex from vertices_A.
 					-- In case there is no entering vertex any more, then this
 					-- loop will be the last:
-					vertice_A_cursor := get_first_entering;
+					vertice_A_cursor := get_first (ENTERING, vertices_A);
 				end loop;
 
 			end if;
