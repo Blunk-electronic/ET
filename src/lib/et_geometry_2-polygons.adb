@@ -2877,6 +2877,47 @@ package body et_geometry_2.polygons is
 		return result;
 	end to_polygon;
 
+
+
+	function get_overlap_status (
+		polygon_A, polygon_B	: in type_polygon;
+		intersections			: in pac_intersections.list;
+		debug					: in boolean := false)
+		return type_overlap_status
+	is
+		result : type_overlap_status;
+		
+		real_intersections : constant pac_intersections.list := 
+			get_real_intersections (intersections);
+	begin
+		case real_intersections.length is
+			when 0 => -- no intersections of edges or vertices
+				
+				if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
+					result := A_INSIDE_B;
+					
+				elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
+					result := B_INSIDE_A;
+					
+				else
+					-- A and B do not overlap. They are apart from each other:
+					result := A_DOES_NOT_OVERLAP_B;
+				end if;
+				
+			when 1 => raise constraint_error; -- CS should never happen
+
+			when others =>
+				result := A_OVERLAPS_B;
+
+		end case;
+
+		if debug then
+			put_line ("overlap status: " & type_overlap_status'image (result));
+		end if;
+
+		return result;
+	end get_overlap_status;
+
 	
 end et_geometry_2.polygons;
 

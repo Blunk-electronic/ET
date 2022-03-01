@@ -744,46 +744,6 @@ package body et_geometry_2.polygons.clipping is
 
 
 		
-
-		type type_overlap_status is (
-			A_INSIDE_B,
-			B_INSIDE_A,							
-			A_OVERLAPS_B,
-			A_DOES_NOT_OVERLAP_B);
-
-		overlap_status : type_overlap_status;
-
-
-		procedure set_overlap_status is
-			real_intersections : constant pac_intersections.list := 
-				get_real_intersections (intersections);
-		begin
-			case real_intersections.length is
-				when 0 => -- no intersections of edges or vertices
-					
-					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
-						overlap_status := A_INSIDE_B;
-						
-					elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
-						overlap_status := B_INSIDE_A;
-						
-					else
-						-- A and B do not overlap. They are apart from each other:
-						overlap_status := A_DOES_NOT_OVERLAP_B;
-					end if;
-					
-				when 1 => raise constraint_error; -- CS should never happen
-
-				when others =>
-					overlap_status := A_OVERLAPS_B;
-
-			end case;
-
-			if debug then
-				put_line ("overlap status: " & type_overlap_status'image (overlap_status));
-			end if;
-		end set_overlap_status;
-
 		
 
 		procedure do_clipping is 
@@ -905,6 +865,8 @@ package body et_geometry_2.polygons.clipping is
 		end do_clipping;
 		
 		
+
+		overlap_status : type_overlap_status;
 		
 	begin -- clip
 
@@ -923,7 +885,8 @@ package body et_geometry_2.polygons.clipping is
 		find_intersections;
 
 
-		set_overlap_status;
+		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
+		
 		case overlap_status is
 			when A_DOES_NOT_OVERLAP_B => 
 				-- Nothing to do. Return an empty list:

@@ -738,6 +738,22 @@ private
 	function to_polygon (vertices : in pac_vertices.list)
 		return type_polygon'class;
 
+
+
+	
+	type type_overlap_status is (
+		A_INSIDE_B,
+		B_INSIDE_A,							
+		A_OVERLAPS_B,
+		A_DOES_NOT_OVERLAP_B);
+
+	function get_overlap_status (
+		polygon_A, polygon_B	: in type_polygon;
+		intersections			: in pac_intersections.list;
+		debug					: in boolean := false)
+		return type_overlap_status;
+
+
 	
 end et_geometry_2.polygons;
 

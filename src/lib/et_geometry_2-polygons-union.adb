@@ -746,39 +746,6 @@ package body et_geometry_2.polygons.union is
 
 		
 
-		type type_overlap_status is (
-			A_INSIDE_B,
-			A_CLIPPED_BY_B,
-			A_OUTSIDE_B);
-
-		overlap_status : type_overlap_status;
-
-
-		procedure set_overlap_status is
-			real_intersections : constant pac_intersections.list := 
-				get_real_intersections (intersections);
-		begin
-			case real_intersections.length is
-				when 0 => -- no real intersections at all
-					-- A is either completely inside or outside B:
-					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
-						overlap_status := A_INSIDE_B;
-					else
-						overlap_status := A_OUTSIDE_B;
-					end if;
-					
-				when 1 => raise constraint_error; -- CS should never happen
-
-				when others =>
-					overlap_status := A_CLIPPED_BY_B;
-
-			end case;
-
-			if debug then
-				put_line ("overlap status: " & type_overlap_status'image (overlap_status));
-			end if;
-		end set_overlap_status;
-
 		
 
 		--procedure do_clipping is 
@@ -898,7 +865,9 @@ package body et_geometry_2.polygons.union is
 
 			--end if;
 		--end do_clipping;
+
 		
+		overlap_status : type_overlap_status;
 		
 		
 	begin -- clip
@@ -918,22 +887,25 @@ package body et_geometry_2.polygons.union is
 		find_intersections;
 
 
-		set_overlap_status;
+		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
+		
 		case overlap_status is
-			when A_OUTSIDE_B => 
+			when A_DOES_NOT_OVERLAP_B => 
 				-- No union possible.
 				result_exists := false;
 
 			when A_INSIDE_B => 
 				-- Polygon A is completely inside B. So the result
+				-- is just polygon B:
+				result_polygon := type_polygon (polygon_B);
+
+			when B_INSIDE_A =>
+				-- Polygon B is completely inside A. So the result
 				-- is just polygon A:
-				--result.append (type_polygon (polygon_A));
-				null;
+				result_polygon := type_polygon (polygon_A);
 
-			-- CS when B_INSIDE_A_ =>
-
-			when A_CLIPPED_BY_B => 
-				-- Do the actual clipping work:
+			when A_OVERLAPS_B => 
+				-- Do the actual union work:
 				--do_clipping;
 				null;	
 		end case;
