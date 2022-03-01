@@ -740,6 +740,20 @@ private
 
 
 
+	-- Searches for intersections of the given two polygons
+	-- and stores them in container "intersection".
+	-- An intersection is where the edge of polygon A intersects
+	-- an edge of polygon B. The intersection has direction "entering"
+	-- if the start point of the edge (of polygon A) is outside of polygon B.
+	-- In other words, if polygon A enters polygon B.
+	-- If there are no intersections then the result is an empty list:
+	function get_intersections (
+		polygon_A	: in type_polygon;
+		polygon_B	: in type_polygon;
+		debug		: in boolean := false)
+		return pac_intersections.list;
+	
+
 	
 	type type_overlap_status is (
 		A_INSIDE_B,
