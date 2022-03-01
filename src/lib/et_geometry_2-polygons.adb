@@ -3317,6 +3317,129 @@ package body et_geometry_2.polygons is
 
 
 
+	procedure delete_regular_after_intersection (
+		vertices : in out pac_vertices.list)
+	is
+		c : pac_vertices.cursor := vertices.first;
+	begin
+		while c /= pac_vertices.no_element loop
+
+			if c = vertices.first then
+				if same_position (vertices.last, c) then
+					vertices.delete (c);
+				end if;
+			else
+				if same_position (previous (c), c) then
+					vertices.delete (c);
+				end if;
+			end if;
+			
+			next (c);
+		end loop;
+	end delete_regular_after_intersection;
+
+
+	procedure delete_regular_before_intersection (
+		vertices : in out pac_vertices.list)
+	is
+		c : pac_vertices.cursor := vertices.first;
+		c2 : pac_vertices.cursor;
+	begin
+		while c /= pac_vertices.no_element loop
+
+			if c = vertices.first then
+				if same_position (c, vertices.last) then
+					vertices.delete_last;
+				end if;
+			else
+				if same_position (c, previous (c)) then
+					c2 := previous (c);
+					vertices.delete (c2);
+				end if;
+			end if;
+			
+			next (c);
+		end loop;
+	end delete_regular_before_intersection;
+
+
+
+	function get_vertices (
+		polygon			: in type_polygon;
+		intersections	: in pac_intersections.list;
+		AB				: in type_AB_polygon)
+		return pac_vertices.list
+	is
+		vertices : pac_vertices.list; -- to be returned
+		
+		-- Returns the intersection points on a given edge.
+		-- Searches in list "intersections" using the supportive information
+		-- of affected edges (see specs of type_intersection and function get_intersections).
+		-- Orders the points by their distance to the start point of 
+		-- the edge (nearest first).
+		-- Intersection points can lie on the start or end point of the given line.
+		-- The parameter AB determines whether to look for intersections
+		-- on edges of the A or the B polygon:
+		function get_intersections_on_edge (
+			edge	: in type_line)
+			return pac_vertices.list
+		is 
+			result : pac_vertices.list;
+			
+			procedure query_intersection (i : in pac_intersections.cursor) is begin
+				case AB is
+					when A =>
+						if element (i).edge_A = edge then
+							result.append (new_item => (
+								position	=> element (i).position,
+								category	=> INTERSECTION,
+								direction	=> element (i).direction));
+						end if;
+
+					when B =>
+						if element (i).edge_B = edge then
+							result.append (new_item => (
+								position	=> element (i).position,
+								category	=> INTERSECTION,
+								direction	=> element (i).direction));
+
+						end if;
+				end case;
+			end query_intersection;
+
+			
+		begin
+			intersections.iterate (query_intersection'access);
+			sort_by_distance (result, edge.start_point);			
+			
+			return result;
+		end get_intersections_on_edge;
+
+		
+		procedure query_segment (s : in pac_polygon_segments.cursor) is
+			v_list : pac_vertices.list;
+		begin
+			-- Get the intersections (on the current edge) that follow
+			-- after the start point:
+			v_list := get_intersections_on_edge (element (s).segment_line);
+					
+			vertices.append (new_item => (
+				category	=> REGULAR,
+				position	=> to_vector (element (s).segment_line.start_point)));
+			
+			-- Append the vertices to result:
+			splice (target => vertices, before => pac_vertices.no_element, source => v_list);
+		end query_segment;
+
+		
+	begin
+		polygon.contours.segments.iterate (query_segment'access);
+		delete_regular_after_intersection (vertices);
+		delete_regular_before_intersection (vertices);
+		
+		return vertices;
+	end get_vertices;
+
 	
 end et_geometry_2.polygons;
 
