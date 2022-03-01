@@ -921,14 +921,16 @@ package body et_geometry_2.polygons.union is
 		set_overlap_status;
 		case overlap_status is
 			when A_OUTSIDE_B => 
-				-- Nothing to do. Return an empty list:
-				null; 
+				-- No union possible.
+				result_exists := false;
 
 			when A_INSIDE_B => 
 				-- Polygon A is completely inside B. So the result
 				-- is just polygon A:
 				--result.append (type_polygon (polygon_A));
 				null;
+
+			-- CS when B_INSIDE_A_ =>
 
 			when A_CLIPPED_BY_B => 
 				-- Do the actual clipping work:

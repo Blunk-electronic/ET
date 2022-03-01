@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..19) of type_test;
+	type type_test_array is array (1..20) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -138,8 +138,8 @@ procedure clip is
 			B := type_polygon (to_polygon (F));
 			--put_line ("B: " & to_string (B));
 
-			--set (i).result_actual := clip (A, B);
-			set (i).result_actual := clip (A, B, true);
+			set (i).result_actual := clip (A, B);
+			--set (i).result_actual := clip (A, B, true);
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
@@ -389,6 +389,17 @@ begin
 		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
 		B => B_default,
 		expect => EXP);
+
+
+	-- TEST 20:
+	init_test;
+	add_to_expect (EXP, "line 10 10 line 90 10 line 90 90 line 10 90");
+	
+	make_set (
+		A => "line 0 0 line 100 0 line 100 100 line 0 100",
+		B => "line 10 10 line 90 10 line 90 90 line 10 90",
+		expect => EXP);
+
 
 	
 	---------------------	

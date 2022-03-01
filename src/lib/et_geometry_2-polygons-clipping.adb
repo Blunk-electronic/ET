@@ -747,8 +747,9 @@ package body et_geometry_2.polygons.clipping is
 
 		type type_overlap_status is (
 			A_INSIDE_B,
-			A_CLIPPED_BY_B,
-			A_OUTSIDE_B);
+			B_INSIDE_A,							
+			A_OVERLAPS_B,
+			A_DOES_NOT_OVERLAP_B);
 
 		overlap_status : type_overlap_status;
 
@@ -758,18 +759,23 @@ package body et_geometry_2.polygons.clipping is
 				get_real_intersections (intersections);
 		begin
 			case real_intersections.length is
-				when 0 => -- no real intersections at all
-					-- A is either completely inside or outside B:
+				when 0 => -- no intersections of edges or vertices
+					
 					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
 						overlap_status := A_INSIDE_B;
+						
+					elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
+						overlap_status := B_INSIDE_A;
+						
 					else
-						overlap_status := A_OUTSIDE_B;
+						-- A and B do not overlap. They are apart from each other:
+						overlap_status := A_DOES_NOT_OVERLAP_B;
 					end if;
 					
 				when 1 => raise constraint_error; -- CS should never happen
 
 				when others =>
-					overlap_status := A_CLIPPED_BY_B;
+					overlap_status := A_OVERLAPS_B;
 
 			end case;
 
@@ -919,7 +925,7 @@ package body et_geometry_2.polygons.clipping is
 
 		set_overlap_status;
 		case overlap_status is
-			when A_OUTSIDE_B => 
+			when A_DOES_NOT_OVERLAP_B => 
 				-- Nothing to do. Return an empty list:
 				null; 
 
@@ -928,7 +934,12 @@ package body et_geometry_2.polygons.clipping is
 				-- is just polygon A:
 				result.append (type_polygon (polygon_A));
 
-			when A_CLIPPED_BY_B => 
+			when B_INSIDE_A => 
+				-- Polygon B is completely inside A. So the result
+				-- is just polygon B:
+				result.append (type_polygon (polygon_B));
+				
+			when A_OVERLAPS_B => 
 				-- Do the actual clipping work:
 				do_clipping;
 		end case;

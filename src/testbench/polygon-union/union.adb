@@ -90,7 +90,7 @@ procedure union is
 		F : type_fields_of_line;
 		PA, PB: type_polygon;
 
-		EXP : type_polygon;
+		PE : type_polygon;
 		union_exists : boolean := false;
 		
 		ACT : type_union;
@@ -107,7 +107,7 @@ procedure union is
 				
 			put_line ("EXPECTED:");
 			if union_exists then
-				put_line ("Union: " & to_string (EXP));
+				put_line ("Union: " & to_string (PE));
 			else
 				put_line ("Union: none");
 			end if;
@@ -149,11 +149,9 @@ procedure union is
 		if E'length > 0 then
 
 			F := read_line (line => E, comment_mark => "#");
-			EXP := type_polygon (to_polygon (F));
-			--put_line ("EXP: " & to_string (EXP));
-
-			union_exists := true;
-			
+			PE := type_polygon (to_polygon (F));
+			--put_line ("EXP: " & to_string (PE));
+			union_exists := true;			
 			
 		else -- given "expected" was empty
 			union_exists := false;
@@ -162,12 +160,16 @@ procedure union is
 
 		case union_exists is
 			when TRUE =>
-				if ACT.union = EXP then
-					null; -- actual same as expected -> ok
+				if ACT.exists = union_exists then				
+					if ACT.union = PE then
+						null; -- actual same as expected -> ok
+					else
+						show_error;					
+					end if;
 				else
-					show_error;					
+					show_error;
 				end if;
-
+				
 			when FALSE =>
 				if ACT.exists = union_exists then
 					null; -- actual same as expected -> ok
