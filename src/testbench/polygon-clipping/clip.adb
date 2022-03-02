@@ -65,7 +65,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..20) of type_test;
+	type type_test_array is array (1..23) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -400,6 +400,39 @@ begin
 		B => "line 10 10 line 90 10 line 90 90 line 10 90",
 		expect => EXP);
 
+
+
+	-- TEST 21 (as test 4, but polygon A and B swapped):
+	init_test;
+	add_to_expect (EXP, "line 0.5 1 line 0.5 0.5 line 1 0.5 line 1 1");
+	
+	make_set (
+		B => "line 0 0 line 1 0 line 1 1 line 0 1",
+		A => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
+		expect => EXP);
+	-- go
+
+
+	-- TEST 22 (as test 12, but polygon A and B swapped):
+	init_test;
+	add_to_expect (EXP, "line 50 0 line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50");
+	
+	make_set (
+		B => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
+		A => B_default,
+		expect => EXP);
+	-- no go
+
+
+	-- TEST 23 (as test 3, but polygon A and B swapped):
+	init_test;
+	add_to_expect (EXP, "line 100 10 line 100 20 line 80 20 line 80 10");
+	
+	make_set (
+		B => "line 80 10 line 150 10 line 150 20 line 80 20",
+		A => B_default,
+		expect => EXP);
+	-- go
 
 	
 	---------------------	
