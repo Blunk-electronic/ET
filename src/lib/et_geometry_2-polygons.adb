@@ -2558,6 +2558,21 @@ package body et_geometry_2.polygons is
 			-- CS output A and B edge ?
 	end to_string;
 
+
+	procedure iterate (
+		intersections	: in pac_intersections.list;
+		process			: not null access procedure (position : in pac_intersections.cursor);
+		proceed			: not null access boolean)
+	is
+		c : pac_intersections.cursor := intersections.first;
+	begin
+		while c /= pac_intersections.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
 	
 	function same_position (
 		intersection_1, intersection_2 : in pac_intersections.cursor)
@@ -3240,22 +3255,66 @@ package body et_geometry_2.polygons is
 
 		-- Removes successive redundant intersections from 
 		-- list "intersections" so that only one of them is left:
+		--procedure remove_redundant_intersections is
+			--c : pac_intersections.cursor := intersections.first;
+			--i_list_new : pac_intersections.list;
+		--begin
+			----put_line ("removing redundant intersections ...");
+			--while c /= pac_intersections.no_element loop
+				----put_line (to_string (element (c)));
+				
+				--if c /= intersections.last then
+					--if not are_redundant (next (c), c) then
+						--i_list_new.append (element (c));
+					--end if;
+				--else
+					--if not are_redundant (intersections.first, c) then
+						--i_list_new.append (element (c));
+					--end if;
+				--end if;
+				
+				--next (c);
+			--end loop;			
+
+			--intersections := i_list_new;
+		--end remove_redundant_intersections;
+
+
+		-- Removes redundant intersections from 
+		-- list "intersections" so that only one of them is left:
 		procedure remove_redundant_intersections is
 			c : pac_intersections.cursor := intersections.first;
 			i_list_new : pac_intersections.list;
+			
+			function redundant return boolean is
+				proceed : aliased boolean := true;
+				
+				procedure query_intersection (i : pac_intersections.cursor) is begin
+					if are_redundant (i, c) then
+						proceed := false; -- first match. abort iteration
+					end if;
+				end query_intersection;
+			
+			begin
+				-- Search in i_list_new for an intersection that is
+				-- redundant with the candidate indicated by cursor c.
+				-- Abort the search on first match:
+				iterate (i_list_new, query_intersection'access, proceed'access);
+				return not proceed;
+			end redundant;
+
+			
 		begin
+			-- Copy one intersection by the other to i_list_new,
+			-- Redundant intersections (those which are already in i_list_new)
+			-- are skipped:
+			
 			--put_line ("removing redundant intersections ...");
 			while c /= pac_intersections.no_element loop
 				--put_line (to_string (element (c)));
 				
-				if c /= intersections.last then
-					if not are_redundant (next (c), c) then
-						i_list_new.append (element (c));
-					end if;
-				else
-					if not are_redundant (intersections.first, c) then
-						i_list_new.append (element (c));
-					end if;
+				if not redundant then
+					i_list_new.append (element (c));
 				end if;
 				
 				next (c);

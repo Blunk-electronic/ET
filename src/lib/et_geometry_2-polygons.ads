@@ -651,6 +651,13 @@ private
 	package pac_intersections is new doubly_linked_lists (type_intersection);
 	use pac_intersections;
 
+
+	-- Iterates the intersections. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		intersections	: in pac_intersections.list;
+		process			: not null access procedure (position : in pac_intersections.cursor);
+		proceed			: not null access boolean);
+
 	
 	
 	-- Returns true if x/y of the given two intersections are equal:
