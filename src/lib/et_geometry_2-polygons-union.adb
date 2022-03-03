@@ -77,9 +77,11 @@ package body et_geometry_2.polygons.union is
 		vertice_A_cursor : pac_vertices.cursor;
 
 
-		-- Returns the vertices (in vertices_B) from the entering vertex 
-		-- to the next leaving vertex. The vertices are removed from
-		-- vertices_B so that they won't be visited again:
+		-- Returns the vertices (in vertices_B) after
+		-- the given entering vertex 
+		-- to (and including) the next leaving vertex. 
+		-- These vertices and the given entering vertex 
+		-- are removed from vertices_B so that they won't be visited again:
 		function get_until_leaving (entering : in pac_vertices.cursor)
 			return pac_vertices.list 
 		is
@@ -178,23 +180,12 @@ package body et_geometry_2.polygons.union is
 		vertices_tmp_2 : pac_vertices.list; -- secondary collection
 		
 		-- The start point when walking along the vertices_A is
-		-- always an intersection:
+		-- always a LEAVING intersection:
 		v_start : type_vertex (category => INTERSECTION);
 
-
-
 		
 
-		
-
-		procedure do_union is 
-
-			-- This is a safety measure to prevent indefinite looping.
-			-- CS: Increase upper limit if required:
-			subtype type_safety_counter is natural range 0 .. 100;
-			safety_counter : type_safety_counter := 0;
-
-		begin
+		procedure do_union is begin
 			vertices_A := get_vertices (polygon_A, intersections, A);
 			
 			if debug then
@@ -217,89 +208,59 @@ package body et_geometry_2.polygons.union is
 				put_line ("first leaving: " & to_string (element (vertice_A_cursor)));
 			end if;
 
-			-- Traverse vertices_A until no more leaving vertex
-			-- can be found:
+			-- When walking along the
+			-- edges of polygon A or B we will eventually get back to 
+			-- the start point v_start. The polygon is then complete.
+			v_start := element (vertice_A_cursor);
+			
+			
+			-- Traverse vertices_A until no more leaving vertex can be found:
 			while vertice_A_cursor /= pac_vertices.no_element loop
-
-				-- The resulting polygon starts at v_start. When walking along the
-				-- edges of polygon A or B we will eventually get back to 
-				-- the start point v_start. The resulting polygon is then complete.
-				v_start := element (vertice_A_cursor);
 
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
-				vertices_tmp_1 := get_until_entering (vertice_A_cursor);
+				vertices_tmp_2 := get_until_entering (vertice_A_cursor);
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
 
+				-- Splice the intersections and vertices of A and B.
+				-- Collect everything in the primary collection:
+				splice (
+					target	=> vertices_tmp_1, -- primary
+					before	=> pac_vertices.no_element, 
+					source 	=> vertices_tmp_2); -- will be emptied
+
+				
 				-- Find the very entering intersection E in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
 				-- a leaving intersection:
 				vertices_tmp_2 := get_until_leaving (vertices_B.find (vertices_tmp_1.last_element));
-
-				
-				loop
-					-- safety measure to prevent forever-looping:
-					safety_counter := safety_counter + 1;
-					if safety_counter = type_safety_counter'last then
-						raise constraint_error with "safety counter overrun !";
-					end if;
 					
 
-					-- Splice the intersections and vertices of A and B.
-					-- Collect everything in the primary collection:
-					splice (
-						target	=> vertices_tmp_1, -- primary
-						before	=> pac_vertices.no_element, 
-						source 	=> vertices_tmp_2); -- will be emptied
+				-- Splice the intersections and vertices of A and B.
+				-- Collect everything in the primary collection:
+				splice (
+					target	=> vertices_tmp_1, -- primary
+					before	=> pac_vertices.no_element, 
+					source 	=> vertices_tmp_2); -- will be emptied
 
-					-- If we have reached the start point then the resulting polygon
-					-- is complete.
-					if last_element (vertices_tmp_1) = v_start then
-						exit;
-					else
-						null;
-						----  CS: This comment is obsolete ? Rework !
-						
-						---- In order to handle the STC (see header of the package specification)
-						---- this stuff is required
-						---- as an extension of the Weiler-Atherton algorithm:
-						---- If sub-polygon is not complete, then again go to the first
-						---- entering intersection of polygon A:
-						--vertice_A_cursor := get_first_entering;
-						--vertice_A_cursor := get_first (ENTERING, vertices_A);
 
-						---- Get the intersections and vertices until
-						---- the a leaving intersection in polygon A:
-						--vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
+				--if last_element (vertices_tmp_1) = v_start then
+					--exit;
+				--else
+					vertice_A_cursor := get_first (LEAVING, vertices_A);
+				--end if;
 
-						-- Append the intersection (and vertices) to the primary
-						-- collection:
-						splice (
-							target	=> vertices_tmp_1, -- primary
-							before	=> pac_vertices.no_element, 
-							source 	=> vertices_tmp_2); -- will be emtied
+				--if element (vertice_A_cursor) = v_start then
+					--exit;
+				--end if;
 
-						---- Switch to polygon B and get intersections
-						---- until (and including) an entering intersection
-						---- into the secondary collection. The secondary collection
-						---- will be appended to the primary one once this loop
-						---- starts again:
-						--vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
-					end if;
-				end loop;
-					
-
-				---- Append the sub-polygon to the result:
-				--result.append (type_polygon (to_polygon (vertices_tmp_1)));
-				----put_line (to_string (to_polygon (vertices_tmp_1)));
-
-				---- Get the next entering vertex from vertices_A.
-				---- In case there is no entering vertex any more, then this
-				---- loop will be the last:
-				--vertice_A_cursor := get_first_entering;
 			end loop;
 
+			-- Make a polygon from the primary collection of vertices:
+			result_polygon := type_polygon (to_polygon (vertices_tmp_1));
+			--put_line (to_string (result_polygon));
+			
 		end do_union;
 
 		

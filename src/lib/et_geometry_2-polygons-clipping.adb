@@ -174,7 +174,7 @@ package body et_geometry_2.polygons.clipping is
 		vertices_tmp_2 : pac_vertices.list; -- secondary collection
 		
 		-- The start point when walking along the vertices_A is
-		-- always an intersection:
+		-- always an ENTERING intersection:
 		v_start : type_vertex (category => INTERSECTION);
 
 
