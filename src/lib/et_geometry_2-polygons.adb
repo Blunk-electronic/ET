@@ -2706,8 +2706,14 @@ package body et_geometry_2.polygons is
 	function to_string (vertex : in type_vertex)
 		return string
 	is begin
-		return to_string (vertex.position) 
-			& " " & type_intersection_direction'image (vertex.direction);
+		case vertex.category is
+			when REGULAR =>
+				return to_string (vertex.position);
+
+			when INTERSECTION =>
+				return to_string (vertex.position)
+				& " " & type_intersection_direction'image (vertex.direction);
+		end case;
 	end to_string;
 
 
@@ -3505,28 +3511,203 @@ package body et_geometry_2.polygons is
 		vertices	: in pac_vertices.list)
 		return pac_vertices.cursor
 	is
-		v : pac_vertices.cursor := vertices.first;
+		--v : pac_vertices.cursor := vertices.first;
+		v : pac_vertices.cursor;
 	begin
-		while v /= pac_vertices.no_element loop
-
-			case direction is
-				when ENTERING =>
-					if is_entering (v) then
-						exit;
-					end if;
-
-				when LEAVING =>
-					if is_leaving (v) then
-						exit;
-					end if;
-			end case;
+		if not is_empty (vertices) then
+			v := vertices.first;
 			
-			next (v);
-		end loop;
+			while v /= pac_vertices.no_element loop
 
+				case direction is
+					when ENTERING =>
+						if is_entering (v) then
+							exit;
+						end if;
+
+					when LEAVING =>
+						if is_leaving (v) then
+							exit;
+						end if;
+				end case;
+				
+				next (v);
+			end loop;
+		end if;
+		
 		return v;
 	end get_first;
 
+
+
+	function get_until (
+		vertices					: in out pac_vertices.list;
+		start_vertex				: in pac_vertices.cursor;
+		direction_of_intersection	: in type_intersection_direction;
+		direction_of_search			: in type_direction_of_rotation) -- CW, CCW
+		return pac_vertices.list
+	is
+
+		v : pac_vertices.cursor;
+		result : pac_vertices.list;
+
+		procedure do_collect is begin
+			case direction_of_search is
+				when CCW =>
+					while v /= pac_vertices.no_element loop
+						result.append (element (v));
+
+						case direction_of_intersection is
+							when LEAVING =>
+								if is_leaving (v) then
+									exit;
+								end if;
+
+							when ENTERING =>
+								if is_entering (v) then
+									exit;
+								end if;
+
+						end case;
+						
+						next (v);
+					end loop;
+
+				when CW =>
+					while v /= pac_vertices.no_element loop
+						result.append (element (v));
+
+						case direction_of_intersection is
+							when LEAVING =>
+								if is_leaving (v) then
+									exit;
+								end if;
+
+							when ENTERING =>
+								if is_entering (v) then
+									exit;
+								end if;
+
+						end case;
+						
+						previous (v);
+					end loop;
+			end case;
+		end do_collect;
+
+
+		function get_until_end return count_type is
+			ct : count_type := 0;
+			cu : pac_vertices.cursor := start_vertex;
+		begin
+			while cu /= pac_vertices.no_element loop
+				ct := ct + 1;
+				next (cu);
+			end loop;
+			return ct;
+		end get_until_end;
+
+
+		function get_until_begin return count_type is
+			ct : count_type := 0;
+			cu : pac_vertices.cursor := start_vertex;
+		begin
+			while cu /= pac_vertices.no_element loop
+				ct := ct + 1;
+				previous (cu);
+			end loop;
+			return ct;
+		end get_until_begin;
+
+		
+		collected_vertices : count_type := 0;
+		deleted_vertices : count_type := 0;
+		restart_required : boolean := false;
+
+		ct_ccw, ct_cw : count_type := 0;
+
+
+		procedure delete_ccw is 
+			c : pac_vertices.cursor;
+		begin
+			if not restart_required then
+				vertices.delete (position => v, count => collected_vertices);
+			else
+				--put_line ("ct_ccw" & count_type'image (ct_ccw));
+				vertices.delete (position => v, count => ct_ccw);
+				c := vertices.first;
+				vertices.delete (position => c, count => collected_vertices - ct_ccw);
+			end if;
+		end delete_ccw;
+
+		
+		procedure delete_cw is 
+			c : pac_vertices.cursor;
+		begin
+			null;
+			-- CS
+			
+			--if not restart_required then
+				--vertices.delete (position => v, count => collected_vertices);
+			--else
+				----put_line ("ct_ccw" & count_type'image (ct_ccw));
+				--vertices.delete (position => v, count => ct_ccw);
+				--c := vertices.first;
+				--vertices.delete (position => c, count => collected_vertices - ct_ccw);
+			--end if;
+		end delete_cw;
+
+
+		
+	begin
+		-- Preset cursor v to the given entering vertex.
+		-- The serach starts here:
+		v := start_vertex;
+
+		-- Collect vertices from entering vertex to
+		-- the next leaving vertex:
+		do_collect;
+
+		case direction_of_search is
+			when CCW =>
+				-- If no leaving/entering vertex found until end of list,
+				-- restart the search from the begin of the list:
+				if v = pac_vertices.no_element then
+					restart_required := true;
+					ct_ccw := get_until_end;
+					v := vertices.first;
+					do_collect;
+				end if;
+
+			when CW =>
+				-- If no leaving/entering vertex found until begin of list,
+				-- restart the search from the end of the list:
+				if v = pac_vertices.no_element then
+					restart_required := true;
+					ct_cw := get_until_begin;
+					v := vertices.last;
+					do_collect;
+				end if;
+		end case;
+
+		
+		collected_vertices := length (result);
+
+		-- Remove the visited vertices from given list of vertices:
+		v := start_vertex;
+		
+		case direction_of_search is
+			when CCW =>	delete_ccw;
+			when CW  => delete_cw;
+		end case;
+
+		
+		-- The first item of the result is not required because
+		-- this is where we have started:
+		result.delete_first;
+
+		return result;
+	end get_until;
 	
 	
 end et_geometry_2.polygons;

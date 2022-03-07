@@ -73,102 +73,6 @@ package body et_geometry_2.polygons.clipping is
 		vertice_A_cursor : pac_vertices.cursor;
 
 
-		-- Returns the vertices (in vertices_A) from the entering vertex 
-		-- to the next leaving vertex. The vertices are removed from
-		-- vertices_A so that they won't be visited again:
-		function get_until_leaving (entering : in pac_vertices.cursor)
-			return pac_vertices.list 
-		is
-			v : pac_vertices.cursor;
-			result : pac_vertices.list;
-
-			procedure collect is begin
-				while v /= pac_vertices.no_element loop
-					result.append (element (v));
-					
-					if is_leaving (v) then
-						exit;
-					end if;
-
-					next (v);
-				end loop;
-			end collect;
-			
-		begin
-			-- Preset cursor v to the given entering vertex:
-			v := entering;
-
-			-- Collect vertices from entering vertex to
-			-- the next leaving vertex:
-			collect;
-
-			-- If no leaving vertex found (until end of list),
-			-- restart the search from the top of the list:
-			if v = pac_vertices.no_element then
-				v := vertices_A.first;
-				collect;
-			end if;
-			
-			-- Remove the vertices from vertices_A:
-			v := entering;
-			vertices_A.delete (position => v, count => length (result));
-
-			-- The first the result is not required because
-			-- this is where we have started:
-			result.delete_first;
-			
-			return result;
-		end get_until_leaving;
-		
-
-		-- Returns the vertices (in vertices_B) between the leaving vertex 
-		-- and the next entering vertex. The vertices are removed from
-		-- vertices_B so that they won't be visited again:
-		function get_until_entering (leaving : in pac_vertices.cursor)
-			return pac_vertices.list 
-		is
-			v : pac_vertices.cursor;
-			result : pac_vertices.list;
-
-			procedure collect is begin
-				while v /= pac_vertices.no_element loop
-					result.append (element (v));
-					
-					if is_entering (v) then
-						exit;
-					end if;
-
-					next (v);
-				end loop;
-			end collect;
-			
-		begin
-			-- Preset cursor v to the given leaving vertex:
-			v := leaving;
-
-			-- Collect vertices from leaving vertex to
-			-- the next entering vertex:
-			collect;
-
-			-- If no entering vertex found (until end of list),
-			-- restart the search from the top of the list:
-			if v = pac_vertices.no_element then
-				v := vertices_B.first;
-				collect;
-			end if;
-			
-			-- Remove the collected vertices from vertices_B:
-			v := leaving;
-			vertices_B.delete (position => v, count => length (result));
-
-			-- The first the result is not required because
-			-- this is where we have started:
-			result.delete_first;
-			
-			return result;
-		end get_until_entering;
-
-		
 		-- Temporarily collections of vertices and intersections:
 		vertices_tmp_1 : pac_vertices.list; -- primary collection
 		vertices_tmp_2 : pac_vertices.list; -- secondary collection
@@ -176,8 +80,6 @@ package body et_geometry_2.polygons.clipping is
 		-- The start point when walking along the vertices_A is
 		-- always an ENTERING intersection:
 		v_start : type_vertex (category => INTERSECTION);
-
-
 
 		
 		
@@ -223,14 +125,25 @@ package body et_geometry_2.polygons.clipping is
 
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- a leaving intersection:
-				vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
+				--vertices_tmp_1 := get_until_leaving (vertice_A_cursor);
+				vertices_tmp_1 := get_until (
+					vertices					=> vertices_A,
+					start_vertex				=> vertice_A_cursor,
+					direction_of_intersection	=> LEAVING,
+					direction_of_search			=> CCW);
+				
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the leaving intersection L.
 
 				-- Find the very leaving intersection L in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
 				-- an entering intersection:
-				vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+				--vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+				vertices_tmp_2 := get_until (
+					vertices					=> vertices_B,
+					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+					direction_of_intersection	=> ENTERING,
+					direction_of_search			=> CCW);
 
 				
 				loop
@@ -264,8 +177,14 @@ package body et_geometry_2.polygons.clipping is
 
 						-- Get the intersections and vertices until
 						-- the a leaving intersection in polygon A:
-						vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
+						--vertices_tmp_2 := get_until_leaving (vertice_A_cursor);
+						vertices_tmp_2 := get_until (
+							vertices					=> vertices_A,
+							start_vertex				=> vertice_A_cursor,
+							direction_of_intersection	=> LEAVING,
+							direction_of_search			=> CCW);
 
+						
 						-- Append the intersection (and vertices) to the primary
 						-- collection:
 						splice (
@@ -278,7 +197,13 @@ package body et_geometry_2.polygons.clipping is
 						-- into the secondary collection. The secondary collection
 						-- will be appended to the primary one once this loop
 						-- starts again:
-						vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+						--vertices_tmp_2 := get_until_entering (vertices_B.find (vertices_tmp_1.last_element));
+						vertices_tmp_2 := get_until (
+							vertices					=> vertices_B,
+							start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+							direction_of_intersection	=> ENTERING,
+							direction_of_search			=> CCW);
+
 					end if;
 				end loop;
 					

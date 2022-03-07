@@ -741,7 +741,9 @@ private
 		return boolean;
 	
 
-	-- Converts a list of vertices to a polygon:
+	-- Converts a list of vertices to a polygon.
+	-- The first vertex becomes the end point of the first edge.
+	-- The last vertex becomes the start point of the first edge.
 	function to_polygon (vertices : in pac_vertices.list)
 		return type_polygon'class;
 
@@ -812,7 +814,19 @@ private
 		direction	: in type_intersection_direction;
 		vertices	: in pac_vertices.list)
 		return pac_vertices.cursor;
-	
+
+
+	-- Returns the vertices (of given list of vertices) after
+	-- the given start vertex 
+	-- to (and including) the next leaving/entering vertex. 
+	-- These vertices and the given start vertex 
+	-- are removed from vertices so that they won't be visited again:
+	function get_until (
+		vertices					: in out pac_vertices.list;
+		start_vertex				: in pac_vertices.cursor;
+		direction_of_intersection	: in type_intersection_direction; -- entering/leaving
+		direction_of_search			: in type_direction_of_rotation) -- CW, CCW
+		return pac_vertices.list;
 	
 end et_geometry_2.polygons;
 

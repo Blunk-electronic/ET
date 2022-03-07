@@ -76,104 +76,6 @@ package body et_geometry_2.polygons.union is
 		
 		vertice_A_cursor : pac_vertices.cursor;
 
-
-		-- Returns the vertices (in vertices_B) after
-		-- the given entering vertex 
-		-- to (and including) the next leaving vertex. 
-		-- These vertices and the given entering vertex 
-		-- are removed from vertices_B so that they won't be visited again:
-		function get_until_leaving (entering : in pac_vertices.cursor)
-			return pac_vertices.list 
-		is
-			v : pac_vertices.cursor;
-			result : pac_vertices.list;
-
-			procedure collect is begin
-				while v /= pac_vertices.no_element loop
-					result.append (element (v));
-					
-					if is_leaving (v) then
-						exit;
-					end if;
-
-					next (v);
-				end loop;
-			end collect;
-			
-		begin
-			-- Preset cursor v to the given entering vertex:
-			v := entering;
-
-			-- Collect vertices from entering vertex to
-			-- the next leaving vertex:
-			collect;
-
-			-- If no leaving vertex found (until end of list),
-			-- restart the search from the top of the list:
-			if v = pac_vertices.no_element then
-				v := vertices_B.first;
-				collect;
-			end if;
-			
-			-- Remove the vertices from vertices_B:
-			v := entering;
-			vertices_B.delete (position => v, count => length (result));
-
-			-- The first the result is not required because
-			-- this is where we have started:
-			result.delete_first;
-			
-			return result;
-		end get_until_leaving;
-		
-
-		-- Returns the vertices (in vertices_A) between the leaving vertex 
-		-- and the next entering vertex. The vertices are removed from
-		-- vertices_A so that they won't be visited again:
-		function get_until_entering (leaving : in pac_vertices.cursor)
-			return pac_vertices.list 
-		is
-			v : pac_vertices.cursor;
-			result : pac_vertices.list;
-
-			procedure collect is begin
-				while v /= pac_vertices.no_element loop
-					result.append (element (v));
-					
-					if is_entering (v) then
-						exit;
-					end if;
-
-					next (v);
-				end loop;
-			end collect;
-			
-		begin
-			-- Preset cursor v to the given leaving vertex:
-			v := leaving;
-
-			-- Collect vertices from leaving vertex to
-			-- the next entering vertex:
-			collect;
-
-			-- If no entering vertex found (until end of list),
-			-- restart the search from the top of the list:
-			if v = pac_vertices.no_element then
-				v := vertices_A.first;
-				collect;
-			end if;
-			
-			-- Remove the collected vertices from vertices_A:
-			v := leaving;
-			vertices_A.delete (position => v, count => length (result));
-
-			-- The first the result is not required because
-			-- this is where we have started:
-			result.delete_first;
-			
-			return result;
-		end get_until_entering;
-
 		
 		-- Temporarily collections of vertices and intersections:
 		vertices_tmp_1 : pac_vertices.list; -- primary collection
@@ -215,14 +117,30 @@ package body et_geometry_2.polygons.union is
 			
 			
 			-- Traverse vertices_A until no more leaving vertex can be found:
-			while vertice_A_cursor /= pac_vertices.no_element loop
+			--while vertice_A_cursor /= pac_vertices.no_element loop
+			loop
 
+				if get_first (ENTERING, vertices_A) = pac_vertices.no_element then
+					exit;
+				end if;
+
+				put_line ("W");
+				
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
-				vertices_tmp_2 := get_until_entering (vertice_A_cursor);
+				--vertices_tmp_2 := get_until_entering (vertice_A_cursor);
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
+				vertices_tmp_2 := get_until (
+					vertices					=> vertices_A,
+					start_vertex				=> vertice_A_cursor,
+					direction_of_intersection	=> ENTERING,
+					direction_of_search			=> CCW);
 
+				
+				put_line ("Y");
+				put_line ("tmp 2 first A: " & to_string (element (vertices_tmp_2.first)));
+				
 				-- Splice the intersections and vertices of A and B.
 				-- Collect everything in the primary collection:
 				splice (
@@ -230,13 +148,30 @@ package body et_geometry_2.polygons.union is
 					before	=> pac_vertices.no_element, 
 					source 	=> vertices_tmp_2); -- will be emptied
 
+
+				--put_line ("tmp 1 first A: " & to_string (element (vertices_tmp_1.first)));
+				
+
+				if get_first (LEAVING, vertices_B) = pac_vertices.no_element then
+					exit;
+				end if;
 				
 				-- Find the very entering intersection E in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
 				-- a leaving intersection:
-				vertices_tmp_2 := get_until_leaving (vertices_B.find (vertices_tmp_1.last_element));
-					
+				--vertices_tmp_2 := get_until_leaving (vertices_B.find (vertices_tmp_1.last_element));
 
+				vertices_tmp_2 := get_until (
+					vertices					=> vertices_B,
+					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+					direction_of_intersection	=> LEAVING,
+					direction_of_search			=> CCW);
+
+
+				
+				put_line ("tmp 2 first B: " & to_string (element (vertices_tmp_2.first)));
+
+				
 				-- Splice the intersections and vertices of A and B.
 				-- Collect everything in the primary collection:
 				splice (
@@ -245,21 +180,26 @@ package body et_geometry_2.polygons.union is
 					source 	=> vertices_tmp_2); -- will be emptied
 
 
+				put_line ("X");
+				
 				--if last_element (vertices_tmp_1) = v_start then
 					--exit;
 				--else
-					vertice_A_cursor := get_first (LEAVING, vertices_A);
+					--vertice_A_cursor := get_first (LEAVING, vertices_A);
 				--end if;
 
 				--if element (vertice_A_cursor) = v_start then
 					--exit;
 				--end if;
 
+				
 			end loop;
 
+			put_line ("tmp 1 first C: " & to_string (element (vertices_tmp_1.first)));
+			
 			-- Make a polygon from the primary collection of vertices:
 			result_polygon := type_polygon (to_polygon (vertices_tmp_1));
-			--put_line (to_string (result_polygon));
+			put_line ("Polygon C: " & to_string (result_polygon));
 			
 		end do_union;
 
