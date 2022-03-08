@@ -1895,6 +1895,16 @@ package body et_geometry_2.polygons is
 	end get_point_to_polygon_status;
 
 
+
+	function get_location (
+		polygon		: in type_polygon_base;	
+		point		: in type_vector)
+		return type_location
+	is begin
+		return get_point_to_polygon_status (polygon, point).location;
+	end get_location;
+
+	
 	
 
 	function get_lower_left_corner (
@@ -2849,7 +2859,32 @@ package body et_geometry_2.polygons is
 	end is_regular;
 
 	
+	function is_inside (v : pac_vertices.cursor) return boolean is begin
+		if element (v).category = REGULAR then
+			if element (v).location = INSIDE then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end is_inside;
+	
 
+	function is_outside (v : pac_vertices.cursor) return boolean is begin
+		if element (v).category = REGULAR then
+			if element (v).location = OUTSIDE then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end is_outside;
+
+	
 	function same_position (
 		vertex_1, vertex_2 : in pac_vertices.cursor)
 		return boolean
@@ -3430,9 +3465,10 @@ package body et_geometry_2.polygons is
 
 
 	function get_vertices (
-		polygon			: in type_polygon;
-		intersections	: in pac_intersections.list;
-		AB				: in type_AB_polygon)
+		polygon_primary		: in type_polygon;
+		polygon_secondary	: in type_polygon;
+		intersections		: in pac_intersections.list;
+		AB					: in type_AB_polygon)
 		return pac_vertices.list
 	is
 		vertices : pac_vertices.list; -- to be returned
@@ -3483,14 +3519,23 @@ package body et_geometry_2.polygons is
 		
 		procedure query_segment (s : in pac_polygon_segments.cursor) is
 			v_list : pac_vertices.list;
+			position : type_vector;
 		begin
 			-- Get the intersections (on the current edge) that follow
 			-- after the start point:
 			v_list := get_intersections_on_edge (element (s).segment_line);
-					
+
+			-- The first vertex to be added to the result is where
+			-- the candidate edge starts:
+			position := to_vector (element (s).segment_line.start_point);
+			
 			vertices.append (new_item => (
 				category	=> REGULAR,
-				position	=> to_vector (element (s).segment_line.start_point)));
+				-- Use the given secondary polygon to figure out
+				-- whether the candidate vertex (of the primary polygon ) 
+				-- is inside, outside, on edge or on vertex:
+				location	=> get_location (polygon_secondary, position),
+				position	=> position));
 			
 			-- Append the vertices to result:
 			splice (target => vertices, before => pac_vertices.no_element, source => v_list);
@@ -3498,7 +3543,7 @@ package body et_geometry_2.polygons is
 
 		
 	begin
-		polygon.contours.segments.iterate (query_segment'access);
+		polygon_primary.contours.segments.iterate (query_segment'access);
 		delete_regular_after_intersection (vertices);
 		delete_regular_before_intersection (vertices);
 		
@@ -3511,7 +3556,6 @@ package body et_geometry_2.polygons is
 		vertices	: in pac_vertices.list)
 		return pac_vertices.cursor
 	is
-		--v : pac_vertices.cursor := vertices.first;
 		v : pac_vertices.cursor;
 	begin
 		if not is_empty (vertices) then
@@ -3539,6 +3583,40 @@ package body et_geometry_2.polygons is
 	end get_first;
 
 
+	function get_first (
+		location	: in type_location;
+		vertices	: in pac_vertices.list)
+		return pac_vertices.cursor
+	is
+		v : pac_vertices.cursor;
+	begin
+		if not is_empty (vertices) then
+			v := vertices.first;
+			
+			while v /= pac_vertices.no_element loop
+
+				case location is
+					when INSIDE =>
+						if is_inside (v) then
+							exit;
+						end if;
+
+					when OUTSIDE =>
+						if is_outside (v) then
+							exit;
+						end if;
+
+					when others => null;
+				end case;
+				
+				next (v);
+			end loop;
+		end if;
+		
+		return v;
+	end get_first;
+
+	
 
 	function get_until (
 		vertices					: in out pac_vertices.list;

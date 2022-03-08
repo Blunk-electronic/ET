@@ -88,14 +88,14 @@ package body et_geometry_2.polygons.union is
 		
 
 		procedure do_union is begin
-			vertices_A := get_vertices (polygon_A, intersections, A);
+			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
 			if debug then
 				new_line;
 				put_line ("vertices A: " & to_string (vertices_A));
 			end if;
 			
-			vertices_B := get_vertices (polygon_B, intersections, B);
+			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
 
 			if debug then
 				new_line;
@@ -124,7 +124,7 @@ package body et_geometry_2.polygons.union is
 					exit;
 				end if;
 
-				put_line ("W");
+				--put_line ("W");
 				
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
@@ -138,8 +138,8 @@ package body et_geometry_2.polygons.union is
 					direction_of_search			=> CCW);
 
 				
-				put_line ("Y");
-				put_line ("tmp 2 first A: " & to_string (element (vertices_tmp_2.first)));
+				--put_line ("Y");
+				--put_line ("tmp 2 first A: " & to_string (element (vertices_tmp_2.first)));
 				
 				-- Splice the intersections and vertices of A and B.
 				-- Collect everything in the primary collection:
@@ -169,7 +169,7 @@ package body et_geometry_2.polygons.union is
 
 
 				
-				put_line ("tmp 2 first B: " & to_string (element (vertices_tmp_2.first)));
+				--put_line ("tmp 2 first B: " & to_string (element (vertices_tmp_2.first)));
 
 				
 				-- Splice the intersections and vertices of A and B.
@@ -180,7 +180,7 @@ package body et_geometry_2.polygons.union is
 					source 	=> vertices_tmp_2); -- will be emptied
 
 
-				put_line ("X");
+				--put_line ("X");
 				
 				--if last_element (vertices_tmp_1) = v_start then
 					--exit;
@@ -195,11 +195,11 @@ package body et_geometry_2.polygons.union is
 				
 			end loop;
 
-			put_line ("tmp 1 first C: " & to_string (element (vertices_tmp_1.first)));
+			--put_line ("tmp 1 first C: " & to_string (element (vertices_tmp_1.first)));
 			
 			-- Make a polygon from the primary collection of vertices:
 			result_polygon := type_polygon (to_polygon (vertices_tmp_1));
-			put_line ("Polygon C: " & to_string (result_polygon));
+			--put_line ("Polygon C: " & to_string (result_polygon));
 			
 		end do_union;
 

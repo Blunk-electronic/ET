@@ -92,14 +92,14 @@ package body et_geometry_2.polygons.clipping is
 			safety_counter : type_safety_counter := 0;
 
 		begin
-			vertices_A := get_vertices (polygon_A, intersections, A);
+			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
 			if debug then
 				new_line;
 				put_line ("vertices A: " & to_string (vertices_A));
 			end if;
 			
-			vertices_B := get_vertices (polygon_B, intersections, B);
+			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
 
 			if debug then
 				new_line;
