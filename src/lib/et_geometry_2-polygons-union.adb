@@ -82,8 +82,8 @@ package body et_geometry_2.polygons.union is
 		vertices_tmp_2 : pac_vertices.list; -- secondary collection
 		
 		-- The start point when walking along the vertices_A is
-		-- always a LEAVING intersection:
-		v_start : type_vertex (category => INTERSECTION);
+		-- a REGULAR vertex OUTSIDE polygon B:
+		v_start : type_vertex (category => REGULAR);
 
 		
 
@@ -102,41 +102,38 @@ package body et_geometry_2.polygons.union is
 				put_line ("vertices B: " & to_string (vertices_B));
 			end if;
 
-			-- Go to the first leaving intersection in vertices_A:
-			vertice_A_cursor := get_first (LEAVING, vertices_A);
+			-- Go to the first OUTSIDE vertex in vertices_A:
+			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
 
 			if debug then
 				new_line;
-				put_line ("first leaving: " & to_string (element (vertice_A_cursor)));
+				put_line ("first outside: " & to_string (element (vertice_A_cursor)));
 			end if;
 
 			-- When walking along the
-			-- edges of polygon A or B we will eventually get back to 
+			-- edges of polygon A we will eventually get back to 
 			-- the start point v_start. The polygon is then complete.
 			v_start := element (vertice_A_cursor);
 			
 			
-			-- Traverse vertices_A until no more leaving vertex can be found:
-			--while vertice_A_cursor /= pac_vertices.no_element loop
 			loop
-
-				if get_first (ENTERING, vertices_A) = pac_vertices.no_element then
-					exit;
-				end if;
-
 				--put_line ("W");
 				
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
-				--vertices_tmp_2 := get_until_entering (vertice_A_cursor);
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
 				vertices_tmp_2 := get_until (
 					vertices					=> vertices_A,
 					start_vertex				=> vertice_A_cursor,
 					direction_of_intersection	=> ENTERING,
-					direction_of_search			=> CCW);
+					direction_of_search			=> CCW,
+					delete_visited				=> false);
 
+
+				if vertices_tmp_2.contains (v_start) then
+					exit;
+				end if;
 				
 				--put_line ("Y");
 				--put_line ("tmp 2 first A: " & to_string (element (vertices_tmp_2.first)));
@@ -150,24 +147,17 @@ package body et_geometry_2.polygons.union is
 
 
 				--put_line ("tmp 1 first A: " & to_string (element (vertices_tmp_1.first)));
-				
 
-				if get_first (LEAVING, vertices_B) = pac_vertices.no_element then
-					exit;
-				end if;
 				
 				-- Find the very entering intersection E in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
 				-- a leaving intersection:
-				--vertices_tmp_2 := get_until_leaving (vertices_B.find (vertices_tmp_1.last_element));
-
 				vertices_tmp_2 := get_until (
 					vertices					=> vertices_B,
 					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
 					direction_of_intersection	=> LEAVING,
-					direction_of_search			=> CCW);
-
-
+					direction_of_search			=> CCW,
+					delete_visited				=> false);
 				
 				--put_line ("tmp 2 first B: " & to_string (element (vertices_tmp_2.first)));
 
@@ -181,17 +171,6 @@ package body et_geometry_2.polygons.union is
 
 
 				--put_line ("X");
-				
-				--if last_element (vertices_tmp_1) = v_start then
-					--exit;
-				--else
-					--vertice_A_cursor := get_first (LEAVING, vertices_A);
-				--end if;
-
-				--if element (vertice_A_cursor) = v_start then
-					--exit;
-				--end if;
-
 				
 			end loop;
 

@@ -858,13 +858,15 @@ private
 	-- Returns the vertices (of given list of vertices) after
 	-- the given start vertex 
 	-- to (and including) the next leaving/entering vertex. 
-	-- These vertices and the given start vertex 
+	-- If argument "delete_visited" is true then all
+	-- these vertices and the given start vertex 
 	-- are removed from vertices so that they won't be visited again:
 	function get_until (
 		vertices					: in out pac_vertices.list;
 		start_vertex				: in pac_vertices.cursor;
 		direction_of_intersection	: in type_intersection_direction; -- entering/leaving
-		direction_of_search			: in type_direction_of_rotation) -- CW, CCW
+		direction_of_search			: in type_direction_of_rotation; -- CW, CCW
+		delete_visited				: in boolean := true)
 		return pac_vertices.list;
 	
 end et_geometry_2.polygons;

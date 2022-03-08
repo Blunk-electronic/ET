@@ -3622,7 +3622,8 @@ package body et_geometry_2.polygons is
 		vertices					: in out pac_vertices.list;
 		start_vertex				: in pac_vertices.cursor;
 		direction_of_intersection	: in type_intersection_direction;
-		direction_of_search			: in type_direction_of_rotation) -- CW, CCW
+		direction_of_search			: in type_direction_of_rotation; -- CW, CCW
+		delete_visited				: in boolean := true)
 		return pac_vertices.list
 	is
 
@@ -3769,15 +3770,18 @@ package body et_geometry_2.polygons is
 		end case;
 
 		
+		-- If requested by the caller
+		-- remove the visited vertices from given list of vertices:
 		collected_vertices := length (result);
-
-		-- Remove the visited vertices from given list of vertices:
-		v := start_vertex;
 		
-		case direction_of_search is
-			when CCW =>	delete_ccw;
-			when CW  => delete_cw;
-		end case;
+		if delete_visited then
+			v := start_vertex;
+			
+			case direction_of_search is
+				when CCW =>	delete_ccw;
+				when CW  => delete_cw;
+			end case;
+		end if;
 
 		
 		-- The first item of the result is not required because
