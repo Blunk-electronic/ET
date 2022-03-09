@@ -134,13 +134,13 @@ package body et_geometry_2 is
 		left, right : in type_vector)
 		return boolean 
 	is
-		lx : type_float_internal := abs (get_x (left));
-		ly : type_float_internal := abs (get_y (left));
-		lz : type_float_internal := abs (get_z (left));
+		lx : type_float_internal := get_x (left);
+		ly : type_float_internal := get_y (left);
+		lz : type_float_internal := get_z (left);
 
-		rx : type_float_internal := abs (get_x (right));
-		ry : type_float_internal := abs (get_y (right));
-		rz : type_float_internal := abs (get_z (right));
+		rx : type_float_internal := get_x (right);
+		ry : type_float_internal := get_y (right);
+		rz : type_float_internal := get_z (right);
 	begin
 		--new_line;
 		--put_line ("left: " & to_string (left));

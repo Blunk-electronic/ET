@@ -2590,11 +2590,12 @@ package body et_geometry_2.polygons is
 	is
 		result : boolean := false;
 	begin
-		-- Due to inevitable rounding errors this direction comparison does not work:
-		--if element (intersection_1).position = element (intersection_2).position then
+		-- CS: Due to inevitable rounding errors this direction comparison may not
+		-- work in all cases:
+		if element (intersection_1).position = element (intersection_2).position then
 
-		-- Instead we use this:
-		if equals (element (intersection_1).position, element (intersection_2).position) then
+		-- ? Instead use this:
+		--if equals (element (intersection_1).position, element (intersection_2).position) then
 			result := true;
 		end if;
 
@@ -3424,25 +3425,42 @@ package body et_geometry_2.polygons is
 	procedure delete_regular_after_intersection (
 		vertices : in out pac_vertices.list)
 	is
+		-- This cursor points to the candidate vertex in the given list:
 		c : pac_vertices.cursor := vertices.first;
+
+		-- In the following this list will be filled with vertices by
+		-- copying vertices from the given list "vertices" one by one.
+		-- If a regular vertex is detected right after an intersection
+		-- then this particular vertex will be ignored:
+		v_list_new : pac_vertices.list;
 	begin
 		while c /= pac_vertices.no_element loop
 			--put_line ("c: " & to_string (element (c).position));
 			
 			if c = vertices.first then
+				-- Look at the vertex at the end of the list:
 				if same_position (vertices.last, c) then
-					vertices.delete (c);
+					null; -- ignore vertex
+				else
+					-- copy vertex
+					v_list_new.append (element (c));
 				end if;
+				
 			else
 				
-				
 				if same_position (previous (c), c) then
-					vertices.delete (c);
+					null; -- ignore vertex
+				else
+					-- copy vertex
+					v_list_new.append (element (c));
 				end if;
 			end if;
 			
 			next (c);
 		end loop;
+
+		-- overwrite the given list by the new list:
+		vertices := v_list_new;
 	end delete_regular_after_intersection;
 
 
@@ -3451,6 +3469,8 @@ package body et_geometry_2.polygons is
 	is
 		c : pac_vertices.cursor := vertices.first;
 		c2 : pac_vertices.cursor;
+
+		-- CS: Probably rework required as in delete_regular_after_intersection ?
 	begin
 		while c /= pac_vertices.no_element loop
 
@@ -3551,6 +3571,8 @@ package body et_geometry_2.polygons is
 		
 	begin
 		polygon_primary.contours.segments.iterate (query_segment'access);
+
+		--put_line ("vertices pre: " & to_string (vertices));
 		delete_regular_after_intersection (vertices);
 		delete_regular_before_intersection (vertices);
 		

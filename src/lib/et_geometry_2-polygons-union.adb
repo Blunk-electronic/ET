@@ -90,6 +90,18 @@ package body et_geometry_2.polygons.union is
 		procedure do_union is 
 			expect_return_to_start : boolean := false;
 			v_cursor : pac_vertices.cursor;
+
+			procedure splice_vertices is begin
+				-- Splice the intersections and vertices of A and B.
+				-- Collect everything in the primary collection:
+				splice (
+					target	=> vertices_tmp_1, -- primary
+					before	=> pac_vertices.no_element, 
+					source 	=> vertices_tmp_2); -- will be emptied
+
+			end splice_vertices;
+
+			
 		begin
 			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
@@ -108,11 +120,15 @@ package body et_geometry_2.polygons.union is
 			-- Go to the first OUTSIDE vertex in vertices_A:
 			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
 
+			-- CS
 			if vertice_A_cursor = pac_vertices.no_element then
 				result_polygon := type_polygon (polygon_B);
 
-				new_line;
-				put_line ("no outside vertex found");
+				if debug then
+					new_line;
+					put_line ("no outside vertex found");
+				end if;
+				
 			else
 								
 				if debug then
@@ -122,7 +138,8 @@ package body et_geometry_2.polygons.union is
 
 				-- When walking along the
 				-- edges of polygon A we will eventually get back to 
-				-- the start point v_start. The polygon is then complete.
+				-- the start point v_start. The polygon is then complete
+				-- and the loop "walk" terminates:
 				v_start := element (vertice_A_cursor);
 
 				walk:
@@ -154,13 +171,7 @@ package body et_geometry_2.polygons.union is
 						end loop;
 
 					else
-						-- Splice the intersections and vertices of A and B.
-						-- Collect everything in the primary collection:
-						splice (
-							target	=> vertices_tmp_1, -- primary
-							before	=> pac_vertices.no_element, 
-							source 	=> vertices_tmp_2); -- will be emptied
-
+						splice_vertices;
 					end if;				
 					
 					-- Find the very entering intersection E in polygon B and walk
@@ -172,13 +183,8 @@ package body et_geometry_2.polygons.union is
 						direction_of_intersection	=> LEAVING,
 						direction_of_search			=> CCW,
 						delete_visited				=> false);
-						
-					-- Splice the intersections and vertices of A and B.
-					-- Collect everything in the primary collection:
-					splice (
-						target	=> vertices_tmp_1, -- primary
-						before	=> pac_vertices.no_element, 
-						source 	=> vertices_tmp_2); -- will be emptied
+
+					splice_vertices;
 
 					vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
 
