@@ -292,81 +292,57 @@ begin
 	-- go
 
 
-	---- TEST 13:
-	--init_test;
-	--add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
-	
-	--make_set (
-		--A => "line -5 -5 line 105 -5 line 105 105",
-		--B => B_default,
-		--expect => EXP);
+	-- TEST 13:
+	do_test (
+		A => "line -5 -5 line 105 -5 line 105 105",
+		B => B_default,
+		E => "line -5 -5 line 105 -5 line 105 105 line 100 100 line 0 100 line 0 0");
 	
 
-	---- TEST 14:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
-	
-	--make_set (
-		--A => "line 50 0 line 80 50 line 70 60 line 40 10",
-		--B => B_default,
-		--expect => EXP);
+	-- TEST 14:
+	do_test (
+		A => "line 50 0 line 80 50 line 70 60 line 40 10",
+		B => B_default,
+		E => B_default);
 
 
-	---- TEST 15:
-	--init_test;
-	---- we expect nothing because the polygons do not overlap
-	
-	--make_set (
-		--A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
-		--B => B_default,
-		--expect => EXP);
+	-- TEST 15:
+	do_test (
+		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
+		B => B_default,
+		E => ""); -- we expect nothing because the polygons do not overlap
 
 
-	---- TEST 16:
-	--init_test;
-	---- we expect nothing because the polygons do not overlap
-	
-	--make_set (
-		--A => "line 200 10 line 250 10 line 250 50",
-		--B => B_default,
-		--expect => EXP);
+	-- TEST 16:
+	do_test (
+		A => "line 200 10 line 250 10 line 250 50",
+		B => B_default,
+		E => ""); -- we expect nothing because the polygons do not overlap
 
 
-
-	---- TEST 17:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 50 0 line 100 0");
-	
-	--make_set (
-		--A => "line 50 0 line 110 -20 line 120 0 line 110 60",
-		--B => B_default,
-		--expect => EXP);
-
+	-- TEST 17:
+	do_test (
+		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
+		B => B_default,
+		E => "line 110 -20 line 120 0 line 110 60 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0");
 
 	
-	---- TEST 18:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 25 50 line 0 0");
-	
-	--make_set (
-		--A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
-		--B => B_default,
-		--expect => EXP);
-
+	-- TEST 18:
+	do_test (
+		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
+		B => B_default,
+		E => "line 25 -50 line 50 -50 lie 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
 
 	
-	---- TEST 19:
-	--init_test;
-	--add_to_expect (EXP, "line 90 0 line 80 10 line 20 10 line 10 0");
-	
-	--make_set (
-		--A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
-		--B => B_default,
-		--expect => EXP);
+	-- TEST 19:
+	do_test (
+		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
+		B => B_default,
+		E => "line 10 -10 line 90 -10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0 line 10 0");
 
 	
 	-----------------------	
-	--make_test;
+
 
 	new_line;
 	put_line ("--------------");
