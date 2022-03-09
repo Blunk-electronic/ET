@@ -87,7 +87,10 @@ package body et_geometry_2.polygons.union is
 
 		
 
-		procedure do_union is begin
+		procedure do_union is 
+			expect_return_to_start : boolean := false;
+			v_cursor : pac_vertices.cursor;
+		begin
 			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
 			if debug then
@@ -105,80 +108,89 @@ package body et_geometry_2.polygons.union is
 			-- Go to the first OUTSIDE vertex in vertices_A:
 			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
 
-			if debug then
+			if vertice_A_cursor = pac_vertices.no_element then
+				result_polygon := type_polygon (polygon_B);
+
 				new_line;
-				put_line ("first outside: " & to_string (element (vertice_A_cursor)));
-			end if;
-
-			-- When walking along the
-			-- edges of polygon A we will eventually get back to 
-			-- the start point v_start. The polygon is then complete.
-			v_start := element (vertice_A_cursor);
-			
-			
-			loop
-				--put_line ("W");
-				
-				-- Walk along the vertices (and intersections) of polygon A until
-				-- an entering intersection:
-				-- Now we have the intersections and vertices from after the start point 
-				-- to (and including) the entering intersection E.
-				vertices_tmp_2 := get_until (
-					vertices					=> vertices_A,
-					start_vertex				=> vertice_A_cursor,
-					direction_of_intersection	=> ENTERING,
-					direction_of_search			=> CCW,
-					delete_visited				=> false);
-
-
-				if vertices_tmp_2.contains (v_start) then
-					exit;
+				put_line ("no outside vertex found");
+			else
+								
+				if debug then
+					new_line;
+					put_line ("first outside: " & to_string (element (vertice_A_cursor)));
 				end if;
-				
-				--put_line ("Y");
-				--put_line ("tmp 2 first A: " & to_string (element (vertices_tmp_2.first)));
-				
-				-- Splice the intersections and vertices of A and B.
-				-- Collect everything in the primary collection:
-				splice (
-					target	=> vertices_tmp_1, -- primary
-					before	=> pac_vertices.no_element, 
-					source 	=> vertices_tmp_2); -- will be emptied
 
+				-- When walking along the
+				-- edges of polygon A we will eventually get back to 
+				-- the start point v_start. The polygon is then complete.
+				v_start := element (vertice_A_cursor);
 
-				--put_line ("tmp 1 first A: " & to_string (element (vertices_tmp_1.first)));
+				walk:
+				loop -- CS safety counter
+					--put_line ("W");
+					
+					-- Walk along the vertices (and intersections) of polygon A until
+					-- an entering intersection:
+					-- Now we have the intersections and vertices from after the start point 
+					-- to (and including) the entering intersection E.
+					vertices_tmp_2 := get_until (
+						vertices					=> vertices_A,
+						start_vertex				=> vertice_A_cursor,
+						direction_of_intersection	=> ENTERING,
+						direction_of_search			=> CCW,
+						delete_visited				=> false);
 
-				
-				-- Find the very entering intersection E in polygon B and walk
-				-- along the vertices (and intersections) of polygon B until
-				-- a leaving intersection:
-				vertices_tmp_2 := get_until (
-					vertices					=> vertices_B,
-					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
-					direction_of_intersection	=> LEAVING,
-					direction_of_search			=> CCW,
-					delete_visited				=> false);
-				
-				--put_line ("tmp 2 first B: " & to_string (element (vertices_tmp_2.first)));
+					
+					if expect_return_to_start then
+											
+						v_cursor := vertices_tmp_2.first;
 
-				
-				-- Splice the intersections and vertices of A and B.
-				-- Collect everything in the primary collection:
-				splice (
-					target	=> vertices_tmp_1, -- primary
-					before	=> pac_vertices.no_element, 
-					source 	=> vertices_tmp_2); -- will be emptied
+						while v_cursor /= pac_vertices.no_element loop
+							vertices_tmp_1.append (element (v_cursor));
+							if element (v_cursor) = v_start then
+								exit walk;
+							end if;
+							next (v_cursor);
+						end loop;
 
+					else
+						-- Splice the intersections and vertices of A and B.
+						-- Collect everything in the primary collection:
+						splice (
+							target	=> vertices_tmp_1, -- primary
+							before	=> pac_vertices.no_element, 
+							source 	=> vertices_tmp_2); -- will be emptied
 
-				--put_line ("X");
-				
-			end loop;
+					end if;				
+					
+					-- Find the very entering intersection E in polygon B and walk
+					-- along the vertices (and intersections) of polygon B until
+					-- a leaving intersection:
+					vertices_tmp_2 := get_until (
+						vertices					=> vertices_B,
+						start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+						direction_of_intersection	=> LEAVING,
+						direction_of_search			=> CCW,
+						delete_visited				=> false);
+						
+					-- Splice the intersections and vertices of A and B.
+					-- Collect everything in the primary collection:
+					splice (
+						target	=> vertices_tmp_1, -- primary
+						before	=> pac_vertices.no_element, 
+						source 	=> vertices_tmp_2); -- will be emptied
 
-			--put_line ("tmp 1 first C: " & to_string (element (vertices_tmp_1.first)));
+					vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
+
+					expect_return_to_start := true;
+
+				end loop walk;
 			
-			-- Make a polygon from the primary collection of vertices:
-			result_polygon := type_polygon (to_polygon (vertices_tmp_1));
-			--put_line ("Polygon C: " & to_string (result_polygon));
+				-- Make a polygon from the primary collection of vertices:
+				result_polygon := type_polygon (to_polygon (vertices_tmp_1));
+				--put_line ("Polygon C: " & to_string (result_polygon));
+
+			end if;
 			
 		end do_union;
 

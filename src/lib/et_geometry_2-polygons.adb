@@ -2590,7 +2590,11 @@ package body et_geometry_2.polygons is
 	is
 		result : boolean := false;
 	begin
-		if element (intersection_1).position = element (intersection_2).position then
+		-- Due to inevitable rounding errors this direction comparison does not work:
+		--if element (intersection_1).position = element (intersection_2).position then
+
+		-- Instead we use this:
+		if equals (element (intersection_1).position, element (intersection_2).position) then
 			result := true;
 		end if;
 
@@ -3423,12 +3427,15 @@ package body et_geometry_2.polygons is
 		c : pac_vertices.cursor := vertices.first;
 	begin
 		while c /= pac_vertices.no_element loop
-
+			--put_line ("c: " & to_string (element (c).position));
+			
 			if c = vertices.first then
 				if same_position (vertices.last, c) then
 					vertices.delete (c);
 				end if;
 			else
+				
+				
 				if same_position (previous (c), c) then
 					vertices.delete (c);
 				end if;

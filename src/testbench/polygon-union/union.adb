@@ -188,121 +188,108 @@ procedure union is
 begin
 
 	-- TEST 1:
-	do_test (
-		A => "line 50 0 line 100 0 line 100 50 line 50 50",
-		B => B_default,
-		E => "line 50 0 line 100 0 line 100 50 line 100 100 line 0 100 line 0 0");
-	-- go
-
-
-	
-	-- TEST 2:
-	do_test (
-		A => "line 50 0 line 101 0 line 101 50 line 50 50",
-		B => B_default,
-		E => "line 50 0 line 101 0 line 101 50 line 100 50 line 100 100 line 0 100 line 0 0");
-	-- go
+	--do_test (
+		--A => "line 50 0 line 100 0 line 100 50 line 50 50",
+		--B => B_default,
+		--E => B_default);
+	---- go
 
 	
-	-- TEST 3:
-	do_test (
-		A => "line 80 10 line 150 10 line 150 20 line 80 20",
-		B => B_default,
-		E => "line 100 10 line 150 10 line 150 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
-	-- go
+	---- TEST 2:
+	--do_test (
+		--A => "line 50 0 line 101 0 line 101 50 line 50 50",
+		--B => B_default,
+		--E => "line 101 0 line 101 50 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0 line 100 0");
+	---- go
+
+	
+	---- TEST 3:
+	--do_test (
+		--A => "line 80 10 line 150 10 line 150 20 line 80 20",
+		--B => B_default,
+		--E => "line 150 10 line 150 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0 line 100 10 ");
+	---- go
 
 
-	-- TEST 4:
-	do_test (
-		A => "line 0 0 line 1 0 line 1 1 line 0 1",
-		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
-		E => "line 0.5 1.0 line 0 1 line 0 0 line 1 0 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5");
-	-- go
+	---- TEST 4:
+	--do_test (
+		--A => "line 0 0 line 1 0 line 1 1 line 0 1",
+		--B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
+		--E => "line 0 0 line 1 0 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5 line 0.5 1.0 line 0 1");
+	---- go
 
 	
 
-	-- TEST 5:
-	do_test (
-		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
-		B => B_default,
-		E => "line 100 50 line 100 100 line 0 100 line 0 0 line 40 0 line 40 -10 line 120 -10 line 120 50");
-	-- nogo
+	---- TEST 5:
+	--do_test (
+		--A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
+		--B => B_default,
+		--E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+	---- go
 
 
-	-- TEST 6:
+	---- TEST 6:
 	--do_test (
 		--A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
 		--B => B_default,
-		--E => "line 100 42.5 line 110 50 line 100 57.5 "
+		--E =>  "line 20 -10 line 30 -10 line 43.3333333333 0 line 100 0 "
+			--& "line 100 42.5 line 110 50 line 100 57.5 "
 			--& "line 100 100 line 43.3333333333 100 line 30 110 line 20 110 line 20.8333333333 100 line 0 100 line 0 0 "
-			--& "line 20.8333333333 0 line 20 -10 line 30 -10 line 43.3333333333 0 line 100 0");
-	--go
-
+			--& "line 20.8333333333 0 ");
+	----go
 	
 
-	-- TEST 7:
+	---- TEST 7:
 	--do_test (
 		--A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
 		--B => B_default,
-		--E => "line 50 100 line 50 110 line 40 110 line 40 100 line 0 100 line 0 0 line 40 0 line 40 -10 line 50 -10 line 50 0 line 100 0 line 100 100");
+		--E => "line 40 -10 line 50 -10 line 50 0 line 100 0 line 100 100 "
+		   --& "line 50 100 line 50 110 line 40 110 line 40 100 line 0 100 line 0 0 line 40 0");
 	---- go
 
 
 	
 	---- TEST 8:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
-	
-	--make_set (
+	--do_test (
 		--A => "line 0 0 line 50 0 line 50 50 line 0 50",
 		--B => B_default,
-		--expect => EXP);
+		--E => B_default);
 	---- go
 
 
 	---- TEST 9:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
-	
-	--make_set (
+	--do_test (
 		--A => "line 30 0 line 50 0 line 50 50 line 30 50",
 		--B => B_default,
-		--expect => EXP);
+		--E => B_default);
 	---- go
-
 
 
 	---- TEST 10:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
-	
-	--make_set (
+	--do_test (
 		--A => "line 50 0 line 100 0 line 101 50 line 50 50",
 		--B => B_default,
-		--expect => EXP);
+		--E => "line 101 50 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0 line 100 0");
 	---- go
 
 
-	------ TEST 11:
-	--init_test;
-	--add_to_expect (EXP, "line 100 0 line 80 20 line 80 40 line 100 40 line 100 60 line 50 60 line 50 0");
-	
-	--make_set (
+	---- TEST 11:
+	--do_test (
 		--A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
 		--B => B_default,
-		--expect => EXP);
+		--E => "line 110 40 line 110 60 line 100 60 line 100 100 line 0 100 "
+		   --& "line 0 0 line 50 0 line 100 0 line 100 40");
 	---- go
 
 
-	---- TEST 12:
-	--init_test;
-	--add_to_expect (EXP, "line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50 line 50 0");
-	
-	--make_set (
-		--A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	-- TEST 12:
+	do_test (
+		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
+		B => B_default,
+		E => "line 50 -10 line 60 -10 line 60 0 line 100 0 line 100 20 line 120 20 "
+		   & "line 120 60 line 100 60 line 100 100 line 105 105 line -5 105 "
+		   & "line 0 100 line 0 0 line 50 0");	
+	-- go
 
 
 	---- TEST 13:
