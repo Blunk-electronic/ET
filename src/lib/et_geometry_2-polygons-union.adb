@@ -106,6 +106,11 @@ package body et_geometry_2.polygons.union is
 			-- The method is choosen by the fact that polygon A
 			-- has or does not has a vertex which is outside polygon B.
 			outside_vertex_found : boolean;
+
+			-- This is a safety measure to prevent indefinite looping.
+			-- CS: Increase upper limit if required:
+			safety_counter_limit : constant natural := 100;
+			safety_counter : natural := 0;
 			
 		begin
 			-- Make the vertices and intersection nodes of polygon A:
@@ -169,7 +174,9 @@ package body et_geometry_2.polygons.union is
 			if outside_vertex_found then
 				
 				WALK_METHOD_1:
-				loop -- CS safety counter
+				loop
+					-- safety measure to prevent forever-looping:
+					increment_safety_counter (safety_counter, safety_counter_limit);
 					
 					-- Walk along the vertices (and intersections) of polygon A until
 					-- the next entering intersection:
@@ -228,7 +235,9 @@ package body et_geometry_2.polygons.union is
 			else
 
 				WALK_METHOD_2:
-				loop -- CS safety counter
+				loop
+					-- safety measure to prevent forever-looping:
+					increment_safety_counter (safety_counter, safety_counter_limit);
 					
 					-- Walk along the vertices (and intersections) of polygon A until
 					-- the next entering intersection:

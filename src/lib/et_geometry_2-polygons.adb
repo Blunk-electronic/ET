@@ -3819,6 +3819,20 @@ package body et_geometry_2.polygons is
 
 		return result;
 	end get_until;
+
+
+	procedure increment_safety_counter (
+		count	: in out natural;
+		limit	: in natural)
+	is begin
+		count := count + 1;
+
+		if count >= limit then
+			raise constraint_error 
+			with "Safety counter overrun ! (max." & natural'image (limit) & ")";
+		end if;
+	end increment_safety_counter;
+
 	
 	
 end et_geometry_2.polygons;

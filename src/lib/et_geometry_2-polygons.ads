@@ -868,6 +868,15 @@ private
 		direction_of_search			: in type_direction_of_rotation; -- CW, CCW
 		delete_visited				: in boolean := true)
 		return pac_vertices.list;
+
+
+	-- Increments the safety counter. Raises constraint error if limit is
+	-- reached or exceeded:
+
+	--subtype type_safety_counter is natural range 0 .. 100;
+	procedure increment_safety_counter (
+		count	: in out natural;
+		limit	: in natural);
 	
 end et_geometry_2.polygons;
 

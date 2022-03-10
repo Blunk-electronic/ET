@@ -63,42 +63,42 @@ package body et_geometry_2.polygons.clipping is
 
 		-- The list of intersecting A and B edges:		
 		intersections : pac_intersections.list;
-
-		
-		-- These are the lists of vertices and intersections
-		-- in counter-clockwise order for polygon A and B:
-		vertices_A, vertices_B : pac_vertices.list;
 		
 		
-		vertice_A_cursor : pac_vertices.cursor;
-
-
-		-- Temporarily collections of vertices and intersections:
-		vertices_tmp_1 : pac_vertices.list; -- primary collection
-		vertices_tmp_2 : pac_vertices.list; -- secondary collection
-		
-		-- The start point when walking along the vertices_A is
-		-- always an ENTERING intersection:
-		v_start : type_vertex (category => INTERSECTION);
-
-		
-		
-
+		-- This procedure does the actual clipping work:
 		procedure do_clipping is 
 
+			-- These are the lists of vertices and intersections
+			-- in counter-clockwise order for polygon A and B:
+			vertices_A, vertices_B : pac_vertices.list;
+					
+			vertice_A_cursor : pac_vertices.cursor;
+
+			-- Temporarily collections of vertices and intersections:
+			vertices_tmp_1 : pac_vertices.list; -- primary collection
+			vertices_tmp_2 : pac_vertices.list; -- secondary collection
+			
+			-- The start point when walking along the vertices_A is
+			-- always an ENTERING intersection:
+			v_start : type_vertex (category => INTERSECTION);
+			
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
-			subtype type_safety_counter is natural range 0 .. 100;
-			safety_counter : type_safety_counter := 0;
+			-- This is a safety measure to prevent indefinite looping.
+			-- CS: Increase upper limit if required:
+			safety_counter_limit : constant natural := 100;
+			safety_counter : natural := 0;
 
 		begin
+			-- Make the vertices and intersection nodes of polygon A:
 			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
 			if debug then
 				new_line;
 				put_line ("vertices A: " & to_string (vertices_A));
 			end if;
-			
+
+			-- Make the vertices and intersection nodes of polygon B:
 			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
 
 			if debug then
@@ -111,7 +111,7 @@ package body et_geometry_2.polygons.clipping is
 
 			if debug then
 				new_line;
-				put_line ("first entering: " & to_string (element (vertice_A_cursor)));
+				put_line ("First entering vertex of A: " & to_string (element (vertice_A_cursor)));
 			end if;
 
 			-- Traverse vertices_A until no more entering vertex
@@ -148,11 +148,7 @@ package body et_geometry_2.polygons.clipping is
 				
 				loop
 					-- safety measure to prevent forever-looping:
-					safety_counter := safety_counter + 1;
-					if safety_counter = type_safety_counter'last then
-						raise constraint_error with "safety counter overrun !";
-					end if;
-					
+					increment_safety_counter (safety_counter, safety_counter_limit);					
 
 					-- Splice the intersections and vertices of A and B.
 					-- Collect everything in the primary collection:
