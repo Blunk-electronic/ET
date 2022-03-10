@@ -84,8 +84,6 @@ package body et_geometry_2.polygons.clipping is
 			
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
-			-- This is a safety measure to prevent indefinite looping.
-			-- CS: Increase upper limit if required:
 			safety_counter_limit : constant natural := 100;
 			safety_counter : natural := 0;
 

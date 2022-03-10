@@ -873,7 +873,8 @@ private
 	-- Increments the safety counter. Raises constraint error if limit is
 	-- reached or exceeded:
 
-	--subtype type_safety_counter is natural range 0 .. 100;
+	--CS : ? subtype type_safety_counter is natural range 0 .. 10000;
+	
 	procedure increment_safety_counter (
 		count	: in out natural;
 		limit	: in natural);
