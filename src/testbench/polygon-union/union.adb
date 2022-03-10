@@ -191,9 +191,11 @@ begin
 	do_test (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
 		B => B_default,
-		E => B_default);
+		--E => B_default);
+		E => "line 50 0 line 100 0 line 100 50 line 100 100 line 0 100 line 0 0");
 	-- go
 
+	--goto end_test;
 	
 	-- TEST 2:
 	do_test (
@@ -253,7 +255,8 @@ begin
 	do_test (
 		A => "line 0 0 line 50 0 line 50 50 line 0 50",
 		B => B_default,
-		E => B_default);
+		--E => B_default);
+		E => "line 0 50 line 0 0 line 50 0 line 100 0 line 100 100 line 0 100");
 	-- go
 
 
@@ -261,7 +264,8 @@ begin
 	do_test (
 		A => "line 30 0 line 50 0 line 50 50 line 30 50",
 		B => B_default,
-		E => B_default);
+		--E => B_default);
+		E => "line 30 0 line 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
 	-- go
 
 
@@ -340,9 +344,18 @@ begin
 		B => B_default,
 		E => "line 10 -10 line 90 -10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0 line 10 0");
 
+
+	-- TEST 20:
+	do_test (
+		A => "line 10 10 line 90 10 line 90 90 line 10 90",
+		B => "line 0 0 line 100 0 line 100 20 line 50 20 line 50 80 line 100 80 "
+			& "line 100 100 line 0 100",
+		E => "line 90 20 line 90 80 line 100 80 "
+			& "line 100 100 line 0 100 line 0 0 line 100 0 line 100 20");
 	
 	-----------------------	
 
+<<end_test>>
 
 	new_line;
 	put_line ("--------------");

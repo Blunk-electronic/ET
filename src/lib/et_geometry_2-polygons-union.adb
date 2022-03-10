@@ -67,49 +67,56 @@ package body et_geometry_2.polygons.union is
 
 
 		
-		-- These are the lists of vertices and intersections
-		-- in counter-clockwise order for polygon A and B:
-		vertices_A, vertices_B : pac_vertices.list;
-		
+		-- This procedure does the actual union work:
+		procedure do_union is
 
-
-		
-		vertice_A_cursor : pac_vertices.cursor;
-
-		
-		-- Temporarily collections of vertices and intersections:
-		vertices_tmp_1 : pac_vertices.list; -- primary collection
-		vertices_tmp_2 : pac_vertices.list; -- secondary collection
-		
-		-- The start point when walking along the vertices_A is
-		-- a REGULAR vertex OUTSIDE polygon B:
-		v_start : type_vertex (category => REGULAR);
-
-		
-
-		procedure do_union is 
-			expect_return_to_start : boolean := false;
-			v_cursor : pac_vertices.cursor;
-
-			procedure splice_vertices is begin
-				-- Splice the intersections and vertices of A and B.
-				-- Collect everything in the primary collection:
+			-- These are the lists of vertices and intersections
+			-- in counter-clockwise order for polygon A and B:
+			vertices_A, vertices_B : pac_vertices.list;
+			
+			vertice_A_cursor : pac_vertices.cursor;
+			
+			-- Temporarily collections of vertices and intersections:
+			vertices_tmp_1 : pac_vertices.list; -- primary collection
+			vertices_tmp_2 : pac_vertices.list; -- secondary collection
+			
+			-- Appends the intersections and vertices of the secondary
+			-- collection to the primary collection.
+			-- The secondary collection will be emptied.
+			procedure append_secondary is begin
 				splice (
 					target	=> vertices_tmp_1, -- primary
 					before	=> pac_vertices.no_element, 
 					source 	=> vertices_tmp_2); -- will be emptied
 
-			end splice_vertices;
+			end append_secondary;
 
+			-- The start point when walking along the vertices_A.
+			-- In the course of the union process we eventually get back
+			-- to this point. The process is then complete:
+			start_point : type_vector;
+
+			-- This flag goes true as soon as the start point is
+			-- approaching:
+			expect_return_to_start : boolean := false;
+
+			v_cursor_tmp : pac_vertices.cursor;
+			
+			-- There are two methods to do the union process.
+			-- The method is choosen by the fact that polygon A
+			-- has or does not has a vertex which is outside polygon B.
+			outside_vertex_found : boolean;
 			
 		begin
+			-- Make the vertices and intersection nodes of polygon A:
 			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
 			
 			if debug then
 				new_line;
 				put_line ("vertices A: " & to_string (vertices_A));
 			end if;
-			
+
+			-- Make the vertices and intersection nodes of polygon B:
 			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
 
 			if debug then
@@ -117,39 +124,55 @@ package body et_geometry_2.polygons.union is
 				put_line ("vertices B: " & to_string (vertices_B));
 			end if;
 
-			-- Go to the first OUTSIDE vertex in vertices_A:
+			-- Search for the first OUTSIDE vertex in vertices_A:
 			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
 
-			-- CS
+			-- Here we decide which method to should be applied in order to
+			-- do the union process.
+			-- The flag outside_vertex_found is set or cleared:
 			if vertice_A_cursor = pac_vertices.no_element then
-				result_polygon := type_polygon (polygon_B);
+
+				-- No outside vertex found.
+				outside_vertex_found := false;
+				
+				if debug then
+					new_line;
+					put_line ("No vertex of A outside B found.");
+				end if;
+
+				-- Find the first leaving vertex instead:
+				vertice_A_cursor := get_first (LEAVING, vertices_A);
 
 				if debug then
 					new_line;
-					put_line ("no outside vertex found");
+					put_line ("First leaving vertex of A: " & to_string (element (vertice_A_cursor)));
 				end if;
-				
+
 			else
-								
+				-- An outside vertex exists:
+				outside_vertex_found := true;
+				
 				if debug then
 					new_line;
 					put_line ("first outside: " & to_string (element (vertice_A_cursor)));
 				end if;
+				
+			end if;
+								
 
-				-- When walking along the
-				-- edges of polygon A we will eventually get back to 
-				-- the start point v_start. The polygon is then complete
-				-- and the loop "walk" terminates:
-				v_start := element (vertice_A_cursor);
+			-- Set the start point.
+			-- When walking along the
+			-- edges of polygon A we will eventually get back to 
+			-- the start point. The polygon is then complete.
+			start_point := element (vertice_A_cursor).position;
 
-				walk:
+			if outside_vertex_found then
+				
+				WALK_METHOD_1:
 				loop -- CS safety counter
-					--put_line ("W");
 					
 					-- Walk along the vertices (and intersections) of polygon A until
-					-- an entering intersection:
-					-- Now we have the intersections and vertices from after the start point 
-					-- to (and including) the entering intersection E.
+					-- the next entering intersection:
 					vertices_tmp_2 := get_until (
 						vertices					=> vertices_A,
 						start_vertex				=> vertice_A_cursor,
@@ -157,26 +180,33 @@ package body et_geometry_2.polygons.union is
 						direction_of_search			=> CCW,
 						delete_visited				=> false);
 
-					
+					-- If this loop is executed the first time we do not expect
+					-- the start point and just append the secondary collection to
+					-- the primary collection.
+					-- For following passes we iterate the secondary collection
+					-- and copy the vertices into the primary collection:
 					if expect_return_to_start then
-											
-						v_cursor := vertices_tmp_2.first;
+						v_cursor_tmp := vertices_tmp_2.first;
+						while v_cursor_tmp /= pac_vertices.no_element loop
 
-						while v_cursor /= pac_vertices.no_element loop
-							vertices_tmp_1.append (element (v_cursor));
-							if element (v_cursor) = v_start then
-								exit walk;
+							-- Copy vertex to primary vertices collection:
+							vertices_tmp_1.append (element (v_cursor_tmp));
+
+							-- Terminate the outer loop "walk" once the start
+							-- point has been detected:
+							if element (v_cursor_tmp).position = start_point then								
+								exit WALK_METHOD_1;
 							end if;
-							next (v_cursor);
+							
+							next (v_cursor_tmp);
 						end loop;
 
 					else
-						splice_vertices;
+						append_secondary;
 					end if;				
 					
-					-- Find the very entering intersection E in polygon B and walk
-					-- along the vertices (and intersections) of polygon B until
-					-- a leaving intersection:
+					-- Walk along the vertices (and intersections) of polygon B until
+					-- the next leaving intersection:
 					vertices_tmp_2 := get_until (
 						vertices					=> vertices_B,
 						start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
@@ -184,18 +214,57 @@ package body et_geometry_2.polygons.union is
 						direction_of_search			=> CCW,
 						delete_visited				=> false);
 
-					splice_vertices;
+					append_secondary;
 
+					-- Set the vertice_A_cursor to the last vertex of the primary collection:
 					vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
 
 					expect_return_to_start := true;
-
-				end loop walk;
+				end loop WALK_METHOD_1;
 			
 				-- Make a polygon from the primary collection of vertices:
 				result_polygon := type_polygon (to_polygon (vertices_tmp_1));
-				--put_line ("Polygon C: " & to_string (result_polygon));
 
+			else
+
+				WALK_METHOD_2:
+				loop -- CS safety counter
+					
+					-- Walk along the vertices (and intersections) of polygon A until
+					-- the next entering intersection:
+					vertices_tmp_2 := get_until (
+						vertices					=> vertices_A,
+						start_vertex				=> vertice_A_cursor,
+						direction_of_intersection	=> ENTERING,
+						direction_of_search			=> CCW,
+						delete_visited				=> false);
+
+					append_secondary;
+					
+					-- Walk along the vertices (and intersections) of polygon B until
+					-- the next leaving intersection:
+					vertices_tmp_2 := get_until (
+						vertices					=> vertices_B,
+						start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+						direction_of_intersection	=> LEAVING,
+						direction_of_search			=> CCW,
+						delete_visited				=> false);
+
+					append_secondary;
+
+					-- Set the vertice_A_cursor to the last vertex of the primary collection:
+					vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
+
+					-- If the last element of the primary collection is the start point
+					-- then the resulting polygon is complete:
+					if element (vertice_A_cursor).position = start_point then
+						-- Make a polygon from the primary collection of vertices:
+						result_polygon := type_polygon (to_polygon (vertices_tmp_1));
+												
+						exit WALK_METHOD_2; -- Terminate this loop:
+					end if;
+					
+				end loop WALK_METHOD_2;
 			end if;
 			
 		end do_union;
