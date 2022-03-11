@@ -496,6 +496,14 @@ package et_geometry_2.polygons is
 
 
 	
+	
+	
+	type type_polygon is new type_polygon_base with null record;
+
+
+	
+private
+
 	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
 	
 	type type_intersection_direction is (
@@ -512,8 +520,7 @@ package et_geometry_2.polygons is
 		d : in out type_intersection_direction);
 
 
-
-
+	
 	-- When a line intersects an edge of a polygon,
 	-- or when a line runs through a vertex of a polygon
 	-- then this type tells whether it is a real intersection
@@ -536,14 +543,13 @@ package et_geometry_2.polygons is
 	-- If the given point is an intersection, then its direction is
 	-- returned.
 	function get_direction (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		line	: in type_line;
 		point	: in type_vector)
 		return type_point_of_contact;
 
 
-
-
+	
 	type type_intersection_base is tagged record
 		--position	: type_point; 	  -- x/y
 		position	: type_vector;
@@ -574,8 +580,9 @@ package et_geometry_2.polygons is
 		intersections	: in out pac_line_edge_intersections.list;
 		reference		: in type_point);
 	
-		
 
+
+	
 	-- When a line runs through a polygon, then the start and end point
 	-- can lie inside, outside, on a vertex or on an edge. Depending
 	-- on this location the start or end point gets more properties.
@@ -603,8 +610,8 @@ package et_geometry_2.polygons is
 				direction_on_vertex	: type_intersection_direction;
 		end case;
 	end record;
-	
-		
+
+
 	type type_line_to_polygon_status is record
 		-- The properties of the start and end point of the line:
 		start_point	: type_line_end;
@@ -625,22 +632,14 @@ package et_geometry_2.polygons is
 	-- their difference is less or equal the rounding_threshold:
 	function equals (left, right : in type_line_to_polygon_status)
 		return boolean;
-	
 
+	
 	function get_line_to_polygon_status (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		line	: in type_line)
 		return type_line_to_polygon_status;
 
-	
-	
-	type type_polygon is new type_polygon_base with null record;
 
-
-
-
-	
-private
 	-- An indicator that tells whether it is about the
 	-- A or the B polygon when a clip or union operation is
 	-- performed:

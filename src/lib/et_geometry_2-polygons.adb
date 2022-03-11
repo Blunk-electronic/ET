@@ -2008,7 +2008,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_direction (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		line	: in type_line;
 		point	: in type_vector)
 		return type_point_of_contact
@@ -2278,7 +2278,7 @@ package body et_geometry_2.polygons is
 	
 	
 	function get_line_to_polygon_status (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		line	: in type_line)
 		return type_line_to_polygon_status
 	is
