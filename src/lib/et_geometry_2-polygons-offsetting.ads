@@ -55,7 +55,7 @@ package et_geometry_2.polygons.offsetting is
 	-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
 
 	procedure offset_polygon (
-		polygon		: in out type_polygon_base'class;
+		polygon		: in out type_polygon'class;
 		offset		: in type_distance);
 
 	

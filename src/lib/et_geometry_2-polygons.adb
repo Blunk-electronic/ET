@@ -128,40 +128,6 @@ package body et_geometry_2.polygons is
 	end get_segment_edge;
 
 
-	function get_segment_edge (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return pac_polygon_segments.cursor
-	is
-		result : pac_polygon_segments.cursor;
-		proceed : aliased boolean := true;
-
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			case element (c).shape is
-				when LINE => 
-					if on_line (point, element (c).segment_line) then
-						result := c;
-						proceed := false; -- abort iteration
-					end if;
-					
-				when ARC => null; -- CS
-			end case;
-		end query_segment;
-		
-	begin
-		-- Make sure the given point is NOT a vertex:
-		-- CS: Maybe no need if caller cares for this check.
-		if is_vertex (polygon, point) then
-			raise constraint_error with "Point is a vertex !";
-		else
-			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
-		end if;
-
-		-- CS exception message if polygon consists of just a circle.
-		return result;
-	end get_segment_edge;
-
-
 
 	
 	function get_neigboring_edges (
@@ -222,62 +188,6 @@ package body et_geometry_2.polygons is
 	end get_neigboring_edges;
 
 
-	function get_neigboring_edges (
-		polygon	: in type_polygon_base;
-		vertex	: in type_vector)
-		return type_neigboring_edges
-	is
-		result : type_neigboring_edges;
-		proceed : aliased boolean := true;
-
-		end_found, start_found : boolean := false;
-		
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			--put_line ("test: " & to_string (element (c)));
-			
-			case element (c).shape is
-			
-				when LINE => 
-					if to_vector (element (c).segment_line.end_point) = vertex then
-						--put_line ("end");
-						result.edge_1 := c;
-						end_found := true;
-					end if;
-
-					if to_vector (element (c).segment_line.start_point) = vertex then
-						--put_line ("start");
-						result.edge_2 := c;
-						start_found := true;
-					end if;
-					
-				when ARC => null; -- CS
-			end case;
-
-			-- Abort iteration once start and end point have been found
-			-- ("proceed" is low-active):
-			proceed := not (end_found and start_found);
-			
-		end query_segment;
-
-	begin
-		-- Make sure the given point IS a vertex:
-		if is_vertex (polygon, vertex) then
-			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
-		else
-			raise constraint_error with "Point is a vertex !";
-		end if;
-
-		-- Safety check:
-		-- Two edges must have been found. Otherwise raise exception:
-		if result.edge_1 = pac_polygon_segments.no_element 
-		or result.edge_2 = pac_polygon_segments.no_element
-		then
-			raise constraint_error with "Search for neigboring edges incomplete !";
-		end if;
-
-		-- CS exception message if polygon consists of just a circle.
-		return result;
-	end get_neigboring_edges;
 	
 
 	
@@ -437,216 +347,6 @@ package body et_geometry_2.polygons is
 
 
 
-	function get_shortest_distance (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return type_float_internal
-	is
-		result : type_float_internal := type_float_internal'last;
-		
-		procedure update (d : in type_float_internal) is begin
-			--put_line (to_string (d));
-			if d < result then
-				result := d;
-			end if;
-		end update;
-
-		
-		procedure query_segment (c : in pac_polygon_segments.cursor) is
-			s : constant type_polygon_segment := element (c);
-		begin
-			case s.shape is
-				when LINE =>
-					--put_line (to_string (s.segment_line));
-					update (get_shortest_distance (point, s.segment_line));
-
-				when ARC =>
-					--put_line (to_string (s.segment_arc));
-					update (get_shortest_distance (point, s.segment_arc));
-					
-			end case;
-		end query_segment;
-
-		
-	begin -- get_shortest_distance
-		if polygon.contours.circular then
-			result := get_shortest_distance (point, polygon.contours.circle);
-		else
-			polygon.contours.segments.iterate (query_segment'access);				
-		end if;			
-
-		--set_absolute (result, type_distance (round (get_absolute (result))));
-		
-		return result;
-	end get_shortest_distance;
-
-	
-	
-	function get_left_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.smallest_x = get_x (line.start_point) then
-			p := line.start_point;
-			
-		elsif b.smallest_x = get_x (line.end_point) then
-			p := line.end_point;
-
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_left_end;
-
-	
-	function get_right_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.greatest_x = get_x (line.start_point) then
-			p := line.start_point;
-			
-		elsif b.greatest_x = get_x (line.end_point) then
-			p := line.end_point;
-
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_right_end;
-
-	
-	function get_lower_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.smallest_y = get_x (line.start_point) then
-			p := line.start_point;
-			
-		elsif b.smallest_y = get_x (line.end_point) then
-			p := line.end_point;
-
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_lower_end;
-
-	
-	function get_upper_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.greatest_y = get_x (line.start_point) then
-			p := line.start_point;
-			
-		elsif b.greatest_y = get_x (line.end_point) then
-			p := line.end_point;
-
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_upper_end;
-
-
-	--function get_segments_on_corner_point (
-		--polygon	: in type_polygon_base;
-		--corner	: in type_point)
-		--return type_polygon_segments
-	--is
-		--use pac_polygon_lines;
-		--use pac_polygon_arcs;
-		
-		--result : type_polygon_segments;
-
-		--procedure query_line (c : in pac_polygon_lines.cursor) is
-			--line : constant type_polygon_line := element (c);
-		--begin
-			--if line.start_point = corner then
-				--result.lines.append (line);
-				
-			--elsif line.end_point = corner then
-				--result.lines.append (line);
-			--end if;
-		--end query_line;
-
-		--procedure query_arc (c : in pac_polygon_arcs.cursor) is
-			--arc : constant type_polygon_arc := element (c);
-		--begin
-			--if arc.start_point = corner then
-				--result.arcs.append (arc);
-				
-			--elsif arc.end_point = corner then
-				--result.arcs.append (arc);
-			--end if;
-		--end query_arc;
-		
-	--begin
-		--polygon.segments.lines.iterate (query_line'access);
-		--polygon.segments.arcs.iterate (query_arc'access);
-		
-		---- circles are not tested, because a circle does not have corners
-		
-		--return result;
-	--end get_segments_on_corner_point;
-
 	
 	procedure load_segments (
 		polygon		: in out type_polygon_base;
@@ -710,76 +410,6 @@ package body et_geometry_2.polygons is
 		end if;
 	end get_segments_total;
 
-	--function get_dimensions (
-		--polygon : in type_polygon_base)
-		--return type_dimensions
-	--is
-		--result : type_dimensions;
-
-		--procedure update_greatest_x (p : in type_point) is 
-			--d : type_distance := X (p);
-		--begin
-			--if d > X (result.greatest) then
-				----put_line ("X" & to_string (d));
-				--set (axis => X, value => d, point => result.greatest);
-			--end if;
-		--end update_greatest_x;
-			
-		--procedure update_greatest_y (p : in type_point) is 
-			--d : type_distance := Y (p);
-		--begin
-			--if d > Y (result.greatest) then
-				--set (axis => Y, value => d, point => result.greatest);
-			--end if;
-		--end update_greatest_y;
-
-		--procedure update_smallest_x (p : in type_point) is 
-			--d : type_distance := X (p);
-		--begin
-			--if d < X (result.smallest) then
-				--set (axis => X, value => d, point => result.smallest);
-			--end if;
-		--end update_smallest_x;
-			
-		--procedure update_smallest_y (p : in type_point) is 
-			--d : type_distance := Y (p);
-		--begin
-			--if d < Y (result.smallest) then
-				--set (axis => Y, value => d, point => result.smallest);
-			--end if;
-		--end update_smallest_y;
-
-		--use pac_polygon_segments;
-
-		--procedure query_segment (c : in pac_polygon_segments.cursor) is 
-		--begin
-			--case element (c).shape is
-				--when LINE =>
-					--update_greatest_x (element (c).segment_line.start_point);
-					--update_greatest_y (element (c).segment_line.start_point);
-					--update_smallest_x (element (c).segment_line.start_point);
-					--update_smallest_y (element (c).segment_line.start_point);
-
-					--update_greatest_x (element (c).segment_line.end_point);
-					--update_greatest_y (element (c).segment_line.end_point);
-					--update_smallest_x (element (c).segment_line.end_point);
-					--update_smallest_y (element (c).segment_line.end_point);
-
-				--when ARC =>
-					--null; -- CS
-
-			--end case;
-		--end query_segment;
-		
-	--begin
-		--if polygon.contours.circular then
-			--null; -- CS
-		--else
-			--iterate (polygon.contours.segments, query_segment'access);
-		--end if;
-		
-		--return result;
-	--end get_dimensions;
 
 	
 	procedure transpose_polygon (
@@ -1318,6 +948,7 @@ package body et_geometry_2.polygons is
 		end if;			
 	end rotate_by;
 
+
 	
 	function to_string (scale : in type_polygon_scale) return string is begin
 		return type_polygon_scale'image (scale);
@@ -1393,24 +1024,238 @@ package body et_geometry_2.polygons is
 
 	
 
+	function is_vertex (
+		polygon	: in type_polygon_base;
+		point	: in type_point)
+		return boolean
+	is
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE =>
+					if element (c).segment_line.start_point = point then
+						proceed := false;
+					end if;
+					
+				when ARC =>
+					if element (c).segment_arc.start_point = point then
+						proceed := false;
+					end if;
+			
+			end case;
+		end query_segment;
+		
+	begin
+		iterate (
+			segments	=> polygon.contours.segments,
+			process		=> query_segment'access,
+			proceed		=> proceed'access);
+
+		return not proceed;
+	end is_vertex;
+
+
+
+	function get_lower_left_corner (
+		polygon	: in type_polygon)
+		return type_lower_left_corner
+	is
+		result : type_lower_left_corner;
+
+		boundaries : constant type_boundaries := get_boundaries (polygon, zero);
+	begin
+		-- compose the lower left corner point:
+		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
+
+		-- figure out whether the point is real or virtual:
+		case get_point_to_polygon_status (polygon, to_vector (result.point)).location is
+			when INSIDE =>
+				result.status := REAL;
+				
+			when OUTSIDE | ON_EDGE | ON_VERTEX =>
+				result.status := VIRTUAL;
+		end case;
+		
+		return result;
+	end get_lower_left_corner;
+	
+	
+-- private
+
+	function get_shortest_distance (
+		polygon	: in type_polygon;
+		point	: in type_vector)
+		return type_float_internal
+	is
+		result : type_float_internal := type_float_internal'last;
+		
+		procedure update (d : in type_float_internal) is begin
+			--put_line (to_string (d));
+			if d < result then
+				result := d;
+			end if;
+		end update;
+
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is
+			s : constant type_polygon_segment := element (c);
+		begin
+			case s.shape is
+				when LINE =>
+					--put_line (to_string (s.segment_line));
+					update (get_shortest_distance (point, s.segment_line));
+
+				when ARC =>
+					--put_line (to_string (s.segment_arc));
+					update (get_shortest_distance (point, s.segment_arc));
+					
+			end case;
+		end query_segment;
+
+		
+	begin -- get_shortest_distance
+		if polygon.contours.circular then
+			result := get_shortest_distance (point, polygon.contours.circle);
+		else
+			polygon.contours.segments.iterate (query_segment'access);				
+		end if;			
+
+		--set_absolute (result, type_distance (round (get_absolute (result))));
+		
+		return result;
+	end get_shortest_distance;
+
+
+	function is_vertex (
+		polygon	: in type_polygon;
+		point	: in type_vector)
+		return boolean
+	is
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE =>
+					if to_vector (element (c).segment_line.start_point) = point then
+						proceed := false;
+					end if;
+					
+				when ARC =>
+					if to_vector (element (c).segment_arc.start_point) = point then
+						proceed := false;
+					end if;
+			
+			end case;
+		end query_segment;
+		
+	begin
+		iterate (
+			segments	=> polygon.contours.segments,
+			process		=> query_segment'access,
+			proceed		=> proceed'access);
+
+		return not proceed;
+	end is_vertex;
+
+
+
+	function get_segment_edge (
+		polygon	: in type_polygon;
+		point	: in type_vector)
+		return pac_polygon_segments.cursor
+	is
+		result : pac_polygon_segments.cursor;
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				when LINE => 
+					if on_line (point, element (c).segment_line) then
+						result := c;
+						proceed := false; -- abort iteration
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+		end query_segment;
+		
+	begin
+		-- Make sure the given point is NOT a vertex:
+		-- CS: Maybe no need if caller cares for this check.
+		if is_vertex (polygon, point) then
+			raise constraint_error with "Point is a vertex !";
+		else
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_segment_edge;
 
 	
--- 		function to_corner_easing (easing : in string) return type_corner_easing is begin
--- 			return type_corner_easing'value (easing);
--- 		end;
--- 
--- 		function to_string (easing : in type_corner_easing) return string is begin
--- 			return to_lower (type_corner_easing'image (easing));
--- 		end to_string;
+	function get_neigboring_edges (
+		polygon	: in type_polygon;
+		vertex	: in type_vector)
+		return type_neigboring_edges
+	is
+		result : type_neigboring_edges;
+		proceed : aliased boolean := true;
+
+		end_found, start_found : boolean := false;
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			--put_line ("test: " & to_string (element (c)));
+			
+			case element (c).shape is
+			
+				when LINE => 
+					if to_vector (element (c).segment_line.end_point) = vertex then
+						--put_line ("end");
+						result.edge_1 := c;
+						end_found := true;
+					end if;
+
+					if to_vector (element (c).segment_line.start_point) = vertex then
+						--put_line ("start");
+						result.edge_2 := c;
+						start_found := true;
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+
+			-- Abort iteration once start and end point have been found
+			-- ("proceed" is low-active):
+			proceed := not (end_found and start_found);
+			
+		end query_segment;
+
+	begin
+		-- Make sure the given point IS a vertex:
+		if is_vertex (polygon, vertex) then
+			iterate (polygon.contours.segments, query_segment'access, proceed'access);					 
+		else
+			raise constraint_error with "Point is a vertex !";
+		end if;
+
+		-- Safety check:
+		-- Two edges must have been found. Otherwise raise exception:
+		if result.edge_1 = pac_polygon_segments.no_element 
+		or result.edge_2 = pac_polygon_segments.no_element
+		then
+			raise constraint_error with "Search for neigboring edges incomplete !";
+		end if;
+
+		-- CS exception message if polygon consists of just a circle.
+		return result;
+	end get_neigboring_edges;
 
 
--- 		procedure move (
--- 			polygon : in out type_polygon_base;
--- 			offset	: in type_point) is
--- 		begin
--- 			-- CS move segments of polygon
--- 			null;
--- 		end;
+
+	function to_string (status : in type_location) return string is begin
+		return type_location'image (status);
+	end to_string;
 
 
 	
@@ -1429,13 +1274,6 @@ package body et_geometry_2.polygons is
 		
 		return result;
 	end "<";
-	
-
-	
-	function to_string (status : in type_location) return string is begin
-		return type_location'image (status);
-	end to_string;
-
 	
 	
 	
@@ -1491,7 +1329,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_point_to_polygon_status (
-		polygon		: in type_polygon_base;	
+		polygon		: in type_polygon;	
 		point		: in type_vector) -- CS rename to vector ?
 		return type_point_to_polygon_status 
 	is
@@ -1897,7 +1735,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_location (
-		polygon		: in type_polygon_base;	
+		polygon		: in type_polygon;	
 		point		: in type_vector)
 		return type_location
 	is begin
@@ -1905,96 +1743,10 @@ package body et_geometry_2.polygons is
 	end get_location;
 
 	
+
+
+
 	
-
-	function get_lower_left_corner (
-		polygon	: in type_polygon_base)
-		return type_lower_left_corner
-	is
-		result : type_lower_left_corner;
-
-		boundaries : constant type_boundaries := get_boundaries (polygon, zero);
-	begin
-		-- compose the lower left corner point:
-		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-
-		-- figure out whether the point is real or virtual:
-		case get_point_to_polygon_status (polygon, to_vector (result.point)).location is
-			when INSIDE =>
-				result.status := REAL;
-				
-			when OUTSIDE | ON_EDGE | ON_VERTEX =>
-				result.status := VIRTUAL;
-		end case;
-		
-		return result;
-	end get_lower_left_corner;
-	
-
-
-	function is_vertex (
-		polygon	: in type_polygon_base;
-		point	: in type_point)
-		return boolean
-	is
-		proceed : aliased boolean := true;
-
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			case element (c).shape is
-				when LINE =>
-					if element (c).segment_line.start_point = point then
-						proceed := false;
-					end if;
-					
-				when ARC =>
-					if element (c).segment_arc.start_point = point then
-						proceed := false;
-					end if;
-			
-			end case;
-		end query_segment;
-		
-	begin
-		iterate (
-			segments	=> polygon.contours.segments,
-			process		=> query_segment'access,
-			proceed		=> proceed'access);
-
-		return not proceed;
-	end is_vertex;
-
-
-	function is_vertex (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return boolean
-	is
-		proceed : aliased boolean := true;
-
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			case element (c).shape is
-				when LINE =>
-					if to_vector (element (c).segment_line.start_point) = point then
-						proceed := false;
-					end if;
-					
-				when ARC =>
-					if to_vector (element (c).segment_arc.start_point) = point then
-						proceed := false;
-					end if;
-			
-			end case;
-		end query_segment;
-		
-	begin
-		iterate (
-			segments	=> polygon.contours.segments,
-			process		=> query_segment'access,
-			proceed		=> proceed'access);
-
-		return not proceed;
-	end is_vertex;
-
 	
 	procedure toggle_direction (
 		d : in out type_intersection_direction) 
@@ -3764,7 +3516,6 @@ package body et_geometry_2.polygons is
 				--vertices.delete (position => c, count => collected_vertices - ct_ccw);
 			--end if;
 		end delete_cw;
-
 
 		
 	begin

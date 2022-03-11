@@ -109,12 +109,6 @@ package et_geometry_2.polygons is
 		polygon	: in type_polygon_base;
 		edge	: in type_line)
 		return pac_polygon_segments.cursor;
-	
-
-	function get_segment_edge (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return pac_polygon_segments.cursor;
 
 	
 	-- Returns the cursor to the edge
@@ -179,19 +173,9 @@ package et_geometry_2.polygons is
 		point	: in type_point)
 		return type_distance_polar;
 
-	function get_shortest_distance (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return type_float_internal;
 
 	
-	
-	-- Returns the segments of a polygon that start or end 
-	-- at the given corner point:
-	--function get_segments_on_corner_point (
-		--polygon	: in type_polygon_base;
-		--corner	: in type_point)
-		--return type_polygon_segments;
+
 
 	
 	-- Loads the given segments into given polygon.
@@ -364,93 +348,8 @@ package et_geometry_2.polygons is
 	end record;
 
 	
-	-- The intersection of a probe line with the polygon side can
-	-- be described as:
-	type type_probe_line_intersection is record
-		x_position	: type_float_internal;
-		angle		: type_rotation := zero_rotation;
-		segment		: type_intersected_segment;
-	end record;
-
-	
-	-- Subtracts 180 degree from the given angle if it is
-	-- greater 90 degrees and returns the absolute value of the difference.
-	-- Otherwise returns the given angle unchanged.		
-	--function subtract_180_if_greater_90 (
-		--angle : in type_rotation)
-		--return type_rotation;
-
-	
-	function "<" (left, right : in type_probe_line_intersection)
-		return boolean;
-	
-
-	
-	package pac_probe_line_intersections is new
-		doubly_linked_lists (type_probe_line_intersection);
 
 
-
-	-- The location of a point relative to a polygon:
-	type type_location is (
-		ON_EDGE,
-		INSIDE,
-		OUTSIDE,
-		ON_VERTEX);
-	
-	
-	function to_string (status : in type_location) return string;
-
-
-
-	type type_point_to_polygon_status (location : type_location) is record
-		-- The point where the probe line has started:
-		start			: type_vector; 
-
-		-- The intersections of the probe line with the polygon edges:
-		intersections	: pac_probe_line_intersections.list;
-
-		case location is
-			when OUTSIDE | INSIDE =>
-				-- The shortest distance of the start point (of the probe line)
-				-- to the polygon:
-				distance		: type_float_internal;
-				
-			when ON_EDGE =>
-				edge : pac_polygon_segments.cursor;
-
-			when ON_VERTEX =>
-				edges : type_neigboring_edges;
-
-		end case;
-	end record;
-
-	
-		
-	
-	-- Returns the query result as a human readable string:
-	function to_string (
-		i : in type_point_to_polygon_status)
-		return string;
-
-	
-
-	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge:
-	function get_point_to_polygon_status (
-		polygon		: in type_polygon_base;	
-		point		: in type_vector)
-		return type_point_to_polygon_status;
-
-
-	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge.
-	-- Similar to get_point_to_polygon_status but the result is reduced
-	-- to INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
-	function get_location (
-		polygon		: in type_polygon_base;	
-		point		: in type_vector)
-		return type_location;
 
 
 	
@@ -474,10 +373,6 @@ package et_geometry_2.polygons is
 	end record;
 
 	
-	-- Searches the lower left corner of a polygon:
-	function get_lower_left_corner (
-		polygon	: in type_polygon_base)
-		return type_lower_left_corner;
 
 
 	-- Returns true if the given point is a vertex
@@ -487,13 +382,6 @@ package et_geometry_2.polygons is
 		point	: in type_point)
 		return boolean;
 
-	function is_vertex (
-		polygon	: in type_polygon_base;
-		point	: in type_vector)
-		return boolean;
-
-
-
 
 	
 	
@@ -501,9 +389,126 @@ package et_geometry_2.polygons is
 	type type_polygon is new type_polygon_base with null record;
 
 
+	-- Searches the lower left corner of a polygon:
+	function get_lower_left_corner (
+		polygon	: in type_polygon)
+		return type_lower_left_corner;
+
+	
 	
 private
 
+	function get_shortest_distance (
+		polygon	: in type_polygon	;
+		point	: in type_vector)
+		return type_float_internal;
+
+	
+	function is_vertex (
+		polygon	: in type_polygon;
+		point	: in type_vector)
+		return boolean;
+
+	function get_segment_edge (
+		polygon	: in type_polygon;
+		point	: in type_vector)
+		return pac_polygon_segments.cursor;
+
+	
+	function get_neigboring_edges (
+		polygon	: in type_polygon;
+		vertex	: in type_vector)
+		return type_neigboring_edges;
+
+
+	-- The location of a point relative to a polygon:
+	type type_location is (
+		ON_EDGE,
+		INSIDE,
+		OUTSIDE,
+		ON_VERTEX);
+	
+	function to_string (status : in type_location) return string;
+
+
+	
+
+	-- The intersection of a probe line with the polygon side can
+	-- be described as:
+	type type_probe_line_intersection is record
+		x_position	: type_float_internal;
+		angle		: type_rotation := zero_rotation;
+		segment		: type_intersected_segment;
+	end record;
+	
+	-- Subtracts 180 degree from the given angle if it is
+	-- greater 90 degrees and returns the absolute value of the difference.
+	-- Otherwise returns the given angle unchanged.		
+	--function subtract_180_if_greater_90 (
+		--angle : in type_rotation)
+		--return type_rotation;
+
+	
+	function "<" (left, right : in type_probe_line_intersection)
+		return boolean;
+	
+	package pac_probe_line_intersections is new
+		doubly_linked_lists (type_probe_line_intersection);
+
+		
+	
+
+	type type_point_to_polygon_status (location : type_location) is record
+		-- The point where the probe line has started:
+		start			: type_vector; 
+
+		-- The intersections of the probe line with the polygon edges:
+		intersections	: pac_probe_line_intersections.list;
+
+		case location is
+			when OUTSIDE | INSIDE =>
+				-- The shortest distance of the start point (of the probe line)
+				-- to the polygon:
+				distance : type_float_internal;
+				
+			when ON_EDGE =>
+				edge : pac_polygon_segments.cursor;
+
+			when ON_VERTEX =>
+				edges : type_neigboring_edges;
+
+		end case;
+	end record;
+
+	
+		
+	
+	-- Returns the query result as a human readable string:
+	function to_string (
+		i : in type_point_to_polygon_status)
+		return string;
+		
+	
+
+	-- Detects whether the given point is inside or outside
+	-- the polygon of whether the point lies on an edge:
+	function get_point_to_polygon_status (
+		polygon		: in type_polygon;	
+		point		: in type_vector)
+		return type_point_to_polygon_status;
+
+
+	-- Detects whether the given point is inside or outside
+	-- the polygon of whether the point lies on an edge.
+	-- Similar to get_point_to_polygon_status but the result is reduced
+	-- to INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
+	function get_location (
+		polygon		: in type_polygon;	
+		point		: in type_vector)
+		return type_location;
+
+	
+	
 	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
 	
 	type type_intersection_direction is (
@@ -535,6 +540,7 @@ private
 		end case;
 	end record;
 
+	
 	-- Returns the direction of a supposed intersection of
 	-- the given line on the given point.
 	-- The given point:

@@ -53,7 +53,7 @@ package body et_geometry_2.polygons.offsetting is
 
 
 	procedure offset_polygon (
-		polygon		: in out type_polygon_base'class;
+		polygon		: in out type_polygon'class;
 		offset		: in type_distance) 
 	is
 		
