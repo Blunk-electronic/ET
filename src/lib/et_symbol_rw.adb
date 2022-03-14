@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -98,6 +98,7 @@ package body et_symbol_rw is
 		return text; -- a 2d point has just x and y
 	end position;
 
+	
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
@@ -114,13 +115,11 @@ package body et_symbol_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				--set_x (point, to_distance (f (line, place + 1)));
-				set (X, to_distance (f (line, place + 1)), point);
+				point.set (X, to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				--set_y (point, to_distance (f (line, place + 1)));
-				set (Y, to_distance (f (line, place + 1)),point);
+				point.set (Y, to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));
@@ -131,6 +130,7 @@ package body et_symbol_rw is
 		
 		return point;
 	end to_position;
+
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
 		use pac_text;
@@ -145,6 +145,7 @@ package body et_symbol_rw is
 				);
 	end write_text_properties;
 
+	
 	procedure create_symbol (
 	-- Creates a symbol and stores it in container et_symbols.symbols.
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym

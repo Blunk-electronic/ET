@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -448,7 +448,8 @@ package body et_kicad_libraries is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
-			
+
+	
 	function to_point (x_in, y_in : in string) return type_point is
 		point : type_point;
 		x, y : type_position_axis;
@@ -456,14 +457,13 @@ package body et_kicad_libraries is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		--set_x (point, x);
-		set (et_geometry.X, x, point);
-		--set_y (point, y);
-		set (et_geometry.Y, y, point);
+		point.set (et_geometry.X, x);
+		point.set (et_geometry.Y, y);
 		
 		return point;
 	end to_point;
 
+	
 	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
@@ -1434,11 +1434,9 @@ package body et_kicad_libraries is
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					--set_x (point, mil_to_distance (mil => f (line, pos))); -- set x
-					set (X, mil_to_distance (mil => f (line, pos)), point); -- set x
+					point.set (X, mil_to_distance (mil => f (line, pos))); -- set x
 				
-					--set_y (point, mil_to_distance (mil => f (line, pos+1))); -- set y (right after the x-field)
-					set (Y, mil_to_distance (mil => f (line, pos + 1)), point); -- set y (right after the x-field)
+					point.set (Y, mil_to_distance (mil => f (line, pos + 1))); -- set y (right after the x-field)
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1456,6 +1454,7 @@ package body et_kicad_libraries is
 				return polyline;
 			end to_polyline;
 
+			
 			function to_rectangle (line : in type_fields_of_line) return type_symbol_rectangle is
 			-- Returns from the given fields of a line a type_rectangle.
 				rectangle	: type_symbol_rectangle;
@@ -1469,21 +1468,15 @@ package body et_kicad_libraries is
 				-- #9 : fill style N/F/f no fill/foreground/background
 
 			begin -- to_rectangle
-				--set_x (rectangle.corner_A, mil_to_distance (mil => f (line,2)));
-				set (X, mil_to_distance (mil => f (line,2)), rectangle.corner_A);
-				
-				--set_y (rectangle.corner_A, mil_to_distance (mil => f (line,3)));
-				set (Y, mil_to_distance (mil => f (line,3)), rectangle.corner_A);
+				rectangle.corner_A.set (X, mil_to_distance (mil => f (line,2)));
+				rectangle.corner_A.set (Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.corner_A, axis => x);
 				
-				--set_x (rectangle.corner_B, mil_to_distance (mil => f (line,4)));
-				set (X, mil_to_distance (mil => f (line,4)), rectangle.corner_B);
-
-				--set_y (rectangle.corner_B, mil_to_distance (mil => f (line,5)));
-				set (Y, mil_to_distance (mil => f (line,5)), rectangle.corner_B);
+				rectangle.corner_B.set (X, mil_to_distance (mil => f (line,4)));
+				rectangle.corner_B.set (Y, mil_to_distance (mil => f (line,5)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1503,6 +1496,7 @@ package body et_kicad_libraries is
 				return rectangle;
 			end to_rectangle;
 
+			
 			function to_circle (line : in type_fields_of_line) return type_symbol_circle is
 			-- Returns from the given fields of a circle a type_circle.
 				circle	: type_symbol_circle;
@@ -1517,11 +1511,8 @@ package body et_kicad_libraries is
 				--  #8 : fill style N/F/f no fill/foreground/background
 
 			begin -- to_circle
-				--set_x (circle.center, mil_to_distance (mil => f (line,2)));
-				set (X, mil_to_distance (mil => f (line,2)), circle.center);
-				
-				--set_y (circle.center, mil_to_distance (mil => f (line,3)));
-				set (Y, mil_to_distance (mil => f (line,3)), circle.center);
+				circle.center.set (X, mil_to_distance (mil => f (line,2)));
+				circle.center.set (Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1543,6 +1534,7 @@ package body et_kicad_libraries is
 				return circle;
 			end to_circle;
 
+			
 			function to_arc (line : in type_fields_of_line) return type_symbol_arc is
 			-- Returns from the given fields of an arc a type_arc.
 				arc		: type_symbol_arc;
@@ -1562,11 +1554,8 @@ package body et_kicad_libraries is
 				-- #13..14 : end point (x/y)
 
 			begin -- to_arc
-				--set_x (arc.center, mil_to_distance (mil => f (line,2)));
-				set (X, mil_to_distance (mil => f (line,2)), arc.center);
-				
-				--set_y (arc.center, mil_to_distance (mil => f (line,3)));
-				set (Y, mil_to_distance (mil => f (line,3)), arc.center);
+				arc.center.set (X, mil_to_distance (mil => f (line,2)));
+				arc.center.set (Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1592,21 +1581,15 @@ package body et_kicad_libraries is
 
 				arc.fill		:= to_fill (f (line,10));
 				
-				--set_x (arc.start_point, mil_to_distance (mil => f (line,11)));
-				set (X, mil_to_distance (mil => f (line,11)), arc.start_point);
-				
-				--set_y (arc.start_point, mil_to_distance (mil => f (line,12)));
-				set (Y, mil_to_distance (mil => f (line,12)), arc.start_point);
+				arc.start_point.set (X, mil_to_distance (mil => f (line,11)));
+				arc.start_point.set (Y, mil_to_distance (mil => f (line,12)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.start_point, axis => x);
 
-				--set_x (arc.end_point, mil_to_distance (mil => f (line,13)));
-				set (X, mil_to_distance (mil => f (line,13)), arc.end_point);
-				
-				--set_y (arc.end_point, mil_to_distance (mil => f (line,14)));
-				set (Y, mil_to_distance (mil => f (line,14)), arc.end_point);
+				arc.end_point.set (X, mil_to_distance (mil => f (line,13)));
+				arc.end_point.set (Y, mil_to_distance (mil => f (line,14)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1615,7 +1598,8 @@ package body et_kicad_libraries is
 				-- CS: log properties
 				return arc;
 			end to_arc;
-	
+
+			
 			function to_text (line : in type_fields_of_line) return et_symbols.type_text is
 			-- Returns from the given fields of a text a type_symbol_text.
 				text : et_symbols.type_text;
@@ -1685,11 +1669,8 @@ package body et_kicad_libraries is
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
 				
-				--set_x (text.position, mil_to_distance (mil => f (line,3)));
-				set (X, mil_to_distance (mil => f (line,3)), text.position);
-				
-				--set_y (text.position, mil_to_distance (mil => f (line,4)));
-				set (Y, mil_to_distance (mil => f (line,4)), text.position);
+				text.position.set (X, mil_to_distance (mil => f (line,3)));
+				text.position.set (Y, mil_to_distance (mil => f (line,4)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1711,6 +1692,7 @@ package body et_kicad_libraries is
 				return text;
 			end to_text;
 
+			
 			function to_port (line : in type_fields_of_line) return type_port_library is
 			-- Converts the given line to a type_port.
 			
@@ -1840,8 +1822,8 @@ package body et_kicad_libraries is
 				tmp_terminal_name := et_terminals.pac_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
 
 				-- compose position
-				set (X, mil_to_distance (mil => f (line,4)), port.position);
-				set (Y, mil_to_distance (mil => f (line,5)), port.position);
+				port.position.set (X, mil_to_distance (mil => f (line,4)));
+				port.position.set (Y, mil_to_distance (mil => f (line,5)));
 				--mirror (point => port.position, axis => x);
 
 				-- compose length
@@ -1894,7 +1876,8 @@ package body et_kicad_libraries is
 			function to_field (
 				line 	: in type_fields_of_line;
 				meaning	: in type_placeholder_meaning) 
-				return type_text_placeholder is
+				return type_text_placeholder 
+			is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
@@ -1953,11 +1936,8 @@ package body et_kicad_libraries is
 
 				end case;
 				
-				--set_x (text.position, mil_to_distance (mil => f (line,3)));
-				set (X, mil_to_distance (mil => f (line,3)), text.position);
-
-				--set_y (text.position, mil_to_distance (mil => f (line,4)));
-				set (Y, mil_to_distance (mil => f (line,4)), text.position);
+				text.position.set (X, mil_to_distance (mil => f (line,3)));
+				text.position.set (Y, mil_to_distance (mil => f (line,4)));
 				
 				text.size := mil_to_distance (mil => f (line,5));
 
@@ -1978,6 +1958,7 @@ package body et_kicad_libraries is
 
 			end to_field;
 
+			
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
 			-- Validates the fields in CONTEXT WITH EACH OTHER.

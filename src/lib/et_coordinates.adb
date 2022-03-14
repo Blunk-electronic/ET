@@ -136,10 +136,12 @@ package body et_coordinates is
 		use et_geometry;
 	begin
 -- 		position.x := position.x + offset.x;
-		set (X, get_x (position) + get_x (offset), position);
+		--set (X, get_x (position) + get_x (offset), position);
+		position.set (X, get_x (position) + get_x (offset));
 		
 -- 		position.y := position.y + offset.y;
-		set (Y, get_y (position) + get_y (offset), position);
+		--set (Y, get_y (position) + get_y (offset), position);
+		position.set (Y, get_y (position) + get_y (offset));
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1350,8 +1350,8 @@ is
 	procedure make_gui_sheet (
 	-- Builds the hierachic sheet.
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		sheet		: type_hierarchic_sheet; -- the hierarchical sheet being built
 		sheet_name	: type_hierarchic_sheet_name; -- incl. file name and sheet name
 
@@ -1430,8 +1430,8 @@ is
 			--log (text => "path " & to_string (path (sheet.coordinates)));
 			set_sheet (sheet.coordinates, sheet_number);
 			
-			set (X, mil_to_distance (f (element (line_cursor), 2)), sheet.coordinates);
-			set (Y, mil_to_distance (f (element (line_cursor), 3)), sheet.coordinates);
+			sheet.coordinates.set (X, mil_to_distance (f (element (line_cursor), 2)));
+			sheet.coordinates.set (Y, mil_to_distance (f (element (line_cursor), 3)));
 
 			sheet.size_x := mil_to_distance (f (element (line_cursor), 4));
 			sheet.size_y := mil_to_distance (f (element (line_cursor), 5));                                
@@ -1562,6 +1562,7 @@ is
 		end if;
 		return result;
 	end net_segment_header;
+
 	
 	procedure make_net_segment (
 		lines			: in pac_lines_of_file.list;
@@ -1588,10 +1589,10 @@ is
 		set_sheet (segment.coordinates_end, sheet_number);
 
 		-- the x/y position
-		set (X, mil_to_distance (f (element (line_cursor), 1)), segment.coordinates_start);
-		set (Y, mil_to_distance (f (element (line_cursor), 2)), segment.coordinates_start);
-		set (X, mil_to_distance (f (element (line_cursor), 3)), segment.coordinates_end);
-		set (Y, mil_to_distance (f (element (line_cursor), 4)), segment.coordinates_end);
+		segment.coordinates_start.set (X, mil_to_distance (f (element (line_cursor), 1)));
+		segment.coordinates_start.set (Y, mil_to_distance (f (element (line_cursor), 2)));
+		segment.coordinates_end.set (X, mil_to_distance (f (element (line_cursor), 3)));
+		segment.coordinates_end.set (Y, mil_to_distance (f (element (line_cursor), 4)));
 
 		-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 		-- If a net segment has zero length, issue a warning.
@@ -1608,6 +1609,7 @@ is
 		--log_indentation_down;
 	end make_net_segment;
 
+	
 	function junction_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 		result : boolean := false;
@@ -1622,6 +1624,7 @@ is
 		return result;
 	end junction_header;
 
+	
 	procedure make_junction (
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level) is
@@ -1636,8 +1639,8 @@ is
 		procedure append_junction (
 		-- add junction to module.junctions
 			module_name : in type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
-		begin
+			module		: in out et_kicad.pcb.type_module) 
+		is begin
 			type_junctions.append (
 				container	=> module.junctions,
 				new_item	=> junction);
@@ -1651,10 +1654,10 @@ is
 		set_sheet (junction.coordinates, sheet_number);
 		
 		--set_x (junction.coordinates, mil_to_distance (f (line,3)));
-		set (X, mil_to_distance (f (line,3)), junction.coordinates);
+		junction.coordinates.set (X, mil_to_distance (f (line,3)));
 		
 		--set_y (junction.coordinates, mil_to_distance (f (line,4)));
-		set (Y, mil_to_distance (f (line,4)), junction.coordinates);
+		junction.coordinates.set (Y, mil_to_distance (f (line,4)));
 
 		-- for the log
 		log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
@@ -1671,6 +1674,7 @@ is
 		--log_indentation_down;
 	end make_junction;
 
+	
 	function simple_label_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a simple label like 
 	-- "Text Label 2350 3250 0 60 ~ 0"
@@ -1685,9 +1689,11 @@ is
 		return result;
 	end simple_label_header;
 
+	
 	procedure make_simple_label (
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 	-- Builds a simple net label and appends it to the collection of wild simple labels.
 
 		-- The label header "Text Label 2350 3250 0 60 ~ 0" and the next line like
@@ -1703,8 +1709,8 @@ is
 		line_cursor := pac_lines_of_file.first (lines);
 
 		-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
-		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
+		label.coordinates.set (X, mil_to_distance (f (element (line_cursor), 3)));
+		label.coordinates.set (Y, mil_to_distance (f (element (line_cursor), 4)));
 		
 		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.size := mil_to_distance (f (element (line_cursor), 6));
@@ -1737,6 +1743,7 @@ is
 		--log_indentation_down;
 	end make_simple_label;
 
+	
 	function tag_label_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a global or hierarchic label like 
 	-- "Text HLabel 2700 2000 0 60 Input ~ 0" or
@@ -1753,11 +1760,12 @@ is
 		return result;
 	end tag_label_header;
 
+	
+	-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
 	procedure make_tag_label (
 		lines 			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) is
-	-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
-
+		log_threshold	: in type_log_level) 
+	is
 		-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
 		-- "net_name_abc" is read here. It contains the supposed net name.
 
@@ -1780,8 +1788,8 @@ is
 			label.global := true;
 		end if;
 
-		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
-		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
+		label.coordinates.set (X, mil_to_distance (f (element (line_cursor), 3)));
+		label.coordinates.set (Y, mil_to_distance (f (element (line_cursor), 4)));
 
 		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.direction := to_direction (f (element (line_cursor), 7));
@@ -1816,6 +1824,7 @@ is
 		--log_indentation_down;
 	end make_tag_label;
 
+	
 	function text_note_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a text note like
 	-- Text Notes 7100 6700 0 67 Italic 13
@@ -1831,6 +1840,7 @@ is
 		return result;
 	end text_note_header;
 
+	
 	procedure make_text_note (
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
@@ -1858,8 +1868,8 @@ is
 		set_path (note.position, path_to_sheet);
 		set_sheet (note.position, sheet_number);
 
-		set (X, mil_to_distance (f (element (line_cursor), 3)), note.position);
-		set (Y, mil_to_distance (f (element (line_cursor), 4)), note.position);
+		note.position.set (X, mil_to_distance (f (element (line_cursor), 3)));
+		note.position.set (Y, mil_to_distance (f (element (line_cursor), 4)));
 		
 		rotation := to_relative_rotation (f (element (line_cursor), 5));
 
@@ -1905,6 +1915,7 @@ is
 		--log_indentation_down;
 	end make_text_note;
 
+	
 	function component_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a component.
 	-- The header is "$Comp"	
@@ -1920,6 +1931,7 @@ is
 		end if;
 	end component_header;
 
+	
 	function component_footer (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a footer of a component.
 	-- The footer is "$EndComp"
@@ -2004,7 +2016,8 @@ is
 		field_value			: type_text_placeholder (meaning => VALUE);	-- like 74LS00
 		field_package		: type_text_placeholder (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
 		field_datasheet		: type_text_placeholder (meaning => DATASHEET); -- might be useful for some special components
-	
+
+		
 		function to_field return type_text_placeholder is
 		-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
 			text_position : type_point;
@@ -2014,8 +2027,8 @@ is
 			-- test if the field content is longer than allowed:
 			check_text_content_length (f (element (line_cursor), 3));
 			
-			set (X, mil_to_distance (f (element (line_cursor), 5)), text_position);
-			set (Y, mil_to_distance (f (element (line_cursor), 6)), text_position);
+			text_position.set (X, mil_to_distance (f (element (line_cursor), 5)));
+			text_position.set (Y, mil_to_distance (f (element (line_cursor), 6)));
 
 			-- Kicad provides the absolute position of a text placeholder.
 			-- But ET requires the position relative to the unit:
@@ -2053,6 +2066,7 @@ is
 				);
 		end to_field;
 
+		
 		procedure check_text_fields (log_threshold : in type_log_level) is 
 		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
 		-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to 
@@ -2072,6 +2086,7 @@ is
 				raise constraint_error;
 			end missing_field;
 
+			
 			procedure process_alternative_references is
 			-- Looks up alternative_references. The are provided in the schematic file in lines like:
 			-- AR Path="/5B7CFC57/5A991D18" Ref="RPH19"  Part="1" 
@@ -2115,6 +2130,7 @@ is
 					next (alt_ref_cursor);
 				end loop;
 			end process_alternative_references;
+
 			
 		begin -- check_text_fields
 			log_indentation_up;
@@ -2974,8 +2990,8 @@ is
 			-- Read unit coordinates from a line like "P 3200 4500".
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_coord then -- "P"
 			
-				set (X, mil_to_distance (f (element (line_cursor), 2)), unit_position); -- "3200"
-				set (Y, mil_to_distance (f (element (line_cursor), 3)), unit_position); -- "4500"
+				unit_position.set (X, mil_to_distance (f (element (line_cursor), 2))); -- "3200"
+				unit_position.set (Y, mil_to_distance (f (element (line_cursor), 3))); -- "4500"
 
 				-- The unit coordinates is more than just x/y. We also have path and sheet number:
 				set_path (unit_position, path_to_sheet);
@@ -3102,6 +3118,7 @@ is
 		end if;
 		return result;
 	end no_connection_header;
+
 	
 	procedure make_no_connection (line : in type_fields_of_line) is
 	-- Builds a no-connect flag and stores it a wild list of no-connection-flags
@@ -3124,10 +3141,8 @@ is
 		set_path (no_connection_flag.coordinates, path_to_sheet);
 		set_sheet (no_connection_flag.coordinates, sheet_number);
 		
-		--set_x (no_connection_flag.coordinates, mil_to_distance (f (line,3)));
-		set (X, mil_to_distance (f (line,3)), no_connection_flag.coordinates);
-		--set_y (no_connection_flag.coordinates, mil_to_distance (f (line,4)));
-		set (Y, mil_to_distance (f (line,4)), no_connection_flag.coordinates);
+		no_connection_flag.coordinates.set (X, mil_to_distance (f (line,3)));
+		no_connection_flag.coordinates.set (Y, mil_to_distance (f (line,4)));
 		
 		-- for the log
 		log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
@@ -3140,6 +3155,7 @@ is
 			process		=> append_no_connect_flag'access);
 		
 	end make_no_connection;
+
 	
 begin -- read
 	

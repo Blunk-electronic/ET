@@ -421,7 +421,7 @@ package body et_geometry_2.polygons is
 			new_y : type_distance;
 		begin
 			new_y := offset - get_y (point);
-			set (Y, new_y, point);
+			point.set (Y, new_y);
 		end move;
 
 		

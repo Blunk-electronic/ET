@@ -229,18 +229,11 @@ package et_geometry_1 is
 
 	
 
-	--type type_point_base is abstract tagged record
-		--x, y : type_position_axis := zero;
-	--end record;
-
-	--type type_point is new type_point_base with null record;
 
 	type type_point is tagged record
 		x, y : type_position_axis := zero;
 	end record;
 
-	--type type_point is new type_point_base with null record;
-	-- CS need an abstract type_point_abstract ?
 	
 	origin			: constant type_point;		
 	far_upper_left	: constant type_point;
@@ -258,14 +251,17 @@ package et_geometry_1 is
 
 
 	
-	function round (point : in type_point)
+	function round (
+		point : in type_point)
 		return type_point'class;
 
-	procedure round (point : in out type_point'class);
+	procedure round (
+		point : in out type_point);
 
 	
 	
-	function to_distance_relative (p : in type_point)
+	function to_distance_relative (
+		p : in type_point)
 		return type_distance_relative;
 
 
@@ -273,7 +269,9 @@ package et_geometry_1 is
 	-- Returns the rotation of the given point about the origin.
 	-- If for example point is (1/1) then the return is 45 degree.
 	-- if point is (-1/-1) then the return is -135 degree.
-	function get_rotation (point : in type_point) return type_rotation;
+	function get_rotation (
+		point : in type_point)
+		return type_rotation;
 
 	
 	
@@ -289,15 +287,22 @@ package et_geometry_1 is
 
 	-- Inverts the given relative distance by 
 	-- multiplying x by -1 and y by -1.
-	function invert (d : in type_distance_relative) 
+	function invert (
+		d : in type_distance_relative) 
 		return type_distance_relative;
 
 	
 	
 	
 	
-	function get_x (point : in type_point'class) return type_position_axis;
-	function get_y (point : in type_point'class) return type_position_axis;		
+	function get_x (
+		point : in type_point)
+		return type_position_axis;
+
+	
+	function get_y (
+		point : in type_point)
+		return type_position_axis;	
 
 	
 
@@ -334,6 +339,7 @@ package et_geometry_1 is
 		boundaries_one : in type_boundaries; -- CS rename to b1,b2. do so with other functions below
 		boundaries_two : in type_boundaries)
 		return boolean;
+	
 
 	type type_boundaries_intersection (exists : boolean := true) is record
 		case exists is
@@ -341,6 +347,7 @@ package et_geometry_1 is
 			when FALSE => null;
 		end case;
 	end record;
+
 	
 	-- Returns the intersection area (german: Schnittmenge) of two
 	-- boundaries. If the boundaries do not overlap each other
@@ -349,11 +356,13 @@ package et_geometry_1 is
 		boundaries_one : in type_boundaries;
 		boundaries_two : in type_boundaries)
 		return type_boundaries_intersection;
+
 	
 	-- Adds two boundaries.
 	procedure add (
 		boundaries_one : in out type_boundaries;
 		boundaries_two : in type_boundaries);
+
 	
 	-- Calculates the boundaries of the given points
 	-- connected with a line that has the
@@ -365,6 +374,7 @@ package et_geometry_1 is
 		width		: in type_distance_positive) 
 		return type_boundaries;
 
+	
 	-- Moves the boundaries by the given offset.
 	-- If clip is true, then the boundaries will assume
 	-- the min or max value as defined by type_position_axis.
@@ -375,10 +385,12 @@ package et_geometry_1 is
 		offset		: in type_distance_relative;
 		clip		: in boolean := false);
 
+	
 	-- Rotates the given boundaries by given rotation.
 	procedure rotate (
 		boundaries	: in out type_boundaries;
 		rotation	: in type_rotation);
+	
 	
 	-- In the GUI, in connection with boundaries and bounding boxes a type for
 	-- a rectangular area of the drawing is required.
@@ -426,15 +438,18 @@ package et_geometry_1 is
 		x, y : in type_position_axis) 
 		return type_point'class;
 
+	
 	procedure set (
+		point	: in out type_point;
 		axis 	: in type_axis_2d;
-		value	: in type_position_axis;					 
-		point	: in out type_point'class);
+		value	: in type_position_axis);
 
+	
 	procedure set (
 		point	: in out type_point'class;
 		position: in type_point);
 
+	
 	-- The quadrants of the coordinate system are numbered counter clockwise.
 	-- Quadrant ONE is top right.
 	type type_quadrant is (ONE, TWO, THREE, FOUR);
@@ -444,25 +459,35 @@ package et_geometry_1 is
 	-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
 	-- THREE: point is left of the y-axis AND below the x-axis
 	-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
-	function get_quadrant (point : in type_point) return type_quadrant;
+	function get_quadrant (
+		point : in type_point) 
+		return type_quadrant;
+
 	
 	-- Inverts the given point by multiplying x by -1 and y by -1.
-	function invert (point : in type_point'class) return type_point'class;
+	function invert (
+		point : in type_point'class) 
+		return type_point'class;
 
+	
 	-- Inverts the point on the given axis.
 	function invert (
 		point	: in type_point;
 		axis	: in type_axis_2d)
 		return type_point'class;
-	
-	procedure reset (point : in out type_point'class);
-	-- Moves the given point to the origin (0/0).
 
+	
+	-- Moves the given point to the origin (0/0).
+	procedure reset (
+		point : in out type_point);
+
+	
 	-- Moves a point by the given offset.
 	procedure move_by (
-		point	: in out type_point'class;
+		point	: in out type_point;
 		offset	: in type_distance_relative);
 
+	
 	-- Moves a point to the given position.
 	procedure move_to (
 		point		: in out type_point'class;

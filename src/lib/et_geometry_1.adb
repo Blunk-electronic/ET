@@ -572,14 +572,17 @@ package body et_geometry_1 is
 	end round;
 
 
-	procedure round (point : in out type_point'class) is begin
+	procedure round (
+		point : in out type_point)
+	is begin
 		point.x := type_distance (round (point.x));
 		point.y := type_distance (round (point.y));
 	end round;
 
 	
 	
-	function to_string (distance : in type_distance_relative)
+	function to_string (
+		distance : in type_distance_relative)
 		return string
 	is begin
 		return "distance relative: x/y" 
@@ -590,6 +593,33 @@ package body et_geometry_1 is
 
 	
 	
+
+	
+	function to_distance_relative (p : in type_point)
+		return type_distance_relative
+	is begin
+		return (p.x, p.y);
+	end to_distance_relative;
+
+
+	function get_rotation (
+		point : in type_point) 
+		return type_rotation 
+	is
+		x : constant type_float_internal := type_float_internal (point.x);
+		y : constant type_float_internal := type_float_internal (point.y);
+	begin
+		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		if x = 0.0 and y = 0.0 then
+			return zero_rotation;
+		else
+			return to_rotation (arctan (y, x, units_per_cycle));
+		end if;
+	end get_rotation;
+
+
+
 	function to_point (
 		d 		: in type_distance_relative;
 		clip	: in boolean := false)
@@ -617,15 +647,10 @@ package body et_geometry_1 is
 		
 	end to_point;
 
-	
-	function to_distance_relative (p : in type_point)
-		return type_distance_relative
-	is begin
-		return (p.x, p.y);
-	end to_distance_relative;
 
 	
-	function invert (d : in type_distance_relative)
+	function invert (
+		d : in type_distance_relative)
 		return type_distance_relative
 	is begin
 		return (-1.0 * d.x, -1.0 * d.y);
@@ -635,27 +660,22 @@ package body et_geometry_1 is
 	
 
 	
-	function get_x (point : in type_point'class) return type_position_axis is begin
+	function get_x (
+		point : in type_point) 
+		return type_position_axis 
+	is begin
 		return point.x;
 	end;
 
-	function get_y (point : in type_point'class) return type_position_axis is begin
+	
+	function get_y (
+		point : in type_point)
+		return type_position_axis 
+	is begin
 		return point.y;
 	end;
 
 
-	function get_rotation (point : in type_point) return type_rotation is
-		x : constant type_float_internal := type_float_internal (point.x);
-		y : constant type_float_internal := type_float_internal (point.y);
-	begin
-		-- NOTE: If x and y are zero then the arctan operation is not possible. 
-		-- In this case we assume the resulting angle is zero.
-		if x = 0.0 and y = 0.0 then
-			return zero_rotation;
-		else
-			return to_rotation (arctan (y, x, units_per_cycle));
-		end if;
-	end get_rotation;
 
 	
 	function get_height (boundaries : in type_boundaries)
@@ -967,10 +987,10 @@ package body et_geometry_1 is
 
 	
 	procedure set (
+		point	: in out type_point;
 		axis 	: in type_axis_2d;
-		value	: in type_position_axis;					 
-		point	: in out type_point'class) is
-	begin
+		value	: in type_position_axis)
+	is begin
 		case axis is
 			when X => point.x := value;
 			when Y => point.y := value;
@@ -980,14 +1000,17 @@ package body et_geometry_1 is
 	
 	procedure set (
 		point	: in out type_point'class;
-		position: in type_point) is
-	begin
+		position: in type_point) 
+	is begin
 		point.x := position.x;
 		point.y := position.y;
 	end;
 
 	
-	function get_quadrant (point : in type_point) return type_quadrant is begin
+	function get_quadrant (
+		point : in type_point) 
+		return type_quadrant
+	is begin
 		if point.x >= zero then -- we are right of the y-axis or on top of it
 			if point.y >= zero then -- we are above the x-axis or on top of it
 				return ONE; 
@@ -1005,7 +1028,10 @@ package body et_geometry_1 is
 	end get_quadrant;
 
 	
-	function invert (point : in type_point'class) return type_point'class is
+	function invert (
+		point : in type_point'class)
+		return type_point'class 
+	is
 		pi : type_point'class := point;
 	begin
 		pi.x := - pi.x;
@@ -1013,10 +1039,12 @@ package body et_geometry_1 is
 		return pi;
 	end invert;
 
+	
 	function invert (
 		point	: in type_point;
 		axis	: in type_axis_2d)
-		return type_point'class is
+		return type_point'class
+	is
 		p : type_point := point;
 	begin
 		case axis is
@@ -1028,14 +1056,16 @@ package body et_geometry_1 is
 	end invert;
 
 	
-	procedure reset (point : in out type_point'class) is begin
+	procedure reset (
+		point : in out type_point) 
+	is begin
 		point.x := zero;
 		point.y := zero;
 	end;
 
 	
 	procedure move_by (
-		point	: in out type_point'class;
+		point	: in out type_point;
 		offset	: in type_distance_relative) 
 	is begin
 		point.x := point.x + offset.x;

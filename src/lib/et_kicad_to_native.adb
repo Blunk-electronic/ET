@@ -171,6 +171,7 @@ package body et_kicad_to_native is
 			return size;
 		end paper_size_of_schematic_sheet;
 
+		
 		procedure move (point : in out et_kicad_coordinates.type_position) is
 		-- Transposes a schematic point from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
@@ -194,17 +195,17 @@ package body et_kicad_to_native is
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
-			new_y				:= sheet_height - get_y (point);
+			new_y				:= sheet_height - et_kicad_coordinates.get_y (point);
 
 			-- assign the new y position to the given point
-			--set_y (point, new_y);
-			set (Y, new_y, point);
+			point.set (Y, new_y);
 		end move;
 
+		
 		procedure move (
 			point_actual	: in out et_coordinates.pac_geometry_sch.type_point;	-- the point it is about
-			point_help		: in et_kicad_coordinates.type_position	-- supportive point that provides the sheet number
-			) is
+			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
+		is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
 		-- KiCad frames have the origin in the upper left corner.
@@ -233,9 +234,10 @@ package body et_kicad_to_native is
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
-			set (Y, new_y, point_actual);
+			point_actual.set (Y, new_y);
 		end move;
 
+		
 		procedure prepare_layout_y_movements is
 		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
 			-- The paper size of a board/layout drawing:
@@ -254,6 +256,7 @@ package body et_kicad_to_native is
 			layout_sheet_height := type_distance_positive (et_frames.paper_dimension (axis => Y, paper_size => board_paper_size));
 		end prepare_layout_y_movements;
 
+		
 		procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_point'class) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
@@ -263,9 +266,10 @@ package body et_kicad_to_native is
 			new_y : type_position_axis;
 		begin
 			new_y := layout_sheet_height - get_y (point);
-			set (Y, new_y, point);
+			point.set (Y, new_y);
 		end move;
-			
+
+		
 		procedure flatten_notes (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) is

@@ -328,6 +328,7 @@ is
 
 		log_indentation_down;
 	end set_rules;
+
 	
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
@@ -350,13 +351,11 @@ is
 				
 			-- We expect after the x the corresponding value for x
 			elsif f (line, place) = keyword_x then
-				--set_x (point, to_distance (f (line, place + 1)));
-				set (X, to_distance (f (line, place + 1)), point);
+				point.set (X, to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				--set_y (point, to_distance (f (line, place + 1)));
-				set (Y, to_distance (f (line, place + 1)), point);
+				point.set (Y, to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));
@@ -368,6 +367,7 @@ is
 		return point;
 	end to_position;
 
+	
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
 		from : in count_type)
@@ -400,6 +400,7 @@ is
 		return size;
 	end to_size;
 
+	
 	function to_position (
 	-- Returns a type_package_position in the layout.
 		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
