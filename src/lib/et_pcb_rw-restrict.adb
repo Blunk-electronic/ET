@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -77,7 +77,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (type_polygon_base (element (cursor)));
+		write_polygon_segments (element (cursor));
 		contours_end;
 		
 		fill_zone_end;
@@ -90,7 +90,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (type_polygon_base (element (cursor)));
+		write_polygon_segments (element (cursor));
 		contours_end;
 		
 		cutout_zone_end;
@@ -141,7 +141,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);			
 
 		contours_begin;
-		write_polygon_segments (type_polygon_base (element (cursor)));
+		write_polygon_segments (element (cursor));
 		contours_end;
 		
 		fill_zone_end;
@@ -155,7 +155,7 @@ package body et_pcb_rw.restrict is
 		write_signal_layers (element (cursor).layers);
 		
 		contours_begin;
-		write_polygon_segments (type_polygon_base (element (cursor)));
+		write_polygon_segments (element (cursor));
 		contours_end;
 		
 		cutout_zone_end;

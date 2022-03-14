@@ -1086,7 +1086,7 @@ is
 			use pac_keepout_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out type_polygon_base'class;
+				polygon	: in out type_keepout_polygon;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -2921,13 +2921,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours
-										stop_mask_contours := (type_polygon_base (pad_outline) with null record);
+										stop_mask_contours := (type_polygon (pad_outline) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (type_polygon_base (pad_outline_in) with null record);
+										stop_mask_contours := (type_polygon (pad_outline_in) with null record);
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
@@ -2957,13 +2957,13 @@ is
 									
 									when AS_PAD =>
 										-- copy solder pad contours
-										stencil_contours := (type_polygon_base (pad_outline) with null record);
+										stencil_contours := (type_polygon (pad_outline) with null record);
 										
 									when SHRINK_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 
 										-- copy solder pad contours and shrink according to shrink_factor
-										stencil_contours := (type_polygon_base (pad_outline_in) with null record);
+										stencil_contours := (type_polygon (pad_outline_in) with null record);
 										
 										scale_polygon (
 											polygon		=> stencil_contours,
@@ -3053,13 +3053,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours to stop mask:
-										stop_mask_contours := (type_polygon_base (pad_outline_outer_layer) with null record);
+										stop_mask_contours := (type_polygon (pad_outline_outer_layer) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (type_polygon_base (pad_outline_in) with null record);
+										stop_mask_contours := (type_polygon (pad_outline_in) with null record);
 
 										offset_polygon (
 											polygon		=> stop_mask_contours,
@@ -3115,7 +3115,7 @@ is
 						move_contours (pad_pos, hole_outline, flip, package_position);
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
-						pad_outline_inner_layers := (type_polygon_base (hole_outline_in) with null record);
+						pad_outline_inner_layers := type_polygon (hole_outline_in);
 						
 						offset_polygon (
 							polygon		=> pad_outline_inner_layers, 

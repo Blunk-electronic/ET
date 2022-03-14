@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -149,7 +149,7 @@ package et_pcb_rw is
 	
 	-- writes the segments of a polygon (lines, arcs or a single circle):
 	procedure write_polygon_segments (
-		polygon : in type_polygon_base'class);
+		polygon : in type_polygon'class);
 
 	
 	

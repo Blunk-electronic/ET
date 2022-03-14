@@ -96,7 +96,8 @@ package et_geometry_2.polygons is
 	end record;
 	
 
-	type type_polygon_base is abstract tagged record -- CS rename to type_polygon ?
+	--type type_polygon_base is abstract tagged record
+	type type_polygon is tagged record
 		contours	: type_polygon_segments;
 	end record;
 
@@ -106,7 +107,7 @@ package et_geometry_2.polygons is
 	-- return is no_element.
 	-- If the polygon consist of just a circle then an exception is raised:
 	function get_segment_edge (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		edge	: in type_line)
 		return pac_polygon_segments.cursor;
 
@@ -120,7 +121,7 @@ package et_geometry_2.polygons is
 	-- If the given point does not lie on an edge then
 	-- the return is no_element:
 	function get_segment_edge (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return pac_polygon_segments.cursor;
 
@@ -142,7 +143,7 @@ package et_geometry_2.polygons is
 	-- If the polygon consists of just a circle then an
 	-- exception is raised.
 	function get_neigboring_edges (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		vertex	: in type_point)
 		return type_neigboring_edges;
 
@@ -151,7 +152,7 @@ package et_geometry_2.polygons is
 	
 	-- Returns the segments of a polygon in human readable form:
 	function to_string (
-		polygon	: in type_polygon_base)
+		polygon	: in type_polygon)
 		return string;
 
 	
@@ -160,7 +161,7 @@ package et_geometry_2.polygons is
 	-- If the given polygon consists of just a single
 	-- circle then a exception is raised:		
 	function get_nearest_corner_point (
-		polygon		: in type_polygon_base;
+		polygon		: in type_polygon;
 		reference	: in type_point)
 		return type_point;
 	
@@ -169,7 +170,7 @@ package et_geometry_2.polygons is
 	-- to the nearest point on the polygon edges.
 	-- The point may be inside or outside the polygon.
 	function get_shortest_distance (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return type_distance_polar;
 
@@ -181,27 +182,27 @@ package et_geometry_2.polygons is
 	-- Loads the given segments into given polygon.
 	-- NOTE: Overwrites already existing segments in the polygon.
 	procedure load_segments (
-		polygon		: in out type_polygon_base;
+		polygon		: in out type_polygon;
 		segments	: in type_polygon_segments);
 	
 	
 	procedure delete_segments (
-		polygon : in out type_polygon_base);
+		polygon : in out type_polygon);
 
 
 	
 	procedure append_segment (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		segment	: in type_polygon_segment);
 	
 
 	procedure set_circle (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		circle	: in type_circle'class);
 	
 		
 	function get_segments (
-		polygon : in type_polygon_base) 
+		polygon : in type_polygon) 
 		return type_polygon_segments;
 	
 
@@ -209,7 +210,7 @@ package et_geometry_2.polygons is
 	-- Returns the number of segments if the contours consist of lines
 	-- and/or arcs:
 	function get_segments_total (
-		polygon : in type_polygon_base)
+		polygon : in type_polygon)
 		return count_type;
 
 
@@ -220,7 +221,7 @@ package et_geometry_2.polygons is
 	-- Each point of each segment gets shifted by
 	-- the formula new_y = offset - old_y:
 	procedure transpose_polygon (
-		polygon	: in out type_polygon_base'class;
+		polygon	: in out type_polygon'class;
 		offset	: in type_distance);
 
 
@@ -242,12 +243,12 @@ package et_geometry_2.polygons is
 	--     - invalid: line 0 0 circle 9 4 10
 	function to_polygon (
 		arguments : in type_fields_of_line)
-		return type_polygon_base'class;
+		return type_polygon'class;
 	
 	
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
-		polygon		: in type_polygon_base;
+		polygon		: in type_polygon;
 		line_width	: in type_distance_positive)
 		return type_boundaries;
 	
@@ -282,25 +283,25 @@ package et_geometry_2.polygons is
 	-- touches one of the other segments (lines and arcs) to regard it as connected
 	-- with the polygon.
 	function is_closed (
-		polygon	: in type_polygon_base)
+		polygon	: in type_polygon)
 		return type_polygon_status;
 	
 
 	-- Moves a polygon by the given offset. 
 	procedure move_by (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		offset	: in type_distance_relative);
 	
 
 	-- Mirrors a polygon along the given axis.
 	procedure mirror (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		axis	: in type_axis_2d);
 	
 
 	-- Rotates a polygon about the origin by the given rotation.
 	procedure rotate_by (
-		polygon		: in out type_polygon_base;
+		polygon		: in out type_polygon;
 		rotation	: in type_rotation);
 
 	
@@ -320,7 +321,7 @@ package et_geometry_2.polygons is
 
 
 	procedure scale_polygon (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		scale	: in type_polygon_scale);
 
 	
@@ -378,7 +379,7 @@ package et_geometry_2.polygons is
 	-- Returns true if the given point is a vertex
 	-- of the given polygon:
 	function is_vertex (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return boolean;
 
@@ -386,7 +387,7 @@ package et_geometry_2.polygons is
 	
 	
 	
-	type type_polygon is new type_polygon_base with null record;
+	--type type_polygon is new type_polygon_base with null record;
 
 
 	-- Searches the lower left corner of a polygon:
@@ -397,9 +398,9 @@ package et_geometry_2.polygons is
 	
 	
 private
-
+					   
 	function get_shortest_distance (
-		polygon	: in type_polygon	;
+		polygon	: in type_polygon;
 		point	: in type_vector)
 		return type_float_internal;
 

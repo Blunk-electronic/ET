@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -630,7 +630,7 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (polygon_solid_cursor)));
+				write_polygon_segments (type_polygon (element (polygon_solid_cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -665,7 +665,7 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (polygon_hatched_cursor)));
+				write_polygon_segments (type_polygon (element (polygon_hatched_cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -679,7 +679,7 @@ is
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cutout_zone_cursor)));
+				write_polygon_segments (type_polygon (element (cutout_zone_cursor)));
 				contours_end;
 				
 				cutout_zone_end;
@@ -1258,7 +1258,7 @@ is
 
 			write_fill_style (element (cursor).fill_style);
 
-			write_polygon_segments (type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon (element (cursor)));
 
 			fill_zone_end;
 		end;
@@ -1280,7 +1280,7 @@ is
 			write_fill_style (element (cursor).fill_style);
 			write_hatching (element (cursor).hatching);
 
-			write_polygon_segments (type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon (element (cursor)));
 
 			fill_zone_end;
 		end;
@@ -1291,7 +1291,7 @@ is
 		procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
-			write_polygon_segments (type_polygon_base (element (cursor)));
+			write_polygon_segments (type_polygon (element (cursor)));
 			cutout_zone_end;
 		end;
 

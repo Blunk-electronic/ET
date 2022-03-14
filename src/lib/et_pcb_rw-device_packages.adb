@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -152,7 +152,7 @@ package body et_pcb_rw.device_packages is
 				write_fill_style (element (cursor).fill_style);
 				
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				
 				fill_zone_end;
@@ -171,7 +171,7 @@ package body et_pcb_rw.device_packages is
 				write_hatching (element (cursor).hatching);
 
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				
 				fill_zone_end;
@@ -183,7 +183,7 @@ package body et_pcb_rw.device_packages is
 				cutout_zone_begin;
 
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				
 				cutout_zone_end;
@@ -420,7 +420,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				fill_zone_begin;
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				fill_zone_end;
 			end write_polygon;
@@ -429,7 +429,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				cutout_zone_begin;
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				cutout_zone_end;
 			end write_cutout;
@@ -492,7 +492,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				fill_zone_begin;
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				fill_zone_end;
 			end write_polygon;
@@ -501,7 +501,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				cutout_zone_begin;
 				contours_begin;
-				write_polygon_segments (type_polygon_base (element (cursor)));
+				write_polygon_segments (element (cursor));
 				contours_end;
 				cutout_zone_end;
 			end write_cutout;
@@ -595,7 +595,7 @@ package body et_pcb_rw.device_packages is
 					when USER_SPECIFIC =>
 						section_mark (section_top, HEADER);
 						
-						write_polygon_segments (type_polygon_base (
+						write_polygon_segments (type_polygon (
 							element (terminal_cursor).stop_mask_shape_tht.top.contours));
 
 						section_mark (section_top, FOOTER);
@@ -607,7 +607,7 @@ package body et_pcb_rw.device_packages is
 					when USER_SPECIFIC =>
 						section_mark (section_bottom, HEADER);
 						
-						write_polygon_segments (type_polygon_base (
+						write_polygon_segments (type_polygon (
 							element (terminal_cursor).stop_mask_shape_tht.bottom.contours));
 
 						section_mark (section_bottom, FOOTER);
@@ -648,7 +648,7 @@ package body et_pcb_rw.device_packages is
 					when AS_PAD | EXPAND_PAD => null;
 					when USER_SPECIFIC =>
 		
-						write_polygon_segments (type_polygon_base (
+						write_polygon_segments (type_polygon (
 							element (terminal_cursor).stop_mask_shape_smt.contours));
 
 				end case;
@@ -662,7 +662,7 @@ package body et_pcb_rw.device_packages is
 			
 			procedure write_plated_millings (millings : in type_plated_millings) is begin
 				section_mark (section_pad_millings, HEADER);
-				write_polygon_segments (type_polygon_base (millings));
+				write_polygon_segments (type_polygon (millings));
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 
@@ -701,7 +701,7 @@ package body et_pcb_rw.device_packages is
 
 					when USER_SPECIFIC =>
 
-						write_polygon_segments (type_polygon_base (
+						write_polygon_segments (type_polygon (
 							element (terminal_cursor).stencil_shape.contours));
 				end case;
 
@@ -727,12 +727,12 @@ package body et_pcb_rw.device_packages is
 						section_mark (section_pad_contours_tht, HEADER);
 						
 						section_mark (section_top, HEADER);
-						write_polygon_segments (type_polygon_base (element (terminal_cursor).pad_shape_tht.top));
+						write_polygon_segments (type_polygon (element (terminal_cursor).pad_shape_tht.top));
 						section_mark (section_top, FOOTER);
 
 						-- pad contour bottom
 						section_mark (section_bottom, HEADER);
-						write_polygon_segments (type_polygon_base (element (terminal_cursor).pad_shape_tht.bottom));
+						write_polygon_segments (type_polygon (element (terminal_cursor).pad_shape_tht.bottom));
 						section_mark (section_bottom, FOOTER);
 						
 						section_mark (section_pad_contours_tht, FOOTER);
@@ -758,7 +758,7 @@ package body et_pcb_rw.device_packages is
 					when SMT =>
 						-- pad contour
 						section_mark (section_pad_contours_smt, HEADER);
-						write_polygon_segments (type_polygon_base (element (terminal_cursor).pad_shape_smt));
+						write_polygon_segments (type_polygon (element (terminal_cursor).pad_shape_smt));
 						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
@@ -1214,7 +1214,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 												fill_style 	=> SOLID,
 												easing 		=> board_easing
 											   ));
@@ -1222,7 +1222,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												fill_style 	=> HATCHED,
 												easing 		=> board_easing,
 												hatching	=> board_hatching));
@@ -1236,7 +1236,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												fill_style	=> SOLID,
 												easing		=> board_easing
 											   ));
@@ -1244,7 +1244,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
@@ -1259,14 +1259,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												easing		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching 	=> board_hatching));
@@ -1281,14 +1281,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												easing 		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with 
+								new_item	=> (type_polygon (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
@@ -1303,7 +1303,7 @@ package body et_pcb_rw.device_packages is
 					
 					pac_keepout_polygons.append (
 						container	=> packge.keepout.top.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 						
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1313,7 +1313,7 @@ package body et_pcb_rw.device_packages is
 
 					pac_keepout_polygons.append (
 						container	=> packge.keepout.bottom.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1324,14 +1324,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -1346,14 +1346,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -1368,14 +1368,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -1390,14 +1390,14 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -1412,7 +1412,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_conductor_polygons_solid.append (
 								container	=> packge.conductors.top.polygons.solid, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										width_min 	=> polygon_width_min,
@@ -1421,7 +1421,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_conductor_polygons_hatched.append (
 								container	=> packge.conductors.top.polygons.hatched, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching_conductor,
@@ -1438,7 +1438,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_conductor_polygons_solid.append (
 								container	=> packge.conductors.bottom.polygons.solid, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										width_min 	=> polygon_width_min,
@@ -1447,7 +1447,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_conductor_polygons_hatched.append (
 								container	=> packge.conductors.bottom.polygons.hatched, 
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (type_polygon (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching_conductor,
@@ -1462,7 +1462,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_route_restrict_polygon_top is begin
 					pac_route_restrict_polygons.append (
 						container	=> packge.route_restrict.top.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1471,7 +1471,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_route_restrict_polygon_bottom is begin
 					pac_route_restrict_polygons.append (
 						container	=> packge.route_restrict.bottom.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1480,7 +1480,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_via_restrict_polygon_top is begin
 					pac_via_restrict_polygons.append (
 						container	=> packge.via_restrict.top.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1489,7 +1489,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_via_restrict_polygon_bottom is begin
 					pac_via_restrict_polygons.append (
 						container	=> packge.via_restrict.bottom.polygons, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1499,7 +1499,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_silk_cutout_top is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1508,7 +1508,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_silk_cutout_bottom is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1517,7 +1517,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_assy_doc_cutout_top is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1526,7 +1526,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_assy_doc_cutout_bottom is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1535,7 +1535,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1544,7 +1544,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1553,7 +1553,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stencil_cutout_top is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1562,7 +1562,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stencil_cutout_bottom is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1571,7 +1571,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_cutout_top is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1580,7 +1580,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_cutout_bottom is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1589,7 +1589,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_cutout_top is begin
 					et_conductor_polygons.packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 										
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1598,7 +1598,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_cutout_bottom is begin
 					et_conductor_polygons.packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> polygon);
 										
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1607,7 +1607,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_route_restrict_cutout_top is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1616,7 +1616,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_route_restrict_cutout_bottom is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1625,7 +1625,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_via_restrict_cutout_top is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1634,7 +1634,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_via_restrict_cutout_bottom is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with null record));
+						new_item	=> (type_polygon (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1669,12 +1669,12 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_PAD_CONTOURS_THT => 
 								check_outline (polygon, log_threshold + 1);
-								tht_pad_shape.top := (type_polygon_base (polygon) with null record);
+								tht_pad_shape.top := polygon;
 								board_reset_polygon;
 
 							when SEC_STOP_MASK_CONTOURS_THT =>
 								check_outline (polygon, log_threshold + 1);
-								tht_stop_mask_contours_top := (type_polygon_base (polygon) with null record);
+								tht_stop_mask_contours_top := (type_polygon (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -1688,12 +1688,12 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_PAD_CONTOURS_THT =>
 								check_outline (polygon, log_threshold + 1);
-								tht_pad_shape.bottom := (type_polygon_base (polygon) with null record);
+								tht_pad_shape.bottom := polygon;
 								board_reset_polygon;
 
 							when SEC_STOP_MASK_CONTOURS_THT =>
 								check_outline (polygon, log_threshold + 1);
-								tht_stop_mask_contours_bottom := (type_polygon_base (polygon) with null record);
+								tht_stop_mask_contours_bottom := (type_polygon (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2474,7 +2474,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TERMINAL => 
 								check_outline (polygon, log_threshold + 1);
-								smt_pad_shape := (type_polygon_base (polygon) with null record);
+								smt_pad_shape := polygon;
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2484,7 +2484,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TERMINAL => 
 								check_outline (polygon, log_threshold + 1);
-								smt_stencil_contours := (type_polygon_base (polygon) with null record);
+								smt_stencil_contours := (type_polygon (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2500,7 +2500,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TERMINAL =>
 								check_outline (polygon, log_threshold + 1);
-								smt_stop_mask_contours := (type_polygon_base (polygon) with null record);
+								smt_stop_mask_contours := (type_polygon (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2516,7 +2516,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TERMINAL =>
 								check_outline (polygon, log_threshold + 1);
-								tht_millings := (type_polygon_base (polygon) with null record);
+								tht_millings := (type_polygon (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;

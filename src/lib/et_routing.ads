@@ -121,12 +121,12 @@ package et_routing is
 	-- Returns false if the point is outside the board or inside a hole.
 	-- Returns false if the point is exactly on the edge of the board.
 	-- Returns true if the point is exactly on the edge of a hole.
-	function on_board (
-		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
-		log_category	: in type_log_category;
-		lth				: in type_log_level)
-		return boolean;
+	--function on_board (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--point			: in type_point;
+		--log_category	: in type_log_category;
+		--lth				: in type_log_level)
+		--return boolean;
 
 	
 	

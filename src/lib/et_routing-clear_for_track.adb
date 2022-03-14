@@ -95,951 +95,951 @@ is
 	clearances_basic : pac_distances_positive.list;
 	
 
-	greatest_clearance : type_distance_positive;
+	--greatest_clearance : type_distance_positive;
 
 	
 	-- Extends the radius of the circle_around_start_point by the
 	-- greatest clearance and updates the boundaries of the circle:
-	procedure extend_circle is begin
-		circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
-		start_point_boundaries := get_boundaries (circle_around_start_point, zero);
-	end extend_circle;
+	--procedure extend_circle is begin
+		--circle_around_start_point.radius := circle_around_start_point.radius + greatest_clearance;
+		--start_point_boundaries := get_boundaries (circle_around_start_point, zero);
+	--end extend_circle;
 
 
 	
 	-- Clears the "result" flag if distance is:
 	-- - negative or
 	-- - less than the currently greatest_clearance
-	procedure test_distance (
-		distance	: in type_distance;
-		lth			: in type_log_level)
-	is 
-		d : type_distance := distance;
-	begin
-		--log_indentation_up;
+	--procedure test_distance (
+		--distance	: in type_distance;
+		--lth			: in type_log_level)
+	--is 
+		--d : type_distance := distance;
+	--begin
+		----log_indentation_up;
 		
-		if distance <= zero then 
-			-- start_point is inside segment/via or on the edge of the segment/via
-			if log_category >= HIGH then
-				log (text => " point is inside", level => lth + 1);
-			end if;
+		--if distance <= zero then 
+			---- start_point is inside segment/via or on the edge of the segment/via
+			--if log_category >= HIGH then
+				--log (text => " point is inside", level => lth + 1);
+			--end if;
 			
-			result := false;
-		else
-			-- start_point is outside the segment/via
-			if log_category >= HIGH then
-				log (text => " point is outside", level => lth + 1);
-			end if;
+			--result := false;
+		--else
+			---- start_point is outside the segment/via
+			--if log_category >= HIGH then
+				--log (text => " point is outside", level => lth + 1);
+			--end if;
 			
-			-- the distance of the start point to the border of the segment/via:
-			d := distance - width * 0.5;
+			---- the distance of the start point to the border of the segment/via:
+			--d := distance - width * 0.5;
 
-			if d >= greatest_clearance then
-				if log_category >= HIGH then
-					log (text => " point is in safe distance", level => lth + 1);
-				end if;
-			else
-				if log_category >= HIGH then
-					log (text => " point is too close", level => lth + 1);
-				end if;
+			--if d >= greatest_clearance then
+				--if log_category >= HIGH then
+					--log (text => " point is in safe distance", level => lth + 1);
+				--end if;
+			--else
+				--if log_category >= HIGH then
+					--log (text => " point is too close", level => lth + 1);
+				--end if;
 				
-				result := false;
-			end if;							
-		end if;
+				--result := false;
+			--end if;							
+		--end if;
 
-		--log_indentation_down;
-	end test_distance;
+		----log_indentation_down;
+	--end test_distance;
 
 
 	
-	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) 
-	is
-		-- FILL ZONE
-		procedure query_fill_zone is 
-			use et_packages;
-			distance_to_border : type_distance; -- CS rename to distance_to_border
-		begin
-			if log_category >= HIGH then
-				log (text => "probing fill zone ...", level => lth + 1);
-				log_indentation_up;
-			end if;
+	--procedure query_module (
+		--module_name	: in pac_module_name.bounded_string;
+		--module		: in et_schematic.type_module) 
+	--is
+		---- FILL ZONE
+		--procedure query_fill_zone is 
+			--use et_packages;
+			--distance_to_border : type_distance; -- CS rename to distance_to_border
+		--begin
+			--if log_category >= HIGH then
+				--log (text => "probing fill zone ...", level => lth + 1);
+				--log_indentation_up;
+			--end if;
 
-			if get_point_to_polygon_status (fill_zone.outline, to_vector (start_point)).location = INSIDE then
+			--if get_point_to_polygon_status (fill_zone.outline, to_vector (start_point)).location = INSIDE then
 
-				if log_category >= HIGH then
-					log (text => "point is in fill zone", level => lth + 1);
-				end if;
+				--if log_category >= HIGH then
+					--log (text => "point is in fill zone", level => lth + 1);
+				--end if;
 				
-				-- the distance of the point to the border of the fill zone:
-				distance_to_border := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
+				---- the distance of the point to the border of the fill zone:
+				--distance_to_border := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-				if log_category >= HIGH then
-					log (text => "distance to border:" & to_string (distance_to_border),
-						 level => lth + 1);
-				end if;
+				--if log_category >= HIGH then
+					--log (text => "distance to border:" & to_string (distance_to_border),
+						 --level => lth + 1);
+				--end if;
 				
-				-- the distance of the start point to the border:
-				distance_to_border := distance_to_border - 0.5 * width;
+				---- the distance of the start point to the border:
+				--distance_to_border := distance_to_border - 0.5 * width;
 
-				if distance_to_border >= zero then
-					if log_category >= HIGH then
-						log (text => "point is in safe distance to border", level => lth + 1);
-					end if;
+				--if distance_to_border >= zero then
+					--if log_category >= HIGH then
+						--log (text => "point is in safe distance to border", level => lth + 1);
+					--end if;
 					
-					result := true;
-				else
-					if log_category >= HIGH then
-						log (text => "point is too close to border", level => lth + 1);
-					end if;
+					--result := true;
+				--else
+					--if log_category >= HIGH then
+						--log (text => "point is too close to border", level => lth + 1);
+					--end if;
 					
-					result := false;
-				end if;
+					--result := false;
+				--end if;
 				
-			else
-				if log_category >= HIGH then
-					log (text => "point is outside fill zone", level => lth + 1);
-				end if;
+			--else
+				--if log_category >= HIGH then
+					--log (text => "point is outside fill zone", level => lth + 1);
+				--end if;
 				
-				result := false;
-			end if;
+				--result := false;
+			--end if;
 
-			if log_category >= HIGH then
-				log_indentation_down;
-			end if;
-		end query_fill_zone;
+			--if log_category >= HIGH then
+				--log_indentation_down;
+			--end if;
+		--end query_fill_zone;
 
 		
-		-- GLOBAL CUTOUTS IN CONDUCTOR POLYGONS
-		procedure query_global_cutouts is 
-			use et_conductor_polygons.boards;
-			use pac_conductor_cutouts;
+		---- GLOBAL CUTOUTS IN CONDUCTOR POLYGONS
+		--procedure query_global_cutouts is 
+			--use et_conductor_polygons.boards;
+			--use pac_conductor_cutouts;
 
-			procedure query_cutout (c : in pac_conductor_cutouts.cursor) is 
-				distance_to_border : type_distance;
-			begin
-				if element (c).layer = layer then
+			--procedure query_cutout (c : in pac_conductor_cutouts.cursor) is 
+				--distance_to_border : type_distance;
+			--begin
+				--if element (c).layer = layer then
 					
-					if log_category >= HIGH then
-						log_indentation_up;
-					end if;
+					--if log_category >= HIGH then
+						--log_indentation_up;
+					--end if;
 						
-					if get_point_to_polygon_status (element (c), to_vector (start_point)).location = OUTSIDE then
+					--if get_point_to_polygon_status (element (c), to_vector (start_point)).location = OUTSIDE then
 
-						if log_category >= HIGH then
-							log (text => "point is outside global cutout area", level => lth + 1);
-						end if;
+						--if log_category >= HIGH then
+							--log (text => "point is outside global cutout area", level => lth + 1);
+						--end if;
 						
-						-- the distance of the point to the border of the cutout area:
-						distance_to_border := get_absolute (get_shortest_distance (element (c), start_point));
+						---- the distance of the point to the border of the cutout area:
+						--distance_to_border := get_absolute (get_shortest_distance (element (c), start_point));
 
-						if log_category >= HIGH then
-							log (text => " distance to border:" & to_string (distance_to_border),
-								 level => lth + 1);
-						end if;
+						--if log_category >= HIGH then
+							--log (text => " distance to border:" & to_string (distance_to_border),
+								 --level => lth + 1);
+						--end if;
 						
-						-- the distance of the start point line to the border:
-						distance_to_border := distance_to_border - 0.5 * width;
+						---- the distance of the start point line to the border:
+						--distance_to_border := distance_to_border - 0.5 * width;
 
-						if distance_to_border >= zero then
-							if log_category >= HIGH then
-								log (text => " point is in safe distance to border", level => lth + 1);
-							end if;
-						else
-							if log_category >= HIGH then
-								log (text => " point is too close to border", level => lth + 1);
-							end if;
+						--if distance_to_border >= zero then
+							--if log_category >= HIGH then
+								--log (text => " point is in safe distance to border", level => lth + 1);
+							--end if;
+						--else
+							--if log_category >= HIGH then
+								--log (text => " point is too close to border", level => lth + 1);
+							--end if;
 							
-							result := false;
-						end if;
+							--result := false;
+						--end if;
 						
-					else
-						if log_category >= HIGH then
-							log (text => " point is in global cutout area", level => lth + 1);
-						end if;
+					--else
+						--if log_category >= HIGH then
+							--log (text => " point is in global cutout area", level => lth + 1);
+						--end if;
 						
-						result := false;
-					end if;
+						--result := false;
+					--end if;
 
-					if log_category >= HIGH then
-						log_indentation_down;
-					end if;
-				end if;
-			end query_cutout;
+					--if log_category >= HIGH then
+						--log_indentation_down;
+					--end if;
+				--end if;
+			--end query_cutout;
 
-		begin
-			if log_category >= HIGH then
-				log (text => "probing global cutout areas ...", level => lth + 1);
-			end if;
+		--begin
+			--if log_category >= HIGH then
+				--log (text => "probing global cutout areas ...", level => lth + 1);
+			--end if;
 			
-			iterate (module.board.conductors.cutouts, query_cutout'access);
-			-- CS use a loop instead of iterate. if result goes false, there is no need
-			-- to probe other cutouts.
-		end query_global_cutouts;
+			--iterate (module.board.conductors.cutouts, query_cutout'access);
+			---- CS use a loop instead of iterate. if result goes false, there is no need
+			---- to probe other cutouts.
+		--end query_global_cutouts;
 
 		
-		-- TRACKS
-		procedure query_tracks is
-			use pac_net_name;
-			use et_schematic;
-			use pac_nets;
+		---- TRACKS
+		--procedure query_tracks is
+			--use pac_net_name;
+			--use et_schematic;
+			--use pac_nets;
 			
-			-- the cursor to the foregin net
-			nf : pac_nets.cursor := module.nets.first;
+			---- the cursor to the foregin net
+			--nf : pac_nets.cursor := module.nets.first;
 
-			procedure query_net (
-				name : in pac_net_name.bounded_string;
-				net  : in type_net) 
-			is
-				class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
+			--procedure query_net (
+				--name : in pac_net_name.bounded_string;
+				--net  : in type_net) 
+			--is
+				--class_foregin_net : constant type_net_class := get_net_class (module_cursor, nf);
 
-				clearances : pac_distances_positive.list := clearances_basic;
+				--clearances : pac_distances_positive.list := clearances_basic;
 
 				
-				procedure query_segments_and_vias is 
-					distance : type_distance;
+				--procedure query_segments_and_vias is 
+					--distance : type_distance;
 				
-					use pac_conductor_lines;
+					--use pac_conductor_lines;
 					
-					procedure query_line (c : in pac_conductor_lines.cursor) is
-						segment_line : et_conductor_segment.type_conductor_line_segment;
-					begin
-						if element (c).layer = layer then
-							segment_line := to_line_segment (element (c));
+					--procedure query_line (c : in pac_conductor_lines.cursor) is
+						--segment_line : et_conductor_segment.type_conductor_line_segment;
+					--begin
+						--if element (c).layer = layer then
+							--segment_line := to_line_segment (element (c));
 
-							if log_category >= HIGH then
-								log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
-							end if;
+							--if log_category >= HIGH then
+								--log (text => et_conductor_segment.to_string (segment_line), level => lth + 3);
+							--end if;
 							
-							distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
-							test_distance (distance, lth + 4);
-						end if;
-					end query_line;
+							--distance := et_conductor_segment.get_shortest_distance (start_point, segment_line);
+							--test_distance (distance, lth + 4);
+						--end if;
+					--end query_line;
 
 					
-					use pac_conductor_arcs;					
+					--use pac_conductor_arcs;					
 
-					procedure query_arc (c : pac_conductor_arcs.cursor) is 
-						segment_arc : et_conductor_segment.type_conductor_arc_segment;
-					begin
-						if element (c).layer = layer then
-							segment_arc := to_arc_segment (element (c));
+					--procedure query_arc (c : pac_conductor_arcs.cursor) is 
+						--segment_arc : et_conductor_segment.type_conductor_arc_segment;
+					--begin
+						--if element (c).layer = layer then
+							--segment_arc := to_arc_segment (element (c));
 
-							if log_category >= HIGH then
-								log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
-							end if;
+							--if log_category >= HIGH then
+								--log (text => et_conductor_segment.to_string (segment_arc), level => lth + 3);
+							--end if;
 							
-							distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
-							test_distance (distance, lth + 4);
-						end if;
-					end query_arc;
+							--distance := et_conductor_segment.get_shortest_distance (start_point, segment_arc);
+							--test_distance (distance, lth + 4);
+						--end if;
+					--end query_arc;
 
 
-					use et_vias;
-					use pac_vias;
+					--use et_vias;
+					--use pac_vias;
 					
-					procedure query_via (v : in pac_vias.cursor) is
-						c : type_circle;
+					--procedure query_via (v : in pac_vias.cursor) is
+						--c : type_circle;
 
-						procedure set_radius (restring : in type_restring_width) is begin
-							c.radius := element (v).diameter * 0.5 + restring;
+						--procedure set_radius (restring : in type_restring_width) is begin
+							--c.radius := element (v).diameter * 0.5 + restring;
 
-							if get_point_to_circle_status (start_point, c) = OUTSIDE then
-								distance := get_absolute (get_shortest_distance (start_point, c));
-								test_distance (distance, lth + 4);
-							else
-								-- the start_point is inside the via
-								result := false;
+							--if get_point_to_circle_status (start_point, c) = OUTSIDE then
+								--distance := get_absolute (get_shortest_distance (start_point, c));
+								--test_distance (distance, lth + 4);
+							--else
+								---- the start_point is inside the via
+								--result := false;
 
-								if log_category >= HIGH then
-									log (text => " point is inside the via", level => lth + 4);
-								end if;
-							end if;							
-						end set_radius;
+								--if log_category >= HIGH then
+									--log (text => " point is inside the via", level => lth + 4);
+								--end if;
+							--end if;							
+						--end set_radius;
 						
-					begin -- query_via
-						c.center := element (v).position;
+					--begin -- query_via
+						--c.center := element (v).position;
 
-						if log_category >= HIGH then
-							log (text => to_string (element (v)), level => lth + 3);
-						end if;
+						--if log_category >= HIGH then
+							--log (text => to_string (element (v)), level => lth + 3);
+						--end if;
 						
-						case element (v).category is
-							when THROUGH =>
-								if is_inner_layer (layer) then
-									set_radius (element (v).restring_inner);
-								else
-									set_radius (element (v).restring_outer);
-								end if;
+						--case element (v).category is
+							--when THROUGH =>
+								--if is_inner_layer (layer) then
+									--set_radius (element (v).restring_inner);
+								--else
+									--set_radius (element (v).restring_outer);
+								--end if;
 								
-							when BURIED =>
-								if buried_via_uses_layer (element (v), layer) then
-									set_radius (element (v).restring_inner);
-								end if;
+							--when BURIED =>
+								--if buried_via_uses_layer (element (v), layer) then
+									--set_radius (element (v).restring_inner);
+								--end if;
 								
-							when BLIND_DRILLED_FROM_TOP =>
-								if layer = type_signal_layer'first then
-									set_radius (element (v).restring_top);
+							--when BLIND_DRILLED_FROM_TOP =>
+								--if layer = type_signal_layer'first then
+									--set_radius (element (v).restring_top);
 
-								elsif blind_via_uses_layer (element (v), layer) then
-									set_radius (element (v).restring_inner);
-								end if;
+								--elsif blind_via_uses_layer (element (v), layer) then
+									--set_radius (element (v).restring_inner);
+								--end if;
 
-							when BLIND_DRILLED_FROM_BOTTOM =>
-								if layer = bottom_layer then
-									set_radius (element (v).restring_bottom);
+							--when BLIND_DRILLED_FROM_BOTTOM =>
+								--if layer = bottom_layer then
+									--set_radius (element (v).restring_bottom);
 
-								elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
-									set_radius (element (v).restring_inner);
-								end if;
-						end case;
-					end query_via;
+								--elsif blind_via_uses_layer (element (v), layer, bottom_layer) then
+									--set_radius (element (v).restring_inner);
+								--end if;
+						--end case;
+					--end query_via;
 
 					
-				begin -- query_segments_and_vias
-					if log_category >= HIGH then
-						log_indentation_up;
-					end if;
+				--begin -- query_segments_and_vias
+					--if log_category >= HIGH then
+						--log_indentation_up;
+					--end if;
 					
-					iterate (
-						lines	=> net.route.lines,
-						process	=> query_line'access,
-						proceed	=> result'access);
+					--iterate (
+						--lines	=> net.route.lines,
+						--process	=> query_line'access,
+						--proceed	=> result'access);
 
-					iterate (
-						arcs	=> net.route.arcs,
-						process	=> query_arc'access,
-						proceed	=> result'access);
+					--iterate (
+						--arcs	=> net.route.arcs,
+						--process	=> query_arc'access,
+						--proceed	=> result'access);
 					
-					iterate (
-						vias	=> net.route.vias,
-						process	=> query_via'access,
-						proceed	=> result'access);
+					--iterate (
+						--vias	=> net.route.vias,
+						--process	=> query_via'access,
+						--proceed	=> result'access);
 				
-					if log_category >= HIGH then
-						log_indentation_down;
-					end if;
-				end query_segments_and_vias;
+					--if log_category >= HIGH then
+						--log_indentation_down;
+					--end if;
+				--end query_segments_and_vias;
 
 				
-			begin -- query_net
-				if log_category >= HIGH then
-					log (text => "net " & to_string (name), level => lth + 2);
-				end if;
+			--begin -- query_net
+				--if log_category >= HIGH then
+					--log (text => "net " & to_string (name), level => lth + 2);
+				--end if;
 				
-				-- Append the clearance of the foregin net and
-				-- select the greatest among the list of clearances:
-				clearances.append (class_foregin_net.clearance);
-				greatest_clearance := get_greatest (clearances);
+				---- Append the clearance of the foregin net and
+				---- select the greatest among the list of clearances:
+				--clearances.append (class_foregin_net.clearance);
+				--greatest_clearance := get_greatest (clearances);
 
 				
-				if ignore_same_net then
-					if net_cursor /= nf then
-						query_segments_and_vias;
-					end if;
-				else
-					query_segments_and_vias;
-				end if;
-			end query_net;
+				--if ignore_same_net then
+					--if net_cursor /= nf then
+						--query_segments_and_vias;
+					--end if;
+				--else
+					--query_segments_and_vias;
+				--end if;
+			--end query_net;
 
 			
-		begin -- query_tracks
-			if log_category >= HIGH then
-				log (text => "probing tracks ...", level => lth + 1);
-				log_indentation_up;
-			end if;
+		--begin -- query_tracks
+			--if log_category >= HIGH then
+				--log (text => "probing tracks ...", level => lth + 1);
+				--log_indentation_up;
+			--end if;
 			
-			while nf /= pac_nets.no_element and result = true loop
-				query_element (nf, query_net'access);
-				next (nf);
-			end loop;
+			--while nf /= pac_nets.no_element and result = true loop
+				--query_element (nf, query_net'access);
+				--next (nf);
+			--end loop;
 			
-			if log_category >= HIGH then
-				log_indentation_down;
-			end if;
-		end query_tracks;
+			--if log_category >= HIGH then
+				--log_indentation_down;
+			--end if;
+		--end query_tracks;
 
 		
 
-	-- TEXTS
+	---- TEXTS
 	
-		procedure query_texts is
-			use et_conductor_text.boards;
-			use pac_conductor_texts;
+		--procedure query_texts is
+			--use et_conductor_text.boards;
+			--use pac_conductor_texts;
 
-			procedure query_segment (
-				c : in pac_conductor_line_segments.cursor)
-			is 
-				use pac_conductor_line_segments;
-				distance : type_distance;
-			begin
-				if log_category >= HIGH then
-					log (text => et_conductor_segment.to_string (element (c)), level => lth + 3);
-				end if;
+			--procedure query_segment (
+				--c : in pac_conductor_line_segments.cursor)
+			--is 
+				--use pac_conductor_line_segments;
+				--distance : type_distance;
+			--begin
+				--if log_category >= HIGH then
+					--log (text => et_conductor_segment.to_string (element (c)), level => lth + 3);
+				--end if;
 				
-				-- Now we treat the line of the text like a regular
-				-- line of conductor material:
-				distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
-				test_distance (distance, lth + 4);
-			end query_segment;
+				---- Now we treat the line of the text like a regular
+				---- line of conductor material:
+				--distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
+				--test_distance (distance, lth + 4);
+			--end query_segment;
 		
 
-			procedure query_text (c : in pac_conductor_texts.cursor) is
-				text_boundaries : type_boundaries;
-				use et_text;
-			begin
-				if element (c).layer = layer then
+			--procedure query_text (c : in pac_conductor_texts.cursor) is
+				--text_boundaries : type_boundaries;
+				--use et_text;
+			--begin
+				--if element (c).layer = layer then
 
-					-- Preselection to improve performance:
-					-- We are interested in texts whose boundaries enclose
-					-- the boundaries of the given start point. If there is 
-					-- no overlap then the text can be skipped:					
-					text_boundaries := pac_text_fab.get_boundaries (element (c).vectors);
+					---- Preselection to improve performance:
+					---- We are interested in texts whose boundaries enclose
+					---- the boundaries of the given start point. If there is 
+					---- no overlap then the text can be skipped:					
+					--text_boundaries := pac_text_fab.get_boundaries (element (c).vectors);
 					
-					if intersect (start_point_boundaries, text_boundaries) then
+					--if intersect (start_point_boundaries, text_boundaries) then
 
-						if log_category >= HIGH then
-							log (text => "overlaps boundaries of text " 
-								& enclose_in_quotes (to_string (element (c).content)) 
-								& " at" & to_string (element (c).position),
-								level => lth + 2);
+						--if log_category >= HIGH then
+							--log (text => "overlaps boundaries of text " 
+								--& enclose_in_quotes (to_string (element (c).content)) 
+								--& " at" & to_string (element (c).position),
+								--level => lth + 2);
 
-							log_indentation_up;
-						end if;
+							--log_indentation_up;
+						--end if;
 						
-						-- Probe the segments one by one.
-						-- Abort once the result-flag goes false.
-						iterate (
-							segments	=> element (c).segments, 
-							process		=> query_segment'access,
-							proceed		=> result'access);
+						---- Probe the segments one by one.
+						---- Abort once the result-flag goes false.
+						--iterate (
+							--segments	=> element (c).segments, 
+							--process		=> query_segment'access,
+							--proceed		=> result'access);
 
-						if log_category >= HIGH then
-							log_indentation_down;
-						end if;
-					end if;
-				end if;
-			end query_text;
-
-			
-		begin -- query_texts
-			if log_category >= HIGH then
-				log (text => "probing texts ...", level => lth + 1);
-				log_indentation_up;
-			end if;
-			
-			-- Take a copy of the initial circle_around_start_point_init:
-			circle_around_start_point := circle_around_start_point_init;
+						--if log_category >= HIGH then
+							--log_indentation_down;
+						--end if;
+					--end if;
+				--end if;
+			--end query_text;
 
 			
-			-- choose the greatest clearance:
-			greatest_clearance := get_greatest (clearances_basic);
-
-			extend_circle;
-
-			-- Iterate texts. Abort if result changes to "false":
-			iterate (
-				texts	=> module.board.conductors.texts,
-				process	=> query_text'access,
-				proceed	=> result'access);
-
-			if log_category >= HIGH then
-				log_indentation_down;
-			end if;
-		end query_texts;
-
-
-		procedure query_devices is
-			use et_devices;
-			use et_schematic;
-			use pac_devices_sch;
-
-			use et_packages;
-			use pac_packages_lib;
-			model : pac_package_model_file_name.bounded_string;
-			package_cursor		: pac_packages_lib.cursor;
-			package_position	: type_package_position; -- incl. rotation and face
-			package_flipped		: type_flipped;
+		--begin -- query_texts
+			--if log_category >= HIGH then
+				--log (text => "probing texts ...", level => lth + 1);
+				--log_indentation_up;
+			--end if;
 			
-			device_cursor : pac_devices_sch.cursor; -- used for querying electrical devices
+			---- Take a copy of the initial circle_around_start_point_init:
+			--circle_around_start_point := circle_around_start_point_init;
+
 			
-			procedure query_package (
-				observe_foreign_nets : in type_observe_foreign_nets) 
-			is
-				procedure query_texts is 
-					use et_conductor_text;
+			---- choose the greatest clearance:
+			--greatest_clearance := get_greatest (clearances_basic);
+
+			--extend_circle;
+
+			---- Iterate texts. Abort if result changes to "false":
+			--iterate (
+				--texts	=> module.board.conductors.texts,
+				--process	=> query_text'access,
+				--proceed	=> result'access);
+
+			--if log_category >= HIGH then
+				--log_indentation_down;
+			--end if;
+		--end query_texts;
+
+
+		--procedure query_devices is
+			--use et_devices;
+			--use et_schematic;
+			--use pac_devices_sch;
+
+			--use et_packages;
+			--use pac_packages_lib;
+			--model : pac_package_model_file_name.bounded_string;
+			--package_cursor		: pac_packages_lib.cursor;
+			--package_position	: type_package_position; -- incl. rotation and face
+			--package_flipped		: type_flipped;
+			
+			--device_cursor : pac_devices_sch.cursor; -- used for querying electrical devices
+			
+			--procedure query_package (
+				--observe_foreign_nets : in type_observe_foreign_nets) 
+			--is
+				--procedure query_texts is 
+					--use et_conductor_text;
 					
-					query_face : type_face;
+					--query_face : type_face;
 					
-					procedure query_text (c : in packages.pac_conductor_texts.cursor) is
-						t : packages.type_conductor_text := packages.pac_conductor_texts.element (c);
+					--procedure query_text (c : in packages.pac_conductor_texts.cursor) is
+						--t : packages.type_conductor_text := packages.pac_conductor_texts.element (c);
 
-						use et_text;
-						mirror_status : type_vector_text_mirrored := NO;
+						--use et_text;
+						--mirror_status : type_vector_text_mirrored := NO;
 						
-						procedure query_segments is 
-							use pac_text_fab;
-							v_text : type_vector_text;
+						--procedure query_segments is 
+							--use pac_text_fab;
+							--v_text : type_vector_text;
 
-							use et_conductor_text.boards;
-							segments: pac_conductor_line_segments.list;
+							--use et_conductor_text.boards;
+							--segments: pac_conductor_line_segments.list;
 
 							
-							procedure query_segment (
-								c : in pac_conductor_line_segments.cursor)
-							is 
-								use pac_conductor_line_segments;
-								distance : type_distance;
-							begin
-								if log_category >= HIGH then
-									log (text => et_conductor_segment.to_string (element (c)), level => lth + 4);
-								end if;
+							--procedure query_segment (
+								--c : in pac_conductor_line_segments.cursor)
+							--is 
+								--use pac_conductor_line_segments;
+								--distance : type_distance;
+							--begin
+								--if log_category >= HIGH then
+									--log (text => et_conductor_segment.to_string (element (c)), level => lth + 4);
+								--end if;
 								
-								-- Now we treat the line of the text like a regular
-								-- line of conductor material:
-								distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
-								test_distance (distance, lth + 5);
-							end query_segment;
+								---- Now we treat the line of the text like a regular
+								---- line of conductor material:
+								--distance := et_conductor_segment.get_shortest_distance (start_point, element (c));
+								--test_distance (distance, lth + 5);
+							--end query_segment;
 
 							
-						begin
-							-- Rotate the position of the text by the rotation of the package.
-							-- NOTE: This does not affect the rotation of the text itself.
-							rotate_by (t.position, rot (package_position));
+						--begin
+							---- Rotate the position of the text by the rotation of the package.
+							---- NOTE: This does not affect the rotation of the text itself.
+							--rotate_by (t.position, rot (package_position));
 
-							if package_flipped = YES then mirror (t.position, Y); end if;
+							--if package_flipped = YES then mirror (t.position, Y); end if;
 
-							-- Move the text by the package position to 
-							-- its final position:
-							move_by (t.position, to_distance_relative (package_position));
+							---- Move the text by the package position to 
+							---- its final position:
+							--move_by (t.position, to_distance_relative (package_position));
 
-							-- Vectorize the content of the text on the fly:
-							v_text := pac_text_fab.vectorize_text (
-								content		=> t.content,
-								size		=> t.size,
-								rotation	=> add (rot (t.position), rot (package_position)),
-								position	=> type_point (t.position),
-								mirror		=> mirror_status,
-								line_width	=> t.line_width,
-								alignment	=> t.alignment -- right, bottom
-								);
+							---- Vectorize the content of the text on the fly:
+							--v_text := pac_text_fab.vectorize_text (
+								--content		=> t.content,
+								--size		=> t.size,
+								--rotation	=> add (rot (t.position), rot (package_position)),
+								--position	=> type_point (t.position),
+								--mirror		=> mirror_status,
+								--line_width	=> t.line_width,
+								--alignment	=> t.alignment -- right, bottom
+								--);
 
-							-- If boundaries of start point and text overlap,
-							-- compute the conductor segments and probe each of them
-							-- for its distance to the start point: 
-							if intersect (start_point_boundaries, get_boundaries (v_text)) then
+							---- If boundaries of start point and text overlap,
+							---- compute the conductor segments and probe each of them
+							---- for its distance to the start point: 
+							--if intersect (start_point_boundaries, get_boundaries (v_text)) then
 
-								if log_category >= HIGH then
-									log (text => "overlaps boundaries of text " 
-										& enclose_in_quotes (to_string (t.content)) 
-										& " at" & to_string (t.position),
-									 level => lth + 3);
+								--if log_category >= HIGH then
+									--log (text => "overlaps boundaries of text " 
+										--& enclose_in_quotes (to_string (t.content)) 
+										--& " at" & to_string (t.position),
+									 --level => lth + 3);
 								
-									log_indentation_up;
-								end if;
+									--log_indentation_up;
+								--end if;
 								
-								segments := make_segments (v_text, t.line_width);
+								--segments := make_segments (v_text, t.line_width);
 
-								-- Probe the segments one by one.
-								-- Abort once the result-flag goes false.
-								iterate (
-									segments	=> segments, 
-									process		=> query_segment'access,
-									proceed		=> result'access);
+								---- Probe the segments one by one.
+								---- Abort once the result-flag goes false.
+								--iterate (
+									--segments	=> segments, 
+									--process		=> query_segment'access,
+									--proceed		=> result'access);
 
-								if log_category >= HIGH then
-									log_indentation_down;
-								end if;
-							end if;
+								--if log_category >= HIGH then
+									--log_indentation_down;
+								--end if;
+							--end if;
 
-						end query_segments;
+						--end query_segments;
 					
-					begin -- query_text
-						-- CS log text content and position
+					--begin -- query_text
+						---- CS log text content and position
 						
-						case query_face is
-							when TOP =>
-								if package_flipped = NO then 
-									if layer = top_layer then
-										query_segments;
-									end if;
+						--case query_face is
+							--when TOP =>
+								--if package_flipped = NO then 
+									--if layer = top_layer then
+										--query_segments;
+									--end if;
 
-								else
-									if layer = bottom_layer then
-										mirror_status := YES;
-										query_segments;
-									end if;
-								end if;
+								--else
+									--if layer = bottom_layer then
+										--mirror_status := YES;
+										--query_segments;
+									--end if;
+								--end if;
 								
-							when BOTTOM =>
-								if package_flipped = NO then
-									if layer = bottom_layer then
-										mirror_status := YES;
-										query_segments;
-									end if;
+							--when BOTTOM =>
+								--if package_flipped = NO then
+									--if layer = bottom_layer then
+										--mirror_status := YES;
+										--query_segments;
+									--end if;
 
-								else
-									if layer = top_layer then
-										query_segments;
-									end if;
-								end if;
+								--else
+									--if layer = top_layer then
+										--query_segments;
+									--end if;
+								--end if;
 
-						end case;								
+						--end case;								
 
-					end query_text;
+					--end query_text;
 
 					
-				begin -- query_texts
-					if not is_inner_layer (layer) then
+				--begin -- query_texts
+					--if not is_inner_layer (layer) then
 
-						if log_category >= HIGH then
-							log_indentation_up;
-						end if;
+						--if log_category >= HIGH then
+							--log_indentation_up;
+						--end if;
 
-						-- Take a copy of the initial circle_around_start_point_init:
-						circle_around_start_point := circle_around_start_point_init;
+						---- Take a copy of the initial circle_around_start_point_init:
+						--circle_around_start_point := circle_around_start_point_init;
 						
-						greatest_clearance := get_greatest (clearances_basic);
+						--greatest_clearance := get_greatest (clearances_basic);
 
-						extend_circle;
+						--extend_circle;
 						
-						query_face := TOP;
+						--query_face := TOP;
 
-						packages.iterate (
-							texts	=> element (package_cursor).conductors.top.texts,
-							process	=> query_text'access,
-							proceed	=> result'access);
+						--packages.iterate (
+							--texts	=> element (package_cursor).conductors.top.texts,
+							--process	=> query_text'access,
+							--proceed	=> result'access);
 								 
-						query_face := BOTTOM;
+						--query_face := BOTTOM;
 						
-						packages.iterate (
-							texts	=> element (package_cursor).conductors.bottom.texts,
-							process	=> query_text'access,
-							proceed	=> result'access);
+						--packages.iterate (
+							--texts	=> element (package_cursor).conductors.bottom.texts,
+							--process	=> query_text'access,
+							--proceed	=> result'access);
 
-						if log_category >= HIGH then
-							log_indentation_down;
-						end if;
-					end if;
-				end query_texts;
+						--if log_category >= HIGH then
+							--log_indentation_down;
+						--end if;
+					--end if;
+				--end query_texts;
 
 
-				procedure query_terminals is
-					use et_terminals;
-					use pac_polygon_offsetting;
+				--procedure query_terminals is
+					--use et_terminals;
+					--use pac_polygon_offsetting;
 					
-					procedure query_terminal (c : in pac_terminals.cursor) is
-						use pac_terminals;
+					--procedure query_terminal (c : in pac_terminals.cursor) is
+						--use pac_terminals;
 
 						
-						procedure move_outline_smt is 
-							position : type_position := element (c).position;
-							oln : type_polygon;
-							distance : type_distance;
-						begin
-							oln := element (c).pad_shape_smt;
+						--procedure move_outline_smt is 
+							--position : type_position := element (c).position;
+							--oln : type_polygon;
+							--distance : type_distance;
+						--begin
+							--oln := element (c).pad_shape_smt;
 							
-							move_contours (
-								term_pos	=> position,
-								outline		=> oln,
-								flipped		=> package_flipped,
-								package_pos	=> package_position);
+							--move_contours (
+								--term_pos	=> position,
+								--outline		=> oln,
+								--flipped		=> package_flipped,
+								--package_pos	=> package_position);
 															
-							if get_point_to_polygon_status (oln, to_vector (start_point)).location = OUTSIDE then
-								distance := get_absolute (get_shortest_distance (oln, start_point));
-								test_distance (distance, lth + 4);
-							else
-								result := false;
-							end if;
+							--if get_point_to_polygon_status (oln, to_vector (start_point)).location = OUTSIDE then
+								--distance := get_absolute (get_shortest_distance (oln, start_point));
+								--test_distance (distance, lth + 4);
+							--else
+								--result := false;
+							--end if;
 
-						end move_outline_smt;
+						--end move_outline_smt;
 
 
-						procedure move_outline_tht is 
-							position : type_position := element (c).position;
-							oln : type_polygon;
-							distance : type_distance;
+						--procedure move_outline_tht is 
+							--position : type_position := element (c).position;
+							--oln : type_polygon;
+							--distance : type_distance;
 
-							procedure inner_layer is begin
-								case element (c).tht_hole is
-									when DRILLED =>											
-										declare
-											s : type_polygon_segments := (circular => true, others => <>);
-										begin
-											s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
-											oln.contours := s;
-										end;
+							--procedure inner_layer is begin
+								--case element (c).tht_hole is
+									--when DRILLED =>											
+										--declare
+											--s : type_polygon_segments := (circular => true, others => <>);
+										--begin
+											--s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
+											--oln.contours := s;
+										--end;
 
-									when MILLED =>
-										declare
-											om : type_polygon := type_polygon (element (c).millings);
-										begin
-											offset_polygon (
-												polygon		=> om, 
-												offset		=> element (c).width_inner_layers);
+									--when MILLED =>
+										--declare
+											--om : type_polygon := type_polygon (element (c).millings);
+										--begin
+											--offset_polygon (
+												--polygon		=> om, 
+												--offset		=> element (c).width_inner_layers);
 											
-											oln := om;
-										end;
-								end case;
-							end inner_layer;
+											--oln := om;
+										--end;
+								--end case;
+							--end inner_layer;
 							
 							
-						begin -- move_outline_tht
-							if package_flipped = NO then
-								if layer = top_layer then
-									oln := element (c).pad_shape_tht.top;
-								elsif layer = bottom_layer then
-									oln := element (c).pad_shape_tht.bottom;
-								else
-									inner_layer;
-								end if;
+						--begin -- move_outline_tht
+							--if package_flipped = NO then
+								--if layer = top_layer then
+									--oln := element (c).pad_shape_tht.top;
+								--elsif layer = bottom_layer then
+									--oln := element (c).pad_shape_tht.bottom;
+								--else
+									--inner_layer;
+								--end if;
 
-							else -- package has been flipped by operator
-								if layer = top_layer then
-									oln := element (c).pad_shape_tht.bottom;
-								elsif layer = bottom_layer then
-									oln := element (c).pad_shape_tht.top;
-								else
-									inner_layer;
-								end if;
+							--else -- package has been flipped by operator
+								--if layer = top_layer then
+									--oln := element (c).pad_shape_tht.bottom;
+								--elsif layer = bottom_layer then
+									--oln := element (c).pad_shape_tht.top;
+								--else
+									--inner_layer;
+								--end if;
 
-							end if;
+							--end if;
 								
-							move_contours (
-								term_pos	=> position,
-								outline		=> oln,
-								flipped		=> package_flipped,
-								package_pos	=> package_position);
+							--move_contours (
+								--term_pos	=> position,
+								--outline		=> oln,
+								--flipped		=> package_flipped,
+								--package_pos	=> package_position);
 
-							if get_point_to_polygon_status (oln, to_vector (start_point)).location = OUTSIDE then
-								distance := get_absolute (get_shortest_distance (oln, start_point));
-								test_distance (distance, lth + 4);
-							else
-								result := false;
-							end if;
+							--if get_point_to_polygon_status (oln, to_vector (start_point)).location = OUTSIDE then
+								--distance := get_absolute (get_shortest_distance (oln, start_point));
+								--test_distance (distance, lth + 4);
+							--else
+								--result := false;
+							--end if;
 
-						end move_outline_tht;
+						--end move_outline_tht;
 
 
-						status : type_get_terminal_clearance_result;
+						--status : type_get_terminal_clearance_result;
 						
-					begin -- query_terminal
-						if log_category >= HIGH then
-							log (text => "terminal " & to_string (key (c)), level => lth + 4);
-						end if;
+					--begin -- query_terminal
+						--if log_category >= HIGH then
+							--log (text => "terminal " & to_string (key (c)), level => lth + 4);
+						--end if;
 						
-						if observe_foreign_nets then
+						--if observe_foreign_nets then
 							
-							-- Get the clearance of the connected foreign net
-							-- and append it to clearances:
-							status := get_clearance (module_cursor, device_cursor, c);
+							---- Get the clearance of the connected foreign net
+							---- and append it to clearances:
+							--status := get_clearance (module_cursor, device_cursor, c);
 
-							if status.connected then
-								declare
-									clearances : pac_distances_positive.list := clearances_basic;
-								begin
-									clearances.append (status.clearance);
-									greatest_clearance := get_greatest (clearances);
+							--if status.connected then
+								--declare
+									--clearances : pac_distances_positive.list := clearances_basic;
+								--begin
+									--clearances.append (status.clearance);
+									--greatest_clearance := get_greatest (clearances);
 
-									extend_circle;
-								end;
-							else
-								greatest_clearance := get_greatest (clearances_basic);
-								extend_circle;
-							end if;
-						end if;
+									--extend_circle;
+								--end;
+							--else
+								--greatest_clearance := get_greatest (clearances_basic);
+								--extend_circle;
+							--end if;
+						--end if;
 
-						case element (c).technology is
-							when THT =>
-								move_outline_tht;
+						--case element (c).technology is
+							--when THT =>
+								--move_outline_tht;
 
-							when SMT =>
-								if package_flipped = NO then
-									case element (c).face is
-										when TOP =>
-											if layer = top_layer then
-												move_outline_smt;
-											end if;
+							--when SMT =>
+								--if package_flipped = NO then
+									--case element (c).face is
+										--when TOP =>
+											--if layer = top_layer then
+												--move_outline_smt;
+											--end if;
 
-										when BOTTOM =>
-											if layer = bottom_layer then
-												move_outline_smt;
-											end if;
-									end case;
-								else
-									case element (c).face is
-										when TOP =>
-											if layer = bottom_layer then
-												move_outline_smt;
-											end if;
+										--when BOTTOM =>
+											--if layer = bottom_layer then
+												--move_outline_smt;
+											--end if;
+									--end case;
+								--else
+									--case element (c).face is
+										--when TOP =>
+											--if layer = bottom_layer then
+												--move_outline_smt;
+											--end if;
 
-										when BOTTOM =>
-											if layer = top_layer then
-												move_outline_smt;
-											end if;
-									end case;
-								end if;
-						end case;
+										--when BOTTOM =>
+											--if layer = top_layer then
+												--move_outline_smt;
+											--end if;
+									--end case;
+								--end if;
+						--end case;
 						
-					end query_terminal;
+					--end query_terminal;
 
 
-				begin -- query_terminals
+				--begin -- query_terminals
 
-					-- Take a copy of the initial circle_around_start_point_init:
-					circle_around_start_point := circle_around_start_point_init;
+					---- Take a copy of the initial circle_around_start_point_init:
+					--circle_around_start_point := circle_around_start_point_init;
 					
-					greatest_clearance := get_greatest (clearances_basic);
+					--greatest_clearance := get_greatest (clearances_basic);
 
-					extend_circle;
+					--extend_circle;
 
-					iterate (
-						terminals	=> element (package_cursor).terminals,
-						process		=> query_terminal'access,
-						proceed		=> result'access);
+					--iterate (
+						--terminals	=> element (package_cursor).terminals,
+						--process		=> query_terminal'access,
+						--proceed		=> result'access);
 					
-				end query_terminals;
+				--end query_terminals;
 				
-			begin
-				query_terminals;
-				query_texts;
+			--begin
+				--query_terminals;
+				--query_texts;
 
-				-- CS conductors
-				-- CS route/via restrict
-				-- CS holes
-			end query_package;
+				---- CS conductors
+				---- CS route/via restrict
+				---- CS holes
+			--end query_package;
 
 			
-			procedure query_device (c : in pac_devices_sch.cursor) is begin
-				if is_real (c) then
+			--procedure query_device (c : in pac_devices_sch.cursor) is begin
+				--if is_real (c) then
 
-					if log_category >= HIGH then
-						log (text => "device " & to_string (key (c)), level => lth + 2);
-						log_indentation_up;
-					end if;
+					--if log_category >= HIGH then
+						--log (text => "device " & to_string (key (c)), level => lth + 2);
+						--log_indentation_up;
+					--end if;
 
-					model := get_package_model (c);
+					--model := get_package_model (c);
 
-					if log_category >= HIGH then
-						log (text => "model " & to_string (model), level => lth + 3);
-					end if;
+					--if log_category >= HIGH then
+						--log (text => "model " & to_string (model), level => lth + 3);
+					--end if;
 					
-					-- locate the package model in the package library:
-					package_cursor := locate_package_model (model);
+					---- locate the package model in the package library:
+					--package_cursor := locate_package_model (model);
 
-					package_position := element (c).position;
-					package_flipped := element (c).flipped;
+					--package_position := element (c).position;
+					--package_flipped := element (c).flipped;
 
-					if log_category >= HIGH then
-						log_indentation_up;
-					end if;
+					--if log_category >= HIGH then
+						--log_indentation_up;
+					--end if;
 					
-					device_cursor := c;
-					query_package (observe_foreign_nets => true);
+					--device_cursor := c;
+					--query_package (observe_foreign_nets => true);
 
-					if log_category >= HIGH then
-						log_indentation_down;
-						log_indentation_down;					
-					end if;
-				end if;
-			end query_device;
+					--if log_category >= HIGH then
+						--log_indentation_down;
+						--log_indentation_down;					
+					--end if;
+				--end if;
+			--end query_device;
 
 			
-			use pac_devices_non_electric;
+			--use pac_devices_non_electric;
 			
-			procedure query_device (c : in pac_devices_non_electric.cursor) is begin
+			--procedure query_device (c : in pac_devices_non_electric.cursor) is begin
 
-				if log_category >= HIGH then
-					log (text => "device " & to_string (key (c)), level => lth + 2);
-					log_indentation_up;
-				end if;
+				--if log_category >= HIGH then
+					--log (text => "device " & to_string (key (c)), level => lth + 2);
+					--log_indentation_up;
+				--end if;
 
-				model := element (c).package_model;
+				--model := element (c).package_model;
 
-				if log_category >= HIGH then
-					log (text => "model " & to_string (model), level => lth + 3);
-				end if;
+				--if log_category >= HIGH then
+					--log (text => "model " & to_string (model), level => lth + 3);
+				--end if;
 				
-				-- locate the package model in the package library:
-				package_cursor := locate_package_model (model);
+				---- locate the package model in the package library:
+				--package_cursor := locate_package_model (model);
 
-				package_position := element (c).position;
-				package_flipped := element (c).flipped;
+				--package_position := element (c).position;
+				--package_flipped := element (c).flipped;
 
-				if log_category >= HIGH then
-					log_indentation_up;
-				end if;
+				--if log_category >= HIGH then
+					--log_indentation_up;
+				--end if;
 				
-				query_package (observe_foreign_nets => false);
+				--query_package (observe_foreign_nets => false);
 
-				if log_category >= HIGH then
-					log_indentation_down;
-					log_indentation_down;
-				end if;
-			end query_device;
+				--if log_category >= HIGH then
+					--log_indentation_down;
+					--log_indentation_down;
+				--end if;
+			--end query_device;
 
 			
-		begin
-			if log_category >= HIGH then
-				log (text => "probing devices ...", level => lth + 1);
-				log_indentation_up;
-			end if;
+		--begin
+			--if log_category >= HIGH then
+				--log (text => "probing devices ...", level => lth + 1);
+				--log_indentation_up;
+			--end if;
 			
-			-- probe electrical devices. abort when result is false:
-			iterate (
-				devices	=> module.devices,
-				process => query_device'access,
-				proceed => result'access);
+			---- probe electrical devices. abort when result is false:
+			--iterate (
+				--devices	=> module.devices,
+				--process => query_device'access,
+				--proceed => result'access);
 
-			-- probe non-electric devices
-			iterate (
-				devices => module.devices_non_electric,
-				process => query_device'access,
-				proceed	=> result'access);
+			---- probe non-electric devices
+			--iterate (
+				--devices => module.devices_non_electric,
+				--process => query_device'access,
+				--proceed	=> result'access);
 
-			if log_category >= HIGH then
-				log_indentation_down;
-			end if;
-		end query_devices;
+			--if log_category >= HIGH then
+				--log_indentation_down;
+			--end if;
+		--end query_devices;
 
-
-		
-	begin -- query_module
-		result := true;
-		
-		if fill_zone.observe then 
-			query_fill_zone;
-		end if;
-
-		if result = true then
-			query_global_cutouts;
-		end if;
-		
-		-- - net specific cutout areas
-		
-		-- CS abort if status is invalid.
-		
-		-- cs pads, ...
-
-		if result = true then
-			query_tracks;
-		end if;
-
-		if result = true then
-			query_texts;
-		end if;
-
-		if result = true then
-			query_devices;
-		end if;
 
 		
-		-- CS query freetracks, route restrict
+	--begin -- query_module
+		--result := true;
 		
-	end query_module;
+		--if fill_zone.observe then 
+			--query_fill_zone;
+		--end if;
 
-	distance_to_edge : type_distance;
+		--if result = true then
+			--query_global_cutouts;
+		--end if;
+		
+		---- - net specific cutout areas
+		
+		---- CS abort if status is invalid.
+		
+		---- cs pads, ...
+
+		--if result = true then
+			--query_tracks;
+		--end if;
+
+		--if result = true then
+			--query_texts;
+		--end if;
+
+		--if result = true then
+			--query_devices;
+		--end if;
+
+		
+		---- CS query freetracks, route restrict
+		
+	--end query_module;
+
+	--distance_to_edge : type_distance;
 	
 begin -- clear_for_track
 
@@ -1069,44 +1069,44 @@ begin -- clear_for_track
 	-- The first an basic test is to figure out whether the point is on
 	-- board and not inside a hole. If both conditions are true, then
 	-- other objects will be probed:
-	if on_board (module_cursor, start_point, log_category, lth + 1) then
+	--if on_board (module_cursor, start_point, log_category, lth + 1) then
 
-		-- the distance of the point to the board edge (incl. holes):
-		distance_to_edge := get_absolute (
-			get_distance_to_edge (module_cursor, start_point, log_category, lth + 1));
+		---- the distance of the point to the board edge (incl. holes):
+		--distance_to_edge := get_absolute (
+			--get_distance_to_edge (module_cursor, start_point, log_category, lth + 1));
 
-		if log_category >= HIGH then
-			log (text => " distance point to board edge:" & to_string (distance_to_edge),
-				level => lth + 1);
-		end if;
+		--if log_category >= HIGH then
+			--log (text => " distance point to board edge:" & to_string (distance_to_edge),
+				--level => lth + 1);
+		--end if;
 		
-		-- the distance of the conductor to the board edge:
-		distance_to_edge := distance_to_edge - 0.5 * width;
+		---- the distance of the conductor to the board edge:
+		--distance_to_edge := distance_to_edge - 0.5 * width;
 
-		if log_category >= HIGH then
-			log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
-				 level => lth + 1);
-		end if;
+		--if log_category >= HIGH then
+			--log (text => " distance conductor to board edge:" & to_string (distance_to_edge),
+				 --level => lth + 1);
+		--end if;
 
-		if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
+		--if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
 
-			if log_category >= HIGH then
-				log (text => " point is in safe distance to board edge", level => lth + 1);
-			end if;
+			--if log_category >= HIGH then
+				--log (text => " point is in safe distance to board edge", level => lth + 1);
+			--end if;
 			
-			-- probe other objects:
-			query_element (module_cursor, query_module'access);
-		else
-			if log_category >= HIGH then
-				log (text => " point is too close to board edge", level => lth + 1);			
-			end if;
-		end if;
+			---- probe other objects:
+			--query_element (module_cursor, query_module'access);
+		--else
+			--if log_category >= HIGH then
+				--log (text => " point is too close to board edge", level => lth + 1);			
+			--end if;
+		--end if;
 			
-	else
-		if log_category >= HIGH then
-			log (text => " point is not in board area", level => lth + 1);
-		end if;
-	end if;
+	--else
+		--if log_category >= HIGH then
+			--log (text => " point is not in board area", level => lth + 1);
+		--end if;
+	--end if;
 
 
 	if log_category >= HIGH then

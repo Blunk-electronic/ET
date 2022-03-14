@@ -272,7 +272,7 @@ package body pac_draw is
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_polygon_base'class;
+		polygon	: in type_polygon'class;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
 		-- CS fill style
@@ -455,7 +455,7 @@ package body pac_draw is
 	procedure draw_polygon_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon_base'class;
+		outer_border	: in type_polygon'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
@@ -481,8 +481,8 @@ package body pac_draw is
 	procedure draw_polygon_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon_base'class;
-		inner_border	: in type_polygon_base'class;
+		outer_border	: in type_polygon'class;
+		inner_border	: in type_polygon'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
 		drawn : boolean := false;

@@ -1,31 +1,30 @@
 HIERARCHY OF POLYGON TYPES
 ==========================
 
-et_geometry
-- abstract type_polygon_base
-- derived type_polygon from type_polygon_base
+et_geometry-polygons
+- type_polygon
 
 et_board_shapes_and_text
-- derived from type_polygon_base:
+- derived from type_polygon:
  - type_polygon_non_conductor (used by stop mask, stencil, silkscreen, assy doc)
 
 et_keepout;
-- derived from type_polygon_base:
+- derived from type_polygon:
  - type_keepout_polygon
  
 et_route_restrict:
- - derived from type_polygon_base:
+ - derived from type_polygon:
   - type_route_restrict_polygon
  
 et_via_restrict;
- - derived from type_polygon_base:
+ - derived from type_polygon:
   - type_via_restrict_polygon
  
  
 
 
 et_conductor_polygons:
-- derived from type_polygon_base:
+- derived from type_polygon:
  - type_polygon_conductor 
 	- discriminiant: fill_style
 	- selectors: width_min, isolation, easing

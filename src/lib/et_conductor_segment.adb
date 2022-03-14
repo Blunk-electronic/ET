@@ -115,80 +115,80 @@ package body et_conductor_segment is
 	end get_end_cap;	
 	
 
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_line_segment)
-		return type_distance
-	is 
-		result : type_distance := zero;
+	--function get_shortest_distance (
+		--point	: in type_point;
+		--segment	: in type_conductor_line_segment)
+		--return type_distance
+	--is 
+		--result : type_distance := zero;
 
-		type type_segment_area is new type_polygon_base with null record;
-		polygon : type_segment_area;
+		--type type_segment_area is new type_polygon with null record;
+		--polygon : type_segment_area;
 
-		length_left_edge  : constant type_distance_positive := get_length (segment.left_edge);
-		length_right_edge : constant type_distance_positive := get_length (segment.right_edge);
+		--length_left_edge  : constant type_distance_positive := get_length (segment.left_edge);
+		--length_right_edge : constant type_distance_positive := get_length (segment.right_edge);
 
-		procedure build_polygon is begin
-			if length_left_edge = zero and length_right_edge = zero then
-				-- rare case: the segment has no straight section between the
-				-- start and end cap. It is basically a circle.
-				declare
-					s : type_polygon_segments := (circular => true, others => <>);
-				begin
-					s.circle.center := segment.cap_start.center;
-					s.circle.radius := get_radius_start (segment.cap_start);
-					polygon.contours := s;
-				end;
-			else
-				-- the most common case: the segment has a straight section between
-				-- its start and end cap:
-				declare
-					use pac_polygon_segments;
-					s : type_polygon_segments := (circular => false, others => <>);
-				begin
-					append (s.segments, (LINE, segment.left_edge));
-					append (s.segments, (ARC, segment.cap_end));
-					append (s.segments, (LINE, type_line (reverse_line (segment.right_edge))));
-					append (s.segments, (ARC, type_arc (reverse_arc (segment.cap_start))));
-					polygon.contours := s;
-				end;
-			end if;			
-		end build_polygon;
+		--procedure build_polygon is begin
+			--if length_left_edge = zero and length_right_edge = zero then
+				---- rare case: the segment has no straight section between the
+				---- start and end cap. It is basically a circle.
+				--declare
+					--s : type_polygon_segments := (circular => true, others => <>);
+				--begin
+					--s.circle.center := segment.cap_start.center;
+					--s.circle.radius := get_radius_start (segment.cap_start);
+					--polygon.contours := s;
+				--end;
+			--else
+				---- the most common case: the segment has a straight section between
+				---- its start and end cap:
+				--declare
+					--use pac_polygon_segments;
+					--s : type_polygon_segments := (circular => false, others => <>);
+				--begin
+					--append (s.segments, (LINE, segment.left_edge));
+					--append (s.segments, (ARC, segment.cap_end));
+					--append (s.segments, (LINE, type_line (reverse_line (segment.right_edge))));
+					--append (s.segments, (ARC, type_arc (reverse_arc (segment.cap_start))));
+					--polygon.contours := s;
+				--end;
+			--end if;			
+		--end build_polygon;
 
-		--distance : type_distance_polar;
-		--ipq : type_point_to_polygon_status;
-	begin
-		-- build a polygon from the given segment:
-		build_polygon;
+		----distance : type_distance_polar;
+		----ipq : type_point_to_polygon_status;
+	--begin
+		---- build a polygon from the given segment:
+		--build_polygon;
 
-		--put_line (to_string (polygon));
+		----put_line (to_string (polygon));
 		
-		if not is_closed (polygon).closed then
-			raise constraint_error with "contour of conductor segment not closed !";
-		end if;
+		--if not is_closed (polygon).closed then
+			--raise constraint_error with "contour of conductor segment not closed !";
+		--end if;
 
 		
-		--distance := get_shortest_distance (polygon, point);
-		declare
-			ipq : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon, to_vector (point));
+		----distance := get_shortest_distance (polygon, point);
+		--declare
+			--ipq : constant type_point_to_polygon_status :=
+				--get_point_to_polygon_status (polygon, to_vector (point));
 
-		begin
-			--put_line ("p" & to_string (point));
-			--put_line ("d" & to_string (get_absolute (distance)));
+		--begin
+			----put_line ("p" & to_string (point));
+			----put_line ("d" & to_string (get_absolute (distance)));
 
-			case ipq.location is
-				when INSIDE =>
-					result := - to_distance (ipq.distance);
+			--case ipq.location is
+				--when INSIDE =>
+					--result := - to_distance (ipq.distance);
 					
-				when OUTSIDE | ON_EDGE | ON_VERTEX =>
-					result := + to_distance (ipq.distance);
+				--when OUTSIDE | ON_EDGE | ON_VERTEX =>
+					--result := + to_distance (ipq.distance);
 
-			end case;
-		end;
+			--end case;
+		--end;
 		
-		return result;
-	end get_shortest_distance;
+		--return result;
+	--end get_shortest_distance;
 
 
 	procedure line_conductor_properties (
@@ -292,50 +292,50 @@ package body et_conductor_segment is
 	end get_end_cap;
 
 	
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_arc_segment)
-		return type_distance
-	is 
-		result : type_distance := zero;
+	--function get_shortest_distance (
+		--point	: in type_point;
+		--segment	: in type_conductor_arc_segment)
+		--return type_distance
+	--is 
+		--result : type_distance := zero;
 
-		type type_segment_area is new type_polygon_base with null record;
-		polygon : type_segment_area;
+		--type type_segment_area is new type_polygon_base with null record;
+		--polygon : type_segment_area;
 
-		procedure build_polygon is 
-			use pac_polygon_segments;
-			s : type_polygon_segments := (circular => false, others => <>);
-		begin
-			append (s.segments, (ARC, segment.outer_edge));
-			append (s.segments, (ARC, segment.cap_end));
-			append (s.segments, (ARC, segment.inner_edge));
-			append (s.segments, (ARC, segment.cap_start));
-			polygon.contours := s;
-		end build_polygon;
+		--procedure build_polygon is 
+			--use pac_polygon_segments;
+			--s : type_polygon_segments := (circular => false, others => <>);
+		--begin
+			--append (s.segments, (ARC, segment.outer_edge));
+			--append (s.segments, (ARC, segment.cap_end));
+			--append (s.segments, (ARC, segment.inner_edge));
+			--append (s.segments, (ARC, segment.cap_start));
+			--polygon.contours := s;
+		--end build_polygon;
 
-		--distance : type_distance_polar;
-		--ipq : type_point_to_polygon_status;
-	begin
-		-- build a polygon from the given segment:
-		build_polygon;
+		----distance : type_distance_polar;
+		----ipq : type_point_to_polygon_status;
+	--begin
+		---- build a polygon from the given segment:
+		--build_polygon;
 
-		--distance := get_shortest_distance (polygon, point);
+		----distance := get_shortest_distance (polygon, point);
 		
-		declare
-			ipq : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon, to_vector (point));
-		begin
-			case ipq.location is
-				when INSIDE =>
-					result := - to_distance (ipq.distance);
+		--declare
+			--ipq : constant type_point_to_polygon_status :=
+				--get_point_to_polygon_status (polygon, to_vector (point));
+		--begin
+			--case ipq.location is
+				--when INSIDE =>
+					--result := - to_distance (ipq.distance);
 					
-				when OUTSIDE | ON_EDGE | ON_VERTEX =>
-					result := + to_distance (ipq.distance);
-			end case;
-		end;
+				--when OUTSIDE | ON_EDGE | ON_VERTEX =>
+					--result := + to_distance (ipq.distance);
+			--end case;
+		--end;
 		
-		return result;
-	end get_shortest_distance;
+		--return result;
+	--end get_shortest_distance;
 	
 
 	procedure arc_conductor_properties (

@@ -81,7 +81,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_segment_edge (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		edge	: in type_line)
 		return pac_polygon_segments.cursor
 	is
@@ -95,7 +95,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_segment_edge (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return pac_polygon_segments.cursor
 	is
@@ -131,7 +131,7 @@ package body et_geometry_2.polygons is
 
 	
 	function get_neigboring_edges (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		vertex	: in type_point)
 		return type_neigboring_edges
 	is
@@ -192,7 +192,7 @@ package body et_geometry_2.polygons is
 
 	
 	function to_string (
-		polygon	: in type_polygon_base)
+		polygon	: in type_polygon)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -235,7 +235,7 @@ package body et_geometry_2.polygons is
 	
 	
 	function get_nearest_corner_point (
-		polygon		: in type_polygon_base;
+		polygon		: in type_polygon;
 		reference	: in type_point)
 		return type_point
 	is
@@ -303,7 +303,7 @@ package body et_geometry_2.polygons is
 
 	
 	function get_shortest_distance (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return type_distance_polar
 	is
@@ -349,21 +349,22 @@ package body et_geometry_2.polygons is
 
 	
 	procedure load_segments (
-		polygon		: in out type_polygon_base;
+		polygon		: in out type_polygon;
 		segments	: in type_polygon_segments)
 	is begin
 		polygon.contours := segments;
 	end load_segments;
 
 	
-	procedure delete_segments (polygon : in out type_polygon_base) 
+	procedure delete_segments (
+		polygon : in out type_polygon) 
 	is begin
 		polygon.contours := (others => <>);
 	end delete_segments;			
 
 	
 	procedure append_segment (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		segment	: in type_polygon_segment)
 	is begin
 		-- CS check discriminant and issue helpful error message ?
@@ -382,7 +383,7 @@ package body et_geometry_2.polygons is
 
 	
 	procedure set_circle (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		circle	: in type_circle'class)
 	is begin
 		-- CS check discriminant and issue helpful error message ?
@@ -392,7 +393,7 @@ package body et_geometry_2.polygons is
 				
 	
 	function get_segments (
-		polygon : in type_polygon_base) 
+		polygon : in type_polygon) 
 		return type_polygon_segments
 	is begin
 		return polygon.contours;
@@ -400,7 +401,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_segments_total (
-		polygon : in type_polygon_base)
+		polygon : in type_polygon)
 		return count_type
 	is begin
 		if polygon.contours.circular then
@@ -413,7 +414,7 @@ package body et_geometry_2.polygons is
 
 	
 	procedure transpose_polygon (
-		polygon	: in out type_polygon_base'class;
+		polygon	: in out type_polygon'class;
 		offset	: in type_distance)
 	is 
 		procedure move (point : in out type_point) is
@@ -471,7 +472,7 @@ package body et_geometry_2.polygons is
 	
 	function to_polygon (
 		arguments : in type_fields_of_line) -- line 0 0 line 160 0 line 160 80 line 0 80
-		return type_polygon_base'class
+		return type_polygon'class
 	is
 		-- CS: to do:
 		-- - length check for lines and arc segments
@@ -650,7 +651,7 @@ package body et_geometry_2.polygons is
 
 		end if;
 			
-		return type_polygon_base (result);
+		return type_polygon'class (result);
 
 		-- CS exception handler required for invalid fields:
 		
@@ -663,7 +664,7 @@ package body et_geometry_2.polygons is
 
 	
 	function get_boundaries (
-		polygon		: in type_polygon_base;
+		polygon		: in type_polygon;
 		line_width	: in type_distance_positive)
 		return type_boundaries 
 	is
@@ -736,7 +737,7 @@ package body et_geometry_2.polygons is
 
 	
 	function is_closed (
-		polygon	: in type_polygon_base)
+		polygon	: in type_polygon)
 		return type_polygon_status 
 	is
 		-- Goes false once a gap has been detected:
@@ -814,7 +815,7 @@ package body et_geometry_2.polygons is
 	
 	
 	procedure move_by (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		offset	: in type_distance_relative) 
 	is
 
@@ -859,7 +860,7 @@ package body et_geometry_2.polygons is
 
 	
 	procedure mirror (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		axis	: in type_axis_2d) 
 	is
 
@@ -904,7 +905,7 @@ package body et_geometry_2.polygons is
 
 	
 	procedure rotate_by (
-		polygon		: in out type_polygon_base;
+		polygon		: in out type_polygon;
 		rotation	: in type_rotation) 
 	is
 
@@ -963,7 +964,7 @@ package body et_geometry_2.polygons is
 	
 	
 	procedure scale_polygon (
-		polygon	: in out type_polygon_base;
+		polygon	: in out type_polygon;
 		scale	: in type_polygon_scale) 
 	is
 		
@@ -1025,7 +1026,7 @@ package body et_geometry_2.polygons is
 	
 
 	function is_vertex (
-		polygon	: in type_polygon_base;
+		polygon	: in type_polygon;
 		point	: in type_point)
 		return boolean
 	is
@@ -1083,6 +1084,7 @@ package body et_geometry_2.polygons is
 	
 -- private
 
+	
 	function get_shortest_distance (
 		polygon	: in type_polygon;
 		point	: in type_vector)

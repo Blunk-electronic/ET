@@ -3291,14 +3291,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3310,14 +3310,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3329,14 +3329,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3348,14 +3348,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with 
+									new_item	=> (polygon with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3365,13 +3365,13 @@ is
 					procedure append_keepout_polygon_top is begin
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.top.polygons, 
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> (polygon with null record));
 					end;
 
 					procedure append_keepout_polygon_bottom is begin
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.bottom.polygons, 
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> (polygon with null record));
 					end;
 
 					procedure append_stencil_polygon_top is begin
@@ -3379,14 +3379,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3398,14 +3398,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3417,14 +3417,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3436,14 +3436,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (type_polygon_base (polygon) with
+									new_item	=> (polygon with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3529,61 +3529,61 @@ is
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.top.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record)); 
+							new_item	=> polygon); 
 					end;
 
 					procedure append_silk_cutout_bottom is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.bottom.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 					
 					procedure append_assy_doc_cutout_top is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.top.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_assy_doc_cutout_bottom is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.bottom.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_keepout_cutout_bottom is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.bottom.cutouts, 
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_stencil_cutout_top is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.top.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_stencil_cutout_bottom is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.bottom.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_stop_cutout_top is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.top.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 
 					procedure append_stop_cutout_bottom is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.bottom.cutouts,
-							new_item	=> (type_polygon_base (polygon) with null record));
+							new_item	=> polygon);
 					end;
 					
 				begin -- do_it
@@ -3652,7 +3652,7 @@ is
 				begin
 					pac_via_restrict_cutouts.append (
 						container	=> module.board.via_restrict.cutouts,
-						new_item	=> (type_polygon_base (polygon) with
+						new_item	=> (polygon with
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3682,7 +3682,7 @@ is
 				begin
 					pac_route_restrict_cutouts.append (
 						container	=> module.board.route_restrict.cutouts,
-						new_item	=> (type_polygon_base (polygon) with 
+						new_item	=> (polygon with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3713,7 +3713,7 @@ is
 				begin
 					pac_conductor_cutouts.append (
 						container	=> module.board.conductors.cutouts,
-						new_item	=> (type_polygon_base (polygon) with
+						new_item	=> (polygon with
 								layer => signal_layer));
 				end do_it;
 									
@@ -3949,7 +3949,7 @@ is
 				is begin
 					append (
 						container	=> module.board.route_restrict.polygons,
-						new_item	=> (type_polygon_base (polygon) with signal_layers));
+						new_item	=> (polygon with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_route_restrict
@@ -4066,7 +4066,7 @@ is
 				is begin
 					append (
 						container	=> module.board.via_restrict.polygons,
-						new_item	=> (type_polygon_base (polygon) with signal_layers));
+						new_item	=> (polygon with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_via_restrict
@@ -4097,7 +4097,7 @@ is
 						when SOLID =>
 							pac_floating_solid.append (
 								container	=> module.board.conductors.polygons.solid,
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (polygon with
 									fill_style 		=> SOLID,
 									easing			=> board_easing,
 									properties		=> (signal_layer, polygon_priority, others => <>),
@@ -4107,7 +4107,7 @@ is
 						when HATCHED =>
 							pac_floating_hatched.append (
 								container	=> module.board.conductors.polygons.hatched,
-								new_item	=> (type_polygon_base (polygon) with
+								new_item	=> (polygon with
 									fill_style 		=> HATCHED,
 									easing			=> board_easing,
 									properties		=> (signal_layer, polygon_priority, others => <>),
@@ -4739,7 +4739,7 @@ is
 			begin
 				pac_conductor_cutouts.append (
 					container	=> route.cutouts,
-					new_item	=> (type_polygon_base (polygon) with
+					new_item	=> (polygon with
 									layer	=> signal_layer));
 
 				board_reset_polygon; -- clean up for next cutout zone

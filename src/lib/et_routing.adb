@@ -155,90 +155,90 @@ package body et_routing is
 	end get_distance_to_edge;
 	
 	
-	function on_board (
-		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
-		log_category	: in type_log_category;
-		lth				: in type_log_level)		
-		return boolean
-	is
-		result : boolean := true;
+	--function on_board (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--point			: in type_point;
+		--log_category	: in type_log_category;
+		--lth				: in type_log_level)		
+		--return boolean
+	--is
+		--result : boolean := true;
 		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
-		is
-			procedure query_outline is begin
-				if get_point_to_polygon_status (
-					module.board.contours.outline, to_vector (point)).location = OUTSIDE 
-				then
-					--log (text => "outside", level => lth + 1);
-					result := false;
-				end if;
-			end query_outline;
+		--procedure query_module (
+			--module_name	: in pac_module_name.bounded_string;
+			--module		: in et_schematic.type_module) 
+		--is
+			--procedure query_outline is begin
+				--if get_point_to_polygon_status (
+					--module.board.contours.outline, to_vector (point)).location = OUTSIDE 
+				--then
+					----log (text => "outside", level => lth + 1);
+					--result := false;
+				--end if;
+			--end query_outline;
 			
 			
-			procedure query_holes is
-				use et_packages;
-				use pac_pcb_cutouts;
-				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
-			begin
-				while c /= pac_pcb_cutouts.no_element loop
-					if get_point_to_polygon_status (
-						element (c), to_vector (point)).location = INSIDE 
-					then
-						if log_category >= HIGH then
-							log (text => "point is in a hole", level => lth + 1);
-						end if;
+			--procedure query_holes is
+				--use et_packages;
+				--use pac_pcb_cutouts;
+				--c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
+			--begin
+				--while c /= pac_pcb_cutouts.no_element loop
+					--if get_point_to_polygon_status (
+						--element (c), to_vector (point)).location = INSIDE 
+					--then
+						--if log_category >= HIGH then
+							--log (text => "point is in a hole", level => lth + 1);
+						--end if;
 						
-						result := false;
+						--result := false;
 						
-						exit; -- no need to test other holes
-					end if;
+						--exit; -- no need to test other holes
+					--end if;
 					
-					next (c);
-				end loop;
-			end query_holes;
+					--next (c);
+				--end loop;
+			--end query_holes;
 
 			
-		begin -- query_module
-			if log_category >= HIGH then
-				log (text => "probing outline ...", level => lth + 1);
-			end if;
+		--begin -- query_module
+			--if log_category >= HIGH then
+				--log (text => "probing outline ...", level => lth + 1);
+			--end if;
 			
-			query_outline;
+			--query_outline;
 
-			if result = true then -- point is inside board outlines
-				if log_category >= HIGH then
-					log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
-				end if;
+			--if result = true then -- point is inside board outlines
+				--if log_category >= HIGH then
+					--log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
+				--end if;
 				
-				query_holes;
-			end if;
-		end query_module;
+				--query_holes;
+			--end if;
+		--end query_module;
 
 		
-	begin -- on_board
-		if log_category >= HIGH then
-			log (text => "probing whether point" & to_string (point) 
-			 & " is on board ...", level => lth);
+	--begin -- on_board
+		--if log_category >= HIGH then
+			--log (text => "probing whether point" & to_string (point) 
+			 --& " is on board ...", level => lth);
 
-			log_indentation_up;
-		end if;
+			--log_indentation_up;
+		--end if;
 		
-		query_element (module_cursor, query_module'access);
+		--query_element (module_cursor, query_module'access);
 
-		if log_category >= HIGH then
-			if result = true then
-				log (text => "point is on board", level => lth);
-			else
-				log (text => "point is not on board", level => lth);
-			end if;
+		--if log_category >= HIGH then
+			--if result = true then
+				--log (text => "point is on board", level => lth);
+			--else
+				--log (text => "point is not on board", level => lth);
+			--end if;
 			
-			log_indentation_down;
-		end if;
-		return result;
-	end on_board;
+			--log_indentation_down;
+		--end if;
+		--return result;
+	--end on_board;
 
 						  
 

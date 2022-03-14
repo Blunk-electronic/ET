@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -345,7 +345,7 @@ is
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic polygon from the arguments:
-		p0 : constant type_polygon_base'class := to_polygon (arguments);
+		p0 : constant type_polygon := type_polygon (to_polygon (arguments));
 	begin
 		draw_outline (module, type_polygon (p0), log_threshold + 1);
 	end draw_outline;
@@ -356,7 +356,7 @@ is
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic polygon from the arguments:
-		p0 : constant type_polygon_base'class := to_polygon (arguments);
+		p0 : constant type_polygon := type_polygon (to_polygon (arguments));
 	begin
 		draw_hole (module, type_polygon (p0), log_threshold + 1);
 	end draw_hole;
@@ -2084,12 +2084,12 @@ is
 			ph : type_hatched_floating;
 
 			-- Build a basic polygon from the arguments:
-			p : constant type_polygon_base'class := to_polygon (arguments);
+			p : constant type_polygon := type_polygon (to_polygon (arguments));
 		begin -- make_polygon
 			case settings.polygons_conductor.fill_style is
 				when SOLID =>
 			
-					ps := (type_polygon_base (p) with 
+					ps := (p with 
 						fill_style	=> SOLID,
 						width_min	=> settings.polygons_conductor.min_width,
 						isolation	=> settings.polygons_conductor.isolation,
@@ -2105,7 +2105,7 @@ is
 					
 				when HATCHED =>
 
-					ph := (type_polygon_base (p) with 
+					ph := (p with 
 						fill_style	=> HATCHED,
 						hatching	=> settings.polygons_conductor.hatching,
 						width_min	=> settings.polygons_conductor.min_width,
@@ -2207,13 +2207,13 @@ is
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 
 			-- Build a basic polygon from the arguments:
-			p0 : constant type_polygon_base'class := to_polygon (arguments);
+			p0 : constant type_polygon := type_polygon (to_polygon (arguments));
 
 			procedure make_solid_thermal is
 				p1 : type_polygon_conductor_solid;
 				p2 : type_solid_route (connection => THERMAL);
 			begin
-				p1 := (type_polygon_base (p0) with 
+				p1 := (p0 with 
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,					
@@ -2240,7 +2240,7 @@ is
 				p1 : type_polygon_conductor_solid;
 				p2 : type_solid_route (connection => SOLID);
 			begin
-				p1 := (type_polygon_base (p0) with 
+				p1 := (p0 with 
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,					
@@ -2267,7 +2267,7 @@ is
 				p1 : type_polygon_conductor_hatched;
 				p2 : type_hatched_route (connection => THERMAL);
 			begin
-				p1 := (type_polygon_base (p0) with 
+				p1 := (p0 with 
 					fill_style	=> HATCHED,
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,
@@ -2295,7 +2295,7 @@ is
 				p1 : type_polygon_conductor_hatched;
 				p2 : type_hatched_route (connection => SOLID);
 			begin
-				p1 := (type_polygon_base (p0) with 
+				p1 := (p0 with 
 					fill_style	=> HATCHED,
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,

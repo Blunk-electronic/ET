@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -159,7 +159,7 @@ package pac_draw is
 		--);
 
 	--type type_cutout_circle is new type_circle with null record;
-	--type type_cutout_arbitrary is new type_polygon_base with null record;
+	--type type_cutout_arbitrary is new type_polygon with null record;
 
 	--package pac_cutouts_arbitrary is new doubly_linked_lists (type_cutout_arbitrary);
 
@@ -189,7 +189,7 @@ package pac_draw is
 	
 ---- CROP
 	--type type_crop is (NO, YES);
-	--type type_crop_arbitrary is new type_polygon_base with null record;
+	--type type_crop_arbitrary is new type_polygon with null record;
 	
 	--type type_crop_area (
 		--required	: type_crop := NO)
@@ -206,7 +206,7 @@ package pac_draw is
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_polygon_base'class;
+		polygon	: in type_polygon'class;
 		filled	: in type_filled;
 		-- CS fill style
 
@@ -225,15 +225,15 @@ package pac_draw is
 	procedure draw_polygon_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon_base'class;
+		outer_border	: in type_polygon'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance);
 
 	procedure draw_polygon_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon_base'class;
-		inner_border	: in type_polygon_base'class;
+		outer_border	: in type_polygon'class;
+		inner_border	: in type_polygon'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance);
 	
 	

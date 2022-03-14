@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -90,10 +90,10 @@ package et_conductor_segment is
 	-- then the point is inside the segment.
 	-- If the segment contour is not closed, then an exception
 	-- is raised:
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_line_segment)
-		return type_distance;
+	--function get_shortest_distance (
+		--point	: in type_point;
+		--segment	: in type_conductor_line_segment)
+		--return type_distance;
 	
 
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
@@ -138,10 +138,10 @@ package et_conductor_segment is
 	-- Computes the shortest distance from a point to
 	-- a conductor arc segment. If the return is negative,
 	-- then the point is inside the segment:
-	function get_shortest_distance (
-		point	: in type_point;
-		segment	: in type_conductor_arc_segment)
-		return type_distance;
+	--function get_shortest_distance (
+		--point	: in type_point;
+		--segment	: in type_conductor_arc_segment)
+		--return type_distance;
 
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
