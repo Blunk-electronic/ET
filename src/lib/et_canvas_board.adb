@@ -1168,7 +1168,6 @@ package body et_canvas_board is
 
 	procedure place_text (destination : in type_point) is
 		use pac_text_fab;
-		use et_canvas_schematic;
 	begin
 		if text_place.being_moved then
 			move_to (text_place.text.position, destination);

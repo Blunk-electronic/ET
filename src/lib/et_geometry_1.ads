@@ -488,10 +488,11 @@ package et_geometry_1 is
 		offset	: in type_distance_relative);
 
 	
-	-- Moves a point to the given position.
+	-- Moves a point to the given destination:
 	procedure move_to (
-		point		: in out type_point'class;
-		position	: in type_point);
+		point		: in out type_point;
+		destination	: in type_point'class);
+
 	
 	-- Moves a point into direction by distance.
 	function move (
@@ -500,6 +501,7 @@ package et_geometry_1 is
 		distance	: in type_distance_positive;
 		clip		: in boolean := false)
 		return type_point'class;
+
 	
 	-- If axis is Y then it swaps right x with left x.
 	-- If axis is X then it swaps upper y with lower y.
@@ -507,12 +509,14 @@ package et_geometry_1 is
 		point	: in out type_point;
 		axis	: in type_axis_2d);	
 
+	
 	-- Returns the distance along the given axis between the given points.
 	function get_distance (
 		point_1	: in type_point;
 		point_2	: in type_point;
 		axis	: in type_axis_2d) 
 		return type_distance;
+
 	
 	-- Returns the absolute distance along the given axis between the given points.
 	-- NOTE: The result in both x and y is always greater or equal zero.
@@ -522,6 +526,7 @@ package et_geometry_1 is
 		axis	: in type_axis_2d) 
 		return type_distance_positive;
 
+	
 	-- Adds x and y of given points as:
 	-- result.x = point_one.x + point_two.x and
 	-- result.y = point_one.y + point_two.y and
@@ -550,6 +555,7 @@ package et_geometry_1 is
 		point_one, point_two : in type_point)
 		return type_distance_positive;
 
+	
 	-- Returns true if point_2 is within the 
 	-- catch zone around point_1:
 	function in_catch_zone (
@@ -605,11 +611,13 @@ package et_geometry_1 is
 		point_one, point_two : in type_point)
 		return type_distance_polar;
 
+	
 	-- Returns the angle of the given polar distance:
 	function get_angle (
 		distance : in type_distance_polar)
 		return type_rotation;
 
+	
 	-- Returns the absolute of the given polar distance:
 	function get_absolute (
 		distance : in type_distance_polar)
@@ -665,14 +673,17 @@ package et_geometry_1 is
 		point		: in type_point;
 		rotation	: in type_rotation)
 		return type_position'class;
+
 	
-	procedure set (
 	-- Sets the rotation of a position. (position.rotation)
+	procedure set (
 		position	: in out type_position;
 		rotation	: in type_rotation);
 	
-	function rot (position : in type_position'class) return type_rotation;
 	-- Returns the rotation of the given position.
+	function rot (
+		position : in type_position'class) 
+		return type_rotation;
 
 	procedure rotate (
 	-- Changes the rotation of the given position by the given offset.

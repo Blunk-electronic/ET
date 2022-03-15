@@ -1074,11 +1074,11 @@ package body et_geometry_1 is
 
 	
 	procedure move_to (
-		point		: in out type_point'class;
-		position	: in type_point) is
-	begin
-		point.x := position.x;
-		point.y := position.y;
+		point		: in out type_point;
+		destination	: in type_point'class) 
+	is begin
+		point.x := destination.x;
+		point.y := destination.y;
 	end move_to;
 
 	
@@ -1437,8 +1437,12 @@ package body et_geometry_1 is
 	is begin
 		position.rotation := rotation;
 	end;
-				
-	function rot (position : in type_position'class) return type_rotation is begin
+
+	
+	function rot (
+		position : in type_position'class)
+		return type_rotation 
+	is begin
 		return position.rotation;
 	end;
 
