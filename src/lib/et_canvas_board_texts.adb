@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -577,7 +577,7 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (rot (text_place.text.position)), left));
+			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (text_place.text.position)), left));
 			
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);

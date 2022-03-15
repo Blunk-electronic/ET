@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -314,7 +314,7 @@ procedure draw_units (
 				end if;
 
 				-- get the rotation of the unit
-				unit_rotation := rot (element (unit_cursor).position);
+				unit_rotation := get_rotation (element (unit_cursor).position);
 
 				
 				-- If this is a real device, then get a copy of the 
@@ -451,7 +451,7 @@ procedure draw_units (
 
 
 					-- get the rotation of the unit
-					unit_rotation := rot (element (unit_cursor).position);
+					unit_rotation := get_rotation (element (unit_cursor).position);
 
 					
 					-- If this is a real device, then get a copy of the 

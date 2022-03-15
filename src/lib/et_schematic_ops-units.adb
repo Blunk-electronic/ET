@@ -234,7 +234,7 @@ package body et_schematic_ops.units is
 							unit.position := to_position (
 								point		=> point, 
 								sheet		=> type_sheet (sheet),
-								rotation	=> rot (unit.position));
+								rotation	=> get_rotation (unit.position));
 
 						when RELATIVE =>
 							move (
@@ -304,7 +304,7 @@ package body et_schematic_ops.units is
 				ports := get_ports_of_unit (device_cursor, unit_name);
 
 				-- Rotate the ports according to the rotation of the unit:
-				rotate_ports (ports, rot (position_of_unit_new));
+				rotate_ports (ports, get_rotation (position_of_unit_new));
 
 				
 				-- Delete the old ports of the targeted unit from module.nets
@@ -831,7 +831,7 @@ package body et_schematic_ops.units is
 							unit.position := to_position (
 								point		=> point, 
 								sheet		=> sheet,
-								rotation	=> rot (unit.position));
+								rotation	=> get_rotation (unit.position));
 							
 						when RELATIVE =>
 							move_by (
@@ -883,7 +883,7 @@ package body et_schematic_ops.units is
 				
 				-- Calculate the old and new positions of the unit ports:
 				ports_old := ports;
-				rotate_ports (ports_old, rot (position_of_unit_old));
+				rotate_ports (ports_old, get_rotation (position_of_unit_old));
 				move_ports (ports_old, position_of_unit_old); 
 				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
@@ -902,7 +902,7 @@ package body et_schematic_ops.units is
 					process		=> query_units'access);
 				
 				ports_new := ports;
-				rotate_ports (ports_new, rot (position_of_unit_new));
+				rotate_ports (ports_new, get_rotation (position_of_unit_new));
 				move_ports (ports_new, position_of_unit_new);
 				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
 				
@@ -1113,7 +1113,7 @@ package body et_schematic_ops.units is
 						when RELATIVE =>
 							set (unit.position, add (rotation_before, rotation));
 							
-							log (text => "rotation now" & to_string (rot (unit.position)),
+							log (text => "rotation now" & to_string (get_rotation (unit.position)),
 									level => log_threshold + 1);
 
 							rotate_placeholders_relative (rotation);
@@ -1128,7 +1128,7 @@ package body et_schematic_ops.units is
 
 					-- load unit position and current rotation
 					position_of_unit := element (unit_cursor).position;
-					rotation_before := rot (element (unit_cursor).position);
+					rotation_before := get_rotation (element (unit_cursor).position);
 
 					-- log unit position and current rotation
 					log (text => to_string (position => position_of_unit) &

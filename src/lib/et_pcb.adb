@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -108,7 +108,7 @@ package body et_pcb is
 	function package_position (position : in type_package_position) return string is
 	begin
 		return (" position" & to_string (type_point (position))
-			& " angle" & to_string (rot (position))
+			& " angle" & to_string (get_rotation (position))
 			& " face" & to_string (get_face (position)));
 	end package_position;
 

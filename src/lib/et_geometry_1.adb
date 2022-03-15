@@ -1439,13 +1439,14 @@ package body et_geometry_1 is
 	end;
 
 	
-	function rot (
-		position : in type_position'class)
+	function get_rotation (
+		position : in type_position)
 		return type_rotation 
 	is begin
 		return position.rotation;
 	end;
 
+	
 	procedure rotate (
 		position	: in out type_position'class;
 		offset		: in type_rotation) 
@@ -1647,7 +1648,7 @@ package body et_geometry_1 is
 			& axis_separator
 			& to_string (point.y)
 			& axis_separator
-			& to_string (rot (point));
+			& to_string (get_rotation (point));
 	end;
 		
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -388,7 +388,7 @@ is
 			v_text := vectorize_text (
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
-				rotation	=> rot (element (c).position),
+				rotation	=> get_rotation (element (c).position),
 				position	=> type_point (element (c).position),
 
 				-- Mirror the text only if it is in the bottom layer:

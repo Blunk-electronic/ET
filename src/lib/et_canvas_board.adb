@@ -578,7 +578,7 @@ package body et_canvas_board is
 				v_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
-					rotation	=> rot (text_place.text.position),
+					rotation	=> get_rotation (text_place.text.position),
 					position	=> point,
 					mirror		=> face_to_mirror (face),
 					line_width	=> text_place.text.line_width,
@@ -632,7 +632,7 @@ package body et_canvas_board is
 			v_text := vectorize_text (
 				content		=> text_place.text.content,
 				size		=> text_place.text.size,
-				rotation	=> rot (text_place.text.position),
+				rotation	=> get_rotation (text_place.text.position),
 				position	=> point,
 				mirror		=> NO,
 				line_width	=> text_place.text.line_width,
@@ -701,7 +701,7 @@ package body et_canvas_board is
 				v_text := vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
-					rotation	=> rot (text_place.text.position),
+					rotation	=> get_rotation (text_place.text.position),
 					position	=> point,
 					mirror		=> mirror,
 					line_width	=> text_place.text.line_width,

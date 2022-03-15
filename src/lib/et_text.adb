@@ -308,7 +308,7 @@ package body et_text is
 			return text_properties (type_text (text))
 				& " pos " & to_string (type_point (text.position))
 				& " line width" & to_string (text.line_width)
-				& " rotation" & to_string (rot (type_position (text.position)));
+				& " rotation" & to_string (get_rotation (text.position));
 		end text_properties;
 
 

@@ -113,9 +113,9 @@ package body et_coordinates is
 				else
 					-- y positions equal -> compare rotation
 
-					if rot (left) < rot (right) then
+					if get_rotation (left) < get_rotation (right) then
 						result := true;
-					elsif rot (left) > rot (right) then
+					elsif get_rotation (left) > get_rotation (right) then
 						result := false;
 					else
 						-- rotations equal

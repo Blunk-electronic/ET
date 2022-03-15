@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -295,7 +295,7 @@ package body et_packages is
 		flipped		: in type_flipped;
 		package_pos	: in type_package_position) 
 	is 
-		package_rotation : constant type_rotation := rot (package_pos);
+		package_rotation : constant type_rotation := get_rotation (package_pos);
 		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos);
 	begin
 		-- Rotate the given terminal position by the position of the package:
@@ -317,7 +317,7 @@ package body et_packages is
 		if flipped = YES then
 			-- The outline must be rotated by the rotation of the package
 			-- minus the rotation of the given position itself:
-			rotate_by (outline, add (package_rotation, - rot (term_pos)));
+			rotate_by (outline, add (package_rotation, - get_rotation (term_pos)));
 
 			-- If the package is flipped, then the
 			-- given outline (of a pad or a milled hole)
@@ -326,7 +326,7 @@ package body et_packages is
 		else				
 			-- The outline must be rotated by the rotation of the package
 			-- plus the rotation of the given position itself:
-			rotate_by (outline, add (package_rotation, rot (term_pos)));
+			rotate_by (outline, add (package_rotation, get_rotation (term_pos)));
 		end if;
 		
 		-- Move the outline to its final position:

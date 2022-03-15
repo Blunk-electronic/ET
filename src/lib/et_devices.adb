@@ -697,7 +697,7 @@ package body et_devices is
 		r.purpose	:= element (symbol_cursor).symbol.purpose;
 
 		-- rotate the positions of placeholders according to rotation given by caller:
-		rotate (r, rot (destination));
+		rotate (r, get_rotation (destination));
 		
 		return r;
 	end rotate_placeholders;

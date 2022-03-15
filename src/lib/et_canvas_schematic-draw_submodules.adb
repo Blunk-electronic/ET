@@ -133,7 +133,7 @@ is
 			use et_pcb_coordinates.pac_geometry_brd;
 			pos_x : constant string := to_string (get_x (element (cursor).position_in_board));
 			pos_y : constant string := to_string (get_y (element (cursor).position_in_board));
-			rotation : constant string := to_string (rot (element (cursor).position_in_board));
+			rotation : constant string := to_string (get_rotation (element (cursor).position_in_board));
 			
 			text : constant string := "board (x/y/rot.):" &
 					pos_x & et_pcb_coordinates.pac_geometry_brd.axis_separator &

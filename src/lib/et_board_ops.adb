@@ -1497,7 +1497,7 @@ package body et_board_ops is
 		end if;
 
 		-- rotate
-		rotate_by (point => terminal_position_base, rotation => rot (package_position));
+		rotate_by (point => terminal_position_base, rotation => get_rotation (package_position));
 
 		-- move
 		move_by (point => terminal_position_base, offset => to_distance_relative (package_position));
@@ -3734,7 +3734,7 @@ package body et_board_ops is
 			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
-				rotation	=> rot (text.position),
+				rotation	=> get_rotation (text.position),
 				position	=> type_point (text.position),
 				mirror		=> mirror,
 				line_width	=> text.line_width
@@ -3816,7 +3816,7 @@ package body et_board_ops is
 			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
-				rotation	=> rot (text.position),
+				rotation	=> get_rotation (text.position),
 				position	=> type_point (text.position),
 				line_width	=> text.line_width
 				-- CS alignment
@@ -3878,7 +3878,7 @@ package body et_board_ops is
 			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
-				rotation	=> rot (text.position),
+				rotation	=> get_rotation (text.position),
 				position	=> type_point (text.position),
 				mirror		=> mirror,
 				line_width	=> text.line_width

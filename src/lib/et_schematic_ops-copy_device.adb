@@ -269,8 +269,8 @@ is
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
 			log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-			if rot (destination) /= zero_rotation then
-				rotate_ports (ports, rot (destination));
+			if get_rotation (destination) /= zero_rotation then
+				rotate_ports (ports, get_rotation (destination));
 			end if;
 			
 			move_ports (ports, destination);
@@ -297,7 +297,7 @@ begin -- copy_device
 	log (text => "module " & to_string (module_name) &
 		" copying " & to_string (device_name) & 
 		" to" & to_string (position => destination) &
-		" rotation" & to_string (rot (destination)) &
+		" rotation" & to_string (get_rotation (destination)) &
 		" ...", level => log_threshold);
 
 	-- locate module

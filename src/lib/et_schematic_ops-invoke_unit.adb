@@ -242,8 +242,8 @@ procedure invoke_unit (
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
 			log (text => "calculating absolute port positions ...", level => log_threshold + 1);
-			if rot (destination) /= zero_rotation then
-				rotate_ports (ports, rot (destination));
+			if get_rotation (destination) /= zero_rotation then
+				rotate_ports (ports, get_rotation (destination));
 			end if;
 
 			move_ports (ports, destination);
@@ -269,7 +269,7 @@ begin -- invoke_unit
 		" invoking unit " & to_string (unit_name) &
 		" at" &
 		to_string (position => destination) &
-		" rotation" & to_string (rot (destination)),
+		" rotation" & to_string (get_rotation (destination)),
 		level => log_threshold);
 
 	log_indentation_up;

@@ -89,7 +89,7 @@ package body et_pcb_coordinates is
 				& axis_separator
 				& to_string (get_y (p))
 				& axis_separator
-				& to_string (rot (p))
+				& to_string (get_rotation (p))
 				& axis_separator
 				& to_string (p.face);
 

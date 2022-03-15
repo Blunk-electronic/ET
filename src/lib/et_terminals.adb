@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -182,7 +182,7 @@ package body et_terminals is
 		log (text => "terminal name " & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point (terminal.position))
-			& " rotation" & to_string (rot (terminal.position)),
+			& " rotation" & to_string (get_rotation (terminal.position)),
 			level => log_threshold);
 
 		log_indentation_up;

@@ -535,7 +535,7 @@ package body et_canvas_schematic_units is
 			ports := get_ports_of_unit (su.device, key (su.unit));
 
 			-- Calculate the port positions in the schematic before the drag:
-			rotate_ports (ports, rot (unit_position));
+			rotate_ports (ports, get_rotation (unit_position));
 			move_ports (ports, unit_position);
 		end get_ports;
 
@@ -688,7 +688,7 @@ package body et_canvas_schematic_units is
 				begin -- rotate_unit
 					set (unit.position, add (rotation_before, rotation));
 					
-					log (text => "rotation now" & to_string (rot (unit.position)),
+					log (text => "rotation now" & to_string (get_rotation (unit.position)),
 							level => log_threshold + 1);
 
 					rotate_placeholders_relative (rotation);
@@ -698,7 +698,7 @@ package body et_canvas_schematic_units is
 
 				-- load unit position and current rotation
 				position_of_unit := element (unit.unit).position;
-				rotation_before := rot (element (unit.unit).position);
+				rotation_before := get_rotation (element (unit.unit).position);
 
 				-- log unit position and current rotation
 				log (text => to_string (position => position_of_unit) &

@@ -649,7 +649,7 @@ package body et_schematic_ops is
 						
 						rotate_by (
 							point		=> port_position,
-							rotation	=> rot (element (unit_cursor).position));
+							rotation	=> get_rotation (element (unit_cursor).position));
 						
 						-- CS mirror ?
 						
@@ -830,7 +830,7 @@ package body et_schematic_ops is
 				
 				rotate_by (
 					point		=> port_xy,
-					rotation	=> rot (nc_position));
+					rotation	=> get_rotation (nc_position));
 				
 				move_by (
 					point	=> port_xy,
@@ -2000,7 +2000,7 @@ package body et_schematic_ops is
 
 						-- CS mirror before rotate or after rotate ?
 						--rotate_ports (ports, unit_rotation);
-						rotate_ports (ports, rot (unit_position));
+						rotate_ports (ports, get_rotation (unit_position));
 
 						move_ports (ports, unit_position);
 
@@ -3838,7 +3838,7 @@ package body et_schematic_ops is
 	begin -- add_netchanger
 		log (text => "module " & to_string (module_name) &
 			" adding netchanger at" & to_string (position => place) &
-			" rotation" & to_string (rot (place)),
+			" rotation" & to_string (get_rotation (place)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -4622,7 +4622,7 @@ package body et_schematic_ops is
 			
 				-- Fetch the current netchanger position and rotation:
 				location := element (cursor).position_sch;
-				rotation := rot (location);
+				rotation := get_rotation (location);
 
 				-- Delete netchanger ports in nets:
 				delete_ports (

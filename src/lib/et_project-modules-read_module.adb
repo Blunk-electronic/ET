@@ -3743,7 +3743,7 @@ is
 					v_text := vectorize_text (
 						content		=> board_text.content,
 						size		=> board_text.size,
-						rotation	=> rot (board_text.position),
+						rotation	=> get_rotation (board_text.position),
 						position	=> type_point (board_text.position),
 						line_width	=> board_text.line_width
 						-- CS alignment
@@ -4241,7 +4241,7 @@ is
 					board_text_conductor.vectors := vectorize_text (
 							content		=> board_text_conductor.content,
 							size		=> board_text_conductor.size,
-							rotation	=> rot (board_text_conductor.position),
+							rotation	=> get_rotation (board_text_conductor.position),
 							position	=> type_point (board_text_conductor.position),
 							mirror		=> mirror,
 							line_width	=> board_text_conductor.line_width
@@ -4859,7 +4859,7 @@ is
 						v_text := vectorize_text (
 							content		=> board_text.content,
 							size		=> board_text.size,
-							rotation	=> rot (board_text.position),
+							rotation	=> get_rotation (board_text.position),
 							position	=> type_point (board_text.position),
 							mirror		=> mirror,
 							line_width	=> board_text.line_width

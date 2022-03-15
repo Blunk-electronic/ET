@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -177,8 +177,8 @@ package body et_submodules is
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic
-		rotate_by (ports.master, rot (element (netchanger_cursor).position_sch));
-		rotate_by (ports.slave,  rot (element (netchanger_cursor).position_sch));
+		rotate_by (ports.master, get_rotation (element (netchanger_cursor).position_sch));
+		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
 
 		-- move the ports according to position in schematic
 		move_by (ports.master, to_distance_relative (element (netchanger_cursor).position_sch));

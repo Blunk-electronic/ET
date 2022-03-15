@@ -195,7 +195,7 @@ is
 
 			-- Rotate the position of the text by the rotation of the package.
 			-- NOTE: This does not affect the rotation of the text itself.
-			rotate_by (t.position, rot (package_position));
+			rotate_by (t.position, get_rotation (package_position));
 			
 			if flipped then mirror (t.position, Y); end if;
 
@@ -212,7 +212,7 @@ is
 			v_text := pac_text_fab.vectorize_text (
 				content		=> t.content,
 				size		=> t.size,
-				rotation	=> add (rot (t.position), rot (package_position)),
+				rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
 				position	=> type_point (t.position),
 				mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 				line_width	=> t.line_width,
@@ -237,7 +237,7 @@ is
 				if silkscreen_enabled (f) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -272,7 +272,7 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -309,7 +309,7 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -366,7 +366,7 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -422,7 +422,7 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -472,9 +472,9 @@ is
 						-- the rotation about the origin of the package.
 						-- If the package has been flipped, then the rotation is counterclockwise.
 						if flipped then
-							rotate_by (ph.position, - rot (package_position));
+							rotate_by (ph.position, - get_rotation (package_position));
 						else
-							rotate_by (ph.position, rot (package_position));
+							rotate_by (ph.position, get_rotation (package_position));
 						end if;
 
 						-- Move the placeholder by the package position to 
@@ -492,7 +492,7 @@ is
 						v_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
-							rotation	=> add (rot (ph.position), rot (package_position)),
+							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 							position	=> type_point (ph.position),
 							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 							line_width	=> ph.line_width,
@@ -611,7 +611,7 @@ is
 				if assy_doc_enabled (f) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -646,7 +646,7 @@ is
 				if assy_doc_enabled (f) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -683,7 +683,7 @@ is
 				if assy_doc_enabled (f) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -739,7 +739,7 @@ is
 				if assy_doc_enabled (f) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -794,7 +794,7 @@ is
 				if assy_doc_enabled (f) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -845,9 +845,9 @@ is
 						-- the rotation about the origin of the package.
 						-- If the package has been flipped, then the rotation is counterclockwise.
 						if flipped then
-							rotate_by (ph.position, - rot (package_position));
+							rotate_by (ph.position, - get_rotation (package_position));
 						else
-							rotate_by (ph.position, rot (package_position));
+							rotate_by (ph.position, get_rotation (package_position));
 						end if;
 
 						-- Move the placeholder by the package position to 
@@ -865,7 +865,7 @@ is
 						v_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
-							rotation	=> add (rot (ph.position), rot (package_position)),
+							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 							position	=> type_point (ph.position),
 							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 							line_width	=> ph.line_width,
@@ -981,7 +981,7 @@ is
 				if keepout_enabled (f) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -1015,7 +1015,7 @@ is
 				if keepout_enabled (f) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -1051,7 +1051,7 @@ is
 				if keepout_enabled (f) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -1094,7 +1094,7 @@ is
 				if keepout_enabled (f) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -1137,7 +1137,7 @@ is
 				if keepout_enabled (f) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -1205,7 +1205,7 @@ is
 				if stop_mask_enabled (f) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -1240,7 +1240,7 @@ is
 				if stop_mask_enabled (f) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -1277,7 +1277,7 @@ is
 				if stop_mask_enabled (f) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -1333,7 +1333,7 @@ is
 				if stop_mask_enabled (f) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -1388,7 +1388,7 @@ is
 				if stop_mask_enabled (f) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -1490,7 +1490,7 @@ is
 				if stencil_enabled (f) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -1525,7 +1525,7 @@ is
 				if stencil_enabled (f) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -1562,7 +1562,7 @@ is
 				if stencil_enabled (f) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -1619,7 +1619,7 @@ is
 				if stencil_enabled (f) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -1674,7 +1674,7 @@ is
 				if stencil_enabled (f) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -1739,7 +1739,7 @@ is
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -1771,7 +1771,7 @@ is
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -1803,7 +1803,7 @@ is
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -1838,7 +1838,7 @@ is
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -1874,7 +1874,7 @@ is
 				if route_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -1970,7 +1970,7 @@ is
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 						
 						if flipped then mirror (line, Y); end if;
 						
@@ -2002,7 +2002,7 @@ is
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -2034,7 +2034,7 @@ is
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -2069,7 +2069,7 @@ is
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -2105,7 +2105,7 @@ is
 				if via_restrict_enabled (f, bottom_layer) then
 				
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -2202,7 +2202,7 @@ is
 				--line : type_pcb_contour_line := element (c);
 			--begin
 				--if outline_enabled then
-					--rotate_by (line, rot (package_position));
+					--rotate_by (line, get_rotation (package_position));
 				
 					--if flipped then mirror (line, Y); end if;
 					
@@ -2224,7 +2224,7 @@ is
 				--arc : type_pcb_contour_arc := element (c);
 			--begin
 				--if outline_enabled then
-					--rotate_by (arc, rot (package_position));
+					--rotate_by (arc, get_rotation (package_position));
 					
 					--if flipped then mirror (arc, Y); end if;
 					
@@ -2244,7 +2244,7 @@ is
 				--circle : type_pcb_contour_circle := element (c);
 			--begin
 				--if outline_enabled then
-					--rotate_by (circle, rot (package_position));
+					--rotate_by (circle, get_rotation (package_position));
 					
 					--if flipped then mirror (circle, Y); end if;
 						
@@ -2262,7 +2262,7 @@ is
 			procedure draw_circle (c : in type_circle) is
 				circle : type_circle := c;
 			begin
-				rotate_by (circle, rot (package_position));
+				rotate_by (circle, get_rotation (package_position));
 				
 				if flipped then mirror (circle, Y); end if;
 					
@@ -2281,7 +2281,7 @@ is
 					when LINE =>
 						l := element (c).segment_line;
 						
-						rotate_by (l, rot (package_position));
+						rotate_by (l, get_rotation (package_position));
 				
 						if flipped then mirror (l, Y); end if;
 						
@@ -2293,7 +2293,7 @@ is
 					when ARC =>
 						a := element (c).segment_arc;
 
-						rotate_by (a, rot (package_position));
+						rotate_by (a, get_rotation (package_position));
 						
 						if flipped then mirror (a, Y); end if;
 						
@@ -2364,7 +2364,7 @@ is
 				if conductor_enabled (ly) then
 				
 					if f = face then
-						rotate_by (line, rot (package_position));
+						rotate_by (line, get_rotation (package_position));
 
 						if flipped then mirror (line, Y); end if;
 						
@@ -2401,7 +2401,7 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						rotate_by (arc, rot (package_position));
+						rotate_by (arc, get_rotation (package_position));
 						
 						if flipped then mirror (arc, Y); end if;
 						
@@ -2439,7 +2439,7 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						rotate_by (circle, rot (package_position));
+						rotate_by (circle, get_rotation (package_position));
 						
 						if flipped then mirror (circle, Y); end if;
 						
@@ -2498,7 +2498,7 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -2550,7 +2550,7 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						rotate_by (polygon, rot (package_position));
+						rotate_by (polygon, get_rotation (package_position));
 						
 						if flipped then mirror (polygon, Y); end if;
 						
@@ -2604,7 +2604,7 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						rotate_by (cutout, rot (package_position));
+						rotate_by (cutout, get_rotation (package_position));
 						
 						if flipped then mirror (cutout, Y); end if;
 						
@@ -2652,7 +2652,7 @@ is
 
 				-- Rotate the position of the text by the rotation of the package.
 				-- NOTE: This does not affect the rotation of the text itself.
-				rotate_by (t.position, rot (package_position));
+				rotate_by (t.position, get_rotation (package_position));
 				
 				if flipped then mirror (t.position, Y); end if;
 
@@ -2669,7 +2669,7 @@ is
 				v_text := pac_text_fab.vectorize_text (
 					content		=> t.content,
 					size		=> t.size,
-					rotation	=> add (rot (t.position), rot (package_position)),
+					rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
 					position	=> type_point (t.position),
 					mirror		=> face_to_mirror (f),
 					line_width	=> t.line_width,
@@ -2843,7 +2843,7 @@ is
 						if not name_drawn then
 								
 							-- Rotate the position of the pad by the rotation of the package:
-							rotate_by (pad_pos, rot (package_position));
+							rotate_by (pad_pos, get_rotation (package_position));
 
 							-- If the package is flipped, then the terminal position
 							-- must be mirrored along the Y axis.
@@ -3149,7 +3149,7 @@ is
 					if inner_conductors_enabled (bottom_layer) then
 						
 						-- Rotate the position of the drill by the rotation of the package:
-						rotate_by (pad_pos, rot (package_position));
+						rotate_by (pad_pos, get_rotation (package_position));
 
 						if flipped then mirror (pad_pos, Y); end if;
 

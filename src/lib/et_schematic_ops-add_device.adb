@@ -285,8 +285,8 @@ is
 
 		-- Calculate the absolute positions of the unit ports. Rotate first if required:
 		log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-		if rot (destination) /= zero_rotation then
-			rotate_ports (ports, rot (destination));
+		if get_rotation (destination) /= zero_rotation then
+			rotate_ports (ports, get_rotation (destination));
 		end if;
 
 		move_ports (ports, destination);
@@ -318,7 +318,7 @@ begin -- add_device
 			" package variant " & to_string (variant) &
 			" at" &
 			to_string (position => destination) &
-			" rotation" & to_string (rot (destination)),
+			" rotation" & to_string (get_rotation (destination)),
 			level => log_threshold);
 		
 	else -- virtual device
@@ -326,7 +326,7 @@ begin -- add_device
 			" adding device " & to_string (device_model) &
 			" at" &
 			to_string (position => destination) &
-			" rotation" & to_string (rot (destination)),
+			" rotation" & to_string (get_rotation (destination)),
 			level => log_threshold);
 	end if;
 		

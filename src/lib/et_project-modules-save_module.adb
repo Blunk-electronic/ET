@@ -118,14 +118,16 @@ is
 		set_output (previous_output);
 		close (module_file_handle);
 	end write_footer;
+
 	
 	function rotation (pos : in et_pcb_coordinates.pac_geometry_brd.type_position'class)  -- CS make generic ?
 		return string
 	is
 		use et_pcb_coordinates.pac_geometry_brd;
 	begin
-		return to_string (rot (pos));
+		return to_string (get_rotation (pos));
 	end rotation;
+
 	
 	function face (point : et_pcb_coordinates.type_package_position) return string is
 		use et_pcb_coordinates;
@@ -133,6 +135,7 @@ is
 		return to_string (get_face (point));
 	end face;
 
+	
 	procedure query_meta is
 		use et_meta;
 		meta : et_meta.type_meta := element (module_cursor).meta;
@@ -721,7 +724,11 @@ is
 		use et_symbols;
 		use pac_devices_sch;
 
-		procedure query_units (device_name : in type_device_name; device : in type_device_sch) is
+		procedure query_units (
+			device_name	: in type_device_name;
+			device		: in type_device_sch) 
+		is
+			use et_coordinates;
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
@@ -742,9 +749,15 @@ is
 			while unit_cursor /= pac_units.no_element loop
 				section_mark (section_unit, HEADER);
 				write (keyword => keyword_name, parameters => to_string (key (unit_cursor)));
-				write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
-				--write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
-				write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
+				
+				write (
+					keyword => keyword_position, 
+					parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
+				
+				write (
+					keyword => keyword_rotation, 
+					parameters => to_string (get_rotation (element (unit_cursor).position))); -- rotation 180.0
+					   
 				write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 				if element (unit_cursor).appearance = PCB then
@@ -977,11 +990,16 @@ is
 		use pac_netchangers;
 
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
+			use pac_geometry_sch;
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
 			write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
-			write (keyword => keyword_rotation_in_schematic, parameters => pac_geometry_sch.to_string (pac_geometry_sch.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
+
+			write (
+				keyword => keyword_rotation_in_schematic, 
+				parameters => to_string (get_rotation (element (cursor).position_sch))); -- rotation_in_schematic 90.0
+
 			write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 			write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);

@@ -607,7 +607,7 @@ is
 						begin
 							-- Rotate the position of the text by the rotation of the package.
 							-- NOTE: This does not affect the rotation of the text itself.
-							rotate_by (t.position, rot (package_position));
+							rotate_by (t.position, get_rotation (package_position));
 
 							if package_flipped = YES then mirror (t.position, Y); end if;
 							
@@ -619,7 +619,7 @@ is
 							v_text := pac_text_fab.vectorize_text (
 								content		=> t.content,
 								size		=> t.size,
-								rotation	=> add (rot (t.position), rot (package_position)),
+								rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
 								position	=> type_point (t.position),
 								mirror		=> mirror_status,
 								line_width	=> t.line_width,

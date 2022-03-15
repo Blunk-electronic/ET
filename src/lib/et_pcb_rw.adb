@@ -444,12 +444,12 @@ package body et_pcb_rw is
 			
 		elsif point'tag = type_position'tag then
 			return xy 
-				& space & keyword_rotation & to_string (rot (type_position (point)));
+				& space & keyword_rotation & to_string (get_rotation (type_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& space & keyword_rotation & to_string (rot (type_position (point)))
+				& space & keyword_rotation & to_string (get_rotation (type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00 face top
 		else

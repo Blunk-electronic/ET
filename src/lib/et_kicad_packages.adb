@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -131,7 +131,7 @@ package body et_kicad_packages is
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
-		angle : constant type_rotation := rot (center);
+		angle : constant type_rotation := get_rotation (center);
 
 		-- supportive frequently used values
 		xp : constant type_position_axis := size_x / 2.0;
@@ -211,7 +211,7 @@ package body et_kicad_packages is
 		shape : type_polygon; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_rotation := rot (center);
+		angle : constant type_rotation := get_rotation (center);
 		
 		-- supportive frequently used values
 		x1p : constant type_position_axis := size_x / 2.0;
@@ -313,7 +313,7 @@ package body et_kicad_packages is
 		lines : pac_polygon_segments.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_rotation := rot (center);
+		angle : constant type_rotation := get_rotation (center);
 		
 		-- supportive frequently used values
 		xp : constant type_position_axis := size_x / 2.0;
