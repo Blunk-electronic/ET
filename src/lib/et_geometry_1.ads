@@ -687,11 +687,12 @@ package et_geometry_1 is
 		return type_rotation;
 
 	
-	procedure rotate (
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
-		position	: in out type_position'class;
+	procedure rotate_about_itself (
+		position	: in out type_position;
 		offset		: in type_rotation);
+
 	
 	-- Rotates the given point BY the given angle about the origin.
 	-- Changes point.x and point.y only.
@@ -699,6 +700,7 @@ package et_geometry_1 is
 		point		: in out type_point'class;
 		rotation	: in type_rotation);
 
+	
 	-- Rotates the given point TO the given angle about the origin.
 	-- Changes point.x and point.y only.
 	procedure rotate_to (

@@ -1447,9 +1447,9 @@ package body et_geometry_1 is
 	end;
 
 	
-	procedure rotate (
-		position	: in out type_position'class;
-		offset		: in type_rotation) 
+	procedure rotate_about_itself (
+		position	: in out type_position;
+		offset		: in type_rotation)
 	is begin
 		position.rotation := add (position.rotation, offset);
 	end;
