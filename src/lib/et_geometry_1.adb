@@ -385,6 +385,25 @@ package body et_geometry_1 is
 		end if;
 	end to_positive_rotation;
 
+
+	function round (
+		distance	: in type_position_axis;
+		grid		: in type_distance_grid)
+		return type_position_axis 
+	is 
+		i : integer;
+		f : type_float_internal;
+	begin
+		--put_line (type_distance'image (distance) & " " & type_distance_grid'image (grid));
+		i := integer (distance / grid);
+		--put_line (integer'image (i));
+		--put_line ("dl " & type_distance'image (type_distance'last));
+		f := type_float_internal (i) * type_float_internal (grid);
+		return to_distance (f);
+	end round;
+
+
+	
 	
 	procedure scale_grid (
 		grid	: in out type_grid;
@@ -560,6 +579,32 @@ package body et_geometry_1 is
 	end to_string;
 
 
+	function round_to_string (
+		point 	: in type_point;
+		grid	: in type_grid) 
+		return string 
+	is begin
+		return point_preamble
+			& to_string (round (point.x, grid.x))
+			& axis_separator
+			& to_string (round (point.y, grid.y));
+	end round_to_string;
+
+
+
+	function round (
+		point 	: in type_point;
+		grid	: in type_grid) 
+		return type_point'class 
+	is		
+		p : type_point := (
+			x => (round (point.x, grid.x)),
+			y => (round (point.y, grid.y)));
+	begin
+		return p;
+	end;
+
+	
 	
 	function round (point : in type_point)
 		return type_point'class
@@ -619,6 +664,142 @@ package body et_geometry_1 is
 	end get_rotation;
 
 
+
+	procedure rotate_by (
+		point		: in out type_point;
+		rotation	: in type_rotation) 
+	is			
+		angle_out			: type_rotation; -- degrees
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- Do nothing if the given rotation is zero.
+		if rotation /= 0.0 then
+
+			-- compute distance of given point to origin
+			if get_x (point) = zero and get_y (point) = zero then
+				distance_to_origin := 0.0;
+				
+			elsif get_x (point) = zero then
+				distance_to_origin := type_float_internal (abs (get_y (point)));
+				
+			elsif get_y (point) = zero then
+				distance_to_origin := type_float_internal (abs (get_x (point)));
+				
+			else
+				distance_to_origin := sqrt (
+					type_float_internal (abs (get_x (point))) ** 2.0
+					+
+					type_float_internal (abs (get_y (point))) ** 2.0
+					);
+			end if;
+			
+			-- compute the current angle of the given point (in degrees)
+
+			if get_x (point) = zero then
+				if get_y (point) > zero then
+					angle_out := 90.0;
+					
+				elsif get_y (point) < zero then
+					angle_out := -90.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			elsif get_y (point) = zero then
+				if get_x (point) > zero then
+					angle_out := 0.0;
+					
+				elsif get_x (point) < zero then
+					angle_out := 180.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				-- neither x nor y of point is zero
+				--angle_out := arctan (
+				angle_out := to_rotation (arctan (
+					x		=> type_float_internal (get_x (point)),
+					y		=> type_float_internal (get_y (point)),
+					cycle	=> units_per_cycle));
+				
+			end if;
+
+			-- Compute new angle by adding current angle and given angle.
+			angle_out := add (angle_out, rotation);
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (type_float_internal (angle_out), units_per_cycle);
+			
+			set (
+				axis	=> X, 
+				point	=> point, 
+				value	=> to_distance (scratch * distance_to_origin)
+				);
+
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (type_float_internal (angle_out), units_per_cycle);
+			
+			set (
+				axis	=> Y,
+				point	=> point,
+				value	=> to_distance (scratch * distance_to_origin)
+				);
+	
+		end if; -- if angle not zero			
+	end rotate_by;
+
+
+
+	procedure rotate_to (
+		point		: in out type_point;
+		rotation	: in type_rotation) -- degrees
+	is
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- compute distance of given point to origin
+		if get_x (point) = zero and get_y (point) = zero then
+			distance_to_origin := 0.0;
+			
+		elsif get_x (point) = zero then
+			distance_to_origin := type_float_internal (abs (get_y (point)));
+			
+		elsif get_y (point) = zero then
+			distance_to_origin := type_float_internal (abs (get_x (point)));
+			
+		else
+			distance_to_origin := sqrt (
+				type_float_internal (abs (get_x (point))) ** 2.0 
+				+
+				type_float_internal (abs (get_y (point))) ** 2.0
+				);
+		end if;
+
+		-- The new angle is the given rotation.
+
+		-- compute new x   -- (cos rotation) * distance_to_origin
+		scratch := cos (type_float_internal (rotation), units_per_cycle);
+		set (
+			axis	=> X,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+
+		-- compute new y   -- (sin rotation) * distance_to_origin
+		scratch := sin (type_float_internal (rotation), units_per_cycle);
+		set (
+			axis 	=> Y,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+		
+	end rotate_to;
+	
+	
 
 	function to_point (
 		d 		: in type_distance_relative;
@@ -1350,18 +1531,21 @@ package body et_geometry_1 is
 
 
 	
--- 		function create (
--- 			point		: in type_point'class;
--- 			rotation	: in type_rotation) 
--- 			return type_position is
--- 		begin
--- 			return (point with rotation);
--- 		end;
+	function to_string (point : in type_position) return string is begin
+		return point_preamble_with_rotation
+			& to_string (point.x)
+			& axis_separator
+			& to_string (point.y)
+			& axis_separator
+			& to_string (get_rotation (point));
+	end;
+	
 
 	function to_rotation (rotation : in string) return type_rotation is begin
 		return type_rotation'value (rotation);
 	end;
 
+	
 	function to_string (rotation : in type_rotation) return string is begin
 		if rotation < zero_rotation then
 			return space & type_rotation'image (rotation);
@@ -1452,203 +1636,6 @@ package body et_geometry_1 is
 		offset		: in type_rotation)
 	is begin
 		position.rotation := add (position.rotation, offset);
-	end;
-
-	
-	procedure rotate_by (
-		point		: in out type_point'class;
-		rotation	: in type_rotation) 
-	is			
-		angle_out			: type_rotation; -- degrees
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
-	begin
-		-- Do nothing if the given rotation is zero.
-		if rotation /= 0.0 then
-
-			-- compute distance of given point to origin
-			if get_x (point) = zero and get_y (point) = zero then
-				distance_to_origin := 0.0;
-				
-			elsif get_x (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_y (point)));
-				
-			elsif get_y (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_x (point)));
-				
-			else
-				distance_to_origin := sqrt (
-					type_float_internal (abs (get_x (point))) ** 2.0
-					+
-					type_float_internal (abs (get_y (point))) ** 2.0
-					);
-			end if;
-			
-			-- compute the current angle of the given point (in degrees)
-
-			if get_x (point) = zero then
-				if get_y (point) > zero then
-					angle_out := 90.0;
-					
-				elsif get_y (point) < zero then
-					angle_out := -90.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			elsif get_y (point) = zero then
-				if get_x (point) > zero then
-					angle_out := 0.0;
-					
-				elsif get_x (point) < zero then
-					angle_out := 180.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			else
-				-- neither x nor y of point is zero
-				--angle_out := arctan (
-				angle_out := to_rotation (arctan (
-					x		=> type_float_internal (get_x (point)),
-					y		=> type_float_internal (get_y (point)),
-					cycle	=> units_per_cycle));
-				
-			end if;
-
-			-- Compute new angle by adding current angle and given angle.
-			angle_out := add (angle_out, rotation);
-
-			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> X, 
-				point	=> point, 
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-
-			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> Y,
-				point	=> point,
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-	
-		end if; -- if angle not zero			
-	end rotate_by;
-
-	
-	procedure rotate_to (
-		point		: in out type_point'class;
-		rotation	: in type_rotation) -- degrees
-	is
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
-	begin
-		-- compute distance of given point to origin
-		if get_x (point) = zero and get_y (point) = zero then
-			distance_to_origin := 0.0;
-			
-		elsif get_x (point) = zero then
-			distance_to_origin := type_float_internal (abs (get_y (point)));
-			
-		elsif get_y (point) = zero then
-			distance_to_origin := type_float_internal (abs (get_x (point)));
-			
-		else
-			distance_to_origin := sqrt (
-				type_float_internal (abs (get_x (point))) ** 2.0 
-				+
-				type_float_internal (abs (get_y (point))) ** 2.0
-				);
-		end if;
-
-		-- The new angle is the given rotation.
-
-		-- compute new x   -- (cos rotation) * distance_to_origin
-		scratch := cos (type_float_internal (rotation), units_per_cycle);
-		set (
-			axis	=> X,
-			point	=> point,
-			value	=> to_distance (scratch * distance_to_origin)
-			);
-
-		-- compute new y   -- (sin rotation) * distance_to_origin
-		scratch := sin (type_float_internal (rotation), units_per_cycle);
-		set (
-			axis 	=> Y,
-			point	=> point,
-			value	=> to_distance (scratch * distance_to_origin)
-			);
-		
-	end rotate_to;
-
-	
--- 		procedure rotate_by (
--- 		-- Rotates the given point BY the given angle around the given center point.
--- 		-- Changes point.x and point.y only.
--- 			point		: in out type_point'class;
--- 			center		: in type_point;
--- 			rotation	: in type_rotation) is
--- 		begin
--- 			null;
--- 		end rotate_by;
-	
-
-	function round (
-		distance	: in type_position_axis;
-		grid		: in type_distance_grid)
-		return type_position_axis 
-	is 
-		i : integer;
-		f : type_float_internal;
-	begin
-		--put_line (type_distance'image (distance) & " " & type_distance_grid'image (grid));
-		i := integer (distance / grid);
-		--put_line (integer'image (i));
-		--put_line ("dl " & type_distance'image (type_distance'last));
-		f := type_float_internal (i) * type_float_internal (grid);
-		return to_distance (f);
-	end round;
-
-	
-	function round_to_string (
-		point 	: in type_point;
-		grid	: in type_grid) 
-		return string is 
-	begin
-		return point_preamble
-			& to_string (round (point.x, grid.x))
-			& axis_separator
-			& to_string (round (point.y, grid.y));
-	end;
-
-	
-	function round (
-		point 	: in type_point;
-		grid	: in type_grid) 
-		return type_point'class is
-		
-		p : type_point := (
-			x => (round (point.x, grid.x)),
-			y => (round (point.y, grid.y)));
-	begin
-		return p;
-	end;
-
-	
-	function to_string (point : in type_position) return string is begin
-		return point_preamble_with_rotation
-			& to_string (point.x)
-			& axis_separator
-			& to_string (point.y)
-			& axis_separator
-			& to_string (get_rotation (point));
 	end;
 		
 

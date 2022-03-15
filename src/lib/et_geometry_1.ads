@@ -119,6 +119,7 @@ package et_geometry_1 is
 
 
 
+	
 	function to_distance (f : in type_float_internal)
 		return type_distance;
 
@@ -206,11 +207,22 @@ package et_geometry_1 is
 	grid_max : constant type_distance_positive := axis_max * 0.1;
 	subtype type_distance_grid is type_distance_positive range zero .. grid_max;
 	grid_default : constant type_distance_grid := 2.5;
+
+
+	-- Returns a position along an axis rounded according to given grid.		
+	function round (
+		distance	: in type_position_axis;
+		grid		: in type_distance_grid)
+		return type_position_axis;
+
 	
 	type type_grid is record
 		x,y	: type_distance_grid := grid_default;
 	end record;
 
+	
+	
+	
 	procedure scale_grid (
 		grid	: in out type_grid;
 		scale	: in type_distance_positive);			
@@ -228,7 +240,7 @@ package et_geometry_1 is
 
 
 	
-
+-- TYPE POINT:
 
 	type type_point is tagged record
 		x, y : type_position_axis := zero;
@@ -250,16 +262,35 @@ package et_geometry_1 is
 	function to_string (point : in type_point) return string;
 
 
+
+
+
+	
+
+	-- Returns x/y of point rounded according to given grid.
+	function round_to_string (
+		point	: in type_point;
+		grid	: in type_grid)
+		return string;
+
+
+	-- Returns point rounded according to given grid.		
+	-- Use this function for operations like "snap to grid" etc...
+	function round (
+		point	: in type_point;
+		grid	: in type_grid)
+		return type_point'class;
+	
 	
 	function round (
 		point : in type_point)
 		return type_point'class;
 
+	
 	procedure round (
 		point : in out type_point);
 
-	
-	
+		
 	function to_distance_relative (
 		p : in type_point)
 		return type_distance_relative;
@@ -274,9 +305,19 @@ package et_geometry_1 is
 		return type_rotation;
 
 	
+	-- Rotates the given point BY the given angle about the origin.
+	-- Changes point.x and point.y only.
+	procedure rotate_by (
+		point		: in out type_point;
+		rotation	: in type_rotation);
 	
 	
-	
+	-- Rotates the given point TO the given angle about the origin.
+	-- Changes point.x and point.y only.
+	procedure rotate_to (
+		point		: in out type_point;
+		rotation	: in type_rotation);
+
 	
 	
 	function to_point (
@@ -624,9 +665,13 @@ package et_geometry_1 is
 		return type_distance_positive;
 
 
+
+	
+-- TYPE POSITION:
 	
 	type type_position is new type_point with private;
 
+	overriding function to_string (point : in type_position) return string;
 	
 	function to_rotation (rotation : in string) return type_rotation;
 	function to_string (rotation : in type_rotation) return string;
@@ -685,7 +730,7 @@ package et_geometry_1 is
 	function get_rotation (
 		position : in type_position) 
 		return type_rotation;
-
+	
 	
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
@@ -693,52 +738,9 @@ package et_geometry_1 is
 		position	: in out type_position;
 		offset		: in type_rotation);
 
-	
-	-- Rotates the given point BY the given angle about the origin.
-	-- Changes point.x and point.y only.
-	procedure rotate_by (
-		point		: in out type_point'class;
-		rotation	: in type_rotation);
-
-	
-	-- Rotates the given point TO the given angle about the origin.
-	-- Changes point.x and point.y only.
-	procedure rotate_to (
-		point		: in out type_point'class;
-		rotation	: in type_rotation);
-
--- 		procedure rotate_by (
--- 		-- Rotates the given point BY the given angle around the given center point.
--- 		-- Changes point.x and point.y only.
--- 			point		: in out type_point'class;
--- 			center		: in type_point;
--- 			rotation	: in type_rotation);
-	
-	-- Returns a position along an axis rounded according to given grid.		
-	function round (
-		distance	: in type_position_axis;
-		grid		: in type_distance_grid)
-		return type_position_axis;
-	
-	-- Returns x/y of point rounded according to given grid.
-	function round_to_string (
-		point	: in type_point;
-		grid	: in type_grid)
-		return string;
-
-	-- Returns point rounded according to given grid.		
-	-- Use this function for operations like "snap to grid" etc...
-	function round (
-		point	: in type_point;
-		grid	: in type_grid)
-		return type_point'class;
-
-	overriding function to_string (point : in type_position) return string;
-
 
 
 	
-
 	package pac_points is new doubly_linked_lists (type_point);
 
 
