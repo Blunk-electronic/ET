@@ -860,6 +860,14 @@ private
 		vertices	: in pac_vertices.list)
 		return pac_vertices.cursor;
 
+
+	-- Returns a list of all vertices according to
+	-- the given location:
+	function get_vertices (
+		location	: in type_location;
+		vertices	: in pac_vertices.list)
+		return pac_vertices.list;
+
 	
 	-- Returns the vertices (of given list of vertices) after
 	-- the given start vertex 

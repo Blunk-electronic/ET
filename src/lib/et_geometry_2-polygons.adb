@@ -3399,6 +3399,30 @@ package body et_geometry_2.polygons is
 		return v;
 	end get_first;
 
+
+	function get_vertices (
+		location	: in type_location;
+		vertices	: in pac_vertices.list)
+		return pac_vertices.list
+	is
+		v_list : pac_vertices.list; -- to be returned
+
+		procedure query_vertex (c : pac_vertices.cursor) is begin
+			if is_regular (c) then
+				if element (c).location = location then
+					v_list.append (element (c));
+				end if;
+			end if;
+		end query_vertex;
+		
+	begin
+		if not is_empty (vertices) then
+			vertices.iterate (query_vertex'access);
+		end if;
+
+		return v_list;
+	end get_vertices;
+
 	
 
 	function get_until (
