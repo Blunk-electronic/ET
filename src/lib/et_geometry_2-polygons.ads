@@ -396,6 +396,7 @@ package et_geometry_2.polygons is
 		return type_lower_left_corner;
 
 	
+
 	
 private
 					   
@@ -703,8 +704,8 @@ private
 	-- inside polygon B. If a vertex lies on an edge
 	-- of polygon A then it is regarded as inside.
 	function all_vertices_of_A_inside_B (
-		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class) -- the clipping polygon
+		polygon_A	: in type_polygon; -- the clipped polygon
+		polygon_B	: in type_polygon) -- the clipping polygon
 		return boolean;
 
 

@@ -1080,6 +1080,8 @@ package body et_geometry_2.polygons is
 		
 		return result;
 	end get_lower_left_corner;
+
+
 	
 	
 -- private
@@ -2422,8 +2424,8 @@ package body et_geometry_2.polygons is
 
 	
 	function all_vertices_of_A_inside_B (
-		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class) -- the clipping polygon
+		polygon_A	: in type_polygon; -- the clipped polygon
+		polygon_B	: in type_polygon) -- the clipping polygon
 		return boolean
 	is
 		proceed : aliased boolean := true;
