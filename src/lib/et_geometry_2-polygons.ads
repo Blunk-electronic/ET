@@ -96,11 +96,11 @@ package et_geometry_2.polygons is
 	end record;
 	
 
-	--type type_polygon_base is abstract tagged record
 	type type_polygon is tagged record
 		contours	: type_polygon_segments;
 	end record;
 
+	
 	
 	-- Returns the cursor to the given edge of the
 	-- given polygon. If the edge does not exist, then the
@@ -110,6 +110,7 @@ package et_geometry_2.polygons is
 		polygon	: in type_polygon;
 		edge	: in type_line)
 		return pac_polygon_segments.cursor;
+
 
 	
 	-- Returns the cursor to the edge
@@ -385,10 +386,6 @@ package et_geometry_2.polygons is
 
 
 	
-	
-	
-	--type type_polygon is new type_polygon_base with null record;
-
 
 	-- Searches the lower left corner of a polygon:
 	function get_lower_left_corner (

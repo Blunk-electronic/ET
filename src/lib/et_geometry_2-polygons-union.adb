@@ -36,12 +36,6 @@
 --
 
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.unbounded;
-with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
 with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
@@ -51,6 +45,18 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_2.polygons.union is
 
 	use pac_polygon_segments;
+
+
+	function get_greatest (
+		polygons	: in pac_polygons.list)
+		return pac_polygons.cursor
+	is 
+		greatest : pac_polygons.cursor;
+	begin
+
+		return greatest;
+	end get_greatest;
+
 	
 	
 	function union (

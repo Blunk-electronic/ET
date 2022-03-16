@@ -45,20 +45,20 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
---with ada.containers.indefinite_doubly_linked_lists;
-
---with et_geometry;				use et_geometry;
---with et_geometry_1;
---with et_string_processing;		use et_string_processing;
-
 
 generic
 	
 package et_geometry_2.polygons.union is
 
+	package pac_polygons is new doubly_linked_lists (type_polygon);
+
+	-- Returns from the given list of polygons the one that encloses
+	-- all others in the list
+	function get_greatest (
+		polygons	: in pac_polygons.list)
+		return pac_polygons.cursor;
+	
+	
 	-- The result of a polygon union operation is a list
 	-- of polygons:
 	type type_union (exists : boolean := true) is record

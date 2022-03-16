@@ -35,13 +35,6 @@
 --   history of changes:
 --
 
-
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.unbounded;
-with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
 with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
