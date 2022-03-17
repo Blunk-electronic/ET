@@ -81,6 +81,7 @@ package body et_geometry_2.polygons.union is
 			vertices_A, vertices_B : pac_vertices.list;
 			
 			vertice_A_cursor : pac_vertices.cursor;
+			outside_vertices_A : pac_vertices.list;
 			
 			-- Temporarily collections of vertices and intersections:
 			vertices_tmp_1 : pac_vertices.list; -- primary collection
@@ -117,67 +118,16 @@ package body et_geometry_2.polygons.union is
 			-- CS: Increase upper limit if required:
 			safety_counter_limit : constant natural := 100;
 			safety_counter : natural := 0;
-			
-		begin
-			-- Make the vertices and intersection nodes of polygon A:
-			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
-			
-			if debug then
-				new_line;
-				put_line ("vertices A: " & to_string (vertices_A));
-			end if;
 
-			-- Make the vertices and intersection nodes of polygon B:
-			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
 
-			if debug then
-				new_line;
-				put_line ("vertices B: " & to_string (vertices_B));
-			end if;
+			-- If there is at least one outside vertex then this method is applied:
+			procedure walk_1 is begin
 
-			-- Search for the first OUTSIDE vertex in vertices_A:
-			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
-
-			-- Here we decide which method to should be applied in order to
-			-- do the union process.
-			-- The flag outside_vertex_found is set or cleared:
-			if vertice_A_cursor = pac_vertices.no_element then
-
-				-- No outside vertex found.
-				outside_vertex_found := false;
-				
-				if debug then
-					new_line;
-					put_line ("No vertex of A outside B found.");
-				end if;
-
-				-- Find the first leaving vertex instead:
-				vertice_A_cursor := get_first (LEAVING, vertices_A);
-
-				if debug then
-					new_line;
-					put_line ("First leaving vertex of A: " & to_string (element (vertice_A_cursor)));
-				end if;
-
-			else
-				-- An outside vertex exists:
-				outside_vertex_found := true;
-				
-				if debug then
-					new_line;
-					put_line ("first outside: " & to_string (element (vertice_A_cursor)));
-				end if;
-				
-			end if;
-								
-
-			-- Set the start point.
-			-- When walking along the
-			-- edges of polygon A we will eventually get back to 
-			-- the start point. The polygon is then complete.
-			start_point := element (vertice_A_cursor).position;
-
-			if outside_vertex_found then
+				-- Set the start point.
+				-- When walking along the
+				-- edges of polygon A we will eventually get back to 
+				-- the start point. The polygon is then complete.
+				start_point := element (vertice_A_cursor).position;
 				
 				WALK_METHOD_1:
 				loop
@@ -238,8 +188,18 @@ package body et_geometry_2.polygons.union is
 				-- Make a polygon from the primary collection of vertices:
 				result_polygon := type_polygon (to_polygon (vertices_tmp_1));
 
-			else
+			end walk_1;
 
+			
+			-- If there are no outside vertices then this method is applied:
+			procedure walk_2 is begin
+
+				-- Set the start point.
+				-- When walking along the
+				-- edges of polygon A we will eventually get back to 
+				-- the start point. The polygon is then complete.
+				start_point := element (vertice_A_cursor).position;
+				
 				WALK_METHOD_2:
 				loop
 					-- safety measure to prevent forever-looping:
@@ -280,6 +240,69 @@ package body et_geometry_2.polygons.union is
 					end if;
 					
 				end loop WALK_METHOD_2;
+			end walk_2;
+
+			
+		begin
+			-- Make the vertices and intersection nodes of polygon A:
+			vertices_A := get_vertices (polygon_A, polygon_B, intersections, A);
+			
+			if debug then
+				new_line;
+				put_line ("vertices A: " & to_string (vertices_A));
+			end if;
+
+			-- Make the vertices and intersection nodes of polygon B:
+			vertices_B := get_vertices (polygon_B, polygon_A, intersections, B);
+
+			if debug then
+				new_line;
+				put_line ("vertices B: " & to_string (vertices_B));
+			end if;
+
+			-- Search for the first OUTSIDE vertex in vertices_A:
+			vertice_A_cursor := get_first (OUTSIDE, vertices_A);
+
+			-- Here we decide which method to should be applied in order to
+			-- do the union process.
+			-- The flag outside_vertex_found is set or cleared:
+			if vertice_A_cursor = pac_vertices.no_element then
+
+				-- No outside vertex found.
+				outside_vertex_found := false;
+				
+				if debug then
+					new_line;
+					put_line ("No vertex of A outside B found.");
+				end if;
+
+				-- Find the first leaving vertex instead:
+				vertice_A_cursor := get_first (LEAVING, vertices_A);
+
+				if debug then
+					new_line;
+					put_line ("First leaving vertex of A: " & to_string (element (vertice_A_cursor)));
+				end if;
+
+			else
+				-- At least one outside vertex exists:
+				outside_vertex_found := true;
+				
+				outside_vertices_A := get_vertices (OUTSIDE, vertices_A);
+				
+				if debug then
+					new_line;
+					put_line ("first outside: " & to_string (element (vertice_A_cursor)));
+					--put_line ("outside vertices: " & to_string (outside_vertices_A));
+				end if;
+
+			end if;
+
+
+			if outside_vertex_found then
+				walk_1;
+			else
+				walk_2;
 			end if;
 			
 		end do_union;
