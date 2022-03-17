@@ -51,10 +51,62 @@ package body et_geometry_2.polygons.union is
 		polygons	: in pac_polygons.list)
 		return pac_polygons.cursor
 	is 
-		greatest : pac_polygons.cursor;
-	begin
+		primary : pac_polygons.cursor := polygons.first;
 
-		return greatest;
+		select_next_primary : boolean := false;
+
+
+		procedure query_secondary (secondary : pac_polygons.cursor) is 
+			intersections : pac_intersections.list;
+			overlap_status : type_overlap_status;			
+		begin
+			if primary /= secondary then
+				new_line;
+				put_line ("secondary: " & to_string (element (secondary)));
+				
+				intersections := get_intersections (element (primary), element (secondary));
+				overlap_status := get_overlap_status (element (primary), element (secondary), intersections);
+
+				case overlap_status is
+					when A_DOES_NOT_OVERLAP_B => 
+						raise constraint_error; -- CS more details ?
+
+					when A_INSIDE_B => 
+						put_line ("A inside");
+						-- Primary polygon is completely inside secondary.
+						select_next_primary := true;
+
+					when B_INSIDE_A =>
+						put_line ("B inside");
+						-- Secondary polygon is completely inside primary.
+						null;
+
+					when A_OVERLAPS_B => 
+						raise constraint_error; -- CS more details ?
+				end case;
+
+			end if;
+		end query_secondary;
+
+		
+	begin
+		while primary /= pac_polygons.no_element loop
+
+			new_line;
+			put_line ("primary: " & to_string (element (primary)));
+
+			polygons.iterate (query_secondary'access);
+
+			if select_next_primary then
+				next (primary);
+				select_next_primary := false;
+			else
+				exit;
+			end if;
+		end loop;
+		
+		--greatest := polygons.first;
+		return primary;
 	end get_greatest;
 
 	
@@ -70,7 +122,6 @@ package body et_geometry_2.polygons.union is
 
 		-- The list of intersecting A and B edges:
 		intersections : pac_intersections.list;
-
 
 		
 		-- This procedure does the actual union work:
@@ -119,75 +170,98 @@ package body et_geometry_2.polygons.union is
 			safety_counter_limit : constant natural := 100;
 			safety_counter : natural := 0;
 
+			-- If there is at least one outside vertex then this method is applied.
+			-- In general the search starts at one selected outside vertex. But
+			-- there can be many outside vertices. It can NOT be assumed that the outcome
+			-- will be the same whatever outside vertex is choosen as starting point.
+			-- So we will be collecting the results in a list of candidate polygons
+			-- and select later the greatest among them, that is the one that encloses
+			-- all the other candidates:
+			procedure walk_1 is 
 
-			-- If there is at least one outside vertex then this method is applied:
-			procedure walk_1 is begin
-
-				-- Set the start point.
-				-- When walking along the
-				-- edges of polygon A we will eventually get back to 
-				-- the start point. The polygon is then complete.
-				start_point := element (vertice_A_cursor).position;
+				candidate_polygons : pac_polygons.list;
 				
-				WALK_METHOD_1:
-				loop
-					-- safety measure to prevent forever-looping:
-					increment_safety_counter (safety_counter, safety_counter_limit);
+				procedure query_outside_vertex (ov : pac_vertices.cursor) is begin
+					-- Set the start point.
+					-- When walking along the
+					-- edges of polygon A we will eventually get back to 
+					-- the start point. The polygon is then complete.
+					start_point := element (ov).position;
+					vertice_A_cursor := vertices_A.find (element (ov));
+
+					safety_counter := 0;
+					vertices_tmp_1.clear;
+					vertices_tmp_2.clear;
+					expect_return_to_start := false;
 					
-					-- Walk along the vertices (and intersections) of polygon A until
-					-- the next entering intersection:
-					vertices_tmp_2 := get_until (
-						vertices					=> vertices_A,
-						start_vertex				=> vertice_A_cursor,
-						direction_of_intersection	=> ENTERING,
-						direction_of_search			=> CCW,
-						delete_visited				=> false);
+					WALK_METHOD_1:
+					loop
+						-- safety measure to prevent forever-looping:
+						increment_safety_counter (safety_counter, safety_counter_limit);
+						
+						-- Walk along the vertices (and intersections) of polygon A until
+						-- the next entering intersection:
+						vertices_tmp_2 := get_until (
+							vertices					=> vertices_A,
+							start_vertex				=> vertice_A_cursor,
+							direction_of_intersection	=> ENTERING,
+							direction_of_search			=> CCW,
+							delete_visited				=> false);
 
-					-- If this loop is executed the first time we do not expect
-					-- the start point and just append the secondary collection to
-					-- the primary collection.
-					-- For following passes we iterate the secondary collection
-					-- and copy the vertices into the primary collection:
-					if expect_return_to_start then
-						v_cursor_tmp := vertices_tmp_2.first;
-						while v_cursor_tmp /= pac_vertices.no_element loop
+						-- If this loop is executed the first time we do not expect
+						-- the start point and just append the secondary collection to
+						-- the primary collection.
+						-- For following passes we iterate the secondary collection
+						-- and copy the vertices into the primary collection:
+						if expect_return_to_start then
+							v_cursor_tmp := vertices_tmp_2.first;
+							while v_cursor_tmp /= pac_vertices.no_element loop
 
-							-- Copy vertex to primary vertices collection:
-							vertices_tmp_1.append (element (v_cursor_tmp));
+								-- Copy vertex to primary vertices collection:
+								vertices_tmp_1.append (element (v_cursor_tmp));
 
-							-- Terminate the outer loop "walk" once the start
-							-- point has been detected:
-							if element (v_cursor_tmp).position = start_point then								
-								exit WALK_METHOD_1;
-							end if;
-							
-							next (v_cursor_tmp);
-						end loop;
+								-- Terminate the outer loop "walk" once the start
+								-- point has been detected:
+								if element (v_cursor_tmp).position = start_point then								
+									exit WALK_METHOD_1;
+								end if;
+								
+								next (v_cursor_tmp);
+							end loop;
 
-					else
+						else
+							append_secondary;
+						end if;				
+						
+						-- Walk along the vertices (and intersections) of polygon B until
+						-- the next leaving intersection:
+						vertices_tmp_2 := get_until (
+							vertices					=> vertices_B,
+							start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
+							direction_of_intersection	=> LEAVING,
+							direction_of_search			=> CCW,
+							delete_visited				=> false);
+
 						append_secondary;
-					end if;				
-					
-					-- Walk along the vertices (and intersections) of polygon B until
-					-- the next leaving intersection:
-					vertices_tmp_2 := get_until (
-						vertices					=> vertices_B,
-						start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
-						direction_of_intersection	=> LEAVING,
-						direction_of_search			=> CCW,
-						delete_visited				=> false);
 
-					append_secondary;
+						-- Set the vertice_A_cursor to the last vertex of the primary collection:
+						vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
 
-					-- Set the vertice_A_cursor to the last vertex of the primary collection:
-					vertice_A_cursor := vertices_A.find (vertices_tmp_1.last_element);
+						expect_return_to_start := true;
+					end loop WALK_METHOD_1;
+				
+					-- Make a polygon from the primary collection of vertices
+					-- and append it to the candidate list of polygons:
+					candidate_polygons.append (type_polygon (to_polygon (vertices_tmp_1)));
 
-					expect_return_to_start := true;
-				end loop WALK_METHOD_1;
-			
-				-- Make a polygon from the primary collection of vertices:
-				result_polygon := type_polygon (to_polygon (vertices_tmp_1));
+				end query_outside_vertex;
+				
+			begin
+				-- Union a union for each candidate outside vertex:
+				outside_vertices_A.iterate (query_outside_vertex'access);
 
+				-- Get the greatest polygon from the resulting candidate polygons:
+				result_polygon := element (get_greatest (candidate_polygons));
 			end walk_1;
 
 			

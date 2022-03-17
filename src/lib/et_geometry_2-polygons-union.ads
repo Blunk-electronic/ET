@@ -51,6 +51,7 @@ generic
 package et_geometry_2.polygons.union is
 
 	package pac_polygons is new doubly_linked_lists (type_polygon);
+	use pac_polygons;
 
 	-- Returns from the given list of polygons the one that encloses
 	-- all others in the list
