@@ -80,6 +80,76 @@ package body et_geometry_2.polygons is
 
 
 
+	function are_congruent (
+		polygon_A, polygon_B : in type_polygon)
+		return boolean
+	is 
+		result : boolean := false;
+
+		ct_A : constant count_type := get_segments_total (polygon_A);
+		ct_B : constant count_type := get_segments_total (polygon_B);
+		
+		edge_A : type_polygon_segment (LINE);
+
+		use pac_polygon_segments;
+		edge_B_cursor : pac_polygon_segments.cursor;
+
+		
+		procedure compare_edges is
+			proceed : aliased boolean := true;
+
+			procedure query_A_edge (edge_A_cursor : pac_polygon_segments.cursor) is begin
+				-- If the two edges are not equal then abort 
+				-- the iteration:
+				if element (edge_A_cursor) /= element (edge_B_cursor) then
+					proceed := false;
+				end if;
+
+				-- Prepare for the next edge of polygon B:
+				next (edge_B_cursor);
+
+				-- If end of list of B-edges reached, set B-cursor to
+				-- begin of list:
+				if edge_B_cursor = pac_polygon_segments.no_element then
+					edge_B_cursor := polygon_B.contours.segments.first;
+				end if;
+			end query_A_edge;
+			
+		begin
+			iterate (polygon_A.contours.segments, query_A_edge'access, proceed'access);
+			result := proceed;
+		end compare_edges;
+
+		
+	begin
+		-- The first and easiest test is to compare the number of edges.
+		-- If they differ, then the polygons are definitely not congruent:
+		if ct_A /= ct_B then
+			result := false;
+		else
+			-- Get the first segment of polygon A:
+			edge_A := polygon_A.contours.segments.first_element;
+
+			-- Search for that element in polygon B:
+			edge_B_cursor := polygon_B.contours.segments.find (edge_A);
+
+			-- If polygon B contains this edge then proceed comparing
+			-- the segments from this position on.
+			-- If polygon B does not contain this starting edge then
+			-- the polygons are not congruent:
+			if edge_B_cursor /= pac_polygon_segments.no_element then
+				compare_edges;
+			else
+				-- not congruent
+				result := false;
+			end if;
+		end if;
+		
+		return result;
+	end are_congruent;
+
+	
+
 	function get_segment_edge (
 		polygon	: in type_polygon;
 		edge	: in type_line)
@@ -2387,9 +2457,9 @@ package body et_geometry_2.polygons is
 		procedure query_intersection (
 			c : in pac_intersections.cursor) 
 		is begin
-			-- CS: We assume that leaving and entering points of
-			-- a touch-point follow each other in the given 
-			-- list of intersection. So we always look at the 
+			-- CS: We assume that on a touch point a leaving and an
+			-- entering node follow each other (in the given 
+			-- list of intersections). So we always look at the 
 			-- predecessor of the candidate intersection (indicated by 
 			-- cursor c):
 			if c = intersections.first then
@@ -3144,31 +3214,39 @@ package body et_geometry_2.polygons is
 		return type_overlap_status
 	is
 		result : type_overlap_status;
-		
-		real_intersections : constant pac_intersections.list := 
-			get_real_intersections (intersections);
+		real_intersections : pac_intersections.list;
 	begin
-		case real_intersections.length is
-			when 0 => -- no intersections of edges or vertices
-				
-				if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
-					result := A_INSIDE_B;
+		if are_congruent (polygon_A, polygon_B) then
+			result := CONGRUENT;
+		else
+			-- The given list of intersections may include places where 
+			-- the two polygons just touch but do not really intersect.
+			-- Extract the nodes (from given list of intersection) where
+			-- the edges of the two polygons truly intersect.
+			real_intersections := get_real_intersections (intersections);
+			
+			case real_intersections.length is
+				when 0 => -- no intersections of edges or vertices
 					
-				elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
-					result := B_INSIDE_A;
+					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
+						result := A_INSIDE_B;
+						
+					elsif all_vertices_of_A_inside_B (polygon_B, polygon_A) then
+						result := B_INSIDE_A;
+						
+					else
+						-- A and B do not overlap. They are apart from each other:
+						result := A_DOES_NOT_OVERLAP_B;
+					end if;
 					
-				else
-					-- A and B do not overlap. They are apart from each other:
-					result := A_DOES_NOT_OVERLAP_B;
-				end if;
-				
-			when 1 => raise constraint_error; -- CS should never happen
+				when 1 => raise constraint_error; -- CS should never happen
 
-			when others =>
-				result := A_OVERLAPS_B;
+				when others =>
+					result := A_OVERLAPS_B;
 
-		end case;
-
+			end case;
+		end if;
+		
 		if debug then
 			put_line ("overlap status: " & type_overlap_status'image (result));
 		end if;

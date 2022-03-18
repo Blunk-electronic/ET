@@ -186,7 +186,9 @@ procedure union is
 
 	
 begin
-
+	--goto test;
+	
+	
 	-- TEST 1:
 	do_test (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
@@ -352,6 +354,25 @@ begin
 			& "line 100 100 line 0 100",
 		E => "line 90 20 line 90 80 line 100 80 "
 			& "line 100 100 line 0 100 line 0 0 line 100 0 line 100 20");
+
+
+<<test>>
+	
+	-- TEST 21, wie test 5. A hat anderen Startpunkt:
+	do_test (
+		A => "line 60 -5 line 60 50 line 40 50 line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5",
+		B => B_default,
+		E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+	-- go
+
+	
+	-- TEST 22, wie test 5. A hat anderen Startpunkt:
+	do_test (
+		A => "line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50 line 40 -10 line 120 -10 line 120 50",
+		B => B_default,
+		E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+	-- go
+	
 	
 	-----------------------	
 
@@ -359,6 +380,7 @@ begin
 
 	new_line;
 	put_line ("--------------");
+	put_line ("TESTS  total:" & natural'image (idx));
 	put_line ("ERRORS total:" & natural'image (errors));
 
 	

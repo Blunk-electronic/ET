@@ -231,6 +231,11 @@ package body et_geometry_2.polygons.clipping is
 		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
 		
 		case overlap_status is
+			when CONGRUENT =>
+				-- Both polygons have the same outline. So the result
+				-- is polygon A:
+				result.append (type_polygon (polygon_A));
+				
 			when A_DOES_NOT_OVERLAP_B => 
 				-- Nothing to do. Return an empty list:
 				null; 

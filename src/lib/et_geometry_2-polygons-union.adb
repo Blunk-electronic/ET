@@ -61,23 +61,26 @@ package body et_geometry_2.polygons.union is
 			overlap_status : type_overlap_status;			
 		begin
 			if primary /= secondary then
-				new_line;
-				put_line ("secondary: " & to_string (element (secondary)));
+				--new_line;
+				--put_line ("secondary: " & to_string (element (secondary)));
 				
 				intersections := get_intersections (element (primary), element (secondary));
 				overlap_status := get_overlap_status (element (primary), element (secondary), intersections);
 
 				case overlap_status is
+					when CONGRUENT =>
+						null; -- CS ?
+						
 					when A_DOES_NOT_OVERLAP_B => 
 						raise constraint_error; -- CS more details ?
 
 					when A_INSIDE_B => 
-						put_line ("A inside");
+						--put_line ("A inside");
 						-- Primary polygon is completely inside secondary.
 						select_next_primary := true;
 
 					when B_INSIDE_A =>
-						put_line ("B inside");
+						--put_line ("B inside");
 						-- Secondary polygon is completely inside primary.
 						null;
 
@@ -92,8 +95,8 @@ package body et_geometry_2.polygons.union is
 	begin
 		while primary /= pac_polygons.no_element loop
 
-			new_line;
-			put_line ("primary: " & to_string (element (primary)));
+			--new_line;
+			--put_line ("primary: " & to_string (element (primary)));
 
 			polygons.iterate (query_secondary'access);
 
@@ -405,6 +408,11 @@ package body et_geometry_2.polygons.union is
 		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
 		
 		case overlap_status is
+			when CONGRUENT =>
+				put_line ("CONGRUENT");
+				-- The result is just polygon A:
+				result_polygon := type_polygon (polygon_A);
+				
 			when A_DOES_NOT_OVERLAP_B => 
 				-- No union possible.
 				result_exists := false;

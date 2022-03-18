@@ -100,6 +100,14 @@ package et_geometry_2.polygons is
 		contours	: type_polygon_segments;
 	end record;
 
+
+	-- Returns true if the given two polygons are congruent,
+	-- means if they are equal in outline and size.
+	-- The start points of the two polygons does not matter.
+	-- CS: Assumes the polygon consists of line-edges only !
+	function are_congruent (
+		polygon_A, polygon_B : in type_polygon)
+		return boolean;
 	
 	
 	-- Returns the cursor to the given edge of the
@@ -556,7 +564,6 @@ private
 
 	
 	type type_intersection_base is tagged record
-		--position	: type_point; 	  -- x/y
 		position	: type_vector;
 		direction	: type_intersection_direction := ENTERING;
 	end record;
@@ -682,7 +689,8 @@ private
 
 	
 	-- Removes from the given list of intersections those where
-	-- polygon A touches polygon B.
+	-- polygon A touches polygon B. The result are those nodes where
+	-- the polygon edges truly intersect each other:
 	function get_real_intersections (
 		intersections	: in pac_intersections.list)
 		return pac_intersections.list;
@@ -795,6 +803,7 @@ private
 
 	
 	type type_overlap_status is (
+		CONGRUENT,
 		A_INSIDE_B,
 		B_INSIDE_A,							
 		A_OVERLAPS_B,
