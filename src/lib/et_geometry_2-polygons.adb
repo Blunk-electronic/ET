@@ -3562,6 +3562,9 @@ package body et_geometry_2.polygons is
 		end do_collect;
 
 
+		-- Returns the number of vertices from and including
+		-- the given start_vertex to the end of the list of 
+		-- given vertices:
 		function get_until_end return count_type is
 			ct : count_type := 0;
 			cu : pac_vertices.cursor := start_vertex;
@@ -3573,7 +3576,12 @@ package body et_geometry_2.polygons is
 			return ct;
 		end get_until_end;
 
+		ct_ccw : count_type := 0;
 
+		
+		-- Returns the number of vertices from and including
+		-- the given start_vertex to the begin of the list of 
+		-- given vertices:
 		function get_until_begin return count_type is
 			ct : count_type := 0;
 			cu : pac_vertices.cursor := start_vertex;
@@ -3585,12 +3593,15 @@ package body et_geometry_2.polygons is
 			return ct;
 		end get_until_begin;
 
+		ct_cw : count_type := 0;
+
+		
 		
 		collected_vertices : count_type := 0;
 		deleted_vertices : count_type := 0;
 		restart_required : boolean := false;
 
-		ct_ccw, ct_cw : count_type := 0;
+
 
 
 		procedure delete_ccw is 
@@ -3625,12 +3636,11 @@ package body et_geometry_2.polygons is
 
 		
 	begin
-		-- Preset cursor v to the given entering vertex.
+		-- Preset cursor v to the given entering/leaving vertex.
 		-- The serach starts here:
 		v := start_vertex;
 
-		-- Collect vertices from entering vertex to
-		-- the next leaving vertex:
+		-- Collect vertices from given vertex to the next leaving/entering vertex:
 		do_collect;
 
 		case direction_of_search is
