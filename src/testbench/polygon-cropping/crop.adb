@@ -47,6 +47,8 @@ with et_string_processing;		use et_string_processing;
 
 procedure crop is
 
+	test_count : constant positive := 11;
+	
 	use pac_geometry_2;
 	use pac_polygons;
 	use pac_polygon_cropping;
@@ -54,11 +56,9 @@ procedure crop is
 
 	use pac_cropped;
 	EXP_list : pac_cropped.list;
-	--EXP_exists : boolean := false;
-	
 
-	-- A: to be cropped
-	-- B: cropping
+	-- A: cropping
+	-- B: to be cropped
 
 	type type_test is record
 		A, B	: unbounded_string;
@@ -66,7 +66,8 @@ procedure crop is
 		result_actual : type_crop;
 	end record;
 
-	type type_test_array is array (1..1) of type_test;
+	
+	type type_test_array is array (1 .. test_count) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -138,8 +139,8 @@ procedure crop is
 			B := type_polygon (to_polygon (F));
 			--put_line ("B: " & to_string (B));
 
-			set (i).result_actual := crop (A, B);
-			--set (i).result_actual := crop (A, B, true);
+			--set (i).result_actual := crop (A, B);
+			set (i).result_actual := crop (A, B, true);
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
@@ -198,130 +199,132 @@ begin
 
 	-- TEST 1:
 	init_test;
-	-- we expect no resulting area because A is completly inside B
+	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
 		B => B_default,
-		expect => (exists => true, crop => pac_cropped.empty_list));
+		expect => (exists => true, crop => EXP_list));
 	-- go
 
 
 	
-	---- TEST 2:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+	-- TEST 2:
+	init_test;
+	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
 
-	--make_set (
-		--A => "line 50 0 line 101 0 line 101 50 line 50 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
-
-	
-	---- TEST 3:
-	--init_test;
-	--add_to_expect (EXP, "line 100 20 line 80 20 line 80 10 line 100 10");
-	
-	--make_set (
-		--A => "line 80 10 line 150 10 line 150 20 line 80 20",
-		--B => B_default,
-		--expect => EXP);
-	---- go
-
-
-	---- TEST 4:
-	--init_test;
-	--add_to_expect (EXP, "line 1 0.5 line 1 1 line 0.5 1 line 0.5 0.5");
-	
-	--make_set (
-		--A => "line 0 0 line 1 0 line 1 1 line 0 1",
-		--B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 50 0 line 101 0 line 101 50 line 50 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 	
-
-	---- TEST 5:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 80 50 line 80 0 line 100 0");
-	--add_to_expect (EXP, "line 60 0 line 60 50 line 40 50 line 40 0");
+	-- TEST 3:
+	init_test;
+	add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
 	
-	--make_set (
-		--A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 80 10 line 150 10 line 150 20 line 80 20",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
-	---- TEST 6:
-	--init_test;
-	--add_to_expect (EXP, "line 43.3333333333 0 line 100 42.5 line 100 57.5 " 
-				   --& "line 43.3333333333 100 line 20.8333333333 100 line 25 50 line 20.8333333333 0");
+	-- TEST 4:
+	init_test;
+	add_to_expect ("line 0.5 1 line 1 1 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5");
 	
-	--make_set (
-		--A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 0 0 line 1 0 line 1 1 line 0 1",
+		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 	
 
-	---- TEST 7:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
+	-- TEST 5:
+	init_test;
+	add_to_expect ("line 40 0 line 40 50 lien 60 50 line 60 0 line 80 0 line 80 50 line 100 50 line 100 100 line 0 100 line 0 0");
 	
-	--make_set (
-		--A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
+
+
+	-- TEST 6:
+	init_test;
+	add_to_expect ("line 20.8333333333 0 line 25 50 line 20.8333333333 100 line 0 100 line 0 0");
+	add_to_expect ("line 100 42.5 line 43.3333333333 0 line 100 0");
+	add_to_expect ("line 43.3333333333 100 line 100 57.5 line 100 100");
+	
+	make_set (
+		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
+
+	
+
+	-- TEST 7:
+	init_test;
+	add_to_expect ("line 40 0 line 40 100 line 0 100 line 0 0");
+	add_to_expect ("line 50 100 line 50 0 line 100 0 line 100 100");
+	
+	make_set (
+		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
 	
-	---- TEST 8:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
+	-- TEST 8:
+	init_test;
+	add_to_expect ("line 0 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
 	
-	--make_set (
-		--A => "line 0 0 line 50 0 line 50 50 line 0 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 0 0 line 50 0 line 50 50 line 0 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
-	---- TEST 9:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
+	-- TEST 9:
+	init_test;
+	add_to_expect ("line 30 0 line 30 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
 	
-	--make_set (
-		--A => "line 30 0 line 50 0 line 50 50 line 30 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 30 0 line 50 0 line 50 50 line 30 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
 
-	---- TEST 10:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+	-- TEST 10:
+	init_test;
+	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
 	
-	--make_set (
-		--A => "line 50 0 line 100 0 line 101 50 line 50 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
-	------ TEST 11:
-	--init_test;
-	--add_to_expect (EXP, "line 100 0 line 80 20 line 80 40 line 100 40 line 100 60 line 50 60 line 50 0");
+	-- TEST 11:
+	init_test;
+	add_to_expect ("line 50 0 line 50 60 line 100 60 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("line 100 40 line 80 40 line 80 20 line 100 0");
 	
-	--make_set (
-		--A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
 	---- TEST 12:

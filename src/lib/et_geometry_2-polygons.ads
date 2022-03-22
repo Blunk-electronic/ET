@@ -881,7 +881,8 @@ private
 	-- to (and including) the next leaving/entering vertex. 
 	-- If argument "delete_visited" is true then all
 	-- these vertices and the given start vertex 
-	-- are removed from vertices so that they won't be visited again:
+	-- are removed from vertices so that they won't be visited again.
+	-- CS: Not implemented yet: Delete visited when direction of search is CW.
 	function get_until (
 		vertices					: in out pac_vertices.list;
 		start_vertex				: in pac_vertices.cursor;

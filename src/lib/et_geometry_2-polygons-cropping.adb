@@ -115,13 +115,18 @@ package body et_geometry_2.polygons.cropping is
 				-- the start point v_start. The current sub-polygon is then complete.
 				v_start := element (vertice_B_cursor);
 
+				--put_line ("A");
+				
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
 				vertices_tmp_1 := get_until (
 					vertices					=> vertices_A,
 					start_vertex				=> vertices_A.find (element (vertice_B_cursor)),
 					direction_of_intersection	=> ENTERING,
-					direction_of_search			=> CW);
+					direction_of_search			=> CW,
+					delete_visited				=> false);
+
+				--put_line ("B");
 				
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
@@ -133,8 +138,9 @@ package body et_geometry_2.polygons.cropping is
 					vertices					=> vertices_B,
 					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
 					direction_of_intersection	=> LEAVING,
-					direction_of_search			=> CW);
+					direction_of_search			=> CCW);
 
+				--put_line ("C");
 				
 				loop
 					-- safety measure to prevent forever-looping:
@@ -154,15 +160,17 @@ package body et_geometry_2.polygons.cropping is
 					else
 						-- If sub-polygon is not complete, then again go to the first
 						-- leaving intersection of polygon B:
-						vertice_B_cursor := get_first (LEAVING, vertices_B);
+						--vertice_B_cursor := get_first (LEAVING, vertices_B);
 
 						-- Get the intersections and vertices until
 						-- the an entering intersection in polygon A:
 						vertices_tmp_2 := get_until (
 							vertices					=> vertices_A,
-							start_vertex				=> vertices_A.find (element (vertice_B_cursor)),
+							--start_vertex				=> vertices_A.find (element (vertice_B_cursor)),
+							start_vertex				=> vertices_A.find (vertices_tmp_1.last_element),
 							direction_of_intersection	=> ENTERING,
-							direction_of_search			=> CW);
+							direction_of_search			=> CW,
+							delete_visited				=> false);
 
 						
 						-- Append the intersection (and vertices) to the primary
@@ -181,7 +189,7 @@ package body et_geometry_2.polygons.cropping is
 							vertices					=> vertices_B,
 							start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
 							direction_of_intersection	=> LEAVING,
-							direction_of_search			=> CW);
+							direction_of_search			=> CCW);
 
 					end if;
 				end loop;
@@ -195,6 +203,12 @@ package body et_geometry_2.polygons.cropping is
 				-- In case there is no leaving vertex any more, then this
 				-- pass will be the last:
 				vertice_B_cursor := get_first (LEAVING, vertices_B);
+
+				if get_first (ENTERING, vertices_B) = pac_vertices.no_element 
+					--and vertice_B_cursor /= pac_vertices.no_element 
+				then
+					exit;
+				end if;
 			end loop;
 
 		end do_cropping;
