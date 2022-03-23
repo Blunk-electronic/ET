@@ -114,8 +114,6 @@ package body et_geometry_2.polygons.cropping is
 				-- edges of polygon A or B we will eventually get back to 
 				-- the start point v_start. The current sub-polygon is then complete.
 				v_start := element (vertice_B_cursor);
-
-				--put_line ("A");
 				
 				-- Walk along the vertices (and intersections) of polygon A until
 				-- an entering intersection:
@@ -126,8 +124,6 @@ package body et_geometry_2.polygons.cropping is
 					direction_of_search			=> CW,
 					delete_visited				=> false);
 
-				--put_line ("B");
-				
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
 
@@ -139,8 +135,6 @@ package body et_geometry_2.polygons.cropping is
 					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
 					direction_of_intersection	=> LEAVING,
 					direction_of_search			=> CCW);
-
-				--put_line ("C");
 				
 				loop
 					-- safety measure to prevent forever-looping:
@@ -201,14 +195,15 @@ package body et_geometry_2.polygons.cropping is
 
 				-- Get the next leaving vertex from vertices_B.
 				-- In case there is no leaving vertex any more, then this
-				-- pass will be the last:
+				-- pass will be the last (see head of this loop):
 				vertice_B_cursor := get_first (LEAVING, vertices_B);
 
-				if get_first (ENTERING, vertices_B) = pac_vertices.no_element 
-					--and vertice_B_cursor /= pac_vertices.no_element 
-				then
+				-- We also abort the loop if there are no more entering
+				-- vertices in vertices_B (happens in rare cases):
+				if get_first (ENTERING, vertices_B) = pac_vertices.no_element then
 					exit;
 				end if;
+				
 			end loop;
 
 		end do_cropping;
@@ -243,32 +238,37 @@ package body et_geometry_2.polygons.cropping is
 		
 		case overlap_status is
 			when CONGRUENT =>
-				show_overlap_status;
+				--show_overlap_status;
+				
 				-- Both polygons have the same outline. B is completely cropped to zero area.
 				-- So the result is an empty list of polygons:
 				result_exists := true;
 				
 			when A_DOES_NOT_OVERLAP_B => 
-				show_overlap_status;
+				--show_overlap_status;
+				
 				-- Nothing to do. Polygon B is unchanged so it is the one and only polygon
 				-- to be returned:
 				result_exists := true;
 				result_crop.append (type_polygon (polygon_B));
 
 			when A_INSIDE_B => 
-				show_overlap_status;
+				--show_overlap_status;
+				
 				-- Polygon A is completely inside B. A crop operation is
 				-- not possible (The outcome would be a cutout area in polygon B.):
 				result_exists := false;
 
 			when B_INSIDE_A => 
-				show_overlap_status;
+				--show_overlap_status;
+				
 				-- Polygon B is completely inside A. B is completey cropped to zero area
 				-- So the result is an empty list of polygon:
 				result_exists := true;
 				
 			when A_OVERLAPS_B => 
-				show_overlap_status;
+				--show_overlap_status;
+				
 				result_exists := true;
 				-- Do the actual cropping work:
 				do_cropping;

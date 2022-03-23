@@ -47,7 +47,7 @@ with et_string_processing;		use et_string_processing;
 
 procedure crop is
 
-	test_count : constant positive := 11;
+	test_count : constant positive := 22;
 	
 	use pac_geometry_2;
 	use pac_polygons;
@@ -139,8 +139,10 @@ procedure crop is
 			B := type_polygon (to_polygon (F));
 			--put_line ("B: " & to_string (B));
 
-			--set (i).result_actual := crop (A, B);
-			set (i).result_actual := crop (A, B, true);
+			set (i).result_actual := crop (A, B);
+
+			-- Use this statement if more debug messages required:
+			--set (i).result_actual := crop (A, B, true);
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
@@ -327,144 +329,135 @@ begin
 	-- go
 
 
-	---- TEST 12:
-	--init_test;
-	--add_to_expect (EXP, "line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50 line 50 0");
+	-- TEST 12:
+	init_test;
+	add_to_expect ("line 50 0 line 50 50 line 0 100 line 0 0");
+	add_to_expect ("line 100 20 line 60 20 line 60 0 line 100 0");
+	add_to_expect ("line 100 100 line 60 60 line 100 60");
 	
-	--make_set (
-		--A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
-		--B => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
 
-	---- TEST 13:
-	--init_test;
-	--add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
+	-- TEST 13:
+	init_test;
+	add_to_expect ("line 0 0 line 100 100 line 0 100");
 	
-	--make_set (
-		--A => "line -5 -5 line 105 -5 line 105 105",
-		--B => B_default,
-		--expect => EXP);
+	make_set (
+		A => "line -5 -5 line 105 -5 line 105 105",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
 	
 
-	---- TEST 14:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
+	-- TEST 14:
+	init_test;
+	-- Cropping not possible since A is completly inside B
+	make_set (
+		A => "line 50 0 line 80 50 line 70 60 line 40 10",
+		B => B_default,
+		expect => (exists => false));
+
 	
-	--make_set (
-		--A => "line 50 0 line 80 50 line 70 60 line 40 10",
-		--B => B_default,
-		--expect => EXP);
 
-
-	---- TEST 15:
-	--init_test;
-	---- we expect nothing because the polygons do not overlap
+	-- TEST 15:
+	init_test;
+	add_to_expect (B_default);
+	-- B is not cropped at all because A is outside B.
 	
-	--make_set (
-		--A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
-		--B => B_default,
-		--expect => EXP);
-
-
-	---- TEST 16:
-	--init_test;
-	---- we expect nothing because the polygons do not overlap
-	
-	--make_set (
-		--A => "line 200 10 line 250 10 line 250 50",
-		--B => B_default,
-		--expect => EXP);
-
-
-
-	---- TEST 17:
-	--init_test;
-	--add_to_expect (EXP, "line 100 50 line 50 0 line 100 0");
-	
-	--make_set (
-		--A => "line 50 0 line 110 -20 line 120 0 line 110 60",
-		--B => B_default,
-		--expect => EXP);
+	make_set (
+		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
 
 
 	
-	---- TEST 18:
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 50 50 line 25 50 line 0 0");
+	-- TEST 16:
+	init_test;
+	add_to_expect (B_default);
+	-- B is not cropped at all because A is outside B.
 	
-	--make_set (
-		--A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
-		--B => B_default,
-		--expect => EXP);
+	make_set (
+		A => "line 200 10 line 250 10 line 250 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+
+
+
+	-- TEST 17:
+	init_test;
+	add_to_expect ("line 50 0 line 100 50 line 100 100 line 0 100 line 0 0");
+	
+	make_set (
+		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
 
 
 	
-	---- TEST 19:
-	--init_test;
-	--add_to_expect (EXP, "line 90 0 line 80 10 line 20 10 line 10 0");
+	-- TEST 18:
+	init_test;
+	add_to_expect ("line 0 0 line 25 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
 	
-	--make_set (
-		--A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
-		--B => B_default,
-		--expect => EXP);
+	make_set (
+		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
 
 
-	---- TEST 20:
-	--init_test;
-	--add_to_expect (EXP, "line 10 10 line 90 10 line 90 90 line 10 90");
 	
-	--make_set (
-		--A => "line 0 0 line 100 0 line 100 100 line 0 100",
-		--B => "line 10 10 line 90 10 line 90 90 line 10 90",
-		--expect => EXP);
-
-
-
-	---- TEST 21 (as test 4, but polygon A and B swapped):
-	--init_test;
-	--add_to_expect (EXP, "line 0.5 1 line 0.5 0.5 line 1 0.5 line 1 1");
+	-- TEST 19:
+	init_test;
+	add_to_expect ("line 10 0 line 20 10 line 80 10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0");
 	
-	--make_set (
-		--B => "line 0 0 line 1 0 line 1 1 line 0 1",
-		--A => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
-		--expect => EXP);
-	---- go
+	make_set (
+		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
 
 
-	---- TEST 22 (as test 12, but polygon A and B swapped):
-	--init_test;
-	--add_to_expect (EXP, "line 50 0 line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50");
+	-- TEST 20:
+	init_test;
+	-- We expect B to disappear since it is completly inside A.
 	
-	--make_set (
-		--B => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
-		--A => B_default,
-		--expect => EXP);
-	---- no go
+	make_set (
+		A => "line 0 0 line 100 0 line 100 100 line 0 100",
+		B => "line 10 10 line 90 10 line 90 90 line 10 90",
+		expect => (exists => true, crop => EXP_list));
 
 
-	---- TEST 23 (as test 3, but polygon A and B swapped):
-	--init_test;
-	--add_to_expect (EXP, "line 100 10 line 100 20 line 80 20 line 80 10");
+
+	-- TEST 21:
+	init_test;
+	-- We expect B to disappear since it is congruent with A.
 	
-	--make_set (
-		--B => "line 80 10 line 150 10 line 150 20 line 80 20",
-		--A => B_default,
-		--expect => EXP);
-	---- go
+	make_set (
+		B => B_default,
+		A => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
 
-
-	---- TEST 24 (as test 5, but polygon A and B swapped):
-	--init_test;
-	--add_to_expect (EXP, "line 40 0 line 60 0 line 60 50 line 40 50 ");
-	--add_to_expect (EXP, "line 80 0 line 100 0 line 100 50 line 80 50");
 	
-	--make_set (
-		--B => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
-		--A => B_default,
-		--expect => EXP);
-	---- go
+
+	-- TEST 22:
+	init_test;
+	add_to_expect ("line 10 0 line 10 10 line 20 10 line 20 0 line 100 0 line 100 10 "
+		& "line 90 10 line 90 80 line 40 80 line 40 100 line 0 100 line 0 0");
+
+	add_to_expect ("line 60 100 line 60 90 line 90 90 line 90 100");
+
+	
+	make_set (
+		A => "line 10 10 line 10 -10 line 150 -10 line 150 110 line 90 110 line 90 90 "
+			& "line 60 90 line 60 110 line 40 110 line 40 80 line 90 80 line 90 10 line 110 10 "
+			& "line 110 -5 line 20 -5 line 20 10",
+		B => B_default,
+		expect => (exists => true, crop => EXP_list));
+	-- go
+
+
 
 	
 	---------------------	
