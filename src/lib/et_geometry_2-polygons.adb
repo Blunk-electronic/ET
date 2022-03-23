@@ -111,17 +111,16 @@ package body et_geometry_2.polygons is
 		end query_segment;
 		
 	begin
-
 		polygon.contours.segments.iterate (query_segment'access);
 
-		if sum >= 0.0 then
+		if sum > 0.0 then
 			return CW;
-		else
+		elsif sum < 0.0 then
 			return CCW;
+		else
+			raise constraint_error; -- CS ??
 		end if;
 
-		-- CS case sum is exactly 0.0 ?
-		--return result;
 	end get_winding;
 
 	
