@@ -75,7 +75,7 @@ package et_geometry_2.polygons is
 	
 
 	-- IMPORTANT: The segments of the polygon are assumend to be
-	-- ordered counter-clock-wise !
+	-- ordered counter-clock-wise (CCW) !	
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
 	
 	
@@ -100,6 +100,12 @@ package et_geometry_2.polygons is
 		contours	: type_polygon_segments;
 	end record;
 
+
+	-- Returns the winding of a polygon:
+	function get_winding (
+		polygon : in type_polygon)
+		return type_direction_of_rotation;
+	
 
 	-- Returns true if the given two polygons are congruent,
 	-- means if they are equal in outline and size.

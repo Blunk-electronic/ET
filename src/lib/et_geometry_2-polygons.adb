@@ -80,6 +80,52 @@ package body et_geometry_2.polygons is
 
 
 
+	function get_winding (
+		polygon : in type_polygon)
+		return type_direction_of_rotation
+	is
+		result : type_direction_of_rotation := CCW;
+
+		-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
+		-- http://blog.element84.com/polygon-winding.html
+
+		sum : type_float_internal := 0.0;
+		
+		procedure query_segment (c : in pac_polygon_segments.cursor) is
+			x1, x2, y1, y2 : type_float_internal;
+		begin
+			x1 := type_float_internal (get_x (element (c).segment_line.start_point));
+			y1 := type_float_internal (get_y (element (c).segment_line.start_point));
+
+			if c /= polygon.contours.segments.last then
+				x2 := type_float_internal (get_x (element (next (c)).segment_line.start_point));
+				y2 := type_float_internal (get_y (element (next (c)).segment_line.start_point));
+			else
+				x2 := type_float_internal (get_x (element (polygon.contours.segments.first).segment_line.start_point));
+				y2 := type_float_internal (get_y (element (polygon.contours.segments.first).segment_line.start_point));
+			end if;
+
+			-- Sum over the edges, (x2 − x1)(y2 + y1).
+			--put_line ("sum " & to_string (sum));
+			sum := sum + (x2 - x1) * (y2 + y1);
+		end query_segment;
+		
+	begin
+
+		polygon.contours.segments.iterate (query_segment'access);
+
+		if sum >= 0.0 then
+			return CW;
+		else
+			return CCW;
+		end if;
+
+		-- CS case sum is exactly 0.0 ?
+		--return result;
+	end get_winding;
+
+	
+
 	function are_congruent (
 		polygon_A, polygon_B : in type_polygon)
 		return boolean

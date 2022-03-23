@@ -339,14 +339,13 @@ package et_geometry_1 is
 	function get_x (
 		point : in type_point)
 		return type_position_axis;
-
 	
 	function get_y (
 		point : in type_point)
 		return type_position_axis;	
 
-	
 
+	
 	
 	-- The area (a rectangular box around an object)
 	-- occupied by the object.

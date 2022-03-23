@@ -47,8 +47,9 @@ with et_string_processing;		use et_string_processing;
 
 procedure crop is
 
-	test_count : constant positive := 22;
-	
+	test_count : constant positive := 23;
+
+	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_polygons;
 	use pac_polygon_cropping;
@@ -89,6 +90,7 @@ procedure crop is
 
 	
 	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	B_default_cw : constant string := "line 0 0 line 0 100 line 100 100 line 100 0";
 	
 
 	procedure init_test is begin
@@ -100,9 +102,16 @@ procedure crop is
 		s : in string)
 	is
 		F : type_fields_of_line;
+		P : type_polygon;
+		W : type_direction_of_rotation;
 	begin
 		F := read_line (line => s, comment_mark => "#");
-		EXP_list.append (type_polygon (to_polygon (F)));
+		P := type_polygon (to_polygon (F));
+
+		W := get_winding (P);
+		--put_line ("winding: " & to_string (W));
+		
+		EXP_list.append (P);
 	end add_to_expect;
 	
 	
@@ -458,7 +467,16 @@ begin
 	-- go
 
 
-
+	-- TEST 23 (wie Test 3 aber mit polygon B in CW orientiert):
+	init_test;
+	add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
+	
+	make_set (
+		A => "line 80 10 line 150 10 line 150 20 line 80 20",
+		B => B_default_cw,
+		expect => (exists => true, crop => EXP_list));
+	-- nogo
+	
 	
 	---------------------	
 	make_test;
