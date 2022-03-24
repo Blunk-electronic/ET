@@ -123,6 +123,52 @@ package body et_geometry_2.polygons is
 
 	end get_winding;
 
+
+
+	procedure set_winding (
+		polygon : in out type_polygon;
+		winding	: in type_direction_of_rotation := winding_default)
+	is
+		-- Get the winding of the given polygon:
+		w_actual : constant type_direction_of_rotation := get_winding (polygon);
+
+		-- This polygon will be formed in the course of this procedure.
+		-- It will later overwrite the given polygon:
+		polygon_new : type_polygon;
+
+		-- This procedure reverses the edges of the given polygon and
+		-- appends them in opposide order to the new polygon:
+		procedure do_it is
+
+			procedure query_segment (c : in pac_polygon_segments.cursor) is 
+				line_new : type_line;
+				cursor_new : pac_polygon_segments.cursor;
+			begin
+				line_new := type_line (reverse_line (element (c).segment_line));
+				
+				if polygon_new.contours.segments.is_empty then
+					polygon_new.contours.segments.append ((LINE, line_new));
+				else
+					cursor_new := polygon_new.contours.segments.first;
+					polygon_new.contours.segments.prepend ((LINE, line_new));
+				end if;
+			end query_segment;
+		
+		begin
+			polygon.contours.segments.iterate (query_segment'access);
+		end do_it;
+
+		
+	begin -- set_winding
+		
+		-- If actual winding is different from given winding then
+		-- create a new polygon with the opposide winding. 
+		-- Otherwise nothing to do.
+		if w_actual /= winding then
+			do_it;
+			polygon := polygon_new;
+		end if;
+	end set_winding;
 	
 
 	function are_congruent (
@@ -858,7 +904,7 @@ package body et_geometry_2.polygons is
 		-- Goes false once a gap has been detected:
 		closed : boolean := true;
 
-		-- The point where the polyon outline starts:
+		-- The point where the polygon outline starts:
 		start_point		: type_point;
 
 		-- The end point of a segment. Once the last segment has been processed,

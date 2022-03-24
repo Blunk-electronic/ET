@@ -91,6 +91,23 @@ procedure winding is
 		P := type_polygon (to_polygon (F));
 		w_actual := get_winding (P);
 
+
+		-- USED TO TEST SET_WINDING:
+		
+		--new_line;
+		--put_line (to_string (P));
+		
+		--if w_actual = CCW then
+			--put_line ("winding is CCW. converting to CW ...");
+			--set_winding (P, CW);
+		--else
+			--put_line ("winding is CW. converting to CCW ...");
+			--set_winding (P, CCW);
+		--end if;
+		
+		--put_line ("new " & to_string (P));
+
+		
 		if w_actual /= w_expect then
 			count_error;
 			new_line;

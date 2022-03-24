@@ -74,8 +74,12 @@ package et_geometry_2.polygons is
 		return string;
 	
 
+
+	-- As system wide default for all kinds of polygons or contours:
+	winding_default : constant type_direction_of_rotation := CCW;
+
 	-- IMPORTANT: The segments of the polygon are assumend to be
-	-- ordered counter-clock-wise (CCW) !	
+	-- ordered as defined in constant winding_default !	
 	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
 	
 	
@@ -101,12 +105,21 @@ package et_geometry_2.polygons is
 	end record;
 
 
-	-- Returns the winding of a polygon:
+	-- Returns the winding of a polygon. 
+	-- This function works with concave polygons and uses the approach discussed in
+	-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
+	-- and http://blog.element84.com/polygon-winding.html
 	function get_winding (
 		polygon : in type_polygon)
 		return type_direction_of_rotation;
-	
 
+	
+	-- This procedure changes the winding of a polygon:
+	procedure set_winding (
+		polygon : in out type_polygon;
+		winding	: in type_direction_of_rotation := winding_default);
+		
+	
 	-- Returns true if the given two polygons are congruent,
 	-- means if they are equal in outline and size.
 	-- The start points of the two polygons does not matter.

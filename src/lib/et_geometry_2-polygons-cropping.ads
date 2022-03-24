@@ -62,6 +62,13 @@ package et_geometry_2.polygons.cropping is
 		end case;
 	end record;
 	
+
+	-- CS
+	-- function "=" (
+	--	left, right : in type_crop)
+	-- return boolean;
+	-- -- Use function are_congruent to compare the polygon edges
+	
 	
 	-- Crops polygon A by polygon B:
 	function crop (
