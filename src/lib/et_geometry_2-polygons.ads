@@ -58,10 +58,10 @@ package et_geometry_2.polygons is
 	-- segments are allowed.
 	-- On the other hand, a polygon may consist of lines and arcs. In that
 	-- case no circle is allowed:
-	type type_polygon_segment_shape is (LINE, ARC);
+	type type_contour_segment_shape is (LINE, ARC);
 
 	
-	type type_polygon_segment (shape : type_polygon_segment_shape) is record
+	type type_contour_segment (shape : type_contour_segment_shape) is record
 		case shape is
 			when LINE	=> segment_line : type_line;
 			when ARC	=> segment_arc  : type_arc;
@@ -70,7 +70,7 @@ package et_geometry_2.polygons is
 
 
 	function to_string (
-		segment	: in type_polygon_segment)
+		segment	: in type_contour_segment)
 		return string;
 	
 
@@ -80,31 +80,55 @@ package et_geometry_2.polygons is
 
 	-- IMPORTANT: The segments of the polygon are assumend to be
 	-- ordered as defined in constant winding_default !	
-	package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
-	
+	package pac_contour_segments is new indefinite_doubly_linked_lists (type_contour_segment);
+	use pac_contour_segments;
 	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		segments	: in pac_polygon_segments.list;
-		process		: not null access procedure (position : in pac_polygon_segments.cursor);
+		segments	: in pac_contour_segments.list;
+		process		: not null access procedure (position : in pac_contour_segments.cursor);
 		proceed		: not null access boolean);
 
 
 	
-	type type_polygon_segments (circular : boolean := false) is record
+	type type_contour_segments (circular : boolean := false) is record
 		case circular is
 			when TRUE	=> circle   : type_circle;
-			when FALSE	=> segments : pac_polygon_segments.list;
+			when FALSE	=> segments : pac_contour_segments.list;
 		end case;
 	end record;
 	
 
-	type type_polygon is tagged record
-		contours	: type_polygon_segments;
+	type type_contour is tagged record
+		contour : type_contour_segments;
+	end record;
+
+	
+	-- Returns the segments of a contour in human readable form:
+	function to_string (
+		contour	: in type_contour)
+		return string;
+
+	
+
+
+	package pac_edges is new doubly_linked_lists (type_line);
+	use pac_edges;
+	
+	-- Iterates the edges. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		edges	: in pac_edges.list;
+		process	: not null access procedure (position : in pac_edges.cursor);
+		proceed	: not null access boolean);
+
+	
+	type type_polygon is record
+		edges : pac_edges.list;
 	end record;
 
 
+	
 	-- Returns the winding of a polygon. 
 	-- This function works with concave polygons and uses the approach discussed in
 	-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
@@ -132,11 +156,11 @@ package et_geometry_2.polygons is
 	-- Returns the cursor to the given edge of the
 	-- given polygon. If the edge does not exist, then the
 	-- return is no_element.
-	-- If the polygon consist of just a circle then an exception is raised:
-	function get_segment_edge (
+	-- If the polygon consist of just a circle then an exception is raised: -- CS remove
+	function get_segment_edge ( -- CS rename to get_edge
 		polygon	: in type_polygon;
 		edge	: in type_line)
-		return pac_polygon_segments.cursor;
+		return pac_edges.cursor;
 
 
 	
@@ -145,24 +169,29 @@ package et_geometry_2.polygons is
 	-- If the given point is a vertex then an
 	-- exception is raised.
 	-- If the polygon consists of just a circle then an
-	-- exception is raised.
+	-- exception is raised. -- CS remove
 	-- If the given point does not lie on an edge then
 	-- the return is no_element:
-	function get_segment_edge (
+	function get_segment_edge ( -- CS rename to get_edge
 		polygon	: in type_polygon;
 		point	: in type_point)
-		return pac_polygon_segments.cursor;
+		return pac_edges.cursor;
 
+
+	function get_segment (
+		contour	: in type_contour;
+		point	: in type_point)
+		return pac_contour_segments.cursor;
 	
 
 	type type_neigboring_edges is record
 		-- The edge segment before a vertex.
 		-- This edge ENDS on the vertex:
-		edge_1 : pac_polygon_segments.cursor;
+		edge_1 : pac_edges.cursor;
 
 		-- The edge segment after a vertex:
 		-- This edge STARTS on the vertex:
-		edge_2 : pac_polygon_segments.cursor;
+		edge_2 : pac_edges.cursor;
 	end record;
 
 	-- Returns the cursors to the two neigboring
@@ -176,9 +205,25 @@ package et_geometry_2.polygons is
 		return type_neigboring_edges;
 
 
+
+	type type_neigboring_segments is record
+		-- The segment before a vertex.
+		-- This segment ENDS on the vertex:
+		segment_1 : pac_contour_segments.cursor;
+
+		-- The segment after a vertex:
+		-- This segment STARTS on the vertex:
+		segment_2 : pac_contour_segments.cursor;
+	end record;
+
+	function get_neigboring_segments (
+		contour	: in type_contour;
+		vertex	: in type_point)
+		return type_neigboring_segments;
+
 	
 	
-	-- Returns the segments of a polygon in human readable form:
+	-- Returns the edges of a polygon in human readable form:
 	function to_string (
 		polygon	: in type_polygon)
 		return string;
@@ -187,7 +232,7 @@ package et_geometry_2.polygons is
 	-- Returns the corner point nearest to the given
 	-- reference point.
 	-- If the given polygon consists of just a single
-	-- circle then a exception is raised:		
+	-- circle then a exception is raised: -- CS remove
 	function get_nearest_corner_point (
 		polygon		: in type_polygon;
 		reference	: in type_point)
@@ -195,10 +240,10 @@ package et_geometry_2.polygons is
 	
 
 	-- Returns the distance from the given reference point to
-	-- to the nearest point on the polygon edges.
-	-- The point may be inside or outside the polygon.
+	-- to the nearest point on the contour.
+	-- The point may be inside or outside the contour.
 	function get_shortest_distance (
-		polygon	: in type_polygon;
+		contour	: in type_contour;
 		point	: in type_point)
 		return type_distance_polar;
 
@@ -207,51 +252,61 @@ package et_geometry_2.polygons is
 
 
 	
-	-- Loads the given segments into given polygon.
-	-- NOTE: Overwrites already existing segments in the polygon.
+	-- Loads the given segments into the given contour.
+	-- NOTE: Overwrites already existing segments in the contour.
 	procedure load_segments (
-		polygon		: in out type_polygon;
-		segments	: in type_polygon_segments);
+		contour		: in out type_contour;
+		segments	: in type_contour_segments);
 	
 	
 	procedure delete_segments (
-		polygon : in out type_polygon);
+		contour	: in out type_contour);
 
 
 	
 	procedure append_segment (
-		polygon	: in out type_polygon;
-		segment	: in type_polygon_segment);
+		contour	: in out type_contour;
+		segment	: in type_contour_segment);
 	
 
 	procedure set_circle (
-		polygon	: in out type_polygon;
+		contour	: in out type_contour;
 		circle	: in type_circle'class);
 	
 		
 	function get_segments (
-		polygon : in type_polygon) 
-		return type_polygon_segments;
+		contour	: in type_contour)
+		return type_contour_segments;
 	
 
 	-- Returns 1 if the polygon contours consist of just a single circle.
 	-- Returns the number of segments if the contours consist of lines
 	-- and/or arcs:
 	function get_segments_total (
+		contour : in type_contour)
+		return count_type;
+
+		
+	function get_edges_total (
 		polygon : in type_polygon)
 		return count_type;
 
 
 
-
 	
-	-- Transposes a polygon in Y direction.
+	---- Transposes a polygon in Y direction.
+	---- Each point of each segment gets shifted by
+	---- the formula new_y = offset - old_y:
+	--procedure transpose_polygon (
+		--polygon	: in out type_polygon'class;
+		--offset	: in type_distance);
+
+	-- Transposes a contour in Y direction.
 	-- Each point of each segment gets shifted by
 	-- the formula new_y = offset - old_y:
-	procedure transpose_polygon (
-		polygon	: in out type_polygon'class;
+	procedure transpose_contour (
+		contour	: in out type_contour'class;
 		offset	: in type_distance);
-
 
 
 	-- Reads the segments provided in a row of
@@ -259,7 +314,7 @@ package et_geometry_2.polygons is
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
 	-- or:
 	-- line 50 50 70 50 arc 60 50 70 50 50 50 ccw
-	-- and builds a polygon.
+	-- and builds a contour.
 	-- 1. The end point of a segment must not be specified.
 	--    It is deduced from the start point of the successor segment.
 	-- 2. A circle can only be read if it is the only shape.
@@ -269,104 +324,104 @@ package et_geometry_2.polygons is
 	--     - valid  : circle 9 4 10
 	--     - invalid: circle 34 45 30 circle 9 4 10
 	--     - invalid: line 0 0 circle 9 4 10
-	function to_polygon (
+	function to_contour (
 		arguments : in type_fields_of_line)
-		return type_polygon'class;
+		return type_contour'class;
 	
 	
-	-- Returns the boundaries of the given polygon.
+	-- Returns the boundaries of the given contour.
 	function get_boundaries (
-		polygon		: in type_polygon;
+		contour		: in type_contour;
 		line_width	: in type_distance_positive)
 		return type_boundaries;
 	
 
-	-- A polygon must have a properly closed outline.
+	-- A contour must have a properly closed outline.
 	-- The outline check returns a list of points (where the gaps are):
-	package pac_polygon_gaps is new doubly_linked_lists (type_point); 
+	package pac_contour_gaps is new doubly_linked_lists (type_point); 
 
 	
-	-- Returns the points where gaps of a polygon outline begin:
+	-- Returns the points where gaps of a contour begin:
 	function to_string (
-		gaps : in pac_polygon_gaps.list)
+		gaps : in pac_contour_gaps.list)
 		return string;
 	
 
 	-- The result of an outline check is a parameterized type:
-	type type_polygon_status (closed : boolean) is record
+	type type_contour_status (closed : boolean) is record
 		case closed is
 			when TRUE	=> null;
-			when FALSE	=> gaps : pac_polygon_gaps.list;
+			when FALSE	=> gaps : pac_contour_gaps.list;
 		end case;
 	end record;
 				
-	-- Returns true if the given polygon is properly closed.
+	-- Returns true if the given contour is properly closed.
 	-- If there are gaps, a list of points is returned where the gaps are.
-	-- The test iterates the segments of the polygon and tests whether
+	-- The test iterates the segments of the contour and tests whether
 	-- the end point of a segment matches the start point of the next segment.
 	-- CS: Special threatment for circle segments: Since a circle does not have 
 	-- start and end point, only the center point of the circle must be in 
 	-- the chain of segments. 
 	-- CS: Improvement required: It is sufficient if the circle
 	-- touches one of the other segments (lines and arcs) to regard it as connected
-	-- with the polygon.
+	-- with the contour.
 	function is_closed (
-		polygon	: in type_polygon)
-		return type_polygon_status;
+		contour	: in type_contour)
+		return type_contour_status;
 	
 
-	-- Moves a polygon by the given offset. 
+	-- Moves a contour by the given offset. 
 	procedure move_by (
-		polygon	: in out type_polygon;
+		contour	: in out type_contour;
 		offset	: in type_distance_relative);
 	
 
-	-- Mirrors a polygon along the given axis.
+	-- Mirrors a contour along the given axis.
 	procedure mirror (
-		polygon	: in out type_polygon;
+		contour	: in out type_contour;
 		axis	: in type_axis_2d);
 	
 
-	-- Rotates a polygon about the origin by the given rotation.
+	-- Rotates a contour about the origin by the given rotation.
 	procedure rotate_by (
-		polygon		: in out type_polygon;
+		contour		: in out type_contour;
 		rotation	: in type_rotation);
 
 	
 
 
-	type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
-	for type_polygon_scale'small use 0.1;
-	--type type_polygon_scale is new float range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
+	--type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
 	--for type_polygon_scale'small use 0.1;
+	----type type_polygon_scale is new float range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
+	----for type_polygon_scale'small use 0.1;
 
-	polygon_scale_default : constant type_polygon_scale := 1.0;
-
-	
-	function to_string (scale : in type_polygon_scale) return string;
-	function to_scale (scale : in string) return type_polygon_scale;
-
-
-
-	procedure scale_polygon (
-		polygon	: in out type_polygon;
-		scale	: in type_polygon_scale);
+	--polygon_scale_default : constant type_polygon_scale := 1.0;
 
 	
+	--function to_string (scale : in type_polygon_scale) return string;
+	--function to_scale (scale : in string) return type_polygon_scale;
 
 
 
-	-- In order to get the status of a point relative to
-	-- a polygon we need this stuff:
-	-- The general approach is:
-	-- A ray that starts at point and travels in zero degees 
-	-- may intersect the polygon edges.
-	-- The result of such a query is the type_point_to_polygon_status
-	-- that contains a status flag (inside/outside) and a list
-	-- of x values where the ray intersects the polygon. For completeness
-	-- the original point where the probe line has started is also provided.
-	-- This list provides the x values ordered according to their
-	-- distance to the start point of the ray. Lowest value first.
+	--procedure scale_polygon (
+		--polygon	: in out type_polygon;
+		--scale	: in type_polygon_scale);
+
+	
+
+
+
+	---- In order to get the status of a point relative to
+	---- a polygon we need this stuff:
+	---- The general approach is:
+	---- A ray that starts at point and travels in zero degees 
+	---- may intersect the polygon edges.
+	---- The result of such a query is the type_point_to_polygon_status
+	---- that contains a status flag (inside/outside) and a list
+	---- of x values where the ray intersects the polygon. For completeness
+	---- the original point where the probe line has started is also provided.
+	---- This list provides the x values ordered according to their
+	---- distance to the start point of the ray. Lowest value first.
 
 	type type_intersected_segment (shape : type_shape := LINE) is record
 		case shape is 
@@ -382,13 +437,13 @@ package et_geometry_2.polygons is
 
 
 	
-	-- For finding the lower left corner of a polygon this type
+	-- For finding the lower left corner of a contour this type
 	-- is required. The lower left corner can be a point somewhere
-	-- on the edge of the polygon. In that case the point is REAL.
-	-- If the point is outside the polygon then the point is VIRTUAL.
+	-- on the edge of the contour. In that case the point is REAL.
+	-- If the point is outside the contour then the point is VIRTUAL.
 	type type_lower_left_corner_status is (
-		REAL,	-- the corner point is somewhere on the outline
-		VIRTUAL	-- the corner point is outside the polygon (where
+		REAL,	-- the corner point is somewhere on the contour
+		VIRTUAL	-- the corner point is outside the contour (where
 				-- the lowest x and lowest y are)
 		);
 
@@ -411,12 +466,16 @@ package et_geometry_2.polygons is
 		point	: in type_point)
 		return boolean;
 
+	function is_vertex (
+		contour	: in type_contour;
+		point	: in type_point)
+		return boolean;
 
 	
 
-	-- Searches the lower left corner of a polygon:
+	-- Searches the lower left corner of a contour:
 	function get_lower_left_corner (
-		polygon	: in type_polygon)
+		contour	: in type_contour)
 		return type_lower_left_corner;
 
 	
@@ -425,11 +484,17 @@ package et_geometry_2.polygons is
 private
 					   
 	function get_shortest_distance (
+		contour	: in type_contour;
+		point	: in type_vector)
+		return type_float_internal;
+
+		
+	function get_shortest_distance (
 		polygon	: in type_polygon;
 		point	: in type_vector)
 		return type_float_internal;
 
-	
+		
 	function is_vertex (
 		polygon	: in type_polygon;
 		point	: in type_vector)
@@ -438,7 +503,7 @@ private
 	function get_segment_edge (
 		polygon	: in type_polygon;
 		point	: in type_vector)
-		return pac_polygon_segments.cursor;
+		return pac_edges.cursor;
 
 	
 	function get_neigboring_edges (
@@ -461,11 +526,20 @@ private
 
 	-- The intersection of a probe line with the polygon side can
 	-- be described as:
-	type type_probe_line_intersection is record
+	type type_probe_line_intersection_contour is record
 		x_position	: type_float_internal;
 		angle		: type_rotation := zero_rotation;
 		segment		: type_intersected_segment;
 	end record;
+
+	-- The intersection of a probe line with the polygon edge can
+	-- be described as:
+	type type_probe_line_intersection_polygon is record
+		x_position	: type_float_internal;
+		angle		: type_rotation := zero_rotation;
+		edge		: type_line;
+	end record;
+
 	
 	-- Subtracts 180 degree from the given angle if it is
 	-- greater 90 degrees and returns the absolute value of the difference.
@@ -475,12 +549,18 @@ private
 		--return type_rotation;
 
 	
-	function "<" (left, right : in type_probe_line_intersection)
+	function "<" (left, right : in type_probe_line_intersection_contour)
 		return boolean;
-	
-	package pac_probe_line_intersections is new
-		doubly_linked_lists (type_probe_line_intersection);
 
+	function "<" (left, right : in type_probe_line_intersection_polygon)
+		return boolean;
+
+		
+	package pac_probe_line_intersections_contour is new
+		doubly_linked_lists (type_probe_line_intersection_contour);
+
+	package pac_probe_line_intersections_polygon is new
+		doubly_linked_lists (type_probe_line_intersection_polygon);
 		
 	
 
@@ -489,7 +569,7 @@ private
 		start			: type_vector; 
 
 		-- The intersections of the probe line with the polygon edges:
-		intersections	: pac_probe_line_intersections.list;
+		intersections	: pac_probe_line_intersections_polygon.list;
 
 		case location is
 			when OUTSIDE | INSIDE =>
@@ -498,7 +578,7 @@ private
 				distance : type_float_internal;
 				
 			when ON_EDGE =>
-				edge : pac_polygon_segments.cursor;
+				edge : pac_edges.cursor;
 
 			when ON_VERTEX =>
 				edges : type_neigboring_edges;
@@ -507,13 +587,40 @@ private
 	end record;
 
 	
-		
+	type type_point_to_contour_status (location : type_location) is record
+		-- The point where the probe line has started:
+		start			: type_point;
+
+		-- The intersections of the probe line with the polygon edges:
+		intersections	: pac_probe_line_intersections_contour.list;
+
+		case location is
+			when OUTSIDE | INSIDE =>
+				-- The shortest distance of the start point (of the probe line)
+				-- to the polygon:
+				distance : type_float_internal;
+				
+			when ON_EDGE =>
+				edge : pac_contour_segments.cursor;
+
+			when ON_VERTEX =>
+				edges : type_neigboring_segments;
+
+		end case;
+	end record;
+
+
+	
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
 		i : in type_point_to_polygon_status)
 		return string;
+
 		
+	function to_string (
+		i : in type_point_to_contour_status)
+		return string;
 	
 
 	-- Detects whether the given point is inside or outside
@@ -523,7 +630,14 @@ private
 		point		: in type_vector)
 		return type_point_to_polygon_status;
 
+		
+	function get_point_to_contour_status (
+		contour		: in type_contour;	
+		point		: in type_point)
+		return type_point_to_contour_status;
 
+
+		
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge.
 	-- Similar to get_point_to_polygon_status but the result is reduced
@@ -589,7 +703,7 @@ private
 
 	
 	type type_intersection_line_edge is new type_intersection_base with record
-		edge		: pac_polygon_segments.cursor;
+		edge : pac_edges.cursor;
 	end record;
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
@@ -625,7 +739,7 @@ private
 			
 			when ON_EDGE =>
 				-- The edge where the line starts or ends:
-				edge				: pac_polygon_segments.cursor;
+				edge				: pac_edges.cursor;
 
 				-- The direction of the line: Whether it is
 				-- entering or leaving the polygon on the start or end point:
@@ -802,7 +916,7 @@ private
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
 	function to_polygon (vertices : in pac_vertices.list)
-		return type_polygon'class;
+		return type_polygon;
 
 
 

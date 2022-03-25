@@ -107,7 +107,7 @@ package body et_geometry_2.polygons.offsetting is
 		end do_segment;
 
 
-		polygon_segments_new : type_polygon_segments := (circular => false, others => <>);
+		polygon_segments_new : type_contour_segments := (circular => false, others => <>);
 		
 		INIT, LS, LE : type_point;
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);

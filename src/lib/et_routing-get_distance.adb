@@ -719,7 +719,7 @@ is
 								case element (c).tht_hole is
 									when DRILLED =>											
 										declare
-											s : type_polygon_segments := (circular => true, others => <>);
+											s : type_contour_segments := (circular => true, others => <>);
 										begin
 											s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
 											oln.contours := s;
