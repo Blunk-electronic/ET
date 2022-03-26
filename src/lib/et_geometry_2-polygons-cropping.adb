@@ -37,18 +37,17 @@
 
 
 with ada.exceptions; 			use ada.exceptions;
-with gnat.source_info;
+--with gnat.source_info;
 
 with et_exceptions;				use et_exceptions;
 
 
 package body et_geometry_2.polygons.cropping is
 
-	use pac_polygon_segments;
 
 	function crop (
-		polygon_A	: in type_polygon'class;
-		polygon_B	: in type_polygon'class;
+		polygon_A	: in type_polygon;
+		polygon_B	: in type_polygon;
 		debug		: in boolean := false)
 		return type_crop
 	is
@@ -221,11 +220,11 @@ package body et_geometry_2.polygons.cropping is
 
 		-- Both polygons must have vertices and edges.
 		-- Otherwise raise exception:
-		if get_segments_total (polygon_A) = 0 then
+		if get_edges_total (polygon_A) = 0 then
 			raise constraint_error with "Polygon A has no vertices !";
 		end if;
 
-		if get_segments_total (polygon_B) = 0 then
+		if get_edges_total (polygon_B) = 0 then
 			raise constraint_error with "Polygon B has no vertices !";
 		end if;
 

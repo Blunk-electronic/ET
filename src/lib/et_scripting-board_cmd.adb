@@ -64,7 +64,7 @@ is
 	use et_packages;
 	use et_board_shapes_and_text;
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use et_drills;
 	use et_vias;
 	use et_pcb;
@@ -345,9 +345,10 @@ is
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic polygon from the arguments:
-		p0 : constant type_polygon := type_polygon (to_polygon (arguments));
+		p0 : constant type_contour := type_contour (to_contour (arguments));
 	begin
-		draw_outline (module, type_polygon (p0), log_threshold + 1);
+		--draw_outline (module, type_polygon (p0), log_threshold + 1);
+		draw_outline (module, p0, log_threshold + 1);
 	end draw_outline;
 
 	
@@ -356,9 +357,10 @@ is
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic polygon from the arguments:
-		p0 : constant type_polygon := type_polygon (to_polygon (arguments));
+		p0 : constant type_contour := type_contour (to_contour (arguments));
 	begin
-		draw_hole (module, type_polygon (p0), log_threshold + 1);
+		--draw_hole (module, type_polygon (p0), log_threshold + 1);
+		draw_hole (module, p0, log_threshold + 1);
 	end draw_hole;
 
 	
@@ -2084,7 +2086,7 @@ is
 			ph : type_hatched_floating;
 
 			-- Build a basic polygon from the arguments:
-			p : constant type_polygon := type_polygon (to_polygon (arguments));
+			p : constant type_contour := type_contour (to_contour (arguments));
 		begin -- make_polygon
 			case settings.polygons_conductor.fill_style is
 				when SOLID =>
@@ -2207,7 +2209,7 @@ is
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 
 			-- Build a basic polygon from the arguments:
-			p0 : constant type_polygon := type_polygon (to_polygon (arguments));
+			p0 : constant type_contour := type_contour (to_contour (arguments));
 
 			procedure make_solid_thermal is
 				p1 : type_polygon_conductor_solid;

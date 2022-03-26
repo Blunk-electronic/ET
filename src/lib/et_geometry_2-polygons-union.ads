@@ -74,8 +74,8 @@ package et_geometry_2.polygons.union is
 	-- Unions polygon A with polygon B.
 	-- If debug is true then a lot of debug messages is output.
 	function union (
-		polygon_A	: in type_polygon'class; -- the first polygon
-		polygon_B	: in type_polygon'class; -- the second polygon
+		polygon_A	: in type_polygon; -- the first polygon
+		polygon_B	: in type_polygon; -- the second polygon
 		debug		: in boolean := false)
 		return type_union;
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -48,7 +48,7 @@ with et_drills;
 with et_terminals;				use et_terminals;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 use et_board_shapes_and_text.pac_geometry_2;
-use et_board_shapes_and_text.pac_polygons;
+use et_board_shapes_and_text.pac_contours;
 use et_board_shapes_and_text.pac_text_fab;
 
 
@@ -198,13 +198,15 @@ package et_kicad_packages is
 	function to_string (shape : in type_pad_shape_smt) return string;	
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt;
 
+	
 	-- Converts the given position and dimensions of a circular pad
 	-- to a list containing just one circle.
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon;
+		return type_contour;
+
 	
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
@@ -214,7 +216,8 @@ package et_kicad_packages is
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon;
+		return type_contour;
+
 	
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
@@ -223,7 +226,8 @@ package et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon;
+		return type_contour;
+
 	
 	-- slotted holes	
 	tht_hole_shape_oval	: constant string := "oval";
@@ -234,6 +238,7 @@ package et_kicad_packages is
 	-- the PCB manufacturer starts the milling with a drill.
 	subtype type_pad_milling_size is type_distance_positive
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
+
 	
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
@@ -242,7 +247,8 @@ package et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_distance_relative) -- the offset of the pad from the center
-		return pac_polygon_segments.list;
+		return pac_contour_segments.list;
+
 	
 	-- For packages, temporarily this type is required to handle texts in 
 	-- silk screen, assembly doc, ...

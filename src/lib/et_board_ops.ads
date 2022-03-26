@@ -96,7 +96,7 @@ package et_board_ops is
 
 	use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 	use pac_net_name;
 
@@ -362,14 +362,14 @@ package et_board_ops is
 	-- be only one outline:
 	procedure draw_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_polygon;
+		outline			: in type_contour;
 		log_threshold	: in type_log_level);
 
 	-- Draws a hole in the board area. Adds the hole to the
 	-- already existing holes:
 	procedure draw_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_polygon;
+		hole			: in type_contour;
 		log_threshold	: in type_log_level);
 	
 	-- Deletes the segment of the outline that crosses the given point.

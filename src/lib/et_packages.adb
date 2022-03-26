@@ -291,7 +291,7 @@ package body et_packages is
 
 	procedure move_contours (
 		term_pos	: in out type_position; -- terminal position
-		outline		: in out type_polygon'class;
+		outline		: in out type_contour'class;
 		flipped		: in type_flipped;
 		package_pos	: in type_package_position) 
 	is 

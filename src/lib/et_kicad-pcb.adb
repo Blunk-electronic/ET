@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -3311,7 +3311,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_arc is 
-				use pac_polygon_segments;
+				use pac_contour_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3383,8 +3383,8 @@ package body et_kicad.pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contours.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
-						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
+						append (board.contours.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
+						pcb_contour_segment_properties (board.contours.outline.contour.segments.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -3392,7 +3392,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_circle is 
-				use pac_polygon_segments;
+				use pac_contour_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3469,8 +3469,8 @@ package body et_kicad.pcb is
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.outline.contours.circle := pac_geometry_2.type_circle (board_circle);
-						pcb_contour_circle_properties (board.contours.outline.contours.circle, log_threshold + 1);
+						board.contours.outline.contour.circle := pac_geometry_2.type_circle (board_circle);
+						pcb_contour_circle_properties (board.contours.outline.contour.circle, log_threshold + 1);
 						
 						
 					when others => invalid_layer;
@@ -3480,7 +3480,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_line is 
-				use pac_polygon_segments;
+				use pac_contour_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3543,8 +3543,8 @@ package body et_kicad.pcb is
 
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contours.segments, (LINE, pac_geometry_2.type_line (board_line)));
-						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
+						append (board.contours.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
+						pcb_contour_segment_properties (board.contours.outline.contour.segments.last, log_threshold + 1);
 
 						
 					when others => invalid_layer;
@@ -3886,7 +3886,7 @@ package body et_kicad.pcb is
 				terminal_inserted : boolean;
 
 				--shape : et_terminals.type_pad_outline;
-				shape : pac_polygons.type_polygon;
+				shape : pac_contours.type_contour;
 
 				procedure insert_tht is 
 					use et_packages;
@@ -3930,11 +3930,11 @@ package body et_kicad.pcb is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_polygon_segments.list := to_pad_milling_contour (
-											center	=> terminal_position,
-											size_x	=> terminal_milling_size_x,
-											size_y	=> terminal_milling_size_y,
-											offset	=> to_distance_relative (terminal_pad_drill_offset));
+								lines : pac_contour_segments.list := to_pad_milling_contour (
+									center	=> terminal_position,
+									size_x	=> terminal_milling_size_x,
+									size_y	=> terminal_milling_size_y,
+									offset	=> to_distance_relative (terminal_pad_drill_offset));
 
 								millings : type_plated_millings;
 
@@ -4628,15 +4628,15 @@ package body et_kicad.pcb is
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
 	function corners_to_lines (corners : type_polygon_points.list)
-		return pac_polygons.pac_polygon_segments.list 
+		return pac_contours.pac_contour_segments.list 
 	is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
 
 		use pac_geometry_2;
-		use pac_polygon_segments;
+		use pac_contour_segments;
 
-		lines : pac_polygon_segments.list; -- to be returned
+		lines : pac_contour_segments.list; -- to be returned
 		l : pac_geometry_2.type_line;
 
 	begin

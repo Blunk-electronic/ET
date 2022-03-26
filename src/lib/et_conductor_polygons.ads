@@ -64,12 +64,12 @@ package et_conductor_polygons is
 	
 	use pac_geometry_brd;
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 
 	
 	-- Polygons in conductor layers have a dedicated type for the hatching:
 	type type_polygon_conductor (fill_style : type_fill_style) 
-		is new type_polygon with
+		is new type_contour with
 	record
 
 		-- the minimum width:

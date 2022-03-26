@@ -2282,7 +2282,7 @@ package body et_board_ops is
 
 	procedure draw_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_polygon;
+		outline			: in type_contour;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2311,7 +2311,7 @@ package body et_board_ops is
 	
 	procedure draw_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_polygon;
+		hole			: in type_contour;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2355,12 +2355,12 @@ package body et_board_ops is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 
 			procedure delete_segment is 
-				use pac_polygon_segments;
-				c : pac_polygon_segments.cursor;
+				use pac_contour_segments;
+				c : pac_contour_segments.cursor;
 			begin
-				c := module.board.contours.outline.contours.segments.first;
+				c := module.board.contours.outline.contour.segments.first;
 				
-				while c /= pac_polygon_segments.no_element loop
+				while c /= pac_contour_segments.no_element loop
 
 					case element (c).shape is
 						when LINE =>
@@ -2368,7 +2368,7 @@ package body et_board_ops is
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
-								delete (module.board.contours.outline.contours.segments, c);
+								delete (module.board.contours.outline.contour.segments, c);
 								deleted := true;
 
 								-- CS update start/end point of predecessor/successor segment
@@ -2381,7 +2381,7 @@ package body et_board_ops is
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
-								delete (module.board.contours.outline.contours.segments, c);
+								delete (module.board.contours.outline.contour.segments, c);
 								deleted := true;
 
 								-- CS update start/end point of predecessor/successor segment
@@ -2396,17 +2396,17 @@ package body et_board_ops is
 			end delete_segment;
 
 			procedure delete_circle is begin
-				if on_circle (point, module.board.contours.outline.contours.circle) then
+				if on_circle (point, module.board.contours.outline.contour.circle) then
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
-					module.board.contours.outline.contours := (others => <>);					
+					module.board.contours.outline.contour := (others => <>);					
 					deleted := true;
 				end if;
 			end delete_circle;
 			
 		begin -- delete
-			if module.board.contours.outline.contours.circular then
+			if module.board.contours.outline.contour.circular then
 				delete_circle;				
 			else
 				delete_segment;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,7 +56,7 @@ package et_stencil is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 
@@ -76,7 +76,7 @@ package et_stencil is
 	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_stencil_cutouts is new doubly_linked_lists (type_polygon);	
+	package pac_stencil_cutouts is new doubly_linked_lists (type_contour);	
 	
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is tagged record

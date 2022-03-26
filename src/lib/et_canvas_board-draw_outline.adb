@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -48,15 +48,15 @@ procedure draw_outline (
 is	
 	use et_board_shapes_and_text;
 	use pac_geometry_2;
-	use pac_polygons;
-	use pac_polygon_segments;
+	use pac_contours;
+	use pac_contour_segments;
 	
 	--use pac_text_fab;
 	--use pac_texts_fab_with_content;
 
 	use pac_contour_texts;
 	
-	procedure query_segment (c : in pac_polygon_segments.cursor) is 
+	procedure query_segment (c : in pac_contour_segments.cursor) is 
 		use pac_draw_fab;
 	begin
 		case element (c).shape is
@@ -96,18 +96,18 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module)
 	is begin
-		if module.board.contours.outline.contours.circular then
+		if module.board.contours.outline.contour.circular then
 
 			pac_draw_fab.draw_circle (
 				area		=> in_area,
 				context		=> context,
-				circle		=> module.board.contours.outline.contours.circle,
+				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
 				width		=> et_packages.pcb_contour_line_width,
 				height		=> self.frame_height);
 			
 		else
-			iterate (module.board.contours.outline.contours.segments, query_segment'access);
+			iterate (module.board.contours.outline.contour.segments, query_segment'access);
 		end if;
 		
 		iterate (module.board.contours.texts, query_text'access);
@@ -122,18 +122,18 @@ is
 		use pac_pcb_cutouts;
 		
 		procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
-			if element (c).contours.circular then
+			if element (c).contour.circular then
 
 				pac_draw_fab.draw_circle (
 					area		=> in_area,
 					context		=> context,
-					circle		=> element (c).contours.circle,
+					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
 					width		=> et_packages.pcb_contour_line_width,
 					height		=> self.frame_height);
 				
 			else
-				iterate (element (c).contours.segments, query_segment'access);
+				iterate (element (c).contour.segments, query_segment'access);
 			end if;
 		end query_hole;
 		

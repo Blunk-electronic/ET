@@ -184,29 +184,6 @@ package et_geometry_2.polygons is
 
 	
 	
-	
-
-	
-
-
-	--type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
-	--for type_polygon_scale'small use 0.1;
-	----type type_polygon_scale is new float range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
-	----for type_polygon_scale'small use 0.1;
-
-	--polygon_scale_default : constant type_polygon_scale := 1.0;
-
-	
-	--function to_string (scale : in type_polygon_scale) return string;
-	--function to_scale (scale : in string) return type_polygon_scale;
-
-
-
-	--procedure scale_polygon (
-		--polygon	: in out type_polygon;
-		--scale	: in type_polygon_scale);
-
-	
 
 	-- Returns true if the given point is a vertex
 	-- of the given polygon:

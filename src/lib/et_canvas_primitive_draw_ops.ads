@@ -59,9 +59,11 @@ with ada.containers.doubly_linked_lists;
 
 with et_geometry;			use et_geometry;
 with et_geometry_2;
-with et_geometry_2.polygons;
+with et_geometry_2.contours;
+--with et_geometry_2.polygons;
 with et_text;
 with et_canvas_general;
+
 
 package et_canvas_primitive_draw_ops is
 
@@ -74,7 +76,7 @@ generic
 	with package pac_shapes is new et_geometry_2 (<>);
 
 	-- The instantiated polygon package:
-	with package pac_polygons is new pac_shapes.polygons;
+	with package pac_contours is new pac_shapes.contours;
 
 	-- The instantiated text package:
 	with package pac_text is new et_text.generic_pac_text (
@@ -82,11 +84,13 @@ generic
 		pac_geometry_2	=> pac_shapes, 
 		others			=> <>);
 
+
 	
 package pac_draw is
+	
 	use pac_canvas;
 	use pac_shapes;
-	use pac_polygons;
+	use pac_contours;
 	use pac_shapes.pac_geometry_1;
 
 
@@ -206,7 +210,7 @@ package pac_draw is
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_polygon'class;
+		polygon	: in type_contour'class;
 		filled	: in type_filled;
 		-- CS fill style
 
@@ -225,15 +229,15 @@ package pac_draw is
 	procedure draw_polygon_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon'class;
+		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance);
 
 	procedure draw_polygon_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon'class;
-		inner_border	: in type_polygon'class;
+		outer_border	: in type_contour'class;
+		inner_border	: in type_contour'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance);
 	
 	

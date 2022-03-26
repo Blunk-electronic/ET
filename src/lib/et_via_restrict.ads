@@ -55,7 +55,7 @@ package et_via_restrict is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 	
 
@@ -77,12 +77,12 @@ package et_via_restrict is
 	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new type_polygon with null record;
+	type type_via_restrict_polygon is new type_contour with null record;
 	
 	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
 
-	type type_via_restrict_cutout is new type_polygon with null record;
+	type type_via_restrict_cutout is new type_contour with null record;
 		
 	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
 	

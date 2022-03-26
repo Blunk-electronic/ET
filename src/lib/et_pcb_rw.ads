@@ -65,7 +65,7 @@ package et_pcb_rw is
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	
 	
 	section_board				: constant string	:= "[BOARD";
@@ -149,7 +149,7 @@ package et_pcb_rw is
 	
 	-- writes the segments of a polygon (lines, arcs or a single circle):
 	procedure write_polygon_segments (
-		polygon : in type_polygon'class);
+		polygon : in type_contour'class);
 
 	
 	
@@ -246,12 +246,12 @@ package et_pcb_rw is
 	-- Ensures that the polygon outline is properly closed. Issues a warning
 	-- if it detects gaps.
 	procedure check_outline (
-		polygon			: in type_polygon;
+		polygon			: in type_contour;
 		log_threshold	: in type_log_level);
 
 
 	-- A temporarily storage place when reading a polygon:
-	polygon : type_polygon;
+	polygon : type_contour; -- CS rename to contour
 	
 	
 	polygon_isolation : type_track_clearance := type_track_clearance'first;

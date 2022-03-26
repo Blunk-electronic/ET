@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -41,7 +41,7 @@ package et_conductor_polygons.packages is
 	
 
 	package pac_conductor_cutouts 
-		is new doubly_linked_lists (type_polygon);
+		is new doubly_linked_lists (type_contour);
 
 		
 	type type_conductor_polygons is record

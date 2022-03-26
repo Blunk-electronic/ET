@@ -316,11 +316,11 @@ package body et_pcb_rw is
 
 	
 	procedure write_polygon_segments (
-		polygon : in type_polygon'class)
+		polygon : in type_contour'class)
 	is
-		use pac_polygon_segments;
+		use pac_contour_segments;
 		
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+		procedure query_segment (c : in pac_contour_segments.cursor) is begin
 			case element (c).shape is
 				
 				when LINE =>
@@ -616,7 +616,7 @@ package body et_pcb_rw is
 	procedure add_polygon_circle (c : in out type_circle) is begin
 		-- The global polygon variable "mutates" so that the contours
 		-- consist of a single circle:
-		polygon := (contours => (circular => true, others => <>));
+		polygon := (contour => (circular => true, others => <>));
 
 		-- From now on the polygon consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
@@ -805,18 +805,18 @@ package body et_pcb_rw is
 
 
 	procedure check_outline (
-		polygon			: in type_polygon;
+		polygon			: in type_contour;
 		log_threshold	: in type_log_level) 
 	is
-		status : constant type_polygon_status := is_closed (polygon);
+		status : constant type_contour_status := is_closed (polygon);
 	begin
-		log (text => "checking polygon outline ...", level => log_threshold);
+		log (text => "checking outline ...", level => log_threshold);
 		log_indentation_up;
 		
 		if status.closed then
 			null;
 		else
-			log (WARNING, "Polygon not properly closed at:" & to_string (status.gaps));
+			log (WARNING, "Contour not properly closed at:" & to_string (status.gaps));
 			-- CS: write implications and dangers !
 		end if;
 
@@ -1006,7 +1006,7 @@ package body et_pcb_rw is
 		end case;
 
 		contours_begin;		
-		write_polygon_segments (type_polygon (element (cursor)));
+		write_polygon_segments (type_contour (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1020,7 +1020,7 @@ package body et_pcb_rw is
 		cutout_zone_begin;
 
 		contours_begin;
-		write_polygon_segments (type_polygon (element (cursor)));
+		write_polygon_segments (type_contour (element (cursor)));
 		contours_end;
 
 		cutout_zone_end;
@@ -1144,6 +1144,7 @@ package body et_pcb_rw is
 		cutout_zone_end;
 	end;
 
+	
 -- STOP MASK
 	procedure write_line (cursor : in pac_stop_lines.cursor) is 
 		use pac_stop_lines;
@@ -1154,6 +1155,7 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
+	
 	procedure write_arc (cursor : in pac_stop_arcs.cursor) is 
 		use pac_stop_arcs;
 	begin
@@ -1163,11 +1165,13 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
+	
 	procedure write_circle (cursor : in pac_stop_circles.cursor) is 
 		use pac_stop_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_stop_polygons.cursor) is 
 		use pac_stop_polygons;
@@ -1187,6 +1191,7 @@ package body et_pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_stop_cutouts.cursor) is 
 		use pac_stop_cutouts;
 	begin
@@ -1199,6 +1204,7 @@ package body et_pcb_rw is
 		cutout_zone_end;
 	end;
 
+	
 -- STENCIL (OR SOLDER PASTE MASK)
 	procedure write_line (cursor : in pac_stencil_lines.cursor) is 
 		use pac_stencil_lines;
@@ -1209,6 +1215,7 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
+	
 	procedure write_arc (cursor : in pac_stencil_arcs.cursor) is 
 		use pac_stencil_arcs;
 	begin
@@ -1218,11 +1225,13 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
+	
 	procedure write_circle (cursor : in pac_stencil_circles.cursor) is 
 		use pac_stencil_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
+
 	
 	procedure write_polygon (cursor : in pac_stencil_polygons.cursor) is 
 		use pac_stencil_polygons;
@@ -1242,6 +1251,7 @@ package body et_pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
+	
 	procedure write_cutout (cursor : in pac_stencil_cutouts.cursor) is 
 		use pac_stencil_cutouts;
 	begin

@@ -101,9 +101,9 @@ package body et_kicad_packages is
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon 
+		return type_contour 
 	is
-		shape : type_polygon; -- to be returned
+		shape : type_contour; -- to be returned
 		c : type_circle;
 	begin
 		c.center := type_point (position);
@@ -122,12 +122,12 @@ package body et_kicad_packages is
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon 
+		return type_contour 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		shape : type_polygon; -- to be returned
+		shape : type_contour; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
@@ -203,12 +203,12 @@ package body et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
-		return type_polygon 
+		return type_contour 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		shape : type_polygon; -- to be returned
+		shape : type_contour; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := get_rotation (center);
@@ -304,13 +304,13 @@ package body et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
-		return pac_polygon_segments.list 
+		return pac_contour_segments.list 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		use pac_polygon_segments;
-		lines : pac_polygon_segments.list; -- to be returned
+		use pac_contour_segments;
+		lines : pac_contour_segments.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := get_rotation (center);
@@ -1898,7 +1898,7 @@ package body et_kicad_packages is
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : type_polygon;
+				shape : type_contour;
 
 				procedure insert_tht is begin 
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
@@ -1937,11 +1937,11 @@ package body et_kicad_packages is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_polygon_segments.list := to_pad_milling_contour (
-											center	=> terminal_position,
-											size_x	=> terminal_milling_size_x,
-											size_y	=> terminal_milling_size_y,
-											offset	=> to_distance_relative (terminal_pad_drill_offset));
+								lines : pac_contour_segments.list := to_pad_milling_contour (
+									center	=> terminal_position,
+									size_x	=> terminal_milling_size_x,
+									size_y	=> terminal_milling_size_y,
+									offset	=> to_distance_relative (terminal_pad_drill_offset));
 
 								millings : type_plated_millings;
 								

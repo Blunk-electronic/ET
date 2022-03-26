@@ -272,7 +272,7 @@ package body pac_draw is
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_polygon'class;
+		polygon	: in type_contour'class;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
 		-- CS fill style
@@ -289,7 +289,7 @@ package body pac_draw is
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
 
-		use pac_polygon_segments;
+		use pac_contour_segments;
 		
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
@@ -303,7 +303,7 @@ package body pac_draw is
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
 
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+		procedure query_segment (c : in pac_contour_segments.cursor) is begin
 			case element (c).shape is
 				
 				when LINE =>
@@ -377,7 +377,7 @@ package body pac_draw is
 
 			new_sub_path (context.cr); -- required to suppress an initial line
 
-			if polygon.contours.circular then
+			if polygon.contour.circular then
 
 				-- Draw the single circle that forms the polygon:
 
@@ -393,9 +393,9 @@ package body pac_draw is
 
 				cairo.arc (
 					context.cr,
-					xc		=> convert_x (get_x (polygon.contours.circle.center)),
-					yc		=> shift_y (get_y (polygon.contours.circle.center), height),
-					radius	=> type_view_coordinate (polygon.contours.circle.radius),
+					xc		=> convert_x (get_x (polygon.contour.circle.center)),
+					yc		=> shift_y (get_y (polygon.contour.circle.center), height),
+					radius	=> type_view_coordinate (polygon.contour.circle.radius),
 
 					-- it must be a full circle starting at 0 degree and ending at 360 degree:
 					angle1	=> 0.0,
@@ -406,7 +406,7 @@ package body pac_draw is
 				
 			else
 				-- move lines and arcs:
-				polygon.contours.segments.iterate (query_segment'access);
+				polygon.contour.segments.iterate (query_segment'access);
 			end if;
 
 			
@@ -455,7 +455,7 @@ package body pac_draw is
 	procedure draw_polygon_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon'class;
+		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
@@ -481,8 +481,8 @@ package body pac_draw is
 	procedure draw_polygon_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		outer_border	: in type_polygon'class;
-		inner_border	: in type_polygon'class;
+		outer_border	: in type_contour'class;
+		inner_border	: in type_contour'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance)
 	is 
 		drawn : boolean := false;

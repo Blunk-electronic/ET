@@ -3284,7 +3284,7 @@ is
 					use et_pcb_coordinates;
 					--use et_terminals;
 					use et_board_shapes_and_text;
-					use pac_polygons;
+					use pac_contours;
 					use et_packages;
 					
 					procedure append_silk_polygon_top is begin
@@ -3519,7 +3519,7 @@ is
 				is
 					use et_pcb_coordinates;
 					use et_board_shapes_and_text;
-					use pac_polygons;
+					use pac_contours;
 					
 					use et_stop_mask;
 					use et_stencil;
@@ -3642,7 +3642,7 @@ is
 			
 			procedure insert_cutout_via_restrict is
 				use et_board_shapes_and_text;
-				use pac_polygons;				
+				use pac_contours;				
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3672,7 +3672,7 @@ is
 			
 			procedure insert_cutout_route_restrict is
 				use et_board_shapes_and_text;
-				use pac_polygons;
+				use pac_contours;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3703,7 +3703,7 @@ is
 			procedure insert_cutout_conductor is
 			-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
-				use pac_polygons;
+				use pac_contours;
 				use et_packages;
 				use et_pcb;
 				use et_conductor_polygons.boards;
@@ -3937,7 +3937,7 @@ is
 			
 			procedure insert_polygon_route_restrict is
 				use et_board_shapes_and_text.pac_geometry_2;
-				use et_board_shapes_and_text.pac_polygons;
+				use et_board_shapes_and_text.pac_contours;
 				use et_route_restrict.boards;
 				use pac_route_restrict_polygons;
 				
@@ -4055,7 +4055,7 @@ is
 			
 			procedure insert_polygon_via_restrict is
 				use et_board_shapes_and_text.pac_geometry_2;
-				use et_board_shapes_and_text.pac_polygons;
+				use et_board_shapes_and_text.pac_contours;
 				use et_via_restrict.boards;
 				use pac_via_restrict_polygons;
 				use et_pcb_stack;
@@ -4086,7 +4086,7 @@ is
 			procedure insert_polygon_conductor is
 			-- This is about floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
-				use pac_polygons;
+				use pac_contours;
 				use et_conductor_polygons;
 				use et_conductor_polygons.boards;
 				
@@ -4309,16 +4309,16 @@ is
 			procedure insert_line_outline is
 				use et_board_shapes_and_text;
 				use pac_geometry_2;
-				use pac_polygons;
-				use pac_polygon_segments;
+				use pac_contours;
+				use pac_contour_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is begin
 					append (
-						container	=> module.board.contours.outline.contours.segments,
-						new_item	=> (pac_polygons.LINE, board_line));
+						container	=> module.board.contours.outline.contour.segments,
+						new_item	=> (pac_contours.LINE, board_line));
 				end do_it;
 									
 			begin -- insert_line_outline
@@ -4335,16 +4335,16 @@ is
 			procedure insert_arc_outline is
 				use et_board_shapes_and_text;
 				use pac_geometry_2;
-				use pac_polygons;
-				use pac_polygon_segments;
+				use pac_contours;
+				use pac_contour_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is begin
 					append (
-						container	=> module.board.contours.outline.contours.segments,
-						new_item	=> (pac_polygons.ARC, board_arc));
+						container	=> module.board.contours.outline.contour.segments,
+						new_item	=> (pac_contours.ARC, board_arc));
 				end do_it;
 									
 			begin -- insert_arc_outline
@@ -4364,7 +4364,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is begin
-					module.board.contours.outline.contours := (
+					module.board.contours.outline.contour := (
 						circular	=> true,
 						circle		=> board_circle);
 				end do_it;
@@ -4615,7 +4615,7 @@ is
 			
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_geometry_2;
-				use et_board_shapes_and_text.pac_polygons;
+				use et_board_shapes_and_text.pac_contours;
 				use et_conductor_polygons;
 				use et_conductor_polygons.boards;
 				
@@ -4735,7 +4735,7 @@ is
 			
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
-				use pac_polygons;
+				use pac_contours;
 				use et_conductor_polygons.boards;
 			begin
 				pac_conductor_cutouts.append (

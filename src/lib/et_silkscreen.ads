@@ -56,7 +56,7 @@ package et_silkscreen is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 
@@ -78,7 +78,7 @@ package et_silkscreen is
 	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
 
 	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
-	package pac_silk_cutouts is new doubly_linked_lists (type_polygon);	
+	package pac_silk_cutouts is new doubly_linked_lists (type_contour);	
 	
 
 	-- This is the base type for silk screen objects in general:

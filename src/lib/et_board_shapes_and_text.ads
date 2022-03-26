@@ -41,6 +41,7 @@ with et_text;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_geometry_2;
+with et_geometry_2.contours;
 with et_geometry_2.polygons;
 with et_geometry_2.polygons.clipping;
 with et_geometry_2.polygons.cropping;
@@ -60,9 +61,12 @@ package et_board_shapes_and_text is
 	use pac_geometry_2;
 		
 
+	package pac_contours is new pac_geometry_2.contours;
+	use pac_contours;
+
+	
 	package pac_polygons is new pac_geometry_2.polygons;
 	use pac_polygons;
-
 	
 	package pac_polygon_clipping is new pac_polygons.clipping;
 	package pac_polygon_cropping is new pac_polygons.cropping;
@@ -191,7 +195,7 @@ package et_board_shapes_and_text is
 
 	-- Polygons in non-conducor layers such as silkscreen, stencil, ...
 	type type_polygon_non_conductor (fill_style : type_fill_style) 
-		is new type_polygon with 
+		is new type_contour with 
 	record
 		easing : type_easing;
 		
@@ -210,25 +214,6 @@ package et_board_shapes_and_text is
 	keyword_min_width : constant string := "min_width";
 
 	
-	---- Polygons in conductor layers have a dedicated type for the hatching:
-	--type type_polygon_conductor (fill_style : type_fill_style) 
-	--is new type_polygon_base with record
-
-		---- the minimum width:
-		--width_min : type_track_width := type_track_width'first;
-
-		---- the space between the polygon and foreign conductor objects:
-		--isolation : type_track_clearance := type_track_clearance'first; 
-	
-		--easing : type_easing;
-		
-		--case fill_style is
-			--when SOLID		=> null;
-			--when HATCHED	=> hatching : type_conductor_hatching;
-		--end case;
-	--end record;
-	
-
 
 	
 	-- This circle type is used by silk screen, assembly doc, stop mask, stencil

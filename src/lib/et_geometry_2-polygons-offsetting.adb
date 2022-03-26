@@ -42,12 +42,9 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_2.polygons.offsetting is
 
-	use pac_polygon_segments;
-
-
 
 	procedure offset_polygon (
-		polygon		: in out type_polygon'class;
+		polygon		: in out type_polygon;
 		offset		: in type_distance) 
 	is
 		
@@ -88,26 +85,27 @@ package body et_geometry_2.polygons.offsetting is
 		line_vectors : pac_line_vectors.list;
 		
 		
-		procedure do_segment (c : in pac_polygon_segments.cursor) is
+		procedure do_segment (c : in pac_edges.cursor) is
 			lv_tmp : type_line_vector;			
 		begin
-			case element (c).shape is
+			--case element (c).shape is
 				
-				when LINE =>
-					lv_tmp := offset_line (element (c).segment_line);
+				--when LINE =>
+					lv_tmp := offset_line (element (c));
 					--put_line ("lv " & to_string (lv_tmp));
 					line_vectors.append (lv_tmp);
 
-				when ARC =>
-					null; 
-					-- CS: scale arc
-					-- CS: render arc to a list of lines instead ?
+				--when ARC =>
+					--null; 
+					---- CS: scale arc
+					---- CS: render arc to a list of lines instead ?
 
-			end case;
+			--end case;
 		end do_segment;
 
 
-		polygon_segments_new : type_contour_segments := (circular => false, others => <>);
+		--polygon_segments_new : type_contour_segments := (circular => false, others => <>);
+		polygon_segments_new : pac_edges.list;
 		
 		INIT, LS, LE : type_point;
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
@@ -138,15 +136,18 @@ package body et_geometry_2.polygons.offsetting is
 				LE := to_point (I.intersection.vector);
 
 				-- line complete. append to new segments:
-				polygon_segments_new.segments.append (
-					(shape => LINE, segment_line => (LS, LE)));
+				--polygon_segments_new.segments.append (
+					--(shape => LINE, segment_line => (LS, LE)));
 
+				polygon_segments_new.append ((LS, LE));
 
+				
 				if cp = line_vectors.last then
 
-					polygon_segments_new.segments.append (
-						(shape => LINE, segment_line => (LE, INIT)));
-
+					--polygon_segments_new.segments.append (
+						--(shape => LINE, segment_line => (LE, INIT)));
+					polygon_segments_new.append ((LE, INIT));
+					
 				end if;
 
 				
@@ -159,28 +160,18 @@ package body et_geometry_2.polygons.offsetting is
 		
 	begin -- offset_polygon
 
-		if polygon.contours.circular then
+		polygon.edges.iterate (do_segment'access);
 
-			polygon.contours.circle.radius := polygon.contours.circle.radius + offset;
+		-- Compute the intersections of the line_vectors.
+		-- The intersections become the start and end points
+		-- of the new line-segments:
+		line_vectors.iterate (query_line'access);
 
-			-- CS: render circle to a list of lines instead ?
-			
-		else
-			polygon.contours.segments.iterate (do_segment'access);
+		polygon.edges := polygon_segments_new;
 
-			-- Compute the intersections of the line_vectors.
-			-- The intersections become the start and end points
-			-- of the new line-segments:
-			line_vectors.iterate (query_line'access);
-
-			polygon.contours := polygon_segments_new;
-
-			if not is_closed (polygon).closed then
-				raise constraint_error with "Polygon NOT closed !";
-			end if;
-
-		end if;
-
+		--if not is_closed (polygon).closed then
+			--raise constraint_error with "Polygon NOT closed !";
+		--end if;
 
 	end offset_polygon;
 

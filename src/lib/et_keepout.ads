@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,7 +56,7 @@ package et_keepout is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 	
@@ -71,10 +71,10 @@ package et_keepout is
 	
 	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	type type_keepout_polygon is new type_polygon with null record;
+	type type_keepout_polygon is new type_contour with null record;
 	package pac_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
 	
-	package pac_keepout_cutouts is new doubly_linked_lists (type_polygon);	
+	package pac_keepout_cutouts is new doubly_linked_lists (type_contour);	
 	
 	type type_keepout is tagged record
 		lines 		: pac_keepout_lines.list;

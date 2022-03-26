@@ -81,7 +81,7 @@ package et_packages is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 
@@ -253,7 +253,7 @@ package et_packages is
 	-- has a closed circumfence.
 	-- So we use the simple polygon type and collect them
 	-- in a simple list:
-	package pac_pcb_cutouts is new doubly_linked_lists (type_polygon);
+	package pac_pcb_cutouts is new doubly_linked_lists (type_contour);
 
 	-- GUI relevant only: The line width of contours:
 	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
@@ -376,7 +376,7 @@ package et_packages is
 	-- of a terminal according to the position and flip status of a package:
 	procedure move_contours (
 		term_pos	: in out type_position; -- terminal position
-		outline		: in out type_polygon'class;	-- contours of terminal (smt or tht)
+		outline		: in out type_contour'class;	-- contours of terminal (smt or tht)
 		flipped		: in type_flipped;		-- package flip status
 		package_pos	: in type_package_position); -- package position
 		

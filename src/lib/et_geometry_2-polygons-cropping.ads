@@ -35,12 +35,6 @@
 --
 --  Description:
 --
--- 	This package bases on the Weiler-Atherton algorithm. Find basics here:
--- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
---  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
---  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
---  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
---
 --
 --   history of changes:
 --
@@ -72,8 +66,8 @@ package et_geometry_2.polygons.cropping is
 	
 	-- Crops polygon A by polygon B:
 	function crop (
-		polygon_A	: in type_polygon'class; -- the cropping polygon
-		polygon_B	: in type_polygon'class; -- the cropped polygon
+		polygon_A	: in type_polygon; -- the cropping polygon
+		polygon_B	: in type_polygon; -- the cropped polygon
 		debug		: in boolean := false)
 		return type_crop;
 

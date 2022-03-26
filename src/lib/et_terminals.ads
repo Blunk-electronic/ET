@@ -63,7 +63,7 @@ package et_terminals is
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 
@@ -103,8 +103,9 @@ package et_terminals is
 	
 -- PLATED MILLINGS OF TERMINALS
 	
-	-- Plated millings as used by terminals. These structures have closed circumfence.
-	type type_plated_millings is new type_polygon with null record;
+	-- Plated millings as used by terminals. 
+	-- These structures have a closed circumfence.
+	type type_plated_millings is new type_contour with null record;
 	-- CS other properties of plated millings
 	
 	procedure log_plated_millings (
@@ -141,11 +142,13 @@ package et_terminals is
 	--type type_pad_outline is new pac_geometry_2.type_polygon_base with null record;
 	
 	type type_pad_outline_tht is record
-		top		: type_polygon; -- The shape on the top side
-		bottom	: type_polygon; -- is not nessecarily the same as on the bottom side.
+		top		: type_contour; -- The shape on the top side
+		bottom	: type_contour; -- is not nessecarily the same as on the bottom side.
 	end record;
 
 
+
+	
 -- SOLDER STOP MASK
 	
 	type type_stop_mask_shape is (
@@ -157,8 +160,9 @@ package et_terminals is
 
 	function to_string (shape : in type_stop_mask_shape) return string;
 	function to_shape (shape : in string) return type_stop_mask_shape;
+
 	
-	type type_stop_mask_contours is new type_polygon with null record;
+	type type_stop_mask_contours is new type_contour with null record;
 	-- CS other properties of stop mask contours ?
 
 	-- Contours of stop mask are required only if the shape is user specific.
@@ -185,6 +189,8 @@ package et_terminals is
 	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
 	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
 
+
+	
 	
 -- SOLDER CREAM / STENCIL
 	type type_stencil_shape is (
@@ -192,22 +198,24 @@ package et_terminals is
 		SHRINK_PAD,		-- opening sligtly smaller than conductor pad. defined by shrink_factor
 		USER_SPECIFIC);	-- opening has a user defined outline
 
-	subtype type_stencil_shrink is type_polygon_scale range 0.2 .. 1.0;
+	--subtype type_stencil_shrink is type_polygon_scale range 0.2 .. 1.0;
 
-	stencil_shrink_default : constant type_stencil_shrink := 0.7; -- CS adjust to a useful value
+	--stencil_shrink_default : constant type_stencil_shrink := 0.7; -- CS adjust to a useful value
+	stencil_shrink_default : constant type_distance_positive := 0.7; -- CS adjust to a useful value
+	-- CS subtype for shrink value ?
 	
 	stencil_shape_default : constant type_stencil_shape := AS_PAD;
 
 	function to_string (shape : in type_stencil_shape) return string;
 	function to_shape (shape : in string) return type_stencil_shape;
 
-	type type_stencil_contours is new type_polygon with null record;
+	type type_stencil_contours is new type_contour with null record;
 	-- CS other properties stencil contours ?
 	
 	type type_stencil (shape : type_stencil_shape := stencil_shape_default) is record
 		case shape is
 			when USER_SPECIFIC 	=> contours : type_stencil_contours;
-			when SHRINK_PAD		=> shrink_factor : type_stencil_shrink := stencil_shrink_default;
+			when SHRINK_PAD		=> shrink_factor : type_distance_positive := stencil_shrink_default;
 			when others			=> null;
 		end case;
 	end record;
@@ -280,7 +288,7 @@ package et_terminals is
 				end case;
 				
 			when SMT =>
-				pad_shape_smt			: type_polygon;
+				pad_shape_smt			: type_contour;
 				face					: type_face;
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
 				stop_mask_shape_smt 	: type_stop_mask_smt;

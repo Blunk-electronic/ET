@@ -68,8 +68,8 @@ package et_geometry_2.polygons.clipping is
 	-- is being clipped. The resulting area will be the same but the order
 	-- of sub-polygons and their vertices will differ.
 	function clip (
-		polygon_A	: in type_polygon'class; -- the clipped polygon
-		polygon_B	: in type_polygon'class; -- the clipping polygon
+		polygon_A	: in type_polygon; -- the clipped polygon
+		polygon_B	: in type_polygon; -- the clipping polygon
 		debug		: in boolean := false)
 		return pac_clipped.list;
 

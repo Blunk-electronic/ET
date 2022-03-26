@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -55,7 +55,7 @@ package et_route_restrict is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 
 	
@@ -78,12 +78,12 @@ package et_route_restrict is
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	
-	type type_route_restrict_polygon is new type_polygon with null record;
+	type type_route_restrict_polygon is new type_contour with null record;
 
 	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
 	
-	type type_route_restrict_cutout is new type_polygon with null record;
+	type type_route_restrict_cutout is new type_contour with null record;
 		
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 

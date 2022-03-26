@@ -255,7 +255,7 @@ package et_conductor_polygons.boards is
 	
 	
 	type type_conductor_cutout 
-		is new type_polygon with
+		is new type_contour with
 	record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;

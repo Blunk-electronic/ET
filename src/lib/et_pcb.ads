@@ -92,7 +92,7 @@ package et_pcb is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	use pac_text_fab;
 	
 
@@ -204,7 +204,7 @@ package et_pcb is
 
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
-		outline	: type_polygon;
+		outline	: type_contour;
 		holes	: pac_pcb_cutouts.list;
 		--texts	: pac_text_fab.pac_texts_fab_with_content.list;
 		texts	: pac_contour_texts.list;
@@ -378,7 +378,7 @@ package et_pcb is
 
 	-- Logs the properties of the given contour segment:
 	procedure pcb_contour_segment_properties (
-		cursor			: in pac_polygon_segments.cursor;
+		cursor			: in pac_contour_segments.cursor;
 		log_threshold 	: in type_log_level);
 
 	

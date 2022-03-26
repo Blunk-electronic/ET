@@ -44,8 +44,10 @@ package et_geometry_2.polygons.offsetting is
 	-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
 	-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
 
+	-- CS subtype for offset
+	
 	procedure offset_polygon (
-		polygon		: in out type_polygon'class;
+		polygon		: in out type_polygon;
 		offset		: in type_distance);
 
 	

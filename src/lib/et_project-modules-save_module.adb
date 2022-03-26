@@ -517,7 +517,7 @@ is
 		is
 			use et_board_shapes_and_text;
 			use pac_geometry_2;
-			use pac_polygons;
+			use pac_contours;
 
 			use et_terminals;
 			use et_pcb;
@@ -633,7 +633,7 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (type_polygon (element (polygon_solid_cursor)));
+				write_polygon_segments (type_contour (element (polygon_solid_cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -668,7 +668,7 @@ is
 				end case;
 
 				contours_begin;
-				write_polygon_segments (type_polygon (element (polygon_hatched_cursor)));
+				write_polygon_segments (type_contour (element (polygon_hatched_cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -682,7 +682,7 @@ is
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
 				contours_begin;
-				write_polygon_segments (type_polygon (element (cutout_zone_cursor)));
+				write_polygon_segments (type_contour (element (cutout_zone_cursor)));
 				contours_end;
 				
 				cutout_zone_end;
@@ -1166,7 +1166,7 @@ is
 		--use et_packages;
 		--use et_terminals;
 		use et_board_shapes_and_text;
-		use pac_polygons;
+		use pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -1276,7 +1276,7 @@ is
 
 			write_fill_style (element (cursor).fill_style);
 
-			write_polygon_segments (type_polygon (element (cursor)));
+			write_polygon_segments (type_contour (element (cursor)));
 
 			fill_zone_end;
 		end;
@@ -1298,7 +1298,7 @@ is
 			write_fill_style (element (cursor).fill_style);
 			write_hatching (element (cursor).hatching);
 
-			write_polygon_segments (type_polygon (element (cursor)));
+			write_polygon_segments (type_contour (element (cursor)));
 
 			fill_zone_end;
 		end;
@@ -1309,7 +1309,7 @@ is
 		procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
-			write_polygon_segments (type_polygon (element (cursor)));
+			write_polygon_segments (type_contour (element (cursor)));
 			cutout_zone_end;
 		end;
 

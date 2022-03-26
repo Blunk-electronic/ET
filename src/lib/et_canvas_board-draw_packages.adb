@@ -414,7 +414,7 @@ is
 			use pac_silk_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -439,14 +439,14 @@ is
 
 			
 			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -786,7 +786,7 @@ is
 			use pac_doc_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -812,14 +812,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1129,7 +1129,7 @@ is
 			use pac_keepout_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1155,14 +1155,14 @@ is
 
 			
 			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1380,7 +1380,7 @@ is
 			use pac_stop_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1405,14 +1405,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1666,7 +1666,7 @@ is
 			use pac_stencil_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1690,14 +1690,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stencil_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stencil_cutouts.cursor) is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -2595,7 +2595,7 @@ is
 			use packages.pac_conductor_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_polygon;
+				cutout	: in out type_contour;
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2623,7 +2623,7 @@ is
 			procedure query_cutout_top (
 				c : in packages.pac_conductor_cutouts.cursor) 
 			is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
@@ -2633,7 +2633,7 @@ is
 			procedure query_cutout_bottom (
 				c : in packages.pac_conductor_cutouts.cursor) 
 			is
-				cutout : type_polygon := element (c);
+				cutout : type_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -2762,7 +2762,7 @@ is
 			use pac_terminals;
 
 			procedure draw_tht_pad_with_circular_cutout (
-				outer_border	: in type_polygon;
+				outer_border	: in type_contour;
 				drill_position	: in type_point;
 				drill_size		: in type_drill_size)
 			is 
@@ -2781,7 +2781,7 @@ is
 
 			
 			procedure draw_tht_pad_with_arbitrary_cutout (
-				outer_border	: in type_polygon;
+				outer_border	: in type_contour;
 				inner_border	: in type_plated_millings)
 			is begin
 				set_color_tht_pad (context.cr);
@@ -2878,13 +2878,13 @@ is
 				-- the signal layer is enabled.
 				procedure draw_pad_smt (
 					name			: in string;  -- H5, 5, 3
-					pad_outline_in	: in type_polygon; -- the outline of the solder pad (copper)
+					pad_outline_in	: in type_contour; -- the outline of the solder pad (copper)
 					stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
 					stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face) 
 				is
-					pad_outline : type_polygon := pad_outline_in;
+					pad_outline : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
 					stop_mask_contours	: type_stop_mask_contours;
@@ -2921,13 +2921,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours
-										stop_mask_contours := (type_polygon (pad_outline) with null record);
+										stop_mask_contours := (type_contour (pad_outline) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (type_polygon (pad_outline_in) with null record);
+										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
@@ -2957,13 +2957,13 @@ is
 									
 									when AS_PAD =>
 										-- copy solder pad contours
-										stencil_contours := (type_polygon (pad_outline) with null record);
+										stencil_contours := (type_contour (pad_outline) with null record);
 										
 									when SHRINK_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 
 										-- copy solder pad contours and shrink according to shrink_factor
-										stencil_contours := (type_polygon (pad_outline_in) with null record);
+										stencil_contours := (type_contour (pad_outline_in) with null record);
 										
 										scale_polygon (
 											polygon		=> stencil_contours,
@@ -2995,7 +2995,7 @@ is
 				-- th outer contour of the stop mask
 				-- in top/bottom signal layer (specified by caller).
 				procedure tht_outer_layer (
-					pad_outline_in	: in type_polygon; -- the outline of the solder pad
+					pad_outline_in	: in type_contour; -- the outline of the solder pad
 					stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face;
@@ -3003,7 +3003,7 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_outline_in	: in type_plated_millings := plated_millings_default)
 				is
-					pad_outline_outer_layer : type_polygon := pad_outline_in;
+					pad_outline_outer_layer : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
 					hole_outline : type_plated_millings := hole_outline_in;
@@ -3053,13 +3053,13 @@ is
 								case stop_mask_in.shape is
 									when AS_PAD =>
 										-- copy solder pad contours to stop mask:
-										stop_mask_contours := (type_polygon (pad_outline_outer_layer) with null record);
+										stop_mask_contours := (type_contour (pad_outline_outer_layer) with null record);
 										
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
 										-- copy solder pad contours and expand according to DRU
-										stop_mask_contours := (type_polygon (pad_outline_in) with null record);
+										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 
 										offset_polygon (
 											polygon		=> stop_mask_contours,
@@ -3108,14 +3108,14 @@ is
 					hole_outline : type_plated_millings := hole_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
-					pad_outline_inner_layers : type_polygon;
+					pad_outline_inner_layers : type_contour;
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 								
 						move_contours (pad_pos, hole_outline, flip, package_position);
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
-						pad_outline_inner_layers := type_polygon (hole_outline_in);
+						pad_outline_inner_layers := type_contour (hole_outline_in);
 						
 						offset_polygon (
 							polygon		=> pad_outline_inner_layers, 
