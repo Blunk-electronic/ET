@@ -51,8 +51,6 @@ package et_contour_to_polygon is
 	use pac_contours;
 	use pac_polygons;
 
-	p : type_polygon;
-	t : type_contour;		
 
 	
 	-- Converts a contour to a polygon:

@@ -689,7 +689,7 @@ is
 					use pac_polygons;
 					use pac_polygon_offsetting;
 					use pac_contour_to_polygon;
-					polygon_tmp : pac_polygons.type_polygon;
+					polygon_tmp : type_polygon;
 
 
 					procedure query_terminal (c : in pac_terminals.cursor) is

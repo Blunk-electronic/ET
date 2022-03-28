@@ -95,7 +95,9 @@ is
 		use et_board_shapes_and_text;
 		use pac_geometry_2;	
 		use pac_contours;
+		use pac_polygons;
 		use pac_polygon_offsetting;
+		use pac_contour_to_polygon;
 		use pac_text_fab;
 
 		use pac_packages_lib;
@@ -2886,8 +2888,7 @@ is
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face) 
 				is
-					use pac_contour_to_polygon;
-					polygon_tmp : pac_polygons.type_polygon;
+					polygon_tmp : type_polygon;
 					
 					pad_outline : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
@@ -3028,8 +3029,7 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_outline_in	: in type_plated_millings := plated_millings_default)
 				is
-					use pac_contour_to_polygon;
-					polygon_tmp : pac_polygons.type_polygon;
+					polygon_tmp : type_polygon;
 					
 					pad_outline_outer_layer : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
@@ -3139,8 +3139,7 @@ is
 					restring_width	: in type_track_width;
 					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
 				is
-					use pac_contour_to_polygon;
-					polygon_tmp : pac_polygons.type_polygon;
+					polygon_tmp : type_polygon;
 					
 					hole_outline : type_plated_millings := hole_outline_in;
 					pad_pos : type_position := pad_pos_in;
