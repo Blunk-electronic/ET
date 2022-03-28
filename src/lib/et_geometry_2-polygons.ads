@@ -45,12 +45,9 @@ with et_geometry_1;
 with et_string_processing;		use et_string_processing;
 
 
-
 generic
 	
 package et_geometry_2.polygons is
-	
-	
 
 
 	-- As system wide default for all kinds of polygons or contours:
@@ -193,7 +190,6 @@ package et_geometry_2.polygons is
 		return boolean;
 
 	
-
 	
 private
 					   

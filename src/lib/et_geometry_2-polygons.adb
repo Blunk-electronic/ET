@@ -606,9 +606,7 @@ package body et_geometry_2.polygons is
 		return not proceed;
 	end is_vertex;
 
-
-
-
+	
 	
 	
 -- private

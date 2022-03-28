@@ -94,7 +94,7 @@ is
 		
 		use et_board_shapes_and_text;
 		use pac_geometry_2;	
-		use pac_polygons;
+		use pac_contours;
 		use pac_polygon_offsetting;
 		use pac_text_fab;
 
@@ -2257,7 +2257,7 @@ is
 			--end query_circle;
 
 			use pac_pcb_cutouts;
-			use pac_polygon_segments;
+			use pac_contour_segments;
 
 			procedure draw_circle (c : in type_circle) is
 				circle : type_circle := c;
@@ -2273,7 +2273,8 @@ is
 
 			end draw_circle;
 
-			procedure draw_segment (c : in pac_polygon_segments.cursor) is
+			
+			procedure draw_segment (c : in pac_contour_segments.cursor) is
 				l : type_line;
 				a : type_arc;
 			begin
@@ -2305,14 +2306,15 @@ is
 				end case;
 			end draw_segment;
 			
-			procedure query_hole (c : in pac_pcb_cutouts.cursor) is
-			begin
-				if element (c).contours.circular then
-					draw_circle (element (c).contours.circle);
+			
+			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+				if element (c).contour.circular then
+					draw_circle (element (c).contour.circle);
 				else
-					iterate (element (c).contours.segments, draw_segment'access);							 
+					iterate (element (c).contour.segments, draw_segment'access);							 
 				end if;
 			end query_hole;
+
 			
 		begin -- draw_pcb_contour
 		
@@ -2928,6 +2930,10 @@ is
 										
 										-- copy solder pad contours and expand according to DRU
 										stop_mask_contours := (type_contour (pad_outline_in) with null record);
+
+										--polygon_tmp : pac_polygons.type_polygon;
+										--polygon_tmp := pac_contour_to_polygon.to_polygon (stop_mask_contours);
+
 										
 										offset_polygon (
 											polygon		=> stop_mask_contours,
