@@ -60,9 +60,10 @@ package body et_contour_to_polygon is
 		result : type_contour;
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			--l : type_line := element (c);
+			--l : pac_geometry.type_line := element (c);
 		begin
 			null;
+			--put_line (to_string (l));
 			--result.contour.segments.append (LINE, l);
 		end query_edge;
 		

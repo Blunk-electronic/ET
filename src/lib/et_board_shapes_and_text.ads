@@ -74,7 +74,8 @@ package et_board_shapes_and_text is
 	package pac_polygon_union is new pac_polygons.union;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
-	package pac_contour_to_polygon is new et_contour_to_polygon (pac_polygons, pac_contours);
+	package pac_contour_to_polygon is new et_contour_to_polygon (
+		pac_geometry_2, pac_polygons, pac_contours);
 	
 
 	type type_text_parameters is record
