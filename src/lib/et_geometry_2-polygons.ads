@@ -71,6 +71,15 @@ package et_geometry_2.polygons is
 	end record;
 
 
+	-- Converts a list of vertices to a polygon.
+	-- The first vertex becomes the end point of the first edge.
+	-- The last vertex becomes the start point of the first edge.
+	-- The vertices must be given in a form like:
+	-- "0.0 0.0   1.0 0.0   1.0 1.0   0.0 1.0" (This example describes a square);
+	function to_polygon (vertices : in string)
+		return type_polygon;
+
+	
 	
 	-- Returns the winding of a polygon. 
 	-- This function works with concave polygons and uses the approach discussed in
@@ -585,7 +594,7 @@ private
 		return type_polygon;
 
 
-
+	
 	-- Searches for intersections of the given two polygons
 	-- and stores them in container "intersection".
 	-- An intersection is where the edge of polygon A intersects

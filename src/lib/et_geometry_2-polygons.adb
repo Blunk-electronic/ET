@@ -62,6 +62,39 @@ package body et_geometry_2.polygons is
 	end iterate;
 	
 
+	function to_polygon (vertices : in string)
+		return type_polygon
+	is
+		v_fields : constant type_fields_of_line := 
+			read_line (line => vertices, comment_mark => "#");
+
+		function f (p : in count_type) return string is begin
+			return to_lower (get_field (v_fields, p));
+		end;
+		
+		-- The place in vertices which we fetch a field from:
+		place : count_type := 1;
+
+		v : type_vertex := (category => REGULAR, location => OUTSIDE, position => null_vector);
+		v_list : pac_vertices.list;
+
+	begin
+		-- Iterate all fields of given list of arguments:
+		while place <= field_count (v_fields) loop
+
+			v.position.x := type_float_internal'value (f (place));
+			v.position.y := type_float_internal'value (f (place + 1));
+
+			v_list.append (v);
+			
+			place := place + 2;
+		end loop;
+
+		return to_polygon (v_list);
+	end to_polygon;
+
+
+	
 	function get_winding (
 		polygon : in type_polygon)
 		return type_direction_of_rotation
@@ -2026,6 +2059,8 @@ package body et_geometry_2.polygons is
 	end to_polygon;
 
 
+
+	
 
 	function get_intersections (
 		polygon_A	: in type_polygon;

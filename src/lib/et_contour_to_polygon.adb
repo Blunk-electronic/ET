@@ -38,6 +38,7 @@
 	
 package body et_contour_to_polygon is
 
+
 	function to_polygon (
 		contour	: in type_contour'class;
 		debug	: in boolean := false)					
@@ -57,8 +58,17 @@ package body et_contour_to_polygon is
 		return type_contour
 	is
 		result : type_contour;
+
+		procedure query_edge (c : in pac_edges.cursor) is
+			--l : type_line := element (c);
+		begin
+			null;
+			--result.contour.segments.append (LINE, l);
+		end query_edge;
+		
 	begin
 
+		polygon.edges.iterate (query_edge'access);
 		return result;
 	end to_contour;
 

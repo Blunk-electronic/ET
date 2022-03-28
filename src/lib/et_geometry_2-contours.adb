@@ -75,6 +75,19 @@ package body et_geometry_2.contours is
 	end iterate;
 
 
+	function to_contour (
+		segments : in string)
+		return type_contour'class
+	is
+		s_fields : constant type_fields_of_line := 
+			read_line (line => segments, comment_mark => "#");
+
+	begin
+		return to_contour (s_fields);
+	end to_contour;
+
+
+	
 	function to_string (
 		contour	: in type_contour)
 		return string
