@@ -192,9 +192,9 @@ is
 		module		: in et_schematic.type_module) 
 	is
 		use pac_distances_sorting;
-		use pac_polygon_segments;
+		use pac_contour_segments;
 
-		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+		procedure query_segment (c : in pac_contour_segments.cursor) is begin
 			--log (text => "track start: " & to_string (track.center.v_start));
 			case element (c).shape is
 				when LINE => 
@@ -218,10 +218,10 @@ is
 				log_indentation_up;
 			end if;
 			
-			if module.board.contours.outline.contours.circular then
-				test_circle (module.board.contours.outline.contours.circle);
+			if module.board.contours.outline.contour.circular then
+				test_circle (module.board.contours.outline.contour.circle);
 			else
-				iterate (module.board.contours.outline.contours.segments, query_segment'access);
+				iterate (module.board.contours.outline.contour.segments, query_segment'access);
 			end if;
 
 			if log_category >= HIGH then
@@ -241,12 +241,12 @@ is
 					log_indentation_up;
 				end if;
 				
-				if element (c).contours.circular then
+				if element (c).contour.circular then
 					--log (text => "circular hole");
-					test_circle (element (c).contours.circle);
+					test_circle (element (c).contour.circle);
 				else		
 					--log (text => "n-shaped hole");
-					iterate (element (c).contours.segments, query_segment'access);
+					iterate (element (c).contour.segments, query_segment'access);
 				end if;
 
 				if log_category >= HIGH then
@@ -271,10 +271,10 @@ is
 				log_indentation_up;
 			end if;
 			
-			if fill_zone.outline.contours.circular then
-				test_circle (fill_zone.outline.contours.circle);
+			if fill_zone.outline.contour.circular then
+				test_circle (fill_zone.outline.contour.circle);
 			else
-				iterate (fill_zone.outline.contours.segments, query_segment'access);
+				iterate (fill_zone.outline.contour.segments, query_segment'access);
 			end if;
 
 			if log_category >= HIGH then
@@ -295,10 +295,10 @@ is
 						log_indentation_up;
 					end if;
 						
-					if element (c).contours.circular then
-						test_circle (element (c).contours.circle);
+					if element (c).contour.circular then
+						test_circle (element (c).contour.circle);
 					else		
-						iterate (element (c).contours.segments, query_segment'access);
+						iterate (element (c).contour.segments, query_segment'access);
 					end if;
 
 					if log_category >= HIGH then
@@ -306,7 +306,8 @@ is
 					end if;
 				end if;
 			end query_cutout;
-		
+
+			
 		begin -- query_global_cutouts
 			if log_category >= HIGH then
 				log (text => "probing global cutout areas ...", level => lth + 1);
@@ -685,14 +686,18 @@ is
 
 				procedure query_terminals is
 					use pac_terminals;
+					use pac_polygons;
 					use pac_polygon_offsetting;
+					use pac_contour_to_polygon;
+					polygon_tmp : pac_polygons.type_polygon;
+
 
 					procedure query_terminal (c : in pac_terminals.cursor) is
 						use et_schematic_ops;
 
 						procedure move_outline_smt is 
 							position : type_position := element (c).position;
-							oln : type_polygon;
+							oln : type_contour;
 						begin
 							oln := element (c).pad_shape_smt;
 							
@@ -701,19 +706,18 @@ is
 								outline		=> oln,
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
-							
-								
-							if oln.contours.circular then
-								test_circle (oln.contours.circle);
+															
+							if oln.contour.circular then
+								test_circle (oln.contour.circle);
 							else
-								iterate (oln.contours.segments, query_segment'access);
+								iterate (oln.contour.segments, query_segment'access);
 							end if;
 						end move_outline_smt;
 
 
 						procedure move_outline_tht is 
 							position : type_position := element (c).position;
-							oln : type_polygon;
+							oln : type_contour;
 
 							procedure inner_layer is begin
 								case element (c).tht_hole is
@@ -722,18 +726,20 @@ is
 											s : type_contour_segments := (circular => true, others => <>);
 										begin
 											s.circle.radius := element (c).drill_size * 0.5 + element (c).width_inner_layers;
-											oln.contours := s;
+											oln.contour := s;
 										end;
 
 									when MILLED =>
 										declare
-											om : type_polygon := type_polygon (element (c).millings);
+											--om : type_polygon := type_polygon (element (c).millings);
+											om : type_polygon := to_polygon (element (c).millings);
 										begin
 											offset_polygon (
 												polygon		=> om, 
 												offset		=> element (c).width_inner_layers);
 											
-											oln := om;
+											--oln := om;
+											oln := to_contour (om);
 										end;
 								end case;
 							end inner_layer;
@@ -766,14 +772,15 @@ is
 								flipped		=> package_flipped,
 								package_pos	=> package_position);
 															
-							if oln.contours.circular then
-								test_circle (oln.contours.circle);
+							if oln.contour.circular then
+								test_circle (oln.contour.circle);
 							else
-								iterate (oln.contours.segments, query_segment'access);
+								iterate (oln.contour.segments, query_segment'access);
 							end if;
 						end move_outline_tht;
 
 						status : type_get_terminal_clearance_result;
+
 						
 					begin -- query_terminal
 						if log_category >= HIGH then

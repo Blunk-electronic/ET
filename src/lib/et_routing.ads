@@ -71,7 +71,7 @@ package et_routing is
 	
 	use pac_geometry_brd;
 	use pac_geometry_2;
-	use pac_polygons;
+	use pac_contours;
 	
 
 	fab_tolerance : constant type_distance_positive := 0.001;

@@ -61,6 +61,12 @@ package et_contour_to_polygon is
 		debug	: in boolean := false)					
 		return type_polygon;
 
+
+	-- Converts a polygon to a contour:
+	function to_contour (
+		polygon	: in type_polygon;
+		debug	: in boolean := false)					
+		return type_contour;
 	
 	
 end et_contour_to_polygon;

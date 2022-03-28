@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      GEOMETRY 2 / CONTOURS                               --
+--                      CONTOUR TO POLYGON CONVERSION                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -49,6 +49,19 @@ package body et_contour_to_polygon is
 
 		return result;
 	end to_polygon;
+
+
+	function to_contour (
+		polygon	: in type_polygon;
+		debug	: in boolean := false)					
+		return type_contour
+	is
+		result : type_contour;
+	begin
+
+		return result;
+	end to_contour;
+
 	
 	
 end et_contour_to_polygon;

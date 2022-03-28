@@ -2886,6 +2886,9 @@ is
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face) 
 				is
+					use pac_contour_to_polygon;
+					polygon_tmp : pac_polygons.type_polygon;
+					
 					pad_outline : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
@@ -2916,6 +2919,7 @@ is
 								-- draw the terminal name
 								draw_name_smt (name, pad_pos);
 							end if;
+
 							
 							-- draw the stop mask
 							if stop_mask_enabled (f) then
@@ -2928,17 +2932,20 @@ is
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
-										-- copy solder pad contours and expand according to DRU
+										-- copy solder pad contour and expand according to DRU
 										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 
-										--polygon_tmp : pac_polygons.type_polygon;
-										--polygon_tmp := pac_contour_to_polygon.to_polygon (stop_mask_contours);
+										-- make a temporary polygon from the stop mask contour
+										polygon_tmp := to_polygon (stop_mask_contours);
 
-										
+										-- offset the temporary polygon
 										offset_polygon (
-											polygon		=> stop_mask_contours,
+											polygon		=> polygon_tmp,
 											offset		=> get_stop_mask_expansion); -- from DRU
 
+										-- convert the temporary polygon back to a contour
+										stop_mask_contours := (to_contour (polygon_tmp) with null record);
+										
 										-- compute final position of expanded stop mask opening
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 										
@@ -2947,7 +2954,6 @@ is
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
-
 								end case;
 
 								set_color_stop_mask (context.cr, f, self.scale);
@@ -2955,6 +2961,7 @@ is
 								pac_draw_fab.draw_polygon (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
+
 							
 							-- draw stencil (or solder paste mask)
 							if stencil_enabled (f) then
@@ -2968,13 +2975,24 @@ is
 									when SHRINK_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 
-										-- copy solder pad contours and shrink according to shrink_factor
+										-- copy solder pad contour and shrink according to shrink_factor
 										stencil_contours := (type_contour (pad_outline_in) with null record);
-										
-										scale_polygon (
-											polygon		=> stencil_contours,
-											scale		=> stencil_in.shrink_factor);
 
+										-- make a temporary polygon from the stencil contour
+										polygon_tmp := to_polygon (stencil_contours);
+										
+										--scale_polygon (
+											--polygon		=> stencil_contours,
+											--scale		=> stencil_in.shrink_factor);
+
+										-- offset the temporary polygon
+										offset_polygon (
+											polygon		=> polygon_tmp,
+											offset		=> stencil_in.shrink_factor);
+
+										-- convert the temporary polygon back to a contour
+										stencil_contours := (to_contour (polygon_tmp) with null record);
+										
 										-- compute final position of shrinked stencil opening
 										move_contours (pad_pos, stencil_contours, flip, package_position);
 										
@@ -2986,6 +3004,7 @@ is
 										
 								end case;
 
+								
 								set_color_stencil (context.cr, f, self.scale);
 								
 								pac_draw_fab.draw_polygon (in_area, context, stencil_contours, YES,
@@ -3009,6 +3028,9 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_outline_in	: in type_plated_millings := plated_millings_default)
 				is
+					use pac_contour_to_polygon;
+					polygon_tmp : pac_polygons.type_polygon;
+					
 					pad_outline_outer_layer : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
@@ -3064,18 +3086,24 @@ is
 									when EXPAND_PAD =>
 										pad_pos := pad_pos_in;  -- get initial pad position
 										
-										-- copy solder pad contours and expand according to DRU
+										-- copy solder pad contour and expand according to DRU
 										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 
+										-- make a temporary polygon from the stop mask contour
+										polygon_tmp := to_polygon (stop_mask_contours);
+									
+										-- offset the temporary polygon										
 										offset_polygon (
-											polygon		=> stop_mask_contours,
+											polygon		=> polygon_tmp,
 											offset		=> get_stop_mask_expansion);  -- from DRU
 
+										-- convert the temporary polygon back to a contour
+										stop_mask_contours := (to_contour (polygon_tmp) with null record);
+										
 										-- compute final position of expanded stop mask opening
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 										
-									when USER_SPECIFIC =>
-										
+									when USER_SPECIFIC =>										
 										-- compute position of user specific stop mask contours:
 										pad_pos := pad_pos_in;
 										stop_mask_contours := stop_mask_in.contours;
@@ -3111,6 +3139,9 @@ is
 					restring_width	: in type_track_width;
 					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
 				is
+					use pac_contour_to_polygon;
+					polygon_tmp : pac_polygons.type_polygon;
+					
 					hole_outline : type_plated_millings := hole_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
@@ -3122,13 +3153,22 @@ is
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
 						pad_outline_inner_layers := type_contour (hole_outline_in);
-						
+
+						-- make a temporary polygon from the inner outline
+						polygon_tmp := to_polygon (pad_outline_inner_layers);
+
+						-- offset the temporary polygon
 						offset_polygon (
-							polygon		=> pad_outline_inner_layers, 
+							polygon		=> polygon_tmp, 
 							offset		=> restring_width);
 
 						-- move the conductor frame to its final position:
 						pad_pos := pad_pos_in;  -- get initial pad position
+
+						-- convert the temporary polygon back to a contour
+						pad_outline_inner_layers := to_contour (polygon_tmp);
+
+						-- compute final position of the inner outline
 						move_contours (pad_pos, pad_outline_inner_layers, flip, package_position);
 						
 						draw_tht_pad_with_arbitrary_cutout (
