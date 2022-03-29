@@ -36,9 +36,21 @@
 --
 
 with ada.text_io;				use ada.text_io;
-	
+
 package body et_contour_to_polygon is
 
+
+	function to_edges (
+		arc		: in type_arc)
+		return pac_edges.list
+	is
+		result : pac_edges.list;
+	begin
+
+		return result;
+	end to_edges;
+
+	
 	
 	function to_polygon (
 		contour	: in type_contour'class;
@@ -46,9 +58,32 @@ package body et_contour_to_polygon is
 		return type_polygon
 	is
 		result : type_polygon;
+
+		procedure query_segment (c : in pac_contour_segments.cursor) is
+			s : type_contour_segment := element (c);
+			e_list : pac_edges.list;
+		begin
+			case s.shape is
+				when LINE =>
+					-- Append the segment line as it is to the 
+					-- edges of the resulting polygon:
+					result.edges.append (s.segment_line);
+
+				when ARC =>
+					-- Convert the arc to a list of small lines
+					-- and append this list to the edges of the 
+					-- resulting polygon:
+					e_list := to_edges (s.segment_arc);
+					
+					result.edges.splice (
+						before	=> pac_edges.no_element,					
+						source	=> e_list);
+			end case;			
+		end query_segment;
+		
 	begin
-
-
+		-- Iterate the contour segments:
+		contour.contour.segments.iterate (query_segment'access);
 		return result;
 	end to_polygon;
 
@@ -61,7 +96,7 @@ package body et_contour_to_polygon is
 		result : type_contour;
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			l : type_line := element (c);
+			l :  type_line := element (c);
 		begin
 			if debug then
 				put_line (to_string (l));

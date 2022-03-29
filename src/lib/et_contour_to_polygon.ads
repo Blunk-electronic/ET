@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
 
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_pcb_coordinates;		use et_pcb_coordinates;

@@ -35,14 +35,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
-
-with et_geometry;				use et_geometry;
-with et_geometry_1;
-with et_string_processing;		use et_string_processing;
 
 
 generic

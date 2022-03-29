@@ -35,14 +35,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
-
-with et_geometry;				use et_geometry;
-with et_geometry_1;
-with et_string_processing;		use et_string_processing;
 
 
 generic
@@ -100,7 +95,7 @@ package et_geometry_2.contours is
 	-- arguments in a form like:
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
 	-- or:
-	-- line 50 50 70 50 arc 60 50 70 50 50 50 ccw
+	-- arc 50 50 0 50 ccw (50/50 center, 0/50 start, counter-clock-wise)
 	-- and builds a contour.
 	-- 1. The end point of a segment must not be specified.
 	--    It is deduced from the start point of the successor segment.
@@ -204,7 +199,7 @@ package et_geometry_2.contours is
 	-- arguments in a form like:
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
 	-- or:
-	-- line 50 50 70 50 arc 60 50 70 50 50 50 ccw
+	-- arc 50 50 0 50 ccw (50/50 center, 0/50 start, counter-clock-wise)
 	-- and builds a contour.
 	-- 1. The end point of a segment must not be specified.
 	--    It is deduced from the start point of the successor segment.
