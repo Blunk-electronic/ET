@@ -99,7 +99,6 @@ package et_geometry_2.polygons is
 	-- Returns true if the given two polygons are congruent,
 	-- means if they are equal in outline and size.
 	-- The start points of the two polygons does not matter.
-	-- CS: Assumes the polygon consists of line-edges only !
 	function are_congruent (
 		polygon_A, polygon_B : in type_polygon)
 		return boolean;

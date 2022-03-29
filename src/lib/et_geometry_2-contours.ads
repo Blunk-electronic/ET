@@ -49,13 +49,10 @@ generic
 	
 package et_geometry_2.contours is
 	
-	-- IMPORTANT NOTE: 
-	-- In contrast to the common definition of a polygon, a polygon
-	-- in this world is described as a finite number of elements 
-	-- like lines, arcs or a single circle that form a polygonal circuit.
-	-- If a polygon consist of just a single circle then no other 
+	-- A contour is list of lines, arcs or a single circle that form a path.
+	-- If a contour consist of just a single circle then no other 
 	-- segments are allowed.
-	-- On the other hand, a polygon may consist of lines and arcs. In that
+	-- On the other hand, a contour may consist of lines and arcs. In that
 	-- case no circle is allowed:
 	type type_contour_segment_shape is (LINE, ARC);
 
@@ -73,7 +70,7 @@ package et_geometry_2.contours is
 		return string;
 
 	
-	-- IMPORTANT: The segments of the polygon are assumend to be
+	-- IMPORTANT: The segments of the contour are assumend to be
 	-- ordered as defined in constant winding_default !	
 	package pac_contour_segments is new indefinite_doubly_linked_lists (type_contour_segment);
 	use pac_contour_segments;
@@ -186,8 +183,8 @@ package et_geometry_2.contours is
 		return type_contour_segments;
 	
 
-	-- Returns 1 if the polygon contours consist of just a single circle.
-	-- Returns the number of segments if the contours consist of lines
+	-- Returns 1 if the contour consist of just a single circle.
+	-- Returns the number of segments if the contour consist of lines
 	-- and/or arcs:
 	function get_segments_total (
 		contour : in type_contour)
@@ -286,13 +283,13 @@ package et_geometry_2.contours is
 
 
 	-- In order to get the status of a point relative to
-	-- a polygon we need this stuff:
+	-- a contour we need this stuff:
 	-- The general approach is:
 	-- A ray that starts at point and travels in zero degees 
-	-- may intersect the polygon edges.
-	-- The result of such a query is the type_point_to_polygon_status
+	-- may intersect the contour edges.
+	-- The result of such a query is the type_point_to_contour_status
 	-- that contains a status flag (inside/outside) and a list
-	-- of x values where the ray intersects the polygon. For completeness
+	-- of x values where the ray intersects the contour. For completeness
 	-- the original point where the probe line has started is also provided.
 	-- This list provides the x values ordered according to their
 	-- distance to the start point of the ray. Lowest value first.
@@ -366,7 +363,7 @@ private
 		return type_float_internal;
 
 
-	-- The location of a point relative to a polygon:
+	-- The location of a point relative to a contour:
 	type type_location is (
 		ON_EDGE,
 		INSIDE,
@@ -376,7 +373,7 @@ private
 	function to_string (status : in type_location) return string;
 
 
-	-- The intersection of a probe line with the polygon side can
+	-- The intersection of a probe line with a segment of the contour can
 	-- be described as:
 	type type_probe_line_intersection_contour is record
 		x_position	: type_float_internal;
@@ -403,7 +400,7 @@ private
 		case location is
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
-				-- to the polygon:
+				-- to the contour:
 				distance : type_float_internal;
 				
 			when ON_EDGE =>

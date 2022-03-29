@@ -35,43 +35,37 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with et_string_processing;		use et_string_processing;
 
---with et_board_shapes_and_text;	--use et_board_shapes_and_text;
-with et_geometry_2;
---with et_pcb_coordinates;
-with et_geometry_2.contours;
-with et_geometry_2.polygons;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 
-generic
 
-	with package pac_geometry is new et_geometry_2 (<>);
-	--with package pac_geometry is new et_geometry_2 (et_pcb_coordinates.pac_geometry_brd);
-	with package pac_polygons is new et_geometry_2.polygons (<>);
-	with package pac_contours is new et_geometry_2.contours (<>);
-	
 package et_contour_to_polygon is
 
-	--use pac_contours.pac_geometry;
-
+	use pac_geometry_2;
+	
 	use pac_contours;
-	--use pac_contour_segments;
-
-	--use pac_geometry;
-	--l : pac_geometry.type_line;
+	use pac_contour_segments;
 	
 	use pac_polygons;
 	use pac_edges;
 	
-	-- Converts a contour to a polygon:
+	
+	-- Converts a contour to a polygon.
+	-- A contour consists of line and arc segments. Since polygons 
+	-- consist of edges (lines) only, special treatment is required 
+	-- in order to model a arcs.
+	-- Each arc segment is replaced by many short line segments.
 	function to_polygon (
 		contour	: in type_contour'class;
 		debug	: in boolean := false)					
 		return type_polygon;
 
 
-	-- Converts a polygon to a contour:
+	-- Converts a polygon to a contour.
+	-- Since a polygon consists of edges (lines) only,
+	-- the resulting contour will also contain only line segments:
 	function to_contour (
 		polygon	: in type_polygon;
 		debug	: in boolean := false)					

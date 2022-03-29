@@ -47,7 +47,6 @@ with et_geometry_2.polygons.clipping;
 with et_geometry_2.polygons.cropping;
 with et_geometry_2.polygons.union;
 with et_geometry_2.polygons.offsetting;
-with et_contour_to_polygon;
 
 with et_design_rules;			use et_design_rules;
 with et_logging;				use et_logging;
@@ -74,8 +73,6 @@ package et_board_shapes_and_text is
 	package pac_polygon_union is new pac_polygons.union;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
-	package pac_contour_to_polygon is new et_contour_to_polygon (
-		pac_geometry_2, pac_polygons, pac_contours);
 	
 
 	type type_text_parameters is record

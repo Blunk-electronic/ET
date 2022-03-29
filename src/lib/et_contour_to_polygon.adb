@@ -35,10 +35,11 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 	
 package body et_contour_to_polygon is
 
-
+	
 	function to_polygon (
 		contour	: in type_contour'class;
 		debug	: in boolean := false)					
@@ -60,15 +61,22 @@ package body et_contour_to_polygon is
 		result : type_contour;
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			--l : pac_geometry.type_line := element (c);
+			l : type_line := element (c);
 		begin
-			null;
-			--put_line (to_string (l));
-			--result.contour.segments.append (LINE, l);
+			if debug then
+				put_line (to_string (l));
+			end if;
+
+			-- Add the edge as a line segment to the contour:
+			result.contour.segments.append ((
+				shape			=> LINE,
+				segment_line	=> l));
+			
 		end query_edge;
+
 		
 	begin
-
+		-- Iterate all edges of the given polygon:
 		polygon.edges.iterate (query_edge'access);
 		return result;
 	end to_contour;

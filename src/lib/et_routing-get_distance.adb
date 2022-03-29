@@ -688,7 +688,6 @@ is
 					use pac_terminals;
 					use pac_polygons;
 					use pac_polygon_offsetting;
-					use pac_contour_to_polygon;
 					polygon_tmp : type_polygon;
 
 

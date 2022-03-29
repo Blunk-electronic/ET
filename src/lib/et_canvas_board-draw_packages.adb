@@ -66,6 +66,9 @@ with et_assy_doc;				use et_assy_doc;
 with et_keepout;				use et_keepout;
 with et_canvas_primitive_draw_ops;
 
+with et_contour_to_polygon;		use et_contour_to_polygon;
+
+
 separate (et_canvas_board)
 
 procedure draw_packages (
@@ -92,12 +95,10 @@ is
 		-- package_offset : constant type_distance_relative := to_distance_relative (package_position)
 		-- use package_offset instead of many calls of to_distance_relative (package_position)
 		
-		use et_board_shapes_and_text;
 		use pac_geometry_2;	
 		use pac_contours;
 		use pac_polygons;
 		use pac_polygon_offsetting;
-		use pac_contour_to_polygon;
 		use pac_text_fab;
 
 		use pac_packages_lib;

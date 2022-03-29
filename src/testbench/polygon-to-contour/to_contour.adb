@@ -45,12 +45,14 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_string_processing;		use et_string_processing;
 
+with et_contour_to_polygon;		use et_contour_to_polygon;
+
+
 procedure to_contour is
 
 	use pac_geometry_2;
 	use pac_polygons;
 	use pac_contours;
-	use pac_contour_to_polygon;
 
 
 	subtype type_index is natural range 0 .. 100;	
@@ -102,7 +104,15 @@ begin
 
 	do_test (
 		polygon_vertices => "0 0  100 0  100 100  0 100",
-		contour_expect => "line 0 0 line 100 0 line 100 100 line 0 100");
+		contour_expect => "line 0 100 line 0 0 line 100 0 line 100 100");
+
+
+	---------------------	
+
+	new_line;
+	put_line ("--------------");
+	put_line ("ERRORS total:" & natural'image (errors));
+
 	
 end to_contour;
 

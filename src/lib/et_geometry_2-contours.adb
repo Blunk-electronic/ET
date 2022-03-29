@@ -159,7 +159,7 @@ package body et_geometry_2.contours is
 			iterate (contour.contour.segments, query_segment'access, proceed'access);					 
 		end if;
 
-		-- CS exception message if polygon consists of just a circle.
+		-- CS exception message if contour consists of just a circle.
 		return result;
 	end get_segment;
 
@@ -220,7 +220,7 @@ package body et_geometry_2.contours is
 			raise constraint_error with "Search for neigboring edges incomplete !";
 		end if;
 
-		-- CS exception message if polygon consists of just a circle.
+		-- CS exception message if contour consists of just a circle.
 		return result;
 	end get_neigboring_segments;
 
@@ -724,13 +724,13 @@ package body et_geometry_2.contours is
 		end if;
 
 		
-		-- Start point and end point of polygon outline must match:
+		-- Start point and end point of contour outline must match:
 		if last_end_point /= start_point then
 			closed := false;
 			append (gaps, last_end_point);
 		end if;
 		
-		-- Return the polygon status:
+		-- Return the contour status:
 		if closed then
 			return (closed => true);
 		else
@@ -1026,12 +1026,12 @@ package body et_geometry_2.contours is
 			--when OUTSIDE =>
 				--result := to_unbounded_string ("Point" 
 					--& to_string (i.start) 
-					--& " is OUTSIDE of polygon. ");
+					--& " is OUTSIDE of contour. ");
 
 			--when INSIDE =>
 				--result := to_unbounded_string ("Point" 
 					--& to_string (i.start)
-					--& " is INSIDE polygon. ");
+					--& " is INSIDE contour. ");
 
 			--when ON_EDGE =>
 				result := to_unbounded_string ("Point" 
@@ -1069,21 +1069,21 @@ package body et_geometry_2.contours is
 		-- A probe line will be formed which starts at the given point
 		-- and runs to the right (direction zero degree).
 		-- The places, after the given start point, where the probe line 
-		-- intersects the polygon edges are returned in a list.
-		-- If a segment of the polygon crosses the imaginary probe line,
+		-- intersects the contour edges are returned in a list.
+		-- If a segment of the contour crosses the imaginary probe line,
 		-- then it is regarded as intersection.
 		-- NOTE: A line segment that runs exactly along the probe line
 		-- is NOT regarded as "crossing" the probe line.
 		
 		-- The approach to detect whether the given point lies inside or outside 
-		-- the polygon area is as follows:
+		-- the contour area is as follows:
 		-- 1. Build a probe line (starting at point) that runs at zero degrees
 		--    to the right. The probe line divides the area in two: an upper half and a
 		--    lower half. Special situations arise if objects start or end exactly at
 		--    the probe line.
 		-- 2. The number of intersections after the start point then tells us:
-		--    - odd -> point is inside the polygon area
-		--    - zero or even -> point is outside the polygon area
+		--    - odd -> point is inside the contour area
+		--    - zero or even -> point is outside the contour area
 
 		-- These are the components of the return value.
 		-- In the end of this function they will be assembled 
@@ -1154,7 +1154,7 @@ package body et_geometry_2.contours is
 		
 		-- This is the variable for the number of intersections detected.
 		-- From this number we will later deduce the position of the given point,
-		-- means whether it is inside or outside the polygon:
+		-- means whether it is inside or outside the contour:
 		it : count_type := 0;
 
 		use pac_probe_line_intersections_contour;
@@ -1186,7 +1186,7 @@ package body et_geometry_2.contours is
 		
 		procedure query_line (l : in type_line) is 
 			-- Find out whether there is an intersection of the probe line
-			-- and the candidate edge of the polygon.
+			-- and the candidate edge of the contour.
 			i : constant type_intersection_of_two_lines := 
 				get_intersection (probe_line, l);
 			
@@ -1220,7 +1220,7 @@ package body et_geometry_2.contours is
 			radius : constant type_distance_positive := get_radius_start (a_norm);
 			
 			-- Find out whether there is an intersection of the probe line
-			-- and the candidate arc of the polygon.
+			-- and the candidate arc of the contour.
 			i : constant type_intersection_of_line_and_circle := 
 				get_intersection (probe_line, a_norm);
 
@@ -1302,7 +1302,7 @@ package body et_geometry_2.contours is
 		
 		procedure query_circle (c : in type_circle) is
 			-- Find out whether there is an intersection of the probe line
-			-- and the candidate circle of the polygon.
+			-- and the candidate circle of the contour.
 			i : constant type_intersection_of_line_and_circle := 
 				get_intersection (probe_line, c);
 
@@ -1405,8 +1405,8 @@ package body et_geometry_2.contours is
 		--put_line ("intersections total:" & count_type'image (it));
 		
 		-- If the total number of intersections is an odd number, then the given point
-		-- is inside the polygon.
-		-- If the total is even, then the point is outside the polygon.
+		-- is inside the contour.
+		-- If the total is even, then the point is outside the contour.
 		if (it rem 2) = 1 then
 			result_status := INSIDE;
 			--put_line ("inside");
@@ -1433,7 +1433,7 @@ package body et_geometry_2.contours is
 			else
 				-- Point is somewhere else.
 				
-				-- Compute the distance of the given point to the polygon.
+				-- Compute the distance of the given point to the contour.
 				-- If the distance is zero then the given point lies on
 				-- a vertex or on an edge:
 				result_distance := get_shortest_distance (contour, point_v); 
