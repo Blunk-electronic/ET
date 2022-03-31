@@ -2970,6 +2970,18 @@ package body et_geometry_2 is
 		move_by (point => arc.end_point,   offset => offset);
 	end move_to;
 
+
+	function move_to (
+		arc			: in type_arc;
+		position	: in type_point)
+		return type_arc'class
+	is
+		a : type_arc := arc;
+	begin
+		a.move_to (position);
+		return a;
+	end move_to;
+	
 	
 	procedure mirror (
 		arc			: in out type_arc;

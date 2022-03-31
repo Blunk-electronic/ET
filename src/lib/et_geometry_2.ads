@@ -897,11 +897,18 @@ package et_geometry_2 is
 		arc		: in out type_arc;
 		offset	: in type_distance_relative);
 
+	
 	-- Moves an arc to the given position. 
 	procedure move_to (
 		arc			: in out type_arc;
 		position	: in type_point);
 
+	function move_to (
+		arc			: in type_arc;
+		position	: in type_point)
+		return type_arc'class;
+
+	
 	-- Mirrors an arc along the given axis.
 	procedure mirror (
 		arc			: in out type_arc;

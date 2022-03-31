@@ -49,25 +49,40 @@ package body et_contour_to_polygon is
 		
 		result : pac_edges.list;
 
-		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+		arc_offset : constant type_distance_relative := to_distance_relative (arc.center);
+		arc_origin : constant type_arc := type_arc (move_to (arc, origin));
+		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
 
 		span : type_float_internal;
 		betha : type_float_internal;
 		f_tol : constant type_float_internal := type_float_internal (fab_tolerance);
+		--f_tol : constant type_float_internal := 1.0;
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
 		
 		edge_ct_float : type_float_internal;
 		edge_ct_final : positive; -- CS subtype ?
 		
-		angle : type_float_internal;
+		angle : type_rotation;
+
+		edge_origin : type_line;
+		edge : type_line;
+
+
+		procedure show_edge_origin is begin
+			new_line;
+			put_line ("edge start: " & to_string (edge_origin.start_point));
+			put_line ("edge end  : " & to_string (edge_origin.end_point));
+		end show_edge_origin;
+
+		
 	begin
-		span := type_float_internal (get_span (arc));
+		span := type_float_internal (get_span (arc_origin));
 		betha := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);
 
 		edge_ct_float := span / betha;
 		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
 
-		angle := span / type_float_internal (edge_ct_final);
+		angle := to_rotation (span / type_float_internal (edge_ct_final));
 		
 		if debug then
 			--put_line ("arc    : " & to_string (arc));
@@ -78,7 +93,52 @@ package body et_contour_to_polygon is
 			put_line ("edge ct final: " & positive'image (edge_ct_final));
 			put_line ("alpha  : " & to_string (angle));
 		end if;
+
 		
+		edge_origin.start_point := arc_origin.start_point;
+
+		edge_origin.end_point := arc_origin.start_point;
+		case arc.direction is
+			when CW =>
+				edge_origin.end_point.rotate_by (- angle); 
+
+			when CCW =>
+				edge_origin.end_point.rotate_by (+ angle); 
+		end case;
+
+		if debug then
+			show_edge_origin;
+		end if;
+
+		edge := edge_origin;
+		edge.move_by (arc_offset);
+		--edge.round;
+		result.append (edge);
+
+		
+		
+		for i in 2 .. edge_ct_final loop
+			
+			case arc.direction is
+				when CW =>
+					edge_origin.start_point.rotate_by (- angle);
+					edge_origin.end_point.rotate_by (- angle);
+
+				when CCW =>
+					edge_origin.start_point.rotate_by (+ angle);
+					edge_origin.end_point.rotate_by (+ angle);
+			end case;
+
+			
+			if debug then
+				show_edge_origin;
+			end if;
+
+			edge := edge_origin;
+			edge.move_by (arc_offset);
+			--edge.round;
+			result.append (edge);
+		end loop;
 
 		
 		return result;
