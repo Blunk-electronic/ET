@@ -74,7 +74,7 @@ package et_routing is
 	use pac_contours;
 	
 
-	fab_tolerance : constant type_distance_positive := 0.001;
+	
 	
 
 	-- When inquiring the clearance of a terminal then

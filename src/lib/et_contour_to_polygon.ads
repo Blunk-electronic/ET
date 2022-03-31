@@ -42,6 +42,10 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 
 package et_contour_to_polygon is
 
+
+	use pac_geometry_brd;
+	use pac_functions_distance;
+	
 	use pac_geometry_2;
 	
 	use pac_contours;
@@ -49,6 +53,12 @@ package et_contour_to_polygon is
 	
 	use pac_polygons;
 	use pac_edges;
+
+
+	function to_edges (
+		arc		: in type_arc;
+		debug	: in boolean := false)				  
+		return pac_edges.list;
 	
 	
 	-- Converts a contour to a polygon.

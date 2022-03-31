@@ -2417,6 +2417,19 @@ package body et_geometry_2 is
 		end if;
 	end is_valid;
 
+
+	function to_string (
+		arc : in type_arc_angles)
+		return string
+	is begin
+		return "C:" & to_string (arc.center)
+			& " R:" & to_string (arc.radius)
+			& " S:" & to_string (arc.angle_start)
+			& " E:" & to_string (arc.angle_end)
+			& " D: " & to_string (arc.direction);
+	end to_string;
+
+	
 	
 	function to_arc_angles (arc : in type_arc) return type_arc_angles is
 	-- The angles may be negative. For example instead of 270 degree
@@ -2492,6 +2505,27 @@ package body et_geometry_2 is
 		
 		return result;
 	end to_arc;
+	
+
+	function get_span (
+		arc	: type_arc)
+		return type_rotation
+	is
+		result : type_rotation;
+		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+	begin
+		case arc.direction is
+			when CCW =>
+				result := abs (arc_angles.angle_end - arc_angles.angle_start);
+				
+			when CW =>
+				-- CS use function normalize_arc ?
+				result := abs (arc_angles.angle_start - arc_angles.angle_end);
+		end case;
+
+		return result;
+	end get_span;
+
 	
 	
 	function get_boundaries (

@@ -784,11 +784,24 @@ package et_geometry_2 is
 		direction	: type_direction_of_rotation := CW;
 	end record;
 
+
+	function to_string (
+		arc : in type_arc_angles)
+		return string;
+	
+		
 	-- Returns the start and end angles of an arc.
 	function to_arc_angles (arc : in type_arc) return type_arc_angles;
 
 	-- Returns the start and end points of an arc.
 	function to_arc (arc : in type_arc_angles) return type_arc'class;
+
+
+	-- Returns the total span in degree between start and end
+	-- of an arc:
+	function get_span (
+		arc	: type_arc)
+		return type_rotation;
 
 	
 	-- Returns the boundaries of the given arc.
@@ -884,13 +897,13 @@ package et_geometry_2 is
 		arc		: in out type_arc;
 		offset	: in type_distance_relative);
 
-	procedure move_to (
 	-- Moves an arc to the given position. 
+	procedure move_to (
 		arc			: in out type_arc;
 		position	: in type_point);
 
-	procedure mirror (
 	-- Mirrors an arc along the given axis.
+	procedure mirror (
 		arc			: in out type_arc;
 		axis		: in type_axis_2d);
 

@@ -41,12 +41,46 @@ package body et_contour_to_polygon is
 
 
 	function to_edges (
-		arc		: in type_arc)
+		arc		: in type_arc;
+		debug	: in boolean := false)				  
 		return pac_edges.list
 	is
+		use pac_functions_distance;
+		
 		result : pac_edges.list;
-	begin
 
+		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+
+		span : type_float_internal;
+		betha : type_float_internal;
+		f_tol : constant type_float_internal := type_float_internal (fab_tolerance);
+		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
+		
+		edge_ct_float : type_float_internal;
+		edge_ct_final : positive; -- CS subtype ?
+		
+		angle : type_float_internal;
+	begin
+		span := type_float_internal (get_span (arc));
+		betha := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);
+
+		edge_ct_float := span / betha;
+		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
+
+		angle := span / type_float_internal (edge_ct_final);
+		
+		if debug then
+			--put_line ("arc    : " & to_string (arc));
+			put_line ("arc    : " & to_string (arc_angles));
+			put_line ("span   : " & to_string (span));
+			put_line ("betha  : " & to_string (betha));
+			--put_line ("edge ct float: " & to_string (edge_ct_float));
+			put_line ("edge ct final: " & positive'image (edge_ct_final));
+			put_line ("alpha  : " & to_string (angle));
+		end if;
+		
+
+		
 		return result;
 	end to_edges;
 
@@ -73,7 +107,7 @@ package body et_contour_to_polygon is
 					-- Convert the arc to a list of small lines
 					-- and append this list to the edges of the 
 					-- resulting polygon:
-					e_list := to_edges (s.segment_arc);
+					e_list := to_edges (s.segment_arc, debug);
 					
 					result.edges.splice (
 						before	=> pac_edges.no_element,					
