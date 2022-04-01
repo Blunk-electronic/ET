@@ -278,7 +278,7 @@ package body et_geometry_2 is
 		return result;
 	end get_distance;
 
-
+	
 	function get_distance (
 		point	: in type_point;
 		vector	: in type_vector)
@@ -288,6 +288,92 @@ package body et_geometry_2 is
 	begin
 		return get_distance (v, vector);
 	end get_distance;
+	
+
+	procedure rotate_by (
+		vector		: in out type_vector;
+		rotation	: in type_float_internal;
+		debug		: in boolean := false)
+	is
+		angle_out			: type_float_internal; -- degrees
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- Do nothing if the given rotation is zero.
+		if rotation /= 0.0 then
+
+			-- compute distance of given vector to origin
+			if vector.x = 0.0 and vector.y = 0.0 then
+				distance_to_origin := 0.0;
+				
+			elsif vector.x = 0.0 then
+				distance_to_origin := abs (vector.y);
+				
+			elsif vector.y = 0.0 then
+				distance_to_origin := abs (vector.x);
+				
+			else
+				--put_line ("A");
+
+				distance_to_origin := sqrt (
+					(abs (vector.x)) ** 2.0
+					+
+					(abs (vector.y)) ** 2.0
+					);
+
+				--put_line ("B");
+			end if;
+			
+			-- compute the current angle of the given vector (in degrees)
+
+			if vector.x = 0.0 then
+				if vector.y > 0.0 then
+					angle_out := 90.0;
+					
+				elsif vector.y < 0.0 then
+					angle_out := -90.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			elsif vector.y = 0.0 then
+				if vector.x > 0.0 then
+					angle_out := 0.0;
+					
+				elsif vector.x < 0.0 then
+					angle_out := 180.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				--put_line ("C");
+				
+				-- neither x nor y of vector is 0.0
+				angle_out := arctan (
+					x		=> vector.x,
+					y		=> vector.y,
+					cycle	=> units_per_cycle);
+
+				--put_line ("D");
+			end if;
+
+			-- Compute new angle by adding current angle and given angle.
+			angle_out := angle_out + rotation;
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (angle_out, units_per_cycle);
+			vector.x := scratch * distance_to_origin;
+			
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (angle_out, units_per_cycle);
+			vector.y := scratch * distance_to_origin;
+			
+		end if; -- if angle not zero			
+	end rotate_by;
+
 	
 	
 	function move_by (

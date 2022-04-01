@@ -163,6 +163,14 @@ package et_geometry_2 is
 		return type_distance_polar;
 
 	
+	-- Rotates the given location vector BY the given angle about the origin.
+	-- Changes vector.x and vector.y only.
+	procedure rotate_by (
+		vector		: in out type_vector;
+		rotation	: in type_float_internal;
+		debug		: in boolean := false);
+	
+	
 	-- Moves the given vector by given offset.
 	-- Leaves z unchanged.
 	function move_by (

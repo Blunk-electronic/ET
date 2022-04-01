@@ -55,25 +55,50 @@ package body et_contour_to_polygon is
 
 		span : type_float_internal;
 		betha : type_float_internal;
-		f_tol : constant type_float_internal := type_float_internal (fab_tolerance);
+		f_tol : constant type_float_internal := type_float_internal (fab_tolerance * 0.01);
 		--f_tol : constant type_float_internal := 1.0;
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
 		
 		edge_ct_float : type_float_internal;
 		edge_ct_final : positive; -- CS subtype ?
 		
-		angle : type_rotation;
+		angle_increment : type_float_internal;
 
-		edge_origin : type_line;
-		edge : type_line;
+		p_start, p_walk, p_walk_previous : type_vector;
+
+		
+		function rotate (
+			p : in type_vector;
+			m : in positive)
+			return type_vector
+		is 
+			result : type_vector := p;
+		begin
+			case arc.direction is
+				when CW =>
+					rotate_by (result, - angle_increment * type_float_internal (m)); 
+
+				when CCW =>
+					rotate_by (result, + angle_increment * type_float_internal (m)); 
+			end case;
+
+			return result;
+		end rotate;
 
 
-		procedure show_edge_origin is begin
-			new_line;
-			put_line ("edge start: " & to_string (edge_origin.start_point));
-			put_line ("edge end  : " & to_string (edge_origin.end_point));
-		end show_edge_origin;
+		procedure make_edge is
+			edge : type_line;
+		begin
+			edge.start_point := to_point (move_by (p_walk_previous, arc_offset));
+			edge.end_point   := to_point (move_by (p_walk,          arc_offset));
 
+			result.append (edge);
+
+			if debug then
+				put_line ("edge: " & to_string (edge));
+			end if;
+		end make_edge;
+		
 		
 	begin
 		span := type_float_internal (get_span (arc_origin));
@@ -82,7 +107,7 @@ package body et_contour_to_polygon is
 		edge_ct_float := span / betha;
 		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
 
-		angle := to_rotation (span / type_float_internal (edge_ct_final));
+		angle_increment := span / type_float_internal (edge_ct_final);
 		
 		if debug then
 			--put_line ("arc    : " & to_string (arc));
@@ -91,55 +116,20 @@ package body et_contour_to_polygon is
 			put_line ("betha  : " & to_string (betha));
 			--put_line ("edge ct float: " & to_string (edge_ct_float));
 			put_line ("edge ct final: " & positive'image (edge_ct_final));
-			put_line ("alpha  : " & to_string (angle));
+			put_line ("angle inc.   : " & to_string (angle_increment));
 		end if;
 
+
+		p_start := to_vector (arc_origin.start_point);
+		p_walk_previous := p_start;
 		
-		edge_origin.start_point := arc_origin.start_point;
+		for e in 1 .. edge_ct_final loop
+			p_walk := rotate (p_start, e);
 
-		edge_origin.end_point := arc_origin.start_point;
-		case arc.direction is
-			when CW =>
-				edge_origin.end_point.rotate_by (- angle); 
+			make_edge;
 
-			when CCW =>
-				edge_origin.end_point.rotate_by (+ angle); 
-		end case;
-
-		if debug then
-			show_edge_origin;
-		end if;
-
-		edge := edge_origin;
-		edge.move_by (arc_offset);
-		--edge.round;
-		result.append (edge);
-
-		
-		
-		for i in 2 .. edge_ct_final loop
-			
-			case arc.direction is
-				when CW =>
-					edge_origin.start_point.rotate_by (- angle);
-					edge_origin.end_point.rotate_by (- angle);
-
-				when CCW =>
-					edge_origin.start_point.rotate_by (+ angle);
-					edge_origin.end_point.rotate_by (+ angle);
-			end case;
-
-			
-			if debug then
-				show_edge_origin;
-			end if;
-
-			edge := edge_origin;
-			edge.move_by (arc_offset);
-			--edge.round;
-			result.append (edge);
+			p_walk_previous := p_walk;
 		end loop;
-
 		
 		return result;
 	end to_edges;
