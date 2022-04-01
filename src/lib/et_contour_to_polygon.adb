@@ -41,32 +41,57 @@ package body et_contour_to_polygon is
 
 
 	function to_edges (
-		arc		: in type_arc;
-		debug	: in boolean := false)				  
+		arc			: in type_arc;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
 		use pac_functions_distance;
-		
+
+		-- This is the list of edges to be returned:
 		result : pac_edges.list;
 
+		-- Convert the given tolerance to a float type:
+		f_tol : constant type_float_internal := type_float_internal (tolerance);
+
+		-- The given arc is usually offset from the origin.
+		-- This offset is later required to create the actual edges 
+		-- where the given arc is:
 		arc_offset : constant type_distance_relative := to_distance_relative (arc.center);
+
+		-- Make a copy of the given arc with its center on the origin (0/0):
 		arc_origin : constant type_arc := type_arc (move_to (arc, origin));
+
+		-- Get the start and end angles of the arc:
 		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
 
-		span : type_float_internal;
-		betha : type_float_internal;
-		f_tol : constant type_float_internal := type_float_internal (fab_tolerance * 0.01);
-		--f_tol : constant type_float_internal := 1.0;
+		-- Get the radius of the given angle:
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
 		
-		edge_ct_float : type_float_internal;
-		edge_ct_final : positive; -- CS subtype ?
-		
-		angle_increment : type_float_internal;
+		-- This is the total angle between start and end point of the given arc:
+		span : type_float_internal;
 
+
+		
+		-- In order to compute the nunber of edges and the angle between
+		-- their start and end points these variable are required:
+		
+		edge_ct_float : type_float_internal; -- number of segments
+		edge_ct_final : positive; -- real number of segments
+		-- CS subtype ?
+
+		-- The minimal and final angle between start and end 
+		-- point of a single edge:
+		angle_min : type_float_internal;
+		angle_final : type_float_internal;
+
+
+		-- The edges will be build on these location vectors:
 		p_start, p_walk, p_walk_previous : type_vector;
 
-		
+
+		-- Rotates the given location vector by angle_final * m.
+		-- m is a multipier according to the current edge being built:
 		function rotate (
 			p : in type_vector;
 			m : in positive)
@@ -76,19 +101,24 @@ package body et_contour_to_polygon is
 		begin
 			case arc.direction is
 				when CW =>
-					rotate_by (result, - angle_increment * type_float_internal (m)); 
+					rotate_by (result, - angle_final * type_float_internal (m)); 
 
 				when CCW =>
-					rotate_by (result, + angle_increment * type_float_internal (m)); 
+					rotate_by (result, + angle_final * type_float_internal (m)); 
 			end case;
 
 			return result;
 		end rotate;
 
 
+		-- Builds a final edge from the current location vectors 
+		-- p_walk and p_walk_previous and appends it to the result:
 		procedure make_edge is
 			edge : type_line;
 		begin
+			-- CS: Improvement required: It would be sufficient to call move_by
+			-- only once. The start point of an edge is the same as the end point
+			-- of the previous edge.
 			edge.start_point := to_point (move_by (p_walk_previous, arc_offset));
 			edge.end_point   := to_point (move_by (p_walk,          arc_offset));
 
@@ -101,29 +131,44 @@ package body et_contour_to_polygon is
 		
 		
 	begin
+		-- Get the span of the arc:
 		span := type_float_internal (get_span (arc_origin));
-		betha := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);
 
-		edge_ct_float := span / betha;
+		-- Compute the minimal angle required between the segments:
+		angle_min := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);
+
+		-- Compute the number of edges required. The result is not an integer.
+		-- So we must round up to the nearest integer:
+		edge_ct_float := span / angle_min;
 		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
 
-		angle_increment := span / type_float_internal (edge_ct_final);
+		-- Compute the number of edges:
+		angle_final := span / type_float_internal (edge_ct_final);
+
 		
 		if debug then
 			--put_line ("arc    : " & to_string (arc));
-			put_line ("arc    : " & to_string (arc_angles));
-			put_line ("span   : " & to_string (span));
-			put_line ("betha  : " & to_string (betha));
+			put_line ("arc          : " & to_string (arc_angles));
+			put_line ("span         : " & to_string (span));
+			put_line ("angle_min    : " & to_string (angle_min));
+			put_line ("fab tol      : " & to_string (tolerance));
 			--put_line ("edge ct float: " & to_string (edge_ct_float));
 			put_line ("edge ct final: " & positive'image (edge_ct_final));
-			put_line ("angle inc.   : " & to_string (angle_increment));
+			put_line ("angle final  : " & to_string (angle_final));
 		end if;
 
 
+		-- The start point of the first edge.
+		-- Further start and end points will be computed by
+		-- rotating this point about the origin:
 		p_start := to_vector (arc_origin.start_point);
-		p_walk_previous := p_start;
 		
+		p_walk_previous := p_start;
+
+		-- We rotate p_start as many times as edges are required:
 		for e in 1 .. edge_ct_final loop
+
+			-- For each pass the multipier increases:
 			p_walk := rotate (p_start, e);
 
 			make_edge;
@@ -137,8 +182,9 @@ package body et_contour_to_polygon is
 	
 	
 	function to_polygon (
-		contour	: in type_contour'class;
-		debug	: in boolean := false)					
+		contour		: in type_contour'class;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)					
 		return type_polygon
 	is
 		result : type_polygon;
@@ -157,7 +203,7 @@ package body et_contour_to_polygon is
 					-- Convert the arc to a list of small lines
 					-- and append this list to the edges of the 
 					-- resulting polygon:
-					e_list := to_edges (s.segment_arc, debug);
+					e_list := to_edges (s.segment_arc, tolerance, debug);
 					
 					result.edges.splice (
 						before	=> pac_edges.no_element,					

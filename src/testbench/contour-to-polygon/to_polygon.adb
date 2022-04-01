@@ -76,6 +76,7 @@ procedure to_polygon is
 
 	procedure do_test (
 		contour_segments	: in string;
+		tolerance			: in type_distance_positive;				  
 		polygon_expect		: in string)
 	is 
 		C_in : type_contour := type_contour (to_contour (contour_segments));
@@ -90,7 +91,7 @@ procedure to_polygon is
 		--new_line;
 		--put_line (to_string (C_exp));
 		
-		P_actual := to_polygon (C_in, true); -- debug messages on
+		P_actual := to_polygon (C_in, tolerance, true); -- debug messages on
 
 		
 		if P_actual /= P_exp then
@@ -165,9 +166,10 @@ begin
 
 
 	do_test (
-		contour_segments => "arc 500 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
-			& "line 1000 0 line 1000 1000 line 0 1000",
-		
+		contour_segments => "arc 50 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
+			& "line 100 0 line 100 100 line 0 100",
+
+		tolerance => 20.0, --fab_tolerance,
 		polygon_expect => "0 0  100 0  100 100  0 100");
 
 	
