@@ -89,80 +89,30 @@ procedure to_polygon is
 		
 		--put_line (to_string (P_in));
 		--new_line;
-		--put_line (to_string (C_exp));
+		--put_line (to_string (P_exp));
 		
 		P_actual := to_polygon (C_in, tolerance, true); -- debug messages on
 
 		
-		if P_actual /= P_exp then
+		--if P_actual /= P_exp then
+		if not are_congruent (P_actual, P_exp) then
 			count_error;
 			new_line;
 			put_line ("ERROR. Test" & type_index'image (idx) & ":");
-			--put_line ("expected: " & to_string (P_exp));
+			put_line ("expected: " & to_string (P_exp));
 			new_line;
-			--put_line ("found   : " & to_string (P_actual));
+			put_line ("found   : " & to_string (P_actual));
 		end if;
 	end do_test;
 
 
-	--area : type_float_internal;
-	--alpha : type_float_internal;
-	--betha : type_float_internal;
-	--radius : type_float_internal := 50.0;
-	--fab_tol : type_float_internal := 1.00;
-
-	--As, Ad : type_float_internal := 0.0;
-
-	--s, sh, h : type_float_internal;
-
-	--PI : constant type_float_internal := type_float_internal (ada.numerics.pi);
 begin
 
-	--for a in 1 .. 179 loop
-	--for a in 1 .. 10 loop
-	--for i in 1 .. 10 loop
-		--alpha := type_float_internal (a);
 
-		--As := alpha * PI * (radius**2) /360.0;
-
-		--s := (radius * sin (alpha, units_per_cycle)) 
-			  --/ sin ((180.0 - alpha)/2.0, units_per_cycle);
-
-
-		--sh := 0.5 * s;
-
-		
-		--Ad := sh * (radius - fab_tol);
-
-		--h := radius - Ad/sh;
-		
-		--area := As - Ad;
-
-		--betha := 90.0 - arcsin ((radius - fab_tol)/radius, units_per_cycle);
-	
-		--new_line;
-		--put_line ("alpha: " & to_string (alpha));
-		--put_line ("fab_tol: " & to_string (fab_tol));
-		--put_line ("betha  : " & to_string (betha));
-
-		--fab_tol := fab_tol * 0.1;
-		--put_line ("s    : " & to_string (s));
-		--put_line ("Ad   : " & to_string (Ad));
-		--put_line ("As   : " & to_string (As) & " Ad: " & to_string (Ad));
-		--put_line ("area : " & to_string (area));
-
-		--put_line ("alpha: " & to_string (alpha) & " area : " & to_string (Ad));
-		--put_line ("h    : " & to_string (h));
-
-		--if h >= fab_tol then
-			--exit;
-		--end if;
-
-	--end loop;	
-	
-	--do_test (
-		--contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100",
-		--polygon_expect => "0 0  100 0  100 100  0 100");
+	do_test (
+		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100",
+		tolerance => 20.0, --fab_tolerance,
+		polygon_expect => "0 0  100 0  100 100  0 100");
 
 
 	do_test (
@@ -170,7 +120,15 @@ begin
 			& "line 100 0 line 100 100 line 0 100",
 
 		tolerance => 20.0, --fab_tolerance,
-		polygon_expect => "0 0  100 0  100 100  0 100");
+			
+		polygon_expect =>
+			  "0 0 "
+			& "14.6446609407 35.3553390593 "
+			& "50 50 "
+			& "85.3553390593 35.3553390593 "
+			& "100 0 "
+			& "100 100 " 
+			& "0 100");
 
 	
 	---------------------	
