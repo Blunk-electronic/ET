@@ -78,9 +78,9 @@ package et_route_restrict is
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	
-	type type_route_restrict_polygon is new type_contour with null record;
+	type type_route_restrict_contour is new type_contour with null record;
 
-	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
+	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
 
 	
 	type type_route_restrict_cutout is new type_contour with null record;

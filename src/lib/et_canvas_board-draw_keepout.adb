@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -54,7 +54,7 @@ is
 	use pac_keepout_lines;
 	use pac_keepout_arcs;
 	use pac_keepout_circles;
-	use pac_keepout_polygons;
+	use pac_keepout_contours;
 	use pac_keepout_cutouts;
 	use pac_keepout_texts;
 
@@ -110,7 +110,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_keepout_polygons.cursor) is 
+	procedure query_polygon (c : in pac_keepout_contours.cursor) is 
 		drawn : boolean := false;
 	begin
 		pac_draw_fab.draw_polygon (

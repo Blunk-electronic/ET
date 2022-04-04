@@ -197,8 +197,8 @@ package et_board_shapes_and_text is
 
 	
 
-	-- Polygons in non-conducor layers such as silkscreen, stencil, ...
-	type type_polygon_non_conductor (fill_style : type_fill_style) 
+	-- Contours in non-conducor layers such as silkscreen, stencil, ...
+	type type_contour_non_conductor (fill_style : type_fill_style) 
 		is new type_contour with 
 	record
 		easing : type_easing;

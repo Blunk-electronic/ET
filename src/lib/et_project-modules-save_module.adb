@@ -1205,13 +1205,13 @@ is
 		use pac_keepout_lines;
 		use pac_keepout_arcs;
 		use pac_keepout_circles;
-		use pac_keepout_polygons;
+		use pac_keepout_contours;
 
 		use et_route_restrict.boards;
 		use pac_route_restrict_lines;
 		use pac_route_restrict_arcs;
 		use pac_route_restrict_circles;
-		use pac_route_restrict_polygons;
+		use pac_route_restrict_contours;
 		use et_pcb_rw.restrict;
 		
 		use et_via_restrict.boards;
@@ -1708,7 +1708,7 @@ is
 			iterate (element (module_cursor).board.route_restrict.lines, write_line'access);
 			iterate (element (module_cursor).board.route_restrict.arcs, write_arc'access);
 			iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
-			iterate (element (module_cursor).board.route_restrict.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.route_restrict.contours, write_contour'access);
 			iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.route_restrict.texts, write_text'access);
 			section_mark (section_route_restrict, FOOTER);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -72,13 +72,13 @@ package et_route_restrict.boards is
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	
-	type type_route_restrict_polygon is new
-		et_route_restrict.type_route_restrict_polygon with
+	type type_route_restrict_contour is new
+		et_route_restrict.type_route_restrict_contour with
 	record
 		layers 	: type_signal_layers.set;
 	end record;
 
-	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
+	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
 
 	
 	type type_route_restrict_cutout is new
@@ -94,7 +94,7 @@ package et_route_restrict.boards is
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
 		circles		: pac_route_restrict_circles.list;
-		polygons	: pac_route_restrict_polygons.list;
+		contours	: pac_route_restrict_contours.list;
 		cutouts		: pac_route_restrict_cutouts.list;
 		texts		: et_conductor_text.boards.pac_conductor_texts.list; -- for notes on routing
 	end record;

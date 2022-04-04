@@ -1,20 +1,32 @@
-HIERARCHY OF POLYGON TYPES
-==========================
+OVERVIEW OF CONTOUR AND POLYGON TYPES
+=====================================
 
 et_geometry-polygons
 - type_polygon
 
-et_board_shapes_and_text
-- derived from type_polygon:
- - type_polygon_non_conductor (used by stop mask, stencil, silkscreen, assy doc)
+et_geometry-contours
+- type_contour
 
+
+et_board_shapes_and_text
+- derived from type_contour:
+ - type_contour_non_conductor (used by stop mask, stencil, silkscreen, assy doc)
+	- selectors: fill_style, hatching, easing
+	
 et_keepout;
-- derived from type_polygon:
- - type_keepout_polygon
+- derived from type_contour:
+ - type_keepout_contour
+ 
  
 et_route_restrict:
- - derived from type_polygon:
-  - type_route_restrict_polygon
+ - derived from type_contour:
+  - type_route_restrict_contour
+ 
+et_route_restrict.boards:
+  - derived from type_route_restrict_contour:
+	- type_route_restrict_contour
+		- selector: layers
+ 
  
 et_via_restrict;
  - derived from type_polygon:
@@ -46,7 +58,7 @@ et_conductor_polygons.board:
 
  
 - derived from type_polygon_conductor_solid 
- - type_polygon_conductor_route_solid
+ - type_route_solid
 	- discriminiant: connection,
 	- selectors: properties.layer, properties.priority, properties.filled_areas
 

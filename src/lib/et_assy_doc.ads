@@ -75,7 +75,7 @@ package et_assy_doc is
 	
 	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
+	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
 	package pac_doc_cutouts is new doubly_linked_lists (type_contour);	
 	
 	-- This is the base type for assembly documentation objects in general:

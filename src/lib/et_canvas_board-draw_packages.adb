@@ -361,7 +361,7 @@ is
 			use pac_silk_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out type_polygon_non_conductor;
+				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -399,14 +399,14 @@ is
 
 			
 			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -734,7 +734,7 @@ is
 			use pac_doc_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out type_polygon_non_conductor;
+				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -771,14 +771,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1086,10 +1086,10 @@ is
 
 			
 			-- POLYGONS
-			use pac_keepout_polygons;
+			use pac_keepout_contours;
 
 			procedure draw_polygon (
-				polygon	: in out type_keepout_polygon;
+				polygon	: in out type_keepout_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1113,15 +1113,15 @@ is
 				end if;
 			end draw_polygon;
 			
-			procedure query_polygon_top (c : in pac_keepout_polygons.cursor) is
-				polygon : type_keepout_polygon := element (c);
+			procedure query_polygon_top (c : in pac_keepout_contours.cursor) is
+				polygon : type_keepout_contour := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
-			procedure query_polygon_bottom (c : in pac_keepout_polygons.cursor) is
-				polygon : type_keepout_polygon := element (c);
+			procedure query_polygon_bottom (c : in pac_keepout_contours.cursor) is
+				polygon : type_keepout_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1328,7 +1328,7 @@ is
 			use pac_stop_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out type_polygon_non_conductor;
+				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1365,14 +1365,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_stop_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stop_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1614,7 +1614,7 @@ is
 			use pac_stencil_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out type_polygon_non_conductor;
+				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1651,14 +1651,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
-				polygon : type_polygon_non_conductor := element (c);
+				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1832,8 +1832,8 @@ is
 
 			
 			-- FILL ZONES
-			use pac_route_restrict_polygons;
-			polygon : type_route_restrict_polygon;
+			use pac_route_restrict_contours;
+			polygon : type_route_restrict_contour;
 
 			procedure draw_polygon (f : in type_face) is 
 				drawn : boolean := false;
@@ -1854,13 +1854,13 @@ is
 				end if;
 			end draw_polygon;
 			
-			procedure query_polygon_top (c : in pac_route_restrict_polygons.cursor) is begin
+			procedure query_polygon_top (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination;
 				draw_polygon (destination);
 			end query_polygon_top;
 
-			procedure query_polygon_bottom (c : in pac_route_restrict_polygons.cursor) is begin
+			procedure query_polygon_bottom (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
 				draw_polygon (destination);
@@ -1947,9 +1947,9 @@ is
 			element (package_cursor).route_restrict.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).route_restrict.bottom.circles.iterate (query_circle_bottom'access);
 
-			-- polygons
-			element (package_cursor).route_restrict.top.polygons.iterate (query_polygon_top'access);
-			element (package_cursor).route_restrict.bottom.polygons.iterate (query_polygon_bottom'access);
+			-- contours
+			element (package_cursor).route_restrict.top.contours.iterate (query_polygon_top'access);
+			element (package_cursor).route_restrict.bottom.contours.iterate (query_polygon_bottom'access);
 
 			-- cutouts
 			element (package_cursor).route_restrict.top.cutouts.iterate (query_cutout_top'access);

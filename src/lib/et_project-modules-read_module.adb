@@ -3364,13 +3364,13 @@ is
 					end;
 
 					procedure append_keepout_polygon_top is begin
-						pac_keepout_polygons.append (
+						pac_keepout_contours.append (
 							container	=> module.board.keepout.top.polygons, 
 							new_item	=> (polygon with null record));
 					end;
 
 					procedure append_keepout_polygon_bottom is begin
-						pac_keepout_polygons.append (
+						pac_keepout_contours.append (
 							container	=> module.board.keepout.bottom.polygons, 
 							new_item	=> (polygon with null record));
 					end;
@@ -3939,7 +3939,7 @@ is
 				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_contours;
 				use et_route_restrict.boards;
-				use pac_route_restrict_polygons;
+				use pac_route_restrict_contours;
 				
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3949,7 +3949,7 @@ is
 					module		: in out et_schematic.type_module) 
 				is begin
 					append (
-						container	=> module.board.route_restrict.polygons,
+						container	=> module.board.route_restrict.contours,
 						new_item	=> (polygon with signal_layers));
 				end do_it;
 									

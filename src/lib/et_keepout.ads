@@ -71,8 +71,8 @@ package et_keepout is
 	
 	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	type type_keepout_polygon is new type_contour with null record;
-	package pac_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
+	type type_keepout_contour is new type_contour with null record;
+	package pac_keepout_contours is new doubly_linked_lists (type_keepout_contour);
 	
 	package pac_keepout_cutouts is new doubly_linked_lists (type_contour);	
 	
@@ -80,7 +80,7 @@ package et_keepout is
 		lines 		: pac_keepout_lines.list;
 		arcs		: pac_keepout_arcs.list;
 		circles		: pac_keepout_circles.list;
-		polygons	: pac_keepout_polygons.list;
+		polygons	: pac_keepout_contours.list;
 		cutouts 	: pac_keepout_cutouts.list;
 	end record;
 

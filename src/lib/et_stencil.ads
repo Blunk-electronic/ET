@@ -75,7 +75,7 @@ package et_stencil is
 
 	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
+	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
 	package pac_stencil_cutouts is new doubly_linked_lists (type_contour);	
 	
 	-- This is the type for solder paste stencil objects in general:

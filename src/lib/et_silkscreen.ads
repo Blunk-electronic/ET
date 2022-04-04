@@ -77,7 +77,7 @@ package et_silkscreen is
 	
 	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
 
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
+	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
 	package pac_silk_cutouts is new doubly_linked_lists (type_contour);	
 	
 

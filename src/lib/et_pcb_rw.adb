@@ -1119,8 +1119,8 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_keepout_polygons.cursor) is 
-		use pac_keepout_polygons;
+	procedure write_polygon (cursor : in pac_keepout_contours.cursor) is 
+		use pac_keepout_contours;
 	begin
 		fill_zone_begin;
 

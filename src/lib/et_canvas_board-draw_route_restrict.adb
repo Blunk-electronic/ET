@@ -53,7 +53,7 @@ is
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
-	use pac_route_restrict_polygons;
+	use pac_route_restrict_contours;
 	use pac_route_restrict_cutouts;
 	use pac_conductor_texts;
 	
@@ -121,7 +121,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is 
+	procedure query_polygon (c : in pac_route_restrict_contours.cursor) is 
 		drawn : boolean := false;
 	begin
 
@@ -192,7 +192,7 @@ is
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
 		iterate (module.board.route_restrict.circles, query_circle'access);
-		iterate (module.board.route_restrict.polygons, query_polygon'access);
+		iterate (module.board.route_restrict.contours, query_polygon'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 		iterate (module.board.route_restrict.texts, query_text'access);
 

@@ -300,7 +300,7 @@ package body et_pcb_rw.device_packages is
 			use pac_keepout_lines;
 			use pac_keepout_arcs;
 			use pac_keepout_circles;
-			use pac_keepout_polygons;
+			use pac_keepout_contours;
 			use pac_keepout_cutouts;
 		begin
 			section_mark (section_keepout, HEADER);
@@ -391,7 +391,7 @@ package body et_pcb_rw.device_packages is
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
-			use pac_route_restrict_polygons;
+			use pac_route_restrict_contours;
 			use pac_route_restrict_cutouts;
 
 			procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
@@ -416,7 +416,7 @@ package body et_pcb_rw.device_packages is
 				circle_end;
 			end write_circle;
 			
-			procedure write_polygon (cursor : in pac_route_restrict_polygons.cursor) is 
+			procedure write_polygon (cursor : in pac_route_restrict_contours.cursor) is 
 			begin
 				fill_zone_begin;
 				contours_begin;
@@ -442,7 +442,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.route_restrict.top.lines, write_line'access);
 			iterate (packge.route_restrict.top.arcs, write_arc'access);
 			iterate (packge.route_restrict.top.circles, write_circle'access);
-			iterate (packge.route_restrict.top.polygons, write_polygon'access);
+			iterate (packge.route_restrict.top.contours, write_polygon'access);
 			iterate (packge.route_restrict.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 
@@ -451,7 +451,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.route_restrict.bottom.lines, write_line'access);
 			iterate (packge.route_restrict.bottom.arcs, write_arc'access);
 			iterate (packge.route_restrict.bottom.circles, write_circle'access);
-			iterate (packge.route_restrict.bottom.polygons, write_polygon'access);
+			iterate (packge.route_restrict.bottom.contours, write_polygon'access);
 			iterate (packge.route_restrict.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
 			
@@ -1309,7 +1309,7 @@ package body et_pcb_rw.device_packages is
 
 				procedure append_keepout_polygon_top is begin
 					
-					pac_keepout_polygons.append (
+					pac_keepout_contours.append (
 						container	=> packge.keepout.top.polygons, 
 						new_item	=> (type_contour (polygon) with null record));
 						
@@ -1319,7 +1319,7 @@ package body et_pcb_rw.device_packages is
 
 				procedure append_keepout_polygon_bottom is begin
 
-					pac_keepout_polygons.append (
+					pac_keepout_contours.append (
 						container	=> packge.keepout.bottom.polygons, 
 						new_item	=> (type_contour (polygon) with null record));
 
@@ -1468,8 +1468,8 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_route_restrict_polygon_top is begin
-					pac_route_restrict_polygons.append (
-						container	=> packge.route_restrict.top.polygons, 
+					pac_route_restrict_contours.append (
+						container	=> packge.route_restrict.top.contours, 
 						new_item	=> (type_contour (polygon) with null record));
 
 					-- clean up for next polygon
@@ -1477,8 +1477,8 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_route_restrict_polygon_bottom is begin
-					pac_route_restrict_polygons.append (
-						container	=> packge.route_restrict.bottom.polygons, 
+					pac_route_restrict_contours.append (
+						container	=> packge.route_restrict.bottom.contours, 
 						new_item	=> (type_contour (polygon) with null record));
 
 					-- clean up for next polygon

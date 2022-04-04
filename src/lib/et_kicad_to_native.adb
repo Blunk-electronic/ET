@@ -843,7 +843,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
@@ -1057,7 +1057,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
@@ -1270,7 +1270,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 
-				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
 					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
 					move_polygon (polygon);
 				end move_polygon;
@@ -1445,7 +1445,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
 					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
@@ -1603,8 +1603,8 @@ package body et_kicad_to_native is
 				use pac_keepout_circles;
 				circles_cursor : pac_keepout_circles.cursor;
 
-				use pac_keepout_polygons;
-				polygons_cursor : pac_keepout_polygons.cursor;
+				use pac_keepout_contours;
+				polygons_cursor : pac_keepout_contours.cursor;
 
 				keepout : constant string := "board keepout ";
 				
@@ -1675,7 +1675,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_keepout_polygon) is begin
+				procedure move_polygon (polygon : in out type_keepout_contour) is begin
 					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
@@ -1757,8 +1757,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.keepout.top.polygons.first;
-				while polygons_cursor /= pac_keepout_polygons.no_element loop
-					pac_keepout_polygons.update_element (
+				while polygons_cursor /= pac_keepout_contours.no_element loop
+					pac_keepout_contours.update_element (
 						container	=> module.board.keepout.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1769,8 +1769,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.keepout.bottom.polygons.first;
-				while polygons_cursor /= pac_keepout_polygons.no_element loop
-					pac_keepout_polygons.update_element (
+				while polygons_cursor /= pac_keepout_contours.no_element loop
+					pac_keepout_contours.update_element (
 						container	=> module.board.keepout.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
