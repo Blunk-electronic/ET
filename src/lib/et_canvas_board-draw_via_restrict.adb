@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -57,7 +57,7 @@ is
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;
 	use pac_via_restrict_circles;
-	use pac_via_restrict_polygons;
+	use pac_via_restrict_contours;
 	use pac_via_restrict_cutouts;
 	use pac_conductor_texts;
 
@@ -131,7 +131,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is
+	procedure query_polygon (c : in pac_via_restrict_contours.cursor) is
 		drawn : boolean := false;
 	begin
 		-- Draw the polygon if restrict layer is enabled:
@@ -199,7 +199,7 @@ is
 		iterate (module.board.via_restrict.lines, query_line'access);
 		iterate (module.board.via_restrict.arcs, query_arc'access);
 		iterate (module.board.via_restrict.circles, query_circle'access);
-		iterate (module.board.via_restrict.polygons, query_polygon'access);
+		iterate (module.board.via_restrict.contours, query_polygon'access);
 		iterate (module.board.via_restrict.cutouts, query_cutout'access);
 		iterate (module.board.via_restrict.texts, query_text'access);
 		

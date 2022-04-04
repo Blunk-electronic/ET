@@ -133,9 +133,9 @@ package body et_pcb_rw.restrict is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor) is 
+	procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is 
 		use et_pcb_stack;
-		use pac_via_restrict_polygons;
+		use pac_via_restrict_contours;
 	begin
 		fill_zone_begin;
 		write_signal_layers (element (cursor).layers);			
@@ -145,7 +145,7 @@ package body et_pcb_rw.restrict is
 		contours_end;
 		
 		fill_zone_end;
-	end write_polygon;
+	end write_contour;
 
 	
 	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 

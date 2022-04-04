@@ -1218,7 +1218,7 @@ is
 		use pac_via_restrict_lines;
 		use pac_via_restrict_arcs;
 		use pac_via_restrict_circles;
-		use pac_via_restrict_polygons;
+		use pac_via_restrict_contours;
 
 		use et_conductor_text;
 		use pac_conductor_texts;
@@ -1720,7 +1720,7 @@ is
 			iterate (element (module_cursor).board.via_restrict.lines, write_line'access);
 			iterate (element (module_cursor).board.via_restrict.arcs, write_arc'access);
 			iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
-			iterate (element (module_cursor).board.via_restrict.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.via_restrict.contours, write_contour'access);
 			iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);

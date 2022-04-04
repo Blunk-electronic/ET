@@ -29,9 +29,13 @@ et_route_restrict.boards:
  
  
 et_via_restrict;
- - derived from type_polygon:
-  - type_via_restrict_polygon
+ - derived from type_contour:
+  - type_via_restrict_contour
  
+et_via_restrict.boards:
+  - derived from type_via_restrict_contour:
+	- type_via_restrict_contour
+		- selector: layers
  
 
 

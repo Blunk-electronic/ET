@@ -4057,7 +4057,7 @@ is
 				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_contours;
 				use et_via_restrict.boards;
-				use pac_via_restrict_polygons;
+				use pac_via_restrict_contours;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
@@ -4066,7 +4066,7 @@ is
 					module		: in out et_schematic.type_module) 
 				is begin
 					append (
-						container	=> module.board.via_restrict.polygons,
+						container	=> module.board.via_restrict.contours,
 						new_item	=> (polygon with signal_layers));
 				end do_it;
 									

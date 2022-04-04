@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -44,7 +44,7 @@ package et_via_restrict.packages is
 		lines 		: pac_via_restrict_lines.list;
 		arcs		: pac_via_restrict_arcs.list;
 		circles		: pac_via_restrict_circles.list;
-		polygons	: pac_via_restrict_polygons.list;
+		contours	: pac_via_restrict_contours.list;
 		cutouts		: pac_via_restrict_cutouts.list;
 		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on via restrict
 	end record;
