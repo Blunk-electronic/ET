@@ -162,7 +162,7 @@ package et_conductor_polygons.boards is
 
 	
 	function conductor_polygon_properties_to_string (
-		polygon			: in type_polygon_conductor'class;
+		polygon			: in type_fill_zone'class;
 		properties		: in type_properties;
 
 		-- Net name is relevant if polygon is part of a route.
@@ -174,7 +174,7 @@ package et_conductor_polygons.boards is
 	
 	-- A floating conductor polygon is not connected to any net:
 	type type_solid_floating is new 
-		type_polygon_conductor (fill_style => SOLID)
+		type_fill_zone (fill_style => SOLID)
 	with record
 		properties	: type_properties;
 	end record;
@@ -185,7 +185,7 @@ package et_conductor_polygons.boards is
 		
 		
 	type type_hatched_floating is new 
-		type_polygon_conductor (fill_style => HATCHED) 
+		type_fill_zone (fill_style => HATCHED) 
 	with record
 		properties	: type_properties;
 	end record;
@@ -202,7 +202,7 @@ package et_conductor_polygons.boards is
 
 
 	type type_solid_route (connection : type_polygon_pad_connection) 
-		is new type_polygon_conductor_solid
+		is new type_fill_zone_solid
 	with record
 		properties	: type_properties;
 
@@ -219,7 +219,7 @@ package et_conductor_polygons.boards is
 
 	
 	type type_hatched_route (connection : type_polygon_pad_connection) 
-		is new type_polygon_conductor_hatched 
+		is new type_fill_zone_hatched 
 	with record
 		properties	: type_properties;
 				

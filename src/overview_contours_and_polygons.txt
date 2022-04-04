@@ -28,7 +28,7 @@ et_route_restrict.boards:
 		- selector: layers
  
  
-et_via_restrict;
+et_via_restrict:
  - derived from type_contour:
   - type_via_restrict_contour
  
@@ -38,41 +38,47 @@ et_via_restrict.boards:
 		- selector: layers
  
 
+et_terminals:
+	- stencil, stop mask and pad contours are derived from type_contour
 
+
+	
 et_conductor_polygons:
-- derived from type_polygon:
- - type_polygon_conductor 
+- derived from type_contour:
+ - type_fill_zone 
 	- discriminiant: fill_style
 	- selectors: width_min, isolation, easing
 
-- derived from type_polygon_conductor
- - type_polygon_conductor_solid
- - type_polygon_conductor_hatched
+- derived from type_fill_zone
+ - type_fill_zone_solid with fixed discriminiant: solid
+ - type_fill_zone_hatched with fixed discriminiant: hatched
 
+ 
+ 
 	
 et_conductor_polygons.board:
-- derived from type_polygon_conductor
- - type_polygon_conductor_solid_floating 
+- derived from type_fill_zone
+ - type_solid_floating 
 	- fixed discriminiant: solid
-	- selectors: properties.layer, properties.priority, properties.filled_areas
+	- selectors: properties (layer, priority, filled_areas)
 
- - type_polygon_conductor_hatched_floating
+ - type_hatched_floating
 	- fixed discriminiant: hatched
-	- selectors: properties.layer, properties.priority, properties.filled_areas
+	- selectors: properties
 
  
-- derived from type_polygon_conductor_solid 
- - type_route_solid
+- derived from type_fill_zone_solid 
+ - type_solid_route
 	- discriminiant: connection,
-	- selectors: properties.layer, properties.priority, properties.filled_areas
+	- selectors: properties
 
-- derived from type_polygon_conductor_hatched
- - type_polygon_conductor_route_hatched
+- derived from type_fill_zone_hatched
+ - type_hatched_route
 	- discriminiant: connection,
-	- selectors: properties.layer, properties.priority, properties.filled_areas
+	- selectors: properties
  
  
-- derived from type_polygon:
+- derived from type_contour:
  - type_conductor_cutout
 	- selector: layer
  

@@ -67,8 +67,7 @@ package et_conductor_polygons is
 	use pac_contours;
 
 	
-	-- Polygons in conductor layers have a dedicated type for the hatching:
-	type type_polygon_conductor (fill_style : type_fill_style) 
+	type type_fill_zone (fill_style : type_fill_style) 
 		is new type_contour with
 	record
 
@@ -88,20 +87,18 @@ package et_conductor_polygons is
 
 	
 
--- SOLID CONDUCTOR POLYGONS
-	type type_polygon_conductor_solid 
-		is new type_polygon_conductor (fill_style => SOLID) with null record;
+	type type_fill_zone_solid 
+		is new type_fill_zone (fill_style => SOLID) with null record;
 
-	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
+	package pac_conductor_polygons_solid is new doubly_linked_lists (type_fill_zone_solid);
 
 
 	
 	
--- HATCHED CONDUCTOR POLYGONS
-	type type_polygon_conductor_hatched
-	is new type_polygon_conductor (fill_style => HATCHED) with null record;
+	type type_fill_zone_hatched
+		is new type_fill_zone (fill_style => HATCHED) with null record;
 
-	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_polygon_conductor_hatched);
+	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_fill_zone_hatched);
 
 
 	

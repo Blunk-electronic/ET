@@ -291,7 +291,7 @@ package et_routing is
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is
 			when TRUE => 
-				outline : type_polygon_conductor (SOLID);
+				outline : et_conductor_polygons.type_fill_zone (SOLID);
 				-- The fill style does not matter.
 
 			when FALSE => null;

@@ -584,7 +584,7 @@ package et_board_ops is
 	
 	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_polygon_conductor'class;
+		polygon			: in type_fill_zone'class;
 		log_threshold	: in type_log_level;
 
 		-- Net name is relevant if polygon is part of a route.

@@ -80,7 +80,7 @@ is
 	function make_rows (
 		net_cursor		: in pac_nets.cursor;
 		net_class		: in type_net_class;
-		fill_zone		: in type_fill_zone;
+		fill_zone		: in et_routing.type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width; -- width of a fill line
 		height			: in type_distance_positive; -- of the polygon
@@ -356,7 +356,7 @@ is
 		rows			: in pac_rows.list;
 		net_cursor		: in pac_nets.cursor;
 		net_class		: in type_net_class;
-		fill_zone		: in type_fill_zone;
+		fill_zone		: in et_routing.type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width; -- width of a fill line
 		lth				: in type_log_level)					 
@@ -592,7 +592,7 @@ is
 					rows := make_rows (
 						net_cursor		=> net_cursor,
 						net_class		=> net_class,
-						fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+						fill_zone		=> (observe => true, outline => et_conductor_polygons.type_fill_zone (element (polygon_cursor))),
 						layer			=> element (polygon_cursor).properties.layer,
 						width			=> element (polygon_cursor).width_min,
 						height			=> get_height (boundaries),
@@ -607,7 +607,7 @@ is
 						rows			=> rows,
 						net_cursor		=> net_cursor,
 						net_class		=> net_class,
-						fill_zone		=> (observe => true, outline => type_polygon_conductor (element (polygon_cursor))),
+						fill_zone		=> (observe => true, outline => et_conductor_polygons.type_fill_zone (element (polygon_cursor))),
 						layer			=> element (polygon_cursor).properties.layer,
 						width			=> element (polygon_cursor).width_min,
 						lth				=> log_threshold + 3);

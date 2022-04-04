@@ -2494,7 +2494,7 @@ is
 			use pac_conductor_polygons_solid;
 
 			procedure draw_polygon_solid (
-				polygon	: in out type_polygon_conductor_solid;
+				polygon	: in out type_fill_zone_solid;
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2527,7 +2527,7 @@ is
 			procedure query_polygon_top_solid (
 				c : in pac_conductor_polygons_solid.cursor) 
 			is
-				polygon : type_polygon_conductor_solid := element (c);
+				polygon : type_fill_zone_solid := element (c);
 			begin
 				set_destination;
 				draw_polygon_solid (polygon, destination);
@@ -2536,7 +2536,7 @@ is
 			procedure query_polygon_bottom_solid (
 				c : in pac_conductor_polygons_solid.cursor) 
 			is
-				polygon : type_polygon_conductor_solid := element (c);
+				polygon : type_fill_zone_solid := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);
@@ -2547,7 +2547,7 @@ is
 			use pac_conductor_polygons_hatched;
 
 			procedure draw_polygon_hatched (
-				polygon	: in out type_polygon_conductor_hatched;
+				polygon	: in out type_fill_zone_hatched;
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2579,7 +2579,7 @@ is
 			procedure query_polygon_top_hatched (
 				c : in pac_conductor_polygons_hatched.cursor) 
 			is
-				polygon : type_polygon_conductor_hatched := element (c);
+				polygon : type_fill_zone_hatched := element (c);
 			begin
 				set_destination;
 				draw_polygon_hatched (polygon, destination);
@@ -2589,7 +2589,7 @@ is
 			procedure query_polygon_bottom_hatched (
 				c : in pac_conductor_polygons_hatched.cursor) 
 			is
-				polygon : type_polygon_conductor_hatched := element (c);
+				polygon : type_fill_zone_hatched := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);
