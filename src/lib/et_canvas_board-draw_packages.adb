@@ -2491,7 +2491,7 @@ is
 			-- POLYGONS
 
 			-- solid
-			use pac_conductor_polygons_solid;
+			use pac_fill_zones_solid;
 
 			procedure draw_polygon_solid (
 				polygon	: in out type_fill_zone_solid;
@@ -2525,7 +2525,7 @@ is
 
 			
 			procedure query_polygon_top_solid (
-				c : in pac_conductor_polygons_solid.cursor) 
+				c : in pac_fill_zones_solid.cursor) 
 			is
 				polygon : type_fill_zone_solid := element (c);
 			begin
@@ -2534,7 +2534,7 @@ is
 			end query_polygon_top_solid;
 
 			procedure query_polygon_bottom_solid (
-				c : in pac_conductor_polygons_solid.cursor) 
+				c : in pac_fill_zones_solid.cursor) 
 			is
 				polygon : type_fill_zone_solid := element (c);
 			begin
@@ -2544,7 +2544,7 @@ is
 
 
 			-- hatched
-			use pac_conductor_polygons_hatched;
+			use pac_fill_zones_hatched;
 
 			procedure draw_polygon_hatched (
 				polygon	: in out type_fill_zone_hatched;
@@ -2577,7 +2577,7 @@ is
 			end draw_polygon_hatched;
 			
 			procedure query_polygon_top_hatched (
-				c : in pac_conductor_polygons_hatched.cursor) 
+				c : in pac_fill_zones_hatched.cursor) 
 			is
 				polygon : type_fill_zone_hatched := element (c);
 			begin
@@ -2587,7 +2587,7 @@ is
 
 			
 			procedure query_polygon_bottom_hatched (
-				c : in pac_conductor_polygons_hatched.cursor) 
+				c : in pac_fill_zones_hatched.cursor) 
 			is
 				polygon : type_fill_zone_hatched := element (c);
 			begin
@@ -2597,7 +2597,7 @@ is
 
 			
 			-- CUTOUTS
-			use packages.pac_conductor_cutouts;
+			use packages.pac_cutouts;
 
 			procedure draw_cutout (
 				cutout	: in out type_contour;
@@ -2626,7 +2626,7 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (
-				c : in packages.pac_conductor_cutouts.cursor) 
+				c : in packages.pac_cutouts.cursor) 
 			is
 				cutout : type_contour := element (c);
 			begin
@@ -2636,7 +2636,7 @@ is
 
 			
 			procedure query_cutout_bottom (
-				c : in packages.pac_conductor_cutouts.cursor) 
+				c : in packages.pac_cutouts.cursor) 
 			is
 				cutout : type_contour := element (c);
 			begin
@@ -2735,13 +2735,13 @@ is
 			element (package_cursor).conductors.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).conductors.bottom.circles.iterate (query_circle_bottom'access);
 
-			-- polygons solid
-			element (package_cursor).conductors.top.polygons.solid.iterate (query_polygon_top_solid'access);
-			element (package_cursor).conductors.bottom.polygons.solid.iterate (query_polygon_bottom_solid'access);
+			-- fill zones solid
+			element (package_cursor).conductors.top.fill_zones.solid.iterate (query_polygon_top_solid'access);
+			element (package_cursor).conductors.bottom.fill_zones.solid.iterate (query_polygon_bottom_solid'access);
 
-			-- polygons hatched
-			element (package_cursor).conductors.top.polygons.hatched.iterate (query_polygon_top_hatched'access);
-			element (package_cursor).conductors.bottom.polygons.hatched.iterate (query_polygon_bottom_hatched'access);
+			-- fill zones hatched
+			element (package_cursor).conductors.top.fill_zones.hatched.iterate (query_polygon_top_hatched'access);
+			element (package_cursor).conductors.bottom.fill_zones.hatched.iterate (query_polygon_bottom_hatched'access);
 
 			-- cutouts
 			element (package_cursor).conductors.top.cutouts.iterate (query_cutout_top'access);

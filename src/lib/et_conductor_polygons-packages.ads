@@ -35,18 +35,21 @@
 --   history of changes:
 --
 --   to do:
-
+--	 - Clarify whether is is really required to allow fill zones
+--	   in a package. Usually a solidly filled area can be drawn
+--	   by a pad contour (see package et_terminals).
 
 package et_conductor_polygons.packages is
 	
 
-	package pac_conductor_cutouts 
+	-- User defined cutout areas:
+	package pac_cutouts 
 		is new doubly_linked_lists (type_contour);
 
 		
-	type type_conductor_polygons is record
-		solid	: pac_conductor_polygons_solid.list;
-		hatched	: pac_conductor_polygons_hatched.list;
+	type type_fill_zones is record
+		solid	: pac_fill_zones_solid.list;
+		hatched	: pac_fill_zones_hatched.list;
 	end record;
 
 	

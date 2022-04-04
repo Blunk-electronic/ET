@@ -90,7 +90,7 @@ package et_conductor_polygons is
 	type type_fill_zone_solid 
 		is new type_fill_zone (fill_style => SOLID) with null record;
 
-	package pac_conductor_polygons_solid is new doubly_linked_lists (type_fill_zone_solid);
+	package pac_fill_zones_solid is new doubly_linked_lists (type_fill_zone_solid);
 
 
 	
@@ -98,7 +98,7 @@ package et_conductor_polygons is
 	type type_fill_zone_hatched
 		is new type_fill_zone (fill_style => HATCHED) with null record;
 
-	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_fill_zone_hatched);
+	package pac_fill_zones_hatched is new doubly_linked_lists (type_fill_zone_hatched);
 
 
 	

@@ -187,16 +187,15 @@ package et_packages is
 		
 -- NON ELECTRIC conductor objects
 
-	--use pac_conductor_lines;
-	--use pac_conductor_arcs;
-	--use pac_conductor_circles;
-
+	-- All objects of this category are floating. Means they
+	-- have no connection to a pad or a track (net):
+	
 	type type_conductor_objects is record 
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
-		polygons	: type_conductor_polygons;
-		cutouts		: packages.pac_conductor_cutouts.list;
+		fill_zones	: type_fill_zones;
+		cutouts		: packages.pac_cutouts.list;
 		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 	
