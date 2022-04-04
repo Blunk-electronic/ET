@@ -731,7 +731,7 @@ is
 									when MILLED =>
 										declare
 											--om : type_polygon := type_polygon (element (c).millings);
-											om : type_polygon := to_polygon (element (c).millings);
+											om : type_polygon := to_polygon (element (c).millings, fab_tolerance);
 										begin
 											offset_polygon (
 												polygon		=> om, 
