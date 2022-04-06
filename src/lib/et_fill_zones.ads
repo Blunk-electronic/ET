@@ -95,10 +95,10 @@ package et_fill_zones is
 
 	
 	
-	type type_fill_zone_hatched
+	type type_zone_hatched
 		is new type_zone (fill_style => HATCHED) with null record;
 
-	package pac_fill_zones_hatched is new doubly_linked_lists (type_fill_zone_hatched);
+	package pac_fill_zones_hatched is new doubly_linked_lists (type_zone_hatched);
 
 
 	

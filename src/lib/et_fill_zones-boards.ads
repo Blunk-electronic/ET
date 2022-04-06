@@ -222,7 +222,7 @@ package et_fill_zones.boards is
 
 	
 	type type_hatched_route (connection : type_fill_zone_pad_connection) 
-		is new type_fill_zone_hatched 
+		is new type_zone_hatched 
 	with record
 		properties	: type_properties;
 				

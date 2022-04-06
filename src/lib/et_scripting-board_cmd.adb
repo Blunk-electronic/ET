@@ -2266,7 +2266,7 @@ is
 
 			
 			procedure make_hatched_thermal is
-				p1 : type_fill_zone_hatched;
+				p1 : type_zone_hatched;
 				p2 : type_hatched_route (connection => THERMAL);
 			begin
 				p1 := (p0 with 
@@ -2294,7 +2294,7 @@ is
 
 			
 			procedure make_hatched_solid is
-				p1 : type_fill_zone_hatched;
+				p1 : type_zone_hatched;
 				p2 : type_hatched_route (connection => SOLID);
 			begin
 				p1 := (p0 with 

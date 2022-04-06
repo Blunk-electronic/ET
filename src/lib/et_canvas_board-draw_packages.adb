@@ -2547,7 +2547,7 @@ is
 			use pac_fill_zones_hatched;
 
 			procedure draw_polygon_hatched (
-				polygon	: in out type_fill_zone_hatched;
+				polygon	: in out type_zone_hatched;
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2579,7 +2579,7 @@ is
 			procedure query_polygon_top_hatched (
 				c : in pac_fill_zones_hatched.cursor) 
 			is
-				polygon : type_fill_zone_hatched := element (c);
+				polygon : type_zone_hatched := element (c);
 			begin
 				set_destination;
 				draw_polygon_hatched (polygon, destination);
@@ -2589,7 +2589,7 @@ is
 			procedure query_polygon_bottom_hatched (
 				c : in pac_fill_zones_hatched.cursor) 
 			is
-				polygon : type_fill_zone_hatched := element (c);
+				polygon : type_zone_hatched := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);

@@ -45,19 +45,19 @@ et_terminals:
 	
 et_fill_zones:
 - derived from type_contour:
- - type_fill_zone 
+ - type_zone 
 	- discriminiant: fill_style
 	- selectors: width_min, isolation, easing
 
-- derived from type_fill_zone
- - type_fill_zone_solid with fixed discriminiant: solid
- - type_fill_zone_hatched with fixed discriminiant: hatched
+- derived from type_zone
+ - type_zone_solid with fixed discriminiant: solid
+ - type_zone_hatched with fixed discriminiant: hatched
 
  
  
 	
 et_fill_zones.board:
-- derived from type_fill_zone
+- derived from type_zone
  - type_solid_floating 
 	- fixed discriminiant: solid
 	- selectors: properties (layer, priority, fill (rows, borders))
@@ -67,12 +67,12 @@ et_fill_zones.board:
 	- selectors: properties
 
  
-- derived from type_fill_zone_solid 
+- derived from type_zone_solid 
  - type_solid_route
 	- discriminiant: connection,
 	- selectors: properties
 
-- derived from type_fill_zone_hatched
+- derived from type_zone_hatched
  - type_hatched_route
 	- discriminiant: connection,
 	- selectors: properties
