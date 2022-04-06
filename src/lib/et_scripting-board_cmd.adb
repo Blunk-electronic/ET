@@ -2214,7 +2214,7 @@ is
 
 			procedure make_solid_thermal is
 				p1 : type_zone_solid;
-				p2 : type_solid_route (connection => THERMAL);
+				p2 : type_route_solid (connection => THERMAL);
 			begin
 				p1 := (p0 with 
 					fill_style	=> SOLID,
@@ -2241,7 +2241,7 @@ is
 			
 			procedure make_solid_solid is 
 				p1 : type_zone_solid;
-				p2 : type_solid_route (connection => SOLID);
+				p2 : type_route_solid (connection => SOLID);
 			begin
 				p1 := (p0 with 
 					fill_style	=> SOLID,

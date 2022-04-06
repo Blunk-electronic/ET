@@ -208,7 +208,7 @@ package et_fill_zones.boards is
 	
 -- FILL ZONES CONNECTED WITH A NET (part of a route)
 
-	type type_solid_route (connection : type_fill_zone_pad_connection) 
+	type type_route_solid (connection : type_fill_zone_pad_connection) 
 		is new type_zone_solid
 	with record
 		properties	: type_properties;
@@ -244,7 +244,7 @@ package et_fill_zones.boards is
 
 	
 	package pac_solid_route is new
-		indefinite_doubly_linked_lists (type_solid_route);
+		indefinite_doubly_linked_lists (type_route_solid);
 	
 	package pac_hatched_route is new
 		indefinite_doubly_linked_lists (type_hatched_route);	

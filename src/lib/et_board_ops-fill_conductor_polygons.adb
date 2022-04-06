@@ -382,7 +382,7 @@ is
 				-- Sets the start point of the border.
 				-- Assumes there are only horizontal fill lines at this time !
 				--procedure set_border_start (
-					--polygon : in type_solid_route)
+					--polygon : in type_route_solid)
 				--is begin
 					---- Use the start point of the first horizontal fill line:
 					----border_start := polygon.properties.fill.rows.first_element.start_point;
@@ -535,7 +535,7 @@ is
 
 				-- Deletes the complete fill of the polygon:
 				procedure clear_fill (
-					polygon	: in out type_solid_route)
+					polygon	: in out type_route_solid)
 				is begin
 					polygon.properties.fill := (others => <>);
 				end clear_fill;
@@ -548,7 +548,7 @@ is
 				
 				-- Assigns the rows to the current polygon:
 				procedure add_rows (
-					polygon	: in out type_solid_route)
+					polygon	: in out type_route_solid)
 				is begin
 					polygon.properties.fill.rows := rows;
 				end add_rows;
@@ -559,7 +559,7 @@ is
 				
 				-- Assigns the borders to the current polygon:
 				procedure add_borders (
-					polygon	: in out type_solid_route)
+					polygon	: in out type_route_solid)
 				is begin
 					polygon.properties.fill.borders := borders;
 				end add_borders;

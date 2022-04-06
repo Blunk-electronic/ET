@@ -3985,8 +3985,8 @@ package body et_board_ops is
 		is
 			use pac_solid_route;
 
-			p : type_solid_route := 
-				type_solid_route (polygon);
+			p : type_route_solid := 
+				type_route_solid (polygon);
 
 
 			procedure add_polygon (
@@ -4061,7 +4061,7 @@ package body et_board_ops is
 
 
 		-- route polygons:
-		elsif polygon'tag = type_solid_route'tag then
+		elsif polygon'tag = type_route_solid'tag then
 
 			locate_targeted_net;
 						

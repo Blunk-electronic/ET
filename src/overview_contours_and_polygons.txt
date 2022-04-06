@@ -69,7 +69,7 @@ et_fill_zones.board:
  
  
 - derived from type_zone_solid 
- - type_solid_route
+ - type_route_solid
 	- discriminiant: connection,
 	- selectors: properties
 

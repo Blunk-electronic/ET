@@ -90,7 +90,7 @@ package body et_fill_zones.boards is
 		end append;
 
 		
-		procedure connected_with_net (p : in type_solid_route) is begin
+		procedure connected_with_net (p : in type_route_solid) is begin
 			case p.connection is
 				when THERMAL => NULL;
 
@@ -107,12 +107,12 @@ package body et_fill_zones.boards is
 		then
 			append ("floating");
 			
-		elsif fill_zone'tag = type_solid_route'tag 
+		elsif fill_zone'tag = type_route_solid'tag 
 		or    fill_zone'tag = type_hatched_route'tag 
 		then
 			append ("net " & pac_net_name.to_string (net_name));
 			
-			-- CS connected_with_net (type_solid_route (fill_zone));
+			-- CS connected_with_net (type_route_solid (fill_zone));
 		end if;
 
 		

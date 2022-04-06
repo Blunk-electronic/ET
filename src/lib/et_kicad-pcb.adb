@@ -4993,7 +4993,7 @@ package body et_kicad.pcb is
 								when THERMAL =>
 									declare
 										use et_fill_zones.boards;
-										p : type_solid_route (boards.THERMAL);
+										p : type_route_solid (boards.THERMAL);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -5022,7 +5022,7 @@ package body et_kicad.pcb is
 								when SOLID =>
 									declare
 										use et_fill_zones.boards;
-										p : type_solid_route (boards.SOLID);
+										p : type_route_solid (boards.SOLID);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;

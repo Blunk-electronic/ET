@@ -4623,7 +4623,7 @@ is
 					use pac_solid_route;
 
 					procedure connection_thermal is
-						p : type_solid_route (connection => boards.THERMAL);
+						p : type_route_solid (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4643,7 +4643,7 @@ is
 
 					
 					procedure connection_solid is
-						p : type_solid_route (connection => boards.SOLID);
+						p : type_route_solid (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						

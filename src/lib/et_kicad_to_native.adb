@@ -673,7 +673,7 @@ package body et_kicad_to_native is
 					end move_via;
 
 					
-					procedure move_polygon (polygon : in out type_solid_route) is begin
+					procedure move_polygon (polygon : in out type_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 					end move_polygon;
