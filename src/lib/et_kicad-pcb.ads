@@ -684,7 +684,7 @@ package et_kicad.pcb is
 		contours	: et_pcb.type_pcb_contours;
 
 		 -- non-electric. used for texts only
-		copper		: et_pcb.type_conductor_objects;
+		copper		: et_pcb.type_conductors_non_electric;
 
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 

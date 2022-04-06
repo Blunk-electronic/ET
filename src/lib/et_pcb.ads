@@ -224,7 +224,7 @@ package et_pcb is
 	-- Type for NON ELECTRIC !! conductor objects:
 	-- NON ELECTRIC conductor objects of a pcb may also 
 	-- include text placeholders:
-	type type_conductor_objects is record
+	type type_conductors_non_electric is record
 		lines 			: pac_conductor_lines.list;
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
@@ -246,6 +246,7 @@ package et_pcb is
 	
 
 	
+	-- A fully route net may consist of these conductor objects:
 	
 	type type_route is record
 		airwires	: et_ratsnest.type_airwires;
@@ -456,7 +457,7 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 
 		-- non-electric stuff, incl. floating polygons !
-		conductors		: type_conductor_objects;
+		conductors		: type_conductors_non_electric;
 		contours		: type_pcb_contours; -- pcb outline
 
 		user_settings	: type_user_settings;
