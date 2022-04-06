@@ -214,9 +214,9 @@ is
 		---- GLOBAL CUTOUTS IN CONDUCTOR POLYGONS
 		--procedure query_global_cutouts is 
 			--use et_conductor_polygons.boards;
-			--use pac_conductor_cutouts;
+			--use pac_cutouts;
 
-			--procedure query_cutout (c : in pac_conductor_cutouts.cursor) is 
+			--procedure query_cutout (c : in pac_cutouts.cursor) is 
 				--distance_to_border : type_distance;
 			--begin
 				--if element (c).layer = layer then

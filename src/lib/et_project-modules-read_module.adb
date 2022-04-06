@@ -3712,7 +3712,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_conductor_cutouts.append (
+					pac_cutouts.append (
 						container	=> module.board.conductors.cutouts,
 						new_item	=> (polygon with
 								layer => signal_layer));
@@ -4738,7 +4738,7 @@ is
 				use pac_contours;
 				use et_fill_zones.boards;
 			begin
-				pac_conductor_cutouts.append (
+				pac_cutouts.append (
 					container	=> route.cutouts,
 					new_item	=> (polygon with
 									layer	=> signal_layer));

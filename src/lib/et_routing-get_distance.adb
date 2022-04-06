@@ -286,9 +286,9 @@ is
 		-- GLOBAL CUTOUT AREAS
 		procedure query_global_cutouts is 
 			use boards;
-			use pac_conductor_cutouts;
+			use pac_cutouts;
 			
-			procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
+			procedure query_cutout (c : in pac_cutouts.cursor) is begin
 				if element (c).layer = layer then
 
 					if log_category >= HIGH then

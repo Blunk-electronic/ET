@@ -173,6 +173,8 @@ package et_fill_zones.boards is
 		net_name		: in pac_net_name.bounded_string := no_name)
 		return string;
 
+
+
 	
 	
 -- FOATING FILL ZONES (not connected to any net):
@@ -203,6 +205,8 @@ package et_fill_zones.boards is
 		hatched	: pac_floating_hatched.list;
 	end record;
 
+
+	
 
 
 	
@@ -264,13 +268,13 @@ package et_fill_zones.boards is
 
 -- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled):
 	
-	type type_conductor_cutout 
+	type type_cutout
 		is new type_contour with
 	record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
 
-	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
+	package pac_cutouts is new doubly_linked_lists (type_cutout);
 
 	
 end et_fill_zones.boards;

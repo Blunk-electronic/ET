@@ -234,7 +234,7 @@ package et_pcb is
 		-- CS: It is probably no good idea to allow floating conductor polygons.
 
 		-- global cutout areas for conductor polygons:
-		cutouts			: boards.pac_conductor_cutouts.list;
+		cutouts			: boards.pac_cutouts.list;
 		
 		texts			: et_conductor_text.boards.pac_conductor_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
@@ -258,7 +258,7 @@ package et_pcb is
 		polygons	: boards.type_route;
 
 		-- route specific cutout areas:
-		cutouts		: boards.pac_conductor_cutouts.list;
+		cutouts		: boards.pac_cutouts.list;
 	end record;
 	
 

@@ -535,10 +535,10 @@ is
 			use et_fill_zones.boards;
 			use pac_route_solid; 
 			use pac_route_hatched;
-			use boards.pac_conductor_cutouts;
+			use boards.pac_cutouts;
 			polygon_solid_cursor	: pac_route_solid.cursor := net.route.polygons.solid.first;
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.polygons.hatched.first;
-			cutout_zone_cursor		: pac_conductor_cutouts.cursor := net.route.cutouts.first;
+			cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
 				use et_vias;
@@ -677,7 +677,7 @@ is
 
 			
 			-- cutout zones
-			while cutout_zone_cursor /= pac_conductor_cutouts.no_element loop
+			while cutout_zone_cursor /= pac_cutouts.no_element loop
 				cutout_zone_begin;
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
@@ -1305,8 +1305,8 @@ is
 
 		
 		-- cutout zones in any signal layers
-		use pac_conductor_cutouts;
-		procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
+		use pac_cutouts;
+		procedure write_cutout (cursor : in pac_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
 			write_polygon_segments (type_contour (element (cursor)));

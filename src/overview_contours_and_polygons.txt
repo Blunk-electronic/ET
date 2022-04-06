@@ -82,7 +82,7 @@ et_fill_zones.board:
  
  
 - derived from type_contour:
- - type_conductor_cutout
+ - type_cutout
 	- selector: layer
  
  

@@ -442,7 +442,7 @@ package body et_nets is
 		use et_fill_zones.boards;
 		use pac_route_solid;
 		use pac_route_hatched;
-		use pac_conductor_cutouts;
+		use pac_cutouts;
 		
 	begin
 		-- SCHEMATIC
@@ -487,7 +487,7 @@ package body et_nets is
 		-- cutout areas:
 		splice (
 			target => net_1.route.cutouts, 
-			before => pac_conductor_cutouts.no_element,
+			before => pac_cutouts.no_element,
 			source => net_2.route.cutouts);
 
 		

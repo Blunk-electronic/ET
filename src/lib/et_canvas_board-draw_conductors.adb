@@ -70,7 +70,7 @@ is
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
-	use pac_conductor_cutouts;
+	use pac_cutouts;
 	use pac_floating_solid;
 	use pac_floating_hatched;
 	use pac_route_solid;
@@ -350,7 +350,7 @@ is
 	end query_polygon;
 
 	
-	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is 
+	procedure query_cutout (c : in pac_cutouts.cursor) is 
 		drawn : boolean := false;
 	begin
 		-- Draw the zone if it is in the current layer:
