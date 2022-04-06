@@ -84,12 +84,13 @@ package body et_fill_zones.boards is
 		
 		result : unbounded_string := to_unbounded_string ("properties:");
 
+		
 		procedure append (s : in string) is begin
 			result := result & space & s;
 		end append;
 
-		procedure connected_with_net (p : in type_solid_route) is
-		begin
+		
+		procedure connected_with_net (p : in type_solid_route) is begin
 			case p.connection is
 				when THERMAL => NULL;
 
@@ -97,11 +98,12 @@ package body et_fill_zones.boards is
 			end case;
 
 		end connected_with_net;
+
 		
 	begin -- conductor_fill_zone_properties_to_string
 
 		if fill_zone'tag = type_floating_solid'tag 
-		or fill_zone'tag = type_hatched_floating'tag 
+		or fill_zone'tag = type_floating_hatched'tag 
 		then
 			append ("floating");
 			

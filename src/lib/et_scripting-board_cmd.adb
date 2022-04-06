@@ -2071,6 +2071,7 @@ is
 	type type_track_shape is (LINE, ARC, POLYGON);
 	-- CS circular tracks are currently not supported
 
+	
 	procedure route_freetrack is
 		shape : constant type_track_shape := type_track_shape'value (f (6));
 
@@ -2083,7 +2084,7 @@ is
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
 			ps : type_floating_solid;
-			ph : type_hatched_floating;
+			ph : type_floating_hatched;
 
 			-- Build a basic polygon from the arguments:
 			p : constant type_contour := type_contour (to_contour (arguments));

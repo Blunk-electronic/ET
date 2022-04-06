@@ -1957,7 +1957,7 @@ package body et_kicad_to_native is
 				end move_polygon;
 
 				
-				procedure move_polygon (polygon : in out type_hatched_floating) is begin
+				procedure move_polygon (polygon : in out type_floating_hatched) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;

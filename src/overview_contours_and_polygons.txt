@@ -62,10 +62,11 @@ et_fill_zones.board:
 	- fixed discriminiant: solid
 	- selectors: properties (layer, priority, fill (rows, borders))
 
- - type_hatched_floating
+ - type_floating_hatched
 	- fixed discriminiant: hatched
 	- selectors: properties
 
+ 
  
 - derived from type_zone_solid 
  - type_solid_route
@@ -76,6 +77,8 @@ et_fill_zones.board:
  - type_hatched_route
 	- discriminiant: connection,
 	- selectors: properties
+ 
+ 
  
  
 - derived from type_contour:

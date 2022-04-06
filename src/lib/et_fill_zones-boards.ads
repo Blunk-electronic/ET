@@ -175,7 +175,8 @@ package et_fill_zones.boards is
 
 	
 	
-	-- A floating conductor fill_zone is not connected to any net:
+-- FOATING FILL ZONES (not connected to any net):
+	
 	type type_floating_solid is new 
 		type_zone (fill_style => SOLID)
 	with record
@@ -187,14 +188,14 @@ package et_fill_zones.boards is
 
 		
 		
-	type type_hatched_floating is new 
+	type type_floating_hatched is new 
 		type_zone (fill_style => HATCHED) 
 	with record
 		properties	: type_properties;
 	end record;
 
 	package pac_floating_hatched is new
-		indefinite_doubly_linked_lists (type_hatched_floating);
+		indefinite_doubly_linked_lists (type_floating_hatched);
 
 		
 	type type_floating is record
@@ -203,6 +204,9 @@ package et_fill_zones.boards is
 	end record;
 
 
+
+	
+-- FILL ZONES CONNECTED WITH A NET (part of a route)
 
 	type type_solid_route (connection : type_fill_zone_pad_connection) 
 		is new type_zone_solid
@@ -255,7 +259,10 @@ package et_fill_zones.boards is
 
 
 
+
 	
+
+-- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled):
 	
 	type type_conductor_cutout 
 		is new type_contour with

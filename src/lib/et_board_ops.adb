@@ -3952,8 +3952,8 @@ package body et_board_ops is
 		is
 			use pac_floating_hatched;
 
-			p : type_hatched_floating := 
-				type_hatched_floating (polygon);
+			p : type_floating_hatched := 
+				type_floating_hatched (polygon);
 			
 		begin
 			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
@@ -4052,7 +4052,7 @@ package body et_board_ops is
 				position	=> module_cursor,
 				process		=> floating_solid'access);
 
-		elsif polygon'tag = type_hatched_floating'tag then
+		elsif polygon'tag = type_floating_hatched'tag then
 
 			update_element (
 				container	=> generic_modules,
