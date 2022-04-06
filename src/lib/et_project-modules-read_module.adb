@@ -4097,7 +4097,7 @@ is
 					case board_fill_style is
 						when SOLID =>
 							pac_floating_solid.append (
-								container	=> module.board.conductors.polygons.solid,
+								container	=> module.board.conductors.fill_zones.solid,
 								new_item	=> (polygon with
 									fill_style 		=> SOLID,
 									easing			=> board_easing,
@@ -4107,7 +4107,7 @@ is
 
 						when HATCHED =>
 							pac_floating_hatched.append (
-								container	=> module.board.conductors.polygons.hatched,
+								container	=> module.board.conductors.fill_zones.hatched,
 								new_item	=> (polygon with
 									fill_style 		=> HATCHED,
 									easing			=> board_easing,
@@ -4637,7 +4637,7 @@ is
 						p.thermal					:= et_pcb_rw.thermal;
 
 						pac_route_solid.append (
-							container	=> route.polygons.solid,
+							container	=> route.fill_zones.solid,
 							new_item	=> p);
 					end;
 
@@ -4657,7 +4657,7 @@ is
 						p.technology				:= et_pcb_rw.thermal.technology;
 
 						pac_route_solid.append (
-							container	=> route.polygons.solid,
+							container	=> route.fill_zones.solid,
 							new_item	=> p);
 					end;
 
@@ -4689,7 +4689,7 @@ is
 						p.thermal					:= et_pcb_rw.thermal;
 						
 						pac_route_hatched.append (
-							container	=> route.polygons.hatched,
+							container	=> route.fill_zones.hatched,
 							new_item	=> p);
 					end;
 
@@ -4710,7 +4710,7 @@ is
 						p.technology := et_pcb_rw.thermal.technology;
 						
 						pac_route_hatched.append (
-							container	=> route.polygons.hatched,
+							container	=> route.fill_zones.hatched,
 							new_item	=> p);
 					end;
 

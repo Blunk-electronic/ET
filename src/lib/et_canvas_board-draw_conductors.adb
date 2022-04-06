@@ -432,8 +432,8 @@ is
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
 		
-		iterate (element (n).route.polygons.solid, query_polygon'access);
-		iterate (element (n).route.polygons.hatched, query_polygon'access);
+		iterate (element (n).route.fill_zones.solid, query_polygon'access);
+		iterate (element (n).route.fill_zones.hatched, query_polygon'access);
 		
 		-- CS iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
@@ -805,13 +805,13 @@ is
 				set_color_conductor (context.cr, current_layer);
 
 				
-				-- freetracks:
+				-- freetracks, floating stuff:
 				is_signal := false;
 				iterate (module.board.conductors.lines, query_line'access);
 				iterate (module.board.conductors.arcs, query_arc'access);
 				iterate (module.board.conductors.circles, query_circle'access);
-				iterate (module.board.conductors.polygons.solid, query_polygon'access);
-				iterate (module.board.conductors.polygons.hatched, query_polygon'access);
+				iterate (module.board.conductors.fill_zones.solid, query_polygon'access);
+				iterate (module.board.conductors.fill_zones.hatched, query_polygon'access);
 				iterate (module.board.conductors.cutouts, query_cutout'access);
 
 				-- texts

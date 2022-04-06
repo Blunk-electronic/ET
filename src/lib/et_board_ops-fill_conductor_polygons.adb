@@ -464,7 +464,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_floating_solid.cursor := module.board.conductors.polygons.solid.first;
+			c : pac_floating_solid.cursor := module.board.conductors.fill_zones.solid.first;
 		begin
 			while c /= pac_floating_solid.no_element loop
 
@@ -475,11 +475,12 @@ is
 			end loop;
 		end floating_solid;
 
+		
 		procedure floating_hatched (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_floating_hatched.cursor := module.board.conductors.polygons.hatched.first;
+			c : pac_floating_hatched.cursor := module.board.conductors.fill_zones.hatched.first;
 		begin
 			while c /= pac_floating_hatched.no_element loop
 
@@ -489,6 +490,7 @@ is
 				next (c);
 			end loop;
 		end floating_hatched;
+
 		
 	begin -- floating_polygons
 		log (text => "floating polygons ...", level => log_threshold + 1);
@@ -524,7 +526,7 @@ is
 				net			: in out type_net)
 			is 
 				-- The cursor that points to the polygon being filled:
-				polygon_cursor : pac_route_solid.cursor := net.route.polygons.solid.first;
+				polygon_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
 				
 				-- The boundaries of the polygon (greatest/smallest x/y):
 				boundaries : type_boundaries;
@@ -571,7 +573,7 @@ is
 				while polygon_cursor /= pac_route_solid.no_element loop
 
 					-- clear the complete fill:
-					update_element (net.route.polygons.solid, polygon_cursor, clear_fill'access);
+					update_element (net.route.fill_zones.solid, polygon_cursor, clear_fill'access);
 
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:
@@ -599,7 +601,7 @@ is
 						start_point_in	=> lower_left_corner,
 						lth				=> log_threshold + 3);
 
-					update_element (net.route.polygons.solid, polygon_cursor, add_rows'access);
+					update_element (net.route.fill_zones.solid, polygon_cursor, add_rows'access);
 
 					
 					-- compute the border:
@@ -612,7 +614,7 @@ is
 						width			=> element (polygon_cursor).width_min,
 						lth				=> log_threshold + 3);
 
-					update_element (net.route.polygons.solid, polygon_cursor, add_borders'access);
+					update_element (net.route.fill_zones.solid, polygon_cursor, add_borders'access);
 
 					
 					log_indentation_down;
@@ -626,7 +628,7 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				p : pac_route_hatched.cursor := net.route.polygons.hatched.first;
+				p : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 
 				-- CS: delete all existing fill lines:
 				

@@ -536,8 +536,8 @@ is
 			use pac_route_solid; 
 			use pac_route_hatched;
 			use boards.pac_cutouts;
-			polygon_solid_cursor	: pac_route_solid.cursor := net.route.polygons.solid.first;
-			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.polygons.hatched.first;
+			polygon_solid_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
+			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 			cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
@@ -1729,11 +1729,14 @@ is
 
 		procedure Write_conductors is begin
 			section_mark (section_conductor, HEADER);
+
+			-- floating stuff:
 			iterate (element (module_cursor).board.conductors.lines, write_line'access);
 			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);
 			iterate (element (module_cursor).board.conductors.circles, write_circle'access);
-			iterate (element (module_cursor).board.conductors.polygons.solid, write_polygon'access);
-			iterate (element (module_cursor).board.conductors.polygons.hatched, write_polygon'access);
+			iterate (element (module_cursor).board.conductors.fill_zones.solid, write_polygon'access);
+			iterate (element (module_cursor).board.conductors.fill_zones.hatched, write_polygon'access);
+			
 			iterate (element (module_cursor).board.conductors.cutouts, write_cutout'access);			
 			iterate (element (module_cursor).board.conductors.texts, write_text'access);
 			iterate (element (module_cursor).board.conductors.placeholders, write_placeholder'access);

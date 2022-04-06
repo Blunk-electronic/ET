@@ -473,16 +473,16 @@ package body et_nets is
 			before => pac_vias.no_element,
 			source => net_2.route.vias);
 
-		-- polygons/fill zones:
+		-- fill zones:
 		splice (
-			target => net_1.route.polygons.solid, 
+			target => net_1.route.fill_zones.solid, 
 			before => pac_route_solid.no_element,
-			source => net_2.route.polygons.solid);
+			source => net_2.route.fill_zones.solid);
 		
 		splice (
-			target => net_1.route.polygons.hatched, 
+			target => net_1.route.fill_zones.hatched, 
 			before => pac_route_hatched.no_element,
-			source => net_2.route.polygons.hatched);
+			source => net_2.route.fill_zones.hatched);
 
 		-- cutout areas:
 		splice (

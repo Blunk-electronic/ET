@@ -621,7 +621,7 @@ package body et_kicad_to_native is
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 					arc_cursor	: pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: pac_route_solid.cursor := net.route.polygons.solid.first;
+					poly_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
 
@@ -713,7 +713,7 @@ package body et_kicad_to_native is
 
 					while poly_cursor /= pac_route_solid.no_element loop
 						pac_route_solid.update_element (
-							container 	=> net.route.polygons.solid,
+							container 	=> net.route.fill_zones.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
 
@@ -2034,12 +2034,12 @@ package body et_kicad_to_native is
 				end loop;
 
 				
-				-- POLYGONS
+				-- FLOATING FILL ZONES
 				-- solid
-				polygons_solid_cursor := module.board.conductors.polygons.solid.first;
+				polygons_solid_cursor := module.board.conductors.fill_zones.solid.first;
 				while polygons_solid_cursor /= pac_floating_solid.no_element loop
 					pac_floating_solid.update_element (
-						container	=> module.board.conductors.polygons.solid,
+						container	=> module.board.conductors.fill_zones.solid,
 						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
 					
@@ -2048,10 +2048,10 @@ package body et_kicad_to_native is
 
 				
 				-- hatched
-				polygons_hatched_cursor := module.board.conductors.polygons.hatched.first;
+				polygons_hatched_cursor := module.board.conductors.fill_zones.hatched.first;
 				while polygons_hatched_cursor /= pac_floating_hatched.no_element loop
 					pac_floating_hatched.update_element (
-						container	=> module.board.conductors.polygons.hatched,
+						container	=> module.board.conductors.fill_zones.hatched,
 						position	=> polygons_hatched_cursor,
 						process		=> move_polygon'access);
 					

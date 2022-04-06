@@ -164,7 +164,7 @@ package et_fill_zones.boards is
 	end record;
 
 	
-	function conductor_fill_zone_properties_to_string (
+	function to_string (
 		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
 

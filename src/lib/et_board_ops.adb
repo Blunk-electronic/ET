@@ -3939,10 +3939,10 @@ package body et_board_ops is
 				type_floating_solid (polygon);
 			
 		begin
-			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
+			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.polygons.solid.append (p);
+			module.board.conductors.fill_zones.solid.append (p);
 		end floating_solid;
 
 		
@@ -3956,10 +3956,10 @@ package body et_board_ops is
 				type_floating_hatched (polygon);
 			
 		begin
-			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
+			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.polygons.hatched.append (p);
+			module.board.conductors.fill_zones.hatched.append (p);
 		end floating_hatched;
 
 		-- Polygons which are connected with a net are part of a route.
@@ -3993,11 +3993,11 @@ package body et_board_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.polygons.solid.append (p);
+				net.route.fill_zones.solid.append (p);
 			end add_polygon;
 			
 		begin --route_solid
-			log (text => conductor_fill_zone_properties_to_string (p, p.properties, net_name),
+			log (text => to_string (p, p.properties, net_name),
 				level => log_threshold + 1);
 
 			update_element (
@@ -4021,11 +4021,11 @@ package body et_board_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.polygons.hatched.append (p);
+				net.route.fill_zones.hatched.append (p);
 			end add_polygon;
 
 		begin -- route_hatched
-			log (text => conductor_fill_zone_properties_to_string (p, p.properties, net_name),
+			log (text => to_string (p, p.properties, net_name),
 				level => log_threshold + 1);
 
 			update_element (

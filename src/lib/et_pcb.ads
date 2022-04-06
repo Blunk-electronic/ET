@@ -229,11 +229,12 @@ package et_pcb is
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
 
-		-- floating conductor polygons/fill areas:
-		polygons		: type_floating; 
+		-- floating fill zones:
+		fill_zones		: type_floating; 
 		-- CS: It is probably no good idea to allow floating conductor polygons.
+		-- Useful to catch the liquid solder during wave soldering ?
 
-		-- global cutout areas for conductor polygons:
+		-- global cutout areas:
 		cutouts			: boards.pac_cutouts.list;
 		
 		texts			: et_conductor_text.boards.pac_conductor_texts.list;
@@ -254,8 +255,8 @@ package et_pcb is
 		-- CS: circles ?
 		vias		: pac_vias.list;
 
-		-- fill areas:
-		polygons	: boards.type_route;
+		-- fill zones:
+		fill_zones	: boards.type_route;
 
 		-- route specific cutout areas:
 		cutouts		: boards.pac_cutouts.list;

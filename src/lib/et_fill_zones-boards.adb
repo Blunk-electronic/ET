@@ -72,7 +72,7 @@ package body et_fill_zones.boards is
 
 	
 	
-	function conductor_fill_zone_properties_to_string (
+	function to_string (
 		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
 		net_name		: in pac_net_name.bounded_string := no_name)
@@ -100,7 +100,7 @@ package body et_fill_zones.boards is
 		end connected_with_net;
 
 		
-	begin -- conductor_fill_zone_properties_to_string
+	begin
 
 		if fill_zone'tag = type_floating_solid'tag 
 		or fill_zone'tag = type_floating_hatched'tag 
@@ -136,7 +136,7 @@ package body et_fill_zones.boards is
 
 		return to_string (result);
 
-	end conductor_fill_zone_properties_to_string;
+	end to_string;
 
 	
 end et_fill_zones.boards;

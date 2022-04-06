@@ -4980,7 +4980,7 @@ package body et_kicad.pcb is
 						log (text => "no vias", level => log_threshold + 3);
 					end if;
 
-					-- Append polygons to route.polygons
+					-- Append fill zone to route.fill_zones
 					while polygon_cursor /= type_polygons.no_element loop
 						if element (polygon_cursor).net_id = net_id then
 						-- Transfer kicad polygon to native ET polygon.
@@ -5016,7 +5016,7 @@ package body et_kicad.pcb is
 											-- convert the polygon corner points to a list of lines:
 											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
-										route.polygons.solid.append (p);																					  
+										route.fill_zones.solid.append (p);																					  
 									end;
 									
 								when SOLID =>
@@ -5041,13 +5041,13 @@ package body et_kicad.pcb is
 											-- convert the polygon corner points to a list of lines:
 											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
-										route.polygons.solid.append (p);																					  
+										route.fill_zones.solid.append (p);																					  
 									end;
 
 								when NONE => null; -- floating polygon is ignored here. will be handled below
 							end case;
 
--- 							et_pcb.route_polygon_properties (route.polygons.solid.last, log_threshold + 3);
+-- 							et_pcb.route_polygon_properties (route.fill_zones.solid.last, log_threshold + 3);
 
 						else
 							null;
@@ -5368,9 +5368,9 @@ package body et_kicad.pcb is
 
 							-- CS set other properties like isolation and priority_level
 							
-							module.board.conductors.polygons.solid.append (p);
+							module.board.conductors.fill_zones.solid.append (p);
 
-							floating_copper_polygon_properties (module.board.conductors.polygons.solid.last, log_threshold + 2);
+							floating_copper_polygon_properties (module.board.conductors.fill_zones.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;
@@ -5381,6 +5381,7 @@ package body et_kicad.pcb is
 
 				use et_symbols;
 				use schematic.type_nets;
+
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
