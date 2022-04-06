@@ -508,8 +508,8 @@ is
 		use et_nets;
 		
 		use pac_nets;
-		use pac_solid_route;
-		use pac_hatched_route;
+		use pac_route_solid;
+		use pac_route_hatched;
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -524,7 +524,7 @@ is
 				net			: in out type_net)
 			is 
 				-- The cursor that points to the polygon being filled:
-				polygon_cursor : pac_solid_route.cursor := net.route.polygons.solid.first;
+				polygon_cursor : pac_route_solid.cursor := net.route.polygons.solid.first;
 				
 				-- The boundaries of the polygon (greatest/smallest x/y):
 				boundaries : type_boundaries;
@@ -568,7 +568,7 @@ is
 
 				
 			begin -- route_solid
-				while polygon_cursor /= pac_solid_route.no_element loop
+				while polygon_cursor /= pac_route_solid.no_element loop
 
 					-- clear the complete fill:
 					update_element (net.route.polygons.solid, polygon_cursor, clear_fill'access);
@@ -626,7 +626,7 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				p : pac_hatched_route.cursor := net.route.polygons.hatched.first;
+				p : pac_route_hatched.cursor := net.route.polygons.hatched.first;
 
 				-- CS: delete all existing fill lines:
 				
@@ -640,7 +640,7 @@ is
 				height : type_distance_positive;
 				
 			begin
-				while p /= pac_hatched_route.no_element loop
+				while p /= pac_route_hatched.no_element loop
 
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:

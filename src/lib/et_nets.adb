@@ -440,8 +440,8 @@ package body et_nets is
 		use pac_vias;
 
 		use et_fill_zones.boards;
-		use pac_solid_route;
-		use pac_hatched_route;
+		use pac_route_solid;
+		use pac_route_hatched;
 		use pac_conductor_cutouts;
 		
 	begin
@@ -476,12 +476,12 @@ package body et_nets is
 		-- polygons/fill zones:
 		splice (
 			target => net_1.route.polygons.solid, 
-			before => pac_solid_route.no_element,
+			before => pac_route_solid.no_element,
 			source => net_2.route.polygons.solid);
 		
 		splice (
 			target => net_1.route.polygons.hatched, 
-			before => pac_hatched_route.no_element,
+			before => pac_route_hatched.no_element,
 			source => net_2.route.polygons.hatched);
 
 		-- cutout areas:

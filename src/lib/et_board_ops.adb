@@ -3983,7 +3983,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_solid_route;
+			use pac_route_solid;
 
 			p : type_route_solid := 
 				type_route_solid (polygon);
@@ -4012,7 +4012,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_hatched_route;
+			use pac_route_hatched;
 
 			p : type_route_hatched := 
 				type_route_hatched (polygon);

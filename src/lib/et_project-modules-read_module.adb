@@ -4620,7 +4620,7 @@ is
 				use et_fill_zones.boards;
 				
 				procedure solid_polygon is
-					use pac_solid_route;
+					use pac_route_solid;
 
 					procedure connection_thermal is
 						p : type_route_solid (connection => boards.THERMAL);
@@ -4636,7 +4636,7 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.thermal					:= et_pcb_rw.thermal;
 
-						pac_solid_route.append (
+						pac_route_solid.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
@@ -4656,7 +4656,7 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.technology				:= et_pcb_rw.thermal.technology;
 
-						pac_solid_route.append (
+						pac_route_solid.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
@@ -4671,7 +4671,7 @@ is
 
 				
 				procedure hatched_polygon is
-					use pac_hatched_route;
+					use pac_route_hatched;
 					use et_packages;
 
 					procedure connection_thermal is
@@ -4688,7 +4688,7 @@ is
 						p.properties.priority_level	:= polygon_priority;
 						p.thermal					:= et_pcb_rw.thermal;
 						
-						pac_hatched_route.append (
+						pac_route_hatched.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
@@ -4709,7 +4709,7 @@ is
 						
 						p.technology := et_pcb_rw.thermal.technology;
 						
-						pac_hatched_route.append (
+						pac_route_hatched.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;

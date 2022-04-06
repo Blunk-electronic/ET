@@ -243,17 +243,17 @@ package et_fill_zones.boards is
 
 
 	
-	package pac_solid_route is new
+	package pac_route_solid is new
 		indefinite_doubly_linked_lists (type_route_solid);
 	
-	package pac_hatched_route is new
+	package pac_route_hatched is new
 		indefinite_doubly_linked_lists (type_route_hatched);	
 
 
 		
 	type type_route is record
-		solid	: pac_solid_route.list;
-		hatched	: pac_hatched_route.list;
+		solid	: pac_route_solid.list;
+		hatched	: pac_route_hatched.list;
 	end record;
 
 

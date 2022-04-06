@@ -533,11 +533,11 @@ is
 
 			use et_fill_zones;
 			use et_fill_zones.boards;
-			use pac_solid_route; 
-			use pac_hatched_route;
+			use pac_route_solid; 
+			use pac_route_hatched;
 			use boards.pac_conductor_cutouts;
-			polygon_solid_cursor	: pac_solid_route.cursor := net.route.polygons.solid.first;
-			polygon_hatched_cursor	: pac_hatched_route.cursor := net.route.polygons.hatched.first;
+			polygon_solid_cursor	: pac_route_solid.cursor := net.route.polygons.solid.first;
+			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.polygons.hatched.first;
 			cutout_zone_cursor		: pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
@@ -609,7 +609,7 @@ is
 			write_vias;
 			
 			-- solid fill zones
-			while polygon_solid_cursor /= pac_solid_route.no_element loop
+			while polygon_solid_cursor /= pac_route_solid.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_solid_cursor).easing);
@@ -642,7 +642,7 @@ is
 
 			
 			-- hatched fill zones
-			while polygon_hatched_cursor /= pac_hatched_route.no_element loop
+			while polygon_hatched_cursor /= pac_route_hatched.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_hatched_cursor).easing);
