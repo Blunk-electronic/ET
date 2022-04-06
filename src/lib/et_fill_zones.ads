@@ -87,10 +87,10 @@ package et_fill_zones is
 
 	
 
-	type type_fill_zone_solid 
+	type type_zone_solid
 		is new type_zone (fill_style => SOLID) with null record;
 
-	package pac_fill_zones_solid is new doubly_linked_lists (type_fill_zone_solid);
+	package pac_fill_zones_solid is new doubly_linked_lists (type_zone_solid);
 
 
 	

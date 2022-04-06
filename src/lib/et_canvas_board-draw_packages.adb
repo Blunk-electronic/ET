@@ -2494,7 +2494,7 @@ is
 			use pac_fill_zones_solid;
 
 			procedure draw_polygon_solid (
-				polygon	: in out type_fill_zone_solid;
+				polygon	: in out type_zone_solid;
 				f		: in type_face) 
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2527,7 +2527,7 @@ is
 			procedure query_polygon_top_solid (
 				c : in pac_fill_zones_solid.cursor) 
 			is
-				polygon : type_fill_zone_solid := element (c);
+				polygon : type_zone_solid := element (c);
 			begin
 				set_destination;
 				draw_polygon_solid (polygon, destination);
@@ -2536,7 +2536,7 @@ is
 			procedure query_polygon_bottom_solid (
 				c : in pac_fill_zones_solid.cursor) 
 			is
-				polygon : type_fill_zone_solid := element (c);
+				polygon : type_zone_solid := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);

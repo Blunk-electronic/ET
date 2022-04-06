@@ -205,7 +205,7 @@ package et_fill_zones.boards is
 
 
 	type type_solid_route (connection : type_fill_zone_pad_connection) 
-		is new type_fill_zone_solid
+		is new type_zone_solid
 	with record
 		properties	: type_properties;
 

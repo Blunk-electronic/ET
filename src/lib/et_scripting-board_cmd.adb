@@ -2212,7 +2212,7 @@ is
 			p0 : constant type_contour := type_contour (to_contour (arguments));
 
 			procedure make_solid_thermal is
-				p1 : type_fill_zone_solid;
+				p1 : type_zone_solid;
 				p2 : type_solid_route (connection => THERMAL);
 			begin
 				p1 := (p0 with 
@@ -2239,7 +2239,7 @@ is
 
 			
 			procedure make_solid_solid is 
-				p1 : type_fill_zone_solid;
+				p1 : type_zone_solid;
 				p2 : type_solid_route (connection => SOLID);
 			begin
 				p1 := (p0 with 
