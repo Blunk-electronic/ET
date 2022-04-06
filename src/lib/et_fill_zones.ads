@@ -67,7 +67,7 @@ package et_fill_zones is
 	use pac_contours;
 
 	
-	type type_fill_zone (fill_style : type_fill_style) 
+	type type_zone (fill_style : type_fill_style) 
 		is new type_contour with
 	record
 
@@ -88,7 +88,7 @@ package et_fill_zones is
 	
 
 	type type_fill_zone_solid 
-		is new type_fill_zone (fill_style => SOLID) with null record;
+		is new type_zone (fill_style => SOLID) with null record;
 
 	package pac_fill_zones_solid is new doubly_linked_lists (type_fill_zone_solid);
 
@@ -96,7 +96,7 @@ package et_fill_zones is
 	
 	
 	type type_fill_zone_hatched
-		is new type_fill_zone (fill_style => HATCHED) with null record;
+		is new type_zone (fill_style => HATCHED) with null record;
 
 	package pac_fill_zones_hatched is new doubly_linked_lists (type_fill_zone_hatched);
 

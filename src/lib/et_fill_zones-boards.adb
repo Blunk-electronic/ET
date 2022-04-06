@@ -73,7 +73,7 @@ package body et_fill_zones.boards is
 	
 	
 	function conductor_fill_zone_properties_to_string (
-		fill_zone			: in type_fill_zone'class;
+		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
 		net_name		: in pac_net_name.bounded_string := no_name)
 		return string

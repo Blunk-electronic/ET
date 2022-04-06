@@ -553,6 +553,7 @@ package et_board_ops is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
+	
 -- TEXT
 	
 	-- Places a text in a non conductor layer like
@@ -584,7 +585,7 @@ package et_board_ops is
 	
 	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_fill_zone'class;
+		polygon			: in type_zone'class;
 		log_threshold	: in type_log_level;
 
 		-- Net name is relevant if polygon is part of a route.

@@ -3921,7 +3921,7 @@ package body et_board_ops is
 
 	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_fill_zone'class;
+		polygon			: in type_zone'class;
 		log_threshold	: in type_log_level;
 		net_name		: in pac_net_name.bounded_string := no_name)
 	is

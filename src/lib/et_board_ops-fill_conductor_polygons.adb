@@ -592,7 +592,7 @@ is
 					rows := make_rows (
 						net_cursor		=> net_cursor,
 						net_class		=> net_class,
-						fill_zone		=> (observe => true, outline => et_fill_zones.type_fill_zone (element (polygon_cursor))),
+						fill_zone		=> (observe => true, outline => et_fill_zones.type_zone (element (polygon_cursor))),
 						layer			=> element (polygon_cursor).properties.layer,
 						width			=> element (polygon_cursor).width_min,
 						height			=> get_height (boundaries),
@@ -607,7 +607,7 @@ is
 						rows			=> rows,
 						net_cursor		=> net_cursor,
 						net_class		=> net_class,
-						fill_zone		=> (observe => true, outline => et_fill_zones.type_fill_zone (element (polygon_cursor))),
+						fill_zone		=> (observe => true, outline => et_fill_zones.type_zone (element (polygon_cursor))),
 						layer			=> element (polygon_cursor).properties.layer,
 						width			=> element (polygon_cursor).width_min,
 						lth				=> log_threshold + 3);

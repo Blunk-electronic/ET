@@ -165,7 +165,7 @@ package et_fill_zones.boards is
 
 	
 	function conductor_fill_zone_properties_to_string (
-		fill_zone			: in type_fill_zone'class;
+		fill_zone		: in type_zone'class;
 		properties		: in type_properties;
 
 		-- Net name is relevant if fill_zone is part of a route.
@@ -177,7 +177,7 @@ package et_fill_zones.boards is
 	
 	-- A floating conductor fill_zone is not connected to any net:
 	type type_solid_floating is new 
-		type_fill_zone (fill_style => SOLID)
+		type_zone (fill_style => SOLID)
 	with record
 		properties	: type_properties;
 	end record;
@@ -188,7 +188,7 @@ package et_fill_zones.boards is
 		
 		
 	type type_hatched_floating is new 
-		type_fill_zone (fill_style => HATCHED) 
+		type_zone (fill_style => HATCHED) 
 	with record
 		properties	: type_properties;
 	end record;
