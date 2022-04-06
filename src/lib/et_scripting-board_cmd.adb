@@ -2082,7 +2082,7 @@ is
 			-- Extract from the given command the polygon arguments (everything after "polygon"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
-			ps : type_solid_floating;
+			ps : type_floating_solid;
 			ph : type_hatched_floating;
 
 			-- Build a basic polygon from the arguments:

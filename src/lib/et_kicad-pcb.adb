@@ -5338,7 +5338,7 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					p : type_solid_floating;
+					p : type_floating_solid;
 				begin
 					-- search polygons with a net_id of zero:
 					while polygon_cursor /= type_polygons.no_element loop

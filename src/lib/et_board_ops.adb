@@ -3935,8 +3935,8 @@ package body et_board_ops is
 		is
 			use pac_floating_solid;
 
-			p : type_solid_floating := 
-				type_solid_floating (polygon);
+			p : type_floating_solid := 
+				type_floating_solid (polygon);
 			
 		begin
 			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
@@ -4034,6 +4034,7 @@ package body et_board_ops is
 				process		=> add_polygon'access);
 
 		end route_hatched;
+
 		
 	begin -- place_polygon_conductor
 		log (text => "module " 
@@ -4044,7 +4045,7 @@ package body et_board_ops is
 		log_indentation_up;
 		
 		-- floating polygons:
-		if polygon'tag = type_solid_floating'tag then
+		if polygon'tag = type_floating_solid'tag then
 
 			update_element (
 				container	=> generic_modules,

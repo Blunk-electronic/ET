@@ -100,7 +100,7 @@ package body et_fill_zones.boards is
 		
 	begin -- conductor_fill_zone_properties_to_string
 
-		if fill_zone'tag = type_solid_floating'tag 
+		if fill_zone'tag = type_floating_solid'tag 
 		or fill_zone'tag = type_hatched_floating'tag 
 		then
 			append ("floating");

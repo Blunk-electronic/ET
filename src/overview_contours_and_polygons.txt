@@ -58,7 +58,7 @@ et_fill_zones:
 	
 et_fill_zones.board:
 - derived from type_zone
- - type_solid_floating 
+ - type_floating_solid
 	- fixed discriminiant: solid
 	- selectors: properties (layer, priority, fill (rows, borders))
 

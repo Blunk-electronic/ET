@@ -1951,7 +1951,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_solid_floating) is begin
+				procedure move_polygon (polygon : in out type_floating_solid) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;

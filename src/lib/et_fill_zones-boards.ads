@@ -176,14 +176,14 @@ package et_fill_zones.boards is
 	
 	
 	-- A floating conductor fill_zone is not connected to any net:
-	type type_solid_floating is new 
+	type type_floating_solid is new 
 		type_zone (fill_style => SOLID)
 	with record
 		properties	: type_properties;
 	end record;
 
 	package pac_floating_solid is new 
-		indefinite_doubly_linked_lists (type_solid_floating);
+		indefinite_doubly_linked_lists (type_floating_solid);
 
 		
 		
