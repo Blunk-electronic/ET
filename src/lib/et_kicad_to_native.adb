@@ -73,8 +73,8 @@ with et_device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
-with et_conductor_polygons;		use et_conductor_polygons;
-with et_conductor_polygons.boards;
+with et_fill_zones;				use et_fill_zones;
+with et_fill_zones.boards;
 with et_conductor_text;			use et_conductor_text;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
@@ -615,7 +615,7 @@ package body et_kicad_to_native is
 					use et_vias;
 					use pac_vias;
 
-					use et_conductor_polygons.boards;
+					use et_fill_zones.boards;
 					use pac_solid_route;
 					
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
@@ -1887,7 +1887,7 @@ package body et_kicad_to_native is
 				use pac_conductor_circles;
 				circles_cursor : pac_conductor_circles.cursor;
 
-				use et_conductor_polygons.boards;
+				use et_fill_zones.boards;
 				use pac_floating_solid;
 				polygons_solid_cursor : pac_floating_solid.cursor;
 

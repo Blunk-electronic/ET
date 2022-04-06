@@ -4347,7 +4347,7 @@ package body et_kicad.pcb is
 			procedure insert_polygon is
 			-- inserts the current polygon in the list "polygons"
 				--use et_packages;
-				use et_conductor_polygons.boards;
+				use et_fill_zones.boards;
 				use type_polygon_points;
 			begin
 				board.polygons.append (polygon);
@@ -4667,7 +4667,7 @@ package body et_kicad.pcb is
 		cursor			: in pac_floating_solid.cursor;
 		log_threshold 	: in type_log_level) 
 	is
-		use et_conductor_polygons;
+		use et_fill_zones;
 		use pac_floating_solid;
 		use et_pcb_stack;
 		use et_packages;
@@ -4990,7 +4990,7 @@ package body et_kicad.pcb is
 							case element (polygon_cursor).pad_connection is
 								when THERMAL =>
 									declare
-										use et_conductor_polygons.boards;
+										use et_fill_zones.boards;
 										p : type_solid_route (boards.THERMAL);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
@@ -5019,7 +5019,7 @@ package body et_kicad.pcb is
 									
 								when SOLID =>
 									declare
-										use et_conductor_polygons.boards;
+										use et_fill_zones.boards;
 										p : type_solid_route (boards.SOLID);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;

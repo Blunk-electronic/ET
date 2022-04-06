@@ -43,7 +43,7 @@ et_terminals:
 
 
 	
-et_conductor_polygons:
+et_fill_zones:
 - derived from type_contour:
  - type_fill_zone 
 	- discriminiant: fill_style
@@ -56,11 +56,11 @@ et_conductor_polygons:
  
  
 	
-et_conductor_polygons.board:
+et_fill_zones.board:
 - derived from type_fill_zone
  - type_solid_floating 
 	- fixed discriminiant: solid
-	- selectors: properties (layer, priority, filled_areas)
+	- selectors: properties (layer, priority, fill (rows, borders))
 
  - type_hatched_floating
 	- fixed discriminiant: hatched

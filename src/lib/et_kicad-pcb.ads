@@ -66,8 +66,8 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;				use et_design_rules;
 
-with et_conductor_polygons;			use et_conductor_polygons;
-with et_conductor_polygons.boards;	use et_conductor_polygons.boards;
+with et_fill_zones;					use et_fill_zones;
+with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_conductor_text;
 with et_conductor_text.boards;
 with et_conductor_segment;

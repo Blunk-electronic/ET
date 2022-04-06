@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---            POLYGONS IN CONDUCTOR LAYERS OF BOARDS (PCB)                  --
+--                       FILL ZONES IN BOARDS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -39,7 +39,7 @@
 with ada.strings.unbounded;
 with ada.tags;
 
-package body et_conductor_polygons.boards is
+package body et_fill_zones.boards is
 
 	function to_string (priority_level : in type_polygon_priority) return string is begin
 		return type_polygon_priority'image (priority_level);
@@ -137,7 +137,7 @@ package body et_conductor_polygons.boards is
 	end conductor_polygon_properties_to_string;
 
 	
-end et_conductor_polygons.boards;
+end et_fill_zones.boards;
 
 -- Soli Deo Gloria
 

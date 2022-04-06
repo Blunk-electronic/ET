@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---            POLYGONS IN CONDUCTOR LAYERS OF BOARDS (PCB)                  --
+--                       FILL ZONES IN BOARDS                               --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -40,7 +40,7 @@ with et_net_names;				use et_net_names;
 with et_pcb_stack;				use et_pcb_stack;
 
 
-package et_conductor_polygons.boards is
+package et_fill_zones.boards is
 
 	-- priority: 0 is weakest, 100 is strongest.
 	keyword_priority : constant string := "priority";
@@ -147,7 +147,7 @@ package et_conductor_polygons.boards is
 	
 	package pac_thermals is new doubly_linked_lists (type_line);
 
-	type type_fill is new et_conductor_polygons.type_fill with record
+	type type_fill is new et_fill_zones.type_fill with record
 		thermals	: pac_thermals.list;
 	end record;
 
@@ -263,7 +263,7 @@ package et_conductor_polygons.boards is
 	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
 
 	
-end et_conductor_polygons.boards;
+end et_fill_zones.boards;
 
 -- Soli Deo Gloria
 

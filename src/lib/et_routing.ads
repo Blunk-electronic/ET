@@ -60,8 +60,8 @@ with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_project.modules;			use et_project.modules;
-with et_conductor_polygons;			use et_conductor_polygons;
-with et_conductor_polygons.boards;
+with et_fill_zones;					use et_fill_zones;
+with et_fill_zones.boards;
 with et_conductor_segment;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_conductor_text.packages;
@@ -291,7 +291,7 @@ package et_routing is
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is
 			when TRUE => 
-				outline : et_conductor_polygons.type_fill_zone (SOLID);
+				outline : et_fill_zones.type_fill_zone (SOLID);
 				-- The fill style does not matter.
 
 			when FALSE => null;

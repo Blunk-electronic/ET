@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                      POLYGONS IN CONDUCTOR LAYERS                        --
+--                             FILL ZONES                                   --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -60,7 +60,7 @@ with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 
-package et_conductor_polygons is
+package et_fill_zones is
 	
 	use pac_geometry_brd;
 	use pac_geometry_2;
@@ -189,7 +189,7 @@ package et_conductor_polygons is
 	procedure dummy;
 
 	
-end et_conductor_polygons;
+end et_fill_zones;
 
 -- Soli Deo Gloria
 

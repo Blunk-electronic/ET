@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---            POLYGONS IN CONDUCTOR LAYERS OF PACKAGES                      --
+--                        FILL ZONES IN PACKAGES                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,7 +39,7 @@
 --	   in a package. Usually a solidly filled area can be drawn
 --	   by a pad contour (see package et_terminals).
 
-package et_conductor_polygons.packages is
+package et_fill_zones.packages is
 	
 
 	-- User defined cutout areas:
@@ -53,7 +53,7 @@ package et_conductor_polygons.packages is
 	end record;
 
 	
-end et_conductor_polygons.packages;
+end et_fill_zones.packages;
 
 -- Soli Deo Gloria
 

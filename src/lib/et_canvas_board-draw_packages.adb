@@ -54,8 +54,8 @@ with et_design_rules;			use et_design_rules;
 with et_text;
 with et_conductor_text.packages;		use et_conductor_text.packages;
 
-with et_conductor_polygons;				use et_conductor_polygons;
-with et_conductor_polygons.packages;	use et_conductor_polygons.packages;
+with et_fill_zones;				use et_fill_zones;
+with et_fill_zones.packages;	use et_fill_zones.packages;
 
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;			use et_via_restrict;

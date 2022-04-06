@@ -1438,7 +1438,7 @@ is
 	procedure read_fill_zone_route is
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_brd;
-		use et_conductor_polygons.boards;
+		use et_fill_zones.boards;
 		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
@@ -1583,7 +1583,7 @@ is
 		use et_board_shapes_and_text;
 		use pac_geometry_2;									
 		use et_pcb_stack;
-		use et_conductor_polygons.boards;
+		use et_fill_zones.boards;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -2294,7 +2294,7 @@ is
 	
 	procedure read_user_settings_fill_zones_conductor is
 		use et_board_shapes_and_text;
-		use et_conductor_polygons.boards;		
+		use et_fill_zones.boards;		
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -3706,7 +3706,7 @@ is
 				use pac_contours;
 				use et_packages;
 				use et_pcb;
-				use et_conductor_polygons.boards;
+				use et_fill_zones.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4087,8 +4087,8 @@ is
 			-- This is about floating polygons in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
 				use pac_contours;
-				use et_conductor_polygons;
-				use et_conductor_polygons.boards;
+				use et_fill_zones;
+				use et_fill_zones.boards;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4616,8 +4616,8 @@ is
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_geometry_2;
 				use et_board_shapes_and_text.pac_contours;
-				use et_conductor_polygons;
-				use et_conductor_polygons.boards;
+				use et_fill_zones;
+				use et_fill_zones.boards;
 				
 				procedure solid_polygon is
 					use pac_solid_route;
@@ -4736,7 +4736,7 @@ is
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
 				use pac_contours;
-				use et_conductor_polygons.boards;
+				use et_fill_zones.boards;
 			begin
 				pac_conductor_cutouts.append (
 					container	=> route.cutouts,

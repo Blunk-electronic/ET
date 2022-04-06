@@ -49,8 +49,8 @@ with et_general_rw;					use et_general_rw;
 with et_text;						use et_text;
 with et_terminals;					use et_terminals;
 
-with et_conductor_text.packages;		use et_conductor_text.packages;
-with et_conductor_polygons.packages;	use et_conductor_polygons.packages;
+with et_conductor_text.packages;	use et_conductor_text.packages;
+with et_fill_zones.packages;		use et_fill_zones.packages;
 
 package body et_pcb_rw.device_packages is
 
@@ -178,8 +178,8 @@ package body et_pcb_rw.device_packages is
 			end write_polygon;
 
 			
-			use et_conductor_polygons.packages.pac_cutouts;
-			procedure write_cutout (cursor : in et_conductor_polygons.packages.pac_cutouts.cursor) is begin
+			use et_fill_zones.packages.pac_cutouts;
+			procedure write_cutout (cursor : in et_fill_zones.packages.pac_cutouts.cursor) is begin
 				cutout_zone_begin;
 
 				contours_begin;
@@ -1595,7 +1595,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_top is begin
-					et_conductor_polygons.packages.pac_cutouts.append (
+					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
 						new_item	=> polygon);
 										
@@ -1604,7 +1604,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_conductor_cutout_bottom is begin
-					et_conductor_polygons.packages.pac_cutouts.append (
+					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
 						new_item	=> polygon);
 										

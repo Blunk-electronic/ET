@@ -36,7 +36,7 @@
 --
 
 with et_conductor_segment.boards;
-with et_conductor_polygons.boards;
+with et_fill_zones.boards;
 with et_vias;
 
 
@@ -439,7 +439,7 @@ package body et_nets is
 		use et_vias;
 		use pac_vias;
 
-		use et_conductor_polygons.boards;
+		use et_fill_zones.boards;
 		use pac_solid_route;
 		use pac_hatched_route;
 		use pac_conductor_cutouts;

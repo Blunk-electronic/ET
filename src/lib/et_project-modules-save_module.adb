@@ -531,8 +531,8 @@ is
 			use pac_conductor_arcs;
 			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
-			use et_conductor_polygons;
-			use et_conductor_polygons.boards;
+			use et_fill_zones;
+			use et_fill_zones.boards;
 			use pac_solid_route; 
 			use pac_hatched_route;
 			use boards.pac_conductor_cutouts;
@@ -1223,7 +1223,7 @@ is
 		use et_conductor_text;
 		use pac_conductor_texts;
 
-		use et_conductor_polygons.boards;
+		use et_fill_zones.boards;
 		use et_conductor_segment.boards;
 		
 		-- general stuff
