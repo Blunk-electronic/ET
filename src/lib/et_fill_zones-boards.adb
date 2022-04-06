@@ -108,7 +108,7 @@ package body et_fill_zones.boards is
 			append ("floating");
 			
 		elsif fill_zone'tag = type_route_solid'tag 
-		or    fill_zone'tag = type_hatched_route'tag 
+		or    fill_zone'tag = type_route_hatched'tag 
 		then
 			append ("net " & pac_net_name.to_string (net_name));
 			

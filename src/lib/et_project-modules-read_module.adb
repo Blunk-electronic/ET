@@ -4675,7 +4675,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : type_hatched_route (connection => boards.THERMAL);
+						p : type_route_hatched (connection => boards.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4695,7 +4695,7 @@ is
 
 					
 					procedure connection_solid is
-						p : type_hatched_route (connection => boards.SOLID);
+						p : type_route_hatched (connection => boards.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						

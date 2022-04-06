@@ -225,7 +225,7 @@ package et_fill_zones.boards is
 	end record;
 
 	
-	type type_hatched_route (connection : type_fill_zone_pad_connection) 
+	type type_route_hatched (connection : type_fill_zone_pad_connection) 
 		is new type_zone_hatched 
 	with record
 		properties	: type_properties;
@@ -247,7 +247,7 @@ package et_fill_zones.boards is
 		indefinite_doubly_linked_lists (type_route_solid);
 	
 	package pac_hatched_route is new
-		indefinite_doubly_linked_lists (type_hatched_route);	
+		indefinite_doubly_linked_lists (type_route_hatched);	
 
 
 		

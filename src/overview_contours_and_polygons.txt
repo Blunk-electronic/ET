@@ -74,7 +74,7 @@ et_fill_zones.board:
 	- selectors: properties
 
 - derived from type_zone_hatched
- - type_hatched_route
+ - type_route_hatched
 	- discriminiant: connection,
 	- selectors: properties
  

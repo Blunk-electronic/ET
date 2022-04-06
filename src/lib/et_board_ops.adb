@@ -4014,8 +4014,8 @@ package body et_board_ops is
 		is
 			use pac_hatched_route;
 
-			p : type_hatched_route := 
-				type_hatched_route (polygon);
+			p : type_route_hatched := 
+				type_route_hatched (polygon);
 			
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
@@ -4070,7 +4070,7 @@ package body et_board_ops is
 				position	=> module_cursor,
 				process		=> route_solid'access);
 
-		elsif polygon'tag = type_hatched_route'tag then
+		elsif polygon'tag = type_route_hatched'tag then
 
 			locate_targeted_net;
 
