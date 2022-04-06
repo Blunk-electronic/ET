@@ -74,7 +74,7 @@ package et_fill_zones is
 		-- the minimum width:
 		width_min : type_track_width := type_track_width'first;
 
-		-- the space between the polygon and foreign conductor objects:
+		-- the space between the fill_zone and foreign conductor objects:
 		isolation : type_track_clearance := type_track_clearance'first; 
 	
 		easing : type_easing;
@@ -185,9 +185,6 @@ package et_fill_zones is
 	
 
 														 
-	
-	procedure dummy;
-
 	
 end et_fill_zones;
 

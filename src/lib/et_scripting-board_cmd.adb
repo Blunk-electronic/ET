@@ -1907,7 +1907,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.priority_level := to_polygon_priority (f (6));
+			module.board.user_settings.polygons_conductor.priority_level := to_fill_zone_priority (f (6));
 		end set_priority;
 
 		procedure set_easing_style (

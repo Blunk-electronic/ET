@@ -154,12 +154,14 @@ package body et_kicad.pcb is
 			when constraint_error => invalid_layer; raise;
 	end to_signal_layer_id;
 
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
-		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	
+	function to_string (polygon_pad_connection : in type_fill_zone_pad_connection) return string is begin
+		return latin_1.space & to_lower (type_fill_zone_pad_connection'image (polygon_pad_connection));
 	end to_string;
 
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
-		return type_polygon_pad_connection'value (connection);
+	
+	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection is begin
+		return type_fill_zone_pad_connection'value (connection);
 	end to_pad_connection;
 	
 
@@ -2854,7 +2856,7 @@ package body et_kicad.pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS validate priority
-									polygon.priority_level := to_polygon_priority (to_string (arg));
+									polygon.priority_level := to_fill_zone_priority (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4353,24 +4355,24 @@ package body et_kicad.pcb is
 				board.polygons.append (polygon);
 
 				log (text => "polygon/zone net " & to_string (polygon.net_name) &
-					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
+					 " " & text_fill_zone_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
 					 " " & keyword_priority & boards.to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
-					 " min_thickness/" & text_polygon_width_min & pac_geometry_brd.to_string (polygon.min_thickness) &
+					 " min_thickness/" & text_fill_zone_width_min & pac_geometry_brd.to_string (polygon.min_thickness) &
 					 " " & keyword_isolation & pac_geometry_brd.to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
 					 " smoothing/easing" & to_string (polygon.easing.style) &
 					 " " & keyword_easing_radius & pac_geometry_brd.to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " " & text_polygon_thermal_gap & pac_geometry_brd.to_string (polygon.thermal_gap) &
-					 " " & text_polygon_thermal_width & pac_geometry_brd.to_string (polygon.thermal_width) &
-					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
-					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
+					 " " & text_fill_zone_thermal_gap & pac_geometry_brd.to_string (polygon.thermal_gap) &
+					 " " & text_fill_zone_thermal_width & pac_geometry_brd.to_string (polygon.thermal_width) &
+					 " " & text_fill_zone_pad_connection & to_string (polygon.pad_connection) &
+					 " " & text_fill_zone_pad_technology & to_string (polygon.pad_technology),
 					 level => log_threshold + 3);
 
 				-- CS log corner points
@@ -4674,8 +4676,8 @@ package body et_kicad.pcb is
 	begin
 		-- general stuff
 		log (text => "polygon" & 
-			 " " & text_polygon_signal_layer & to_string (element (cursor).properties.layer) &
-			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & text_fill_zone_signal_layer & to_string (element (cursor).properties.layer) &
+			 " " & text_fill_zone_width_min & to_string (element (cursor).width_min) &
 			 " " & keyword_easing_style & to_string (element (cursor).easing.style) &
 			 " " & keyword_easing_radius & to_string (element (cursor).easing.radius),
 			 level => log_threshold);
@@ -4684,7 +4686,7 @@ package body et_kicad.pcb is
 		
 		-- corner points
 		-- CS show shapes instead
--- 		log (text => text_polygon_corner_points, level => log_threshold);
+-- 		log (text => text_fill_zone_corner_points, level => log_threshold);
 -- 		points := element (cursor).corners;
 -- 		point_cursor := points.first;
 -- 		while point_cursor /= type_polygon_points.no_element loop

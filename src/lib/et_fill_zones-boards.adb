@@ -41,39 +41,39 @@ with ada.tags;
 
 package body et_fill_zones.boards is
 
-	function to_string (priority_level : in type_polygon_priority) return string is begin
-		return type_polygon_priority'image (priority_level);
+	function to_string (priority_level : in type_fill_zone_priority) return string is begin
+		return type_fill_zone_priority'image (priority_level);
 	end;
 
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
-		return type_polygon_priority'value (priority_level);
+	function to_fill_zone_priority (priority_level : in string) return type_fill_zone_priority is begin
+		return type_fill_zone_priority'value (priority_level);
 	end;
 
 
 
 
 	
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
-		return to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	function to_string (fill_zone_pad_connection : in type_fill_zone_pad_connection) return string is begin
+		return to_lower (type_fill_zone_pad_connection'image (fill_zone_pad_connection));
 	end;
 
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
-		return type_polygon_pad_connection'value (connection);
+	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection is begin
+		return type_fill_zone_pad_connection'value (connection);
 	end;
 
 	
-	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
-		return to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
+	function to_string (fill_zone_pad_technology : in type_fill_zone_pad_technology) return string is begin
+		return to_lower (type_fill_zone_pad_technology'image (fill_zone_pad_technology));
 	end;
 
-	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
-		return type_polygon_pad_technology'value (technology);
+	function to_pad_technology (technology : in string) return type_fill_zone_pad_technology is begin
+		return type_fill_zone_pad_technology'value (technology);
 	end to_pad_technology;
 
 	
 	
-	function conductor_polygon_properties_to_string (
-		polygon			: in type_fill_zone'class;
+	function conductor_fill_zone_properties_to_string (
+		fill_zone			: in type_fill_zone'class;
 		properties		: in type_properties;
 		net_name		: in pac_net_name.bounded_string := no_name)
 		return string
@@ -98,43 +98,43 @@ package body et_fill_zones.boards is
 
 		end connected_with_net;
 		
-	begin -- conductor_polygon_properties_to_string
+	begin -- conductor_fill_zone_properties_to_string
 
-		if polygon'tag = type_solid_floating'tag 
-		or polygon'tag = type_hatched_floating'tag 
+		if fill_zone'tag = type_solid_floating'tag 
+		or fill_zone'tag = type_hatched_floating'tag 
 		then
 			append ("floating");
 			
-		elsif polygon'tag = type_solid_route'tag 
-		or    polygon'tag = type_hatched_route'tag 
+		elsif fill_zone'tag = type_solid_route'tag 
+		or    fill_zone'tag = type_hatched_route'tag 
 		then
 			append ("net " & pac_net_name.to_string (net_name));
 			
-			-- CS connected_with_net (type_solid_route (polygon));
+			-- CS connected_with_net (type_solid_route (fill_zone));
 		end if;
 
 		
-		case polygon.fill_style is
+		case fill_zone.fill_style is
 			when SOLID =>
-				append (keyword_fill_style & space & to_string (polygon.fill_style));
+				append (keyword_fill_style & space & to_string (fill_zone.fill_style));
 
 				
 			when HATCHED =>
-				append (keyword_fill_style & space & to_string (polygon.fill_style));
+				append (keyword_fill_style & space & to_string (fill_zone.fill_style));
 
 		end case;
 
-		append (keyword_min_width & to_string (polygon.width_min));
-		append (keyword_isolation & to_string (polygon.isolation));
-		append (keyword_easing_style & space & to_string (polygon.easing.style));
-		append (keyword_easing_radius & to_string (polygon.easing.radius));
+		append (keyword_min_width & to_string (fill_zone.width_min));
+		append (keyword_isolation & to_string (fill_zone.isolation));
+		append (keyword_easing_style & space & to_string (fill_zone.easing.style));
+		append (keyword_easing_radius & to_string (fill_zone.easing.radius));
 		
 		append (keyword_layer & space & to_string (properties.layer));
 		append (keyword_priority & to_string (properties.priority_level));
 
 		return to_string (result);
 
-	end conductor_polygon_properties_to_string;
+	end conductor_fill_zone_properties_to_string;
 
 	
 end et_fill_zones.boards;

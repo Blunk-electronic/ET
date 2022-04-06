@@ -133,12 +133,12 @@ package et_pcb_rw is
 	procedure write_thermal (thermal : in type_thermal);
 	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
-	procedure write_priority (prio : in type_polygon_priority);
+	procedure write_priority (prio : in type_fill_zone_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
 	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
-	procedure write_pad_connection (connection : in type_polygon_pad_connection);
-	procedure write_pad_technology (techno : in type_polygon_pad_technology);	
+	procedure write_pad_connection (connection : in type_fill_zone_pad_connection);
+	procedure write_pad_technology (techno : in type_fill_zone_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
 	procedure write_circle_fillable (circle : in type_fillable_circle);
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle);
@@ -258,8 +258,8 @@ package et_pcb_rw is
 	polygon_width_min : type_track_width := type_track_width'first;
 
 	-- board relevant only:
-	polygon_pad_connection	: type_polygon_pad_connection := type_polygon_pad_connection'first;
-	polygon_priority		: type_polygon_priority := type_polygon_priority'first;
+	polygon_pad_connection	: type_fill_zone_pad_connection := type_fill_zone_pad_connection'first;
+	polygon_priority		: type_fill_zone_priority := type_fill_zone_priority'first;
 	thermal					: type_thermal;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 

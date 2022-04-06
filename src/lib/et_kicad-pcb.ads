@@ -614,18 +614,20 @@ package et_kicad.pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is boards.type_polygon_pad_technology 
+	subtype type_fill_zone_pad_technology is boards.type_fill_zone_pad_technology 
 		range THT_ONLY .. SMT_AND_THT;
 
--- POLYGON (or fill zone)
+
+	
+-- FILL ZONES
 
 	-- Corner points are collected in a simple list.
 	package type_polygon_points is new doubly_linked_lists (type_point);
 
-	type type_polygon_pad_connection is (THERMAL, SOLID, NONE);
+	type type_fill_zone_pad_connection is (THERMAL, SOLID, NONE);
 
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
+	function to_string (polygon_pad_connection : in type_fill_zone_pad_connection) return string;
+	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection;
 	
 	type type_polygon is record
 		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
@@ -638,14 +640,14 @@ package et_kicad.pcb is
 		filled				: boolean := true; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
-		thermal_gap			: type_polygon_thermal_gap := type_polygon_thermal_gap'first;
-		thermal_width		: type_polygon_thermal_width := type_polygon_thermal_width'first; -- spoke width
-		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
-		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
-		priority_level		: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		thermal_gap			: type_fill_zone_thermal_gap := type_fill_zone_thermal_gap'first;
+		thermal_width		: type_fill_zone_thermal_width := type_fill_zone_thermal_width'first; -- spoke width
+		pad_technology		: type_fill_zone_pad_technology := type_fill_zone_pad_technology'last;
+		pad_connection		: type_fill_zone_pad_connection := type_fill_zone_pad_connection'first;
+		priority_level		: type_fill_zone_priority := type_fill_zone_priority'first;
+		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the fill_zone
 		corners				: type_polygon_points.list;
-		fill_style			: et_geometry.type_fill_style := et_geometry.SOLID; -- a polygon is always filled
+		fill_style			: et_geometry.type_fill_style := et_geometry.SOLID; -- a fill_zone is always filled
 		hatching			: type_hatching;
 		easing				: type_easing;
 	end record;

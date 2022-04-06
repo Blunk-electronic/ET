@@ -193,47 +193,56 @@ package body et_pcb_rw is
 		write (keyword => keyword_thermal_gap   , parameters => to_string (thermal.gap));	
 	end;
 
+	
 	procedure write_width_min (width : in type_track_width) is begin
 		write (keyword => keyword_min_width, parameters => to_string (width));
 	end;
 
+	
 	procedure write_isolation (iso : in type_track_clearance) is begin
 		write (keyword => keyword_isolation, parameters => to_string (iso));
 	end;
 
-	procedure write_priority (prio : in type_polygon_priority) is
+	
+	procedure write_priority (prio : in type_fill_zone_priority) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_priority , parameters => to_string (prio));
 	end;
 
+	
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer) is 
 		use et_pcb_stack;
 	begin
 		write (keyword => keyword_layer, parameters => to_string (layer));
 	end;
 
+	
 	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
 
+	
 	procedure write_fill_status (filled : in type_filled) is begin
 		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
+
 	
-	procedure write_pad_connection (connection : in type_polygon_pad_connection) is
+	procedure write_pad_connection (connection : in type_fill_zone_pad_connection) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_connection, parameters => to_string (connection));
 	end;
 
-	procedure write_pad_technology (techno : in type_polygon_pad_technology) is
+	
+	procedure write_pad_technology (techno : in type_fill_zone_pad_technology) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (techno));
 	end;	
 
+	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set) is
 		use et_pcb_stack;
 	begin
@@ -947,8 +956,8 @@ package body et_pcb_rw is
 		board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		
-		polygon_pad_connection	:= type_polygon_pad_connection'first; -- board relevant only
-		polygon_priority		:= type_polygon_priority'first;  -- board relevant only
+		polygon_pad_connection	:= type_fill_zone_pad_connection'first; -- board relevant only
+		polygon_priority		:= type_fill_zone_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 
@@ -964,6 +973,7 @@ package body et_pcb_rw is
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 
+	
 -- SILK SCREEN
 	procedure write_line (cursor : in pac_silk_lines.cursor) is 
 		use pac_silk_lines;

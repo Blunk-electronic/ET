@@ -3939,7 +3939,7 @@ package body et_board_ops is
 				type_solid_floating (polygon);
 			
 		begin
-			log (text => conductor_polygon_properties_to_string (p, p.properties),
+			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
 				level => log_threshold + 1);
 
 			module.board.conductors.polygons.solid.append (p);
@@ -3956,7 +3956,7 @@ package body et_board_ops is
 				type_hatched_floating (polygon);
 			
 		begin
-			log (text => conductor_polygon_properties_to_string (p, p.properties),
+			log (text => conductor_fill_zone_properties_to_string (p, p.properties),
 				level => log_threshold + 1);
 
 			module.board.conductors.polygons.hatched.append (p);
@@ -3997,7 +3997,7 @@ package body et_board_ops is
 			end add_polygon;
 			
 		begin --route_solid
-			log (text => conductor_polygon_properties_to_string (p, p.properties, net_name),
+			log (text => conductor_fill_zone_properties_to_string (p, p.properties, net_name),
 				level => log_threshold + 1);
 
 			update_element (
@@ -4025,7 +4025,7 @@ package body et_board_ops is
 			end add_polygon;
 
 		begin -- route_hatched
-			log (text => conductor_polygon_properties_to_string (p, p.properties, net_name),
+			log (text => conductor_fill_zone_properties_to_string (p, p.properties, net_name),
 				level => log_threshold + 1);
 
 			update_element (
