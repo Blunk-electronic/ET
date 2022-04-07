@@ -47,6 +47,7 @@ with et_canvas_board_vias;
 with et_design_rules;				use et_design_rules;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_thermal_relief;				use et_thermal_relief;
 with et_conductor_text;				use et_conductor_text;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;

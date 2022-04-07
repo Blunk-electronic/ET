@@ -533,9 +533,11 @@ is
 
 			use et_fill_zones;
 			use et_fill_zones.boards;
+			use et_thermal_relief;
 			use pac_route_solid; 
 			use pac_route_hatched;
 			use boards.pac_cutouts;
+			
 			polygon_solid_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 			cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
@@ -623,11 +625,11 @@ is
 				write_fill_style (SOLID);
 
 				case element (polygon_solid_cursor).connection is
-					when boards.THERMAL => 
+					when THERMAL => 
 						write_pad_connection (element (polygon_solid_cursor).connection);
 						write_thermal (element (polygon_solid_cursor).thermal_relief);
 		
-					when boards.SOLID =>
+					when SOLID =>
 						write_pad_technology (element (polygon_solid_cursor).technology);
 						
 				end case;
@@ -658,11 +660,11 @@ is
 				write_hatching (element (polygon_hatched_cursor).hatching);
 
 				case element (polygon_hatched_cursor).connection is
-					when boards.THERMAL => 
+					when THERMAL => 
 						write_pad_connection (element (polygon_hatched_cursor).connection);
 						write_thermal (element (polygon_hatched_cursor).thermal_relief);
 		
-					when boards.SOLID =>
+					when SOLID =>
 						write_pad_technology (element (polygon_hatched_cursor).technology);
 
 				end case;

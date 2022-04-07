@@ -1439,6 +1439,7 @@ is
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_fill_zones.boards;
+		use et_thermal_relief;
 		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
@@ -2295,6 +2296,7 @@ is
 	procedure read_user_settings_fill_zones_conductor is
 		use et_board_shapes_and_text;
 		use et_fill_zones.boards;		
+		use et_thermal_relief;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -4620,12 +4622,13 @@ is
 				use et_board_shapes_and_text.pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
+				use et_thermal_relief;
 				
 				procedure solid_polygon is
 					use pac_route_solid;
 
 					procedure connection_thermal is
-						p : type_route_solid (connection => boards.THERMAL);
+						p : type_route_solid (connection => THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4645,7 +4648,7 @@ is
 
 					
 					procedure connection_solid is
-						p : type_route_solid (connection => boards.SOLID);
+						p : type_route_solid (connection => SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4666,8 +4669,8 @@ is
 					
 				begin -- solid_polygon
 					case polygon_pad_connection is
-						when boards.THERMAL	=> connection_thermal;
-						when boards.SOLID	=> connection_solid;
+						when THERMAL	=> connection_thermal;
+						when SOLID		=> connection_solid;
 					end case;
 				end solid_polygon;
 
@@ -4677,7 +4680,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : type_route_hatched (connection => boards.THERMAL);
+						p : type_route_hatched (connection => THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4697,7 +4700,7 @@ is
 
 					
 					procedure connection_solid is
-						p : type_route_hatched (connection => boards.SOLID);
+						p : type_route_hatched (connection => SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4719,8 +4722,8 @@ is
 					
 				begin -- hatched_polygon
 					case polygon_pad_connection is
-						when boards.THERMAL	=> connection_thermal;
-						when boards.SOLID	=> connection_solid;
+						when THERMAL	=> connection_thermal;
+						when SOLID		=> connection_solid;
 					end case;
 				end hatched_polygon;
 

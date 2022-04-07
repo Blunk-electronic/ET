@@ -52,6 +52,7 @@ with et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_fill_zones;				use et_fill_zones;
 with et_fill_zones.boards;		use et_fill_zones.boards;
+with et_thermal_relief;			use et_thermal_relief;
 --with et_conductor_segment;
 with et_conductor_segment.boards;	--use et_conductor_segment.boards;
 with et_conductor_text;			use et_conductor_text;

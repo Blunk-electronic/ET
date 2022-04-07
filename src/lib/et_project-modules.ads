@@ -62,6 +62,7 @@ with et_meta;
 with et_conductor_segment.boards;
 with et_fill_zones;
 with et_fill_zones.boards;
+with et_thermal_relief;
 with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;

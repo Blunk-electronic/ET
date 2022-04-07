@@ -68,6 +68,7 @@ with et_design_rules;				use et_design_rules;
 
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_thermal_relief;				use et_thermal_relief;
 with et_conductor_text;
 with et_conductor_text.boards;
 with et_conductor_segment;
@@ -614,7 +615,7 @@ package et_kicad.pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_pad_technology is boards.type_pad_technology 
+	subtype type_pad_technology is et_thermal_relief.type_pad_technology 
 		range THT_ONLY .. SMT_AND_THT;
 
 
