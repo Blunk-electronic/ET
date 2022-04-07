@@ -4083,8 +4083,8 @@ is
 			end insert_polygon_via_restrict;
 
 			
-			procedure insert_polygon_conductor is
 			-- This is about floating polygons in signal layers. No connection to any net.
+			procedure insert_polygon_conductor is
 				use et_board_shapes_and_text;
 				use pac_contours;
 				use et_fill_zones;
@@ -4092,29 +4092,31 @@ is
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
-				begin
+					module		: in out et_schematic.type_module) 
+				is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_floating_solid.append (
 								container	=> module.board.conductors.fill_zones.solid,
 								new_item	=> (polygon with
-									fill_style 		=> SOLID,
-									easing			=> board_easing,
-									properties		=> (signal_layer, polygon_priority, others => <>),
-									isolation		=> polygon_isolation,
-									width_min		=> polygon_width_min));
+									fill_style 	=> SOLID,
+									easing		=> board_easing,
+									fill		=> no_fill,
+									properties	=> (signal_layer, polygon_priority, others => <>),
+									isolation	=> polygon_isolation,
+									width_min	=> polygon_width_min));
 
 						when HATCHED =>
 							pac_floating_hatched.append (
 								container	=> module.board.conductors.fill_zones.hatched,
 								new_item	=> (polygon with
-									fill_style 		=> HATCHED,
-									easing			=> board_easing,
-									properties		=> (signal_layer, polygon_priority, others => <>),
-									isolation		=> polygon_isolation,
-									width_min		=> polygon_width_min,
-									hatching		=> board_hatching_conductor));
+									fill_style 	=> HATCHED,
+									easing		=> board_easing,
+									fill		=> no_fill,
+									properties	=> (signal_layer, polygon_priority, others => <>),
+									isolation	=> polygon_isolation,
+									width_min	=> polygon_width_min,
+									hatching	=> board_hatching_conductor));
 					end case;
 				end do_it;
 

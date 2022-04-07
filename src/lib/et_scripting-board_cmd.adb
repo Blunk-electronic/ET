@@ -2091,8 +2091,8 @@ is
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 
+		-- Extract from the given command the polygon arguments (everything after "polygon"):
 		procedure make_polygon is
-			-- Extract from the given command the polygon arguments (everything after "polygon"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
 			ps : type_floating_solid;
@@ -2100,7 +2100,7 @@ is
 
 			-- Build a basic polygon from the arguments:
 			p : constant type_contour := type_contour (to_contour (arguments));
-		begin -- make_polygon
+		begin
 			case settings.polygons_conductor.fill_style is
 				when SOLID =>
 			
@@ -2112,7 +2112,8 @@ is
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
-						
+
+						fill		=> no_fill,						
 						easing		=> settings.polygons_conductor.easing);
 
 					place_polygon_conductor (module_cursor, ps, log_threshold + 1);
@@ -2129,13 +2130,15 @@ is
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
-						
+
+						fill		=> no_fill,
 						easing		=> settings.polygons_conductor.easing);
 
 					place_polygon_conductor (module_cursor, ph, log_threshold + 1);
 					
 			end case;
 		end make_polygon;
+
 		
 	begin -- route_freetrack
 		case shape is
@@ -2232,6 +2235,7 @@ is
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,					
+					fill		=> no_fill,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2258,7 +2262,8 @@ is
 				p1 := (p0 with 
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
-					isolation	=> settings.polygons_conductor.isolation,					
+					isolation	=> settings.polygons_conductor.isolation,
+					fill		=> no_fill,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2286,7 +2291,8 @@ is
 					fill_style	=> HATCHED,
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,
-					isolation	=> settings.polygons_conductor.isolation,					
+					isolation	=> settings.polygons_conductor.isolation,
+					fill		=> no_fill,					
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2314,7 +2320,8 @@ is
 					fill_style	=> HATCHED,
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,
-					isolation	=> settings.polygons_conductor.isolation,					
+					isolation	=> settings.polygons_conductor.isolation,
+					fill		=> no_fill,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with

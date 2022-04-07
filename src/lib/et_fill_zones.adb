@@ -43,142 +43,143 @@
 
 package body et_fill_zones is
 
+	procedure dummy is begin null; end;
+	
+	--procedure iterate (
+		--h_lines	: in pac_h_lines.list;
+		--side	: in type_side;
+		--process	: not null access procedure (position : in pac_h_lines.cursor);
+		--proceed	: not null access boolean)
+	--is
+		--use pac_h_lines;
+		--c : pac_h_lines.cursor;
+	--begin
+		--case side is
+			--when LEFT => 
+				--c := h_lines.first;
 
-	procedure iterate (
-		h_lines	: in pac_h_lines.list;
-		side	: in type_side;
-		process	: not null access procedure (position : in pac_h_lines.cursor);
-		proceed	: not null access boolean)
-	is
-		use pac_h_lines;
-		c : pac_h_lines.cursor;
-	begin
-		case side is
-			when LEFT => 
-				c := h_lines.first;
-
-				while c /= no_element and proceed.all = TRUE loop
-					process (c);
-					next (c);
-				end loop;
+				--while c /= no_element and proceed.all = TRUE loop
+					--process (c);
+					--next (c);
+				--end loop;
 
 				
-			when RIGHT => 
-				c := h_lines.last;
+			--when RIGHT => 
+				--c := h_lines.last;
 
-				while c /= no_element and proceed.all = TRUE loop
-					process (c);
-					previous (c);
-				end loop;
+				--while c /= no_element and proceed.all = TRUE loop
+					--process (c);
+					--previous (c);
+				--end loop;
 				
-		end case;
+		--end case;
 				
-	end iterate;
+	--end iterate;
 
 
 	
-	function overlap (
-		hl_1, hl_2 : in pac_h_lines.cursor)
-		return boolean
-	is
-		use pac_h_lines;
+	--function overlap (
+		--hl_1, hl_2 : in pac_h_lines.cursor)
+		--return boolean
+	--is
+		--use pac_h_lines;
 		
-		result : boolean := false;
+		--result : boolean := false;
 
-		L1S : constant type_distance := get_x (element (hl_1).start_point);
-		L1E : constant type_distance := get_x (element (hl_1).end_point);
+		--L1S : constant type_distance := get_x (element (hl_1).start_point);
+		--L1E : constant type_distance := get_x (element (hl_1).end_point);
 
-		L2S : constant type_distance := get_x (element (hl_2).start_point);
-		L2E : constant type_distance := get_x (element (hl_2).end_point);
+		--L2S : constant type_distance := get_x (element (hl_2).start_point);
+		--L2E : constant type_distance := get_x (element (hl_2).end_point);
 
-	begin
-		-- case 1:
-		--
-		--        L1S----L1E
-		--    L2S------------L2E
-		--
-		-- case 2:
-		--
-		--         L1S----L1E
-		--    L2S-----L2E
+	--begin
+		---- case 1:
+		----
+		----        L1S----L1E
+		----    L2S------------L2E
+		----
+		---- case 2:
+		----
+		----         L1S----L1E
+		----    L2S-----L2E
 
-		if L1S >= L2S and L1S <= L2E then
-			result := true;
-		else
+		--if L1S >= L2S and L1S <= L2E then
+			--result := true;
+		--else
 
-		-- case 3:
-		--
-		--    L1S----------L1E
-		--       L2S----L2E
+		---- case 3:
+		----
+		----    L1S----------L1E
+		----       L2S----L2E
 
-		-- case 4:
-		--
-		--    L1S------L1E
-		--         L2S------L2E
+		---- case 4:
+		----
+		----    L1S------L1E
+		----         L2S------L2E
 			
-			if L2S >= L1S and L2S <= L1E then
-				result := true;
-			end if;
+			--if L2S >= L1S and L2S <= L1E then
+				--result := true;
+			--end if;
 
-		end if;
+		--end if;
 		
-		return result;
-	end overlap;
+		--return result;
+	--end overlap;
 
 
 
 
 
 
-	function get_adjacent_h_line (
-		row		: in pac_rows.cursor;
-		h_line	: in pac_h_lines.cursor;							 
-		place	: in type_adjacent;
-		side	: in type_side)
-		return pac_h_lines.cursor
-	is
-		result : pac_h_lines.cursor := pac_h_lines.no_element;
+	--function get_adjacent_h_line (
+		--row		: in pac_rows.cursor;
+		--h_line	: in pac_h_lines.cursor;							 
+		--place	: in type_adjacent;
+		--side	: in type_side)
+		--return pac_h_lines.cursor
+	--is
+		--result : pac_h_lines.cursor := pac_h_lines.no_element;
 
-		use pac_rows;
-		row_cursor : pac_rows.cursor := row;
+		--use pac_rows;
+		--row_cursor : pac_rows.cursor := row;
 
 
-		procedure query_row (row : in type_row) is
-			proceed : aliased boolean := true;
+		--procedure query_row (row : in type_row) is
+			--proceed : aliased boolean := true;
 
-			procedure query_h_line (l : in pac_h_lines.cursor) is begin
-				if overlap (h_line, l) then
-					result := l;
-					proceed := false;
-				end if;
-			end query_h_line;
+			--procedure query_h_line (l : in pac_h_lines.cursor) is begin
+				--if overlap (h_line, l) then
+					--result := l;
+					--proceed := false;
+				--end if;
+			--end query_h_line;
 			
-		begin
-			iterate (row.lines, side, query_h_line'access, proceed'access);
-		end query_row;
+		--begin
+			--iterate (row.lines, side, query_h_line'access, proceed'access);
+		--end query_row;
 
 		
-	begin -- get_adjacent_h_line
+	--begin -- get_adjacent_h_line
 
-		case place is
-			when ABOVE =>
-				next (row_cursor);
+		--case place is
+			--when ABOVE =>
+				--next (row_cursor);
 				
-				if row_cursor /= no_element then
-					query_element (row_cursor, query_row'access);
-				end if;
+				--if row_cursor /= no_element then
+					--query_element (row_cursor, query_row'access);
+				--end if;
 					
 
-			when BELOW =>
-				previous (row_cursor);
+			--when BELOW =>
+				--previous (row_cursor);
 				
-				if row_cursor /= no_element then
-					query_element (row_cursor, query_row'access);
-				end if;
-		end case;
+				--if row_cursor /= no_element then
+					--query_element (row_cursor, query_row'access);
+				--end if;
+		--end case;
 
-		return result;
-	end get_adjacent_h_line;
+		--return result;
+	--end get_adjacent_h_line;
 
 
 

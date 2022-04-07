@@ -76,10 +76,10 @@ is
 	use pac_route_solid;
 	use pac_route_hatched;
 
-	use pac_h_lines;
-	use pac_rows;
-	use pac_borders;
-	use pac_border_lines;
+	--use pac_h_lines;
+	--use pac_rows;
+	--use pac_borders;
+	--use pac_border_lines;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use pac_conductor_texts;
@@ -199,41 +199,41 @@ is
 
 	
 	-- This procedure draws a horizontal fill line of a conductor polygon:
-	procedure query_h_line (l : in pac_h_lines.cursor) is begin
+	--procedure query_h_line (l : in pac_h_lines.cursor) is begin
 
-		draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (l),
-			width		=> fill_line_width,
-			height		=> self.frame_height);
+		--draw_line (
+			--area		=> in_area,
+			--context		=> context,
+			--line		=> element (l),
+			--width		=> fill_line_width,
+			--height		=> self.frame_height);
 		
-	end query_h_line;
+	--end query_h_line;
 
 
 	-- This procedure draws a border line of a conductor polygon:
-	procedure query_b_line (l : in pac_border_lines.cursor) is begin
+	--procedure query_b_line (l : in pac_border_lines.cursor) is begin
 
-		draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (l),
-			width		=> fill_line_width,
-			height		=> self.frame_height);
+		--draw_line (
+			--area		=> in_area,
+			--context		=> context,
+			--line		=> element (l),
+			--width		=> fill_line_width,
+			--height		=> self.frame_height);
 		
-	end query_b_line;
+	--end query_b_line;
 
 	
 	procedure query_polygon (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
 
-		procedure query_row (r : in pac_rows.cursor) is begin
-			iterate (element (r).lines, query_h_line'access);
-		end query_row;
+		--procedure query_row (r : in pac_rows.cursor) is begin
+			--iterate (element (r).lines, query_h_line'access);
+		--end query_row;
 
-		procedure query_row (r : in pac_borders.cursor) is begin
-			iterate (element (r).border, query_b_line'access);
-		end query_row;
+		--procedure query_row (r : in pac_borders.cursor) is begin
+			--iterate (element (r).border, query_b_line'access);
+		--end query_row;
 		
 	begin
 		-- Draw the polygon if it is in the current layer:
@@ -256,8 +256,9 @@ is
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 
-				iterate (element (c).properties.fill.rows, query_row'access);
-				iterate (element (c).properties.fill.borders, query_row'access);
+				-- CS:
+				--iterate (element (c).properties.fill.rows, query_row'access);
+				--iterate (element (c).properties.fill.borders, query_row'access);
 			end if;
 		end if;
 	end query_polygon;
@@ -288,13 +289,13 @@ is
 	procedure query_polygon (c : in pac_route_solid.cursor) is 
 		drawn : boolean := false;
 
-		procedure query_row (r : in pac_rows.cursor) is begin
-			iterate (element (r).lines, query_h_line'access);
-		end query_row;
+		--procedure query_row (r : in pac_rows.cursor) is begin
+			--iterate (element (r).lines, query_h_line'access);
+		--end query_row;
 
-		procedure query_row (r : in pac_borders.cursor) is begin
-			iterate (element (r).border, query_b_line'access);
-		end query_row;
+		--procedure query_row (r : in pac_borders.cursor) is begin
+			--iterate (element (r).border, query_b_line'access);
+		--end query_row;
 
 		
 	begin
@@ -318,9 +319,10 @@ is
 				-- All fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				
-				iterate (element (c).properties.fill.rows, query_row'access);
-				iterate (element (c).properties.fill.borders, query_row'access);
+
+				-- CS:
+				--iterate (element (c).properties.fill.rows, query_row'access);
+				--iterate (element (c).properties.fill.borders, query_row'access);
 				
 			end if;
 

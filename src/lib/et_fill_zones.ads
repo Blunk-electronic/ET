@@ -65,18 +65,31 @@ package et_fill_zones is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
-	--use pac_polygons;
+	use pac_polygons;
 
 
-	--package pac_stripes is new doubly_linked_lists (type_line);
+	procedure dummy;
+
 	
-	--type type_island is record
-		--border	: type_polygon;
-		--stripes	: pac_stripes.list;
-	--end record;
-		
-	--package pac_islands is new doubly_linked_lists (type_island);
+	-- The factor that causes the fill stripes to overlap slightly.
+	-- It is required in order to avoid a possible small gap between them
+	-- that could occur during manufacturing.
+	-- The lower the factor the more overlap. 1.0 means no overlap.
+	overlap_factor : constant type_distance_positive := 0.99;
+	
+	
+	package pac_stripes is new doubly_linked_lists (type_line);
 
+	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
+	
+	type type_island is record
+		border	: type_polygon;
+		stripes	: pac_stripes.list;
+	end record;
+		
+	package pac_islands is new doubly_linked_lists (type_island);
+
+	no_fill : constant pac_islands.list := pac_islands.empty_list;
 
 	
 -- A FILL ZONE IN GENERAL
@@ -93,7 +106,7 @@ package et_fill_zones is
 	
 		easing : type_easing;
 
-		--fill : pac_islands.list;
+		fill : pac_islands.list := no_fill;
 		
 		case fill_style is
 			when SOLID		=> null;
@@ -130,79 +143,74 @@ package et_fill_zones is
 
 
 
-	package pac_fill_lines is new doubly_linked_lists (type_line);
+	--package pac_fill_lines is new doubly_linked_lists (type_line);
 
-	no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
+	--no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
 
 
 -- HORIZONTAL FILL LINES
-	package pac_h_lines is new doubly_linked_lists (type_line);
+	--package pac_h_lines is new doubly_linked_lists (type_line);
 
 
-	type type_side is (LEFT, RIGHT);
+	--type type_side is (LEFT, RIGHT);
 	
 	
 	-- Iterates the h_lines. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		h_lines	: in pac_h_lines.list;
-		side	: in type_side;				  
-		process	: not null access procedure (position : in pac_h_lines.cursor);
-		proceed	: not null access boolean);
+	--procedure iterate (
+		--h_lines	: in pac_h_lines.list;
+		--side	: in type_side;				  
+		--process	: not null access procedure (position : in pac_h_lines.cursor);
+		--proceed	: not null access boolean);
 
 
 	
 	-- Returns true if the given h_lines overlap each other in x direction.
-	function overlap (
-		hl_1, hl_2 : in pac_h_lines.cursor)
-		return boolean;
+	--function overlap (
+		--hl_1, hl_2 : in pac_h_lines.cursor)
+		--return boolean;
 
 
-	type type_row is record
-		lines	: pac_h_lines.list;
-	end record;
+	--type type_row is record
+		--lines	: pac_h_lines.list;
+	--end record;
 
-	package pac_rows is new doubly_linked_lists (type_row);
+	--package pac_rows is new doubly_linked_lists (type_row);
 
 
 
-	type type_adjacent is (ABOVE, BELOW);
+	--type type_adjacent is (ABOVE, BELOW);
 
 	
-	function get_adjacent_h_line (
-		row		: in pac_rows.cursor;
-		h_line	: in pac_h_lines.cursor;							 
-		place	: in type_adjacent;
-		side	: in type_side)
-		return pac_h_lines.cursor;
+	--function get_adjacent_h_line (
+		--row		: in pac_rows.cursor;
+		--h_line	: in pac_h_lines.cursor;							 
+		--place	: in type_adjacent;
+		--side	: in type_side)
+		--return pac_h_lines.cursor;
 
 	
 	
 -- BORDERS
-	package pac_border_lines is new doubly_linked_lists (type_line);
+	--package pac_border_lines is new doubly_linked_lists (type_line);
 
-	type type_border is record
-		border : pac_border_lines.list;
-	end record;
+	--type type_border is record
+		--border : pac_border_lines.list;
+	--end record;
 
-	package pac_borders is new doubly_linked_lists (type_border);
+	--package pac_borders is new doubly_linked_lists (type_border);
 
 
--- FILL
-	type type_fill is tagged record
-		rows	: pac_rows.list;
-		borders	: pac_borders.list;
-	end record;
+---- FILL
+	--type type_fill is tagged record
+		--rows	: pac_rows.list;
+		--borders	: pac_borders.list;
+	--end record;
 
 
 
 	
 	
 	
-	-- The factor that causes the fill lines to overlap slightly.
-	-- It is required in order to avoid a possible small gap between them
-	-- that could occur during manufacturing.
-	-- The lower the factor the more overlap. 1.0 means no overlap.
-	fill_line_overlap_factor : constant type_distance_positive := 0.99;
 	
 
 														 

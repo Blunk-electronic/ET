@@ -47,7 +47,8 @@ et_fill_zones:
 - derived from type_contour:
  - type_zone 
 	- discriminiant: fill_style
-	- selectors: width_min, isolation, easing
+	- selectors: width_min, isolation, easing, fill (border, stripes)
+
 
 - derived from type_zone
  - type_zone_solid with fixed discriminiant: solid
@@ -60,7 +61,7 @@ et_fill_zones.board:
 - derived from type_zone
  - type_floating_solid
 	- fixed discriminiant: solid
-	- selectors: properties (layer, priority, fill (rows, borders))
+	- selectors: properties (layer, priority)
 
  - type_floating_hatched
 	- fixed discriminiant: hatched

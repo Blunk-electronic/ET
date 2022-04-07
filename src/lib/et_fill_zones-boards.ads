@@ -41,7 +41,8 @@ with et_pcb_stack;				use et_pcb_stack;
 
 
 package et_fill_zones.boards is
-
+	
+	
 	-- priority: 0 is weakest
 	keyword_priority : constant string := "priority";
 	
@@ -149,9 +150,9 @@ package et_fill_zones.boards is
 	
 	package pac_thermals is new doubly_linked_lists (type_line);
 
-	type type_fill is new et_fill_zones.type_fill with record
-		thermals	: pac_thermals.list;
-	end record;
+	--type type_fill is new et_fill_zones.type_fill with record
+		--thermals	: pac_thermals.list;
+	--end record;
 
 	
 	
@@ -159,7 +160,7 @@ package et_fill_zones.boards is
 	type type_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_priority := type_priority'first;
-		fill			: type_fill;
+		--fill			: type_fill;
 	end record;
 
 	

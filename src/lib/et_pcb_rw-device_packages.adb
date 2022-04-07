@@ -1392,6 +1392,7 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_polygon;
 				end;
+
 				
 				procedure append_stop_polygon_bottom is begin
 					case board_fill_style is
@@ -1415,6 +1416,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
+				
 				procedure append_conductor_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
@@ -1423,6 +1425,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
+										fill		=> no_fill,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -1432,6 +1435,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
+										fill		=> no_fill,
 										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
@@ -1441,6 +1445,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
+				
 				procedure append_conductor_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
@@ -1449,6 +1454,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
+										fill		=> no_fill,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -1458,6 +1464,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
+										fill		=> no_fill,
 										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
@@ -1467,6 +1474,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
+				
 				procedure append_route_restrict_polygon_top is begin
 					pac_route_restrict_contours.append (
 						container	=> packge.route_restrict.top.contours, 
