@@ -1486,7 +1486,7 @@ is
 
 		elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 			expect_field_count (line, 2);
-			et_pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
+			et_pcb_rw.thermal_relief.technology := to_pad_technology (f (line, 2));
 
 		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 			expect_field_count (line, 2);
@@ -1494,11 +1494,11 @@ is
 			
 		elsif kw = keyword_thermal_width then -- thermal_width 0.3
 			expect_field_count (line, 2);
-			et_pcb_rw.thermal.width := to_distance (f (line, 2));
+			et_pcb_rw.thermal_relief.width := to_distance (f (line, 2));
 
 		elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 			expect_field_count (line, 2);
-			et_pcb_rw.thermal.gap := to_distance (f (line, 2));
+			et_pcb_rw.thermal_relief.gap := to_distance (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -4636,7 +4636,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.thermal					:= et_pcb_rw.thermal;
+						p.thermal_relief			:= et_pcb_rw.thermal_relief;
 
 						pac_route_solid.append (
 							container	=> route.fill_zones.solid,
@@ -4656,7 +4656,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.technology				:= et_pcb_rw.thermal.technology;
+						p.technology				:= et_pcb_rw.thermal_relief.technology;
 
 						pac_route_solid.append (
 							container	=> route.fill_zones.solid,
@@ -4688,7 +4688,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.thermal					:= et_pcb_rw.thermal;
+						p.thermal_relief			:= et_pcb_rw.thermal_relief;
 						
 						pac_route_hatched.append (
 							container	=> route.fill_zones.hatched,
@@ -4709,7 +4709,7 @@ is
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
 						
-						p.technology := et_pcb_rw.thermal.technology;
+						p.technology := et_pcb_rw.thermal_relief.technology;
 						
 						pac_route_hatched.append (
 							container	=> route.fill_zones.hatched,

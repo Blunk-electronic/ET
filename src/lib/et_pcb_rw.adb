@@ -183,7 +183,7 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_thermal (thermal : in type_thermal) is
+	procedure write_thermal (thermal : in type_thermal_relief) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
@@ -963,9 +963,10 @@ package body et_pcb_rw is
 
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
 
-		thermal					:= (others => <>); -- board relevant only
+		thermal_relief			:= (others => <>); -- board relevant only
 	end;
 
+	
 	procedure fill_zone_begin is begin section_mark (section_fill_zone, HEADER); end;
 	procedure fill_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
 	procedure cutout_zone_begin is begin section_mark (section_cutout_zone, HEADER); end;
@@ -973,6 +974,7 @@ package body et_pcb_rw is
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 
+	
 	
 -- SILK SCREEN
 	procedure write_line (cursor : in pac_silk_lines.cursor) is 
@@ -984,6 +986,7 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
+	
 	procedure write_arc (cursor : in pac_silk_arcs.cursor) is 
 		use pac_silk_arcs;
 	begin
@@ -993,6 +996,7 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
+	
 	procedure write_circle (cursor : in pac_silk_circles.cursor) is 
 		use pac_silk_circles;
 	begin

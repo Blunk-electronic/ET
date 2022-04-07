@@ -104,7 +104,7 @@ package et_fill_zones.boards is
 	function to_pad_technology (technology : in string) return type_pad_technology;
 
 	
-	type type_thermal is record -- CS rename to type_thermal_relief ?
+	type type_thermal_relief is record
 		-- whether SMT, THT or both kinds of pads connect with the fill_zone
 		technology	: type_pad_technology := pad_technology_default;
 
@@ -132,7 +132,7 @@ package et_fill_zones.boards is
 		connection		: type_pad_connection := pad_connection_default;
 
 		-- relevant if connection is thermal
-		thermal			: type_thermal;
+		thermal			: type_thermal_relief;
 		
 		fill_style		: type_fill_style := fill_style_default;
 
@@ -148,11 +148,6 @@ package et_fill_zones.boards is
 
 
 	
-	package pac_thermals is new doubly_linked_lists (type_line);
-
-	--type type_fill is new et_fill_zones.type_fill with record
-		--thermals	: pac_thermals.list;
-	--end record;
 
 	
 	
@@ -160,7 +155,6 @@ package et_fill_zones.boards is
 	type type_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_priority := type_priority'first;
-		--fill			: type_fill;
 	end record;
 
 	
@@ -212,6 +206,9 @@ package et_fill_zones.boards is
 	
 -- FILL ZONES CONNECTED WITH A NET (part of a route)
 
+	package pac_thermals is new doubly_linked_lists (type_line);
+	
+	
 	type type_route_solid (connection : type_pad_connection) 
 		is new type_zone_solid
 	with record
@@ -219,7 +216,8 @@ package et_fill_zones.boards is
 
 		case connection is
 			when THERMAL =>
-				thermal : type_thermal;
+				thermal_relief : type_thermal_relief;
+				-- CS lines
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
@@ -236,8 +234,9 @@ package et_fill_zones.boards is
 				
 		case connection is
 			when THERMAL =>
-				thermal : type_thermal;
-
+				thermal_relief : type_thermal_relief;
+				-- CS lines
+				
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
 				technology	: type_pad_technology;

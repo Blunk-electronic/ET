@@ -5005,10 +5005,10 @@ package body et_kicad.pcb is
 										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 										p.properties.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
 										
-										p.thermal := (
-													technology	=> element (polygon_cursor).pad_technology,
-													gap			=> element (polygon_cursor).thermal_gap,
-													width		=> element (polygon_cursor).thermal_width);
+										p.thermal_relief := (
+											technology	=> element (polygon_cursor).pad_technology,
+											gap			=> element (polygon_cursor).thermal_gap,
+											width		=> element (polygon_cursor).thermal_width);
 
 										
 										load_segments (p, (
@@ -5018,6 +5018,7 @@ package body et_kicad.pcb is
 										
 										route.fill_zones.solid.append (p);																					  
 									end;
+
 									
 								when SOLID =>
 									declare

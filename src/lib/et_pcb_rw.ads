@@ -134,7 +134,7 @@ package et_pcb_rw is
 	procedure write_hatching (hatching : in type_hatching);
 	procedure write_hatching (hatching : in type_conductor_hatching);
 	procedure write_easing (easing: in type_easing);
-	procedure write_thermal (thermal : in type_thermal);
+	procedure write_thermal (thermal : in type_thermal_relief);
 	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in type_priority);
@@ -264,7 +264,7 @@ package et_pcb_rw is
 	-- board relevant only:
 	polygon_pad_connection	: type_pad_connection := type_pad_connection'first;
 	polygon_priority		: type_priority := type_priority'first;
-	thermal					: type_thermal;
+	thermal_relief			: type_thermal_relief;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
 	procedure board_reset_signal_layer;

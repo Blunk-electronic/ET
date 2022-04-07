@@ -2239,9 +2239,9 @@ is
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
-					connection	=> THERMAL,
-					thermal		=> settings.polygons_conductor.thermal,
-					properties	=> (
+					connection		=> THERMAL,
+					thermal_relief	=> settings.polygons_conductor.thermal,
+					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
@@ -2296,9 +2296,9 @@ is
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
-					connection	=> THERMAL,
-					thermal		=> settings.polygons_conductor.thermal,
-					properties	=> (
+					connection		=> THERMAL,
+					thermal_relief	=> settings.polygons_conductor.thermal,
+					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
