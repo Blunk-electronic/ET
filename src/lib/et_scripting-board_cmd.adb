@@ -1889,6 +1889,7 @@ is
 			module.board.user_settings.polygons_conductor.fill_style := to_fill_style (f (6));
 		end set_fill_style;
 
+		
 		procedure set_min_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1896,6 +1897,7 @@ is
 			module.board.user_settings.polygons_conductor.min_width := to_distance (f (6));
 		end set_min_width;
 
+		
 		procedure set_iso (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1903,13 +1905,15 @@ is
 			module.board.user_settings.polygons_conductor.isolation := to_distance (f (6));
 		end set_iso;
 
+		
 		procedure set_priority (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.priority_level := to_fill_zone_priority (f (6));
+			module.board.user_settings.polygons_conductor.priority_level := to_priority (f (6));
 		end set_priority;
 
+		
 		procedure set_easing_style (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1917,6 +1921,7 @@ is
 			module.board.user_settings.polygons_conductor.easing.style := to_easing_style (f (7));
 		end set_easing_style;
 
+		
 		procedure set_easing_radius (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1924,6 +1929,7 @@ is
 			module.board.user_settings.polygons_conductor.easing.radius := to_distance (f (7));
 		end set_easing_radius;	
 
+		
 		procedure set_connection (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1931,6 +1937,7 @@ is
 			module.board.user_settings.polygons_conductor.connection := to_pad_connection (f (6));
 		end set_connection;	
 
+		
 		procedure set_hatching_line_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1938,6 +1945,7 @@ is
 			module.board.user_settings.polygons_conductor.hatching.line_width := to_distance (f (7));
 		end set_hatching_line_width;	
 
+		
 		procedure set_hatching_border_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1945,6 +1953,7 @@ is
 			module.board.user_settings.polygons_conductor.hatching.border_width := to_distance (f (7));
 		end set_hatching_border_width;	
 
+		
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1952,6 +1961,7 @@ is
 			module.board.user_settings.polygons_conductor.hatching.spacing := to_distance (f (7));
 		end set_hatching_spacing;	
 
+		
 		procedure set_thermal_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1959,12 +1969,14 @@ is
 			module.board.user_settings.polygons_conductor.thermal.width := to_distance (f (7));
 		end set_thermal_width;	
 
+		
 		procedure set_thermal_gap (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
 			module.board.user_settings.polygons_conductor.thermal.gap := to_distance (f (7));
 		end set_thermal_gap;	
+
 		
 	begin -- set_polygon_properties
 		case get_field_count is

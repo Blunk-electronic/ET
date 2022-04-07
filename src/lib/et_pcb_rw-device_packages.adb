@@ -141,8 +141,8 @@ package body et_pcb_rw.device_packages is
 			end write_circle;
 
 			
-			use pac_fill_zones_solid;
-			procedure write_polygon (cursor : in pac_fill_zones_solid.cursor) is begin
+			use pac_zones_solid;
+			procedure write_polygon (cursor : in pac_zones_solid.cursor) is begin
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
@@ -159,8 +159,8 @@ package body et_pcb_rw.device_packages is
 			end write_polygon;
 
 			
-			use pac_fill_zones_hatched;
-			procedure write_polygon (cursor : in pac_fill_zones_hatched.cursor) is begin
+			use pac_zones_hatched;
+			procedure write_polygon (cursor : in pac_zones_hatched.cursor) is begin
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
@@ -1418,7 +1418,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_fill_zones_solid.append (
+							pac_zones_solid.append (
 								container	=> packge.conductors.top.fill_zones.solid, 
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> SOLID,
@@ -1427,7 +1427,7 @@ package body et_pcb_rw.device_packages is
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
-							pac_fill_zones_hatched.append (
+							pac_zones_hatched.append (
 								container	=> packge.conductors.top.fill_zones.hatched, 
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> HATCHED,
@@ -1444,7 +1444,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_fill_zones_solid.append (
+							pac_zones_solid.append (
 								container	=> packge.conductors.bottom.fill_zones.solid, 
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> SOLID,
@@ -1453,7 +1453,7 @@ package body et_pcb_rw.device_packages is
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
-							pac_fill_zones_hatched.append (
+							pac_zones_hatched.append (
 								container	=> packge.conductors.bottom.fill_zones.hatched, 
 								new_item	=> (type_contour (polygon) with
 										fill_style	=> HATCHED,

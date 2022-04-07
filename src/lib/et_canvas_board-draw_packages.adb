@@ -2491,7 +2491,7 @@ is
 			-- POLYGONS
 
 			-- solid
-			use pac_fill_zones_solid;
+			use pac_zones_solid;
 
 			procedure draw_polygon_solid (
 				polygon	: in out type_zone_solid;
@@ -2525,7 +2525,7 @@ is
 
 			
 			procedure query_polygon_top_solid (
-				c : in pac_fill_zones_solid.cursor) 
+				c : in pac_zones_solid.cursor) 
 			is
 				polygon : type_zone_solid := element (c);
 			begin
@@ -2534,7 +2534,7 @@ is
 			end query_polygon_top_solid;
 
 			procedure query_polygon_bottom_solid (
-				c : in pac_fill_zones_solid.cursor) 
+				c : in pac_zones_solid.cursor) 
 			is
 				polygon : type_zone_solid := element (c);
 			begin
@@ -2544,7 +2544,7 @@ is
 
 
 			-- hatched
-			use pac_fill_zones_hatched;
+			use pac_zones_hatched;
 
 			procedure draw_polygon_hatched (
 				polygon	: in out type_zone_hatched;
@@ -2577,7 +2577,7 @@ is
 			end draw_polygon_hatched;
 			
 			procedure query_polygon_top_hatched (
-				c : in pac_fill_zones_hatched.cursor) 
+				c : in pac_zones_hatched.cursor) 
 			is
 				polygon : type_zone_hatched := element (c);
 			begin
@@ -2587,7 +2587,7 @@ is
 
 			
 			procedure query_polygon_bottom_hatched (
-				c : in pac_fill_zones_hatched.cursor) 
+				c : in pac_zones_hatched.cursor) 
 			is
 				polygon : type_zone_hatched := element (c);
 			begin

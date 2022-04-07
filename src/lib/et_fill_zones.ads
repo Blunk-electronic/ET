@@ -65,7 +65,21 @@ package et_fill_zones is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
+	--use pac_polygons;
 
+
+	--package pac_stripes is new doubly_linked_lists (type_line);
+	
+	--type type_island is record
+		--border	: type_polygon;
+		--stripes	: pac_stripes.list;
+	--end record;
+		
+	--package pac_islands is new doubly_linked_lists (type_island);
+
+
+	
+-- A FILL ZONE IN GENERAL
 	
 	type type_zone (fill_style : type_fill_style) 
 		is new type_contour with
@@ -78,6 +92,8 @@ package et_fill_zones is
 		isolation : type_track_clearance := type_track_clearance'first; 
 	
 		easing : type_easing;
+
+		--fill : pac_islands.list;
 		
 		case fill_style is
 			when SOLID		=> null;
@@ -87,18 +103,23 @@ package et_fill_zones is
 
 	
 
+	
+-- SOLID FILLED ZONE:
+	
 	type type_zone_solid
 		is new type_zone (fill_style => SOLID) with null record;
 
-	package pac_fill_zones_solid is new doubly_linked_lists (type_zone_solid);
+	package pac_zones_solid is new doubly_linked_lists (type_zone_solid);
+
 
 
 	
+-- HATCHED FILL ZONE:
 	
 	type type_zone_hatched
 		is new type_zone (fill_style => HATCHED) with null record;
 
-	package pac_fill_zones_hatched is new doubly_linked_lists (type_zone_hatched);
+	package pac_zones_hatched is new doubly_linked_lists (type_zone_hatched);
 
 
 	

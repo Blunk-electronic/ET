@@ -41,33 +41,33 @@ with ada.tags;
 
 package body et_fill_zones.boards is
 
-	function to_string (priority_level : in type_fill_zone_priority) return string is begin
-		return type_fill_zone_priority'image (priority_level);
+	function to_string (priority_level : in type_priority) return string is begin
+		return type_priority'image (priority_level);
 	end;
 
-	function to_fill_zone_priority (priority_level : in string) return type_fill_zone_priority is begin
-		return type_fill_zone_priority'value (priority_level);
+	function to_priority (priority_level : in string) return type_priority is begin
+		return type_priority'value (priority_level);
 	end;
 
 
 
 
 	
-	function to_string (fill_zone_pad_connection : in type_fill_zone_pad_connection) return string is begin
-		return to_lower (type_fill_zone_pad_connection'image (fill_zone_pad_connection));
+	function to_string (connection : in type_pad_connection) return string is begin
+		return to_lower (type_pad_connection'image (connection));
 	end;
 
-	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection is begin
-		return type_fill_zone_pad_connection'value (connection);
+	function to_pad_connection (connection : in string) return type_pad_connection is begin
+		return type_pad_connection'value (connection);
 	end;
 
 	
-	function to_string (fill_zone_pad_technology : in type_fill_zone_pad_technology) return string is begin
-		return to_lower (type_fill_zone_pad_technology'image (fill_zone_pad_technology));
+	function to_string (technology : in type_pad_technology) return string is begin
+		return to_lower (type_pad_technology'image (technology));
 	end;
 
-	function to_pad_technology (technology : in string) return type_fill_zone_pad_technology is begin
-		return type_fill_zone_pad_technology'value (technology);
+	function to_pad_technology (technology : in string) return type_pad_technology is begin
+		return type_pad_technology'value (technology);
 	end to_pad_technology;
 
 	

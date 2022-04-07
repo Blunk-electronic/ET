@@ -42,15 +42,15 @@ with et_pcb_stack;				use et_pcb_stack;
 
 package et_fill_zones.boards is
 
-	-- priority: 0 is weakest, 100 is strongest.
+	-- priority: 0 is weakest
 	keyword_priority : constant string := "priority";
 	
-	fill_zone_priority_max : constant natural := 100;
+	zone_priority_max : constant natural := 100;
 
-	subtype type_fill_zone_priority is natural range natural'first .. fill_zone_priority_max;
+	subtype type_priority is natural range natural'first .. zone_priority_max;
 
-	function to_string (priority_level : in type_fill_zone_priority) return string;
-	function to_fill_zone_priority (priority_level : in string) return type_fill_zone_priority;
+	function to_string (priority_level : in type_priority) return string;
+	function to_priority (priority_level : in string) return type_priority;
 
 	
 
@@ -65,71 +65,70 @@ package et_fill_zones.boards is
 	keyword_thermal_width : constant string := "thermal_width";		
 	keyword_thermal_gap : constant string := "thermal_gap";
 	
-	fill_zone_thermal_width_min : constant type_track_width := type_track_width'first;
-	fill_zone_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
-	subtype type_fill_zone_thermal_width is pac_geometry_brd.type_distance_positive
-		range fill_zone_thermal_width_min .. fill_zone_thermal_width_max;
+	thermal_width_min : constant type_track_width := type_track_width'first;
+	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
+	
+	subtype type_thermal_width is pac_geometry_brd.type_distance_positive
+		range thermal_width_min .. thermal_width_max;
 
-	-- If a terminal is connected/associated with a polyon,
+	-- If a terminal is connected/associated with a polyon, then
 	-- this is the space between pad and fill_zone:
-	fill_zone_thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
-	fill_zone_thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
-	subtype type_fill_zone_thermal_gap is type_track_clearance range fill_zone_thermal_gap_min .. fill_zone_thermal_gap_max;
+	thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
+	thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
+	subtype type_thermal_gap is type_track_clearance range thermal_gap_min .. thermal_gap_max;
 
 
 	-- Polygons which are connected with a net
 	-- can be connected with pads by thermals or solid:
 	keyword_pad_connection : constant string := "pad_connection";
-	type type_fill_zone_pad_connection is (THERMAL, SOLID);
-	fill_zone_pad_connection_default : constant type_fill_zone_pad_connection := THERMAL;
+	type type_pad_connection is (THERMAL, SOLID);
+	pad_connection_default : constant type_pad_connection := THERMAL;
 
-	function to_string (fill_zone_pad_connection : in type_fill_zone_pad_connection) return string;
-	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection;
+	function to_string (connection : in type_pad_connection) return string;
+	function to_pad_connection (connection : in string) return type_pad_connection;
 
 	
 	-- Polygons may be connected with SMT, THT or all pad technologies
 	-- CS: Is that a reasonable idea ????? it was inherited from kicad.
 	keyword_pad_technology : constant string := "pad_technology";
 	
-	type type_fill_zone_pad_technology is (
+	type type_pad_technology is (
 		SMT_ONLY,
 		THT_ONLY,
 		SMT_AND_THT);
 
-	fill_zone_pad_technology_default : constant type_fill_zone_pad_technology := SMT_AND_THT;
+	pad_technology_default : constant type_pad_technology := SMT_AND_THT;
 	
-	function to_string (fill_zone_pad_technology : in type_fill_zone_pad_technology) return string;
-	function to_pad_technology (technology : in string) return type_fill_zone_pad_technology;
+	function to_string (technology : in type_pad_technology) return string;
+	function to_pad_technology (technology : in string) return type_pad_technology;
 
+	
 	type type_thermal is record -- CS rename to type_thermal_relief ?
 		-- whether SMT, THT or both kinds of pads connect with the fill_zone
-		technology	: type_fill_zone_pad_technology := fill_zone_pad_technology_default;
+		technology	: type_pad_technology := pad_technology_default;
 
 		-- the width of the thermal relief spokes
-		width		: type_fill_zone_thermal_width := type_fill_zone_thermal_width'first;
+		width		: type_thermal_width := type_thermal_width'first;
 
 		-- the space between pad and fill_zone -- CS: rename to thermal_length ?
-		gap			: type_fill_zone_thermal_gap := type_fill_zone_thermal_gap'first;
+		gap			: type_thermal_gap := type_thermal_gap'first;
 	end record;
 	
 	
 	
 	
--- LOGGING PROPERTIES OF OBJECTS
-
-	
-	text_fill_zone_thermal_width : constant string := "thermal_width";	
-	text_fill_zone_thermal_gap : constant string := "thermal_gap";	
-	text_fill_zone_pad_connection : constant string := "pad_connection";	
-	text_fill_zone_pad_technology : constant string := "connected_with";	
-	text_fill_zone_width_min : constant string := "minimum_width";	
-	text_fill_zone_signal_layer : constant string := "signal_layer";
+	text_thermal_width 	: constant string := "thermal_width";	
+	text_thermal_gap 	: constant string := "thermal_gap";	
+	text_pad_connection : constant string := "pad_connection";	
+	text_pad_technology : constant string := "connected_with";	
+	text_width_min 		: constant string := "minimum_width";	
+	text_signal_layer 	: constant string := "signal_layer";
 	
 
 	type type_user_settings is record
 
 		-- relevant if fill_zone is connected with a net:
-		connection		: type_fill_zone_pad_connection := fill_zone_pad_connection_default;
+		connection		: type_pad_connection := pad_connection_default;
 
 		-- relevant if connection is thermal
 		thermal			: type_thermal;
@@ -141,7 +140,7 @@ package et_fill_zones.boards is
 
 		min_width		: type_track_width := type_track_width'first;
 		isolation		: type_track_clearance := type_track_clearance'first;
-		priority_level	: type_fill_zone_priority := type_fill_zone_priority'first;
+		priority_level	: type_priority := type_priority'first;
 		easing			: type_easing;
 	end record;
 
@@ -159,7 +158,7 @@ package et_fill_zones.boards is
 	-- All fill zones in conductor layers have these common properties:
 	type type_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
-		priority_level	: type_fill_zone_priority := type_fill_zone_priority'first;
+		priority_level	: type_priority := type_priority'first;
 		fill			: type_fill;
 	end record;
 
@@ -212,7 +211,7 @@ package et_fill_zones.boards is
 	
 -- FILL ZONES CONNECTED WITH A NET (part of a route)
 
-	type type_route_solid (connection : type_fill_zone_pad_connection) 
+	type type_route_solid (connection : type_pad_connection) 
 		is new type_zone_solid
 	with record
 		properties	: type_properties;
@@ -223,13 +222,13 @@ package et_fill_zones.boards is
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
-				technology	: type_fill_zone_pad_technology;
+				technology	: type_pad_technology;
 				-- no need for any kind of thermal parameters
 		end case;				
 	end record;
 
 	
-	type type_route_hatched (connection : type_fill_zone_pad_connection) 
+	type type_route_hatched (connection : type_pad_connection) 
 		is new type_zone_hatched 
 	with record
 		properties	: type_properties;
@@ -240,7 +239,7 @@ package et_fill_zones.boards is
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
-				technology	: type_fill_zone_pad_technology;
+				technology	: type_pad_technology;
 				-- no need for any kind of thermal parameters
 		end case;
 	end record;

@@ -1445,7 +1445,7 @@ is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := to_fill_zone_priority (f (line, 2));
+			polygon_priority := to_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -1623,7 +1623,7 @@ is
 			
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := to_fill_zone_priority (f (line, 2));
+			polygon_priority := to_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -2308,7 +2308,7 @@ is
 
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.priority_level := to_fill_zone_priority (f (line, 2));
+			user_settings_board.polygons_conductor.priority_level := to_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.4
 			expect_field_count (line, 2);

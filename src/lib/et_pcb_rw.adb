@@ -204,7 +204,7 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_priority (prio : in type_fill_zone_priority) is
+	procedure write_priority (prio : in type_priority) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_priority , parameters => to_string (prio));
@@ -229,14 +229,14 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_pad_connection (connection : in type_fill_zone_pad_connection) is
+	procedure write_pad_connection (connection : in type_pad_connection) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_connection, parameters => to_string (connection));
 	end;
 
 	
-	procedure write_pad_technology (techno : in type_fill_zone_pad_technology) is
+	procedure write_pad_technology (techno : in type_pad_technology) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (techno));
@@ -940,11 +940,11 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure board_reset_polygon is
 	-- This procedure resets the global variable "polygon" to its default.
 	-- This proecdure is used by both package and board parsing procedures 
 	-- read_package and read_module_file.
 	-- Some properties have no meaning in packages as remarked below.
+	procedure board_reset_polygon is
 		use et_pcb_stack;
 	begin
 		-- reset polygon:
@@ -956,8 +956,8 @@ package body et_pcb_rw is
 		board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		
-		polygon_pad_connection	:= type_fill_zone_pad_connection'first; -- board relevant only
-		polygon_priority		:= type_fill_zone_priority'first;  -- board relevant only
+		polygon_pad_connection	:= type_pad_connection'first; -- board relevant only
+		polygon_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 

@@ -43,13 +43,12 @@ package et_fill_zones.packages is
 	
 
 	-- User defined cutout areas:
-	package pac_cutouts 
-		is new doubly_linked_lists (type_contour);
+	package pac_cutouts is new doubly_linked_lists (type_contour);
 
 		
 	type type_fill_zones is record
-		solid	: pac_fill_zones_solid.list;
-		hatched	: pac_fill_zones_hatched.list;
+		solid	: pac_zones_solid.list;
+		hatched	: pac_zones_hatched.list;
 	end record;
 
 	
