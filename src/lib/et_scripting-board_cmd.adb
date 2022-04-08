@@ -2117,7 +2117,7 @@ is
 						fill		=> no_fill,						
 						easing		=> settings.polygons_conductor.easing);
 
-					place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+					place_fill_zone (module_cursor, ps, log_threshold + 1);
 
 					
 				when HATCHED =>
@@ -2135,7 +2135,7 @@ is
 						fill		=> no_fill,
 						easing		=> settings.polygons_conductor.easing);
 
-					place_polygon_conductor (module_cursor, ph, log_threshold + 1);
+					place_fill_zone (module_cursor, ph, log_threshold + 1);
 					
 			end case;
 		end make_polygon;
@@ -2248,9 +2248,9 @@ is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
 					   
-				place_polygon_conductor (
+				place_fill_zone (
 					module_cursor	=> module_cursor,
-					polygon			=> p2,
+					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
 					log_threshold	=> log_threshold + 1);
 				
@@ -2276,9 +2276,9 @@ is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
 					   
-				place_polygon_conductor (
+				place_fill_zone (
 					module_cursor	=> module_cursor,
-					polygon			=> p2,
+					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
 					log_threshold	=> log_threshold + 1);
 
@@ -2306,9 +2306,9 @@ is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
 					   
-				place_polygon_conductor (
+				place_fill_zone (
 					module_cursor	=> module_cursor,
-					polygon			=> p2,
+					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
 					log_threshold	=> log_threshold + 1);
 				
@@ -2335,9 +2335,9 @@ is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>));
 					   
-				place_polygon_conductor (
+				place_fill_zone (
 					module_cursor	=> module_cursor,
-					polygon			=> p2,
+					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
 					log_threshold	=> log_threshold + 1);
 				
@@ -2737,7 +2737,7 @@ is
 			when 4 => -- fill all polygons
 				
 				-- command: board demo fill polygon
-				fill_conductor_polygons (module_cursor, polygon_log_category, log_threshold + 1);
+				fill_fill_zones (module_cursor, polygon_log_category, log_threshold + 1);
 
 				
 			when others => 
@@ -2748,7 +2748,7 @@ is
 					nets.append (to_net_name (f (place)));
 				end loop;
 
-				fill_conductor_polygons (module_cursor, polygon_log_category, log_threshold + 1, nets);
+				fill_fill_zones (module_cursor, polygon_log_category, log_threshold + 1, nets);
 		end case;
 				
 		if runmode /= MODE_HEADLESS then

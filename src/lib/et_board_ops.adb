@@ -3919,9 +3919,9 @@ package body et_board_ops is
 
 
 
-	procedure place_polygon_conductor (
+	procedure place_fill_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_zone'class;
+		zone			: in type_zone'class;
 		log_threshold	: in type_log_level;
 		net_name		: in pac_net_name.bounded_string := no_name)
 	is
@@ -3936,7 +3936,7 @@ package body et_board_ops is
 			use pac_floating_solid;
 
 			p : type_floating_solid := 
-				type_floating_solid (polygon);
+				type_floating_solid (zone);
 			
 		begin
 			log (text => to_string (p, p.properties),
@@ -3953,7 +3953,7 @@ package body et_board_ops is
 			use pac_floating_hatched;
 
 			p : type_floating_hatched := 
-				type_floating_hatched (polygon);
+				type_floating_hatched (zone);
 			
 		begin
 			log (text => to_string (p, p.properties),
@@ -3986,7 +3986,7 @@ package body et_board_ops is
 			use pac_route_solid;
 
 			p : type_route_solid := 
-				type_route_solid (polygon);
+				type_route_solid (zone);
 
 
 			procedure add_polygon (
@@ -4015,7 +4015,7 @@ package body et_board_ops is
 			use pac_route_hatched;
 
 			p : type_route_hatched := 
-				type_route_hatched (polygon);
+				type_route_hatched (zone);
 			
 			procedure add_polygon (
 				net_name	: in pac_net_name.bounded_string;
@@ -4036,23 +4036,23 @@ package body et_board_ops is
 		end route_hatched;
 
 		
-	begin -- place_polygon_conductor
+	begin -- place_fill_zone
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " placing polygon in conductor layer ...",
+			& " placing fill zone in conductor layer ...",
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		-- floating polygons:
-		if polygon'tag = type_floating_solid'tag then
+		-- floating:
+		if zone'tag = type_floating_solid'tag then
 
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> floating_solid'access);
 
-		elsif polygon'tag = type_floating_hatched'tag then
+		elsif zone'tag = type_floating_hatched'tag then
 
 			update_element (
 				container	=> generic_modules,
@@ -4060,8 +4060,8 @@ package body et_board_ops is
 				process		=> floating_hatched'access);
 
 
-		-- route polygons:
-		elsif polygon'tag = type_route_solid'tag then
+		-- route:
+		elsif zone'tag = type_route_solid'tag then
 
 			locate_targeted_net;
 						
@@ -4070,7 +4070,7 @@ package body et_board_ops is
 				position	=> module_cursor,
 				process		=> route_solid'access);
 
-		elsif polygon'tag = type_route_hatched'tag then
+		elsif zone'tag = type_route_hatched'tag then
 
 			locate_targeted_net;
 
@@ -4084,11 +4084,11 @@ package body et_board_ops is
 		end if;
 		
 		log_indentation_down;
-	end place_polygon_conductor;
+	end place_fill_zone;
 
 
 
-	procedure fill_conductor_polygons (
+	procedure fill_fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_category	: in type_log_category;
 		log_threshold	: in type_log_level;

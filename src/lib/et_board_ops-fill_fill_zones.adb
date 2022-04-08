@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                  BOARD OPERATIONS / FILL CONDUCTOR POLYGONS              --
+--                  BOARD OPERATIONS / FILLING FILL ZONES                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_routing;					use et_routing;
 
 separate (et_board_ops)
 
-procedure fill_conductor_polygons (
+procedure fill_fill_zones (
 	module_cursor	: in pac_generic_modules.cursor;
 	log_category	: in type_log_category;
 	log_threshold	: in type_log_level;
@@ -51,7 +51,7 @@ procedure fill_conductor_polygons (
 is 
 	use pac_net_names;
 
-	all_polygons : boolean;
+	all_zones : boolean;
 
 	
 	-- Get the design rules:
@@ -506,7 +506,7 @@ is
 
 	
 	-- Fills polygons that are connected with a net:
-	procedure signal_polygons is
+	procedure signal_contours is
 		use et_nets;
 		
 		use pac_nets;
@@ -525,22 +525,22 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				-- The cursor that points to the polygon being filled:
-				polygon_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
+				-- The cursor that points to the zone being filled:
+				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
 				
-				-- The boundaries of the polygon (greatest/smallest x/y):
+				-- The boundaries of the zone (greatest/smallest x/y):
 				boundaries : type_boundaries;
 
-				-- We fill the polygons with lines from left to right.
+				-- We fill the zones with lines from left to right.
 				lower_left_corner : type_point;
 
 
-				-- Deletes the complete fill of the polygon:
-				--procedure clear_fill (
-					--polygon	: in out type_route_solid)
-				--is begin
-					--polygon.fill := (others => <>);
-				--end clear_fill;
+				-- Deletes the complete fill of the zone:
+				procedure clear_fill (
+					zone	: in out type_route_solid)
+				is begin
+					zone.fill := no_fill;
+				end clear_fill;
 
 
 				-- The rows to be computed:
@@ -570,19 +570,19 @@ is
 
 				
 			begin -- route_solid
-				while polygon_cursor /= pac_route_solid.no_element loop
+				while zone_cursor /= pac_route_solid.no_element loop
 
 					-- clear the complete fill:
-					--update_element (net.route.fill_zones.solid, polygon_cursor, clear_fill'access);
+					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
 
-					-- Get the boundaries of the polygon. From the boundaries we will
+					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (element (polygon_cursor), zero);
+					boundaries := get_boundaries (element (zone_cursor), zero);
 
 					log (text => to_string (boundaries), level => log_threshold + 2);
 
 					
-					-- obtain the lower left corner of the polygon from the boundaries:
+					-- obtain the lower left corner of the zone from the boundaries:
 					lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
 					log_lower_left_corner (lower_left_corner, log_threshold + 2);
@@ -619,7 +619,7 @@ is
 					
 					log_indentation_down;
 
-					next (polygon_cursor);
+					next (zone_cursor);
 				end loop;
 			end route_solid;
 
@@ -628,7 +628,7 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				p : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+				zone_cursor : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 
 				-- CS: delete all existing fill lines:
 				
@@ -642,11 +642,11 @@ is
 				height : type_distance_positive;
 				
 			begin
-				while p /= pac_route_hatched.no_element loop
+				while zone_cursor /= pac_route_hatched.no_element loop
 
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (element (p), zero);
+					boundaries := get_boundaries (element (zone_cursor), zero);
 
 					log (text => to_string (boundaries), level => log_threshold + 2);
 
@@ -654,7 +654,7 @@ is
 					height := get_height (boundaries);
 
 					-- Get the width of the fill lines:
-					line_width := element (p).width_min;
+					line_width := element (zone_cursor).width_min;
 
 					
 					--log_net_name;
@@ -662,7 +662,7 @@ is
 					--log_lower_left_corner (log_threshold + 3);
 
 					--log_indentation_down;
-					next (p);
+					next (zone_cursor);
 				end loop;
 			end route_hatched;
 
@@ -704,7 +704,7 @@ is
 			
 			
 		begin -- query_nets
-			if all_polygons then
+			if all_zones then
 
 				-- we must query all nets:
 				net_cursor := module.nets.first;
@@ -723,30 +723,31 @@ is
 		end query_nets;
 
 		
-	begin -- signal_polygons
-		log (text => "signal polygons ...", level => log_threshold + 1);
+	begin 
+		log (text => "signal contours ...", level => log_threshold + 1);
 		log_indentation_up;
 		update_element (generic_modules, module_cursor, query_nets'access);
 		log_indentation_down;
-	end signal_polygons;
+	end signal_contours;
 
 	
-begin -- fill_conductor_polygons
+begin -- fill_fill_zones
 	if is_empty (nets) then
-		-- Fill floating polygons if no explicit net names given:
+		
+		-- Fill floating zones if no explicit net names given:
 		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " filling all conductor polygons. Log category " 
+			& " filling all zones. Log category " 
 			& to_string (log_category) & " ...",
 			level => log_threshold);
 
-		all_polygons := true;
+		all_zones := true;
 		
 		log_indentation_up;
-		signal_polygons;
+		signal_contours;
 
-		-- CS floating_polygons;
+		-- CS floating_zones;
 		-- use class settings of class "default":
 
 		log_indentation_down;
@@ -754,19 +755,19 @@ begin -- fill_conductor_polygons
 	else
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " filling conductor polygons of dedicated nets. Log category " 
+			& " filling zones of dedicated nets. Log category " 
 			& to_string (log_category) & " ...",
 			level => log_threshold);
 
-		all_polygons := false;
+		all_zones := false;
 		
 		log_indentation_up;
-		signal_polygons;
+		signal_contours;
 		log_indentation_down;
 		
 	end if;
 
-end fill_conductor_polygons;
+end fill_fill_zones;
 	
 -- Soli Deo Gloria
 
