@@ -653,54 +653,54 @@ board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 
 board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100, clockwise
 ```
 
-#### Polygons / Fill Zones
+#### Fill Zones
 Commands to set basic properties:
 ```
-board led_driver set polygon fill solid # hatched
+board led_driver set zone fill solid # hatched
 ```
 ```
-board led_driver set polygon width 0.35
+board led_driver set zone width 0.35
 ```
 ```
-board led_driver set polygon isolation 0.3
+board led_driver set zone isolation 0.3
 ```
 ```
-board led_driver set polygon easing style fillet # chamfer, none, fillet
+board led_driver set zone easing style fillet # chamfer, none, fillet
 ```
 ```
-board led_driver set polygon easing radius 0.6
+board led_driver set zone easing radius 0.6
 ```
 ```
-board led_driver set polygon connection thermal # solid
+board led_driver set zone connection thermal # solid
 ```
 ```
-board led_driver set polygon hatching width 0.3
+board led_driver set zone hatching width 0.3
 ```
 ```
-board led_driver set polygon hatching border 0.4
+board led_driver set zone hatching border 0.4
 ```
 ```
-board led_driver set polygon hatching spacing 1.1
+board led_driver set zone hatching spacing 1.1
 ```
 ```
-board demo set polygon thermal width 0.2
+board demo set zone thermal width 0.2
 ```
 ```
-board demo set polygon thermal gap 0.33
+board demo set zone thermal gap 0.33
 ```
 
-When filling polygons a lot of logging data mey be generated.
+When filling zones a lot of logging data mey be generated.
 With this command the verbosity of logging can be set.
 Default is NORMAL.
 ```
-board demo set polygon log HIGH # NORMAL, HIGH, INSANE
+board demo set zone log HIGH # NORMAL, HIGH, INSANE
 ```
 
 
 
-Drawing the polygon outline:
+Drawing the zone outline:
 ```
-board demo route net gnd 1 polygon line 0 0 line 50 0 line 50 50 line 0 50
+board demo route net gnd 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 ```
 
 
@@ -756,17 +756,17 @@ board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, cr
 #### Polygons / Fill Zones
 Commands to set basic properties: (see section freetracks)
 ```
-board demo route net gnd 1 polygon line 0 0 line 50 0 line 50 50 line 0 50
+board demo route net gnd 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 ```
 
-Fill all polygons:
+Fill all zones:
 ```
-board demo fill polygon
+board demo fill zone
 ```
 
-Fill polygons that are connected with certains nets:
+Fill zones that are connected with certains nets:
 ```
-board demo fill polygon GND P3V3
+board demo fill zone GND P3V3
 ```
 
 
