@@ -58,6 +58,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 --with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
+with et_conductor_segment;
 
 
 package et_thermal_relief is
@@ -114,11 +115,12 @@ package et_thermal_relief is
 	function to_pad_technology (technology : in string) return type_pad_technology;
 
 	
-	type type_thermal_relief is record
+	type type_relief_properties is record
 		-- whether SMT, THT or both kinds of pads connect with the fill_zone
 		technology	: type_pad_technology := pad_technology_default;
 
-		-- the width of the thermal relief spokes
+		-- The width of the thermal relief spokes.
+		-- Applies to ALL pads connected with the zone:
 		width		: type_thermal_width := type_thermal_width'first;
 
 		-- the space between pad and fill_zone -- CS: rename to thermal_length ?
@@ -135,9 +137,20 @@ package et_thermal_relief is
 
 	
 
-	package pac_thermals is new doubly_linked_lists (type_line);
+
+	-- CS type_spoke ?
+	-- CS list of spokes forms the relief of a pad
+
+	-- The spokes of a single pad:
+	type type_spokes is record
+		lines : et_conductor_segment.pac_conductor_lines.list;
+	end record;
+
+	-- The spokes of the whole fill zone:
+	package pac_spokes is new doubly_linked_lists (type_spokes);
+
+	no_spokes : constant pac_spokes.list := pac_spokes.empty_list;
 	
-														 
 	
 end et_thermal_relief;
 

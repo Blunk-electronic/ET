@@ -183,7 +183,7 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_thermal (thermal : in type_thermal_relief) is
+	procedure write_thermal (thermal : in type_relief_properties) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
@@ -963,7 +963,7 @@ package body et_pcb_rw is
 
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
 
-		thermal_relief			:= (others => <>); -- board relevant only
+		relief_properties		:= (others => <>); -- board relevant only
 	end;
 
 	

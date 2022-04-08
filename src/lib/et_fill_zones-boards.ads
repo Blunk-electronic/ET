@@ -69,7 +69,7 @@ package et_fill_zones.boards is
 		connection		: type_pad_connection := pad_connection_default;
 
 		-- relevant if connection is thermal
-		thermal			: type_thermal_relief;
+		thermal			: type_relief_properties;
 		
 		fill_style		: type_fill_style := fill_style_default;
 
@@ -151,8 +151,8 @@ package et_fill_zones.boards is
 
 		case connection is
 			when THERMAL =>
-				thermal_relief : type_thermal_relief;
-				-- CS lines
+				relief_properties	: type_relief_properties;
+				relief_spokes		: pac_spokes.list;
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone
@@ -169,8 +169,8 @@ package et_fill_zones.boards is
 				
 		case connection is
 			when THERMAL =>
-				thermal_relief : type_thermal_relief;
-				-- CS lines
+				relief_properties	: type_relief_properties;
+				relief_spokes		: pac_spokes.list;
 				
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone

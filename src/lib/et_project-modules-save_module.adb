@@ -627,7 +627,7 @@ is
 				case element (polygon_solid_cursor).connection is
 					when THERMAL => 
 						write_pad_connection (element (polygon_solid_cursor).connection);
-						write_thermal (element (polygon_solid_cursor).thermal_relief);
+						write_thermal (element (polygon_solid_cursor).relief_properties);
 		
 					when SOLID =>
 						write_pad_technology (element (polygon_solid_cursor).technology);
@@ -662,7 +662,7 @@ is
 				case element (polygon_hatched_cursor).connection is
 					when THERMAL => 
 						write_pad_connection (element (polygon_hatched_cursor).connection);
-						write_thermal (element (polygon_hatched_cursor).thermal_relief);
+						write_thermal (element (polygon_hatched_cursor).relief_properties);
 		
 					when SOLID =>
 						write_pad_technology (element (polygon_hatched_cursor).technology);

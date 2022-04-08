@@ -59,10 +59,14 @@ package et_conductor_segment is
 
 	
 -- LINES
+	
 	type type_conductor_line is new type_line with record
 		width	: type_track_width;
 	end record;
 
+
+
+	
 	
 	type type_conductor_line_segment is private;
 
@@ -72,6 +76,8 @@ package et_conductor_segment is
 	function to_line_segment (line : in type_conductor_line)
 		return type_conductor_line_segment;
 
+
+	
 	
 	function get_left_edge (segment : in type_conductor_line_segment)
 		return type_line;

@@ -2241,7 +2241,8 @@ is
 
 				p2 := (p1 with
 					connection		=> THERMAL,
-					thermal_relief	=> settings.polygons_conductor.thermal,
+					relief_properties	=> settings.polygons_conductor.thermal,
+					relief_spokes		=> no_spokes,
 					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
@@ -2298,7 +2299,8 @@ is
 
 				p2 := (p1 with
 					connection		=> THERMAL,
-					thermal_relief	=> settings.polygons_conductor.thermal,
+					relief_properties	=> settings.polygons_conductor.thermal,
+					relief_spokes		=> no_spokes,
 					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,

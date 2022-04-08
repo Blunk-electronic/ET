@@ -43,6 +43,7 @@ package body et_conductor_segment is
 
 -- LINES
 	
+	
 	function to_string (segment : in type_conductor_line_segment)
 		return string
 	is begin
