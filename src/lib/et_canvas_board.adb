@@ -1275,7 +1275,7 @@ package body et_canvas_board is
 		procedure fill is begin
 			case key is
 				when GDK_LC_p =>
-					noun := NOUN_POLYGON;
+					noun := NOUN_ZONE;
 					fill_fill_zones (current_active_module, NORMAL, log_threshold + 1);
 
 					set_status ("conductor polygons filled");

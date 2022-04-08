@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -92,7 +92,6 @@ package et_modes.board is
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,
 		NOUN_PARTCODE,
-		NOUN_POLYGON,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
 		NOUN_RATSNEST,
@@ -111,7 +110,8 @@ package et_modes.board is
 		NOUN_VIA,
 		NOUN_VIAS,
 		NOUN_VIA_DRILL,
-		NOUN_VIA_RESTRICT
+		NOUN_VIA_RESTRICT,
+		NOUN_ZONE
 		);
 
 	noun_default : constant type_noun := NOUN_NAME;

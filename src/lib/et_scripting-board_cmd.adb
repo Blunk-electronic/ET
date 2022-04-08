@@ -3117,7 +3117,7 @@ is
 
 			when VERB_FILL =>
 				case noun is
-					when NOUN_POLYGON =>
+					when NOUN_ZONE =>
 						fill_polygons;
 						
 					when others => 
@@ -3365,7 +3365,7 @@ is
 							when others => command_incomplete;
 						end case;
 
-					when NOUN_POLYGON =>
+					when NOUN_ZONE =>
 						set_polygon_properties; -- conductor layers related
 						
 					when NOUN_VIA =>
