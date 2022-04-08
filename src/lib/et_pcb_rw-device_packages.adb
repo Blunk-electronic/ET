@@ -1209,6 +1209,7 @@ package body et_pcb_rw.device_packages is
 			terminal_position	:= origin_zero_rotation;
 			
 		end build_terminal;
+
 		
 		procedure process_line is 
 
@@ -1222,7 +1223,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 												fill_style 	=> SOLID,
 												easing 		=> board_easing
 											   ));
@@ -1230,21 +1231,22 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												fill_style 	=> HATCHED,
 												easing 		=> board_easing,
 												hatching	=> board_hatching));
 					end case;
 					
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_silk_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												fill_style	=> SOLID,
 												easing		=> board_easing
 											   ));
@@ -1252,51 +1254,53 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
 					end case;
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_assy_doc_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												easing		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching 	=> board_hatching));
 					end case;
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_assy_doc_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												easing 		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with 
+								new_item	=> (contour with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
@@ -1304,49 +1308,52 @@ package body et_pcb_rw.device_packages is
 					end case;
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_keepout_polygon_top is begin
 					
 					pac_keepout_contours.append (
 						container	=> packge.keepout.top.polygons, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 						
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_keepout_polygon_bottom is begin
 
 					pac_keepout_contours.append (
 						container	=> packge.keepout.bottom.polygons, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
+				
 				procedure append_stencil_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
 					end case;
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_stencil_polygon_bottom is begin
@@ -1354,21 +1361,21 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
 					end case;
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_stop_polygon_top is begin
@@ -1376,21 +1383,21 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
 					end case;
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				
@@ -1399,21 +1406,21 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
 					end case;
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				
@@ -1422,7 +1429,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_zones_solid.append (
 								container	=> packge.conductors.top.fill_zones.solid, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										fill		=> no_fill,
@@ -1432,7 +1439,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_zones_hatched.append (
 								container	=> packge.conductors.top.fill_zones.hatched, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										fill		=> no_fill,
@@ -1442,7 +1449,7 @@ package body et_pcb_rw.device_packages is
 					end case;
 										
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				
@@ -1451,7 +1458,7 @@ package body et_pcb_rw.device_packages is
 						when SOLID =>
 							pac_zones_solid.append (
 								container	=> packge.conductors.bottom.fill_zones.solid, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										fill		=> no_fill,
@@ -1461,7 +1468,7 @@ package body et_pcb_rw.device_packages is
 						when HATCHED =>
 							pac_zones_hatched.append (
 								container	=> packge.conductors.bottom.fill_zones.hatched, 
-								new_item	=> (type_contour (polygon) with
+								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										fill		=> no_fill,
@@ -1471,197 +1478,197 @@ package body et_pcb_rw.device_packages is
 					end case;
 										
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				
 				procedure append_route_restrict_polygon_top is begin
 					pac_route_restrict_contours.append (
 						container	=> packge.route_restrict.top.contours, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_route_restrict_polygon_bottom is begin
 					pac_route_restrict_contours.append (
 						container	=> packge.route_restrict.bottom.contours, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_via_restrict_polygon_top is begin
 					pac_via_restrict_contours.append (
 						container	=> packge.via_restrict.top.contours, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 				
 				procedure append_via_restrict_polygon_bottom is begin
 					pac_via_restrict_contours.append (
 						container	=> packge.via_restrict.bottom.contours, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				-- cutout zones
 				procedure append_silk_cutout_top is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_silk_cutout_bottom is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_assy_doc_cutout_top is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_assy_doc_cutout_bottom is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.bottom.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 					
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_stencil_cutout_top is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_stencil_cutout_bottom is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_stop_cutout_top is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 				
 				procedure append_stop_cutout_bottom is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.bottom.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_conductor_cutout_top is begin
 					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 										
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_conductor_cutout_bottom is begin
 					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
-						new_item	=> polygon);
+						new_item	=> contour);
 										
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_route_restrict_cutout_top is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.top.cutouts, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_route_restrict_cutout_bottom is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.bottom.cutouts, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 				
 				procedure append_via_restrict_cutout_top is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.top.cutouts, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 
 				procedure append_via_restrict_cutout_bottom is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.bottom.cutouts, 
-						new_item	=> (type_contour (polygon) with null record));
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
-					board_reset_polygon;
+					board_reset_contour;
 				end;
 				
 				-- holes in PCB (or cutouts)
 				procedure append_hole is begin
-					packge.holes.append (polygon);
+					packge.holes.append (contour);
 
 					-- clean up for next hole
-					board_reset_polygon;
+					board_reset_contour;
 				end append_hole;
 				
 			begin -- execute_section
@@ -1684,14 +1691,14 @@ package body et_pcb_rw.device_packages is
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT => 
-								check_outline (polygon, log_threshold + 1);
-								tht_pad_shape.top := polygon;
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								tht_pad_shape.top := contour;
+								board_reset_contour;
 
 							when SEC_STOP_MASK_CONTOURS_THT =>
-								check_outline (polygon, log_threshold + 1);
-								tht_stop_mask_contours_top := (type_contour (polygon) with null record);
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								tht_stop_mask_contours_top := (contour with null record);
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -1703,14 +1710,14 @@ package body et_pcb_rw.device_packages is
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT =>
-								check_outline (polygon, log_threshold + 1);
-								tht_pad_shape.bottom := polygon;
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								tht_pad_shape.bottom := contour;
+								board_reset_contour;
 
 							when SEC_STOP_MASK_CONTOURS_THT =>
-								check_outline (polygon, log_threshold + 1);
-								tht_stop_mask_contours_bottom := (type_contour (polygon) with null record);
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								tht_stop_mask_contours_bottom := (contour with null record);
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -2319,8 +2326,8 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => check_outline (polygon, log_threshold + 1);
-							when SEC_CUTOUT_ZONE => check_outline (polygon, log_threshold + 1);
+							when SEC_FILL_ZONE => check_outline (contour, log_threshold + 1);
+							when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
@@ -2489,9 +2496,9 @@ package body et_pcb_rw.device_packages is
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								check_outline (polygon, log_threshold + 1);
-								smt_pad_shape := polygon;
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								smt_pad_shape := contour;
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -2499,9 +2506,9 @@ package body et_pcb_rw.device_packages is
 					when SEC_STENCIL_CONTOURS =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								check_outline (polygon, log_threshold + 1);
-								smt_stencil_contours := (type_contour (polygon) with null record);
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								smt_stencil_contours := (contour with null record);
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -2515,9 +2522,9 @@ package body et_pcb_rw.device_packages is
 					when SEC_STOP_MASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								check_outline (polygon, log_threshold + 1);
-								smt_stop_mask_contours := (type_contour (polygon) with null record);
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								smt_stop_mask_contours := (contour with null record);
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -2531,9 +2538,9 @@ package body et_pcb_rw.device_packages is
 					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								check_outline (polygon, log_threshold + 1);
-								tht_millings := (type_contour (polygon) with null record);
-								board_reset_polygon;
+								check_outline (contour, log_threshold + 1);
+								tht_millings := (contour with null record);
+								board_reset_contour;
 								
 							when others => invalid_section;
 						end case;

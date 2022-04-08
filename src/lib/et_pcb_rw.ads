@@ -255,18 +255,18 @@ package et_pcb_rw is
 		log_threshold	: in type_log_level);
 
 
-	-- A temporarily storage place when reading a polygon:
-	polygon : type_contour; -- CS rename to contour
+	-- A temporarily storage place when reading a contour:
+	contour : type_contour;
 	
 	
 	polygon_isolation : type_track_clearance := type_track_clearance'first;
 	polygon_width_min : type_track_width := type_track_width'first;
 
 	-- board relevant only:
-	polygon_pad_connection	: type_pad_connection := type_pad_connection'first;
-	polygon_priority		: type_priority := type_priority'first;
-	relief_properties		: type_relief_properties;
-	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+	pad_connection		: type_pad_connection := type_pad_connection'first;
+	contour_priority	: type_priority := type_priority'first;
+	relief_properties	: type_relief_properties;
+	signal_layer		: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
 	procedure board_reset_signal_layer;
 	
@@ -301,11 +301,13 @@ package et_pcb_rw is
 			
 
 	
-	procedure board_reset_polygon;
-	-- This procdure resets polygon properties to their defaults.
-	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
-	-- Some properties have no meaning in packages as remarked below.
+	-- This procdure resets contour properties to their defaults.
+	-- This procdure is used by both package and board parsing procedures 
+	-- read_package and read_module_file.
+	-- Some properties have no meaning in connection with device packages.
+	procedure board_reset_contour;
 
+	
 	section_fill_zone	: constant string := "[FILL_ZONE";
 	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
 	section_contours	: constant string := "[CONTOURS";

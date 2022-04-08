@@ -1446,7 +1446,7 @@ is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := to_priority (f (line, 2));
+			contour_priority := to_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -1491,7 +1491,7 @@ is
 
 		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 			expect_field_count (line, 2);
-			polygon_pad_connection := to_pad_connection (f (line, 2));
+			pad_connection := to_pad_connection (f (line, 2));
 			
 		elsif kw = keyword_thermal_width then -- thermal_width 0.3
 			expect_field_count (line, 2);
@@ -1624,7 +1624,7 @@ is
 			
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := to_priority (f (line, 2));
+			contour_priority := to_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -3294,14 +3294,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3313,14 +3313,14 @@ is
 							when SOLID =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style 	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_silk_polygons.append (
 									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3332,14 +3332,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3351,14 +3351,14 @@ is
 							when SOLID =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													easing		=> board_easing,
 													fill_style 	=> SOLID));
 
 							when HATCHED =>
 								pac_doc_polygons.append (
 									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (polygon with 
+									new_item	=> (contour with 
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3368,13 +3368,13 @@ is
 					procedure append_keepout_polygon_top is begin
 						pac_keepout_contours.append (
 							container	=> module.board.keepout.top.polygons, 
-							new_item	=> (polygon with null record));
+							new_item	=> (contour with null record));
 					end;
 
 					procedure append_keepout_polygon_bottom is begin
 						pac_keepout_contours.append (
 							container	=> module.board.keepout.bottom.polygons, 
-							new_item	=> (polygon with null record));
+							new_item	=> (contour with null record));
 					end;
 
 					procedure append_stencil_polygon_top is begin
@@ -3382,14 +3382,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3401,14 +3401,14 @@ is
 							when SOLID =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3420,14 +3420,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3439,14 +3439,14 @@ is
 							when SOLID =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
 								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (polygon with
+									new_item	=> (contour with
 													fill_style	=> HATCHED,
 													easing		=> board_easing,
 													hatching	=> board_hatching));
@@ -3503,7 +3503,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next board polygon
-				board_reset_polygon;
+				board_reset_contour;
 			end insert_polygon;
 
 			
@@ -3532,61 +3532,61 @@ is
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.top.cutouts,
-							new_item	=> polygon); 
+							new_item	=> contour); 
 					end;
 
 					procedure append_silk_cutout_bottom is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.bottom.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 					
 					procedure append_assy_doc_cutout_top is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.top.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_assy_doc_cutout_bottom is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.bottom.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_keepout_cutout_bottom is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.bottom.cutouts, 
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_stencil_cutout_top is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.top.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_stencil_cutout_bottom is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.bottom.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_stop_cutout_top is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.top.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 
 					procedure append_stop_cutout_bottom is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.bottom.cutouts,
-							new_item	=> polygon);
+							new_item	=> contour);
 					end;
 					
 				begin -- do_it
@@ -3638,7 +3638,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next board cutout
-				board_reset_polygon;
+				board_reset_contour;
 			end insert_cutout;
 
 			
@@ -3655,7 +3655,7 @@ is
 				begin
 					pac_via_restrict_cutouts.append (
 						container	=> module.board.via_restrict.cutouts,
-						new_item	=> (polygon with
+						new_item	=> (contour with
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3665,8 +3665,8 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next board polygon
-				board_reset_polygon;
+				-- clean up for next board contour
+				board_reset_contour;
 
 				clear (signal_layers);
 			end insert_cutout_via_restrict;
@@ -3685,7 +3685,7 @@ is
 				begin
 					pac_route_restrict_cutouts.append (
 						container	=> module.board.route_restrict.cutouts,
-						new_item	=> (polygon with 
+						new_item	=> (contour with 
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3695,15 +3695,15 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next board polygon
-				board_reset_polygon;
+				-- clean up for next board contour
+				board_reset_contour;
 
 				clear (signal_layers);
 			end insert_cutout_route_restrict;
 
 			
 			procedure insert_cutout_conductor is
-			-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
+			-- This is about cutout zones to trim floating contours in signal layers. No connection to any net.
 				use et_board_shapes_and_text;
 				use pac_contours;
 				use et_packages;
@@ -3716,7 +3716,7 @@ is
 				begin
 					pac_cutouts.append (
 						container	=> module.board.conductors.cutouts,
-						new_item	=> (polygon with
+						new_item	=> (contour with
 								layer => signal_layer));
 				end do_it;
 									
@@ -3726,8 +3726,8 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next floating board polygon
-				board_reset_polygon;
+				-- clean up for next floating board contour
+				board_reset_contour;
 			end insert_cutout_conductor;
 
 			
@@ -3952,7 +3952,7 @@ is
 				is begin
 					append (
 						container	=> module.board.route_restrict.contours,
-						new_item	=> (polygon with signal_layers));
+						new_item	=> (contour with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_route_restrict
@@ -3962,7 +3962,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next board polygon
-				board_reset_polygon;
+				board_reset_contour;
 
 				clear (signal_layers);
 			end insert_polygon_route_restrict;
@@ -4069,7 +4069,7 @@ is
 				is begin
 					append (
 						container	=> module.board.via_restrict.contours,
-						new_item	=> (polygon with signal_layers));
+						new_item	=> (contour with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_via_restrict
@@ -4078,14 +4078,14 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next board polygon
-				board_reset_polygon;
+				-- clean up for next board contour
+				board_reset_contour;
 
 				clear (signal_layers);
 			end insert_polygon_via_restrict;
 
 			
-			-- This is about floating polygons in signal layers. No connection to any net.
+			-- This is about floating contours in signal layers. No connection to any net.
 			procedure insert_polygon_conductor is
 				use et_board_shapes_and_text;
 				use pac_contours;
@@ -4100,22 +4100,22 @@ is
 						when SOLID =>
 							pac_floating_solid.append (
 								container	=> module.board.conductors.fill_zones.solid,
-								new_item	=> (polygon with
+								new_item	=> (contour with
 									fill_style 	=> SOLID,
 									easing		=> board_easing,
 									fill		=> no_fill,
-									properties	=> (signal_layer, polygon_priority, others => <>),
+									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
 									width_min	=> polygon_width_min));
 
 						when HATCHED =>
 							pac_floating_hatched.append (
 								container	=> module.board.conductors.fill_zones.hatched,
-								new_item	=> (polygon with
+								new_item	=> (contour with
 									fill_style 	=> HATCHED,
 									easing		=> board_easing,
 									fill		=> no_fill,
-									properties	=> (signal_layer, polygon_priority, others => <>),
+									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
 									width_min	=> polygon_width_min,
 									hatching	=> board_hatching_conductor));
@@ -4130,7 +4130,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next floating board polygon
-				board_reset_polygon;
+				board_reset_contour;
 			end insert_polygon_conductor;
 
 			
@@ -4397,7 +4397,7 @@ is
 				is begin
 					append (
 						container 	=> module.board.contours.holes,
-						new_item	=> polygon);
+						new_item	=> contour);
 				end do_it;
 
 			begin
@@ -4407,7 +4407,7 @@ is
 					process		=> do_it'access);
 				
 				-- clean up for next hole
-				board_reset_polygon;
+				board_reset_contour;
 			end append_hole;
 
 			
@@ -4630,7 +4630,7 @@ is
 					procedure connection_thermal is
 						p : type_route_solid (connection => THERMAL);
 					begin
-						load_segments (p, get_segments (polygon));
+						load_segments (p, get_segments (contour));
 						
 						p.easing := board_easing;
 						
@@ -4638,7 +4638,7 @@ is
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
-						p.properties.priority_level	:= polygon_priority;
+						p.properties.priority_level	:= contour_priority;
 						p.relief_properties			:= et_pcb_rw.relief_properties;
 
 						pac_route_solid.append (
@@ -4650,7 +4650,7 @@ is
 					procedure connection_solid is
 						p : type_route_solid (connection => SOLID);
 					begin
-						load_segments (p, get_segments (polygon));
+						load_segments (p, get_segments (contour));
 						
 						p.easing := board_easing;
 						
@@ -4658,7 +4658,7 @@ is
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
-						p.properties.priority_level	:= polygon_priority;
+						p.properties.priority_level	:= contour_priority;
 						p.technology				:= et_pcb_rw.relief_properties.technology;
 
 						pac_route_solid.append (
@@ -4668,7 +4668,7 @@ is
 
 					
 				begin -- solid_polygon
-					case polygon_pad_connection is
+					case pad_connection is
 						when THERMAL	=> connection_thermal;
 						when SOLID		=> connection_solid;
 					end case;
@@ -4682,7 +4682,7 @@ is
 					procedure connection_thermal is
 						p : type_route_hatched (connection => THERMAL);
 					begin
-						load_segments (p, get_segments (polygon));
+						load_segments (p, get_segments (contour));
 						
 						p.easing := board_easing;
 						
@@ -4690,7 +4690,7 @@ is
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
-						p.properties.priority_level	:= polygon_priority;
+						p.properties.priority_level	:= contour_priority;
 						p.relief_properties			:= et_pcb_rw.relief_properties;
 						
 						pac_route_hatched.append (
@@ -4702,7 +4702,7 @@ is
 					procedure connection_solid is
 						p : type_route_hatched (connection => SOLID);
 					begin
-						load_segments (p, get_segments (polygon));
+						load_segments (p, get_segments (contour));
 						
 						p.easing := board_easing;
 						
@@ -4710,7 +4710,7 @@ is
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
-						p.properties.priority_level	:= polygon_priority;
+						p.properties.priority_level	:= contour_priority;
 						
 						p.technology := et_pcb_rw.relief_properties.technology;
 						
@@ -4721,7 +4721,7 @@ is
 
 					
 				begin -- hatched_polygon
-					case polygon_pad_connection is
+					case pad_connection is
 						when THERMAL	=> connection_thermal;
 						when SOLID		=> connection_solid;
 					end case;
@@ -4734,7 +4734,7 @@ is
 					when HATCHED	=> hatched_polygon;
 				end case;
 
-				board_reset_polygon; -- clean up for next polygon
+				board_reset_contour; -- clean up for next polygon
 			end build_route_polygon;
 
 			
@@ -4745,10 +4745,10 @@ is
 			begin
 				pac_cutouts.append (
 					container	=> route.cutouts,
-					new_item	=> (polygon with
+					new_item	=> (contour with
 									layer	=> signal_layer));
 
-				board_reset_polygon; -- clean up for next cutout zone
+				board_reset_contour; -- clean up for next cutout zone
 			end build_route_cutout;
 
 			
@@ -5019,8 +5019,8 @@ is
 
 				when SEC_CONTOURS =>
 					case stack.parent is
-						when SEC_FILL_ZONE => check_outline (polygon, log_threshold + 1);
-						when SEC_CUTOUT_ZONE => check_outline (polygon, log_threshold + 1);
+						when SEC_FILL_ZONE => check_outline (contour, log_threshold + 1);
+						when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
 						
 						when others => invalid_section;
 					end case;

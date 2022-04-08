@@ -607,7 +607,7 @@ package body et_pcb_rw is
 	procedure board_reset_line is begin board_line := (others => <>); end;
 
 	procedure add_polygon_line (l : in out type_line) is begin
-		append_segment (polygon, (LINE, l));
+		append_segment (contour, (LINE, l));
 		board_reset_line;
 	end;	
 
@@ -615,7 +615,7 @@ package body et_pcb_rw is
 	procedure board_reset_arc is begin board_arc := (others => <>); end;
 	
 	procedure add_polygon_arc (a : in out type_arc) is begin
-		append_segment (polygon, (ARC, a));
+		append_segment (contour, (ARC, a));
 		board_reset_arc;
 	end;
 
@@ -623,15 +623,15 @@ package body et_pcb_rw is
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 	
 	procedure add_polygon_circle (c : in out type_circle) is begin
-		-- The global polygon variable "mutates" so that the contours
+		-- The global contour variable "mutates" so that the contours
 		-- consist of a single circle:
-		polygon := (contour => (circular => true, others => <>));
+		contour := (contour => (circular => true, others => <>));
 
-		-- From now on the polygon consists of just a single circle.
+		-- From now on the contour consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
 		
-		-- Assign the circle to the polygon contours:
-		set_circle (polygon, c);
+		-- Assign the circle to the contour:
+		set_circle (contour, c);
 		board_reset_circle;
 	end;
 
@@ -940,24 +940,22 @@ package body et_pcb_rw is
 	end;
 
 	
-	-- This procedure resets the global variable "polygon" to its default.
-	-- This proecdure is used by both package and board parsing procedures 
-	-- read_package and read_module_file.
-	-- Some properties have no meaning in packages as remarked below.
-	procedure board_reset_polygon is
+	procedure board_reset_contour is
 		use et_pcb_stack;
 	begin
-		-- reset polygon:
-		polygon := (others => <>);
-		-- NOTE: A polygon by default consists of lines and arcs.
+		-- Some properties have no meaning in packages as remarked below.
+		
+		-- reset contour:
+		contour := (others => <>);
+		-- NOTE: A contour by default consists of lines and arcs.
 		
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;
 		board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		
-		polygon_pad_connection	:= type_pad_connection'first; -- board relevant only
-		polygon_priority		:= type_priority'first;  -- board relevant only
+		pad_connection	:= type_pad_connection'first; -- board relevant only
+		contour_priority		:= type_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 
