@@ -742,11 +742,16 @@ is
 	end signal_contours;
 
 
-	--board_polygon : type_polygon;
+	board_outer_edge : type_polygon;
+	board_inner_edge : pac_holes.list;
 	
 begin -- fill_fill_zones
 
-	--board_polygon := to_polygon (
+	board_outer_edge := to_polygon (
+		contour		=> get_outline (module_cursor),
+		tolerance	=> fab_tolerance);
+
+	--board_inner_edge := get_holes (
 	
 	if is_empty (nets) then
 		

@@ -366,16 +366,18 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 
-	--function get_
-	
-	
-	-- Adds a hole to the already existing holes:
-	procedure add_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_inner_edge;
-		log_threshold	: in type_log_level);
+	-- Returns the outer edge of the PCB:
+	function get_outline (
+		module_cursor	: in pac_generic_modules.cursor)
+		return type_outer_edge;
 
 	
+	function get_outline (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level)
+		return type_outer_edge;
+	
+
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
@@ -384,6 +386,27 @@ package et_board_ops is
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
+
+	
+	
+	
+	-- Adds a hole to the already existing holes:
+	procedure add_hole (
+		module_cursor	: in pac_generic_modules.cursor;
+		hole			: in type_inner_edge;
+		log_threshold	: in type_log_level);
+
+	
+	procedure add_hole (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		hole			: in type_inner_edge;
+		log_threshold	: in type_log_level);
+
+	
+	-- Returns the holes of the given module:
+	function get_holes (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_holes.list;
 
 	
 	-- Deletes the segment of a hole that crosses the given point.
@@ -396,6 +419,8 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 
+
+	
 	
 -- SILK SCREEN
 
