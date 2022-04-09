@@ -44,10 +44,15 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
 with et_conductor_segment;		use et_conductor_segment;
+with et_pcb_contour;			use et_pcb_contour;
 with et_conventions;
+
 
 package body et_kicad_packages is
 
+	use pac_pcb_cutouts;
+
+	
 	function to_string (tags : in type_package_tags.bounded_string) return string is
 	begin
 		return "tags '" & type_package_tags.to_string (tags) & "'";

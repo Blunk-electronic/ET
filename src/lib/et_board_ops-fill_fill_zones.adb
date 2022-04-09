@@ -741,8 +741,13 @@ is
 		log_indentation_down;
 	end signal_contours;
 
+
+	--board_polygon : type_polygon;
 	
 begin -- fill_fill_zones
+
+	--board_polygon := to_polygon (
+	
 	if is_empty (nets) then
 		
 		-- Fill floating zones if no explicit net names given:

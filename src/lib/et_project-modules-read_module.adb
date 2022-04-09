@@ -4388,7 +4388,7 @@ is
 			
 			-- holes in PCB (or cutouts)
 			procedure append_hole is 
-				use et_packages;
+				use et_pcb_contour;
 				use pac_pcb_cutouts;
 				
 				procedure do_it (

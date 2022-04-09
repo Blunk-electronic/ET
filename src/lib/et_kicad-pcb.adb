@@ -48,9 +48,14 @@ with et_vias;
 with et_pcb_stack;
 with et_symbols;
 
+with et_pcb_contour;			use et_pcb_contour;
 
 package body et_kicad.pcb is
 
+	use pac_pcb_cutouts;
+
+
+	
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
 	begin
 		return type_plot_output_directory.to_bounded_string (directory);

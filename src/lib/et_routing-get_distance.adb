@@ -232,7 +232,7 @@ is
 		
 		-- holes
 		procedure query_holes is
-			use et_packages;			
+			use et_pcb_contour;			
 			use pac_pcb_cutouts;
 
 			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin

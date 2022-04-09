@@ -50,7 +50,7 @@ is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_contour_segments;
-	
+
 	--use pac_text_fab;
 	--use pac_texts_fab_with_content;
 
@@ -65,7 +65,7 @@ is
 					area		=> in_area,
 					context		=> context,
 					line		=> element (c).segment_line,
-					width		=> et_packages.pcb_contour_line_width,
+					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
 
 			when ARC =>
@@ -73,7 +73,7 @@ is
 					area		=> in_area,
 					context		=> context,
 					arc			=> element (c).segment_arc,
-					width		=> et_packages.pcb_contour_line_width,
+					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
 		end case;
 	end query_segment;
@@ -103,7 +103,7 @@ is
 				context		=> context,
 				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
-				width		=> et_packages.pcb_contour_line_width,
+				width		=> pcb_contour_line_width,
 				height		=> self.frame_height);
 			
 		else
@@ -129,7 +129,7 @@ is
 					context		=> context,
 					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
-					width		=> et_packages.pcb_contour_line_width,
+					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
 				
 			else
@@ -151,7 +151,7 @@ begin -- draw_outline
 
 	-- All outline segments and holes be 
 	-- drawn with the same line width:
-	set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
+	set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 
 	-- The line width of texts is a property of a particular text and is
 	-- NOT set here.

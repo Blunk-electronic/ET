@@ -74,6 +74,7 @@ with et_stencil.packages;				use et_stencil.packages;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout.packages;				use et_keepout.packages;
+with et_pcb_contour;					use et_pcb_contour;
 
 with cairo;
 
@@ -244,23 +245,6 @@ package et_packages is
 
 
 	
--- PCB CUTOUTS OR HOLES
-
-	-- As this is the model of a package, we have only
-	-- pcb contours that form holes inside the board area.
-	-- There may be multiple cutout areas. Each of them
-	-- has a closed circumfence.
-	-- So we use the simple polygon type and collect them
-	-- in a simple list:
-	package pac_pcb_cutouts is new doubly_linked_lists (type_contour);
-
-	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-
-	-- NOTE: There is no reason to allow texts in contours here.
-	-- The text would most likely end up somewhere inside the board area. 
-	-- This in turn would cause the DRC to output errors.
-	
 
 	
 	
@@ -305,9 +289,15 @@ package et_packages is
 
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;
-		
+
+		-- PCB contour:
 		-- These structures are cutout areas inside the board area:
 		holes			: pac_pcb_cutouts.list;
+		
+		-- NOTE: There is no reason to allow texts in contours here.
+		-- The text would most likely end up somewhere inside the board area. 
+		-- This in turn would cause the DRC to output errors.
+
 		
 		technology		: type_assembly_technology := SMT; -- set by majority of terminals
 		

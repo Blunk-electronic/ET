@@ -365,12 +365,17 @@ package et_board_ops is
 		outline			: in type_contour;
 		log_threshold	: in type_log_level);
 
+
+	--function get_
+	
+	
 	-- Draws a hole in the board area. Adds the hole to the
 	-- already existing holes:
 	procedure draw_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		hole			: in type_contour;
 		log_threshold	: in type_log_level);
+
 	
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
@@ -381,6 +386,7 @@ package et_board_ops is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
+	
 	-- Deletes the segment of a hole that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
@@ -389,6 +395,8 @@ package et_board_ops is
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
+
+
 	
 -- SILK SCREEN
 

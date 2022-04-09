@@ -1480,7 +1480,7 @@ is
 
 
 		procedure write_board_contours is 
-			use et_packages;
+			use et_pcb_contour;
 			use pac_pcb_cutouts;
 			
 			procedure write_hole (c : in pac_pcb_cutouts.cursor) is begin

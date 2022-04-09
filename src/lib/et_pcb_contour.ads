@@ -48,8 +48,22 @@ with et_string_processing;		use et_string_processing;
 
 package et_pcb_contour is
 
-	use et_board_shapes_and_text.pac_text_fab;
+	--use pac_geometry_brd;
 
+	use pac_geometry_2;
+	use pac_contours;
+	use pac_text_fab;
+
+	
+
+	package pac_pcb_cutouts is new doubly_linked_lists (type_contour);
+
+	
+	-- GUI relevant only: The line width of contours:
+	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+
+	
+	
 	type type_contour_text 
 		is new pac_text_fab.type_text_fab_with_content with
 	record

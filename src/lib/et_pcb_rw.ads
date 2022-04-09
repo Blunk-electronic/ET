@@ -48,6 +48,7 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 with et_pcb;
+with et_pcb_contour;
 with et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_fill_zones;				use et_fill_zones;

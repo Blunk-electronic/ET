@@ -54,6 +54,7 @@ with et_nets;						use et_nets;
 
 with et_schematic_ops;
 with et_pcb;						use et_pcb;
+with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;

@@ -44,6 +44,7 @@ with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 
 with et_pcb;
+with et_pcb_contour;
 with et_pcb_stack;				use et_pcb_stack;
 
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
@@ -2259,6 +2260,7 @@ is
 
 			--end query_circle;
 
+			use et_pcb_contour;
 			use pac_pcb_cutouts;
 			use pac_contour_segments;
 

@@ -532,6 +532,7 @@ package body et_pcb_rw.device_packages is
 
 		
 		procedure write_holes is
+			use et_pcb_contour;
 			use pac_pcb_cutouts;
 			use pac_contour_segments;
 
