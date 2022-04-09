@@ -52,6 +52,8 @@ with et_conductor_text;				use et_conductor_text;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
+with et_pcb_contour;
+
 
 separate (et_scripting)
 	
@@ -342,14 +344,17 @@ is
 
 	
 	procedure draw_outline is
+		use et_pcb_contour;
+		
 		-- Extract from the given command the polygon arguments (everything after "outline"):
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
-		-- Build a basic polygon from the arguments:
-		p0 : constant type_contour := type_contour (to_contour (arguments));
+		-- Build a basic contour from the arguments:
+		c : constant type_contour := type_contour (to_contour (arguments));
 	begin
-		--draw_outline (module, type_polygon (p0), log_threshold + 1);
-		draw_outline (module, p0, log_threshold + 1);
+		-- Convert the contour to a pcb outer edge type
+		-- and assign it to the module:
+		set_outline (module, (c with null record), log_threshold + 1);
 	end draw_outline;
 
 	

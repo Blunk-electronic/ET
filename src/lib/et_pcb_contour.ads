@@ -54,8 +54,13 @@ package et_pcb_contour is
 	use pac_contours;
 	use pac_text_fab;
 
-	
 
+	-- As a safety measure we derive dedicated types for
+	-- the outer and inner edge of the PCB from the general contour type:
+	type type_outer_edge is new type_contour with null record;
+
+	type type_inner_edge is new type_contour with null record;
+	
 	package pac_pcb_cutouts is new doubly_linked_lists (type_contour);
 
 	

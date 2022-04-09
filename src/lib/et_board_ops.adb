@@ -2280,9 +2280,9 @@ package body et_board_ops is
 	
 -- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
 
-	procedure draw_outline (
+	procedure set_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_contour;
+		outline			: in type_outer_edge;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2306,7 +2306,7 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_outline;
+	end set_outline;
 
 	
 	procedure draw_hole (

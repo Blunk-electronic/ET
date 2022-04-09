@@ -357,12 +357,12 @@ package et_board_ops is
 	
 -- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
 
-	-- Draws the PCB outline.
+	-- Assigns the given module a PCB outer edge.
 	-- Overwrites the already existing outline as there can
 	-- be only one outline:
-	procedure draw_outline (
+	procedure set_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_contour;
+		outline			: in type_outer_edge;
 		log_threshold	: in type_log_level);
 
 
