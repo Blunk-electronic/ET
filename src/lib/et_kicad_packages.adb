@@ -50,7 +50,7 @@ with et_conventions;
 
 package body et_kicad_packages is
 
-	use pac_pcb_cutouts;
+	use pac_holes;
 
 	
 	function to_string (tags : in type_package_tags.bounded_string) return string is
@@ -2504,7 +2504,7 @@ package body et_kicad_packages is
 					--package_contour			=> (others => <>), -- CS to be filled from 3d model
 
 					-- CS: pcb contours in a package
-					holes				=> pac_pcb_cutouts.empty_list,
+					holes				=> pac_holes.empty_list,
 
 					-- CS: plated pcb contours ?
 					
@@ -2532,7 +2532,7 @@ package body et_kicad_packages is
 					appearance			=> VIRTUAL,
 						   
 					-- CS: pcb contours in a package						   
-					holes				=> pac_pcb_cutouts.empty_list,
+					holes				=> pac_holes.empty_list,
 
 					-- CS: plated pcb contours ?
 					

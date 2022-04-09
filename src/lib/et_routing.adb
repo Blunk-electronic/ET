@@ -102,9 +102,9 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 			use et_pcb_contour;
-			use pac_pcb_cutouts;
+			use pac_holes;
 			
-			procedure query_hole (c : pac_pcb_cutouts.cursor) is begin
+			procedure query_hole (c : pac_holes.cursor) is begin
 				update (get_shortest_distance (element (c), point));
 			end query_hole;
 			
@@ -180,10 +180,10 @@ package body et_routing is
 			
 			--procedure query_holes is
 				--use et_packages;
-				--use pac_pcb_cutouts;
-				--c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
+				--use pac_holes;
+				--c : pac_holes.cursor := module.board.contours.holes.first;
 			--begin
-				--while c /= pac_pcb_cutouts.no_element loop
+				--while c /= pac_holes.no_element loop
 					--if get_point_to_polygon_status (
 						--element (c), to_vector (point)).location = INSIDE 
 					--then

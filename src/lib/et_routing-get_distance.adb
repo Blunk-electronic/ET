@@ -233,9 +233,9 @@ is
 		-- holes
 		procedure query_holes is
 			use et_pcb_contour;			
-			use pac_pcb_cutouts;
+			use pac_holes;
 
-			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+			procedure query_hole (c : in pac_holes.cursor) is begin
 
 				if log_category >= HIGH then
 					log_indentation_up;

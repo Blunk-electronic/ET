@@ -362,11 +362,12 @@ is
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
-		-- Build a basic polygon from the arguments:
-		p0 : constant type_contour := type_contour (to_contour (arguments));
+		-- Build a basic contour from the arguments:
+		c : constant type_contour := type_contour (to_contour (arguments));
 	begin
-		--draw_hole (module, type_polygon (p0), log_threshold + 1);
-		draw_hole (module, p0, log_threshold + 1);
+		-- Convert the contour to an inner pcb edge type and add it to
+		-- the already existing holes:
+		add_hole (module, (c with null record), log_threshold + 1);
 	end draw_hole;
 
 	

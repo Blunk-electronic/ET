@@ -1481,9 +1481,9 @@ is
 
 		procedure write_board_contours is 
 			use et_pcb_contour;
-			use pac_pcb_cutouts;
+			use pac_holes;
 			
-			procedure write_hole (c : in pac_pcb_cutouts.cursor) is begin
+			procedure write_hole (c : in pac_holes.cursor) is begin
 				section_mark (section_hole, HEADER);		
 				write_polygon_segments (element (c));		
 				section_mark (section_hole, FOOTER);		

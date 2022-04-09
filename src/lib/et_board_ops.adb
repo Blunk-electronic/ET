@@ -2296,7 +2296,7 @@ package body et_board_ops is
 							   
 	begin
 		log (text => "module " & to_string (module_name) 
-			 & " drawing outline" & to_string (outline),
+			 & " setting outline" & to_string (outline),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
@@ -2309,9 +2309,9 @@ package body et_board_ops is
 	end set_outline;
 
 	
-	procedure draw_hole (
+	procedure add_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_contour;
+		hole			: in type_inner_edge;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2320,14 +2320,14 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 
-			use pac_pcb_cutouts;
+			use pac_holes;
 		begin
 			append (module.board.contours.holes, hole);
 		end;
 							   
 	begin
 		log (text => "module " & to_string (module_name) 
-			 & " drawing hole" & to_string (hole),
+			 & " placing hole" & to_string (hole),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
@@ -2337,7 +2337,7 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_hole;
+	end add_hole;
 
 	
 	procedure delete_outline (

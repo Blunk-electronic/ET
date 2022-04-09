@@ -2261,7 +2261,7 @@ is
 			--end query_circle;
 
 			use et_pcb_contour;
-			use pac_pcb_cutouts;
+			use pac_holes;
 			use pac_contour_segments;
 
 			procedure draw_circle (c : in type_circle) is
@@ -2312,7 +2312,7 @@ is
 			end draw_segment;
 			
 			
-			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+			procedure query_hole (c : in pac_holes.cursor) is begin
 				if element (c).contour.circular then
 					draw_circle (element (c).contour.circle);
 				else

@@ -61,7 +61,7 @@ package et_pcb_contour is
 
 	type type_inner_edge is new type_contour with null record;
 	
-	package pac_pcb_cutouts is new doubly_linked_lists (type_contour);
+	package pac_holes is new doubly_linked_lists (type_inner_edge);
 
 	
 	-- GUI relevant only: The line width of contours:

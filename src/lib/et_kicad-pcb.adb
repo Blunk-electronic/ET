@@ -52,7 +52,7 @@ with et_pcb_contour;			use et_pcb_contour;
 
 package body et_kicad.pcb is
 
-	use pac_pcb_cutouts;
+	use pac_holes;
 
 
 	
@@ -3096,7 +3096,7 @@ package body et_kicad.pcb is
 								assembly_documentation	=> package_assy_doc,
 
 								-- CS: pcb contours in a package
-								holes				=> pac_pcb_cutouts.empty_list
+								holes				=> pac_holes.empty_list
 
 								-- CS: plated pcb contours ?
 								
@@ -3128,7 +3128,7 @@ package body et_kicad.pcb is
 								assembly_documentation	=> package_assy_doc,
 
 								-- CS: pcb contours in a package
-								holes				=> pac_pcb_cutouts.empty_list
+								holes				=> pac_holes.empty_list
 
 								-- CS: plated pcb contours ?
 								

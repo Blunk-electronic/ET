@@ -4389,7 +4389,7 @@ is
 			-- holes in PCB (or cutouts)
 			procedure append_hole is 
 				use et_pcb_contour;
-				use pac_pcb_cutouts;
+				use pac_holes;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4397,7 +4397,7 @@ is
 				is begin
 					append (
 						container 	=> module.board.contours.holes,
-						new_item	=> contour);
+						new_item	=> (contour with null record));
 				end do_it;
 
 			begin

@@ -369,11 +369,10 @@ package et_board_ops is
 	--function get_
 	
 	
-	-- Draws a hole in the board area. Adds the hole to the
-	-- already existing holes:
-	procedure draw_hole (
+	-- Adds a hole to the already existing holes:
+	procedure add_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_contour;
+		hole			: in type_inner_edge;
 		log_threshold	: in type_log_level);
 
 	

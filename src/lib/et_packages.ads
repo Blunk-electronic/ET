@@ -292,7 +292,7 @@ package et_packages is
 
 		-- PCB contour:
 		-- These structures are cutout areas inside the board area:
-		holes			: pac_pcb_cutouts.list;
+		holes			: pac_holes.list;
 		
 		-- NOTE: There is no reason to allow texts in contours here.
 		-- The text would most likely end up somewhere inside the board area. 

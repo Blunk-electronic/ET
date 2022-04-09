@@ -118,10 +118,10 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) 
 	is
-		use et_packages;
-		use pac_pcb_cutouts;
+		--use et_packages;
+		use pac_holes;
 		
-		procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+		procedure query_hole (c : in pac_holes.cursor) is begin
 			if element (c).contour.circular then
 
 				pac_draw_fab.draw_circle (

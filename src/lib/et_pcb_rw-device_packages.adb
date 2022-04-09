@@ -533,10 +533,10 @@ package body et_pcb_rw.device_packages is
 		
 		procedure write_holes is
 			use et_pcb_contour;
-			use pac_pcb_cutouts;
+			use pac_holes;
 			use pac_contour_segments;
 
-			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+			procedure query_hole (c : in pac_holes.cursor) is begin
 				section_mark (section_hole, HEADER);		
 				write_polygon_segments (element (c));		
 				section_mark (section_hole, FOOTER);		
@@ -1492,6 +1492,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_route_restrict_polygon_bottom is begin
 					pac_route_restrict_contours.append (
 						container	=> packge.route_restrict.bottom.contours, 
@@ -1501,6 +1502,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_via_restrict_polygon_top is begin
 					pac_via_restrict_contours.append (
 						container	=> packge.via_restrict.top.contours, 
@@ -1509,6 +1511,7 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
+
 				
 				procedure append_via_restrict_polygon_bottom is begin
 					pac_via_restrict_contours.append (
@@ -1519,6 +1522,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				-- cutout zones
 				procedure append_silk_cutout_top is begin
 					pac_silk_cutouts.append (
@@ -1529,6 +1533,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_silk_cutout_bottom is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
@@ -1538,6 +1543,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_assy_doc_cutout_top is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
@@ -1546,6 +1552,7 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
+			
 
 				procedure append_assy_doc_cutout_bottom is begin
 					pac_doc_cutouts.append (
@@ -1556,6 +1563,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
@@ -1565,6 +1573,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
@@ -1574,6 +1583,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_stencil_cutout_top is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
@@ -1583,6 +1593,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_stencil_cutout_bottom is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
@@ -1592,6 +1603,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_stop_cutout_top is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
@@ -1600,6 +1612,7 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
+
 				
 				procedure append_stop_cutout_bottom is begin
 					pac_stop_cutouts.append (
@@ -1610,6 +1623,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_conductor_cutout_top is begin
 					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
@@ -1619,6 +1633,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_conductor_cutout_bottom is begin
 					et_fill_zones.packages.pac_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
@@ -1628,6 +1643,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_route_restrict_cutout_top is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.top.cutouts, 
@@ -1637,6 +1653,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_route_restrict_cutout_bottom is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.bottom.cutouts, 
@@ -1645,6 +1662,7 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
+
 				
 				procedure append_via_restrict_cutout_top is begin
 					pac_via_restrict_cutouts.append (
@@ -1655,6 +1673,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_via_restrict_cutout_bottom is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.bottom.cutouts, 
@@ -1663,14 +1682,16 @@ package body et_pcb_rw.device_packages is
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
+			
 				
 				-- holes in PCB (or cutouts)
 				procedure append_hole is begin
-					packge.holes.append (contour);
+					packge.holes.append ((contour with null record));
 
 					-- clean up for next hole
 					board_reset_contour;
 				end append_hole;
+
 				
 			begin -- execute_section
 				case stack.current is
