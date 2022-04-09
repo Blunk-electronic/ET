@@ -39,6 +39,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with et_exceptions;					use et_exceptions;
 
+with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_routing;					use et_routing;
 
 separate (et_board_ops)
@@ -49,6 +50,9 @@ procedure fill_fill_zones (
 	log_threshold	: in type_log_level;
 	nets 			: in pac_net_names.list := no_net_names)
 is 
+	use pac_polygons;
+	use pac_polygon_clipping;
+	
 	use pac_net_names;
 
 	all_zones : boolean;
@@ -525,6 +529,10 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				--a : type_outer_border;
+				--b : type_inner_border;
+				--c : pac_clipped.list;
+				
 				-- The cursor that points to the zone being filled:
 				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
 				
@@ -570,6 +578,9 @@ is
 
 				
 			begin -- route_solid
+				--c := clip (type_polygon (a), type_polygon (b));
+				--a := b;
+				
 				while zone_cursor /= pac_route_solid.no_element loop
 
 					-- clear the complete fill:

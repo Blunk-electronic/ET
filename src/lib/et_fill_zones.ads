@@ -81,9 +81,24 @@ package et_fill_zones is
 	package pac_stripes is new doubly_linked_lists (type_line);
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
-	
+
+	-- The fill zone may disintegrate into smaller islands.
+	-- In the best case there is only one island.
+	-- Each island has an outer border (which is basically a polygon):
+	type type_outer_border is new type_polygon;
+
+	-- An island may have multiple inner areas which are not filled.
+	-- They are usually a result of holes in the PCB, tracks, pads, vias, ...
+	-- Such a cutout area is an inner border (which is basically a polygon):
+	type type_inner_border is new type_polygon;
+
+	-- Since we have lots of those inner cutout areas we store them in a list:
+	package pac_inner_borders is new doubly_linked_lists (type_inner_border);
+
+
 	type type_island is record
-		border	: type_polygon;
+		border	: type_outer_border;
+		cutouts	: pac_inner_borders.list;
 		stripes	: pac_stripes.list;
 	end record;
 		

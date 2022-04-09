@@ -2081,7 +2081,7 @@ is
 	end set_polygon_properties;
 
 	
-	type type_track_shape is (LINE, ARC, POLYGON);
+	type type_track_shape is (LINE, ARC, ZONE);
 	-- CS circular tracks are currently not supported
 
 	
@@ -2092,7 +2092,7 @@ is
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 
-		-- Extract from the given command the polygon arguments (everything after "polygon"):
+		-- Extract from the given command the polygon arguments (everything after "zone"):
 		procedure make_polygon is
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
@@ -2202,7 +2202,7 @@ is
 						command_incomplete;
 				end case;
 
-			when POLYGON =>
+			when ZONE =>
 				case get_field_count is
 					when 5 .. count_type'last =>
 						make_polygon;
@@ -2222,7 +2222,7 @@ is
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 		
 		procedure make_polygon is
-			-- Extract from the given command the polygon arguments (everything after "polygon"):
+			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 
 			-- Build a basic polygon from the arguments:
@@ -2559,11 +2559,11 @@ is
 						command_incomplete;
 				end case;
 
-			when POLYGON =>
+			when ZONE =>
 				case get_field_count is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
-					--  board led_driver route net RESET_N 1 polygon /
+					--  board led_driver route net RESET_N 1 zone /
 					--  line 0 0 100 0 /
 					--  line 100 0 100 100 / 
 					--  arc 50 100 100 100 0 100 ccw / 
