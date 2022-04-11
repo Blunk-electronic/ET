@@ -75,11 +75,6 @@ is
 	use pac_floating_hatched;
 	use pac_route_solid;
 	use pac_route_hatched;
-
-	--use pac_h_lines;
-	--use pac_rows;
-	--use pac_borders;
-	--use pac_border_lines;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use pac_conductor_texts;
@@ -120,6 +115,9 @@ is
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
 
+
+	
+-- LINES, ARCS, CIRCLES
 	
 	procedure query_line (c : in pac_conductor_lines.cursor) is begin
 
@@ -193,53 +191,38 @@ is
 		end if;
 	end query_circle;
 
+
+
 	
-	-- The width of the lines that fill the polygon.
+-- FILL ZONES
+	
+	-- The width of the border and fill lines of a fill zone:
 	fill_line_width : type_track_width;
-
 	
-	-- This procedure draws a horizontal fill line of a conductor polygon:
-	--procedure query_h_line (l : in pac_h_lines.cursor) is begin
+	use pac_islands;
+	
+	procedure query_island (c : in pac_islands.cursor) is
+		use pac_inner_borders;
+		use pac_stripes;
+	begin
+		null;
 
-		--draw_line (
-			--area		=> in_area,
-			--context		=> context,
-			--line		=> element (l),
-			--width		=> fill_line_width,
-			--height		=> self.frame_height);
 		
-	--end query_h_line;
-
-
-	-- This procedure draws a border line of a conductor polygon:
-	--procedure query_b_line (l : in pac_border_lines.cursor) is begin
-
-		--draw_line (
-			--area		=> in_area,
-			--context		=> context,
-			--line		=> element (l),
-			--width		=> fill_line_width,
-			--height		=> self.frame_height);
-		
-	--end query_b_line;
+	--type type_island is record
+		--border	: type_outer_border;
+		--cutouts	: pac_inner_borders.list;
+		--stripes	: pac_stripes.list;
+	--end record;
+	
+	end query_island;
 
 	
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
-
-		--procedure query_row (r : in pac_rows.cursor) is begin
-			--iterate (element (r).lines, query_h_line'access);
-		--end query_row;
-
-		--procedure query_row (r : in pac_borders.cursor) is begin
-			--iterate (element (r).border, query_b_line'access);
-		--end query_row;
-		
 	begin
-		-- Draw the contour if it is in the current layer:
+		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
-			-- draw contours outer contours
 			draw_contour (
 				area	=> in_area,
 				context	=> context,
@@ -249,16 +232,12 @@ is
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw fill lines if contour has been drawn
+			-- Draw the islands if contour has been drawn:
 			if drawn then
-
-				-- All fill lines will be drawn with the same width:
+				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-
-				-- CS:
-				--iterate (element (c).properties.fill.rows, query_row'access);
-				--iterate (element (c).properties.fill.borders, query_row'access);
+				iterate (element (c).fill, query_island'access);
 			end if;
 		end if;
 	end query_fill_zone;
@@ -267,10 +246,9 @@ is
 	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
 		drawn : boolean := false;
 	begin
-		-- Draw the contour if it is in the current layer:
+		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 			
-			-- draw polygon outer contours
 			draw_contour (
 				area	=> in_area,
 				context	=> context,
@@ -280,29 +258,24 @@ is
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw filled areas
-			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
+			-- Draw the islands if contour has been drawn:
+			if drawn then
+				-- All borders and fill lines will be drawn with the same width:
+				fill_line_width := element (c).width_min;			
+				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				iterate (element (c).fill, query_island'access);
+			end if;
+
 		end if;
 	end query_fill_zone;
 
 	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		drawn : boolean := false;
-
-		--procedure query_row (r : in pac_rows.cursor) is begin
-			--iterate (element (r).lines, query_h_line'access);
-		--end query_row;
-
-		--procedure query_row (r : in pac_borders.cursor) is begin
-			--iterate (element (r).border, query_b_line'access);
-		--end query_row;
-
-		
 	begin
-		-- Draw the contour if it is in the current layer:
+		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 	
-			-- draw contour
 			draw_contour (
 				area	=> in_area,
 				context	=> context,
@@ -312,18 +285,12 @@ is
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw fill lines if contour has been drawn
+			-- Draw islands if contour has been drawn:
 			if drawn then
-				--put_line ("draw fill lines");
-
-				-- All fill lines will be drawn with the same width:
-				fill_line_width := element (c).width_min;
+				-- All borders and fill lines will be drawn with the same width:
+				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-
-				-- CS:
-				--iterate (element (c).properties.fill.rows, query_row'access);
-				--iterate (element (c).properties.fill.borders, query_row'access);
-				
+				iterate (element (c).fill, query_island'access);
 			end if;
 
 		end if;
@@ -333,7 +300,7 @@ is
 	procedure query_fill_zone (c : in pac_route_hatched.cursor) is 
 		drawn : boolean := false;
 	begin		
-		-- Draw the zone contour if it is in the current layer:
+		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
 			draw_contour (
@@ -345,10 +312,17 @@ is
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw filled areas
-			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
+			-- Draw islands if contour has been drawn:
+			if drawn then
+				-- All borders and fill lines will be drawn with the same width:
+				fill_line_width := element (c).width_min;			
+				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				iterate (element (c).fill, query_island'access);
+			end if;
+
 		end if;
 	end query_fill_zone;
+
 
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
@@ -373,6 +347,9 @@ is
 		end if;
 	end query_cutout;
 
+
+
+-- TEXTS
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
 		v_text : type_vector_text;
@@ -440,6 +417,10 @@ is
 		-- CS iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 
+
+
+	
+-- VIAS
 	
 	procedure query_via (v : in pac_vias.cursor) is 
 		circle : type_circle;

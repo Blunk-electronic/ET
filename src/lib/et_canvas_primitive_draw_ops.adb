@@ -268,6 +268,163 @@ package body pac_draw is
 		end if;
 	end draw_circle;
 
+
+	
+	procedure draw_polygon (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		polygon	: in type_polygon;
+		filled	: in type_filled; -- CS ?
+		width	: in type_distance_positive;
+		-- CS fill style
+
+		height	: in pac_shapes.pac_geometry_1.type_distance;
+		drawn	: in out boolean)
+	is
+		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
+		--boundaries : constant type_boundaries := get_boundaries (polygon, width);
+
+		---- compute the bounding box of the given contour
+		--bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
+
+		---- backup previous line width
+		--line_width_before : constant type_view_coordinate := get_line_width (context.cr);
+
+		--use pac_edges;
+		
+		---- For cairo, en arc must be expressed by start and end arc:
+		--arc_temp : type_arc_angles;
+
+		---- If the contour is not to be filled, then its contours must be drawn 
+		---- with a line widht that depends on the current scale:
+		--scale : type_scale;
+
+		---- The line style, or the dash pattern, will be calculated 
+		---- according to the current scale:
+		--dash_on, dash_off	: gdouble;
+		--dash_pattern		: dash_array (1 .. 2);
+
+		--procedure query_segment (c : in pac_contour_segments.cursor) is begin
+
+		-- CS query area vs bounding box ?
+		
+			--case element (c).shape is
+				
+				--when LINE =>
+
+					---- start point
+					--line_to (
+						--context.cr,
+						--convert_x (get_x (element (c).segment_line.start_point)),
+						--shift_y (get_y (element (c).segment_line.start_point), height)
+						--);
+						
+					---- end point
+					--line_to (
+						--context.cr,
+						--convert_x (get_x (element (c).segment_line.end_point)),
+						--shift_y (get_y (element (c).segment_line.end_point), height)
+						--);
+
+					
+				--when ARC =>
+					---- Convert the segment to a type that uses start and end angles.
+					---- The angles of arc_temp will later be inverted for cairo draw operation:
+					--arc_temp := to_arc_angles (element (c).segment_arc);
+					
+					--if element (c).segment_arc.direction = CW then
+						----put_line ("CW");
+						
+						--cairo.arc (
+							--context.cr,
+							--xc		=> convert_x (get_x (arc_temp.center)),
+							--yc		=> shift_y (get_y (arc_temp.center), height),
+							--radius	=> type_view_coordinate (arc_temp.radius),
+							--angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+							--angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+							--);
+
+					--else -- CCW
+						----put_line ("CCW start" & to_string (element (ca).start_point) & " angle" 
+						----		  & to_string (arc_temp.angle_start));
+
+						----put_line ("CCW end  " & to_string (element (ca).end_point) & " angle" 
+						----		  & to_string (arc_temp.angle_end));
+						
+						--cairo.arc_negative (
+							--context.cr,
+							--xc		=> convert_x (get_x (arc_temp.center)),
+							--yc		=> shift_y (get_y (arc_temp.center), height),
+							--radius	=> type_view_coordinate (arc_temp.radius),
+							--angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+							--angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+							--);
+					--end if;
+
+			--end case;
+		--end query_segment;
+
+		
+	begin -- draw_polygon
+
+		-- We draw the contour if:
+		--  - no area given or
+		--  - if the bounding box of the contour intersects the given area
+		--if (area = no_rectangle
+			--or else intersects (area, bounding_box)) 
+		--then
+			
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+
+			new_sub_path (context.cr); -- required to suppress an initial line
+
+		
+			
+			--case filled is
+				--when YES => 
+					--fill (context.cr);
+					--set_line_width (context.cr, type_view_coordinate (zero));
+					
+				--when NO =>
+					---- Calculate the line width of the contours:
+					--scale := get_scale (canvas);
+					--set_line_width (context.cr, type_view_coordinate (0.01 + 1.0 / scale));
+					
+					---- The ends of the line are round:
+					--set_line_cap (context.cr, cairo_line_cap_round);
+
+					----dash_on := 0.2 + 1.0 / scale;
+					----dash_off := 0.1 + 1.0 / scale;
+					--dash_on := 20.0 / scale;
+					--dash_off := 15.0 / scale;
+
+					--dash_pattern (1) := dash_on;
+					--dash_pattern (2) := dash_off;
+					--set_dash (context.cr, dash_pattern, 0.0);
+			--end case;
+
+			--stroke (context.cr);
+
+			---- Restore line width as it was before this procedure:
+			--set_line_width (context.cr, line_width_before);
+
+			---- Disable line dashes:
+			--set_dash (context.cr, no_dashes, 0.0);
+
+			
+			---- The contour has been drawn:
+			--drawn := true;			
+		--else
+			---- The contour has not been drawn:
+			--drawn := false;
+		--end if;
+		
+	end draw_polygon;
+	
+
 	
 	procedure draw_contour (
 		area	: in type_rectangle;
@@ -304,6 +461,9 @@ package body pac_draw is
 		dash_pattern		: dash_array (1 .. 2);
 
 		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+
+			-- CS query area vs bounding box ?
+			
 			case element (c).shape is
 				
 				when LINE =>

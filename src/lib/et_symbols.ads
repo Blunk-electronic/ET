@@ -55,6 +55,7 @@ with et_coordinates;			use et_coordinates;
 with et_geometry;
 with et_geometry_2;
 with et_geometry_2.contours;
+with et_geometry_2.polygons;
 with et_string_processing;
 with et_general;
 with et_text;
@@ -72,6 +73,10 @@ package et_symbols is
 	use pac_geometry_2;
 
 	package pac_contours is new pac_geometry_2.contours;
+	-- This package is never used in schematic. But it is mandatory
+	-- for the instantiation of the primitive draw operations package.
+
+	package pac_polygons is new pac_geometry_2.polygons;
 	-- This package is never used in schematic. But it is mandatory
 	-- for the instantiation of the primitive draw operations package.
 

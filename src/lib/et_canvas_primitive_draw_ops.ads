@@ -57,10 +57,10 @@ with cairo;					use cairo;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_geometry;			use et_geometry;
+with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_geometry_2.contours;
---with et_geometry_2.polygons;
+with et_geometry_2.polygons;
 with et_text;
 with et_canvas_general;
 
@@ -76,8 +76,11 @@ generic
 	with package pac_shapes is new et_geometry_2 (<>);
 
 	-- The instantiated polygon package:
-	with package pac_contours is new pac_shapes.contours;
+	with package pac_polygons is new pac_shapes.polygons;
 
+	-- The instantiated contour package:
+	with package pac_contours is new pac_shapes.contours;
+	
 	-- The instantiated text package:
 	with package pac_text is new et_text.generic_pac_text (
 		-- The used text package must have been instantiated with the same shapes package:
@@ -90,6 +93,7 @@ package pac_draw is
 	
 	use pac_canvas;
 	use pac_shapes;
+	use pac_polygons;
 	use pac_contours;
 	use pac_shapes.pac_geometry_1;
 
@@ -207,7 +211,27 @@ package pac_draw is
 		--end case;
 	--end record;
 
-							
+
+	procedure draw_polygon (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		polygon	: in type_polygon;
+		filled	: in type_filled; -- CS ?
+		-- CS fill style
+
+		-- The line width is used for calculating the boundaries
+		-- of the segments. 
+		-- The width for the actual drawing must be set by the caller.
+		width	: in type_distance_positive;
+		
+		height	: in pac_shapes.pac_geometry_1.type_distance;
+
+		-- This flag is set if the polygon has been drawn
+		-- because is inside the given area:
+		drawn	: in out boolean);
+
+	
+	
 	procedure draw_contour (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -222,7 +246,7 @@ package pac_draw is
 		
 		height	: in pac_shapes.pac_geometry_1.type_distance;
 
-		-- This flag is set if the polygon has been drawn
+		-- This flag is set if the contour has been drawn
 		-- because is inside the given area:
 		drawn	: in out boolean);
 
