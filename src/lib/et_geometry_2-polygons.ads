@@ -66,6 +66,9 @@ package et_geometry_2.polygons is
 	end record;
 
 
+	package pac_polygons is new doubly_linked_lists (type_polygon);
+	
+
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.

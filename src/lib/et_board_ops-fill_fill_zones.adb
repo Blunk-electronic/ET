@@ -52,6 +52,7 @@ procedure fill_fill_zones (
 is 
 	use pac_polygons;
 	use pac_polygon_clipping;
+	use pac_polygon_offsetting;
 	
 	use pac_net_names;
 
@@ -743,7 +744,7 @@ is
 
 
 	board_outer_edge : type_polygon;
-	board_inner_edge : pac_holes.list;
+	board_holes : pac_holes_as_polygons.list;
 	
 begin -- fill_fill_zones
 
@@ -751,7 +752,19 @@ begin -- fill_fill_zones
 		contour		=> get_outline (module_cursor),
 		tolerance	=> fab_tolerance);
 
-	--board_inner_edge := get_holes (
+	board_holes := to_polygons (
+		holes		=> get_holes (module_cursor),
+		tolerance	=> fab_tolerance);
+
+	-- Shrink the outer board edge by the conductor-to-edge clearance
+	-- as given by the design rules:
+	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
+
+	-- Expand the holes by the conductor-to-edge clearance
+	-- as given by the design rules:
+	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
+
+
 	
 	if is_empty (nets) then
 		

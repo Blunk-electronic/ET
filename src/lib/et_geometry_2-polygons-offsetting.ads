@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      GEOMETRY 2 / POLYGONS / CLIPPING                    --
+--                      GEOMETRY 2 / POLYGONS / OFFSETTING                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -45,9 +45,24 @@ package et_geometry_2.polygons.offsetting is
 	-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
 
 	-- CS subtype for offset
-	
+
+	-- Offsets (the edges of) a polygon. 
+	-- If offset is positive then the edges are moved toward the outside
+	-- of the polygon. If offset is negative then the edges are moved inside.
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
+		offset		: in type_distance);
+
+
+	-- Offsets a list of polygons:
+	function offset_polygons (
+		polygons	: in pac_polygons.list;
+		offset		: in type_distance)
+		return pac_polygons.list;
+
+	
+	procedure offset_polygons (
+		polygons	: in out pac_polygons.list;
 		offset		: in type_distance);
 
 	

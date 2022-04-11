@@ -175,6 +175,39 @@ package body et_geometry_2.polygons.offsetting is
 
 	end offset_polygon;
 
+
+
+	function offset_polygons (
+		polygons	: in pac_polygons.list;
+		offset		: in type_distance)
+		return pac_polygons.list
+	is
+		use pac_polygons;
+		result : pac_polygons.list;
+
+		-- Iterate the given list of polygons. 
+		-- Offset each of them and append it to the result:
+		
+		procedure query_polygon (c : in pac_polygons.cursor) is
+			p : type_polygon := element (c);
+		begin
+			offset_polygon (p, offset);
+			result.append (p);
+		end query_polygon;
+		
+	begin
+		polygons.iterate (query_polygon'access);
+		return result;
+	end offset_polygons;
+
+
+	procedure offset_polygons (
+		polygons	: in out pac_polygons.list;
+		offset		: in type_distance)
+	is begin
+		polygons := offset_polygons (polygons, offset);
+	end offset_polygons;
+	
 	
 end et_geometry_2.polygons.offsetting;
 

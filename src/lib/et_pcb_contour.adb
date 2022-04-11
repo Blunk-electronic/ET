@@ -4,7 +4,7 @@
 --                                                                          --
 --                           PCB CONTOURS                                   --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,71 +36,55 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_contour_to_polygon;
+package body et_pcb_contour is
 
 
-package et_pcb_contour is
-
-	use pac_geometry_brd;
-
-	use pac_geometry_2;
-	use pac_contours;
-	use pac_polygons;
-	use pac_polygon_offsetting;
-	use pac_text_fab;
-
-
-	-- As a safety measure we derive dedicated types for
-	-- the outer and inner edge of the PCB from the general contour type.
-	
-	-- There is only one outer edge of a PCB:
-	type type_outer_edge is new type_contour with null record;
-
-	-- There can be many inner edges due to holes:
-	type type_inner_edge is new type_contour with null record;
-	package pac_holes is new doubly_linked_lists (type_inner_edge);
-	use pac_holes;
-	
-	
-	-- In order to handle fill zones, the holes must be converted to
-	-- a list of polygons:
-	package pac_holes_as_polygons is new doubly_linked_lists (type_polygon);
-	use pac_holes_as_polygons;
-
-	
-	-- Converts a list of holes to a list of polygons:
 	function to_polygons (
 		holes		: in pac_holes.list;
 		tolerance	: in type_distance_positive)
-		return pac_holes_as_polygons.list;
+		return pac_holes_as_polygons.list
+	is
+		use et_contour_to_polygon;
+		
+		result : pac_holes_as_polygons.list;
 
+		-- Iterate the given list of holes and convert each hole
+		-- to a polygon. The polygon in turn will be appended to the result
+		-- so that a list of polygons will be the result.
+		
+		procedure query_hole (c : in pac_holes.cursor) is begin
 
-	-- Offsets a list of holes (in the form of polygons).
-	-- The parameter "offset" is always positive because
-	-- holes can only become greater:
+			result.append (to_polygon (
+				contour		=> element (c),
+				tolerance	=> tolerance));
+			
+		end query_hole;
+
+		
+	begin
+		holes.iterate (query_hole'access);
+		return result;
+	end to_polygons;
+	
+
 	procedure offset_holes (
 		holes		: in out pac_holes_as_polygons.list;
-		offset		: in type_distance_positive);
-
+		offset		: in type_distance_positive)
+	is
+		result : pac_holes_as_polygons.list;
 	
-		
-	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+		procedure query_hole (c : in pac_holes_as_polygons.cursor) is
+			p : type_polygon := element (c);
+		begin
+			offset_polygon (p, offset);
+			result.append (p);
+		end query_hole;
+			
+	begin
+		holes.iterate (query_hole'access);
+	end offset_holes;
 
-	
-	
-	type type_contour_text 
-		is new pac_text_fab.type_text_fab_with_content with
-	record
-		vectors	: type_vector_text;		
-	end record;
-
-	package pac_contour_texts is new doubly_linked_lists (type_contour_text);
 
 	
 end et_pcb_contour;
