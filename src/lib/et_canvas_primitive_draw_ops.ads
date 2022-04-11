@@ -131,6 +131,7 @@ package pac_draw is
 		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry_1.type_distance);
 
+	
 	-- This procedure draws the given circle on the given context.
 	-- The circle is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
@@ -207,10 +208,10 @@ package pac_draw is
 	--end record;
 
 							
-	procedure draw_polygon (
+	procedure draw_contour (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_contour'class;
+		contour	: in type_contour'class;
 		filled	: in type_filled;
 		-- CS fill style
 
@@ -226,14 +227,14 @@ package pac_draw is
 		drawn	: in out boolean);
 
 
-	procedure draw_polygon_with_circular_cutout (
+	procedure draw_contour_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry_1.type_distance);
 
-	procedure draw_polygon_with_arbitrary_cutout (
+	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;

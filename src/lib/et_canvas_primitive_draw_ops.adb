@@ -269,10 +269,10 @@ package body pac_draw is
 	end draw_circle;
 
 	
-	procedure draw_polygon (
+	procedure draw_contour (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
-		polygon	: in type_contour'class;
+		contour	: in type_contour'class;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
 		-- CS fill style
@@ -280,10 +280,10 @@ package body pac_draw is
 		height	: in pac_shapes.pac_geometry_1.type_distance;
 		drawn	: in out boolean)
 	is
-		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
-		boundaries : constant type_boundaries := get_boundaries (polygon, width);
+		-- compute the boundaries (greatest/smallest x/y) of the given contour:
+		boundaries : constant type_boundaries := get_boundaries (contour, width);
 
-		-- compute the bounding box of the given polygon
+		-- compute the bounding box of the given contour
 		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
 
 		-- backup previous line width
@@ -294,7 +294,7 @@ package body pac_draw is
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
 
-		-- If the polygon is not to be filled, then its contours must be drawn 
+		-- If the contour is not to be filled, then its contours must be drawn 
 		-- with a line widht that depends on the current scale:
 		scale : type_scale;
 
@@ -361,11 +361,11 @@ package body pac_draw is
 		end query_segment;
 
 		
-	begin -- draw_polygon
+	begin -- draw_contour
 
-		-- We draw the polygon if:
+		-- We draw the contour if:
 		--  - no area given or
-		--  - if the bounding box of the polygon intersects the given area
+		--  - if the bounding box of the contour intersects the given area
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
@@ -377,9 +377,9 @@ package body pac_draw is
 
 			new_sub_path (context.cr); -- required to suppress an initial line
 
-			if polygon.contour.circular then
+			if contour.contour.circular then
 
-				-- Draw the single circle that forms the polygon:
+				-- Draw the single circle that forms the contour:
 
 				if filled = YES then
 					fill (context.cr);
@@ -388,14 +388,14 @@ package body pac_draw is
 				-- CS: The intersection between circle and other segments
 				-- is still visible as a very thin line.
 
-				-- CS: All segments of the polygon must have the same color.
-				-- Where the circle overlaps the polygon the brightness increases.
+				-- CS: All segments of the contour must have the same color.
+				-- Where the circle overlaps the contour the brightness increases.
 
 				cairo.arc (
 					context.cr,
-					xc		=> convert_x (get_x (polygon.contour.circle.center)),
-					yc		=> shift_y (get_y (polygon.contour.circle.center), height),
-					radius	=> type_view_coordinate (polygon.contour.circle.radius),
+					xc		=> convert_x (get_x (contour.contour.circle.center)),
+					yc		=> shift_y (get_y (contour.contour.circle.center), height),
+					radius	=> type_view_coordinate (contour.contour.circle.radius),
 
 					-- it must be a full circle starting at 0 degree and ending at 360 degree:
 					angle1	=> 0.0,
@@ -406,7 +406,7 @@ package body pac_draw is
 				
 			else
 				-- move lines and arcs:
-				polygon.contour.segments.iterate (query_segment'access);
+				contour.contour.segments.iterate (query_segment'access);
 			end if;
 
 			
@@ -443,16 +443,17 @@ package body pac_draw is
 			set_dash (context.cr, no_dashes, 0.0);
 
 			
-			-- The polygon has been drawn:
+			-- The contour has been drawn:
 			drawn := true;			
 		else
-			-- The polygon has not been drawn:
+			-- The contour has not been drawn:
 			drawn := false;
 		end if;
-	end draw_polygon;
+		
+	end draw_contour;
 
 
-	procedure draw_polygon_with_circular_cutout (
+	procedure draw_contour_with_circular_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
@@ -464,8 +465,8 @@ package body pac_draw is
 		-- Since this is about filled areas, the line width must be zero:
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
-		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, zero, height, drawn);
+		-- draw outer contour with outer border
+		draw_contour (area, context, outer_border, YES, zero, height, drawn);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
@@ -475,10 +476,10 @@ package body pac_draw is
 
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
-	end draw_polygon_with_circular_cutout;
+	end draw_contour_with_circular_cutout;
 
 
-	procedure draw_polygon_with_arbitrary_cutout (
+	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
@@ -490,18 +491,18 @@ package body pac_draw is
 		-- Since this is about filled areas, the line width must be zero:
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
-		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, zero, height, drawn);
+		-- draw outer contour with outer border
+		draw_contour (area, context, outer_border, YES, zero, height, drawn);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
-		-- draw inner polygon - the area to be taken out:
-		draw_polygon (area, context, inner_border, YES, zero, height, drawn);
+		-- draw inner contour - the area to be taken out:
+		draw_contour (area, context, inner_border, YES, zero, height, drawn);
 		
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
-	end draw_polygon_with_arbitrary_cutout;
+	end draw_contour_with_arbitrary_cutout;
 
 	
 	procedure draw_rectangle (

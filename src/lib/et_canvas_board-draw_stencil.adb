@@ -118,10 +118,10 @@ is
 	begin
 		case element (c).fill_style is
 			when SOLID =>
-				pac_draw_fab.draw_polygon (
+				pac_draw_fab.draw_contour (
 					area	=> in_area,
 					context	=> context,
-					polygon	=> element (c),
+					contour	=> element (c),
 					filled	=> YES,
 					width	=> zero,
 					height	=> self.frame_height,
@@ -130,10 +130,10 @@ is
 			when HATCHED =>
 				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
 
-				pac_draw_fab.draw_polygon (
+				pac_draw_fab.draw_contour (
 					area	=> in_area,
 					context	=> context,
-					polygon	=> element (c),
+					contour	=> element (c),
 					filled	=> NO,
 					width	=> element (c).hatching.border_width,
 					height	=> self.frame_height,
@@ -149,10 +149,10 @@ is
 	begin
 		set_color_background (context.cr);
 		
-		pac_draw_fab.draw_polygon (
+		pac_draw_fab.draw_contour (
 			area	=> in_area,
 			context	=> context,
-			polygon	=> element (c),
+			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
 			height	=> self.frame_height,

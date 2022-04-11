@@ -259,7 +259,7 @@ package et_pcb is
 		-- fill zones:
 		fill_zones	: boards.type_route;
 
-		-- route specific cutout areas:
+		-- user defined cutout areas:
 		cutouts		: boards.pac_cutouts.list;
 	end record;
 	

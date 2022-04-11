@@ -113,10 +113,10 @@ is
 	procedure query_polygon (c : in pac_keepout_contours.cursor) is 
 		drawn : boolean := false;
 	begin
-		pac_draw_fab.draw_polygon (
+		pac_draw_fab.draw_contour (
 			area	=> in_area,
 			context	=> context,
-			polygon	=> element (c),
+			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
 			height	=> self.frame_height,
@@ -130,10 +130,10 @@ is
 	begin
 		set_color_background (context.cr);
 		
-		pac_draw_fab.draw_polygon (
+		pac_draw_fab.draw_contour (
 			area	=> in_area,
 			context	=> context,
-			polygon	=> element (c),
+			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
 			height	=> self.frame_height,

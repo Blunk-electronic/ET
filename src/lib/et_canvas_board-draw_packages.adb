@@ -358,10 +358,10 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 			use pac_silk_polygons;
 
-			procedure draw_polygon (
+			procedure draw_contour (
 				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
@@ -380,14 +380,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								-- CS hatching ?
 						end case;
@@ -396,21 +396,21 @@ is
 
 				end if;
 				
-			end draw_polygon;
+			end draw_contour;
 
 			
 			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
@@ -434,7 +434,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 					end if;
 
@@ -731,10 +731,10 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 			use pac_doc_polygons;
 
-			procedure draw_polygon (
+			procedure draw_contour (
 				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
@@ -753,14 +753,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -769,20 +769,20 @@ is
 					end if;
 
 				end if;				
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
@@ -806,7 +806,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1086,10 +1086,10 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 			use pac_keepout_contours;
 
-			procedure draw_polygon (
+			procedure draw_contour (
 				polygon	: in out type_keepout_contour;
 				f		: in type_face)
 			is 
@@ -1106,26 +1106,26 @@ is
 
 						set_color_keepout (context.cr, f);
 
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
 
 				end if;
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_keepout_contours.cursor) is
 				polygon : type_keepout_contour := element (c);
 			begin
 				set_destination;
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_keepout_contours.cursor) is
 				polygon : type_keepout_contour := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
@@ -1149,7 +1149,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1325,10 +1325,10 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 			use pac_stop_polygons;
 
-			procedure draw_polygon (
+			procedure draw_contour (
 				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
@@ -1347,14 +1347,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -1363,20 +1363,20 @@ is
 					end if;
 
 				end if;
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_stop_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stop_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
@@ -1400,7 +1400,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1611,10 +1611,10 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 			use pac_stencil_polygons;
 
-			procedure draw_polygon (
+			procedure draw_contour (
 				polygon	: in out type_contour_non_conductor;
 				f		: in type_face)
 			is 
@@ -1633,14 +1633,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 
-								pac_draw_fab.draw_polygon (in_area, context, polygon, NO,
+								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -1649,20 +1649,20 @@ is
 					end if;
 
 				end if;
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination;
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon (polygon, destination);
+				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
@@ -1686,7 +1686,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1836,7 +1836,7 @@ is
 			use pac_route_restrict_contours;
 			polygon : type_route_restrict_contour;
 
-			procedure draw_polygon (f : in type_face) is 
+			procedure draw_contour (f : in type_face) is 
 				drawn : boolean := false;
 			begin
 				if route_restrict_enabled (f, bottom_layer) then
@@ -1847,24 +1847,24 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position));
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							route_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
 
 				end if;
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination;
-				draw_polygon (destination);
+				draw_contour (destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
-				draw_polygon (destination);
+				draw_contour (destination);
 			end query_polygon_bottom;
 
 			
@@ -1885,7 +1885,7 @@ is
 						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
@@ -2067,7 +2067,7 @@ is
 			use pac_via_restrict_contours;
 			polygon : type_via_restrict_contour;
 
-			procedure draw_polygon (f : in type_face) is 
+			procedure draw_contour (f : in type_face) is 
 				drawn : boolean := false;
 			begin
 				if via_restrict_enabled (f, bottom_layer) then
@@ -2078,24 +2078,24 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position));
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							via_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
 
 				end if;
-			end draw_polygon;
+			end draw_contour;
 			
 			procedure query_polygon_top (c : in pac_via_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination;
-				draw_polygon (destination);
+				draw_contour (destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_via_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
-				draw_polygon (destination);
+				draw_contour (destination);
 			end query_polygon_bottom;
 
 			
@@ -2116,7 +2116,7 @@ is
 						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
@@ -2490,12 +2490,12 @@ is
 			end query_circle_bottom;
 
 			
-			-- POLYGONS
+			-- CONTOURS
 
 			-- solid
 			use pac_zones_solid;
 
-			procedure draw_polygon_solid (
+			procedure draw_contour_solid (
 				polygon	: in out type_zone_solid;
 				f		: in type_face) 
 			is
@@ -2513,7 +2513,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 
-						pac_draw_fab.draw_polygon (in_area, context, polygon, YES,
+						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
 -- CS
 -- 		easing : type_easing;
@@ -2523,7 +2523,7 @@ is
 					end if;
 
 				end if;				
-			end draw_polygon_solid;
+			end draw_contour_solid;
 
 			
 			procedure query_polygon_top_solid (
@@ -2532,7 +2532,7 @@ is
 				polygon : type_zone_solid := element (c);
 			begin
 				set_destination;
-				draw_polygon_solid (polygon, destination);
+				draw_contour_solid (polygon, destination);
 			end query_polygon_top_solid;
 
 			procedure query_polygon_bottom_solid (
@@ -2541,14 +2541,14 @@ is
 				polygon : type_zone_solid := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon_solid (polygon, destination);
+				draw_contour_solid (polygon, destination);
 			end query_polygon_bottom_solid;
 
 
 			-- hatched
 			use pac_zones_hatched;
 
-			procedure draw_polygon_hatched (
+			procedure draw_contour_hatched (
 				polygon	: in out type_zone_hatched;
 				f		: in type_face) 
 			is
@@ -2565,7 +2565,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 
--- 						draw_polygon (in_area, context, polygon, YES, self.frame_height);
+-- 						draw_contour (in_area, context, polygon, YES, self.frame_height);
 -- CS
 -- 		easing : type_easing;
 -- 		hatching : type_hatching_copper;
@@ -2576,7 +2576,7 @@ is
 
 				end if;
 				
-			end draw_polygon_hatched;
+			end draw_contour_hatched;
 			
 			procedure query_polygon_top_hatched (
 				c : in pac_zones_hatched.cursor) 
@@ -2584,7 +2584,7 @@ is
 				polygon : type_zone_hatched := element (c);
 			begin
 				set_destination;
-				draw_polygon_hatched (polygon, destination);
+				draw_contour_hatched (polygon, destination);
 			end query_polygon_top_hatched;
 
 			
@@ -2594,7 +2594,7 @@ is
 				polygon : type_zone_hatched := element (c);
 			begin
 				set_destination (INVERSE);
-				draw_polygon_hatched (polygon, destination);
+				draw_contour_hatched (polygon, destination);
 			end query_polygon_bottom_hatched;
 
 			
@@ -2619,7 +2619,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_polygon (in_area, context, cutout, YES,
+						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -2777,7 +2777,7 @@ is
 			begin
 				set_color_tht_pad (context.cr);
 
-				pac_draw_fab.draw_polygon_with_circular_cutout (
+				pac_draw_fab.draw_contour_with_circular_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2793,7 +2793,7 @@ is
 			is begin
 				set_color_tht_pad (context.cr);
 
-				pac_draw_fab.draw_polygon_with_arbitrary_cutout (
+				pac_draw_fab.draw_contour_with_arbitrary_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2917,7 +2917,7 @@ is
 
 								set_color_conductor (context.cr, ly);
 								
-								pac_draw_fab.draw_polygon (in_area, context, pad_outline, YES,
+								pac_draw_fab.draw_contour (in_area, context, pad_outline, YES,
 									zero, self.frame_height, drawn);
 
 								-- draw the terminal name
@@ -2962,7 +2962,7 @@ is
 
 								set_color_stop_mask (context.cr, f, self.scale);
 
-								pac_draw_fab.draw_polygon (in_area, context, stop_mask_contours, YES,
+								pac_draw_fab.draw_contour (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
 
@@ -3011,7 +3011,7 @@ is
 								
 								set_color_stencil (context.cr, f, self.scale);
 								
-								pac_draw_fab.draw_polygon (in_area, context, stencil_contours, YES,
+								pac_draw_fab.draw_contour (in_area, context, stencil_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
 
@@ -3116,10 +3116,10 @@ is
 								set_color_stop_mask (context.cr, f, self.scale);
 								
 								-- draw the outer contour of the stop mask opening
-								pac_draw_fab.draw_polygon (
+								pac_draw_fab.draw_contour (
 									area		=> in_area,
 									context		=> context,
-									polygon		=> stop_mask_contours,
+									contour		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,
 									height		=> self.frame_height,

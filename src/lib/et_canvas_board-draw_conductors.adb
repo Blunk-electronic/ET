@@ -224,7 +224,7 @@ is
 	--end query_b_line;
 
 	
-	procedure query_polygon (c : in pac_floating_solid.cursor) is 
+	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
 
 		--procedure query_row (r : in pac_rows.cursor) is begin
@@ -236,20 +236,20 @@ is
 		--end query_row;
 		
 	begin
-		-- Draw the polygon if it is in the current layer:
+		-- Draw the contour if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
-			-- draw polygon outer contours
-			draw_polygon (
+			-- draw contours outer contours
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
-				filled	=> NO,
+				contour	=> element (c),
+				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw fill lines if polygon has been drawn
+			-- draw fill lines if contour has been drawn
 			if drawn then
 
 				-- All fill lines will be drawn with the same width:
@@ -261,21 +261,21 @@ is
 				--iterate (element (c).properties.fill.borders, query_row'access);
 			end if;
 		end if;
-	end query_polygon;
+	end query_fill_zone;
 
 	
-	procedure query_polygon (c : in pac_floating_hatched.cursor) is 
+	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
 		drawn : boolean := false;
 	begin
-		-- Draw the polygon if it is in the current layer:
+		-- Draw the contour if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 			
 			-- draw polygon outer contours
-			draw_polygon (
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
-				filled	=> NO,
+				contour	=> element (c),
+				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
 				drawn	=> drawn);
@@ -283,10 +283,10 @@ is
 			-- draw filled areas
 			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
 		end if;
-	end query_polygon;
+	end query_fill_zone;
 
 	
-	procedure query_polygon (c : in pac_route_solid.cursor) is 
+	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		drawn : boolean := false;
 
 		--procedure query_row (r : in pac_rows.cursor) is begin
@@ -299,20 +299,20 @@ is
 
 		
 	begin
-		-- Draw the polygon if it is in the current layer:
+		-- Draw the contour if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 	
-			-- draw polygon outer contours
-			draw_polygon (
+			-- draw contour
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
-				filled	=> NO,
+				contour	=> element (c),
+				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
-			-- draw fill lines if polygon has been drawn
+			-- draw fill lines if contour has been drawn
 			if drawn then
 				--put_line ("draw fill lines");
 
@@ -327,21 +327,20 @@ is
 			end if;
 
 		end if;
-	end query_polygon;
+	end query_fill_zone;
 
 	
-	procedure query_polygon (c : in pac_route_hatched.cursor) is 
+	procedure query_fill_zone (c : in pac_route_hatched.cursor) is 
 		drawn : boolean := false;
 	begin		
-		-- Draw the polygon if it is in the current layer:
+		-- Draw the zone contour if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
-			-- draw polygon outer contours
-			draw_polygon (
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
-				filled	=> NO,
+				contour	=> element (c),
+				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero,
 				height	=> self.frame_height,
 				drawn	=> drawn);
@@ -349,7 +348,7 @@ is
 			-- draw filled areas
 			-- CS iterate (element (c).properties.fill_lines, query_h_line'access);
 		end if;
-	end query_polygon;
+	end query_fill_zone;
 
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
@@ -361,10 +360,10 @@ is
 			--save (context.cr);
 			--set_color_background (context.cr);
 			
-			draw_polygon (
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
+				contour	=> element (c),
 				filled	=> NO,
 				width	=> zero,
 				height	=> self.frame_height,
@@ -434,9 +433,10 @@ is
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
 		
-		iterate (element (n).route.fill_zones.solid, query_polygon'access);
-		iterate (element (n).route.fill_zones.hatched, query_polygon'access);
-		
+		iterate (element (n).route.fill_zones.solid, query_fill_zone'access);
+		iterate (element (n).route.fill_zones.hatched, query_fill_zone'access);
+
+		-- user defined cutout areas:
 		-- CS iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 
@@ -812,8 +812,8 @@ is
 				iterate (module.board.conductors.lines, query_line'access);
 				iterate (module.board.conductors.arcs, query_arc'access);
 				iterate (module.board.conductors.circles, query_circle'access);
-				iterate (module.board.conductors.fill_zones.solid, query_polygon'access);
-				iterate (module.board.conductors.fill_zones.hatched, query_polygon'access);
+				iterate (module.board.conductors.fill_zones.solid, query_fill_zone'access);
+				iterate (module.board.conductors.fill_zones.hatched, query_fill_zone'access);
 				iterate (module.board.conductors.cutouts, query_cutout'access);
 
 				-- texts

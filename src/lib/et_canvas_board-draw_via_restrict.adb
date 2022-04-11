@@ -137,10 +137,10 @@ is
 		-- Draw the polygon if restrict layer is enabled:
 		if via_restrict_layer_enabled (element (c).layers) then
 			
-			draw_polygon (
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
+				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
 				height	=> self.frame_height,
@@ -158,10 +158,10 @@ is
 
 			set_color_background (context.cr);
 			
-			draw_polygon (
+			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> element (c),
+				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
 				height	=> self.frame_height,
