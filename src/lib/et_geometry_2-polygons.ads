@@ -78,6 +78,12 @@ package et_geometry_2.polygons is
 		return type_polygon;
 
 	
+	-- Returns the boundaries of the given polygon.
+	function get_boundaries (
+		polygon		: in type_polygon;
+		line_width	: in type_distance_positive)
+		return type_boundaries;
+
 	
 	-- Returns the winding of a polygon. 
 	-- This function works with concave polygons and uses the approach discussed in

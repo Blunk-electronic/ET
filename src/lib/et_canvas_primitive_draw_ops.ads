@@ -216,7 +216,7 @@ package pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		polygon	: in type_polygon;
-		filled	: in type_filled; -- CS ?
+		filled	: in type_filled;
 		-- CS fill style
 
 		-- The line width is used for calculating the boundaries

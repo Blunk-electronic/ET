@@ -65,8 +65,6 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
-	--use pac_fill_lines;
-	
 
 		
 	procedure log_lower_left_corner (
@@ -356,99 +354,7 @@ is
 		--return result;
 	--end make_rows;
 
-	
-	--function make_borders (
-		--rows			: in pac_rows.list;
-		--net_cursor		: in pac_nets.cursor;
-		--net_class		: in type_net_class;
-		--fill_zone		: in et_routing.type_fill_zone;
-		--layer			: in type_signal_layer;
-		--width			: in type_track_width; -- width of a fill line
-		--lth				: in type_log_level)					 
-		--return pac_borders.list
-	--is
-		--result : pac_borders.list;
 
-		--line : type_line;
-
-		----distance : type_distance_positive;
-		--dir : type_rotation := 180.0;
-
-		--d_min : constant type_distance_positive := 0.1;
-
-		--proceed : boolean := true;
-
-		----P : type_point := start_point;
-	--begin
-
-				---- The point where the border starts (and where it ends after the round-trip):
-				----border_start : type_point;
-
-				---- Sets the start point of the border.
-				---- Assumes there are only horizontal fill lines at this time !
-				----procedure set_border_start (
-					----polygon : in type_route_solid)
-				----is begin
-					------ Use the start point of the first horizontal fill line:
-					------border_start := polygon.properties.fill.rows.first_element.start_point;
-					------ CS
-					----null;
-				----end set_border_start;
-
-		
-		----line.start_point := start_point;
-		----line.end_point := origin;
-
-		----while proceed loop
-			
-			----declare
-				----distance : constant type_route_distance := 
-
-					----et_routing.get_distance (
-					----module_cursor	=> module_cursor,
-					----design_rules	=> design_rules,
-					----bottom_layer	=> bottom_layer,
-					----start_point		=> P,
-					----place			=> BEFORE,
-					----direction		=> dir,
-					----net_cursor		=> net_cursor,
-					----net_class		=> net_class,
-					----fill_zone		=> fill_zone,
-					----layer			=> layer,
-					----width			=> width,
-					----ignore_same_net	=> true,
-					----log_category	=> log_category,
-					----lth				=> lth);
-			----begin
-				----if distance.status = VALID then
-					----if distance.distance < d_min then
-						----dir := dir - 10.0;
-						----if dir = 90.0 then
-							----exit;
-						----end if;
-					----else
-						----line.start_point := P;
-						
-						----P := type_point (move (P, dir, distance.distance));
-
-						----line.end_point := P;
-
-						----append (result, line);
-
-						----dir := 180.0;
-					----end if;
-				----else
-					----proceed := false;
-				----end if;
-				
-			----end;
-
-		----end loop;
-
-		
-		--return result;
-	--end make_borders;
-	
 	
 	procedure floating_polygons is
 		use pac_floating_solid;
@@ -759,11 +665,12 @@ begin -- fill_fill_zones
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
 	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
+	-- CS consider half the line width !
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
 	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
-
+	-- CS consider half the line width !
 
 	
 	if is_empty (nets) then

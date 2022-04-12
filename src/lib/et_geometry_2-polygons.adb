@@ -95,6 +95,34 @@ package body et_geometry_2.polygons is
 
 
 	
+	function get_boundaries (
+		polygon		: in type_polygon;
+		line_width	: in type_distance_positive)
+		return type_boundaries
+	is
+		result : type_boundaries; -- to be returned
+
+		half_width : constant type_distance_positive := line_width * 0.5;
+
+		procedure query_edge (c : in pac_edges.cursor) is begin
+			union (result, get_boundaries (element (c), zero));
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+					
+		-- Extend the boundaries by half the line width;
+		result.smallest_x := result.smallest_x - half_width;
+		result.smallest_y := result.smallest_y - half_width;
+
+		result.greatest_x := result.greatest_x + half_width;
+		result.greatest_y := result.greatest_y + half_width;
+		
+		return result;
+	end get_boundaries;
+	
+
+	
 	function get_winding (
 		polygon : in type_polygon)
 		return type_direction_of_rotation

@@ -63,10 +63,12 @@ is
 	use et_schematic.pac_nets;
 
 	use pac_draw_fab;
-	use et_board_shapes_and_text;
-	use et_board_shapes_and_text.pac_text_fab;
-	use et_board_shapes_and_text.pac_geometry_2;	
 
+	use et_board_shapes_and_text;
+	use pac_text_fab;
+	use pac_geometry_2;
+	use pac_polygons;
+	
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
@@ -201,19 +203,50 @@ is
 	
 	use pac_islands;
 	
-	procedure query_island (c : in pac_islands.cursor) is
+	procedure query_island (i : in pac_islands.cursor) is
 		use pac_inner_borders;
 		use pac_stripes;
-	begin
-		null;
 
+		island : type_island renames element (i);
+		drawn : boolean := false;
+
+		procedure query_cutout (c : pac_inner_borders.cursor) is begin 
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> type_polygon (element (c)),
+				filled	=> NO, -- this is a cutout
+				width	=> fill_line_width,
+				height	=> self.frame_height,
+				drawn	=> drawn);
+		end query_cutout;
+
+		procedure query_stripe (s : pac_stripes.cursor) is begin 
+			draw_line (
+				area	=> in_area,
+				context	=> context,
+				line	=> element (s),
+				width	=> fill_line_width,
+				height	=> self.frame_height);
+		end query_stripe;
 		
-	--type type_island is record
-		--border	: type_outer_border;
-		--cutouts	: pac_inner_borders.list;
-		--stripes	: pac_stripes.list;
-	--end record;
-	
+	begin
+		draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> type_polygon (island.border),
+			filled	=> NO, -- this is the outer border !
+			width	=> fill_line_width,
+			height	=> self.frame_height,
+			drawn	=> drawn);
+						
+		-- Draw the stripes if the polygon has been drawn.
+		-- If the polygon border has not been drawn (because it is outside area)
+		-- then it would be useless to draw cutouts and fill lines.
+		if drawn then
+			iterate (island.cutouts, query_cutout'access);
+			iterate (island.stripes, query_stripe'access);
+		end if;
 	end query_island;
 
 	
