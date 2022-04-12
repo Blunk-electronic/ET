@@ -66,6 +66,9 @@ is
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
 
+	board_outer_edge : type_polygon;
+	board_holes : pac_holes_as_polygons.list;
+
 		
 	procedure log_lower_left_corner (
 		corner	: in type_point;
@@ -76,6 +79,25 @@ is
 	end log_lower_left_corner;
 
 
+	function make_islands (
+		polygons	: in pac_clipped.list)
+		return pac_islands.list
+	is
+		result : pac_islands.list;
+
+		procedure query_polygon (p : in pac_clipped.cursor) is 
+			use pac_clipped;
+		begin
+			result.append ((
+				border	=> type_outer_border (element (p)),
+				others	=> <>));
+		end query_polygon;
+		
+	begin
+		polygons.iterate (query_polygon'access);
+		return result;
+	end make_islands;
+	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
 	-- Appends the fill lines to the polygon indicated by
@@ -436,12 +458,11 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
-				--a : type_outer_border;
-				--b : type_inner_border;
-				--c : pac_clipped.list;
-				
 				-- The cursor that points to the zone being filled:
 				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
+
+				-- The candidate fill zone must be converted to a polygon:
+				zone : type_polygon;
 				
 				-- The boundaries of the zone (greatest/smallest x/y):
 				boundaries : type_boundaries;
@@ -482,28 +503,44 @@ is
 				--end add_borders;
 
 
+				zone_clipped_by_board_outer_edge : pac_clipped.list;
 
+				procedure set_islands (
+					zone : in out type_route_solid)
+				is begin
+					zone.fill := make_islands (zone_clipped_by_board_outer_edge);
+				end set_islands;
+	
 				
 			begin -- route_solid
-				--c := clip (type_polygon (a), type_polygon (b));
-				--a := b;
+
 				
 				while zone_cursor /= pac_route_solid.no_element loop
 
 					-- clear the complete fill:
 					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
 
+					-- Convert the contour of the candidate fill zone to a polygon:
+					zone := to_polygon (element (zone_cursor), fab_tolerance);
+
+					
 					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (element (zone_cursor), zero);
-
+					boundaries := get_boundaries (zone, zero);
 					log (text => to_string (boundaries), level => log_threshold + 2);
-
 					
 					-- obtain the lower left corner of the zone from the boundaries:
 					lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-
 					log_lower_left_corner (lower_left_corner, log_threshold + 2);
+
+
+					
+					-- Clip the contour of the fill zone by the outer edge of the board.
+					-- The result can be a single polygon or many polygons:
+					zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge);
+
+					-- Convert the polygon(s) to islands and assign them to the zone:
+					net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
 
 					
 					log_indentation_up;
@@ -648,9 +685,6 @@ is
 		log_indentation_down;
 	end signal_contours;
 
-
-	board_outer_edge : type_polygon;
-	board_holes : pac_holes_as_polygons.list;
 	
 begin -- fill_fill_zones
 
@@ -669,7 +703,7 @@ begin -- fill_fill_zones
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
-	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
+	--offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
 	-- CS consider half the line width !
 
 	
@@ -686,7 +720,7 @@ begin -- fill_fill_zones
 		all_zones := true;
 		
 		log_indentation_up;
-		signal_contours;
+		--signal_contours;
 
 		-- CS floating_zones;
 		-- use class settings of class "default":
@@ -703,7 +737,7 @@ begin -- fill_fill_zones
 		all_zones := false;
 		
 		log_indentation_up;
-		signal_contours;
+		--signal_contours;
 		log_indentation_down;
 		
 	end if;
