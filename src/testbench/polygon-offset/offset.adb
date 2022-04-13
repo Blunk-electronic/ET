@@ -43,30 +43,37 @@ with ada.strings.unbounded;
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_string_processing;		use et_string_processing;
 
 procedure offset is
 
 	use pac_geometry_2;
+
+	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_offsetting;
 
+	C : type_contour;
 	P : type_polygon;
 
 	S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	F : type_fields_of_line;
 
-	--O : type_offset := (style => BY_DISTANCE, distance => 1.0);
 begin
 
-	F := read_line (
-		line			=> S, 
-		comment_mark	=> "#");
 	
-	P := type_polygon (to_polygon (F));
+	C := type_contour (to_contour (S));
 
-	offset_polygon (P, 1.0);
+	-- expand polygon:
+	P := to_polygon (C, fab_tolerance);
+	offset_polygon (P, +1.0); 
+	put_line (to_string (P));
+
+	new_line;
 	
+	-- shrink polygon:
+	P := to_polygon (C, fab_tolerance);
+	offset_polygon (P, -1.0);
 	put_line (to_string (P));
 	
 end offset;

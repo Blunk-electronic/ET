@@ -47,6 +47,10 @@ package body et_geometry_2.polygons.offsetting is
 		polygon		: in out type_polygon;
 		offset		: in type_distance) 
 	is
+		-- Mode tells whether we are shrinking, expanding
+		-- or whether there is nothing to do:
+		mode : constant type_mode := to_mode (offset);	
+		
 		
 		function offset_line (
 			line : in type_line)
@@ -54,26 +58,56 @@ package body et_geometry_2.polygons.offsetting is
 		is
 			line_new : type_line := line;
 			center : type_point := get_center (line);
+			-- CS center should be a location vector
+			
 			line_direction : type_rotation := get_direction (line);
 			dir_scratch : type_rotation;			
 			test_point : type_point;
+
+			-- These two procedures move the line_new to the right or
+			-- to the left (seen relative to the line direction):
+			procedure move_right is begin
+				move_by (line_new, add (line_direction, -90.0), abs (offset));
+			end move_right;
+
+			procedure move_left is begin
+				move_by (line_new, add (line_direction, +90.0), abs (offset));
+			end move_left;
 			
 		begin
+			-- Set a test point that is very close to the center of the line.
+			-- The point is located in direction dir_scratch away from the center:
 			dir_scratch := add (line_direction, +90.0);
 			test_point := type_point (move (center, dir_scratch, type_distance'small));
 			--put_line ("tp " & to_string (test_point));
 
+			-- Depending on the location of the test point, means inside or outside
+			-- the polygon and the mode we move the line to the right or to the left:
 			declare
 				tp_status : constant type_point_to_polygon_status :=
 					get_point_to_polygon_status (polygon, to_vector (test_point));
 			begin
-				if tp_status.location = INSIDE then
-					--put_line ("inside");
-					move_by (line_new, add (line_direction, -90.0), offset);
-				else
-					--put_line ("outside");
-					move_by (line_new, add (line_direction, +90.0), offset);
-				end if;
+				case mode is
+					when EXPAND =>
+					-- move line toward outside. Polygon area becomes greater:
+						if tp_status.location = INSIDE then
+							move_right;
+						else
+							move_left;
+						end if;
+
+					when SHRINK =>
+					-- move the line toward inside. Polygon area becomes smaller:
+						if tp_status.location = INSIDE then
+							move_left;
+						else
+							move_right;							
+						end if;
+
+					when NOTHING =>
+						raise constraint_error; -- should never happen
+				end case;
+					
 			end;
 			
 			return to_line_vector (line_new);
@@ -88,23 +122,12 @@ package body et_geometry_2.polygons.offsetting is
 		procedure do_segment (c : in pac_edges.cursor) is
 			lv_tmp : type_line_vector;			
 		begin
-			--case element (c).shape is
-				
-				--when LINE =>
-					lv_tmp := offset_line (element (c));
-					--put_line ("lv " & to_string (lv_tmp));
-					line_vectors.append (lv_tmp);
-
-				--when ARC =>
-					--null; 
-					---- CS: scale arc
-					---- CS: render arc to a list of lines instead ?
-
-			--end case;
+			lv_tmp := offset_line (element (c));
+			--put_line ("lv " & to_string (lv_tmp));
+			line_vectors.append (lv_tmp);
 		end do_segment;
 
 
-		--polygon_segments_new : type_contour_segments := (circular => false, others => <>);
 		polygon_segments_new : pac_edges.list;
 		
 		INIT, LS, LE : type_point;
@@ -160,19 +183,22 @@ package body et_geometry_2.polygons.offsetting is
 		
 	begin -- offset_polygon
 
-		polygon.edges.iterate (do_segment'access);
+		if mode /= NOTHING then
+			
+			polygon.edges.iterate (do_segment'access);
 
-		-- Compute the intersections of the line_vectors.
-		-- The intersections become the start and end points
-		-- of the new line-segments:
-		line_vectors.iterate (query_line'access);
+			-- Compute the intersections of the line_vectors.
+			-- The intersections become the start and end points
+			-- of the new line-segments:
+			line_vectors.iterate (query_line'access);
 
-		polygon.edges := polygon_segments_new;
+			polygon.edges := polygon_segments_new;
 
-		--if not is_closed (polygon).closed then
-			--raise constraint_error with "Polygon NOT closed !";
-		--end if;
-
+			--if not is_closed (polygon).closed then
+				--raise constraint_error with "Polygon NOT closed !";
+			--end if;
+		end if;
+		
 	end offset_polygon;
 
 
@@ -207,7 +233,26 @@ package body et_geometry_2.polygons.offsetting is
 	is begin
 		polygons := offset_polygons (polygons, offset);
 	end offset_polygons;
+
+
 	
+
+	function to_mode (
+		offset : in type_distance)
+	return type_mode is 
+		result : type_mode := NOTHING;
+	begin
+		if offset > 0.0 then
+			result := EXPAND;
+		elsif offset < 0.0 then
+			result := SHRINK;
+		else
+			result := NOTHING;
+		end if;
+
+		return result;
+	end to_mode;
+
 	
 end et_geometry_2.polygons.offsetting;
 

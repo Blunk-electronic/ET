@@ -48,7 +48,9 @@ package et_geometry_2.polygons.offsetting is
 
 	-- Offsets (the edges of) a polygon. 
 	-- If offset is positive then the edges are moved toward the outside
-	-- of the polygon. If offset is negative then the edges are moved inside.
+	-- of the polygon. The polygon area then becomes greater.
+	-- If offset is negative then the edges are moved inside. The polygon area
+	-- then shrinks.
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
 		offset		: in type_distance);
@@ -64,6 +66,21 @@ package et_geometry_2.polygons.offsetting is
 	procedure offset_polygons (
 		polygons	: in out pac_polygons.list;
 		offset		: in type_distance);
+
+private
+	
+	type type_mode is (
+		EXPAND,		-- polygon area becomes greater
+		SHRINK,		-- polygon area becomes smaller
+		NOTHING);	-- no change
+
+	-- Convertes the given offset to type mode.
+	-- If offset is greater zero, then returns EXPAND.
+	-- If offset is less than zero, then returns SHRINK.
+	-- If offset is zero, then returns NOTHING:
+	function to_mode (
+		offset : in type_distance)
+		return type_mode;
 
 	
 end et_geometry_2.polygons.offsetting;
