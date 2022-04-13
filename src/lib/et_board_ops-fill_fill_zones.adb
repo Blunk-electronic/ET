@@ -537,10 +537,11 @@ is
 					
 					-- Clip the contour of the fill zone by the outer edge of the board.
 					-- The result can be a single polygon or many polygons:
-					zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge);
+					--zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge);
+					zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge, true);
 
 					-- Convert the polygon(s) to islands and assign them to the zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
+					--net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
 
 					
 					log_indentation_up;
@@ -692,6 +693,8 @@ begin -- fill_fill_zones
 		contour		=> get_outline (module_cursor),
 		tolerance	=> fab_tolerance);
 
+	put_line ("board outer edge 1: " & to_string (board_outer_edge));
+	
 	board_holes := to_polygons (
 		holes		=> get_holes (module_cursor),
 		tolerance	=> fab_tolerance);
@@ -701,9 +704,11 @@ begin -- fill_fill_zones
 	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
 	-- CS consider half the line width !
 
+	put_line ("board outer edge 2: " & to_string (board_outer_edge));
+	
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
-	--offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
+	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
 	-- CS consider half the line width !
 
 	

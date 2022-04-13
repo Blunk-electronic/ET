@@ -49,7 +49,8 @@ with et_string_processing;		use et_string_processing;
 procedure offset is
 
 	use pac_geometry_2;
-
+	use pac_geometry_brd;
+	
 	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_offsetting;
@@ -57,7 +58,11 @@ procedure offset is
 	C : type_contour;
 	P : type_polygon;
 
-	S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	--S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	--S : string := "line 0 1 line 100 1 line 100 100 line 0 100";
+	S : string := "line 0 0 arc 20 0 10 0 cw line 30 0 line 50 0 line 50 50 line 0 50";
+
+	tolerance : type_distance_positive := fab_tolerance;
 
 begin
 
@@ -65,16 +70,22 @@ begin
 	C := type_contour (to_contour (S));
 
 	-- expand polygon:
-	P := to_polygon (C, fab_tolerance);
-	offset_polygon (P, +1.0); 
-	put_line (to_string (P));
+	--P := to_polygon (C, tolerance);
+	--offset_polygon (P, +1.0); 
+	--put_line ("expanded: " & to_string (P));
+
+	--new_line;
+
+	tolerance := 0.1;
+	
+	-- shrink polygon:
+	P := to_polygon (C, tolerance);
+	put_line ("original: " & to_string (P));
 
 	new_line;
 	
-	-- shrink polygon:
-	P := to_polygon (C, fab_tolerance);
 	offset_polygon (P, -1.0);
-	put_line (to_string (P));
+	put_line ("shrank  : " & to_string (P));
 	
 end offset;
 

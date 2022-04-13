@@ -44,10 +44,13 @@ with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_string_processing;		use et_string_processing;
+with et_contour_to_polygon;		use et_contour_to_polygon;
 
 procedure clip is
 
+	use pac_geometry_brd;
 	use pac_geometry_2;
+	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_clipping;
 
@@ -65,7 +68,7 @@ procedure clip is
 		result_actual : pac_clipped.list;
 	end record;
 
-	type type_test_array is array (1..24) of type_test;
+	type type_test_array is array (1..26) of type_test;
 	set : type_test_array;
 
 	subtype type_index is natural range 0 .. type_test_array'last;
@@ -84,6 +87,7 @@ procedure clip is
 		
 
 
+	tolerance : type_distance_positive := fab_tolerance;
 
 	
 	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
@@ -98,10 +102,10 @@ procedure clip is
 		clipped : in out pac_clipped.list;
 		s		: in string)
 	is
-		F : type_fields_of_line;
+		p : type_polygon;
 	begin
-		F := read_line (line => s, comment_mark => "#");
-		clipped.append (type_polygon (to_polygon (F)));
+		p := to_polygon (to_contour (s), tolerance);
+		clipped.append (p);
 	end add_to_expect;
 	
 	
@@ -118,6 +122,7 @@ procedure clip is
 	
 	procedure make_test is 
 		F	: type_fields_of_line;
+		C	: type_contour;
 		A, B: type_polygon;
 
 		procedure query_polygon (p : in pac_clipped.cursor) is begin
@@ -130,12 +135,12 @@ procedure clip is
 			put_line ("TEST:" & natural'image (i));
 			put_line ("-------------");
 			
-			F := read_line (line => to_string (set(i).A), comment_mark => "#");
-			A := type_polygon (to_polygon (F));
+			C := type_contour (to_contour (to_string (set(i).A)));
+			A := to_polygon (C, tolerance);
 			--put_line ("A: " & to_string (A));
 
-			F := read_line (line => to_string (set(i).B), comment_mark => "#");
-			B := type_polygon (to_polygon (F));
+			C := type_contour (to_contour (to_string (set(i).B)));
+			B := to_polygon (C, tolerance);
 			--put_line ("B: " & to_string (B));
 
 			set (i).result_actual := clip (A, B);
@@ -445,6 +450,35 @@ begin
 		A => B_default,
 		expect => EXP);
 	-- go
+
+
+	-- TEST 25
+	tolerance := 5.0;
+	
+	init_test;
+	add_to_expect (EXP, "line 50 30 line 0 30 line 0 0 line 10 0 "
+				  & "line 15 8.6602540378 line 25 8.6602540378 line 30 0 line 50 0");
+	
+	make_set (
+		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped
+		B => "line 0 0 arc 20 0 10 0 cw line 30 0 line 50 0 line 50 50 line 0 50", -- pcb
+		expect => EXP);
+	-- go
+
+
+	
+	-- TEST 26
+	tolerance := 5.0;
+	
+	init_test;
+	add_to_expect (EXP, "line 50 30 line 0 30 line 0 1 line 10 1 "
+				  & "line 15 9.6602540378 line 25 9.6602540378 line 30 1 line 50 1");
+	
+	make_set (
+		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped
+		B => "line 0 1 arc 20 1 10 1 cw line 30 1 line 50 1 line 50 50 line 0 50", -- pcb
+		expect => EXP);
+	-- 
 
 	
 	---------------------	

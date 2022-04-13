@@ -313,6 +313,8 @@ package body pac_draw is
 
 		end query_edge;
 
+
+		-- CS: round caps on all edges ! currently only start and end of path have round caps.
 		
 	begin -- draw_polygon
 

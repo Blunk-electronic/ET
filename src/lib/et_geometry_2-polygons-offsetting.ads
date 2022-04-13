@@ -74,7 +74,7 @@ private
 		SHRINK,		-- polygon area becomes smaller
 		NOTHING);	-- no change
 
-	-- Convertes the given offset to type mode.
+	-- Converts the given offset to type mode.
 	-- If offset is greater zero, then returns EXPAND.
 	-- If offset is less than zero, then returns SHRINK.
 	-- If offset is zero, then returns NOTHING:
