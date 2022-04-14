@@ -100,9 +100,23 @@ package et_geometry_1 is
 	-- Returns -1.0 if x less than zero.
 	function sgn (x : type_float_internal) return type_float_internal;
 
+
+
+	-- Returns the greatest of the given numbers. 
+	-- If both are equal then "right" will be returned.
+	function get_greatest (
+		left, right : in type_float_internal)
+		return type_float_internal;
+
+	-- Returns the smallest of the given numbers. 
+	-- If both are equal then "right" will be returned.
+	function get_smallest (
+		left, right : in type_float_internal)
+		return type_float_internal;
+
 	
 	
-	function to_distance (distance : in string) 
+	function to_distance (dd : in string) 
 		return type_distance;		
 	
 	function to_string (distance : in type_distance)
@@ -119,6 +133,8 @@ package et_geometry_1 is
 
 
 
+	function to_distance (df : in string)
+		return type_float_internal;
 	
 	function to_distance (f : in type_float_internal)
 		return type_distance;
@@ -326,6 +342,11 @@ package et_geometry_1 is
 		return type_point'class;
 
 
+	function to_point (
+		x,y : in string)
+		return type_point'class;
+
+
 	-- Inverts the given relative distance by 
 	-- multiplying x by -1 and y by -1.
 	function invert (
@@ -352,8 +373,8 @@ package et_geometry_1 is
 	-- The boundaries are always relative to a certain origin that
 	-- sits somewhere inside the rectangular box. 
 	type type_boundaries is record
-		smallest_x, smallest_y : type_position_axis := type_position_axis'last;
-		greatest_x, greatest_y : type_position_axis := type_position_axis'first;
+		smallest_x, smallest_y : type_float_internal := type_float_internal'last;
+		greatest_x, greatest_y : type_float_internal := type_float_internal'first;
 		distance_of_topleft_to_default : type_point := origin;
 	end record;
 
@@ -362,12 +383,13 @@ package et_geometry_1 is
 	-- Returns the height of the given boundaries by
 	-- calculating boundaries.greatest_y - boundaries.smallest_y:
 	function get_height (boundaries : in type_boundaries)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
+	
 	-- Returns the width of the given boundaries by
 	-- calculating boundaries.greatest_x - boundaries.smallest_x:
 	function get_width (boundaries : in type_boundaries)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 	
 	function to_string (boundaries : in type_boundaries) return string;
@@ -427,9 +449,9 @@ package et_geometry_1 is
 
 	
 	-- Rotates the given boundaries by given rotation.
-	procedure rotate (
-		boundaries	: in out type_boundaries;
-		rotation	: in type_rotation);
+	--procedure rotate (
+		--boundaries	: in out type_boundaries;
+		--rotation	: in type_rotation);
 	
 	
 	-- In the GUI, in connection with boundaries and bounding boxes a type for
@@ -593,7 +615,7 @@ package et_geometry_1 is
 	-- Computes the total distance between point_one and point_two.
 	function get_distance_total (
 		point_one, point_two : in type_point)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 	
 	-- Returns true if point_2 is within the 
@@ -611,24 +633,29 @@ package et_geometry_1 is
 
 
 	
+	
 	type type_distance_polar is private;
 
+	
 	function to_string (
 		distance : in type_distance_polar)
 		return string;
+
 	
 	function to_polar (
-		absolute	: in type_distance_positive;
+		absolute	: in type_float_internal_positive;
 		angle		: in type_rotation)
 		return type_distance_polar;
 
+	
 	-- Sets the absolute component of a polar distance.
 	-- If the given absolute is zero, then the angle component
 	-- is NOT changed.
 	procedure set_absolute (
 		distance : in out type_distance_polar;
-		absolute : in type_distance_positive);
+		absolute : in type_float_internal_positive);
 
+	
 	procedure set_angle (
 		distance : in out type_distance_polar;
 		angle    : in type_rotation);
@@ -661,7 +688,7 @@ package et_geometry_1 is
 	-- Returns the absolute of the given polar distance:
 	function get_absolute (
 		distance : in type_distance_polar)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 
 
@@ -770,7 +797,7 @@ package et_geometry_1 is
 private
 	
 	type type_distance_polar is record
-		absolute: type_distance_positive := zero;
+		absolute: type_float_internal_positive := 0.0;
 		angle	: type_rotation := zero_rotation; -- ranges from -180 to 180 degrees
 	end record;
 	

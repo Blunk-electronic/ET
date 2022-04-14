@@ -1460,7 +1460,7 @@ package body et_geometry_2.polygons is
 	is
 		result : type_line_to_polygon_status;
 
-		line_center : type_point;
+		line_center : type_vector;
 		
 		procedure set_line_start is 
 			PPS : constant type_point_to_polygon_status := 
@@ -1707,7 +1707,7 @@ package body et_geometry_2.polygons is
 
 			--put_line ("center" & to_string (line_center));
 			
-			case get_point_to_polygon_status (polygon, to_vector (line_center)).location is
+			case get_point_to_polygon_status (polygon, line_center).location is
 				when INSIDE => result.center_point := INSIDE;
 				when OUTSIDE => result.center_point := OUTSIDE;
 				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;

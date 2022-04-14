@@ -141,17 +141,45 @@ package body et_geometry_1 is
 		end if;
 	end sgn;
 
+
+	function get_greatest (
+		left, right : in type_float_internal)
+		return type_float_internal
+	is begin
+		if left > right then
+			return left;
+		elsif left < right then
+			return right;
+		else
+			return right;
+		end if;
+	end get_greatest;
+
+	
+	function get_smallest (
+		left, right : in type_float_internal)
+		return type_float_internal
+	is begin
+		if left < right then
+			return left;
+		elsif left > right then
+			return right;
+		else
+			return right;
+		end if;
+	end get_smallest;
+
 	
 
-	function to_distance (distance : in string) 
+	function to_distance (dd : in string) 
 		return type_distance 
 	is begin
-		return type_distance'value (distance);
+		return type_distance'value (dd);
 
 		exception when event: others =>
 			raise syntax_error_2 with 
 				"ERROR: Expect a distance instead of " 
-				& enclose_in_quotes (distance) & " !";
+				& enclose_in_quotes (dd) & " !";
 	end to_distance;
 
 	
@@ -179,6 +207,13 @@ package body et_geometry_1 is
 	end to_string;
 
 
+	function to_distance (df : in string)
+		return type_float_internal
+	is begin
+		return type_float_internal'value (df);
+	end to_distance;
+
+	
 	function to_distance (f : in type_float_internal)
 		return type_distance 
 	is
@@ -511,7 +546,7 @@ package body et_geometry_1 is
 	is
 		type type_item is record
 			point		: type_point;
-			distance	: type_distance_positive;
+			distance	: type_float_internal_positive;
 		end record;
 
 		
@@ -829,6 +864,20 @@ package body et_geometry_1 is
 	end to_point;
 
 
+	function to_point (
+		x,y : in string)
+		return type_point'class
+	is 
+		result : type_point;					
+	begin
+		result.x := to_distance (dd => x);
+		result.y := to_distance (dd => y);
+		return result;
+
+		-- CS exception handler
+	end to_point;
+
+	
 	
 	function invert (
 		d : in type_distance_relative)
@@ -860,13 +909,14 @@ package body et_geometry_1 is
 
 	
 	function get_height (boundaries : in type_boundaries)
-		return type_distance_positive
+		return type_float_internal_positive
 	is begin
 		return boundaries.greatest_y - boundaries.smallest_y;
 	end get_height;
 
+	
 	function get_width (boundaries : in type_boundaries)
-		return type_distance_positive
+		return type_float_internal_positive
 	is begin
 		return boundaries.greatest_x - boundaries.smallest_x;
 	end get_width;
@@ -951,36 +1001,42 @@ package body et_geometry_1 is
 	is
 		result : type_boundaries;
 
-		half_width : constant type_distance_positive := width * 0.5;
+		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+
+		--p1x : type_float_internal renames type_float_internal (point_one.x);
+		--p1y : type_float_internal renames point_one.y;
+
+		--p2x : type_float_internal renames point_two.x;
+		--p2y : type_float_internal renames point_two.y;
 	begin
 		-- X axis
 		if point_one.x = point_two.x then -- both points on a vertical line
 
-			result.smallest_x := point_one.x;
-			result.greatest_x := point_one.x;
+			result.smallest_x := type_float_internal (point_one.x);
+			result.greatest_x := type_float_internal (point_one.x);
 			
 		elsif point_one.x < point_two.x then
 			
-			result.smallest_x := point_one.x;
-			result.greatest_x := point_two.x;
+			result.smallest_x := type_float_internal (point_one.x);
+			result.greatest_x := type_float_internal (point_two.x);
 		else
-			result.smallest_x := point_two.x;
-			result.greatest_x := point_one.x;
+			result.smallest_x := type_float_internal (point_two.x);
+			result.greatest_x := type_float_internal (point_one.x);
 		end if;
 
 		-- Y axis
 		if point_one.y = point_two.y then -- both points on a horizontal line
 
-			result.smallest_y := point_one.y;
-			result.greatest_y := point_one.y;
+			result.smallest_y := type_float_internal (point_one.y);
+			result.greatest_y := type_float_internal (point_one.y);
 			
 		elsif point_one.y < point_two.y then
 			
-			result.smallest_y := point_one.y;
-			result.greatest_y := point_two.y;
+			result.smallest_y := type_float_internal (point_one.y);
+			result.greatest_y := type_float_internal (point_two.y);
 		else
-			result.smallest_y := point_two.y;
-			result.greatest_y := point_one.y;
+			result.smallest_y := type_float_internal (point_two.y);
+			result.greatest_y := type_float_internal (point_one.y);
 		end if;
 
 		
@@ -1000,32 +1056,35 @@ package body et_geometry_1 is
 		offset		: in type_distance_relative;
 		clip		: in boolean := false)
 	is 
-		sx : constant type_distance := boundaries.smallest_x + offset.x;
-		gx : constant type_distance := boundaries.greatest_x + offset.x;
-		sy : constant type_distance := boundaries.smallest_y + offset.y;
-		gy : constant type_distance := boundaries.greatest_y + offset.y;
+		sx : constant type_float_internal := boundaries.smallest_x + type_float_internal (offset.x);
+		gx : constant type_float_internal := boundaries.greatest_x + type_float_internal (offset.x);
+		sy : constant type_float_internal := boundaries.smallest_y + type_float_internal (offset.y);
+		gy : constant type_float_internal := boundaries.greatest_y + type_float_internal (offset.y);
+
+		axf : constant type_float_internal := type_float_internal (type_position_axis'first);
+		axl : constant type_float_internal := type_float_internal (type_position_axis'last);
 	begin
 		if clip then
-			if sx < type_position_axis'first then
-				boundaries.smallest_x := type_position_axis'first;
+			if sx < axf then
+				boundaries.smallest_x := axf;
 			else
 				boundaries.smallest_x := sx;
 			end if;
 
-			if sy < type_position_axis'first then
-				boundaries.smallest_y := type_position_axis'first;
+			if sy < axf then
+				boundaries.smallest_y := axf;
 			else
 				boundaries.smallest_y := sy;
 			end if;
 
-			if gx > type_position_axis'last then
-				boundaries.greatest_x := type_position_axis'last;
+			if gx > axl then
+				boundaries.greatest_x := axl;
 			else
 				boundaries.greatest_x := gx;
 			end if;
 
-			if gy > type_position_axis'last then
-				boundaries.greatest_y := type_position_axis'last;
+			if gy > axl then
+				boundaries.greatest_y := axl;
 			else
 				boundaries.greatest_y := gy;
 			end if;
@@ -1040,75 +1099,76 @@ package body et_geometry_1 is
 	end move_by;
 
 	
-	procedure rotate (
-		boundaries	: in out type_boundaries;
-		rotation	: in type_rotation) is
+	--procedure rotate (
+		--boundaries	: in out type_boundaries;
+		--rotation	: in type_rotation) 
+	--is
 
-		-- The boundaries are basically a rectangle with those four corners:
-		corners : array (positive range 1 .. 4) of type_point;
+		---- The boundaries are basically a rectangle with those four corners:
+		--corners : array (positive range 1 .. 4) of type_point;
 
-		-- backup the position of the topleft corner of the boundaries:
-		topleft_before_rotation : constant type_point := (
-				x	=> boundaries.smallest_x,
-				y	=> boundaries.greatest_y);
+		---- backup the position of the topleft corner of the boundaries:
+		--topleft_before_rotation : constant type_point := (
+				--x	=> boundaries.smallest_x,
+				--y	=> boundaries.greatest_y);
 
-		topleft_after_rotation : type_point;
+		--topleft_after_rotation : type_point;
 		
-	begin -- rotate
-		-- Set the corner points according to the given boundaries:
-		corners (1)	:= (boundaries.smallest_x, boundaries.greatest_y);
-		corners (2) := (boundaries.greatest_x, boundaries.greatest_y);
-		corners (3) := (boundaries.smallest_x, boundaries.smallest_y);
-		corners (4) := (boundaries.greatest_x, boundaries.smallest_y);
+	--begin -- rotate
+		---- Set the corner points according to the given boundaries:
+		--corners (1)	:= (boundaries.smallest_x, boundaries.greatest_y);
+		--corners (2) := (boundaries.greatest_x, boundaries.greatest_y);
+		--corners (3) := (boundaries.smallest_x, boundaries.smallest_y);
+		--corners (4) := (boundaries.greatest_x, boundaries.smallest_y);
 
-		-- After the rotation the boundaries may become wider than actually
-		-- required.
+		---- After the rotation the boundaries may become wider than actually
+		---- required.
 		
-		-- The boundaries are always relative to a certain origin that
-		-- sits somewhere inside the rectangle. The four corners are now rotated
-		-- around the origin by the given angle:
-		for c in corners'first .. corners'last loop
-			rotate_by (corners (c), rotation);
-		end loop;
+		---- The boundaries are always relative to a certain origin that
+		---- sits somewhere inside the rectangle. The four corners are now rotated
+		---- around the origin by the given angle:
+		--for c in corners'first .. corners'last loop
+			--rotate_by (corners (c), rotation);
+		--end loop;
 
-		-- reset boundaries
-		boundaries := boundaries_default;
+		---- reset boundaries
+		--boundaries := boundaries_default;
 		
-		for c in corners'first .. corners'last loop
+		--for c in corners'first .. corners'last loop
 			
-			-- find the smallest x
-			if corners (c).x < boundaries.smallest_x then
-				boundaries.smallest_x := corners (c).x;
-			end if;
+			---- find the smallest x
+			--if corners (c).x < boundaries.smallest_x then
+				--boundaries.smallest_x := corners (c).x;
+			--end if;
 
-			-- find the greatest x
-			if corners (c).x > boundaries.greatest_x then
-				boundaries.greatest_x := corners (c).x;
-			end if;
+			---- find the greatest x
+			--if corners (c).x > boundaries.greatest_x then
+				--boundaries.greatest_x := corners (c).x;
+			--end if;
 
-			-- find the smallest y
-			if corners (c).y < boundaries.smallest_y then
-				boundaries.smallest_y := corners (c).y;
-			end if;
+			---- find the smallest y
+			--if corners (c).y < boundaries.smallest_y then
+				--boundaries.smallest_y := corners (c).y;
+			--end if;
 
-			-- find the greatest y
-			if corners (c).y > boundaries.greatest_y then
-				boundaries.greatest_y := corners (c).y;
-			end if;
+			---- find the greatest y
+			--if corners (c).y > boundaries.greatest_y then
+				--boundaries.greatest_y := corners (c).y;
+			--end if;
 			
-		end loop;
+		--end loop;
 
-		-- After the rotation we get a new topleft position:
-		topleft_after_rotation := (
-			x	=> boundaries.smallest_x,
-			y	=> boundaries.greatest_y);
+		---- After the rotation we get a new topleft position:
+		--topleft_after_rotation := (
+			--x	=> boundaries.smallest_x,
+			--y	=> boundaries.greatest_y);
 
-		-- The difference in x and y between topleft_before_rotation
-		-- and topleft_after_rotation:
-		boundaries.distance_of_topleft_to_default := type_point 
-			(topleft_before_rotation - topleft_after_rotation);
+		---- The difference in x and y between topleft_before_rotation
+		---- and topleft_after_rotation:
+		--boundaries.distance_of_topleft_to_default := type_point 
+			--(topleft_before_rotation - topleft_after_rotation);
 		
-	end rotate;
+	--end rotate;
 
 	
 	function to_string (rectangle : in type_rectangle) return string is begin
@@ -1380,25 +1440,25 @@ package body et_geometry_1 is
 	
 	function get_distance_total (
 		point_one, point_two : in type_point) 
-		return type_distance_positive 
+		return type_float_internal_positive 
 	is
-		distance : type_distance_positive; -- to be returned
+		distance : type_float_internal_positive; -- to be returned
 		delta_x, delta_y : type_float_internal := 0.0;
 	begin
 		if point_one = point_two then
-			distance := zero;
+			distance := 0.0;
 			
 		elsif get_x (point_one) = get_x (point_two) then -- points are in a vertical line
-			distance := abs (get_y (point_two) - get_y (point_one));
+			distance := type_float_internal_positive (abs (get_y (point_two) - get_y (point_one)));
 			
 		elsif get_y (point_one) = get_y (point_two) then -- points are in a horizontal line
-			distance := abs (get_x (point_two) - get_x (point_one));
+			distance := type_float_internal_positive (abs (get_x (point_two) - get_x (point_one)));
 			
 		else
 			delta_x := type_float_internal (get_x (point_one) - get_x (point_two));
 			delta_y := type_float_internal (get_y (point_one) - get_y (point_two));
 
-			distance := to_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
+			distance := sqrt ((delta_x ** 2) + (delta_y ** 2));
 		end if;
 			
 		return distance;
@@ -1411,7 +1471,7 @@ package body et_geometry_1 is
 		point_2 	: in type_point) -- the point being tested
 		return boolean 
 	is
-		d : type_distance_positive := get_distance_total (point_1, point_2);
+		d : type_distance_positive := to_distance (get_distance_total (point_1, point_2));
 	begin
 		if d <= catch_zone then
 			return true;
@@ -1450,7 +1510,7 @@ package body et_geometry_1 is
 	
 	
 	function to_polar (
-		absolute	: in type_distance_positive;
+		absolute	: in type_float_internal_positive;
 		angle		: in type_rotation)
 		return type_distance_polar
 	is begin
@@ -1460,7 +1520,7 @@ package body et_geometry_1 is
 	
 	procedure set_absolute (
 		distance : in out type_distance_polar;
-		absolute : in type_distance_positive)
+		absolute : in type_float_internal_positive)
 	is begin
 		distance.absolute := absolute;
 	end set_absolute;
@@ -1496,7 +1556,7 @@ package body et_geometry_1 is
 		-- the arctan operation is not possible. In this case we assume
 		-- the resulting angle is zero.
 		-- So we do the angle computation only if there is a distance between the points:
-		if result.absolute /= zero then
+		if result.absolute /= 0.0 then
 			
 			delta_x := type_float_internal (get_x (point_two) - get_x (point_one));
 			delta_y := type_float_internal (get_y (point_two) - get_y (point_one));
@@ -1524,7 +1584,7 @@ package body et_geometry_1 is
 	
 	function get_absolute (
 		distance : in type_distance_polar) 
-		return type_distance_positive
+		return type_float_internal_positive
 	is begin
 		return distance.absolute;
 	end get_absolute;

@@ -65,23 +65,26 @@ package body et_geometry_2 is
 	procedure union (
 		boundaries	: in out type_boundaries;
 		point		: in type_point) 
-	is begin
+	is 
+		x : constant type_float_internal := type_float_internal (get_x (point));
+		y : constant type_float_internal := type_float_internal (get_y (point));
+	begin
 		-- X axis
-		if get_x (point) < boundaries.smallest_x then 
-			boundaries.smallest_x := get_x (point); 
+		if x < boundaries.smallest_x then 
+			boundaries.smallest_x := x; 
 		end if;
 		
-		if get_x (point) > boundaries.greatest_x then
-			boundaries.greatest_x := get_x (point); 
+		if x > boundaries.greatest_x then
+			boundaries.greatest_x := x; 
 		end if;
 
 		-- Y axis
-		if get_y (point) < boundaries.smallest_y then
-			boundaries.smallest_y := get_y (point);
+		if y < boundaries.smallest_y then
+			boundaries.smallest_y := y;
 		end if;
 		
-		if get_y (point) > boundaries.greatest_y then
-			boundaries.greatest_y := get_y (point);
+		if y > boundaries.greatest_y then
+			boundaries.greatest_y := y;
 		end if;
 	end;
 
@@ -258,13 +261,13 @@ package body et_geometry_2 is
 		--put_line ("dx " & float'image (abs_dx));
 		--put_line ("dy " & float'image (abs_dy));
 		
-		set_absolute (result, to_distance (sqrt (abs_dx ** 2 + abs_dy ** 2)));
+		set_absolute (result, sqrt (abs_dx ** 2 + abs_dy ** 2));
 		
 		-- NOTE: If the total distance between the location vectors is zero then
 		-- the arctan operation is not possible. In this case we assume
 		-- the resulting angle is zero.
 		-- So we do the angle computation only if there is a distance between the vectors:
-		if get_absolute (result) /= zero then
+		if get_absolute (result) /= 0.0 then
 			
 			set_angle (result, to_rotation (arctan (
 					x 		=> dx,
@@ -406,6 +409,19 @@ package body et_geometry_2 is
 		v.y := v.y + delta_y;
 	end move_by;
 
+
+	function move_by (
+		v			: in type_vector;
+		direction	: in type_rotation;
+		distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		return type_vector
+	is
+		result : type_vector := v;
+	begin
+		move_by (result, direction, distance);
+		return result;
+	end move_by;
+	
 	
 	function to_vector (
 		point	: in type_point)
@@ -873,17 +889,17 @@ package body et_geometry_2 is
 
 	
 	function get_length (line : in type_line)
-		return type_distance_positive
+		return type_float_internal_positive
 	is begin
 		return get_distance_total (line.start_point, line.end_point);
 	end get_length;
 
 
 	function get_greatest_length (l1, l2 : in type_line)
-		return type_distance_positive
+		return type_float_internal_positive
 	is 
-		length_1 : constant type_distance_positive := get_length (l1);
-		length_2 : constant type_distance_positive := get_length (l2);
+		length_1 : constant type_float_internal_positive := get_length (l1);
+		length_2 : constant type_float_internal_positive := get_length (l2);
 	begin
 		if length_1 > length_2 then
 			return length_1;
@@ -896,8 +912,8 @@ package body et_geometry_2 is
 	function get_longest (l1, l2 : in type_line)
 		return type_line'class
 	is
-		length_1 : constant type_distance_positive := get_length (l1);
-		length_2 : constant type_distance_positive := get_length (l2);
+		length_1 : constant type_float_internal_positive := get_length (l1);
+		length_2 : constant type_float_internal_positive := get_length (l2);
 	begin
 		if length_1 > length_2 then
 			return l1;
@@ -1025,19 +1041,26 @@ package body et_geometry_2 is
 	
 	function get_center (
 		line	: in type_line)
-		return type_point
+		return type_vector
 	is
 		dp : constant type_distance_polar := 
 			get_distance (line.start_point, line.end_point);
 	begin
-		return type_point (move (
-			point		=> line.start_point,
-			direction	=> get_angle (dp),
-			distance	=> get_absolute (dp) * 0.5));
+		--return to_vector (type_point (move (
+			--point		=> line.start_point,
+			--direction	=> get_angle (dp),
+			--distance	=> get_absolute (dp) * 0.5)));
 
+		return move_by (
+			v			=> to_vector (line.start_point),
+			direction	=> get_angle (dp),
+			distance	=> type_float_internal (get_absolute (dp) * 0.5));
+		
+		-- CS rework using line vector
 	end get_center;
 
 
+	
 	function get_nearest (
 		line	: in type_line;
 		point	: in type_vector;
@@ -1138,7 +1161,7 @@ package body et_geometry_2 is
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
 			-- double check: location vectors must match !
-			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = zero then
+			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
 				status := EXISTS;
 				intersection.vector := int_A.intersection.vector;
 				intersection.angle := int_A.intersection.angle;
@@ -1933,7 +1956,7 @@ package body et_geometry_2 is
 				
 				-- An imaginary line can be drawn perpendicular from
 				-- point to line. Both intersect each other.
-				set_absolute (result, to_distance (get_distance (d)));
+				set_absolute (result, get_distance (d));
 				set_angle (result, get_direction (d));
 			else
 				
@@ -2104,7 +2127,7 @@ package body et_geometry_2 is
 			ILC : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
 
 			DPC : constant type_distance_polar := get_distance (point, arc.center);
-			radius : constant type_distance_positive := get_radius_start (arc);
+			radius : constant type_float_internal_positive := get_radius_start (arc);
 
 			-- Assigns to the result either the start or the end point of
 			-- the arc, depending on which one is closer.
@@ -2239,6 +2262,7 @@ package body et_geometry_2 is
 
 					when TWO_EXIST =>
 						-- treat the arc like a circle and compute distance point to circle:
+						--result := get_distance_to_circumfence (point, (arc.center, radius));
 						result := get_distance_to_circumfence (point, (arc.center, radius));
 						
 				end case;				
@@ -2252,7 +2276,7 @@ package body et_geometry_2 is
 			-- If the given point is right on the center of the arc,
 			-- then return zero distance and zero angle:
 
-			set_absolute (result, zero);
+			set_absolute (result, 0.0);
 			set_angle (result, 0.0);
 		else
 			do_it;
@@ -2470,7 +2494,7 @@ package body et_geometry_2 is
 	
 	function get_radius_start (
 		arc : in type_arc) 
-		return type_distance_positive 
+		return type_float_internal_positive 
 	is begin
 		return get_distance_total (arc.center, arc.start_point);
 	end get_radius_start;
@@ -2478,7 +2502,7 @@ package body et_geometry_2 is
 	
 	function get_radius_end (
 		arc : in type_arc)
-		return type_distance_positive
+		return type_float_internal_positive
 	is begin
 		return get_distance_total (arc.center, arc.end_point);
 	end get_radius_end;
@@ -2488,12 +2512,12 @@ package body et_geometry_2 is
 		arc : in type_arc)
 		return boolean 
 	is 
-		rs : constant type_distance_positive := get_radius_start (arc);
-		re : constant type_distance_positive := get_radius_end (arc);
+		rs : constant type_float_internal_positive := get_radius_start (arc);
+		re : constant type_float_internal_positive := get_radius_end (arc);
 	begin
 		if rs = re then
 
-			if rs > zero then				
+			if rs > 0.0 then
 				return true;
 			else
 				return false;
@@ -2619,7 +2643,7 @@ package body et_geometry_2 is
 		line_width	: in type_distance_positive) 
 		return type_boundaries 
 	is
-		half_width : constant type_distance_positive := line_width * 0.5;
+		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 		
 		result : type_boundaries; -- to be returned
 
@@ -2627,7 +2651,7 @@ package body et_geometry_2 is
 		arc_norm : type_arc := type_arc (normalize_arc (arc));
 
 		-- Calculate the radius of the arc:
-		radius : constant type_distance_positive := get_radius_start (arc_norm);
+		radius : constant type_float_internal_positive := get_radius_start (arc_norm);
 
 		-- The quadrant of start and end point:
 		q_start : type_quadrant;
@@ -3089,208 +3113,208 @@ package body et_geometry_2 is
 	end;
 
 
-	function split_arc (arc_in : in type_arc) 
-		return type_arcs
-	is
-		-- normalize the given arc so that its direction is always CCW
-		arc : type_arc := type_arc (normalize_arc (arc_in));
+	--function split_arc (arc_in : in type_arc) 
+		--return type_arcs
+	--is
+		---- normalize the given arc so that its direction is always CCW
+		--arc : type_arc := type_arc (normalize_arc (arc_in));
 		
-		-- the x and y-position of the center, start and end point of the given arc:
-		CX : constant type_distance := get_x (arc.center);
-		CY : constant type_distance := get_y (arc.center);			
-		SX : type_distance;
-		EX : type_distance;
+		---- the x and y-position of the center, start and end point of the given arc:
+		--CX : constant type_distance := get_x (arc.center);
+		--CY : constant type_distance := get_y (arc.center);			
+		--SX : type_distance;
+		--EX : type_distance;
 
-		-- the radius of the given arc:
-		R  : constant type_distance_positive := get_radius_start (arc);
+		---- the radius of the given arc:
+		--R  : constant type_float_internal_positive := get_radius_start (arc);
 
-		-- The connecting points between the resulting arcs are where an
-		-- imaginary vertical line intersects an imaginary circle at its highest and 
-		-- lowest point:
-		PU : constant type_point := type_point (set (CX, CY + R));
-		PL : constant type_point := type_point (set (CX, CY - R));
+		---- The connecting points between the resulting arcs are where an
+		---- imaginary vertical line intersects an imaginary circle at its highest and 
+		---- lowest point:
+		--PU : constant type_point := type_point (set (CX, CY + R));
+		--PL : constant type_point := type_point (set (CX, CY - R));
 		
-		-- the boundaries of the given arc:
-		by : constant type_boundaries := get_boundaries (arc, zero);
+		---- the boundaries of the given arc:
+		--by : constant type_boundaries := get_boundaries (arc, zero);
 
-		S_left, E_left : boolean := false;
+		--S_left, E_left : boolean := false;
 
-		function left_of_center (x : in type_distance) return boolean is begin
-			if x < CX then return true; -- x is left of center.x
-			else return false; -- x is equal or right of center.x or 
-			end if;
-		end left_of_center;
+		--function left_of_center (x : in type_distance) return boolean is begin
+			--if x < CX then return true; -- x is left of center.x
+			--else return false; -- x is equal or right of center.x or 
+			--end if;
+		--end left_of_center;
 
-		-- There can be up to 3 segments after splitting the arc.
-		-- All arc segments have the same center and direction:
-		result_2 : type_arcs (1..2);
-		result_3 : type_arcs (1..3);
+		---- There can be up to 3 segments after splitting the arc.
+		---- All arc segments have the same center and direction:
+		--result_2 : type_arcs (1..2);
+		--result_3 : type_arcs (1..3);
 
-		-- If the arc breaks up into 3 arc fragments, then it may
-		-- happen that the first or the last fragment has zero length.
-		-- In this case this function removes such a fragment and 
-		-- returns two fragments instead.
-		-- Otherwise the three fragments are untouched.
-		function remove_useless_fragments return type_arcs is begin
-			if zero_length (result_3 (1)) then
-				result_2 (1) := result_3 (2);
-				result_2 (2) := result_3 (3);
-				return result_2;
+		---- If the arc breaks up into 3 arc fragments, then it may
+		---- happen that the first or the last fragment has zero length.
+		---- In this case this function removes such a fragment and 
+		---- returns two fragments instead.
+		---- Otherwise the three fragments are untouched.
+		--function remove_useless_fragments return type_arcs is begin
+			--if zero_length (result_3 (1)) then
+				--result_2 (1) := result_3 (2);
+				--result_2 (2) := result_3 (3);
+				--return result_2;
 				
-			elsif zero_length (result_3 (3)) then
-				result_2 (1) := result_3 (1);
-				result_2 (2) := result_3 (2);
-				return result_2;
-			else
-				return result_3;
-			end if;
-		end remove_useless_fragments;
+			--elsif zero_length (result_3 (3)) then
+				--result_2 (1) := result_3 (1);
+				--result_2 (2) := result_3 (2);
+				--return result_2;
+			--else
+				--return result_3;
+			--end if;
+		--end remove_useless_fragments;
 		
-	begin -- split_arc
+	--begin -- split_arc
 
-		-- test whether the arc can be split at all:
-		if by.smallest_x < CX and by.greatest_x > CX then
-			-- arc extends to the right and to the left of its center
+		---- test whether the arc can be split at all:
+		--if by.smallest_x < CX and by.greatest_x > CX then
+			---- arc extends to the right and to the left of its center
 
-			-- get x of start and end point:
-			SX := get_x (arc.start_point);
-			EX := get_x (arc.end_point);
+			---- get x of start and end point:
+			--SX := get_x (arc.start_point);
+			--EX := get_x (arc.end_point);
 
-			-- get position of start and end point (relative to center):
-			S_left := left_of_center (SX);
-			E_left := left_of_center (EX);
+			---- get position of start and end point (relative to center):
+			--S_left := left_of_center (SX);
+			--E_left := left_of_center (EX);
 			
-			if S_left then
-				if E_left then
-					-- start point is below end point
+			--if S_left then
+				--if E_left then
+					---- start point is below end point
 
-					-- the lower left segment:
-					result_3 (1) := (
-						center		=> arc.center, 
-						start_point	=> arc.start_point,
-						end_point	=> PL,
-						direction 	=> CCW);
+					---- the lower left segment:
+					--result_3 (1) := (
+						--center		=> arc.center, 
+						--start_point	=> arc.start_point,
+						--end_point	=> PL,
+						--direction 	=> CCW);
 
-					-- the segment on the right
-					result_3 (2) := (
-						center		=> arc.center, 
-						start_point	=> PL,
-						end_point	=> PU,
-						direction 	=> CCW);
+					---- the segment on the right
+					--result_3 (2) := (
+						--center		=> arc.center, 
+						--start_point	=> PL,
+						--end_point	=> PU,
+						--direction 	=> CCW);
 
-					-- the upper left segment:
-					result_3 (3) := (
-						center		=> arc.center, 
-						start_point	=> PU,
-						end_point	=> arc.end_point,
-						direction 	=> CCW);
+					---- the upper left segment:
+					--result_3 (3) := (
+						--center		=> arc.center, 
+						--start_point	=> PU,
+						--end_point	=> arc.end_point,
+						--direction 	=> CCW);
 
-					return remove_useless_fragments;
+					--return remove_useless_fragments;
 					
-				else -- end point is on the right
-					-- the segment on the left:
-					result_2 (1) := (
-						center		=> arc.center, 
-						start_point	=> arc.start_point,
-						end_point	=> PL,
-						direction 	=> CCW);
+				--else -- end point is on the right
+					---- the segment on the left:
+					--result_2 (1) := (
+						--center		=> arc.center, 
+						--start_point	=> arc.start_point,
+						--end_point	=> PL,
+						--direction 	=> CCW);
 
-					-- the segment on the right
-					result_2 (2) := (
-						center		=> arc.center, 
-						start_point	=> PL,
-						end_point	=> arc.end_point,
-						direction 	=> CCW);
+					---- the segment on the right
+					--result_2 (2) := (
+						--center		=> arc.center, 
+						--start_point	=> PL,
+						--end_point	=> arc.end_point,
+						--direction 	=> CCW);
 
-					-- return segment 1 and 2
-					return result_2;
-				end if;
+					---- return segment 1 and 2
+					--return result_2;
+				--end if;
 
 				
-			else -- start point is on the right
-				if E_left then
+			--else -- start point is on the right
+				--if E_left then
 
-					-- the segment on the right:
-					result_2 (1) := (
-						center		=> arc.center, 
-						start_point	=> arc.start_point,
-						end_point	=> PU,
-						direction 	=> CCW);
+					---- the segment on the right:
+					--result_2 (1) := (
+						--center		=> arc.center, 
+						--start_point	=> arc.start_point,
+						--end_point	=> PU,
+						--direction 	=> CCW);
 
-					-- the segment on the left
-					result_2 (2) := (
-						center		=> arc.center, 
-						start_point	=> PU,
-						end_point	=> arc.end_point,
-						direction 	=> CCW);
+					---- the segment on the left
+					--result_2 (2) := (
+						--center		=> arc.center, 
+						--start_point	=> PU,
+						--end_point	=> arc.end_point,
+						--direction 	=> CCW);
 
-					-- return segment 1 and 2
-					return result_2;
+					---- return segment 1 and 2
+					--return result_2;
 
 					
-				else
-					-- end point is on the right
+				--else
+					---- end point is on the right
 					
-					-- start point is above end point
+					---- start point is above end point
 
-					-- the upper right segment:
-					result_3 (1) := (
-						center		=> arc.center, 
-						start_point	=> arc.start_point,
-						end_point	=> PU,
-						direction 	=> CCW);
+					---- the upper right segment:
+					--result_3 (1) := (
+						--center		=> arc.center, 
+						--start_point	=> arc.start_point,
+						--end_point	=> PU,
+						--direction 	=> CCW);
 
-					-- the segment on the left
-					result_3 (2) := (
-						center		=> arc.center, 
-						start_point	=> PU,
-						end_point	=> PL,
-						direction 	=> CCW);
+					---- the segment on the left
+					--result_3 (2) := (
+						--center		=> arc.center, 
+						--start_point	=> PU,
+						--end_point	=> PL,
+						--direction 	=> CCW);
 
-					result_3 (3) := (
-						center		=> arc.center, 
-						start_point	=> PL,
-						end_point	=> arc.end_point,
-						direction 	=> CCW);
+					--result_3 (3) := (
+						--center		=> arc.center, 
+						--start_point	=> PL,
+						--end_point	=> arc.end_point,
+						--direction 	=> CCW);
 
-					return remove_useless_fragments;
-				end if;
-			end if;
+					--return remove_useless_fragments;
+				--end if;
+			--end if;
 			
-		else
-			raise constraint_error with "can not split " & to_string (arc) & " !";
-		end if;
+		--else
+			--raise constraint_error with "can not split " & to_string (arc) & " !";
+		--end if;
 
-	end split_arc;
+	--end split_arc;
 
 
-	function split_circle (circle_in : in type_circle) 
-		return type_arcs
-	is
-		-- the x and y-position of the center of the given circle:
-		CX : constant type_distance := get_x (circle_in.center);
-		CY : constant type_distance := get_y (circle_in.center);
-		R  : constant type_distance_positive := circle_in.radius;
+	--function split_circle (circle_in : in type_circle) 
+		--return type_arcs
+	--is
+		---- the x and y-position of the center of the given circle:
+		--CX : constant type_distance := get_x (circle_in.center);
+		--CY : constant type_distance := get_y (circle_in.center);
+		--R  : constant type_distance_positive := circle_in.radius;
 
-		-- The connecting points between the resulting arcs are where an
-		-- imaginary vertical line intersects the circle at its highest and 
-		-- lowest point:
-		PU : constant type_point := type_point (set (CX, CY + R));
-		PL : constant type_point := type_point (set (CX, CY - R));
+		---- The connecting points between the resulting arcs are where an
+		---- imaginary vertical line intersects the circle at its highest and 
+		---- lowest point:
+		--PU : constant type_point := type_point (set (CX, CY + R));
+		--PL : constant type_point := type_point (set (CX, CY - R));
 
-		-- There will be only 2 arcs.
-		result : type_arcs (1..2);
-	begin
-		-- the arc on the left:
-		result (1) := (center => circle_in.center, start_point => PU, 
-						end_point => PL, direction => CCW);
+		---- There will be only 2 arcs.
+		--result : type_arcs (1..2);
+	--begin
+		---- the arc on the left:
+		--result (1) := (center => circle_in.center, start_point => PU, 
+						--end_point => PL, direction => CCW);
 
-		-- the arc on the right:
-		result (2) := (center => circle_in.center, start_point => PL,
-						end_point => PU, direction => CCW);			
+		---- the arc on the right:
+		--result (2) := (center => circle_in.center, start_point => PL,
+						--end_point => PU, direction => CCW);			
 
-		return result;
-	end split_circle;
+		--return result;
+	--end split_circle;
 	
 
 	function get_distance_to_circumfence (
@@ -3323,7 +3347,7 @@ package body et_geometry_2 is
 		-- the polar distance from point to center:
 		d_pc : constant type_distance_polar := get_distance (point, circle.center);
 		
-		dd : type_distance;
+		dd : type_float_internal;
 	begin
 		--result := get_distance (point, circle.center);
 		--set_absolute (result, get_absolute (result) - circle.radius);
@@ -3331,7 +3355,7 @@ package body et_geometry_2 is
 		--dd := type_distance (round (get_absolute (d_pc) - circle.radius));
 		dd := get_absolute (d_pc) - circle.radius;
 		
-		if dd > zero then -- point outside of circle
+		if dd > 0.0 then -- point outside of circle
 
 			-- Now the polar distance from point to center matters:
 			result := d_pc;
@@ -3408,6 +3432,7 @@ package body et_geometry_2 is
 	is begin
 		move_by (point	=> circle.center,	offset => offset);
 	end move_by;
+
 	
 	procedure mirror (
 		circle		: in out type_circle;
@@ -3415,6 +3440,7 @@ package body et_geometry_2 is
 	begin
 		mirror (circle.center, axis);
 	end mirror;
+
 	
 	procedure rotate_by (
 		circle		: in out type_circle;
@@ -3422,6 +3448,7 @@ package body et_geometry_2 is
 	begin
 		rotate_by (circle.center, rotation);
 	end;
+
 	
 	function get_boundaries (
 		circle		: in type_circle;
@@ -3430,15 +3457,15 @@ package body et_geometry_2 is
 	is
 		result : type_boundaries;
 
-		half_width : constant type_distance_positive := line_width * 0.5;
+		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 	begin
 		-- X axis
-		result.smallest_x := get_x (circle.center) - circle.radius;
-		result.greatest_x := get_x (circle.center) + circle.radius;
+		result.smallest_x := type_float_internal (get_x (circle.center)) - circle.radius;
+		result.greatest_x := type_float_internal (get_x (circle.center)) + circle.radius;
 
 		-- Y axis
-		result.smallest_y := get_y (circle.center) - circle.radius;
-		result.greatest_y := get_y (circle.center) + circle.radius;
+		result.smallest_y := type_float_internal (get_y (circle.center)) - circle.radius;
+		result.greatest_y := type_float_internal (get_y (circle.center)) + circle.radius;
 
 		
 		-- extend the boundaries by half the line width;
@@ -3458,10 +3485,10 @@ package body et_geometry_2 is
 		return boolean 
 	is
 		-- the distance from center to point:
-		DCP: constant type_distance_positive := 
+		DCP: constant type_float_internal_positive := 
 			get_distance_total (point, circle.center);
 	begin
-		if abs (DCP - circle.radius) <= type_distance'small then
+		if abs (DCP - circle.radius) <= type_float_internal (type_distance'small) then
 
 			-- Point is on circumfence of circle.
 			return true;
@@ -3520,18 +3547,18 @@ package body et_geometry_2 is
 	function get_distance (
 		circle	: in type_circle'class;
 		line	: in type_line'class)
-		return type_distance
+		return type_float_internal_positive
 	is
-		result : type_distance := zero;
+		result : type_float_internal_positive := 0.0;
 
 		--debug : constant boolean := false;
 		--debug : constant boolean := true;
 		
 		-- the distance from circumfence to start of line:
-		ds : type_distance_positive;
+		ds : type_float_internal_positive;
 		
 		-- the distance from circumfence to end of line:
-		de : type_distance_positive;
+		de : type_float_internal_positive;
 
 		-- the distance from center perpendicular to line:
 		dp : type_distance_point_line;
@@ -3557,7 +3584,7 @@ package body et_geometry_2 is
 		
 		--if on_line (get_intersection (dp), line) then
 		if not dp.out_of_range then -- line passes the circle
-			result := to_distance (get_distance (dp));
+			result := get_distance (dp);
 			--log (text => "line passes the circle");
 
 			--if debug then
@@ -3589,9 +3616,9 @@ package body et_geometry_2 is
 	function get_distance (
 		circle	: in type_circle'class;
 		arc		: in type_arc'class)
-		return type_distance
+		return type_float_internal_positive
 	is
-		result : type_distance := zero;
+		result : type_float_internal_positive := 0.0;
 
 		dp : type_distance_polar;
 	begin
@@ -3613,9 +3640,9 @@ package body et_geometry_2 is
 	function get_distance (
 		circle_1	: in type_circle'class;
 		circle_2	: in type_circle'class)
-		return type_distance
+		return type_float_internal_positive
 	is
-		result : type_distance := zero;
+		result : type_float_internal_positive := 0.0;
 		dp : type_distance_polar;
 	begin
 		dp := get_distance (circle_1.center, circle_2.center);
@@ -3959,10 +3986,10 @@ package body et_geometry_2 is
 			b := get_boundaries (line, zero); -- a polygon line has zero width
 		end if;
 		
-		if b.smallest_x = get_x (line.start_point) then
+		if b.smallest_x = type_float_internal (get_x (line.start_point)) then
 			p := line.start_point;
 			
-		elsif b.smallest_x = get_x (line.end_point) then
+		elsif b.smallest_x = type_float_internal (get_x (line.end_point)) then
 			p := line.end_point;
 
 		else
@@ -3990,10 +4017,10 @@ package body et_geometry_2 is
 			b := get_boundaries (line, zero); -- a polygon line has zero width
 		end if;
 		
-		if b.greatest_x = get_x (line.start_point) then
+		if b.greatest_x = type_float_internal (get_x (line.start_point)) then
 			p := line.start_point;
 			
-		elsif b.greatest_x = get_x (line.end_point) then
+		elsif b.greatest_x = type_float_internal (get_x (line.end_point)) then
 			p := line.end_point;
 
 		else
@@ -4021,10 +4048,10 @@ package body et_geometry_2 is
 			b := get_boundaries (line, zero); -- a polygon line has zero width
 		end if;
 		
-		if b.smallest_y = get_x (line.start_point) then
+		if b.smallest_y = type_float_internal (get_x (line.start_point)) then
 			p := line.start_point;
 			
-		elsif b.smallest_y = get_x (line.end_point) then
+		elsif b.smallest_y = type_float_internal (get_x (line.end_point)) then
 			p := line.end_point;
 
 		else
@@ -4052,10 +4079,10 @@ package body et_geometry_2 is
 			b := get_boundaries (line, zero); -- a polygon line has zero width
 		end if;
 		
-		if b.greatest_y = get_x (line.start_point) then
+		if b.greatest_y = type_float_internal (get_x (line.start_point)) then
 			p := line.start_point;
 			
-		elsif b.greatest_y = get_x (line.end_point) then
+		elsif b.greatest_y = type_float_internal (get_x (line.end_point)) then
 			p := line.end_point;
 
 		else

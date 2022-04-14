@@ -231,7 +231,7 @@ package body et_geometry_2.contours is
 		point	: in type_point)
 		return type_distance_polar
 	is
-		result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
+		result : type_distance_polar := to_polar (type_float_internal'last, zero_rotation);
 		
 		procedure update (d : in type_distance_polar) is begin
 			--put_line (to_string (d));
@@ -474,10 +474,15 @@ package body et_geometry_2.contours is
 				when LINE => -- line 0 0
 
 					-- assign start point of line
-					l.start_point := type_point (set (
-							x => to_distance (f (p + 1)),
-							y => to_distance (f (p + 2))));
+					--l.start_point := type_point (set (
+							--x => to_distance (f (p + 1)),
+							--y => to_distance (f (p + 2))));
 
+					l.start_point := type_point (to_point (
+							x => f (p + 1),
+							y => f (p + 2)));
+
+					
 					-- The start point of the line is also the end point of
 					-- the previous segment:
 					end_point_previous := l.start_point;
@@ -504,15 +509,25 @@ package body et_geometry_2.contours is
 				when ARC => -- arc 50 100 100 100 ccw
 
 					-- assign center of arc
-					a.center := type_point (set (
-							x => to_distance (f (p + 1)),
-							y => to_distance (f (p + 2))));
-						
-					-- assign start point of arc
-					a.start_point := type_point (set (
-							x => to_distance (f (p + 3)),
-							y => to_distance (f (p + 4))));
+					--a.center := type_point (set (
+							--x => to_distance (f (p + 1)),
+							--y => to_distance (f (p + 2))));
 
+					a.center := type_point (to_point (
+							x => f (p + 1),
+							y => f (p + 2)));
+
+					
+					-- assign start point of arc
+					--a.start_point := type_point (set (
+							--x => to_distance (f (p + 3)),
+							--y => to_distance (f (p + 4))));
+
+					a.start_point := type_point (to_point (
+							x => f (p + 3),
+							y => f (p + 4)));
+
+					
 					-- The start point of the arc is also the end point
 					-- of the previous segment:
 					end_point_previous := a.start_point;
@@ -543,10 +558,15 @@ package body et_geometry_2.contours is
 				when CIRCLE => -- circle 40 40 10
 
 					-- assign center of circle
-					c.center := type_point (set (
-							x => to_distance (f (p + 1)),
-							y => to_distance (f (p + 2))));
+					--c.center := type_point (set (
+							--x => to_distance (f (p + 1)),
+							--y => to_distance (f (p + 2))));
 
+					c.center := type_point (to_point (
+							x => f (p + 1),
+							y => f (p + 2)));
+
+					
 					-- assigne radius of circle
 					c.radius := to_distance (f (p + 3));
 
@@ -595,7 +615,7 @@ package body et_geometry_2.contours is
 	is
 		result : type_boundaries; -- to be returned
 
-		half_width : constant type_distance_positive := line_width * 0.5;
+		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 		
 
 		procedure query_segment (c : in pac_contour_segments.cursor) is begin
@@ -887,7 +907,9 @@ package body et_geometry_2.contours is
 		boundaries : constant type_boundaries := get_boundaries (contour, zero);
 	begin
 		-- compose the lower left corner point:
-		result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
+		--result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
+		result.point := type_point (set (to_distance (boundaries.smallest_x),
+										 to_distance (boundaries.smallest_y)));
 
 		-- figure out whether the point is real or virtual:
 		case get_point_to_contour_status (contour, result.point).location is
@@ -1217,7 +1239,7 @@ package body et_geometry_2.contours is
 			a_norm : constant type_arc := type_arc (normalize_arc (a));
 			
 			-- the radius of the arc:
-			radius : constant type_distance_positive := get_radius_start (a_norm);
+			radius : constant type_float_internal_positive := get_radius_start (a_norm);
 			
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate arc of the contour.

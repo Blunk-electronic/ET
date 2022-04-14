@@ -186,6 +186,13 @@ package et_geometry_2 is
 		direction	: in type_rotation;
 		distance	: in type_float_internal); -- CS type_float_internal_positive ?
 
+
+	function move_by (
+		v			: in type_vector;
+		direction	: in type_rotation;
+		distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		return type_vector;
+	
 	
 	function to_vector (
 		point	: in type_point)
@@ -383,14 +390,14 @@ package et_geometry_2 is
 	
 	-- Returns the length of a line:
 	function get_length (line : in type_line)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 
 	-- Returns the length of the longest line.
 	-- If both have equal length, then the length of 
 	-- the second line will be returned:
 	function get_greatest_length (l1, l2 : in type_line)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 	
 	-- Returns the longest of the given lines.
@@ -442,7 +449,7 @@ package et_geometry_2 is
 	-- that is between its start and end point:
 	function get_center (
 		line	: in type_line)
-		return type_point;
+		return type_vector;
 
 
 
@@ -768,12 +775,12 @@ package et_geometry_2 is
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc) 
-		return type_distance_positive;
+		return type_float_internal_positive;
 	
 	-- Returns the distance between the end point and the center of the arc.
 	function get_radius_end (
 		arc : in type_arc) 
-		return type_distance_positive;
+		return type_float_internal_positive;
 
 	-- Test whether the given arc is valid. The arc is valid if:
 	-- - start and end point have equal distance to center
@@ -786,7 +793,7 @@ package et_geometry_2 is
 	-- expressed in terms of start and end angle:
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_point;
-		radius		: type_float_internal;
+		radius		: type_float_internal_positive;
 		angle_start	: type_rotation;
 		angle_end	: type_rotation;
 		direction	: type_direction_of_rotation := CW;
@@ -931,21 +938,21 @@ package et_geometry_2 is
 
 	-- This type is required when an arc or a circle is to be 
 	-- split into smaller arc segments:
-	type type_arcs is array (positive range <>) of type_arc;
+	--type type_arcs is array (positive range <>) of type_arc;
 
 	-- Splits an arc in 2 or 3 smaller arcs.
 	-- The arc will be split by a vertical line that crosses the center.
 	-- The resulting arcs have all the same center, radius  and direction as the
 	-- given arc.
-	function split_arc (arc_in : in type_arc) 
-		return type_arcs;
+	--function split_arc (arc_in : in type_arc) 
+		--return type_arcs;
 
 	
 	
 -- CIRCLE
 	type type_circle_base is abstract tagged record
 		center			: type_point;
-		radius  		: type_distance_positive := zero;
+		radius  		: type_float_internal_positive := 0.0;
 		-- CS locked : type_locked;
 	end record;
 
@@ -956,8 +963,8 @@ package et_geometry_2 is
 	-- The circle will be split by a vertical line that crosses the center.
 	-- The resulting arcs have all the same center and radius as the given circle.
 	-- The resulting arcs have both direction CCW:
-	function split_circle (circle_in : in type_circle) 
-		return type_arcs;
+	--function split_circle (circle_in : in type_circle) 
+		--return type_arcs;
 
 	
 	-- Returns the distance of point to circumfence of circle.
@@ -1029,29 +1036,32 @@ package et_geometry_2 is
 		line	: in type_line'class)
 		return boolean;
 
+	
 	-- Returns the shortest distance between a circle and a line.
 	-- If circle and line do intersect in some way, then the return
 	-- is a negative number.
 	function get_distance (
 		circle	: in type_circle'class;
 		line	: in type_line'class)
-		return type_distance;
+		return type_float_internal_positive;
 
+	
 	-- Returns the shortest distance between a circle and an arc.
 	-- If circle and arc do intersect in some way, then the return
 	-- is a negative number.
 	function get_distance (
 		circle	: in type_circle'class;
 		arc		: in type_arc'class)
-		return type_distance;
+		return type_float_internal_positive;
 
+	
 	-- Returns the shortest distance between two circles.
 	-- If the circles do intersect in some way, then the return
 	-- is a negative number.
 	function get_distance (
 		circle_1	: in type_circle'class;
 		circle_2	: in type_circle'class)
-		return type_distance;
+		return type_float_internal_positive;
 
 	
 	-- The angle of a tangent to a circle:

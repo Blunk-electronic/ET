@@ -57,8 +57,7 @@ package body et_geometry_2.polygons.offsetting is
 			return type_line_vector
 		is
 			line_new : type_line := line;
-			center : type_point := get_center (line);
-			-- CS center should be a location vector
+			center : type_vector := get_center (line);
 			
 			line_direction : type_rotation := get_direction (line);
 			dir_scratch : type_rotation;			
@@ -78,7 +77,7 @@ package body et_geometry_2.polygons.offsetting is
 			-- Set a test point that is very close to the center of the line.
 			-- The point is located in direction dir_scratch away from the center:
 			dir_scratch := add (line_direction, +90.0);
-			test_point := type_point (move (center, dir_scratch, type_distance'small));
+			test_point := type_point (move (to_point (center), dir_scratch, type_distance'small));
 			--put_line ("tp " & to_string (test_point));
 
 			-- Depending on the location of the test point, means inside or outside
