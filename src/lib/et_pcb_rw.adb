@@ -787,6 +787,7 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+	
 	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
 	function read_board_circle (line : type_fields_of_line) return boolean is
 		kw : constant string := f (line, 1);
@@ -805,8 +806,7 @@ package body et_pcb_rw is
 			
 			board_circle.radius := to_distance (f (line, 2));
 
-			return true;
-			
+			return true;			
 		else
 			return false;
 		end if;

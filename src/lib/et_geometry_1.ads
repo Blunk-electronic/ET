@@ -170,8 +170,8 @@ package et_geometry_1 is
 		range zero .. type_distance'last;
 
 	
-	subtype type_catch_zone is type_distance_positive
-		range zero .. type_distance_positive'last/100.0;
+	subtype type_catch_zone is type_float_internal_positive
+		range 0.0 .. type_float_internal (type_distance_positive'last/100.0);
 
 	
 	subtype type_rotation_positive is type_rotation
@@ -247,14 +247,23 @@ package et_geometry_1 is
 
 
 
-	type type_distance_relative is record
+	type type_distance_relative is record -- CS rename to type_offset ?
 		x, y : type_distance := zero;
 	end record;
 
 	function to_string (distance : in type_distance_relative)
 		return string;
 
+	--type type_offset is record
+		--x, y : type_float_internal := 0.0;
+	--end record;
 
+	
+	function to_distance_relative (
+		x,y : in type_float_internal)
+		return type_distance_relative;
+
+	
 	
 -- TYPE POINT:
 
@@ -457,19 +466,21 @@ package et_geometry_1 is
 	-- In the GUI, in connection with boundaries and bounding boxes a type for
 	-- a rectangular area of the drawing is required.
 	-- NOTE: The bounding box is something required in the model plane only.
+
+	-- CS move to canvas package or primitve draw ops ?
 	type type_rectangle is record
-		x, y			: type_distance; -- position, upper left corner
-		width, height	: type_distance_positive; -- size
+		x, y			: type_float_internal; -- position, upper left corner
+		width, height	: type_float_internal_positive; -- size
 	end record;
 
-	no_rectangle : constant type_rectangle := (others => zero);
+	no_rectangle : constant type_rectangle := (others => 0.0);
 
 	function to_string (rectangle : in type_rectangle) return string;
 
 	-- Moves the rectangle by the given offset:
 	procedure move_by (
 		rectangle	: in out type_rectangle;
-		offset		: in type_distance_relative);
+		offset		: in type_distance_relative); -- CS type_offset ?
 	
 	-- Returns true if the given two rectangles intersect each other in some way:
 	function intersects (rect1, rect2 : type_rectangle) return boolean;

@@ -6148,16 +6148,19 @@ package body et_kicad.schematic is
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
 
-	function length (segment : in type_net_segment_base) 
-		return et_coordinates.type_distance is
+	
 	-- Returns the length of the given net segment.
+	function length (segment : in type_net_segment_base) 
+		return et_coordinates.type_distance 
+	is
 		len : type_distance;
-		use et_string_processing;
+		--use et_string_processing;
 	begin
-		len := get_distance_total (segment.coordinates_start, segment.coordinates_end);
+		len := to_distance (get_distance_total (segment.coordinates_start, segment.coordinates_end));
 		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
 		return len;
 	end length;
+
 	
 	function to_string (
 		segment	: in type_net_segment_base'class;

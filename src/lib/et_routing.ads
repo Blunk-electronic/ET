@@ -162,9 +162,9 @@ package et_routing is
 	end record;
 
 	-- Calculates the dimensions of a track:
-	function get_dimensions (
-		track	:  in type_track)
-		return type_track_dimensions;
+	--function get_dimensions (
+		--track	:  in type_track)
+		--return type_track_dimensions;
 
 	type type_obstacle (shape : type_shape) is record
 		case shape is
@@ -179,14 +179,14 @@ package et_routing is
 	-- an obstacle along the x-axis. The result is an x-position
 	-- before or after the obstacle.
 	-- This function assumes the travel direction of the fill line is zero.
-	function get_break (
-		init			: in type_distance; -- the start point of the search
-		place			: in type_place; -- before/after
-		obstacle		: in type_obstacle;
-		clearance		: in type_distance_positive; -- the clearance to the obstacle
-		log_category	: in type_log_category;
-		lth				: in type_log_level) 
-		return type_distance;
+	--function get_break (
+		--init			: in type_distance; -- the start point of the search
+		--place			: in type_place; -- before/after
+		--obstacle		: in type_obstacle;
+		--clearance		: in type_distance_positive; -- the clearance to the obstacle
+		--log_category	: in type_log_category;
+		--lth				: in type_log_level) 
+		--return type_distance;
 
 	
 	-- A break may or may not exist. If it exists, then the point
@@ -208,14 +208,14 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns false (no break).
 	-- The returned break point is the center of the cap of the track.
-	function get_break_by_line (
-		track				: in type_track;
-		track_dimensions	: in type_track_dimensions;
-		line				: in type_line;
-		place				: in type_place;
-		log_category		: in type_log_category;
-		lth					: in type_log_level)
-		return type_break;
+	--function get_break_by_line (
+		--track				: in type_track;
+		--track_dimensions	: in type_track_dimensions;
+		--line				: in type_line;
+		--place				: in type_place;
+		--log_category		: in type_log_category;
+		--lth					: in type_log_level)
+		--return type_break;
 
 	
 	-- A break of a track with an arc may consist of up to
@@ -238,14 +238,14 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
-	function get_break_by_arc (
-		track				: in type_track;
-		track_dimensions	: in type_track_dimensions;
-		arc					: in type_arc;
-		place				: in type_place;
-		log_category		: in type_log_category;
-		lth					: in type_log_level)
-		return type_break_double;
+	--function get_break_by_arc (
+		--track				: in type_track;
+		--track_dimensions	: in type_track_dimensions;
+		--arc					: in type_arc;
+		--place				: in type_place;
+		--log_category		: in type_log_category;
+		--lth					: in type_log_level)
+		--return type_break_double;
 
 	-- Returns the point where a track is broken/interrupted
 	-- by a circle that crosses or overlaps the track.
@@ -256,24 +256,24 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
-	function get_break_by_circle (
-		track				: in type_track;
-		track_dimensions	: in type_track_dimensions;
-		circle				: in type_circle;
-		place				: in type_place;
-		log_category		: in type_log_category;
-		lth					: in type_log_level)
-		return type_break_double;
+	--function get_break_by_circle (
+		--track				: in type_track;
+		--track_dimensions	: in type_track_dimensions;
+		--circle				: in type_circle;
+		--place				: in type_place;
+		--log_category		: in type_log_category;
+		--lth					: in type_log_level)
+		--return type_break_double;
 	
 
 	-- Returns true if the given point comes after the 
 	-- start point of the given track. 
 	-- Assumes that the point is on the center line of the track. 
 	-- If the point is not on the track, raises constraint error:
-	function after_start_of_track (
-		track	: in type_track;
-		point	: in type_point)
-		return boolean;
+	--function after_start_of_track (
+		--track	: in type_track;
+		--point	: in type_point)
+		--return boolean;
 	
 
 	type type_valid is (VALID, INVALID);
@@ -314,42 +314,42 @@ package et_routing is
 	-- If the parameter "ignore_same_net" is true, then the segments
 	-- of the same net as indicated by net_cursor are ignored. When filling
 	-- fill areas (polygons) this setting should be used.
-	function get_distance (
-		module_cursor	: in pac_generic_modules.cursor;
-		design_rules	: in type_design_rules;
-		bottom_layer	: in type_signal_layer;
-		start_point		: in type_point;
-		place			: in type_place := BEFORE;
-		direction		: in type_rotation;
-		net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
-		net_class		: in type_net_class;
-		fill_zone		: in type_fill_zone;
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		ignore_same_net	: in boolean;
-		log_category	: in type_log_category := log_category_default;
-		lth				: in type_log_level)
-		return type_route_distance;
+	--function get_distance (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--design_rules	: in type_design_rules;
+		--bottom_layer	: in type_signal_layer;
+		--start_point		: in type_point;
+		--place			: in type_place := BEFORE;
+		--direction		: in type_rotation;
+		--net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		--net_class		: in type_net_class;
+		--fill_zone		: in type_fill_zone;
+		--layer			: in type_signal_layer;
+		--width			: in type_track_width;
+		--ignore_same_net	: in boolean;
+		--log_category	: in type_log_category := log_category_default;
+		--lth				: in type_log_level)
+		--return type_route_distance;
 
 
 	-- Returns true if a track can be started at the given start_point.
 	-- If parameter "ignore_same_net" is true then the segments of
 	-- the net indicated by net_cursor are ignored. This setting should
 	-- be used when filling fill areas (polygons):
-	function clear_for_track (
-		module_cursor	: in pac_generic_modules.cursor;
-		design_rules	: in type_design_rules;
-		bottom_layer	: in type_signal_layer;
-		start_point		: in type_point;
-		net_cursor		: in et_schematic.pac_nets.cursor;
-		net_class		: in type_net_class;
-		fill_zone		: in type_fill_zone;
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		ignore_same_net	: in boolean;
-		log_category	: in type_log_category := log_category_default;
-		lth				: in type_log_level)		
-		return boolean;
+	--function clear_for_track (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--design_rules	: in type_design_rules;
+		--bottom_layer	: in type_signal_layer;
+		--start_point		: in type_point;
+		--net_cursor		: in et_schematic.pac_nets.cursor;
+		--net_class		: in type_net_class;
+		--fill_zone		: in type_fill_zone;
+		--layer			: in type_signal_layer;
+		--width			: in type_track_width;
+		--ignore_same_net	: in boolean;
+		--log_category	: in type_log_category := log_category_default;
+		--lth				: in type_log_level)		
+		--return boolean;
 
 	
 end et_routing;

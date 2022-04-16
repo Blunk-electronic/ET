@@ -54,6 +54,8 @@ with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
 
+-- to do:
+
 
 separate (et_scripting)
 	
@@ -377,11 +379,8 @@ is
 				-- delete a segment of board outline
 				delete_outline (
 					module_name 	=> module,
-					point			=> type_point (set (
-							x => to_distance (f (5)),
-							y => to_distance (f (6)))),
-					accuracy		=> to_distance (f (7)),
-					
+					point			=> type_point (to_point (f (5), f (6))),
+					accuracy		=> to_distance (f (7)),					
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -397,9 +396,7 @@ is
 				-- delete a segment of a hole
 				delete_hole (
 					module_name 	=> module,
-					point			=> type_point (set (
-							x => to_distance (f (5)),
-							y => to_distance (f (6)))),
+					point			=> type_point (to_point (f (5), f (6))),
 					accuracy		=> to_distance (f (7)),
 					
 					log_threshold	=> log_threshold + 1);
@@ -422,14 +419,9 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							line			=> (
-										width		=> to_distance (f (7)),
-										start_point	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11))))
-										),
+									width		=> to_distance (f (7)),
+									start_point	=> type_point (to_point (f (8), f (9))),
+									end_point	=> type_point (to_point (f (10), f (11)))),
 
 							log_threshold	=> log_threshold + 1
 							);
@@ -440,6 +432,7 @@ is
 					when others =>
 						command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -448,18 +441,11 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							arc				=> (
-										width	=> to_distance (f (7)),
-										center	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (12)),
-											y => to_distance (f (13)))),
-										direction	=> to_direction (f (14))
-										),
+								width	=> to_distance (f (7)),
+								center	=> type_point (to_point (f (8), f (9))),
+								start_point	=> type_point (to_point (f (10), f (11))),
+								end_point	=> type_point (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))),
 
 							log_threshold	=> log_threshold + 1
 							);
@@ -471,6 +457,7 @@ is
 						command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
@@ -484,16 +471,12 @@ is
 							draw_silk_screen_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> 
-										(
-										filled			=> NO,
-										fill_style		=> fill_style_default, -- don't care here
-										border_width	=> to_distance (f (7)),
-										center			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-										radius			=> to_distance (f (10))
-										),
+								circle			=> (
+									filled			=> NO,
+									fill_style		=> fill_style_default, -- don't care here
+									border_width	=> to_distance (f (7)),
+									center			=> type_point (to_point (f (8), f (9))),
+									radius			=> to_distance (f (10))),
 								log_threshold	=> log_threshold + 1);
 						else
 							
@@ -522,15 +505,11 @@ is
 									draw_silk_screen_circle (
 										module_name 	=> module,
 										face			=> to_face (f (5)),
-										circle			=> 
-													(
-													filled		=> YES,
-													fill_style	=> SOLID,
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-													radius	=> to_distance (f (10))
-													),
+										circle			=> (
+												filled		=> YES,
+												fill_style	=> SOLID,
+												center	=> type_point (to_point (f (8), f (9))),
+												radius	=> to_distance (f (10))),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -539,7 +518,8 @@ is
 
 							end case;
 						end if;
-							
+
+						
 					when 12 =>
 						-- This is going to be a hatched circle.
 						-- In this case the 7th field MUST be fill style HATCHED.
@@ -555,15 +535,12 @@ is
 												(
 												filled		=> YES,
 												fill_style	=> HATCHED,
-												center		=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
+												center		=> type_point (to_point (f (8), f (9))),
 												radius		=> to_distance (f (10)),
 												hatching	=> (
-															line_width	=> to_distance (f (11)),
-															spacing		=> to_distance (f (12)),
-															others		=> <>
-															)
+													line_width	=> to_distance (f (11)),
+													spacing		=> to_distance (f (12)),
+													others		=> <>)
 												),
 										log_threshold	=> log_threshold + 1);
 
@@ -572,8 +549,10 @@ is
 							end case;
 						end if;
 
+						
 					when 13 .. count_type'last =>
 						command_too_long (single_cmd_status.cmd, get_field_count - 1);
+
 						
 					when others =>
 						command_incomplete;
@@ -596,24 +575,18 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							line			=> (
-										width		=> to_distance (f (7)),
-										start_point	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11))))
-										),
-
-							log_threshold	=> log_threshold + 1
-							);
-
+									width		=> to_distance (f (7)),
+									start_point	=> type_point (to_point (f (8), f (9))),
+									end_point	=> type_point (to_point (f (10), f (11)))),
+							log_threshold	=> log_threshold + 1);
+						
 					when 12 .. count_type'last =>
 						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others =>
 						command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -622,21 +595,12 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							arc				=> (
-										width	=> to_distance (f (7)),
-										center	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (12)),
-											y => to_distance (f (13)))),
-										direction	=> to_direction (f (14))
-										),
-
-							log_threshold	=> log_threshold + 1
-							);
+								width		=> to_distance (f (7)),
+								center		=> type_point (to_point (f (8), f (9))),
+								start_point	=> type_point (to_point (f (10), f (11))),
+								end_point	=> type_point (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))),
+							log_threshold	=> log_threshold + 1);
 
 					when 15 .. count_type'last =>
 						command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -645,6 +609,7 @@ is
 						command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
@@ -658,16 +623,12 @@ is
 							draw_assy_doc_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> 
-										(
-										filled			=> NO,
-										fill_style		=> fill_style_default, -- don't care here
-										border_width	=> to_distance (f (7)),
-										center			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-										radius			=> to_distance (f (10))
-										),
+								circle			=> (
+									filled			=> NO,
+									fill_style		=> fill_style_default, -- don't care here
+									border_width	=> to_distance (f (7)),
+									center			=> type_point (to_point (f (8), f (9))),
+									radius			=> to_distance (f (10))),
 								log_threshold	=> log_threshold + 1);
 						else
 							
@@ -696,24 +657,20 @@ is
 									draw_assy_doc_circle (
 										module_name 	=> module,
 										face			=> to_face (f (5)),
-										circle			=> 
-													(
-													filled		=> YES,
-													fill_style	=> SOLID,
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-													radius	=> to_distance (f (10))
-													),
-										log_threshold	=> log_threshold + 1
-										);
+										circle			=> (
+												filled		=> YES,
+												fill_style	=> SOLID,
+												center		=> type_point (to_point (f (8), f (9))),
+												radius		=> to_distance (f (10))),
+										log_threshold	=> log_threshold + 1);
 
 								when HATCHED =>
 									command_incomplete;
 
 							end case;
 						end if;
-							
+
+						
 					when 12 =>
 						-- This is going to be a hatched circle.
 						-- In this case the 7th field MUST be fill style HATCHED.
@@ -725,20 +682,15 @@ is
 									draw_assy_doc_circle (
 										module_name 	=> module,
 										face			=> to_face (f (5)),
-										circle			=> 
-												(
+										circle			=> (
 												filled		=> YES,
 												fill_style	=> HATCHED,
-												center		=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
+												center		=> type_point (to_point (f (8), f (9))),
 												radius		=> to_distance (f (10)),
-
 												hatching	=> (
-															line_width	=> to_distance (f (11)),
-															spacing		=> to_distance (f (12)),
-															others		=> <>
-															)
+													line_width	=> to_distance (f (11)),
+													spacing		=> to_distance (f (12)),
+													others		=> <>)
 												),
 										log_threshold	=> log_threshold + 1);
 
@@ -747,6 +699,7 @@ is
 							end case;
 						end if;
 
+						
 					when 13 .. count_type'last =>
 						command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
@@ -771,12 +724,8 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							line			=> (
-										start_point	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10))))
+										start_point	=> type_point (to_point (f (7), f (8))),
+										end_point	=> type_point (to_point (f (9), f (10)))
 										),
 
 							log_threshold	=> log_threshold + 1);
@@ -785,6 +734,7 @@ is
 						
 					when others => command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -793,17 +743,10 @@ is
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							arc				=> (
-										center	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (11)),
-											y => to_distance (f (12)))),
-										direction	=> to_direction (f (13))
-										),
+									center		=> type_point (to_point (f (7), f (8))),
+									start_point	=> type_point (to_point (f (9), f (10))),
+									end_point	=> type_point (to_point (f (11), f (12))),
+									direction	=> to_direction (f (13))),
 
 							log_threshold	=> log_threshold + 1);
 
@@ -812,6 +755,7 @@ is
 					when others => command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 9 =>
@@ -826,9 +770,7 @@ is
 								circle			=> 
 											(
 											filled		=> NO,
-											center	=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
+											center	=> type_point (to_point (f (7), f (8))),
 											radius	=> to_distance (f (9))
 											),
 								log_threshold	=> log_threshold + 1);
@@ -836,6 +778,7 @@ is
 							expect_value_center_x (7);
 						end if;
 
+						
 					when 10 =>
 					-- board led_driver draw keepout top circle filled 50 50 40 -- 10 fields
 						
@@ -848,9 +791,7 @@ is
 								circle			=> 
 											(
 											filled		=> YES,
-											center	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
+											center	=> type_point (to_point (f (8), f (9))),
 											radius	=> to_distance (f (10))
 											),
 								log_threshold	=> log_threshold + 1);
@@ -889,12 +830,8 @@ is
 							module_name 	=> module,
 							line			=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										start_point	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10))))
+										start_point	=> type_point (to_point (f (7), f (8))),
+										end_point	=> type_point (to_point (f (9), f (10)))
 										),
 
 							log_threshold	=> log_threshold + 1);
@@ -903,6 +840,7 @@ is
 						
 					when others => command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -911,18 +849,11 @@ is
 						draw_route_restrict_arc (
 							module_name 	=> module,
 							arc				=> (
-										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										center	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (11)),
-											y => to_distance (f (12)))),
-										direction	=> to_direction (f (13))
-										),
+									layers		=> to_layers (f (5)), -- [1,3,5-9]
+									center		=> type_point (to_point (f (7), f (8))),										
+									start_point	=> type_point (to_point (f (9), f (10))),
+									end_point	=> type_point (to_point (f (11), f (12))),
+									direction	=> to_direction (f (13))),
 
 							log_threshold	=> log_threshold + 1);
 
@@ -931,6 +862,7 @@ is
 					when others => command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 9 =>
@@ -940,16 +872,12 @@ is
 							-- Circle is not filled.
 							draw_route_restrict_circle (
 								module_name 	=> module,
-								circle			=> 
-											(
-											layers		=> to_layers (f (5)), -- [1,3,5-9]
-											filled		=> NO,
-											center	=> type_point (set (
-														x => to_distance (f (7)), -- 20
-														y => to_distance (f (8)))), -- 50
-											radius	=> to_distance (f (9)) -- 40
-											),
-											
+								circle			=> (
+										layers		=> to_layers (f (5)), -- [1,3,5-9]
+										filled		=> NO,
+										center	=> type_point (to_point (f (7), f (8))),
+										radius	=> to_distance (f (9))), -- 40
+						
 								log_threshold	=> log_threshold + 1);
 						else
 							expect_value_center_x (7);
@@ -967,9 +895,7 @@ is
 											(
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> YES,
-											center	=> type_point (set (
-														x => to_distance (f (8)), -- 20
-														y => to_distance (f (9)))), -- 50
+											center	=> type_point (to_point (f (8), f (9))),
 											radius	=> to_distance (f (10)) -- 40
 											),
 											
@@ -1000,13 +926,8 @@ is
 							module_name 	=> module,
 							line			=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										start_point	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10))))
-										),
+										start_point	=> type_point (to_point (f (7), f (8))),
+										end_point	=> type_point (to_point (f (9), f (10)))),
 
 							log_threshold	=> log_threshold + 1);
 
@@ -1014,6 +935,7 @@ is
 						
 					when others => command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -1023,17 +945,10 @@ is
 							module_name 	=> module,
 							arc				=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										center	=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (9)),
-											y => to_distance (f (10)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (11)),
-											y => to_distance (f (12)))),
-										direction	=> to_direction (f (13))
-										),
+										center	=> type_point (to_point (f (7), f (8))),
+										start_point	=> type_point (to_point (f (9), f (10))),
+										end_point	=> type_point (to_point (f (11), f (12))),
+										direction	=> to_direction (f (13))),
 
 							log_threshold	=> log_threshold + 1);
 
@@ -1055,9 +970,7 @@ is
 											(
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> NO,
-											center	=> type_point (set (
-														x => to_distance (f (7)), -- 20
-														y => to_distance (f (8)))), -- 50
+											center	=> type_point (to_point (f (7), f (8))),
 											radius	=> to_distance (f (9)) -- 40
 											),
 											
@@ -1078,9 +991,7 @@ is
 											(
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> YES,
-											center	=> type_point (set (
-														x => to_distance (f (8)), -- 20
-														y => to_distance (f (9)))), -- 50
+											center	=> type_point (to_point (f (8), f (9))),
 											radius	=> to_distance (f (10)) -- 40
 											),
 											
@@ -1111,12 +1022,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11))))
+										start_point	=> type_point (to_point (f (8), f (9))),
+										end_point	=> type_point (to_point (f (10), f (11)))
 										),
 
 							log_threshold	=> log_threshold + 1);
@@ -1125,6 +1032,7 @@ is
 						
 					when others => command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -1134,15 +1042,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 										width	=> to_distance (f (7)),
-										center	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (12)),
-											y => to_distance (f (13)))),
+										center	=> type_point (to_point (f (8), f (9))),
+										start_point	=> type_point (to_point (f (10), f (11))),
+										end_point	=> type_point (to_point (f (12), f (13))),
 										direction	=> to_direction (f (14))
 										),
 
@@ -1153,6 +1055,7 @@ is
 					when others => command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
@@ -1171,9 +1074,7 @@ is
 										filled			=> NO,
 										fill_style		=> fill_style_default, -- don't care here
 										border_width	=> to_distance (f (7)),
-										center			=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
+										center			=> type_point (to_point (f (8), f (9))),
 										radius			=> to_distance (f (10))
 										),
 								log_threshold	=> log_threshold + 1);
@@ -1207,9 +1108,7 @@ is
 													(
 													filled		=> YES,
 													fill_style	=> SOLID,
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
+													center	=> type_point (to_point (f (8), f (9))),
 													radius	=> to_distance (f (10))
 													),
 										log_threshold	=> log_threshold + 1);
@@ -1218,7 +1117,8 @@ is
 
 							end case;
 						end if;
-							
+
+						
 					when 12 =>
 						-- This is going to be a hatched circle.
 						-- In this case the 7th field MUST be fill style HATCHED.
@@ -1234,9 +1134,7 @@ is
 												(
 												filled		=> YES,
 												fill_style	=> HATCHED,
-												center		=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
+												center		=> type_point (to_point (f (8), f (9))),
 												radius		=> to_distance (f (10)),
 												hatching	=> (
 															line_width	=> to_distance (f (11)),
@@ -1273,12 +1171,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11))))
+										start_point	=> type_point (to_point (f (8), f (9))),
+										end_point	=> type_point (to_point (f (10), f (11)))
 										),
 
 							log_threshold	=> log_threshold + 1);
@@ -1287,6 +1181,7 @@ is
 						
 					when others => command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -1296,15 +1191,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 										width	=> to_distance (f (7)),
-										center	=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-										start_point	=> type_point (set (
-											x => to_distance (f (10)),
-											y => to_distance (f (11)))),
-										end_point	=> type_point (set (
-											x => to_distance (f (12)),
-											y => to_distance (f (13)))),
+										center	=> type_point (to_point (f (8), f (9))),
+										start_point	=> type_point (to_point (f (10), f (11))),
+										end_point	=> type_point (to_point (f (12), f (13))),
 										direction	=> to_direction (f (14))
 										),
 
@@ -1315,6 +1204,7 @@ is
 					when others => command_incomplete;
 				end case;
 
+				
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
@@ -1333,9 +1223,7 @@ is
 										filled			=> NO,
 										fill_style		=> fill_style_default, -- don't care here
 										border_width	=> to_distance (f (7)),
-										center			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
+										center			=> type_point (to_point (f (8), f (9))),
 										radius			=> to_distance (f (10))
 										),
 								log_threshold	=> log_threshold + 1);
@@ -1369,9 +1257,7 @@ is
 													(
 													filled		=> YES,
 													fill_style	=> SOLID,
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
+													center	=> type_point (to_point (f (8), f (9))),
 													radius	=> to_distance (f (10))
 													),
 										log_threshold	=> log_threshold + 1);
@@ -1380,7 +1266,8 @@ is
 
 							end case;
 						end if;
-							
+
+						
 					when 12 =>
 						-- This is going to be a hatched circle.
 						-- In this case the 7th field MUST be fill style HATCHED.
@@ -1396,9 +1283,7 @@ is
 												(
 												filled		=> YES,
 												fill_style	=> HATCHED,
-												center		=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
+												center		=> type_point (to_point (f (8), f (9))),
 												radius		=> to_distance (f (10)),
 												hatching	=> (
 															line_width	=> to_distance (f (11)),
@@ -1442,9 +1327,7 @@ is
 				text.line_width := to_distance (f (6)); -- 0.15
 				text.size := to_distance (f (7)); -- 1
 				
-				pos_xy := type_point (set (
-							x => to_distance (f (8)), -- 140
-							y => to_distance (f (9)))); -- 100
+				pos_xy := type_point (to_point (f (8), f (9)));
 
 				rotation := to_rotation (f (10)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
@@ -1480,9 +1363,7 @@ is
 				text.line_width := to_distance (f (7)); -- 0.15
 				text.size := to_distance (f (8)); -- 1
 				
-				pos_xy := type_point (set (
-							x => to_distance (f (9)), -- 140
-							y => to_distance (f (10)))); -- 100
+				pos_xy := type_point (to_point (f (9), f (10)));
 
 				rotation := to_rotation (f (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
@@ -1686,9 +1567,7 @@ is
 		end set_net_name;
 
 		procedure set_position is begin
-			drill.position := type_point (set (
-				x => to_distance (f (6)), -- 10
-				y => to_distance (f (7)))); -- 14
+			drill.position := type_point (to_point (f (6), f (7)));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -2158,12 +2037,8 @@ is
 							net_name		=> to_net_name (""),
 							line	=> (
 								width		=> to_distance (f (7)),
-								start_point	=> type_point (set (
-									x => to_distance (f (8)),
-									y => to_distance (f (9)))),
-								end_point	=> type_point (set (
-									x => to_distance (f (10)),
-									y => to_distance (f (11)))),
+								start_point	=> type_point (to_point (f (8), f (9))),
+								end_point	=> type_point (to_point (f (10), f (11))),
 								layer		=> to_signal_layer (f (5))
 								),
 							log_threshold	=> log_threshold + 1
@@ -2175,6 +2050,7 @@ is
 					when others =>
 						command_incomplete;
 				end case;
+
 				
 			when ARC =>
 				case get_field_count is
@@ -2183,23 +2059,15 @@ is
 						draw_track_arc (
 							module_name 	=> module,
 							arc			=> (
-								layer			=> to_signal_layer (f (5)),
-								width			=> to_distance (f (7)),
-								center			=> type_point (set (
-									x => to_distance (f (8)),
-									y => to_distance (f (9)))),
-								start_point		=> type_point (set (
-									x => to_distance (f (10)),
-									y => to_distance (f (11)))),
-								end_point		=> type_point (set (
-									x => to_distance (f (12)),
-									y => to_distance (f (13)))),
-								direction	=> to_direction (f (14))
-									),
+								layer		=> to_signal_layer (f (5)),
+								width		=> to_distance (f (7)),
+								center		=> type_point (to_point (f (8), f (9))),
+								start_point	=> type_point (to_point (f (10), f (11))),
+								end_point	=> type_point (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))),
 							net_name		=> to_net_name (""),
 
-							log_threshold	=> log_threshold + 1
-							);
+							log_threshold	=> log_threshold + 1);
 						
 					when 15 .. count_type'last =>
 						command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -2384,11 +2252,11 @@ is
 									layer		=> to_signal_layer (f (6)),
 									width		=> to_distance (f (8)),
 									start_point	=> type_point (set (
-										x => to_distance (f (9)),
-										y => to_distance (f (10)))),
+										x => to_distance (dd => f (9)),
+										y => to_distance (dd => f (10)))),
 									end_point	=> type_point (set (
-										x => to_distance (f (11)),
-										y => to_distance (f (12))))
+										x => to_distance (dd => f (11)),
+										y => to_distance (dd => f (12))))
 									),
 								
 								log_threshold	=> log_threshold + 1
@@ -2420,8 +2288,8 @@ is
 										device		=> to_device_name (f (9)),
 										terminal	=> to_terminal_name (f (10)),
 										end_point	=> type_point (set (
-												x => to_distance (f (12)),	 -- 35
-												y => to_distance (f (13)))), -- 40
+												x => to_distance (dd => f (12)),	 -- 35
+												y => to_distance (dd => f (13)))), -- 40
 										
 										log_threshold	=> log_threshold + 1
 										);
@@ -2545,14 +2413,14 @@ is
 								layer		=> to_signal_layer (f (6)),
 								width		=> to_distance (f (8)),
 								center		=> type_point (set (
-									x => to_distance (f (9)),
-									y => to_distance (f (10)))),
+									x => to_distance (dd => f (9)),
+									y => to_distance (dd => f (10)))),
 								start_point	=> type_point (set (
-									x => to_distance (f (11)),
-									y => to_distance (f (12)))),
+									x => to_distance (dd => f (11)),
+									y => to_distance (dd => f (12)))),
 								end_point	=> type_point (set (
-									x => to_distance (f (13)),
-									y => to_distance (f (14)))),
+									x => to_distance (dd => f (13)),
+									y => to_distance (dd => f (14)))),
 								direction	=> to_direction (f (15))
 								),
 
@@ -2605,8 +2473,8 @@ is
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
 		c : type_point := type_point (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
+				x => to_distance (dd => f (5)),
+				y => to_distance (dd => f (6))));
 	begin
 		case runmode is
 			when MODE_MODULE =>
@@ -2644,8 +2512,8 @@ is
 		
 		coordinates : type_coordinates := to_coordinates (f (5));
 		position : type_point := type_point (set (
-				x => to_distance (f (6)),
-				y => to_distance (f (7))));
+				x => to_distance (dd => f (6)),
+				y => to_distance (dd => f (7))));
 	begin
 		case runmode is
 			when MODE_MODULE =>
@@ -2667,8 +2535,8 @@ is
 		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
 
 		xy : constant type_point := type_point (set (
-				x => to_distance (f (7)),
-				y => to_distance (f (8))));
+				x => to_distance (dd => f (7)),
+				y => to_distance (dd => f (8))));
 
 	begin
 		case get_field_count is
@@ -2863,8 +2731,8 @@ is
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2886,8 +2754,8 @@ is
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2907,8 +2775,8 @@ is
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2928,8 +2796,8 @@ is
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2949,8 +2817,8 @@ is
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2969,8 +2837,8 @@ is
 								delete_route_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
+											x => to_distance (dd => f (5)),
+											y => to_distance (dd => f (6)))),
 									accuracy		=> to_distance (f (7)),
 									
 									log_threshold	=> log_threshold + 1
@@ -2989,8 +2857,8 @@ is
 								delete_via_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
+											x => to_distance (dd => f (5)),
+											y => to_distance (dd => f (6)))),
 									accuracy		=> to_distance (f (7)),
 									
 									log_threshold	=> log_threshold + 1
@@ -3179,8 +3047,8 @@ is
 									module_name 	=> module,
 									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
 									point			=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
+														x => to_distance (dd => f (6)),
+														y => to_distance (dd => f (7)))),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -3199,8 +3067,8 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
+														x => to_distance (dd => f (7)),
+														y => to_distance (dd => f (8)))),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -3219,8 +3087,8 @@ is
 									instance		=> et_general.to_instance_name (f (5)), -- OSC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
+														x => to_distance (dd => f (7)),
+														y => to_distance (dd => f (8)))),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -3289,8 +3157,8 @@ is
 									net_name		=> to_net_name (""),
 									layer			=> to_signal_layer (f (5)),
 									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
+											x => to_distance (dd => f (6)),
+											y => to_distance (dd => f (7)))),
 									accuracy		=> to_distance (f (8)),
 									
 									log_threshold	=> log_threshold + 1
@@ -3312,8 +3180,8 @@ is
 									net_name		=> to_net_name (f (5)),
 									layer			=> to_signal_layer (f (6)),
 									point			=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
+											x => to_distance (dd => f (7)),
+											y => to_distance (dd => f (8)))),
 									accuracy		=> to_distance (f (9)),
 									
 									log_threshold	=> log_threshold + 1

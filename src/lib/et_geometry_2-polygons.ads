@@ -170,10 +170,10 @@ package et_geometry_2.polygons is
 	-- reference point.
 	-- If the given polygon consists of just a single
 	-- circle then a exception is raised: -- CS remove
-	function get_nearest_corner_point (
-		polygon		: in type_polygon;
-		reference	: in type_point)
-		return type_point;
+	--function get_nearest_corner_point (
+		--polygon		: in type_polygon;
+		--reference	: in type_point)
+		--return type_point;
 	
 
 		

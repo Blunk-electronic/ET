@@ -530,8 +530,8 @@ is
 					log (text => to_string (boundaries), level => log_threshold + 2);
 					
 					-- obtain the lower left corner of the zone from the boundaries:
-					lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-					log_lower_left_corner (lower_left_corner, log_threshold + 2);
+					--lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
+					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
 
 
 					
@@ -595,7 +595,7 @@ is
 				boundaries : type_boundaries;
 
 				-- The total height of the polygon:
-				height : type_distance_positive;
+				height : type_float_internal_positive;
 				
 			begin
 				while zone_cursor /= pac_route_hatched.no_element loop

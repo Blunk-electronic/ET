@@ -145,11 +145,11 @@ package body et_ratsnest is
 		function get_nearest_neighbor_of_node (node_in : in type_point)
 			return type_point
 		is
-			smallest_distance : type_distance_positive := type_distance'last;
+			smallest_distance : type_float_internal_positive := type_float_internal_positive'last;
 			node_nearest : type_point; -- to be returned
 			
 			procedure query_node (c : in pac_points.cursor) is
-				d_tmp : type_distance_positive;
+				d_tmp : type_float_internal_positive;
 			begin
 				-- ignore the given node. For others nodes: get the distance
 				-- from node_in to the candidate node:
@@ -199,7 +199,7 @@ package body et_ratsnest is
 				node		: type_point; 
 
 				-- the distance to the graph:
-				distance	: type_distance_positive := zero; 
+				distance	: type_float_internal_positive := 0.0; 
 
 				-- the referencing node in the graph:
 				origin		: type_point;
@@ -234,7 +234,7 @@ package body et_ratsnest is
 			-- distance to the graph.
 			-- Generates an airwire to that neigbor.
 			procedure find_nearest_among_neigbors is
-				smallest_distance : type_distance_positive := type_distance'last;
+				smallest_distance : type_float_internal_positive := type_float_internal_positive'last;
 				aw_tmp : type_line;
 			begin
 				for i in neigbors'first .. neigbors'last loop

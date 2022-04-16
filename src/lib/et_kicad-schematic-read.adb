@@ -1511,7 +1511,7 @@ is
 					new_item => (
 						direction 	=> to_direction (f (element (line_cursor),  3)),
 						orientation	=> to_orientation (f (element (line_cursor),  4)),
-						coordinates	=> to_point (f (element (line_cursor),  5), f (element (line_cursor),  6)),
+						coordinates	=> et_kicad.schematic.to_point (f (element (line_cursor),  5), f (element (line_cursor),  6)),
 						text_size	=> text_size,
 						processed	=> false),
 					inserted => port_inserted,

@@ -102,7 +102,7 @@ package body et_geometry_2.polygons is
 	is
 		result : type_boundaries; -- to be returned
 
-		half_width : constant type_distance_positive := line_width * 0.5;
+		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
 			union (result, get_boundaries (element (c), zero));
@@ -453,15 +453,15 @@ package body et_geometry_2.polygons is
 
 	
 	
-	function get_nearest_corner_point (
-		polygon		: in type_polygon;
-		reference	: in type_point)
-		return type_point
-	is
-		result : type_point := origin;
+	--function get_nearest_corner_point (
+		--polygon		: in type_polygon;
+		--reference	: in type_point)
+		--return type_point
+	--is
+		--result : type_point := origin;
 		
-		d1 : type_distance_positive := zero;
-		d2 : type_distance_positive := get_absolute (get_distance (reference, far_upper_right));
+		--d1 : type_distance_positive := zero;
+		--d2 : type_distance_positive := get_absolute (get_distance (reference, far_upper_right));
 
 		--procedure query_segment (c : in pac_polygon_segments.cursor) is
 			--s : constant type_polygon_segment := element (c);
@@ -509,33 +509,33 @@ package body et_geometry_2.polygons is
 			--end case;
 		--end query_segment;
 
-		procedure query_edge (c : in pac_edges.cursor) is
-			s : constant type_line := element (c);
-		begin
-			-- test start point
-			d1 := get_absolute (get_distance (reference, s.start_point));
+		--procedure query_edge (c : in pac_edges.cursor) is
+			--s : constant type_line := element (c);
+		--begin
+			---- test start point
+			--d1 := get_absolute (get_distance (reference, s.start_point));
 			
-			if d1 < d2 then
-				d2 := d1;
+			--if d1 < d2 then
+				--d2 := d1;
 				
-				result := s.start_point;
-			end if;
+				--result := s.start_point;
+			--end if;
 
-			-- test end point
-			d1 := get_absolute (get_distance (reference, s.end_point));
+			---- test end point
+			--d1 := get_absolute (get_distance (reference, s.end_point));
 			
-			if d1 < d2 then
-				d2 := d1;
+			--if d1 < d2 then
+				--d2 := d1;
 				
-				result := s.end_point;
-			end if;
-		end query_edge;
+				--result := s.end_point;
+			--end if;
+		--end query_edge;
 		
-	begin
-		polygon.edges.iterate (query_edge'access);				
+	--begin
+		--polygon.edges.iterate (query_edge'access);				
 		
-		return result;
-	end get_nearest_corner_point;
+		--return result;
+	--end get_nearest_corner_point;
 
 	
 

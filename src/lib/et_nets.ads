@@ -74,10 +74,12 @@ package et_nets is
 	
 	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
 	junction_radius : constant type_distance_positive := 0.5;
+	
 	type type_junction_symbol is new type_circle with null record;
+	
 	junction_symbol : type_junction_symbol := (
-						radius 	=> junction_radius,
-						others	=> <>);
+			radius 	=> type_float_internal (junction_radius),
+			others	=> <>);
 
 
 	

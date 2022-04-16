@@ -462,7 +462,7 @@ is
 
 		procedure set_width_and_radius (r : in type_restring_width) is begin
 			set_line_width (context.cr, type_view_coordinate (r));
-			circle.radius := radius_base + r / 2.0;
+			circle.radius := type_float_internal_positive (radius_base + r / 2.0);
 		end set_width_and_radius;
 
 		procedure draw_restring is begin

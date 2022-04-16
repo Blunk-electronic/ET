@@ -671,7 +671,14 @@ package body et_geometry_1 is
 			& to_string (distance.y);
 	end to_string;
 
-	
+
+
+	function to_distance_relative (
+		x,y : in type_float_internal)
+		return type_distance_relative
+	is begin
+		return (to_distance (x), to_distance (y));
+	end to_distance_relative;
 	
 
 	
@@ -1172,7 +1179,8 @@ package body et_geometry_1 is
 
 	
 	function to_string (rectangle : in type_rectangle) return string is begin
-		return "rectangle " & to_string (set (rectangle.x, rectangle.y))
+		return "rectangle " --to_string (set (rectangle.x, rectangle.y))
+			& "x/y " & to_string (rectangle.x) & "/" & to_string (rectangle.y)
 			& " width" & to_string (rectangle.width)
 			& " height" & to_string (rectangle.height);
 	end;
@@ -1182,8 +1190,8 @@ package body et_geometry_1 is
 		rectangle	: in out type_rectangle;
 		offset		: in type_distance_relative)
 	is begin
-		rectangle.x := rectangle.x + offset.x;
-		rectangle.y := rectangle.y + offset.y;
+		rectangle.x := rectangle.x + type_float_internal (offset.x);
+		rectangle.y := rectangle.y + type_float_internal (offset.y);
 	end move_by;
 
 	
@@ -1471,7 +1479,7 @@ package body et_geometry_1 is
 		point_2 	: in type_point) -- the point being tested
 		return boolean 
 	is
-		d : type_distance_positive := to_distance (get_distance_total (point_1, point_2));
+		d : type_float_internal_positive := get_distance_total (point_1, point_2);
 	begin
 		if d <= catch_zone then
 			return true;
