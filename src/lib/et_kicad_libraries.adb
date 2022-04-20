@@ -1518,7 +1518,7 @@ package body et_kicad_libraries is
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => circle.center, axis => x);
 	
-				circle.radius	:= mil_to_distance (mil => f (line,4));
+				circle.radius := type_float_internal_positive (mil_to_distance (mil => f (line,4)));
 
 				-- If line width is too small, use a lower limit instead.
 				if mil_to_distance (f (line,7)) < type_line_width'first then

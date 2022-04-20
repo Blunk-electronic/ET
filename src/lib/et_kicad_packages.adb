@@ -112,7 +112,7 @@ package body et_kicad_packages is
 		c : type_circle;
 	begin
 		c.center := type_point (position);
-		c.radius := diameter / 2.0;
+		c.radius := type_float_internal_positive (diameter / 2.0);
 		move_by (c.center, offset);
 
 		shape.set_circle (c);
