@@ -193,16 +193,18 @@ package body et_canvas_board is
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> get_x (model_point) 
-						- self.frame_bounding_box.x
-						- get_x (self.board_origin) -- because board origin is not the same as drawing origin
+						- type_distance (self.frame_bounding_box.x)
+						--- get_x (self.board_origin) -- because board origin is not the same as drawing origin
+						- type_distance (self.board_origin.x) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
 						- get_y (model_point) 
-						+ self.frame_bounding_box.y
-						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
+						+ type_distance (self.frame_bounding_box.y)
+						--- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
+						- type_distance (self.board_origin.y)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -219,16 +221,18 @@ package body et_canvas_board is
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> get_x (drawing_point) 
-						+ self.frame_bounding_box.x
-						+ get_x (self.board_origin) -- because board origin is not the same as drawing origin
+						+ type_distance (self.frame_bounding_box.x)
+						--+ get_x (self.board_origin) -- because board origin is not the same as drawing origin
+						+ type_distance (self.board_origin.x) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
 						- get_y (drawing_point) 
-						+ self.frame_bounding_box.y
-						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
+						+ type_distance (self.frame_bounding_box.y)
+						--- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
+						- type_distance (self.board_origin.y)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -484,8 +488,12 @@ package body et_canvas_board is
 		-- CS if text_origins_enabled then
 		
 			set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
-			draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
-			draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
+		
+			draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, 
+				type_float_internal_positive (self.frame_height));
+			
+			draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width,
+				type_float_internal_positive (self.frame_height));
 
 		--end if;
 	end draw_text_origin;
@@ -587,7 +595,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				pac_draw_fab.draw_vector_text (in_area, context, v_text,
-					text_place.text.line_width, self.frame_height);
+					text_place.text.line_width, type_float_internal_positive (self.frame_height));
 
 			end if;
 		end if;
@@ -641,7 +649,7 @@ package body et_canvas_board is
 
 			-- Draw the text:
 			pac_draw_fab.draw_vector_text (in_area, context, v_text,
-				text_place.text.line_width, self.frame_height);
+				text_place.text.line_width, type_float_internal_positive (self.frame_height));
 		end if;
 	end draw_text_being_placed_in_outline;
 
@@ -710,7 +718,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				pac_draw_fab.draw_vector_text (in_area, context, v_text,
-					text_place.text.line_width, self.frame_height);
+					text_place.text.line_width, type_float_internal_positive (self.frame_height));
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;
@@ -795,11 +803,15 @@ package body et_canvas_board is
 		area_shifted : type_rectangle := area;
 
 		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : constant type_distance_relative := 
-			to_distance_relative (set (
-						x => - self.frame_bounding_box.x,
-						y => - self.frame_bounding_box.y));
+		--area_shifted_new_position : constant type_distance_relative := 
+			--to_distance_relative (set (
+						--x => - self.frame_bounding_box.x,
+						--y => - self.frame_bounding_box.y));
 
+		area_shifted_new_position : constant type_offset := to_offset (
+			x => - self.frame_bounding_box.x,
+			y => - self.frame_bounding_box.y);
+		
 		use et_display.board;
 
 		
@@ -911,6 +923,7 @@ package body et_canvas_board is
 		
 		-- draw the frame:
 		save (context.cr);
+		
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
@@ -923,7 +936,8 @@ package body et_canvas_board is
 
 		
 		-- move area_shifted according to board position:
-		move_by (area_shifted, to_distance_relative (invert (self.board_origin, X)));
+		--move_by (area_shifted, to_distance_relative (invert (self.board_origin, X)));
+		move_by (area_shifted, to_offset (invert (self.board_origin, X)));
 		
 		save (context.cr);
 		-- Prepare the current transformation matrix (CTM) so that
@@ -932,10 +946,14 @@ package body et_canvas_board is
 		-- The drawing must further-on be shifted to the right and up by the board position
 		-- so that the board origin is not at the lower left corner of the frame.
 		-- The board origin is now somewhere inside the frame.
+		--translate (
+			--context.cr,
+			--convert_x (self.frame_bounding_box.x + get_x (self.board_origin)),
+			--convert_y (self.frame_bounding_box.y - get_y (self.board_origin)));
 		translate (
 			context.cr,
-			convert_x (self.frame_bounding_box.x + get_x (self.board_origin)),
-			convert_y (self.frame_bounding_box.y - get_y (self.board_origin)));
+			convert_x (self.frame_bounding_box.x + self.board_origin.x),
+			convert_y (self.frame_bounding_box.y - self.board_origin.y));
 
 
 		-- draw packages, tracks, vias, silkscreen, pcb outline, ...
@@ -1114,11 +1132,12 @@ package body et_canvas_board is
 	
 	function frame_height (
 		self : not null access type_view)
-		return type_distance_positive is 
-
+		return type_float_internal_positive 
+	is 
 		use et_canvas_schematic;
 	begin
-		return type_distance_positive (element (current_active_module).board.frame.frame.size.y);
+		return type_float_internal_positive (
+			element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
 
 	
@@ -1142,11 +1161,11 @@ package body et_canvas_board is
 	
 	function board_origin (
 		self : not null access type_view)
-		return type_point is
-
+		return type_place 
+	is
 		use et_canvas_schematic;
 	begin
-		return element (current_active_module).board.origin;
+		return to_place (element (current_active_module).board.origin);
 	end board_origin;
 
 	

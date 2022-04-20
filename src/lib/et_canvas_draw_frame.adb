@@ -55,9 +55,10 @@ package body pac_draw_frame is
 			context		=> context,
 			line		=> line,
 			width		=> type_distance_positive (line_width_thin),
-			height		=> type_distance_positive (frame_size.y));
+			height		=> type_float_internal_positive (frame_size.y));
 	end draw_line;
 
+	
 	procedure draw_border is begin
 	-- OUTER BORDER
 		-- left line from bottom to top
@@ -147,6 +148,7 @@ package body pac_draw_frame is
 
 	end draw_border;
 
+	
 	procedure draw_sector_delimiters is
 		use draw_ops.pac_shapes;
 		
@@ -171,7 +173,7 @@ package body pac_draw_frame is
 				origin		=> false,
 				rotation	=> pac_geometry_1.zero_rotation,
 				alignment	=> (CENTER, CENTER),
-				height		=> type_distance_positive (frame_size.y));
+				height		=> type_float_internal_positive (frame_size.y));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
@@ -322,12 +324,13 @@ package body pac_draw_frame is
 		draw_line;
 	end query_line;
 
+	
 	procedure draw_text (
 		content	: in pac_text_content.bounded_string;
 		size	: in type_text_size;
 		font	: in type_font;
-		pos		: in et_frames.type_position) is
-
+		pos		: in et_frames.type_position) 
+	is
 		-- The given position is given in frame coordinates and must be 
 		-- converted to schematic coordinates and shifted by the position
 		-- of the title block.
@@ -347,8 +350,9 @@ package body pac_draw_frame is
 			origin		=> true,
 			rotation	=> zero_rotation,
 			alignment	=> (LEFT, BOTTOM),
-			height		=> type_distance_positive (frame_size.y));
+			height		=> type_float_internal_positive (frame_size.y));
 	end draw_text;
+
 	
 	procedure draw_texts is
 

@@ -247,22 +247,28 @@ package et_geometry_1 is
 
 
 
-	type type_distance_relative is record -- CS rename to type_offset ?
+	type type_distance_relative is record
 		x, y : type_distance := zero;
 	end record;
 
 	function to_string (distance : in type_distance_relative)
 		return string;
 
-	--type type_offset is record
-		--x, y : type_float_internal := 0.0;
-	--end record;
-
 	
 	function to_distance_relative (
 		x,y : in type_float_internal)
 		return type_distance_relative;
 
+
+
+
+	type type_offset is record
+		x, y : type_float_internal := 0.0;
+	end record;
+
+	function to_offset (
+		x, y : in type_float_internal)
+		return type_offset;
 	
 	
 -- TYPE POINT:
@@ -477,10 +483,12 @@ package et_geometry_1 is
 
 	function to_string (rectangle : in type_rectangle) return string;
 
+	
 	-- Moves the rectangle by the given offset:
 	procedure move_by (
 		rectangle	: in out type_rectangle;
-		offset		: in type_distance_relative); -- CS type_offset ?
+		offset		: in type_offset);
+
 	
 	-- Returns true if the given two rectangles intersect each other in some way:
 	function intersects (rect1, rect2 : type_rectangle) return boolean;

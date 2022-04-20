@@ -37,7 +37,7 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_pcb_coordinates;
+--with et_pcb_coordinates;
 with et_schematic;
 
 with et_submodules;				use et_submodules;
@@ -67,9 +67,9 @@ is
 				area			=> in_area,
 				context			=> context,
 				position		=> submod_position,
-				width			=> element (cursor).size.x,
-				height			=> element (cursor).size.y,
-				frame_height	=> self.frame_height);
+				width			=> type_float_internal_positive (element (cursor).size.x),
+				height			=> type_float_internal_positive (element (cursor).size.y),
+				frame_height	=> type_float_internal_positive (self.frame_height));
 								
 			cairo.stroke (context.cr);
 		end draw_box;
@@ -94,7 +94,7 @@ is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.frame_height);
+				height		=> type_float_internal_positive (self.frame_height));
 
 		end draw_instance_name;
 		
@@ -118,7 +118,7 @@ is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.frame_height);
+				height		=> type_float_internal_positive (self.frame_height));
 
 		end draw_file_name;
 
@@ -152,9 +152,10 @@ is
 				origin		=> false,
 				rotation	=> pac_geometry_sch.zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.frame_height);
+				height		=> pac_geometry_sch.type_float_internal_positive (self.frame_height));
 
 		end draw_position_in_board;
+
 		
 		procedure draw_ports is 
 			use pac_submodule_ports;
@@ -162,6 +163,7 @@ is
 			procedure draw_port (pc : in pac_submodule_ports.cursor) is 
 				-- First get the position of the submodule box.
 				pos : type_point := submod_position;
+				-- CS ? pos : type_vector := to_vector (submod_position);
 
 				procedure draw_horizontal is begin
 					-- Draw the port horizontal:
@@ -171,7 +173,7 @@ is
 						position		=> pos,
 						width			=> port_symbol_width,
 						height			=> port_symbol_height,
-						frame_height	=> self.frame_height);
+						frame_height	=> type_float_internal_positive (self.frame_height));
 					
 				end draw_horizontal;
 
@@ -183,7 +185,7 @@ is
 						position		=> pos,
 						width			=> port_symbol_height,
 						height			=> port_symbol_width,
-						frame_height	=> self.frame_height);
+						frame_height	=> type_float_internal_positive (self.frame_height));
 
 				end draw_vertical;
 				
@@ -210,11 +212,11 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 0.0, port_symbol_width / 2.0)),
+						position	=> type_point (move (pos, 0.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					draw_text 
@@ -224,15 +226,15 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 0.0, port_symbol_width + port_name_spacing)),
+						position	=> type_point (move (pos, 0.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (LEFT, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => zero, y => - port_symbol_height / 2.0)));
+					move_by (pos, to_distance_relative (set (x => zero, y => - type_distance (port_symbol_height) / 2.0)));
 
 					draw_horizontal;
 					
@@ -247,11 +249,11 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 180.0, port_symbol_width / 2.0)),
+						position	=> type_point (move (pos, 180.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					draw_text 
@@ -261,15 +263,15 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 180.0, port_symbol_width + port_name_spacing)),
+						position	=> type_point (move (pos, 180.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (RIGHT, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - port_symbol_width, y => - port_symbol_height / 2.0)));
+					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_width), y => - type_distance (port_symbol_height) / 2.0)));
 
 					draw_horizontal;
 
@@ -284,11 +286,11 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 90.0, port_symbol_width / 2.0)),
+						position	=> type_point (move (pos, 90.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					draw_text 
@@ -298,15 +300,15 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 90.0, port_symbol_width + port_name_spacing)),
+						position	=> type_point (move (pos, 90.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (LEFT, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => zero)));
+					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_height) / 2.0, y => zero)));
 
 					draw_vertical;
 
@@ -321,11 +323,11 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 270.0, port_symbol_width / 2.0)),
+						position	=> type_point (move (pos, 270.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					draw_text 
@@ -335,15 +337,15 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 270.0, port_symbol_width + port_name_spacing)),
+						position	=> type_point (move (pos, 270.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (RIGHT, CENTER),
-						height		=> self.frame_height);
+						height		=> type_float_internal_positive (self.frame_height));
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => - port_symbol_width)));
+					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_height) / 2.0, y => - type_distance (port_symbol_width))));
 
 					draw_vertical;
 					

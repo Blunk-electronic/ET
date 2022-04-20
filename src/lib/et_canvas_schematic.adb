@@ -179,13 +179,13 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> clip_distance (get_x (model_point) - self.frame_bounding_box.x));
+			 value	=> clip_distance (get_x (model_point) - type_distance (self.frame_bounding_box.x)));
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> clip_distance (type_distance (self.frame_height) 
 						- get_y (model_point)
-						+ self.frame_bounding_box.y));
+						+ type_distance (self.frame_bounding_box.y)));
 	
 		return p;
 
@@ -195,21 +195,22 @@ package body et_canvas_schematic is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
-		return type_point is 
+		return type_point 
+	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> get_x (drawing_point) + self.frame_bounding_box.x);
+			 value	=> get_x (drawing_point) + type_distance (self.frame_bounding_box.x));
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
 						- get_y (drawing_point) 
-						+ self.frame_bounding_box.y);
+						+ type_distance (self.frame_bounding_box.y));
 
 		return p;
-	end;
+	end drawing_to_model;
 
 
 
@@ -483,7 +484,7 @@ package body et_canvas_schematic is
 					context		=> context,
 					line		=> line,
 					width		=> net_line_width,
-					height		=> self.frame_height);
+					height		=> type_float_internal_positive (self.frame_height));
 			end draw;
 			
 		begin -- compute_route
@@ -569,10 +570,14 @@ package body et_canvas_schematic is
 		area_shifted : type_rectangle := area;
 
 		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : constant type_distance_relative := 
-			to_distance_relative (set (
-						x => - self.frame_bounding_box.x,
-						y => - self.frame_bounding_box.y));
+		--area_shifted_new_position : constant type_distance_relative := 
+			--to_distance_relative (set (
+						--x => - type_distance (self.frame_bounding_box.x),
+						--y => - type_distance (self.frame_bounding_box.y)));
+
+		area_shifted_new_position : constant type_offset := to_offset (
+			x => - self.frame_bounding_box.x,
+			y => - self.frame_bounding_box.y);
 		
 		use et_display.schematic;
 	begin
@@ -594,11 +599,17 @@ package body et_canvas_schematic is
 			
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
+		--translate (
+			--context.cr,
+			--convert_x (type_distance (self.frame_bounding_box.x)),
+			--convert_y (type_distance (self.frame_bounding_box.y)));
+
 		translate (
 			context.cr,
 			convert_x (self.frame_bounding_box.x),
 			convert_y (self.frame_bounding_box.y));
 
+		
 		draw_units (self, area_shifted, context);
 		
 		draw_frame (self, area_shifted, context);
@@ -818,14 +829,14 @@ package body et_canvas_schematic is
 			context		=> context,
 			line		=> lh,
 			width		=> type_distance_positive (width),
-			height		=> self.frame_height);
+			height		=> type_float_internal_positive (self.frame_height));
 
 		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,
 			width		=> type_distance_positive (width),
-			height		=> self.frame_height);
+			height		=> type_float_internal_positive (self.frame_height));
 		
 		cairo.stroke (context.cr);		
 
@@ -862,15 +873,18 @@ package body et_canvas_schematic is
 		return element (current_active_module).frames.frame;
 	end get_frame;
 
+	
 	function frame_height (
 		self : not null access type_view)
-		return type_distance_positive is 
-
+		return type_float_internal_positive 
+	is 
 		use et_project.modules.pac_generic_modules;
 	begin
-		return type_distance_positive (element (current_active_module).frames.frame.size.y);
+		return type_float_internal_positive (
+			element (current_active_module).frames.frame.size.y);
 	end frame_height;
 
+	
 	function frame_width (
 		self : not null access type_view)
 		return type_distance_positive is 

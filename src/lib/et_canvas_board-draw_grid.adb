@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -60,8 +60,9 @@ begin
 	-- The start point on the x-axis is aligned with the left frame border
 	-- and shifted right by the board origin x position.
 	start_x := type_view_coordinate (self.frame_bounding_box.x) 
-			   - lower_grid_coordinate (area.width, used_grid.x)
-			   + type_view_coordinate (get_x (self.board_origin));
+			   - lower_grid_coordinate (type_distance_positive (area.width), used_grid.x)
+			   -- + type_view_coordinate (get_x (self.board_origin));
+			   + type_view_coordinate (self.board_origin.x);
 
 	-- CS: Currently the start point is very far on the left outside the given area.
 	-- On drawing the grid this circumstance may waste computing time.
@@ -73,8 +74,9 @@ begin
 	-- and shifted up by the board origin y position.
 	start_y := type_view_coordinate (self.frame_bounding_box.y) 
 			   + type_view_coordinate (self.frame_height)
-			   + lower_grid_coordinate (area.height, used_grid.y)
-			   - type_view_coordinate (get_y (self.board_origin));
+			   + lower_grid_coordinate (type_distance_positive (area.height), used_grid.y)
+			   -- - type_view_coordinate (get_y (self.board_origin));
+			   - type_view_coordinate (self.board_origin.y);
 	
 	-- CS: Currently the start point is very far below the given area.
 	-- On drawing the grid this circumstance may waste computing time.

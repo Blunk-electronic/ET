@@ -56,14 +56,14 @@ is
 begin
 	-- The start point on the x-axis is aligned with the left frame border:
 	start_x := type_view_coordinate (self.frame_bounding_box.x) 
-			   - lower_grid_coordinate (area.width, used_grid.x);
+			   - lower_grid_coordinate (type_distance_positive (area.width), used_grid.x);
 	-- CS: Currently the start point is at -area.width. Means very far on the left outside the given area.
 	-- On drawing the grid this consumes useless computing power.
 
 	-- The start point on the y-axis is aligned with the lower frame border (bounding box.y + frame height).
 	start_y := type_view_coordinate (self.frame_bounding_box.y) 
 			   + type_view_coordinate (self.frame_height)
-			   + lower_grid_coordinate (area.height, used_grid.y);
+			   + lower_grid_coordinate (type_distance_positive (area.height), used_grid.y);
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.
 

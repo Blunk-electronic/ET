@@ -64,7 +64,7 @@ is
 				rotation	=> to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment,
-				height		=> self.frame_height);
+				height		=> type_float_internal_positive (self.frame_height));
 
 		end if;
 	end query_text;

@@ -246,11 +246,13 @@ package et_canvas_board is
 	overriding function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame;
-	
+
+		
 	overriding function frame_height (
 		self : not null access type_view)
-		return type_distance_positive;
+		return type_float_internal_positive;
 
+		
 	overriding function frame_width (
 		self : not null access type_view)
 		return type_distance_positive;
@@ -259,11 +261,12 @@ package et_canvas_board is
 		self : not null access type_view)
 		return et_frames.type_position;
 
+		
 	-- Returns the position of the board origin relative to the lower left
 	-- corner of the drawing frame:
 	function board_origin (
 		self : not null access type_view)
-		return type_point;
+		return type_place;
 
 	
 	overriding function get_verb (

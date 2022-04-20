@@ -614,6 +614,40 @@ package body pac_canvas is
 		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
 	end;
 
+
+	function to_place (
+		point	: in type_point)
+		return type_place
+	is begin
+		return (type_float_internal (get_x (point)), type_float_internal (get_y (point)));
+	end to_place;
+
+	
+	function invert (
+		place	: in type_place;
+		axis	: in type_axis_2d)
+		return type_place
+	is
+		p : type_place := place;
+	begin
+		case axis is
+			when X => p.x := - p.x;
+			when Y => p.y := - p.y;
+		end case;
+
+		return p;
+	end invert;
+
+
+	function to_offset (
+		place	: in type_place)
+		return type_offset
+	is begin
+		return (place.x , place.y);
+	end to_offset;
+
+
+	
 	
 	-- view_signals : constant gtkada.types.chars_ptr_array := ( -- came with gtkada release 17.0
 	view_signals : constant interfaces.c.strings.chars_ptr_array := (
@@ -627,23 +661,26 @@ package body pac_canvas is
 
 	view_class_record : aliased glib.object.ada_gobject_class := glib.object.uninitialized_class;
 
+	
 	-- This procedure unifies two rectangles to one.
 	procedure union (
 		rect1 : in out type_rectangle;
 		rect2 : type_rectangle) 
 	is
-		right : constant type_distance := 
-			type_distance'max (rect1.x + rect1.width, rect2.x + rect2.width);
-		bottom : constant type_distance :=
-			type_distance'max (rect1.y + rect1.height, rect2.y + rect2.height);
+		right : constant type_float_internal := 
+			type_float_internal'max (rect1.x + rect1.width, rect2.x + rect2.width);
+		
+		bottom : constant type_float_internal :=
+			type_float_internal'max (rect1.y + rect1.height, rect2.y + rect2.height);
 	begin
-		rect1.x := type_distance'min (rect1.x, rect2.x);
+		rect1.x := type_float_internal'min (rect1.x, rect2.x);
 		rect1.width := right - rect1.x;
 
-		rect1.y := type_distance'min (rect1.y, rect2.y);
+		rect1.y := type_float_internal'min (rect1.y, rect2.y);
 		rect1.height := bottom - rect1.y;
 	end;
 
+	
 	procedure set_transform (
 		self	: not null access type_view'class;
 		cr		: cairo.cairo_context)
@@ -852,10 +889,10 @@ package body pac_canvas is
 		-- get the position of the given rectangle in drawing coordinatess
 		p1 : type_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
 	begin
-		return (x      => get_x (p1),
-				y      => get_y (p1),
-				width  => type_distance (rect.width / self.scale),
-				height => type_distance (rect.height / self.scale));
+		return (x      => type_float_internal (get_x (p1)),
+				y      => type_float_internal (get_y (p1)),
+				width  => type_float_internal_positive (rect.width / self.scale),
+				height => type_float_internal_positive (rect.height / self.scale));
 	end view_to_model;
 
 	
@@ -1132,8 +1169,8 @@ package body pac_canvas is
 
 		-- Calculate the new topleft corner:
 		pos  : constant type_point := type_point (set (
-			get_x (center_on_model) - area.width * 0.5,
-			get_y (center_on_model) - area.height * 0.5));
+			get_x (center_on_model) - type_distance_positive (area.width * 0.5),
+			get_y (center_on_model) - type_distance_positive (area.height * 0.5)));
 	begin
 		self.scale_to_fit_requested := 0.0;
 		self.topleft := pos;
@@ -1144,31 +1181,32 @@ package body pac_canvas is
 	
 	procedure shift_area (
 		self		: not null access type_view'class;
-		cursor		: in type_cursor) is
-
+		cursor		: in type_cursor) 
+	is
 		area : constant type_rectangle := self.get_visible_area;
 
 		area_center : constant type_point := type_point (set (
-										x => area.x + area.width * 0.5,
-										y => area.y + area.height * 0.5));
+			x => type_distance (area.x + area.width * 0.5),
+			y => type_distance (area.y + area.height * 0.5)));
 		
 		area_center_drawing : type_point := self.model_to_drawing (area_center);
 		
 		-- Calculate the position of the area in the drawing.
 		-- This is the upper left corner of the area:
-		p : constant type_point := self.model_to_drawing (type_point (set (area.x, area.y)));
+		p : constant type_point := self.model_to_drawing (
+			type_point (set (type_distance (area.x), type_distance (area.y))));
 
 		-- Build the area of the drawing:
 		a : constant type_rectangle := (
-							x 		=> get_x (p),
-							y 		=> get_y (p), 
-							width 	=> area.width,
-							height 	=> area.height);
+			x 		=> type_float_internal (get_x (p)),
+			y 		=> type_float_internal (get_y (p)), 
+			width 	=> type_float_internal_positive (area.width),
+			height 	=> type_float_internal_positive (area.height));
 
-		border_left		: constant type_distance := a.x;
-		border_right	: constant type_distance := a.x + a.width;
-		border_top		: constant type_distance := a.y;
-		border_bottom	: constant type_distance := a.y - a.height;
+		border_left		: constant type_distance := type_distance (a.x);
+		border_right	: constant type_distance := type_distance (a.x + a.width);
+		border_top		: constant type_distance := type_distance (a.y);
+		border_bottom	: constant type_distance := type_distance (a.y - a.height);
 		
 		dxr : constant type_distance := get_x (cursor.position) - border_right;
 		dxl : constant type_distance := border_left - get_x (cursor.position);
@@ -1492,8 +1530,8 @@ package body pac_canvas is
 
 			-- set p at the center of the visible area
 			p := type_point (set (
-				x => box.x + box.width / 2.0,
-				y => box.y + box.height / 2.0));
+				x => type_distance (box.x + box.width / 2.0),
+				y => type_distance (box.y + box.height / 2.0)));
 		end if;
 
 		self.scale := scale;
@@ -1603,9 +1641,14 @@ package body pac_canvas is
 				self.scale := s;
 
 				-- calculate the new topleft corner of the visible area:
+				--self.topleft := type_point (set (
+					--x	=> box.x - (type_distance (w / s) - box.width) / 2.0,
+					--y	=> box.y - (type_distance (h / s) - box.height) / 2.0
+					--));
+
 				self.topleft := type_point (set (
-					x	=> box.x - (type_distance (w / s) - box.width) / 2.0,
-					y	=> box.y - (type_distance (h / s) - box.height) / 2.0
+					x	=> type_distance (box.x) - (type_distance (w / s) - type_distance (box.width)) / 2.0,
+					y	=> type_distance (box.y) - (type_distance (h / s) - type_distance (box.height)) / 2.0
 					));
 				
 				self.set_adjustment_values;
@@ -1614,8 +1657,9 @@ package body pac_canvas is
 			end if;
 		end if;
 	end scale_to_fit;
+
 	
-	function convert_x (x : in type_distance) return type_view_coordinate is begin
+	function convert_x (x : in type_float_internal) return type_view_coordinate is begin
 		return type_view_coordinate (x);
 	end;
 
@@ -1735,15 +1779,18 @@ package body pac_canvas is
 
 	begin
 		-- position (upper left corner):
-		box.x := (paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0;
-		box.y := (paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0;
-
+		--box.x := (paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0;
+		--box.y := (paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0;
+		box.x := type_float_internal ((paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0);
+		box.y := type_float_internal ((paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0);
+		
 		-- width and height
-		box.width := type_distance_positive (self.get_frame.size.x);
-		box.height := type_distance_positive (self.get_frame.size.y);
+		box.width := type_float_internal_positive (self.get_frame.size.x);
+		box.height := type_float_internal_positive (self.get_frame.size.y);
 
 		return box;
 	end frame_bounding_box;
+
 	
 	function paper_bounding_box (
 		self : not null access type_view'class)
@@ -1751,12 +1798,12 @@ package body pac_canvas is
 	is
 		use et_frames;
 
-		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
+		paper_height : constant type_float_internal_positive := type_float_internal_positive (paper_dimension (
 						paper_size	=> self.get_frame.paper,
 						orientation	=> self.get_frame.orientation,
 						axis		=> Y));
 
-		paper_width : constant type_distance_positive := type_distance_positive (paper_dimension (
+		paper_width : constant type_float_internal_positive := type_float_internal_positive (paper_dimension (
 						paper_size	=> self.get_frame.paper,
 						orientation	=> self.get_frame.orientation,
 						axis		=> X));
@@ -1773,11 +1820,13 @@ package body pac_canvas is
 		-- show instruction in status bar
 		set_status ("clarify object by right click or page-down key !");
 	end set_request_clarification;
+
 	
 	procedure reset_request_clarification is begin
 		request_clarificaton := NO;
 	end reset_request_clarification;
 
+	
 	function clarification_pending return boolean is begin
 		case request_clarificaton is 
 			when YES => return true;
@@ -1790,6 +1839,7 @@ package body pac_canvas is
 		activate_counter := type_activate_counter'first;
 	end reset_activate_counter;
 
+	
 	procedure increment_activate_counter is begin
 		activate_counter := activate_counter + 1;
 	end increment_activate_counter;

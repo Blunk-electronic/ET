@@ -357,7 +357,24 @@ package pac_canvas is
 	view_margin : constant type_view_coordinate := 20.0;
 
 
-	
+
+	type type_place is record
+		x, y : type_float_internal;
+	end record;
+
+	function to_place (
+		point	: in type_point)
+		return type_place;
+
+	function invert (
+		place	: in type_place;
+		axis	: in type_axis_2d)
+		return type_place;
+
+	function to_offset (
+		place	: in type_place)
+		return type_offset;
+		
 -- VIEW
 
 	type type_view is abstract new gtk.widget.gtk_widget_record with record
@@ -580,12 +597,12 @@ package pac_canvas is
 		max_scale : in type_scale := 4.0);
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	-- It just converts from type_distance to type_view_coordinate. No shifting, no inverting.
-	function convert_x (x : in type_distance) return type_view_coordinate;
+	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.
+	function convert_x (x : in type_float_internal) return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the view.	
-	-- It just converts from type_distance to type_view_coordinate. No shifting, no inverting.	
-	function convert_y (y : in type_distance) return type_view_coordinate renames convert_x;
+	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.	
+	function convert_y (y : in type_float_internal) return type_view_coordinate renames convert_x;
 	
 
 	
@@ -689,7 +706,7 @@ package pac_canvas is
 	-- Returns the height of the drawing frame:
 	function frame_height (
 		self : not null access type_view)
-		return type_distance_positive is abstract;
+		return type_float_internal_positive is abstract;
 
 	-- Returns the width of the drawing frame:
 	function frame_width (

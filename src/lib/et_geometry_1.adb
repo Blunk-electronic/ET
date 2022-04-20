@@ -689,6 +689,16 @@ package body et_geometry_1 is
 	end to_distance_relative;
 
 
+
+	function to_offset (
+		x, y : in type_float_internal)
+		return type_offset
+	is begin
+		return (x, y);
+	end to_offset;
+
+	
+	
 	function get_rotation (
 		point : in type_point) 
 		return type_rotation 
@@ -1188,10 +1198,10 @@ package body et_geometry_1 is
 	
 	procedure move_by (
 		rectangle	: in out type_rectangle;
-		offset		: in type_distance_relative)
+		offset		: in type_offset)
 	is begin
-		rectangle.x := rectangle.x + type_float_internal (offset.x);
-		rectangle.y := rectangle.y + type_float_internal (offset.y);
+		rectangle.x := rectangle.x + offset.x;
+		rectangle.y := rectangle.y + offset.y;
 	end move_by;
 
 	

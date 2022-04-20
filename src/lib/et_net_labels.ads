@@ -123,10 +123,10 @@ package et_net_labels is
 	tag_label_box_line_width : constant type_distance_positive := 0.2;
 
 	-- GUI relevant only: The spacing between anchor point of tag label and net name:
-	tag_label_text_offset : constant type_distance_positive := 1.0;
+	tag_label_text_offset : constant type_float_internal_positive := 1.0;
 
 	-- GUI relevant only: The ratio of box height to text size of a tag label:
-	tag_label_height_to_size_ratio : constant type_distance_positive := 1.8;
+	tag_label_height_to_size_ratio : constant type_float_internal_positive := 1.8;
 
 
 	

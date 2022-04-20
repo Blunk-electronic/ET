@@ -122,10 +122,11 @@ package et_submodules is
 	
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
-	port_symbol_width	: constant type_distance_positive := 4.0;
-	port_symbol_height	: constant type_distance_positive := 2.0;
+	port_symbol_width	: constant type_float_internal_positive := 4.0;
+	port_symbol_height	: constant type_float_internal_positive := 2.0;
+	
 	type type_port_symbol is record
-		width, height : type_distance_positive;
+		width, height : type_float_internal_positive;
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
@@ -153,7 +154,8 @@ package et_submodules is
 
 	-- The font size of the port direction:
 	port_direction_font_size : constant et_symbols.pac_text.type_text_size :=
-		port_symbol_height - 3.0 * port_symbol_line_width;
+		et_symbols.pac_text.type_text_size (port_symbol_height) 
+		- 3.0 * port_symbol_line_width;
 
 	-- Required in the GUI to indicate the direction of a submodule port:
 	port_direction_abbrevation_master : constant string := "M";
