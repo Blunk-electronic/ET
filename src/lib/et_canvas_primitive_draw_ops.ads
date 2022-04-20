@@ -92,16 +92,22 @@ generic
 package pac_draw is
 	
 	use pac_canvas;
+	
 	use pac_shapes;
+	use pac_geometry_1;
+	-- NOTE: This use clause does not work properly. 
+	-- For some reason the package name must be explicitely provided
+	-- for stuff that stems from pac_geometry_1.
+	-- Otherwise the linker reports lots of "undefined references" ...
+	
 	use pac_polygons;
 	use pac_contours;
-	use pac_shapes.pac_geometry_1;
 
-
+	
 	function make_bounding_box (
-		height		: in type_float_internal; -- pac_shapes.pac_geometry_1.type_distance;
-		boundaries	: in type_boundaries)
-		return type_rectangle;
+		height		: in pac_geometry_1.type_float_internal;
+		boundaries	: in pac_geometry_1.type_boundaries)
+		return pac_geometry_1.type_rectangle;
 
 	
 	-- This procedure draws the given line on the given context.

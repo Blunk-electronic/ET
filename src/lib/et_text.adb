@@ -416,7 +416,7 @@ package body et_text is
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in pac_geometry_1.type_rotation; 
-			position	: in type_point; -- the anchor point of the text (where the origin is)
+			position	: in pac_geometry_1.type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_1.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
@@ -790,7 +790,7 @@ package body et_text is
 		
 		function get_boundaries (
 			text	: in type_vector_text)
-			return type_boundaries
+			return pac_geometry_1.type_boundaries
 		is begin
 			return text.boundaries;
 		end get_boundaries;
