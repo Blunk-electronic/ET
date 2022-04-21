@@ -331,6 +331,10 @@ package pac_canvas is
 	-- This signal is emitted whenever the view is zoomed or scrolled.
 
 
+	
+
+-- VIEW COORDINATES:
+	
 	-- The view coordinates are the 
 	-- coordinates of items on the screen and are expressed in pixels.
 	-- They change when the operators zooms or scrolls.
@@ -339,12 +343,14 @@ package pac_canvas is
 	subtype type_view_coordinate is gdouble range -1_000_000.0 .. 1_000_000.0;
 	subtype type_view_coordinate_positive is type_view_coordinate range 0.0 .. type_view_coordinate'last;
 
-	-- The point inside the view.
+	-- A point in the view:
 	type type_view_point is record
 		x, y : type_view_coordinate;
 	end record;
 
+	
 	function to_string (p : in type_view_point) return string;
+
 	
 	-- A rectangular regions of the view:
 	type type_view_rectangle is record
@@ -357,26 +363,40 @@ package pac_canvas is
 	view_margin : constant type_view_coordinate := 20.0;
 
 
+	
 
-	type type_place is record -- or model point
+-- MODEL COORDINATES:
+
+	-- The model coordinates are required as an intermediate format
+	-- to convert between drawning and view coordinates.
+	
+	type type_model_point is record
 		x, y : type_float_internal := 0.0;
 	end record;
 
-	model_origin : constant type_place := (0.0, 0.0);
-	
+	model_origin : constant type_model_point := (0.0, 0.0);
+
+
+	-- Converts from drawing point to model point:
 	function to_place (
 		point	: in type_point)
-		return type_place;
+		return type_model_point;
 
+
+	-- Inverts a model point along the given axis:
 	function invert (
-		place	: in type_place;
+		place	: in type_model_point;
 		axis	: in type_axis_2d)
-		return type_place;
+		return type_model_point;
 
+
+	-- Converts a model point to type offset:
 	function to_offset (
-		place	: in type_place)
+		place	: in type_model_point)
 		return type_offset;
-		
+
+
+	
 -- VIEW
 
 	type type_view is abstract new gtk.widget.gtk_widget_record with record
@@ -385,8 +405,7 @@ package pac_canvas is
 		-- NOTE: This has nothing to do with the upper left corner of the
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
-		--topleft  	: type_point := origin;
-		topleft  	: type_place;
+		topleft  	: type_model_point;
 
 		-- The drawing scale:
 		-- - increases on zoom in
@@ -423,6 +442,7 @@ package pac_canvas is
 		event	: in gdk_event_key) 
 		return boolean;
 
+	
 	-- Updates the coordinates display (grid, cursor, pointer, distances, ...).
 	-- Called on mouse or cursor movement.
 	procedure update_coordinates_display (
@@ -435,9 +455,11 @@ package pac_canvas is
 		self	: not null access type_view)
 		return string is abstract;
 
+	
 	function get_noun (
 		self	: not null access type_view)
 		return string is abstract;
+
 	
 	procedure update_mode_display (
 		self	: not null access type_view'class);
@@ -451,9 +473,11 @@ package pac_canvas is
 -- 		call : not null access procedure (self : not null access gobject_record'class);
 -- 		slot : access gobject_record'class := null)
 -- 		return gtk.handlers.handler_id;
+
 	
 	function get_scale (self : not null access type_view) return type_scale;
 
+	
 	-- The cairo context to perform the actual drawing.
 	-- NOTE: The final drawing is performed in the view (hence in view coordinates):
 	type type_draw_context is record
@@ -464,6 +488,7 @@ package pac_canvas is
 
 -- 	procedure layout_changed (self : not null access type_model'class);
 
+	
 	procedure set_transform (
 		self	: not null access type_view'class;
 		cr		: cairo.cairo_context);
@@ -475,17 +500,17 @@ package pac_canvas is
 		return type_point;
 
 	
-	function vtm ( -- CS rename to vtp ?
+	function vtm (
 		view_point	: in type_view_point;
 		scale		: in type_scale;
-		topleft		: in type_place) 
-		return type_place;
+		topleft		: in type_model_point) 
+		return type_model_point;
 
 	
-	function view_to_model (  -- CS rename to view_to_place ?
+	function view_to_model (
 		self   : not null access type_view;
 		p      : in type_view_point) 
-		return type_place;
+		return type_model_point;
 	
 
 	-- Converts the given area of the view to a model rectangle:
@@ -495,18 +520,17 @@ package pac_canvas is
 		return type_rectangle;
 	
 
-	function mtv ( -- CS rename to ptv ?
-		--drawing_point	: in type_point;
-		model_point	: in type_place;
+	function mtv (
+		model_point	: in type_model_point;
 		scale		: in type_scale;
-		topleft		: in type_place) 
+		topleft		: in type_model_point) 
 		return type_view_point;
 
 	
 	-- Converts the given point in the model to a point in the view.
-	function model_to_view ( -- CS rename to place_to_view
+	function model_to_view (
 		self   : not null access type_view;
-		p      : in type_place) -- position x/y given as a float type
+		p      : in type_model_point) -- position x/y given as a float type
 		return type_view_point;
 
 	
@@ -526,7 +550,7 @@ package pac_canvas is
 	-- lower left corner of the drawing frame.
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_place)
+		model_point : in type_model_point)
 		return type_point is abstract;
 
 	
@@ -534,12 +558,13 @@ package pac_canvas is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
-		return type_place is abstract;
+		return type_model_point is abstract;
 
 	
 	-- Returns the bounding box of all items.	
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is abstract;
+
 	
 	procedure set_adjustment_values (self : not null access type_view'class);	
 
@@ -559,7 +584,7 @@ package pac_canvas is
 	procedure set_scale (
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
-		preserve : in type_place := model_origin);
+		preserve : in type_model_point := model_origin);
 
 	
 	function get_visible_area (self : not null access type_view'class)
@@ -604,12 +629,14 @@ package pac_canvas is
 		context : type_draw_context;
 		area    : type_rectangle) is null;
 
+	
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
 		rect      : in type_rectangle := no_rectangle;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0);
 
+	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.
 	function convert_x (x : in type_float_internal) return type_view_coordinate;
@@ -630,6 +657,7 @@ package pac_canvas is
 		grid		: in type_distance_grid)
 		return type_view_coordinate;
 
+	
 	-- The grid density threshold above which the grid will no longer be drawn.
 	-- The grid density equals 1/(grid_size * scale).
 	threshold_grid_density : constant type_view_coordinate := 0.05;
@@ -653,6 +681,7 @@ package pac_canvas is
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color);
 
+	
 	-- Moves the view so that the given point is on the center.
 	-- Uses the current scale and leaves it as it is.
 	procedure center_on (
@@ -661,17 +690,19 @@ package pac_canvas is
 
 	
 	procedure zoom_in (
-		point	: in type_place; 	-- model point
+		point	: in type_model_point; 	-- model point
 		step	: in type_scale);	-- the increment of scale change
 	
 	procedure zoom_out (
-		point	: in type_place; 	-- model point
+		point	: in type_model_point; 	-- model point
 		step	: in type_scale);	-- the increment of scale change
 
 	
 
 
-	-- CURSOR
+	
+-- CURSOR
+	
 	type type_cursor is record
 		position	: type_point;
 		-- CS blink, color, ...

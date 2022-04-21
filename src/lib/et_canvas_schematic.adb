@@ -172,21 +172,17 @@ package body et_canvas_schematic is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_place)	
+		model_point : in type_model_point)	
 		return type_point 
 	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 --value	=> clip_distance (get_x (model_point) - type_distance (self.frame_bounding_box.x)));
 			 value	=> clip_distance (type_distance (model_point.x - self.frame_bounding_box.x)));
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 --value	=> clip_distance (type_distance (self.frame_height) 
-						--- get_y (model_point)
-						--+ type_distance (self.frame_bounding_box.y)));
 			 value	=> clip_distance (type_distance (
 						self.frame_height
 						- model_point.y
@@ -200,20 +196,10 @@ package body et_canvas_schematic is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
-		return type_place 
+		return type_model_point 
 	is 
-		p : type_place; -- to be returned
+		p : type_model_point; -- to be returned
 	begin
-		--set (point	=> p,
-			 --axis	=> X, 
-			 --value	=> get_x (drawing_point) + type_distance (self.frame_bounding_box.x));
-		
-		--set (point	=> p,
-			 --axis	=> Y,
-			 --value	=> type_distance (self.frame_height) 
-						--- get_y (drawing_point) 
-						--+ type_distance (self.frame_bounding_box.y));
-
 		p.x := type_float_internal (get_x (drawing_point)) 
 			+ self.frame_bounding_box.x;
 		
@@ -582,11 +568,6 @@ package body et_canvas_schematic is
 		area_shifted : type_rectangle := area;
 
 		-- Calculate the new position of area_shifted:
-		--area_shifted_new_position : constant type_distance_relative := 
-			--to_distance_relative (set (
-						--x => - type_distance (self.frame_bounding_box.x),
-						--y => - type_distance (self.frame_bounding_box.y)));
-
 		area_shifted_new_position : constant type_offset := to_offset (
 			x => - self.frame_bounding_box.x,
 			y => - self.frame_bounding_box.y);
@@ -611,11 +592,6 @@ package body et_canvas_schematic is
 			
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
-		--translate (
-			--context.cr,
-			--convert_x (type_distance (self.frame_bounding_box.x)),
-			--convert_y (type_distance (self.frame_bounding_box.y)));
-
 		translate (
 			context.cr,
 			convert_x (self.frame_bounding_box.x),

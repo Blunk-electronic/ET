@@ -215,14 +215,14 @@ package et_canvas_schematic is
 	
 	overriding function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_place)
+		model_point : in type_model_point)
 		return type_point;
 
 	
 	overriding function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	
-		return type_place;
+		return type_model_point;
 
 	
 	-- Creates a new schematic view:

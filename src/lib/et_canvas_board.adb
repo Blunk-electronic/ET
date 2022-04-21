@@ -185,17 +185,13 @@ package body et_canvas_board is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_place)	
+		model_point : in type_model_point)	
 		return type_point 
 	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 --value	=> get_x (model_point) 
-						--- type_distance (self.frame_bounding_box.x)
-						----- get_x (self.board_origin) -- because board origin is not the same as drawing origin
-						--- type_distance (self.board_origin.x) -- because board origin is not the same as drawing origin
 			 value	=> type_distance (
 						model_point.x 
 						- self.frame_bounding_box.x
@@ -204,16 +200,10 @@ package body et_canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 --value	=> type_distance (self.frame_height) 
-						--- get_y (model_point) 
-						--+ type_distance (self.frame_bounding_box.y)
-						----- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
-						--- type_distance (self.board_origin.y)  -- because board origin is not the same as drawing origin
 			 value	=> type_distance (
 						self.frame_height
 						- model_point.y 
 						+ self.frame_bounding_box.y
-						--- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
 						- self.board_origin.y)  -- because board origin is not the same as drawing origin
 			);
 
@@ -224,27 +214,10 @@ package body et_canvas_board is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	
-		return type_place 
+		return type_model_point 
 	is 
-		p : type_place; -- to be returned
+		p : type_model_point; -- to be returned
 	begin
-		--set (point	=> p,
-			 --axis	=> X, 
-			 --value	=> get_x (drawing_point) 
-						--+ type_distance (self.frame_bounding_box.x)
-						----+ get_x (self.board_origin) -- because board origin is not the same as drawing origin
-						--+ type_distance (self.board_origin.x) -- because board origin is not the same as drawing origin
-			--);
-		
-		--set (point	=> p,
-			 --axis	=> Y,
-			 --value	=> type_distance (self.frame_height) 
-						--- get_y (drawing_point) 
-						--+ type_distance (self.frame_bounding_box.y)
-						----- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
-						--- type_distance (self.board_origin.y)  -- because board origin is not the same as drawing origin
-			--);
-
 		p.x := type_float_internal (get_x (drawing_point))
 				+ self.frame_bounding_box.x
 				+ type_float_internal (self.board_origin.x);
@@ -965,10 +938,6 @@ package body et_canvas_board is
 		-- The drawing must further-on be shifted to the right and up by the board position
 		-- so that the board origin is not at the lower left corner of the frame.
 		-- The board origin is now somewhere inside the frame.
-		--translate (
-			--context.cr,
-			--convert_x (self.frame_bounding_box.x + get_x (self.board_origin)),
-			--convert_y (self.frame_bounding_box.y - get_y (self.board_origin)));
 		translate (
 			context.cr,
 			convert_x (self.frame_bounding_box.x + self.board_origin.x),
@@ -1180,7 +1149,7 @@ package body et_canvas_board is
 	
 	function board_origin (
 		self : not null access type_view)
-		return type_place 
+		return type_model_point 
 	is
 		use et_canvas_schematic;
 	begin

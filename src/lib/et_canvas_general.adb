@@ -617,18 +617,18 @@ package body pac_canvas is
 
 	function to_place (
 		point	: in type_point)
-		return type_place
+		return type_model_point
 	is begin
 		return (type_float_internal (get_x (point)), type_float_internal (get_y (point)));
 	end to_place;
 
 	
 	function invert (
-		place	: in type_place;
+		place	: in type_model_point;
 		axis	: in type_axis_2d)
-		return type_place
+		return type_model_point
 	is
-		p : type_place := place;
+		p : type_model_point := place;
 	begin
 		case axis is
 			when X => p.x := - p.x;
@@ -640,7 +640,7 @@ package body pac_canvas is
 
 
 	function to_offset (
-		place	: in type_place)
+		place	: in type_model_point)
 		return type_offset
 	is begin
 		return (place.x , place.y);
@@ -685,7 +685,7 @@ package body pac_canvas is
 		self	: not null access type_view'class;
 		cr		: cairo.cairo_context)
 	is
-		model_p : type_place; -- := model_origin;
+		model_p : type_model_point; -- := model_origin;
 		view_p  : type_view_point;
 	begin
 		-- compute a view point according to current model point:
@@ -827,7 +827,7 @@ package body pac_canvas is
 		view_point : type_view_point;
 
 		-- The point in the model (in millimeters):
-		model_point : type_place;
+		model_point : type_model_point;
 
 		-- The point in the drawing (in millimeters):
 		drawing_point : type_point;
@@ -862,13 +862,9 @@ package body pac_canvas is
 	function vtm (
 		view_point	: in type_view_point;
 		scale		: in type_scale;
-		topleft		: in type_place) 
-		return type_place 
+		topleft		: in type_model_point) 
+		return type_model_point 
 	is begin
-		--return type_point (set (
-			--x	=> type_distance (view_point.x / scale) + (get_x (topleft)),
-			--y	=> type_distance (view_point.y / scale) + (get_y (topleft))
-			--));
 		return (
 			x	=> type_float_internal (view_point.x / scale) + topleft.x,
 			y	=> type_float_internal (view_point.y / scale) + topleft.y
@@ -879,7 +875,7 @@ package body pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		p      : in type_view_point) 
-		return type_place 
+		return type_model_point 
 	is begin
 		return vtm (p, self.scale, self.topleft);
 	end view_to_model;
@@ -892,12 +888,8 @@ package body pac_canvas is
 	is
 		-- Get the position of the given rectangle in model coordinatess
 		-- (upper left corner):
-		p1 : type_place := vtm ((rect.x, rect.y), self.scale, self.topleft);
+		p1 : type_model_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
 	begin
-		--return (x      => type_float_internal (get_x (p1)),
-				--y      => type_float_internal (get_y (p1)),
-				--width  => type_float_internal_positive (rect.width / self.scale),
-				--height => type_float_internal_positive (rect.height / self.scale));
 		return (
 			x      => p1.x,
 			y      => p1.y,
@@ -907,16 +899,12 @@ package body pac_canvas is
 
 	
 	function mtv (
-		--drawing_point	: in type_point;
-		model_point	: in type_place;
+		model_point	: in type_model_point;
 		scale		: in type_scale;
-		topleft		: in type_place) 
+		topleft		: in type_model_point) 
 		return type_view_point 
 	is begin
 		return (
-			--x => type_view_coordinate (drawing_point.x - topleft.x) * scale,
-			--y => type_view_coordinate (drawing_point.y - topleft.y) * scale
-
 			x => type_view_coordinate (model_point.x - topleft.x) * scale,
 			y => type_view_coordinate (model_point.y - topleft.y) * scale			
 			);
@@ -925,7 +913,7 @@ package body pac_canvas is
 	
 	function model_to_view (
 		self   : not null access type_view;
-		p      : in type_place) 
+		p      : in type_model_point) 
 		return type_view_point 
 	is begin
 		return mtv (p, self.scale, self.topleft);
@@ -979,11 +967,8 @@ package body pac_canvas is
 	
 	-- Called when one of the scrollbars has changed value.		
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class) is
-		--pos  : constant type_point := type_point (set (
-				--x => type_distance (canvas.hadj.get_value),
-		--y => type_distance (canvas.vadj.get_value)));
-		
-		pos : constant type_place := (
+	
+		pos : constant type_model_point := (
 			x => type_float_internal (canvas.hadj.get_value),
 			y => type_float_internal (canvas.vadj.get_value));
 
@@ -1138,7 +1123,7 @@ package body pac_canvas is
 		view_point : type_view_point;
 
 		-- The point in the model expressed in millimeters:
-		model_point : type_place;
+		model_point : type_model_point;
 
 		-- The point in the drawing:
 		drawing_point : type_point;
@@ -1178,17 +1163,13 @@ package body pac_canvas is
 		center_on	: type_point) -- in drawing
 	is
 		-- Convert the given point to a point in the model:
-		center_on_model : type_place := drawing_to_model (self, center_on);
+		center_on_model : type_model_point := drawing_to_model (self, center_on);
 
 		-- Get the visible area of the model
 		area : constant type_rectangle := self.get_visible_area; -- model
 
 		-- Calculate the new topleft corner:
-		--pos  : constant type_point := type_point (set (
-			--get_x (center_on_model) - type_distance_positive (area.width * 0.5),
-			--get_y (center_on_model) - type_distance_positive (area.height * 0.5)));
-
-		pos : constant type_place := (
+		pos : constant type_model_point := (
 			center_on_model.x - area.width * 0.5,
 			center_on_model.y - area.height * 0.5);
 
@@ -1206,11 +1187,7 @@ package body pac_canvas is
 	is
 		area : constant type_rectangle := self.get_visible_area;
 
-		--area_center : constant type_point := type_point (set (
-			--x => type_distance (area.x + area.width * 0.5),
-			--y => type_distance (area.y + area.height * 0.5)));
-
-		area_center : constant type_place := ( -- model
+		area_center : constant type_model_point := ( -- model
 			x => area.x + area.width * 0.5,
 			y => area.y + area.height * 0.5);
 		
@@ -1218,8 +1195,6 @@ package body pac_canvas is
 		
 		-- Calculate the position of the area in the drawing.
 		-- This is the upper left corner of the area:
-		--p : constant type_point := self.model_to_drawing (
-			--type_point (set (type_distance (area.x), type_distance (area.y))));
 		p : constant type_point := self.model_to_drawing ((area.x, area.y));
 		
 		-- Build the area of the drawing:
@@ -1254,7 +1229,7 @@ package body pac_canvas is
 
 	
 	procedure zoom_in (
-		point	: in type_place; -- model point
+		point	: in type_model_point; -- model point
 		step	: in type_scale) 
 	is
 		scale : gdouble := canvas.get_scale * step;
@@ -1268,7 +1243,7 @@ package body pac_canvas is
 
 	
 	procedure zoom_out (
-		point	: in type_place; -- model point
+		point	: in type_model_point; -- model point
 		step	: in type_scale) 
 	is
 		scale : gdouble := canvas.get_scale / step;
@@ -1303,7 +1278,7 @@ package body pac_canvas is
 		dy : gdouble := event.delta_y;
 		
 		-- The model point at which the zooming takes place:
-		point : type_place;
+		point : type_model_point;
 		
 	begin -- on_scroll_event
 
@@ -1478,7 +1453,7 @@ package body pac_canvas is
 		-- Get the mouse pointer position.
 		-- Convert from mouse pointer position to drawing point:
 		view_point		: constant type_view_point := (event.x, event.y);
-		model_point		: constant type_place := canvas.view_to_model (view_point);
+		model_point		: constant type_model_point := canvas.view_to_model (view_point);
 		drawing_point	: constant type_point := canvas.model_to_drawing (model_point);
 	begin
 		--put_line ("mouse button " & to_string (mouse_button) & " at pos. " & to_string (drawing_point));
@@ -1530,7 +1505,7 @@ package body pac_canvas is
 	procedure set_scale (
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
-		preserve : in type_place := model_origin)
+		preserve : in type_model_point := model_origin)
 	is
 		-- backup old scale
 		old_scale : constant type_float_internal := type_float_internal (self.scale);
@@ -1543,7 +1518,7 @@ package body pac_canvas is
 		dx, dy : type_float_internal;
 		
 		box : type_rectangle;
-		p   : type_place;
+		p   : type_model_point;
 
 		
 		function in_range (d : in type_float_internal) return boolean is 
@@ -1630,6 +1605,7 @@ package body pac_canvas is
 			));
 	end get_visible_area;
 
+	
 -- 	procedure refresh_layout (
 -- 		self        : not null access type_model;
 -- 		send_signal : boolean := true) is
@@ -1643,6 +1619,7 @@ package body pac_canvas is
 -- 		end if;
 -- 	end refresh_layout;
 
+	
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
 		rect      : in type_rectangle := no_rectangle;
@@ -1686,16 +1663,6 @@ package body pac_canvas is
 				self.scale := s;
 
 				-- calculate the new topleft corner of the visible area:
-				--self.topleft := type_point (set (
-					--x	=> box.x - (type_distance (w / s) - box.width) / 2.0,
-					--y	=> box.y - (type_distance (h / s) - box.height) / 2.0
-					--));
-
-				--self.topleft := type_point (set (
-					--x	=> type_distance (box.x) - (type_distance (w / s) - type_distance (box.width)) / 2.0,
-					--y	=> type_distance (box.y) - (type_distance (h / s) - type_distance (box.height)) / 2.0
-					--));
-
 				self.topleft := (
 					x	=> box.x - (type_float_internal (w / s) - box.width) / 2.0,
 					y	=> box.y - (type_float_internal (h / s) - box.height) / 2.0
@@ -1717,15 +1684,10 @@ package body pac_canvas is
 	function lower_grid_coordinate (
 		coordinate	: in type_distance;
 		grid		: in type_distance_grid) 
-	-- This function calculates the grid coordinate on the axis that comes
-	-- before the given coordinate.
-	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
-	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
-		return type_view_coordinate is 
-		
+		return type_view_coordinate 
+	is 		
 		g : float := float (grid);
 		f : float := float'floor (float (coordinate) / g);
-		
 	begin
 		return type_view_coordinate (f * g);
 	end;
