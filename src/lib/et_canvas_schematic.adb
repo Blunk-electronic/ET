@@ -172,21 +172,26 @@ package body et_canvas_schematic is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_point)	
+		model_point : in type_place)	
 		return type_point 
 	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> clip_distance (get_x (model_point) - type_distance (self.frame_bounding_box.x)));
+			 --value	=> clip_distance (get_x (model_point) - type_distance (self.frame_bounding_box.x)));
+			 value	=> clip_distance (type_distance (model_point.x - self.frame_bounding_box.x)));
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> clip_distance (type_distance (self.frame_height) 
-						- get_y (model_point)
-						+ type_distance (self.frame_bounding_box.y)));
-	
+			 --value	=> clip_distance (type_distance (self.frame_height) 
+						--- get_y (model_point)
+						--+ type_distance (self.frame_bounding_box.y)));
+			 value	=> clip_distance (type_distance (
+						self.frame_height
+						- model_point.y
+						+ self.frame_bounding_box.y)));
+		 
 		return p;
 
 	end model_to_drawing;
@@ -195,20 +200,27 @@ package body et_canvas_schematic is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
-		return type_point 
+		return type_place 
 	is 
-		p : type_point; -- to be returned
+		p : type_place; -- to be returned
 	begin
-		set (point	=> p,
-			 axis	=> X, 
-			 value	=> get_x (drawing_point) + type_distance (self.frame_bounding_box.x));
+		--set (point	=> p,
+			 --axis	=> X, 
+			 --value	=> get_x (drawing_point) + type_distance (self.frame_bounding_box.x));
 		
-		set (point	=> p,
-			 axis	=> Y,
-			 value	=> type_distance (self.frame_height) 
-						- get_y (drawing_point) 
-						+ type_distance (self.frame_bounding_box.y));
+		--set (point	=> p,
+			 --axis	=> Y,
+			 --value	=> type_distance (self.frame_height) 
+						--- get_y (drawing_point) 
+						--+ type_distance (self.frame_bounding_box.y));
 
+		p.x := type_float_internal (get_x (drawing_point)) 
+			+ self.frame_bounding_box.x;
+		
+		p.y := self.frame_height 
+			- type_float_internal (get_y (drawing_point))
+			+ self.frame_bounding_box.y;
+			
 		return p;
 	end drawing_to_model;
 

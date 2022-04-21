@@ -358,10 +358,12 @@ package pac_canvas is
 
 
 
-	type type_place is record
-		x, y : type_float_internal;
+	type type_place is record -- or model point
+		x, y : type_float_internal := 0.0;
 	end record;
 
+	model_origin : constant type_place := (0.0, 0.0);
+	
 	function to_place (
 		point	: in type_point)
 		return type_place;
@@ -383,7 +385,8 @@ package pac_canvas is
 		-- NOTE: This has nothing to do with the upper left corner of the
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
-		topleft  	: type_point := origin;
+		--topleft  	: type_point := origin;
+		topleft  	: type_place;
 
 		-- The drawing scale:
 		-- - increases on zoom in
@@ -465,40 +468,48 @@ package pac_canvas is
 		self	: not null access type_view'class;
 		cr		: cairo.cairo_context);
 
+	
 	-- Returns the position of the pointer in the drawing:
 	function mouse_position (
 		self	: not null access type_view'class)
 		return type_point;
 
-	function vtm (
+	
+	function vtm ( -- CS rename to vtp ?
 		view_point	: in type_view_point;
 		scale		: in type_scale;
-		topleft		: in type_point) 
-		return type_point;
+		topleft		: in type_place) 
+		return type_place;
 
-	function view_to_model (
+	
+	function view_to_model (  -- CS rename to view_to_place ?
 		self   : not null access type_view;
 		p      : in type_view_point) 
-		return type_point;
+		return type_place;
+	
 
 	-- Converts the given area of the view to a model rectangle:
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle;
+	
 
-	function mtv (
-		drawing_point	: in type_point;
-		scale			: in type_scale;
-		topleft			: in type_point) 
+	function mtv ( -- CS rename to ptv ?
+		--drawing_point	: in type_point;
+		model_point	: in type_place;
+		scale		: in type_scale;
+		topleft		: in type_place) 
 		return type_view_point;
+
 	
 	-- Converts the given point in the model to a point in the view.
-	function model_to_view (
+	function model_to_view ( -- CS rename to place_to_view
 		self   : not null access type_view;
-		p      : in type_point) -- position x/y given as a float type
+		p      : in type_place) -- position x/y given as a float type
 		return type_view_point;
 
+	
 	-- Converts the given area of the model to a view rectangle:	
 -- 	function model_to_view (
 -- 		self   : not null access type_view;
@@ -515,14 +526,15 @@ package pac_canvas is
 	-- lower left corner of the drawing frame.
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_point)
+		model_point : in type_place)
 		return type_point is abstract;
 
+	
 	-- Converts a drawing point to a model point. See comments on function model_to_drawing.
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
-		return type_point is abstract;
+		return type_place is abstract;
 
 	
 	-- Returns the bounding box of all items.	
@@ -538,16 +550,18 @@ package pac_canvas is
 
 	procedure init (
 		self  : not null access type_view'class);
-	
-	procedure set_scale (
-		self     : not null access type_view;
-		scale    : in type_scale := scale_default;
-		preserve : in type_point := origin);
+
+
 	-- Changes the scaling factor for self.
 	-- this also scrolls the view so that either preserve or the current center
 	-- of the view remains at the same location in the widget, as if the user
 	-- was zooming towards that specific point.
+	procedure set_scale (
+		self     : not null access type_view;
+		scale    : in type_scale := scale_default;
+		preserve : in type_place := model_origin);
 
+	
 	function get_visible_area (self : not null access type_view'class)
 		return type_rectangle;
 	-- Return the area of the model (or the sheet) that is currently displayed in the view.
@@ -645,12 +659,13 @@ package pac_canvas is
 		self		: not null access type_view'class;
 		center_on	: type_point); -- in drawing
 
+	
 	procedure zoom_in (
-		point	: in type_point; 	-- model point
+		point	: in type_place; 	-- model point
 		step	: in type_scale);	-- the increment of scale change
 	
 	procedure zoom_out (
-		point	: in type_point; 	-- model point
+		point	: in type_place; 	-- model point
 		step	: in type_scale);	-- the increment of scale change
 
 	

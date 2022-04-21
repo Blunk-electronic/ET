@@ -177,15 +177,17 @@ package et_canvas_board is
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
+		
 	overriding function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_point)
+		model_point : in type_place)
 		return type_point;
 
+		
 	overriding function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	
-		return type_point;
+		return type_place;
 
 
 
