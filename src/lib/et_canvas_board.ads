@@ -234,6 +234,7 @@ package et_canvas_board is
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
 	type type_cursor_line is new et_board_shapes_and_text.pac_geometry_2.type_line with null record;
+
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
@@ -241,10 +242,12 @@ package et_canvas_board is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor);
 
+	
 	overriding function get_grid (
 		self : not null access type_view)
 		return type_grid;
-	
+
+		
 	overriding function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame;
@@ -257,7 +260,8 @@ package et_canvas_board is
 		
 	overriding function frame_width (
 		self : not null access type_view)
-		return type_distance_positive;
+		return type_float_internal_positive;
+	
 		
 	overriding function title_block_position (
 		self : not null access type_view)
