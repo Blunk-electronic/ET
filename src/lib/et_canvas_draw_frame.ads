@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --         Bases on the package gtkada.canvas_view written by               --
 --         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
@@ -56,7 +56,7 @@ generic
 
 	with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
 
-	in_area			: draw_ops.pac_shapes.pac_geometry_1.type_rectangle;
+	in_area			: draw_ops.pac_canvas.pac_geometry_2.pac_geometry_1.type_rectangle;
 	context			: draw_ops.pac_canvas.type_draw_context;
 	frame_size		: et_frames.type_frame_size;
 	border_width	: et_frames.type_border_width;
@@ -68,7 +68,11 @@ generic
 	
 package pac_draw_frame is
 	use draw_ops;
-	use draw_ops.pac_shapes.pac_geometry_1;
+	
+	use pac_canvas;
+	use pac_geometry_2;
+	use pac_geometry_1;
+	
 	use et_frames;
 	use pac_lines;
 	

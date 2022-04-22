@@ -47,7 +47,7 @@ package body et_canvas_primitive_draw_ops is
 package body pac_draw is
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	function convert_x (x : in pac_shapes.pac_geometry_1.type_distance) 
+	function convert_x (x : in pac_geometry_1.type_distance) 
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate (x);
@@ -67,7 +67,7 @@ package body pac_draw is
 
 	
 	function shift_y (
-		y		: in pac_shapes.pac_geometry_1.type_distance;
+		y		: in pac_geometry_1.type_distance;
 		height	: in type_float_internal)
 		return type_view_coordinate is
 	begin
@@ -839,7 +839,7 @@ package body pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
 		origin		: in boolean;
-		rotation	: in pac_shapes.pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_1.type_rotation;
 		alignment	: in type_text_alignment) 
 	is
 		-- Here we will store the extents of the given text:

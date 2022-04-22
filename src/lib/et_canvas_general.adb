@@ -1682,8 +1682,8 @@ package body pac_canvas is
 
 
 	function lower_grid_coordinate (
-		coordinate	: in type_distance;
-		grid		: in type_distance_grid) 
+		coordinate	: in pac_geometry_1.type_distance;
+		grid		: in pac_geometry_1.type_distance_grid) 
 		return type_view_coordinate 
 	is 		
 		g : float := float (grid);
@@ -1705,7 +1705,7 @@ package body pac_canvas is
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_rectangle; -- the area of the drawing to be displayed
-		grid	: in geometry.type_grid;
+		grid	: in pac_geometry_1.type_grid;
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color)

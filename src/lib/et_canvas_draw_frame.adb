@@ -46,8 +46,7 @@ package body et_canvas_draw_frame is
 
 package body pac_draw_frame is
 
-	type type_line is new draw_ops.pac_shapes.type_line with null record;
-	line : type_line;
+	line : pac_geometry_2.type_line;
 
 	procedure draw_line is begin
 		draw_ops.draw_line (
@@ -62,7 +61,7 @@ package body pac_draw_frame is
 	procedure draw_border is begin
 	-- OUTER BORDER
 		-- left line from bottom to top
-		line.start_point := type_point (set (0.0, 0.0));
+		line.start_point := origin;
 		
 		line.end_point := type_point (set (
 			x => 0.0,
@@ -82,7 +81,7 @@ package body pac_draw_frame is
 		draw_line;
 
 		-- lower line from left to right
-		line.start_point := type_point (set (0.0, 0.0));
+		line.start_point := origin;
 		line.end_point := type_point (set (
 			x => type_distance_positive (frame_size.x),
 			y => 0.0));
@@ -150,7 +149,6 @@ package body pac_draw_frame is
 
 	
 	procedure draw_sector_delimiters is
-		use draw_ops.pac_shapes;
 		
 		sector_width  : constant et_frames.type_distance := 
 			(frame_size.x - 2 * border_width) / et_frames.type_distance (sectors.columns);
@@ -161,13 +159,13 @@ package body pac_draw_frame is
 		use et_text;
 		procedure draw_index (
 			content	: in pac_text_content.bounded_string;
-			pos		: in pac_geometry_1.type_point) is
-		begin
+			pos		: in pac_geometry_1.type_point) 
+		is begin
 			draw_ops.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> content,
-				size		=> pac_shapes.pac_geometry_1.type_distance_positive (font_indexes_size),
+				size		=> type_distance_positive (font_indexes_size),
 				font		=> font_indexes,
 				position	=> pos,
 				origin		=> false,
@@ -334,17 +332,16 @@ package body pac_draw_frame is
 		-- The given position is given in frame coordinates and must be 
 		-- converted to schematic coordinates and shifted by the position
 		-- of the title block.
-		ps : constant pac_shapes.pac_geometry_1.type_point := type_point (set (
+		ps : constant type_point := type_point (set (
 				x => type_distance_positive (pos.x + title_block.position.x),
 				y => type_distance_positive (pos.y + title_block.position.y)));
 
-		use pac_shapes;
 	begin
 		draw_ops.draw_text (
 			area		=> in_area,
 			context		=> context,
 			content		=> content,
-			size		=> pac_geometry_1.type_distance_positive (size),
+			size		=> type_distance_positive (size),
 			font		=> font,
 			position	=> ps,
 			origin		=> true,

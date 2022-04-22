@@ -80,6 +80,7 @@ with system.storage_elements;	use system.storage_elements;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_geometry_1;
+with et_geometry_2;
 with et_frames;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -167,10 +168,12 @@ generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	-- The system of measurement:
-	with package geometry is new et_geometry_1 (<>);
+	--with package pac_geometry_1 is new et_geometry_1 (<>);
+	with package pac_geometry_2 is new et_geometry_2 (<>);
 	
 package pac_canvas is
-	use geometry;
+	use pac_geometry_2;
+	use pac_geometry_1;
 
 	window 					: gtk_window; -- the main window.	
 
@@ -396,6 +399,9 @@ package pac_canvas is
 		return type_offset;
 
 
+
+
+	
 	
 -- VIEW
 
@@ -639,11 +645,13 @@ package pac_canvas is
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.
-	function convert_x (x : in type_float_internal) return type_view_coordinate;
+	function convert_x (x : in pac_geometry_1.type_float_internal) 
+		return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the view.	
 	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.	
-	function convert_y (y : in type_float_internal) return type_view_coordinate renames convert_x;
+	function convert_y (y : in pac_geometry_1.type_float_internal) 
+		return type_view_coordinate renames convert_x;
 	
 
 	
@@ -653,8 +661,8 @@ package pac_canvas is
 	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
 	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
 	function lower_grid_coordinate (
-		coordinate	: in type_distance;
-		grid		: in type_distance_grid)
+		coordinate	: in pac_geometry_1.type_distance;
+		grid		: in pac_geometry_1.type_distance_grid)
 		return type_view_coordinate;
 
 	
@@ -676,7 +684,7 @@ package pac_canvas is
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_rectangle;  -- the area of the drawing to be displayed
-		grid	: in geometry.type_grid;		
+		grid	: in pac_geometry_1.type_grid;		
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color);

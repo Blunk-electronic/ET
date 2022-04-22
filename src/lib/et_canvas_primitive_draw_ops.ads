@@ -59,7 +59,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
 with et_geometry_2;
-with et_geometry_2.contours;
+with et_geometry_2.contours;	
 with et_geometry_2.polygons;
 with et_text;
 with et_canvas_general;
@@ -73,18 +73,19 @@ generic
 	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
 
 	-- The instantiated shapes package:
-	with package pac_shapes is new et_geometry_2 (<>);
+	--with package pac_shapes is new et_geometry_2 (<>);
 
 	-- The instantiated polygon package:
-	with package pac_polygons is new pac_shapes.polygons;
+	with package pac_polygons is new pac_canvas.pac_geometry_2.polygons;
 
 	-- The instantiated contour package:
-	with package pac_contours is new pac_shapes.contours;
+	with package pac_contours is new pac_canvas.pac_geometry_2.contours;
 	
 	-- The instantiated text package:
 	with package pac_text is new et_text.generic_pac_text (
 		-- The used text package must have been instantiated with the same shapes package:
-		pac_geometry_2	=> pac_shapes, 
+		--pac_geometry_2	=> pac_shapes,
+		pac_geometry_2	=> pac_canvas.pac_geometry_2, 
 		others			=> <>);
 
 
@@ -92,17 +93,22 @@ generic
 package pac_draw is
 	
 	use pac_canvas;
+	--use pac_geometry_1;
 	
-	use pac_shapes;
-	use pac_geometry_1;
+	--use pac_shapes;
 	-- NOTE: This use clause does not work properly. 
 	-- For some reason the package name must be explicitely provided
 	-- for stuff that stems from pac_geometry_1.
 	-- Otherwise the linker reports lots of "undefined references" ...
 	
+	--use pac_polygons;
+	--use pac_contours;
+
+	use pac_geometry_2;
+	use pac_geometry_1;
 	use pac_polygons;
 	use pac_contours;
-
+	
 	
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal;
@@ -319,7 +325,7 @@ package pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble; -- the anchor point in the view
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
-		rotation	: in pac_shapes.pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_1.type_rotation;
 		alignment	: in type_text_alignment);
 
 	
