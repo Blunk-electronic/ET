@@ -1154,7 +1154,7 @@ package body et_canvas_board is
 	is
 		use et_canvas_schematic;
 	begin
-		return to_place (element (current_active_module).board.origin);
+		return to_model_point (element (current_active_module).board.origin);
 	end board_origin;
 
 	

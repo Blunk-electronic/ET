@@ -615,12 +615,12 @@ package body pac_canvas is
 	end;
 
 
-	function to_place (
+	function to_model_point (
 		point	: in type_point)
 		return type_model_point
 	is begin
 		return (type_float_internal (get_x (point)), type_float_internal (get_y (point)));
-	end to_place;
+	end to_model_point;
 
 	
 	function invert (
