@@ -167,14 +167,15 @@ generic
 
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
-	-- The system of measurement:
-	--with package pac_geometry_1 is new et_geometry_1 (<>);
 	with package pac_geometry_2 is new et_geometry_2 (<>);
 	
 package pac_canvas is
+	
 	use pac_geometry_2;
 	use pac_geometry_1;
 
+
+	
 	window 					: gtk_window; -- the main window.	
 
 	box_main				: gtk_vbox;
@@ -400,7 +401,29 @@ package pac_canvas is
 
 
 
+	-- In connection with boundaries and bounding boxes a type to model
+	-- a rectangular area is required.
+	-- NOTE: The bounding box is something required in the model plane only.
+	type type_rectangle is record -- CS rename to type_bounding_box
+		x, y			: type_float_internal; -- position, upper left corner
+		width, height	: type_float_internal_positive; -- size
+	end record;
 
+	no_rectangle : constant type_rectangle := (others => 0.0);
+
+	function to_string (rectangle : in type_rectangle) return string;
+
+	
+	-- Moves the rectangle by the given offset:
+	procedure move_by (
+		rectangle	: in out type_rectangle;
+		offset		: in type_offset);
+
+	
+	-- Returns true if the given two rectangles intersect each other in some way:
+	function intersects (rect1, rect2 : type_rectangle) return boolean;
+
+	
 	
 	
 -- VIEW

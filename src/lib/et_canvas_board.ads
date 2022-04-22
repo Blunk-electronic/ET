@@ -101,7 +101,6 @@ package et_canvas_board is
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		--geometry		=> et_pcb_coordinates.pac_geometry_brd);
 		pac_geometry_2	=> et_board_shapes_and_text.pac_geometry_2);
 
 	use pac_canvas;	
@@ -111,23 +110,21 @@ package et_canvas_board is
 	-- that are fabrication relevant:
 	package pac_draw_fab is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		--pac_shapes		=> et_board_shapes_and_text.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_contours	=> et_board_shapes_and_text.pac_contours,
 		pac_text		=> et_board_shapes_and_text.pac_text_fab);
 	
-	--use pac_draw_fab;
+
 
 	--In order to draw objects of packages and board 
 	--that are for documentation (not fabrication relevant):
 	package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		--pac_shapes		=> et_board_shapes_and_text.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_contours	=> et_board_shapes_and_text.pac_contours,
 		pac_text		=> et_board_shapes_and_text.pac_text_doc);
 
-	--use pac_draw_doc;
+
 
 
 	

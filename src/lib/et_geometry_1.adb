@@ -1116,104 +1116,6 @@ package body et_geometry_1 is
 	end move_by;
 
 	
-	--procedure rotate (
-		--boundaries	: in out type_boundaries;
-		--rotation	: in type_rotation) 
-	--is
-
-		---- The boundaries are basically a rectangle with those four corners:
-		--corners : array (positive range 1 .. 4) of type_point;
-
-		---- backup the position of the topleft corner of the boundaries:
-		--topleft_before_rotation : constant type_point := (
-				--x	=> boundaries.smallest_x,
-				--y	=> boundaries.greatest_y);
-
-		--topleft_after_rotation : type_point;
-		
-	--begin -- rotate
-		---- Set the corner points according to the given boundaries:
-		--corners (1)	:= (boundaries.smallest_x, boundaries.greatest_y);
-		--corners (2) := (boundaries.greatest_x, boundaries.greatest_y);
-		--corners (3) := (boundaries.smallest_x, boundaries.smallest_y);
-		--corners (4) := (boundaries.greatest_x, boundaries.smallest_y);
-
-		---- After the rotation the boundaries may become wider than actually
-		---- required.
-		
-		---- The boundaries are always relative to a certain origin that
-		---- sits somewhere inside the rectangle. The four corners are now rotated
-		---- around the origin by the given angle:
-		--for c in corners'first .. corners'last loop
-			--rotate_by (corners (c), rotation);
-		--end loop;
-
-		---- reset boundaries
-		--boundaries := boundaries_default;
-		
-		--for c in corners'first .. corners'last loop
-			
-			---- find the smallest x
-			--if corners (c).x < boundaries.smallest_x then
-				--boundaries.smallest_x := corners (c).x;
-			--end if;
-
-			---- find the greatest x
-			--if corners (c).x > boundaries.greatest_x then
-				--boundaries.greatest_x := corners (c).x;
-			--end if;
-
-			---- find the smallest y
-			--if corners (c).y < boundaries.smallest_y then
-				--boundaries.smallest_y := corners (c).y;
-			--end if;
-
-			---- find the greatest y
-			--if corners (c).y > boundaries.greatest_y then
-				--boundaries.greatest_y := corners (c).y;
-			--end if;
-			
-		--end loop;
-
-		---- After the rotation we get a new topleft position:
-		--topleft_after_rotation := (
-			--x	=> boundaries.smallest_x,
-			--y	=> boundaries.greatest_y);
-
-		---- The difference in x and y between topleft_before_rotation
-		---- and topleft_after_rotation:
-		--boundaries.distance_of_topleft_to_default := type_point 
-			--(topleft_before_rotation - topleft_after_rotation);
-		
-	--end rotate;
-
-	
-	function to_string (rectangle : in type_rectangle) return string is begin
-		return "rectangle " --to_string (set (rectangle.x, rectangle.y))
-			& "x/y " & to_string (rectangle.x) & "/" & to_string (rectangle.y)
-			& " width" & to_string (rectangle.width)
-			& " height" & to_string (rectangle.height);
-	end;
-
-	
-	procedure move_by (
-		rectangle	: in out type_rectangle;
-		offset		: in type_offset)
-	is begin
-		rectangle.x := rectangle.x + offset.x;
-		rectangle.y := rectangle.y + offset.y;
-	end move_by;
-
-	
-	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
-		return not (
-			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
-			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
-			or else rect1.y > rect2.y + rect2.height   --  r1 below r2
-			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
-	end intersects;
-
-
 
 	
 	function mil_to_distance (mil : in string) return type_distance is
@@ -1221,8 +1123,6 @@ package body et_geometry_1 is
 	begin
 		return to_distance (distance_mil * (25.4 * 0.001));
 	end mil_to_distance;
-
-	
 	
 
 	function distance_to_mil (distance : in type_distance) return string is
@@ -1231,6 +1131,8 @@ package body et_geometry_1 is
 		scratch := type_float_internal (distance) * 1000.00 / 25.4;
 		return to_string (to_distance (scratch));
 	end;
+
+
 
 	
 	function set (

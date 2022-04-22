@@ -72,9 +72,6 @@ generic
 	-- The instantiated canvas package:
 	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
 
-	-- The instantiated shapes package:
-	--with package pac_shapes is new et_geometry_2 (<>);
-
 	-- The instantiated polygon package:
 	with package pac_polygons is new pac_canvas.pac_geometry_2.polygons;
 
@@ -84,7 +81,6 @@ generic
 	-- The instantiated text package:
 	with package pac_text is new et_text.generic_pac_text (
 		-- The used text package must have been instantiated with the same shapes package:
-		--pac_geometry_2	=> pac_shapes,
 		pac_geometry_2	=> pac_canvas.pac_geometry_2, 
 		others			=> <>);
 
@@ -93,19 +89,14 @@ generic
 package pac_draw is
 	
 	use pac_canvas;
-	--use pac_geometry_1;
-	
-	--use pac_shapes;
+	use pac_geometry_2;
+
+	use pac_geometry_1;
 	-- NOTE: This use clause does not work properly. 
 	-- For some reason the package name must be explicitely provided
 	-- for stuff that stems from pac_geometry_1.
 	-- Otherwise the linker reports lots of "undefined references" ...
-	
-	--use pac_polygons;
-	--use pac_contours;
 
-	use pac_geometry_2;
-	use pac_geometry_1;
 	use pac_polygons;
 	use pac_contours;
 	
@@ -113,7 +104,7 @@ package pac_draw is
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal;
 		boundaries	: in pac_geometry_1.type_boundaries)
-		return pac_geometry_1.type_rectangle;
+		return type_rectangle;
 
 	
 	-- This procedure draws the given line on the given context.
@@ -129,7 +120,6 @@ package pac_draw is
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance);
 		height	: in type_float_internal_positive);
 		
 
@@ -147,7 +137,6 @@ package pac_draw is
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
 		height	: in type_float_internal_positive);
-		--height	: in pac_shapes.pac_geometry_1.type_distance);
 
 	
 	-- This procedure draws the given circle on the given context.
@@ -166,7 +155,6 @@ package pac_draw is
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance);
 		height	: in type_float_internal_positive);
 		-- CS fill style ?
 
@@ -239,7 +227,6 @@ package pac_draw is
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
 		
-		--height	: in pac_shapes.pac_geometry_1.type_distance;
 		height	: in type_float_internal_positive;
 
 		-- This flag is set if the polygon has been drawn
@@ -260,7 +247,6 @@ package pac_draw is
 		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
 		
-		--height	: in pac_shapes.pac_geometry_1.type_distance;
 		height	: in type_float_internal_positive;
 
 		-- This flag is set if the contour has been drawn
@@ -273,8 +259,7 @@ package pac_draw is
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
-		--height			: in pac_shapes.pac_geometry_1.type_distance);
-		height	: in type_float_internal_positive);
+		height			: in type_float_internal_positive);
 
 	
 	procedure draw_contour_with_arbitrary_cutout (
@@ -282,8 +267,7 @@ package pac_draw is
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
-		--height			: in pac_shapes.pac_geometry_1.type_distance);
-		height	: in type_float_internal_positive);
+		height			: in type_float_internal_positive);
 	
 	
 	-- This procedure draws the a rectangle on the given context.
@@ -295,15 +279,14 @@ package pac_draw is
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		position		: in type_point'class;	-- position of the rectangle (lower left corner)
-		--width			: in pac_shapes.pac_geometry_1.type_distance;		-- widht of the rectangle
-		width			: in type_float_internal_positive;		-- widht of the rectangle
-		--height			: in pac_shapes.pac_geometry_1.type_distance;		-- height of the rectangle
-		height			: in type_float_internal_positive;
-		--frame_height	: in pac_shapes.pac_geometry_1.type_distance;
+		width			: in type_float_internal_positive; -- widht of the rectangle
+		height			: in type_float_internal_positive; -- height of the rectangle
 		frame_height	: in type_float_internal_positive;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default);
 		-- CS fill style ?
+
+
 
 	
 -- TEXT
@@ -352,7 +335,6 @@ package pac_draw is
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in pac_geometry_1.type_rotation;
 		alignment	: in type_text_alignment;
-		--height		: in pac_shapes.pac_geometry_1.type_distance); -- the height of the drawing frame
 		height		: in type_float_internal_positive); -- the height of the drawing frame
 
 	
@@ -365,7 +347,6 @@ package pac_draw is
 		-- The line width is used for calculating the boundaries
 		-- of the line segments:
 		width	: in type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance);
 		height	: in type_float_internal_positive);
 
 	

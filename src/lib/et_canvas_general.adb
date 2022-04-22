@@ -647,6 +647,37 @@ package body pac_canvas is
 	end to_offset;
 
 
+
+
+
+	function to_string (rectangle : in type_rectangle) return string is begin
+		return "rectangle " --to_string (set (rectangle.x, rectangle.y))
+			& "x/y " & to_string (rectangle.x) & "/" & to_string (rectangle.y)
+			& " width" & to_string (rectangle.width)
+			& " height" & to_string (rectangle.height);
+	end;
+
+	
+	procedure move_by (
+		rectangle	: in out type_rectangle;
+		offset		: in type_offset)
+	is begin
+		rectangle.x := rectangle.x + offset.x;
+		rectangle.y := rectangle.y + offset.y;
+	end move_by;
+
+	
+	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
+		return not (
+			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
+			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
+			or else rect1.y > rect2.y + rect2.height   --  r1 below r2
+			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
+	end intersects;
+
+
+	
+
 	
 	
 	-- view_signals : constant gtkada.types.chars_ptr_array := ( -- came with gtkada release 17.0

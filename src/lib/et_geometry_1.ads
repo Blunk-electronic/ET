@@ -463,42 +463,12 @@ package et_geometry_1 is
 		clip		: in boolean := false);
 
 	
-	-- Rotates the given boundaries by given rotation.
-	--procedure rotate (
-		--boundaries	: in out type_boundaries;
-		--rotation	: in type_rotation);
-	
-	
-	-- In the GUI, in connection with boundaries and bounding boxes a type for
-	-- a rectangular area of the drawing is required.
-	-- NOTE: The bounding box is something required in the model plane only.
-
-	-- CS move to canvas package or primitve draw ops ?
-	type type_rectangle is record
-		x, y			: type_float_internal; -- position, upper left corner
-		width, height	: type_float_internal_positive; -- size
-	end record;
-
-	no_rectangle : constant type_rectangle := (others => 0.0);
-
-	function to_string (rectangle : in type_rectangle) return string;
-
-	
-	-- Moves the rectangle by the given offset:
-	procedure move_by (
-		rectangle	: in out type_rectangle;
-		offset		: in type_offset);
-
-	
-	-- Returns true if the given two rectangles intersect each other in some way:
-	function intersects (rect1, rect2 : type_rectangle) return boolean;
-
 
 	
 	
 	
-	function mil_to_distance (mil : in string) return type_distance;
 	-- Converts a mil number (given as a string) to millimeters.	
+	function mil_to_distance (mil : in string) return type_distance;
 
 	function distance_to_mil (distance : in type_distance) return string;
 
