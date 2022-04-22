@@ -43,7 +43,7 @@ separate (et_canvas_board)
 
 procedure draw_stop (
 	self    : not null access type_view;
-	in_area	: in type_rectangle := no_rectangle;
+	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context;
 	face	: in type_face)
 is

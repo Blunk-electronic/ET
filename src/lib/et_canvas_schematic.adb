@@ -383,7 +383,7 @@ package body et_canvas_schematic is
 	
 	
 	function bounding_box (self : not null access type_view)
-		return type_rectangle is
+		return type_bounding_box is
 	begin
 		return self.paper_bounding_box; -- CS should include all items of the current sheet.
 		-- means: also items outside the frame
@@ -403,18 +403,18 @@ package body et_canvas_schematic is
 	procedure draw_grid (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle)	is separate;
+		area    : type_bounding_box) is separate;
 
 	
 	procedure draw_frame (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_tag_label (
 		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label) is separate;
@@ -422,20 +422,20 @@ package body et_canvas_schematic is
 	
 	procedure draw_nets (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_texts (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	-- Draws a single symbol of the given device:
 	procedure draw_symbol (
 		self			: not null access type_view;
-		in_area			: in type_rectangle := no_rectangle;
+		in_area			: in type_bounding_box := no_area;
 		context 		: in type_draw_context;
 		symbol			: in et_symbols.type_symbol;
 		device_name		: in et_devices.type_device_name := (others => <>);
@@ -458,13 +458,13 @@ package body et_canvas_schematic is
 	-- Draws all units:
 	procedure draw_units (
 		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 
 	procedure draw_net_route_being_drawn (
 		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context)
 	is
 		use et_nets;
@@ -552,20 +552,20 @@ package body et_canvas_schematic is
 	
 	procedure draw_submodules (
 		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle) 
+		area    : type_bounding_box) 
 	is
 		-- The given area must be shifted (left and up) by the position
 		-- of the drawing frame. This is required for all objects in the 
 		-- drawing frame.
 		-- Take a copy of the given area:
-		area_shifted : type_rectangle := area;
+		area_shifted : type_bounding_box := area;
 
 		-- Calculate the new position of area_shifted:
 		area_shifted_new_position : constant type_offset := to_offset (
@@ -774,7 +774,7 @@ package body et_canvas_schematic is
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is

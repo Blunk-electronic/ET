@@ -209,7 +209,7 @@ package et_canvas_schematic is
 
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
-		return type_rectangle;
+		return type_bounding_box;
 
 	
 	overriding function model_to_drawing (
@@ -234,7 +234,7 @@ package et_canvas_schematic is
 	overriding procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle);
+		area    : type_bounding_box);
 
 
 	-- Sets the active module to be displayed in the canvas.
@@ -294,7 +294,7 @@ package et_canvas_schematic is
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor);
 

@@ -39,7 +39,7 @@ separate (et_canvas_schematic)
 
 procedure draw_symbol (
 	self			: not null access type_view;
-	in_area			: in type_rectangle := no_rectangle;
+	in_area			: in type_bounding_box := no_area;
 	context 		: in type_draw_context;
 	symbol			: in et_symbols.type_symbol;
 	device_name		: in et_devices.type_device_name := (others => <>);

@@ -46,7 +46,7 @@ separate (et_canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view;
-	in_area	: in type_rectangle := no_rectangle;
+	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context) 
 is
 	use et_schematic;

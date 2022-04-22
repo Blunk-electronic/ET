@@ -44,7 +44,7 @@ separate (et_canvas_schematic)
 procedure draw_grid (
 	self    : not null access type_view;
 	context : type_draw_context;
-	area    : type_rectangle) -- the area of the drawing to be displayed
+	area    : type_bounding_box) -- the area of the drawing to be displayed
 is
 	-- The grid must be aligned with the frame.
 	-- NOTE: The grid is drawn directly in cairo, means with y-axis going downwards. 

@@ -404,24 +404,24 @@ package pac_canvas is
 	-- In connection with boundaries and bounding boxes a type to model
 	-- a rectangular area is required.
 	-- NOTE: The bounding box is something required in the model plane only.
-	type type_rectangle is record -- CS rename to type_bounding_box
+	type type_bounding_box is record -- CS rename to type_bounding_box
 		x, y			: type_float_internal; -- position, upper left corner
 		width, height	: type_float_internal_positive; -- size
 	end record;
 
-	no_rectangle : constant type_rectangle := (others => 0.0);
+	no_area : constant type_bounding_box := (others => 0.0);
 
-	function to_string (rectangle : in type_rectangle) return string;
+	function to_string (rectangle : in type_bounding_box) return string;
 
 	
 	-- Moves the rectangle by the given offset:
 	procedure move_by (
-		rectangle	: in out type_rectangle;
+		rectangle	: in out type_bounding_box;
 		offset		: in type_offset);
 
 	
 	-- Returns true if the given two rectangles intersect each other in some way:
-	function intersects (rect1, rect2 : type_rectangle) return boolean;
+	function intersects (rect1, rect2 : type_bounding_box) return boolean;
 
 	
 	
@@ -451,7 +451,7 @@ package pac_canvas is
 		-- id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
 
 		scale_to_fit_requested	: gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
-		scale_to_fit_area		: type_rectangle;
+		scale_to_fit_area		: type_bounding_box;
 	end record;
 
 	-- The pointer to the canvas/view:
@@ -546,7 +546,7 @@ package pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_rectangle;
+		return type_bounding_box;
 	
 
 	function mtv (
@@ -566,7 +566,7 @@ package pac_canvas is
 	-- Converts the given area of the model to a view rectangle:	
 -- 	function model_to_view (
 -- 		self   : not null access type_view;
--- 		rect   : in type_rectangle) -- position x/y and size given as a float type
+-- 		rect   : in type_bounding_box) -- position x/y and size given as a float type
 -- 		return type_view_rectangle;
 
 
@@ -592,7 +592,7 @@ package pac_canvas is
 	
 	-- Returns the bounding box of all items.	
 	function bounding_box (self : not null access type_view)
-		return type_rectangle is abstract;
+		return type_bounding_box is abstract;
 
 	
 	procedure set_adjustment_values (self : not null access type_view'class);	
@@ -617,7 +617,7 @@ package pac_canvas is
 
 	
 	function get_visible_area (self : not null access type_view'class)
-		return type_rectangle;
+		return type_bounding_box;
 	-- Return the area of the model (or the sheet) that is currently displayed in the view.
 	-- This is in model coordinates (since the canvas coordinates are always
 	-- from (0,0) to (self.get_allocation_width, self.get_allocation_height).
@@ -656,12 +656,12 @@ package pac_canvas is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle) is null;
+		area    : type_bounding_box) is null;
 
 	
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
-		rect      : in type_rectangle := no_rectangle;
+		rect      : in type_bounding_box := no_area;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0);
 
@@ -706,7 +706,7 @@ package pac_canvas is
 	-- threshold_grid_density then the grid will be drawn.
 	procedure draw_grid (
 		context	: in type_draw_context;
-		area	: in type_rectangle;  -- the area of the drawing to be displayed
+		area	: in type_bounding_box;  -- the area of the drawing to be displayed
 		grid	: in pac_geometry_1.type_grid;		
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
@@ -764,7 +764,7 @@ package pac_canvas is
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
@@ -793,12 +793,12 @@ package pac_canvas is
 	-- Returns the bounding box of the drawing frame:
 	function frame_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle;
+		return type_bounding_box;
 
 	-- Returns the bounding box of the paper:
 	function paper_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle;
+		return type_bounding_box;
 
 	-- Returns the position of the title block:
 	function title_block_position (

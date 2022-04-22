@@ -44,7 +44,7 @@ separate (et_canvas_board)
 procedure draw_grid (
 	self    : not null access type_view;
 	context : type_draw_context;
-	area    : type_rectangle)  -- the area of the drawing to be displayed
+	area    : type_bounding_box)  -- the area of the drawing to be displayed
 is
 	-- IMPORTANT !
 	-- THE GRID MUST BE ALIGNED WITH THE BOARD ORIGIN.

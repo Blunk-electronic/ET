@@ -650,7 +650,7 @@ package body pac_canvas is
 
 
 
-	function to_string (rectangle : in type_rectangle) return string is begin
+	function to_string (rectangle : in type_bounding_box) return string is begin
 		return "rectangle " --to_string (set (rectangle.x, rectangle.y))
 			& "x/y " & to_string (rectangle.x) & "/" & to_string (rectangle.y)
 			& " width" & to_string (rectangle.width)
@@ -659,7 +659,7 @@ package body pac_canvas is
 
 	
 	procedure move_by (
-		rectangle	: in out type_rectangle;
+		rectangle	: in out type_bounding_box;
 		offset		: in type_offset)
 	is begin
 		rectangle.x := rectangle.x + offset.x;
@@ -667,7 +667,7 @@ package body pac_canvas is
 	end move_by;
 
 	
-	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
+	function intersects (rect1, rect2 : type_bounding_box) return boolean is begin
 		return not (
 			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
 			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
@@ -695,8 +695,8 @@ package body pac_canvas is
 	
 	-- This procedure unifies two rectangles to one.
 	procedure union (
-		rect1 : in out type_rectangle;
-		rect2 : type_rectangle) 
+		rect1 : in out type_bounding_box;
+		rect2 : type_bounding_box) 
 	is
 		right : constant type_float_internal := 
 			type_float_internal'max (rect1.x + rect1.width, rect2.x + rect2.width);
@@ -735,12 +735,12 @@ package body pac_canvas is
 	procedure refresh (
 		self : not null access type_view'class;
 		cr   : cairo.cairo_context;
-		area : type_rectangle := no_rectangle)
+		area : type_bounding_box := no_area)
 	is
-		a : type_rectangle;
+		a : type_bounding_box;
 		c : type_draw_context;
 	begin
-		if area = no_rectangle then
+		if area = no_area then
 			a := self.get_visible_area;
 		else
 			a := area;
@@ -915,7 +915,7 @@ package body pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_rectangle 
+		return type_bounding_box 
 	is
 		-- Get the position of the given rectangle in model coordinatess
 		-- (upper left corner):
@@ -952,8 +952,8 @@ package body pac_canvas is
 
 	
 	procedure set_adjustment_values (self : not null access type_view'class) is
-		box   : type_rectangle;
-		area  : constant type_rectangle := self.get_visible_area;
+		box   : type_bounding_box;
+		area  : constant type_bounding_box := self.get_visible_area;
 		min, max : gdouble;
 	begin
 		if area.width <= 1.0 then
@@ -1197,7 +1197,7 @@ package body pac_canvas is
 		center_on_model : type_model_point := drawing_to_model (self, center_on);
 
 		-- Get the visible area of the model
-		area : constant type_rectangle := self.get_visible_area; -- model
+		area : constant type_bounding_box := self.get_visible_area; -- model
 
 		-- Calculate the new topleft corner:
 		pos : constant type_model_point := (
@@ -1216,7 +1216,7 @@ package body pac_canvas is
 		self		: not null access type_view'class;
 		cursor		: in type_cursor) 
 	is
-		area : constant type_rectangle := self.get_visible_area;
+		area : constant type_bounding_box := self.get_visible_area;
 
 		area_center : constant type_model_point := ( -- model
 			x => area.x + area.width * 0.5,
@@ -1229,7 +1229,7 @@ package body pac_canvas is
 		p : constant type_point := self.model_to_drawing ((area.x, area.y));
 		
 		-- Build the area of the drawing:
-		a : constant type_rectangle := (
+		a : constant type_bounding_box := (
 			x 		=> type_float_internal (get_x (p)),
 			y 		=> type_float_internal (get_y (p)), 
 			width 	=> type_float_internal_positive (area.width),
@@ -1548,7 +1548,7 @@ package body pac_canvas is
 		cx, cy : type_float_internal;
 		dx, dy : type_float_internal;
 		
-		box : type_rectangle;
+		box : type_bounding_box;
 		p   : type_model_point;
 
 		
@@ -1615,11 +1615,11 @@ package body pac_canvas is
 
 	
 	function get_visible_area (self : not null access type_view'class)
-		return type_rectangle is
+		return type_bounding_box is
 	begin
 		return self.view_to_model (
 			-- Assemble a type_view_rectangle which will be converted
-			-- to a type_rectangle by function view_to_model.
+			-- to a type_bounding_box by function view_to_model.
 			(
 			-- The visible area of the view always starts at 0/0 (topleft corner):
 			x		=> 0.0, 
@@ -1653,11 +1653,11 @@ package body pac_canvas is
 	
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
-		rect      : in type_rectangle := no_rectangle;
+		rect      : in type_bounding_box := no_area;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0)
 	is
-		box     : type_rectangle;
+		box     : type_bounding_box;
 		w, h, s : gdouble;
 		alloc   : gtk_allocation;
 		wmin, hmin : gdouble;
@@ -1671,7 +1671,7 @@ package body pac_canvas is
 		else
 			self.scale_to_fit_requested := 0.0;
 			
-			if rect = no_rectangle then
+			if rect = no_area then
 				box := bounding_box (self);
 			else
 				box := rect;
@@ -1735,7 +1735,7 @@ package body pac_canvas is
 	
 	procedure draw_grid (
 		context	: in type_draw_context;
-		area	: in type_rectangle; -- the area of the drawing to be displayed
+		area	: in type_bounding_box; -- the area of the drawing to be displayed
 		grid	: in pac_geometry_1.type_grid;
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
@@ -1804,9 +1804,9 @@ package body pac_canvas is
 
 	function frame_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle 
+		return type_bounding_box 
 	is
-		box : type_rectangle; -- to be returned
+		box : type_bounding_box; -- to be returned
 
 		use et_frames;
 
@@ -1837,7 +1837,7 @@ package body pac_canvas is
 	
 	function paper_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle
+		return type_bounding_box
 	is
 		use et_frames;
 

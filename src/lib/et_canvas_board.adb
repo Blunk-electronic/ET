@@ -398,7 +398,7 @@ package body et_canvas_board is
 
 	
 	function bounding_box (self : not null access type_view)
-		return type_rectangle is
+		return type_bounding_box is
 	begin
 		return self.paper_bounding_box; -- CS should include all items of the current sheet.
 		-- means: also items outside the frame
@@ -461,7 +461,7 @@ package body et_canvas_board is
 	procedure draw_text_origin (
 		self    : not null access type_view;
 		p		: in type_position; -- the position of the origin
-		in_area	: in type_rectangle;
+		in_area	: in type_bounding_box;
 		context	: in type_draw_context) 
 	is		
 		use et_board_shapes_and_text;
@@ -528,12 +528,12 @@ package body et_canvas_board is
 	procedure draw_grid (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle) is separate;
+		area    : type_bounding_box) is separate;
 
 	
 	procedure draw_frame (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
@@ -544,7 +544,7 @@ package body et_canvas_board is
 	-- nothing happens here:
 	procedure draw_text_being_placed (
 		self    	: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		face		: in type_face;
 		category	: in type_layer_category_non_conductor)
@@ -601,7 +601,7 @@ package body et_canvas_board is
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_outline (
 		self    	: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context)
 	is 
 		use et_text;
@@ -653,7 +653,7 @@ package body et_canvas_board is
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_conductors (
 		self    	: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
@@ -718,67 +718,67 @@ package body et_canvas_board is
 	
 	procedure draw_outline (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_silk_screen (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_assy_doc (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stop (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stencil (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_keepout (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_route_restrict (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_via_restrict (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	-- Draws objects in conductor layers (incl. vias):
 	procedure draw_conductors (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context) is separate;
 
 	
 	procedure draw_packages (
 		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
+		in_area	: in type_bounding_box := no_area;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
 
@@ -786,13 +786,13 @@ package body et_canvas_board is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_rectangle) 
+		area    : type_bounding_box) 
 	is
 		-- The given area must be shifted (left and up) by the position
 		-- of the drawing frame. This is required for all objects in the 
 		-- drawing frame.
 		-- Take a copy of the given area:
-		area_shifted : type_rectangle := area;
+		area_shifted : type_bounding_box := area;
 
 		-- Calculate the new position of area_shifted:
 		area_shifted_new_position : constant type_offset := to_offset (
@@ -1020,7 +1020,7 @@ package body et_canvas_board is
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_rectangle := no_rectangle;
+		in_area		: in type_bounding_box := no_area;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is

@@ -104,7 +104,7 @@ package pac_draw is
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal;
 		boundaries	: in pac_geometry_1.type_boundaries)
-		return type_rectangle;
+		return type_bounding_box;
 
 	
 	-- This procedure draws the given line on the given context.
@@ -113,7 +113,7 @@ package pac_draw is
 	-- The line will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the line would be drawn in any case.
 	procedure draw_line (
-		area	: in type_rectangle;	
+		area	: in type_bounding_box;	
 		context	: in type_draw_context;
 		line	: in type_line'class;
 
@@ -129,7 +129,7 @@ package pac_draw is
 	-- The arc will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the arc would be drawn in any case.
 	procedure draw_arc (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
 
@@ -147,7 +147,7 @@ package pac_draw is
 	-- If the circle is filled, the line width will be set to zero
 	-- and left with this setting.
 	procedure draw_circle (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		filled	: in type_filled;
@@ -216,7 +216,7 @@ package pac_draw is
 
 
 	procedure draw_polygon (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		polygon	: in type_polygon;
 		filled	: in type_filled;
@@ -236,7 +236,7 @@ package pac_draw is
 	
 	
 	procedure draw_contour (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
 		filled	: in type_filled;
@@ -255,7 +255,7 @@ package pac_draw is
 
 
 	procedure draw_contour_with_circular_cutout (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
@@ -263,7 +263,7 @@ package pac_draw is
 
 	
 	procedure draw_contour_with_arbitrary_cutout (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
@@ -276,7 +276,7 @@ package pac_draw is
 	-- The rectangle will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the rectangle would be drawn in any case.
 	procedure draw_rectangle (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		position		: in type_point'class;	-- position of the rectangle (lower left corner)
 		width			: in type_float_internal_positive; -- widht of the rectangle
@@ -326,7 +326,7 @@ package pac_draw is
 	-- text intersects the given area.
 	-- If area is no_rectangle then the text would be drawn in any case.
 	procedure draw_text (
-		area		: in type_rectangle; -- in model plane
+		area		: in type_bounding_box; -- in model plane
 		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
@@ -340,7 +340,7 @@ package pac_draw is
 	
 	-- Draw a vectorized text:
 	procedure draw_vector_text (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		text	: in type_vector_text;
 

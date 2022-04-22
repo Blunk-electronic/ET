@@ -106,7 +106,7 @@ package body pac_draw is
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal; -- pac_shapes.pac_geometry_1.type_distance;
 		boundaries	: in pac_geometry_1.type_boundaries)
-		return type_rectangle 
+		return type_bounding_box 
 	is begin
 		--put_line (to_string (boundaries));
 		
@@ -128,7 +128,7 @@ package body pac_draw is
 
 	
 	procedure draw_line (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		line	: in type_line'class;
 		width	: in type_distance_positive;
@@ -139,12 +139,12 @@ package body pac_draw is
 		boundaries : type_boundaries := get_boundaries (line, width);
 
 		-- compute the bounding box of the given line
-		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
 	begin
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			--put_line (to_string (line));
@@ -179,7 +179,7 @@ package body pac_draw is
 
 	
 	procedure draw_arc (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
 		width	: in type_distance_positive;
@@ -190,7 +190,7 @@ package body pac_draw is
 		boundaries : type_boundaries := get_boundaries (arc, width);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
 
 		-- Convert the given arc so that it is expressed by start and end arc:
 		arc_temp : type_arc_angles := to_arc_angles (arc);
@@ -198,7 +198,7 @@ package body pac_draw is
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 	-- CS test size 
@@ -240,7 +240,7 @@ package body pac_draw is
 
 	
 	procedure draw_circle (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		filled	: in type_filled;
@@ -252,7 +252,7 @@ package body pac_draw is
 		boundaries : type_boundaries := get_boundaries (circle, width);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -261,7 +261,7 @@ package body pac_draw is
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			null;
@@ -304,7 +304,7 @@ package body pac_draw is
 
 	
 	procedure draw_polygon (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		polygon	: in type_polygon;
 		filled	: in type_filled;
@@ -319,7 +319,7 @@ package body pac_draw is
 		boundaries : constant type_boundaries := get_boundaries (polygon, width);
 
 		-- compute the bounding box of the given contour
-		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : constant type_bounding_box := make_bounding_box (height, boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -355,7 +355,7 @@ package body pac_draw is
 		-- We draw the polygon if:
 		--  - no area given or
 		--  - if the bounding box of the contour intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			
@@ -398,7 +398,7 @@ package body pac_draw is
 
 	
 	procedure draw_contour (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
 		filled	: in type_filled;
@@ -413,7 +413,7 @@ package body pac_draw is
 		boundaries : constant type_boundaries := get_boundaries (contour, width);
 
 		-- compute the bounding box of the given contour
-		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : constant type_bounding_box := make_bounding_box (height, boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -498,7 +498,7 @@ package body pac_draw is
 		-- We draw the contour if:
 		--  - no area given or
 		--  - if the bounding box of the contour intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			
@@ -585,7 +585,7 @@ package body pac_draw is
 
 
 	procedure draw_contour_with_circular_cutout (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle'class;
@@ -612,7 +612,7 @@ package body pac_draw is
 
 
 	procedure draw_contour_with_arbitrary_cutout (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
@@ -639,7 +639,7 @@ package body pac_draw is
 
 	
 	procedure draw_rectangle (
-		area			: in type_rectangle;
+		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		position		: in type_point'class; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
@@ -660,7 +660,7 @@ package body pac_draw is
 			others		=> <>);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_rectangle := make_bounding_box (frame_height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (frame_height, boundaries);
 
 	begin
 		if extend_boundaries then
@@ -670,7 +670,7 @@ package body pac_draw is
 		-- We draw the rectangle if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			-- We draw the four lines of the rectangle starting at
@@ -919,7 +919,7 @@ package body pac_draw is
 
 	
 	procedure draw_text (
-		area		: in type_rectangle;
+		area		: in type_bounding_box;
 		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
@@ -934,7 +934,7 @@ package body pac_draw is
 		text_area : cairo_text_extents;
 
 		-- the bounding box of the given text
-		bounding_box : type_rectangle;
+		bounding_box : type_bounding_box;
 
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
@@ -985,7 +985,7 @@ package body pac_draw is
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box)) 
 		then
 			save (context.cr);
@@ -1018,14 +1018,14 @@ package body pac_draw is
 
 	
 	procedure draw_vector_text (
-		area	: in type_rectangle;
+		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		text	: in type_vector_text;
 		width	: in type_distance_positive;
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
 	is
-		bounding_box_text : constant type_rectangle := 
+		bounding_box_text : constant type_bounding_box := 
 			make_bounding_box (height, get_boundaries (text));
 		
 		use pac_vector_text_lines;
@@ -1036,14 +1036,14 @@ package body pac_draw is
 			b : type_boundaries := get_boundaries (element (c), width);
 
 			-- compute the bounding box of the given line
-			bounding_box : constant type_rectangle := 
+			bounding_box : constant type_bounding_box := 
 				make_bounding_box (height, b);
 
 		begin
 			-- We draw the segment if:
 			--  - no area given or
 			--  - if the bounding box of the segment intersects the given area
-			if (area = no_rectangle
+			if (area = no_area
 				or else intersects (area, bounding_box)) 
 			then
 				-- CS test size 
@@ -1073,7 +1073,7 @@ package body pac_draw is
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
-		if (area = no_rectangle
+		if (area = no_area
 			or else intersects (area, bounding_box_text)) 
 		then
 			

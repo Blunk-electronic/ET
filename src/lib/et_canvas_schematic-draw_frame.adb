@@ -45,7 +45,7 @@ separate (et_canvas_schematic)
 
 procedure draw_frame (
 	self	: not null access type_view;
-	in_area	: in type_rectangle := no_rectangle;
+	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context) is
 
 	use et_frames;
@@ -113,7 +113,7 @@ begin -- draw_frame
 -- 	put_line ("draw frame ...");
 
 	-- We draw the frame if it is inside the given area or if it itersects the given area:
-	if (in_area = no_rectangle)
+	if (in_area = no_area)
 		or else intersects (in_area, self.frame_bounding_box) 
 	then
 		-- CS test size 
