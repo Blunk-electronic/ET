@@ -49,9 +49,117 @@ package et_geometry_2.polygons is
 	winding_default : constant type_direction_of_rotation := CCW;
 
 
+	type type_edge is record
+		start_point, end_point : type_vector;
+	end record;
+
+	
+	function to_string (
+		edge : in type_edge)
+		return string;
+
+	
+	function to_edge (
+		line : in type_line)
+		return type_edge;
+
+	
+	function to_line (
+		edge : in type_edge)
+		return type_line;
+
+	
+
+	function reverse_edge (
+		edge	: in type_edge)
+		return type_edge;
+	
+
+	-- Returns the point on the given edge
+	-- that is right between its start and end point:
+	function get_center (
+		edge : in type_edge)
+		return type_vector;
+
+	
+	-- Returns the direction in degrees of a line.
+	-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
+	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
+	function get_direction (
+		edge : in type_edge)
+		return type_rotation;
 
 
-	package pac_edges is new doubly_linked_lists (type_line);
+	-- Moves a line in the given direction by the given distance:
+	procedure move_by (
+		edge		: in out type_edge;
+		direction	: in type_rotation;
+		distance	: in type_distance_positive);
+
+
+	function to_line_vector (
+		edge	: in type_edge)
+		return type_line_vector;
+
+
+	function get_shortest_distance (
+		point	: in type_vector;
+		edge	: in type_edge)
+		return type_float_internal;
+
+
+
+	function on_edge (
+		point	: in type_vector;
+		edge	: in type_edge)
+		return boolean;
+	
+
+
+	-- Returns the nearest point after/before
+	-- a given point on the given line.
+	-- The argument "after" determines whether to return
+	-- a point before or after the given point:
+	function get_nearest (
+		edge	: in type_edge;
+		point	: in type_vector;
+		place	: in type_nearest := AFTER)
+		return type_vector;
+	
+
+	-- Returns true if the given two edges overlap each other.
+	-- Independend of start and end points, both lines are regarded as infinitely
+	-- long beyond their start and end points:
+	function lines_overlap (
+		edge_1, edge_2 : in type_edge)
+		return boolean;
+	
+
+	function get_intersection (
+		line : in type_line_vector;
+		edge : in type_edge)
+		return type_intersection_of_two_lines;
+	
+
+	function get_intersection (
+		edge_1 : in type_edge;
+		edge_2 : in type_edge)
+		return type_intersection_of_two_lines;
+	
+
+	function crosses_threshold (
+		edge : in type_edge;
+		y_th : in type_float_internal)
+		return boolean;
+	
+	
+	function get_boundaries (
+		edge	: in type_edge)
+		return type_boundaries;
+
+
+	
+	package pac_edges is new doubly_linked_lists (type_edge);
 	use pac_edges;
 	
 	-- Iterates the edges. Aborts the process when the proceed-flag goes false:
@@ -114,7 +222,7 @@ package et_geometry_2.polygons is
 	-- If the polygon consist of just a circle then an exception is raised: -- CS remove
 	function get_segment_edge ( -- CS rename to get_edge
 		polygon	: in type_polygon;
-		edge	: in type_line)
+		edge	: in type_edge)
 		return pac_edges.cursor;
 
 
@@ -127,10 +235,10 @@ package et_geometry_2.polygons is
 	-- exception is raised. -- CS remove
 	-- If the given point does not lie on an edge then
 	-- the return is no_element:
-	function get_segment_edge ( -- CS rename to get_edge
-		polygon	: in type_polygon;
-		point	: in type_point)
-		return pac_edges.cursor;
+	--function get_segment_edge ( -- CS rename to get_edge
+		--polygon	: in type_polygon;
+		--point	: in type_point)
+		--return pac_edges.cursor;
 
 
 	
@@ -150,10 +258,10 @@ package et_geometry_2.polygons is
 	-- The given point must be a vertex. Otherwise an exception is raised.
 	-- If the polygon consists of just a circle then an
 	-- exception is raised.
-	function get_neigboring_edges (
-		polygon	: in type_polygon;
-		vertex	: in type_point)
-		return type_neigboring_edges;
+	--function get_neigboring_edges (
+		--polygon	: in type_polygon;
+		--vertex	: in type_point)
+		--return type_neigboring_edges;
 
 
 
@@ -196,10 +304,10 @@ package et_geometry_2.polygons is
 
 	-- Returns true if the given point is a vertex
 	-- of the given polygon:
-	function is_vertex (
-		polygon	: in type_polygon;
-		point	: in type_point)
-		return boolean;
+	--function is_vertex (
+		--polygon	: in type_polygon;
+		--point	: in type_point)
+		--return boolean;
 
 	
 	
@@ -247,7 +355,7 @@ private
 	type type_probe_line_intersection_polygon is record
 		x_position	: type_float_internal;
 		angle		: type_rotation := zero_rotation;
-		edge		: type_line;
+		edge		: type_edge;
 	end record;
 
 	
@@ -368,7 +476,7 @@ private
 	-- returned.
 	function get_direction (
 		polygon	: in type_polygon;
-		line	: in type_line;
+		line	: in type_edge;
 		point	: in type_vector)
 		return type_point_of_contact;
 
@@ -401,7 +509,7 @@ private
 	-- to the given reference point. Nearest comes first:
 	procedure sort_by_distance (
 		intersections	: in out pac_line_edge_intersections.list;
-		reference		: in type_point);
+		reference		: in type_vector);
 	
 
 
@@ -435,7 +543,7 @@ private
 	end record;
 
 
-	type type_line_to_polygon_status is record
+	type type_line_to_polygon_status is record -- CS rename to type_edge_to_polygon_status
 		-- The properties of the start and end point of the line:
 		start_point	: type_line_end;
 		end_point	: type_line_end;
@@ -459,7 +567,7 @@ private
 	
 	function get_line_to_polygon_status (
 		polygon	: in type_polygon;
-		line	: in type_line)
+		edge	: in type_edge)
 		return type_line_to_polygon_status;
 
 
@@ -472,8 +580,8 @@ private
 	type type_intersection is new type_intersection_base with record
 		-- This is supportive information. It helps
 		-- to find the edges that intersect:
-		edge_A		: type_line;
-		edge_B		: type_line;
+		edge_A		: type_edge;
+		edge_B		: type_edge;
 	end record;
 
 	
@@ -573,7 +681,7 @@ private
 
 	procedure sort_by_distance (
 		vertices	: in out pac_vertices.list;
-		reference	: in type_point);
+		reference	: in type_vector);
 
 	
 

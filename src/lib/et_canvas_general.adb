@@ -651,7 +651,7 @@ package body pac_canvas is
 
 
 	function to_string (rectangle : in type_bounding_box) return string is begin
-		return "rectangle " --to_string (set (rectangle.x, rectangle.y))
+		return "bounding box: "
 			& "x/y " & to_string (rectangle.x) & "/" & to_string (rectangle.y)
 			& " width" & to_string (rectangle.width)
 			& " height" & to_string (rectangle.height);

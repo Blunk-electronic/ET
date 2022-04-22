@@ -47,6 +47,221 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_2.polygons is
 
+
+	function to_string (
+		edge : in type_edge)
+		return string
+	is
+	begin
+		-- CS
+		return "";
+	end to_string;
+	
+
+	function to_edge (
+		line : in type_line)
+		return type_edge
+	is
+		result : type_edge;
+	begin
+		-- CS
+		return result;
+	end to_edge;
+	
+
+	function to_line (
+		edge : in type_edge)
+		return type_line
+	is
+		result : type_line;
+	begin
+		-- CS
+		return result;
+	end to_line;
+
+
+	function reverse_edge (
+		edge	: in type_edge)
+		return type_edge 
+	is begin
+		return (edge.end_point, edge.start_point);
+	end reverse_edge;
+
+	
+	function get_center (
+		edge : in type_edge)
+		return type_vector
+	is
+		result : type_vector;
+	begin
+		-- CS
+		return result;
+	end get_center;
+
+
+	function get_direction (
+		edge : in type_edge)
+		return type_rotation
+	is
+		result : type_rotation := 0.0;
+	begin
+		-- CS
+		return result;
+	end get_direction;
+		
+
+	procedure move_by (
+		edge		: in out type_edge;
+		direction	: in type_rotation;
+		distance	: in type_distance_positive)
+	is
+	begin
+		-- CS
+		null;
+	end move_by;
+
+
+	function to_line_vector (
+		edge	: in type_edge)
+		return type_line_vector
+	is
+		result : type_line_vector;
+	begin
+		-- CS
+		return result;
+	end to_line_vector;
+
+
+	
+	function get_shortest_distance (
+		point	: in type_vector;
+		edge	: in type_edge)
+		return type_float_internal
+	is
+		result : type_float_internal := 0.0;
+	begin
+		-- CS
+		return result;
+	end get_shortest_distance;
+
+
+	function on_edge (
+		point	: in type_vector;
+		edge	: in type_edge)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- CS
+		return result;
+	end on_edge;
+
+
+	function get_nearest (
+		edge	: in type_edge;
+		point	: in type_vector;
+		place	: in type_nearest := AFTER)
+		return type_vector
+	is
+		result : type_vector;
+	begin
+		-- CS
+		return result;
+	end get_nearest;
+
+
+	
+
+	function lines_overlap (
+		edge_1, edge_2 : in type_edge)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- CS
+		return result;
+	end lines_overlap;
+
+
+	
+	function get_intersection (
+		line : in type_line_vector;
+		edge : in type_edge)
+		return type_intersection_of_two_lines
+	is
+		result : type_intersection_of_two_lines (EXISTS); -- CS
+	begin
+		-- CS
+		return result;
+	end get_intersection;
+
+
+	function get_intersection (
+		edge_1 : in type_edge;
+		edge_2 : in type_edge)
+		return type_intersection_of_two_lines
+	is
+		result : type_intersection_of_two_lines (EXISTS); -- CS
+	begin
+		-- CS
+		return result;
+	end get_intersection;
+
+	
+	function crosses_threshold (
+		edge : in type_edge;
+		y_th : in type_float_internal)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+
+		-- CS
+		return result;
+	end crosses_threshold;
+	
+	
+	function get_boundaries (
+		edge	: in type_edge)
+		return type_boundaries
+	is 
+		result : type_boundaries;
+	begin
+		-- X axis
+		if edge.start_point.x = edge.end_point.x then -- both ends on a vertical line
+
+			result.smallest_x := edge.start_point.x;
+			result.greatest_x := edge.start_point.x;
+			
+		elsif edge.start_point.x < edge.end_point.x then
+			
+			result.smallest_x := edge.start_point.x;
+			result.greatest_x := edge.end_point.x;
+		else
+			result.smallest_x := edge.end_point.x;
+			result.greatest_x := edge.start_point.x;
+		end if;
+
+		-- Y axis
+		if edge.start_point.y = edge.end_point.y then -- both ends on a horizontal line
+
+			result.smallest_y := edge.start_point.y;
+			result.greatest_y := edge.start_point.y;
+			
+		elsif edge.start_point.y < edge.end_point.y then
+			
+			result.smallest_y := edge.start_point.y;
+			result.greatest_y := edge.end_point.y;
+		else
+			result.smallest_y := edge.end_point.y;
+			result.greatest_y := edge.start_point.y;
+		end if;
+
+		
+		return result;
+	end get_boundaries;
+
+	
 	
 	procedure iterate (
 		edges	: in pac_edges.list;
@@ -105,7 +320,7 @@ package body et_geometry_2.polygons is
 		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
-			union (result, get_boundaries (element (c), zero));
+			union (result, get_boundaries (element (c)));
 		end query_edge;
 		
 	begin
@@ -184,16 +399,16 @@ package body et_geometry_2.polygons is
 		procedure do_it is
 
 			procedure query_edge (c : in pac_edges.cursor) is 
-				line_new : type_line;
+				edge_new : type_edge;
 				cursor_new : pac_edges.cursor;
 			begin
-				line_new := type_line (reverse_line (element (c)));
+				edge_new := reverse_edge (element (c));
 				
 				if polygon_new.edges.is_empty then
-					polygon_new.edges.append (line_new);
+					polygon_new.edges.append (edge_new);
 				else
 					cursor_new := polygon_new.edges.first;
-					polygon_new.edges.prepend (line_new);
+					polygon_new.edges.prepend (edge_new);
 				end if;
 			end query_edge;
 		
@@ -223,7 +438,7 @@ package body et_geometry_2.polygons is
 		ct_A : constant count_type := get_edges_total (polygon_A);
 		ct_B : constant count_type := get_edges_total (polygon_B);
 		
-		edge_A : type_line;
+		edge_A : type_edge;
 
 		edge_B_cursor : pac_edges.cursor;
 
@@ -285,7 +500,7 @@ package body et_geometry_2.polygons is
 
 	function get_segment_edge (
 		polygon	: in type_polygon;
-		edge	: in type_line)
+		edge	: in type_edge)
 		return pac_edges.cursor
 	is
 		result : pac_edges.cursor;
@@ -297,46 +512,46 @@ package body et_geometry_2.polygons is
 	
 
 
-	function get_segment_edge (
-		polygon	: in type_polygon;
-		point	: in type_point)
-		return pac_edges.cursor
-	is
-		result : pac_edges.cursor;
-		proceed : aliased boolean := true;
+	--function get_segment_edge (
+		--polygon	: in type_polygon;
+		--point	: in type_point)
+		--return pac_edges.cursor
+	--is
+		--result : pac_edges.cursor;
+		--proceed : aliased boolean := true;
 
-		--procedure query_segment (c : in pac_edges.cursor) is begin
-			--case element (c).shape is
-				--when LINE => 
-					--if on_line (point, element (c).segment_line) then
-						--result := c;
-						--proceed := false; -- abort iteration
-					--end if;
+		----procedure query_segment (c : in pac_edges.cursor) is begin
+			----case element (c).shape is
+				----when LINE => 
+					----if on_line (point, element (c).segment_line) then
+						----result := c;
+						----proceed := false; -- abort iteration
+					----end if;
 					
-				--when ARC => null; -- CS
-			--end case;
-		--end query_segment;
+				----when ARC => null; -- CS
+			----end case;
+		----end query_segment;
 
-		procedure query_edge (c : in pac_edges.cursor) is begin
-			if on_line (point, element (c)) then
-				result := c;
-				proceed := false; -- abort iteration
-			end if;
-		end query_edge;
+		--procedure query_edge (c : in pac_edges.cursor) is begin
+			--if on_line (point, element (c)) then
+				--result := c;
+				--proceed := false; -- abort iteration
+			--end if;
+		--end query_edge;
 
 		
-	begin
-		-- Make sure the given point is NOT a vertex:
-		-- CS: Maybe no need if caller cares for this check.
-		if is_vertex (polygon, point) then
-			raise constraint_error with "Point is a vertex !";
-		else
-			iterate (polygon.edges, query_edge'access, proceed'access);					 
-		end if;
+	--begin
+		---- Make sure the given point is NOT a vertex:
+		---- CS: Maybe no need if caller cares for this check.
+		--if is_vertex (polygon, point) then
+			--raise constraint_error with "Point is a vertex !";
+		--else
+			--iterate (polygon.edges, query_edge'access, proceed'access);					 
+		--end if;
 
-		-- CS exception message if polygon consists of just a circle.
-		return result;
-	end get_segment_edge;
+		---- CS exception message if polygon consists of just a circle.
+		--return result;
+	--end get_segment_edge;
 
 
 
@@ -344,57 +559,57 @@ package body et_geometry_2.polygons is
 
 	
 	
-	function get_neigboring_edges (
-		polygon	: in type_polygon;
-		vertex	: in type_point)
-		return type_neigboring_edges
-	is
-		result : type_neigboring_edges;
-		proceed : aliased boolean := true;
+	--function get_neigboring_edges (
+		--polygon	: in type_polygon;
+		--vertex	: in type_point)
+		--return type_neigboring_edges
+	--is
+		--result : type_neigboring_edges;
+		--proceed : aliased boolean := true;
 
-		end_found, start_found : boolean := false;
+		--end_found, start_found : boolean := false;
 		
 
-		procedure query_edge (c : in pac_edges.cursor) is begin
-			--put_line ("test: " & to_string (element (c)));
+		--procedure query_edge (c : in pac_edges.cursor) is begin
+			----put_line ("test: " & to_string (element (c)));
 			
-			if element (c).end_point = vertex then
-				--put_line ("end");
-				result.edge_1 := c;
-				end_found := true;
-			end if;
+			--if element (c).end_point = vertex then
+				----put_line ("end");
+				--result.edge_1 := c;
+				--end_found := true;
+			--end if;
 
-			if element (c).start_point = vertex then
-				--put_line ("start");
-				result.edge_2 := c;
-				start_found := true;
-			end if;
+			--if element (c).start_point = vertex then
+				----put_line ("start");
+				--result.edge_2 := c;
+				--start_found := true;
+			--end if;
 
-			-- Abort iteration once start and end point have been found
-			-- ("proceed" is low-active):
-			proceed := not (end_found and start_found);
+			---- Abort iteration once start and end point have been found
+			---- ("proceed" is low-active):
+			--proceed := not (end_found and start_found);
 	
-		end query_edge;
+		--end query_edge;
 
 		
-	begin
-		-- Make sure the given point IS a vertex:
-		if is_vertex (polygon, vertex) then
-			iterate (polygon.edges, query_edge'access, proceed'access);					 
-		else
-			raise constraint_error with "Point is a vertex !";
-		end if;
+	--begin
+		---- Make sure the given point IS a vertex:
+		--if is_vertex (polygon, vertex) then
+			--iterate (polygon.edges, query_edge'access, proceed'access);					 
+		--else
+			--raise constraint_error with "Point is a vertex !";
+		--end if;
 
-		-- Safety check:
-		-- Two edges must have been found. Otherwise raise exception:
-		if result.edge_1 = pac_edges.no_element 
-		or result.edge_2 = pac_edges.no_element
-		then
-			raise constraint_error with "Search for neigboring edges incomplete !";
-		end if;
+		---- Safety check:
+		---- Two edges must have been found. Otherwise raise exception:
+		--if result.edge_1 = pac_edges.no_element 
+		--or result.edge_2 = pac_edges.no_element
+		--then
+			--raise constraint_error with "Search for neigboring edges incomplete !";
+		--end if;
 
-		return result;
-	end get_neigboring_edges;
+		--return result;
+	--end get_neigboring_edges;
 
 
 
@@ -632,40 +847,40 @@ package body et_geometry_2.polygons is
 
 	
 
-	function is_vertex (
-		polygon	: in type_polygon;
-		point	: in type_point)
-		return boolean
-	is
-		proceed : aliased boolean := true;
+	--function is_vertex (
+		--polygon	: in type_polygon;
+		--point	: in type_point)
+		--return boolean
+	--is
+		--proceed : aliased boolean := true;
 
-		procedure query_edge (c : in pac_edges.cursor) is begin
-			--case element (c).shape is
-				--when LINE =>
-					--if element (c).segment_line.start_point = point then
-						--proceed := false;
-					--end if;
+		--procedure query_edge (c : in pac_edges.cursor) is begin
+			----case element (c).shape is
+				----when LINE =>
+					----if element (c).segment_line.start_point = point then
+						----proceed := false;
+					----end if;
 					
-				--when ARC =>
-					--if element (c).segment_arc.start_point = point then
-						--proceed := false;
-					--end if;
+				----when ARC =>
+					----if element (c).segment_arc.start_point = point then
+						----proceed := false;
+					----end if;
 			
-			--end case;
+			----end case;
 
-			if element (c).start_point = point then
-				proceed := false;
-			end if;
-		end query_edge;
+			--if element (c).start_point = point then
+				--proceed := false;
+			--end if;
+		--end query_edge;
 		
-	begin
-		iterate (
-			edges	=> polygon.edges,
-			process	=> query_edge'access,
-			proceed	=> proceed'access);
+	--begin
+		--iterate (
+			--edges	=> polygon.edges,
+			--process	=> query_edge'access,
+			--proceed	=> proceed'access);
 
-		return not proceed;
-	end is_vertex;
+		--return not proceed;
+	--end is_vertex;
 
 	
 	
@@ -711,23 +926,8 @@ package body et_geometry_2.polygons is
 	is
 		proceed : aliased boolean := true;
 
-		--procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-			--case element (c).shape is
-				--when LINE =>
-					--if to_vector (element (c).segment_line.start_point) = point then
-						--proceed := false;
-					--end if;
-					
-				--when ARC =>
-					--if to_vector (element (c).segment_arc.start_point) = point then
-						--proceed := false;
-					--end if;
-			
-			--end case;
-		--end query_segment;
-
 		procedure query_edge (c : in pac_edges.cursor) is begin
-			if to_vector (element (c).start_point) = point then
+			if element (c).start_point = point then
 				proceed := false;
 			end if;
 		end query_edge;
@@ -752,7 +952,7 @@ package body et_geometry_2.polygons is
 		proceed : aliased boolean := true;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
-			if on_line (point, element (c)) then
+			if on_edge (point, element (c)) then
 				result := c;
 				proceed := false; -- abort iteration
 			end if;
@@ -784,13 +984,13 @@ package body et_geometry_2.polygons is
 		procedure query_edge (c : in pac_edges.cursor) is begin
 			--put_line ("test: " & to_string (element (c)));
 			
-			if to_vector (element (c).end_point) = vertex then
+			if element (c).end_point = vertex then
 				--put_line ("end");
 				result.edge_1 := c;
 				end_found := true;
 			end if;
 
-			if to_vector (element (c).start_point) = vertex then
+			if element (c).start_point = vertex then
 				--put_line ("start");
 				result.edge_2 := c;
 				start_found := true;
@@ -984,7 +1184,7 @@ package body et_geometry_2.polygons is
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
 			intersection: in et_geometry_2.type_intersection; -- incl. point and angle
-			edge		: in type_line)
+			edge		: in type_edge)
 		is 
 			xi : constant type_float_internal := get_x (intersection.vector);
 		begin
@@ -1185,7 +1385,7 @@ package body et_geometry_2.polygons is
 
 	function get_direction (
 		polygon	: in type_polygon;
-		line	: in type_line;
+		line	: in type_edge;
 		point	: in type_vector)
 		return type_point_of_contact
 	is
@@ -1205,11 +1405,11 @@ package body et_geometry_2.polygons is
 		point_on_start, point_on_end : boolean := false;
 		
 	begin
-		if point = to_vector (line.start_point) then
+		if point = line.start_point then
 			point_on_start := true;
 		end if;
 
-		if point = to_vector (line.end_point) then
+		if point = line.end_point then
 			point_on_end := true;
 		end if;
 
@@ -1346,7 +1546,7 @@ package body et_geometry_2.polygons is
 	
 	procedure sort_by_distance (
 		intersections	: in out pac_line_edge_intersections.list;
-		reference		: in type_point)
+		reference		: in type_vector)
 	is
 		type type_item is record
 			intersection: type_intersection_line_edge;
@@ -1455,7 +1655,7 @@ package body et_geometry_2.polygons is
 	
 	function get_line_to_polygon_status (
 		polygon	: in type_polygon;
-		line	: in type_line)
+		edge	: in type_edge)
 		return type_line_to_polygon_status
 	is
 		result : type_line_to_polygon_status;
@@ -1464,7 +1664,7 @@ package body et_geometry_2.polygons is
 		
 		procedure set_line_start is 
 			PPS : constant type_point_to_polygon_status := 
-				get_point_to_polygon_status (polygon, to_vector (line.start_point));
+				get_point_to_polygon_status (polygon, edge.start_point);
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -1491,7 +1691,7 @@ package body et_geometry_2.polygons is
 		
 		procedure set_line_end is 
 			PPS : constant type_point_to_polygon_status := 
-				get_point_to_polygon_status (polygon, to_vector (line.end_point));
+				get_point_to_polygon_status (polygon, edge.end_point);
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -1520,21 +1720,21 @@ package body et_geometry_2.polygons is
 			
 			procedure query_edge (c : in pac_edges.cursor) is 
 				I2L : constant type_intersection_of_two_lines := 
-					get_intersection (element (c), line);
+					get_intersection (element (c), edge);
 
 				I_rounded : type_vector;
-				IP : type_point;
+				IP : type_vector;
 	
 			begin
 				-- We are interested in an edge that DOES intersect in some way
-				-- the given line. Otherwise the candidate edge is to be skipped:
+				-- the given edge. Otherwise the candidate edge is to be skipped:
 				if I2L.status = EXISTS then
-					IP := to_point (I2L.intersection.vector);
+					IP := I2L.intersection.vector;
 
 					-- If the intersection is right on the start or the end
-					-- of the given line the the candidate edge is to be skipped:
-					if IP = line.start_point 
-					or IP = line.end_point
+					-- of the given edge the the candidate edge is to be skipped:
+					if IP = edge.start_point 
+					or IP = edge.end_point
 					then
 						null; -- skip this intersection point entirely
 					else
@@ -1576,7 +1776,7 @@ package body et_geometry_2.polygons is
 			--   This erroneous intersection will later be removed from the
 			--   list of intersections:			
 			procedure set_direction (i : in out type_intersection_line_edge) is
-				POC : constant type_point_of_contact := get_direction (polygon, line, i.position);
+				POC : constant type_point_of_contact := get_direction (polygon, edge, i.position);
 			begin
 				-- If the given supposed intersection can not be confirmed as such
 				-- then the intersection is erroneous and the flag "delete_intersection" is set,
@@ -1603,7 +1803,7 @@ package body et_geometry_2.polygons is
 				when ON_EDGE =>
 					declare
 						POC : constant type_point_of_contact := 
-							get_direction (polygon, line, to_vector (line.start_point));
+							get_direction (polygon, edge, edge.start_point);
 					begin
 						result.start_point.direction_on_edge := POC.direction;
 					end;
@@ -1611,13 +1811,13 @@ package body et_geometry_2.polygons is
 				when ON_VERTEX =>
 					declare
 						POC : constant type_point_of_contact := 
-							get_direction (polygon, line, to_vector (line.start_point));
+							get_direction (polygon, edge, edge.start_point);
 					begin
 						result.start_point.direction_on_vertex := POC.direction;
 					end;
 			end case;
 
-			-- In case the end point of the line lies on an edge or on a vertex
+			-- In case the end point of the edge lies on an edge or on a vertex
 			-- then assign the direction of this intersection:
 			case result.end_point.location is
 				when OUTSIDE | INSIDE =>
@@ -1626,7 +1826,7 @@ package body et_geometry_2.polygons is
 				when ON_EDGE =>
 					declare
 						POC : constant type_point_of_contact := 
-							get_direction (polygon, line, to_vector (line.end_point));
+							get_direction (polygon, edge, edge.end_point);
 					begin
 						result.end_point.direction_on_edge := POC.direction;
 					end;
@@ -1634,7 +1834,7 @@ package body et_geometry_2.polygons is
 				when ON_VERTEX =>
 					declare
 						POC : constant type_point_of_contact := 
-							get_direction (polygon, line, to_vector (line.end_point));
+							get_direction (polygon, edge, edge.end_point);
 					begin
 						result.end_point.direction_on_vertex := POC.direction;
 					end;
@@ -1703,7 +1903,7 @@ package body et_geometry_2.polygons is
 		-- center of the given line tells whether the line runs
 		-- completely inside or outside the polygon.
 		if result.intersections.is_empty then
-			line_center := get_center (line);
+			line_center := get_center (edge);
 
 			--put_line ("center" & to_string (line_center));
 			
@@ -1716,7 +1916,7 @@ package body et_geometry_2.polygons is
 		end if;
 
 		-- Sort intersections by their distance to the start point.
-		sort_by_distance (result.intersections, line.start_point);
+		sort_by_distance (result.intersections, edge.start_point);
 		
 		-- Assign directions of start and end point and the intersections
 		-- betweeen start and end:
@@ -1848,7 +2048,7 @@ package body et_geometry_2.polygons is
 		-- outside polygon B.
 		procedure query_edge (c : in pac_edges.cursor) is 
 			IPQ : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon_B, to_vector (element (c).start_point));
+				get_point_to_polygon_status (polygon_B, element (c).start_point);
 		begin
 			if IPQ.location = OUTSIDE then
 				proceed := false; -- abort iteration
@@ -1911,7 +2111,7 @@ package body et_geometry_2.polygons is
 
 	procedure sort_by_distance (
 		vertices	: in out pac_vertices.list;
-		reference	: in type_point)
+		reference	: in type_vector)
 	is
 		type type_item is record
 			-- We will be sorting intersections only (no regular vertices):
@@ -2062,18 +2262,18 @@ package body et_geometry_2.polygons is
 		result : type_polygon;
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is 
-			edge : type_line;
+			edge : type_edge;
 		begin
 			-- The candidate vertex becomes the end of 
 			-- the edge:
-			edge.end_point := to_point (element (v).position);
+			edge.end_point := element (v).position;
 
 			-- The vertex before the candidate vertex 
 			-- will be the start of the edge:
 			if v = vertices.first then
-				edge.start_point := to_point (element (vertices.last).position);
+				edge.start_point := element (vertices.last).position;
 			else
-				edge.start_point := to_point (element (previous (v)).position);
+				edge.start_point := element (previous (v)).position;
 			end if;
 			
 			append (result.edges, edge);
@@ -2135,7 +2335,7 @@ package body et_geometry_2.polygons is
 				-- The intersection of edge A and B:
 				IAB : type_intersection;
 			begin
-				IAB.position := to_vector (element (a).start_point);
+				IAB.position := element (a).start_point;
 				IAB.edge_A := element (a);
 				
 				case LPS.start_point.location is
@@ -2181,7 +2381,7 @@ package body et_geometry_2.polygons is
 				-- The intersection of edge A and B:
 				IAB : type_intersection;
 			begin
-				IAB.position := to_vector (element (a).end_point);
+				IAB.position := element (a).end_point;
 				IAB.edge_A := element (a);
 				
 				case LPS.end_point.location is
@@ -2668,7 +2868,7 @@ package body et_geometry_2.polygons is
 		-- The parameter AB determines whether to look for intersections
 		-- on edges of the A or the B polygon:
 		function get_intersections_on_edge (
-			edge	: in type_line)
+			edge	: in type_edge)
 			return pac_vertices.list
 		is 
 			result : pac_vertices.list;
@@ -2713,7 +2913,7 @@ package body et_geometry_2.polygons is
 
 			-- The first vertex to be added to the result is where
 			-- the candidate edge starts:
-			position := to_vector (element (s).start_point);
+			position := element (s).start_point;
 			
 			vertices.append (new_item => (
 				category	=> REGULAR,

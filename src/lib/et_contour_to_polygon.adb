@@ -114,13 +114,13 @@ package body et_contour_to_polygon is
 		-- Builds a final edge from the current location vectors 
 		-- p_walk and p_walk_previous and appends it to the result:
 		procedure make_edge is
-			edge : type_line;
+			edge : type_edge;
 		begin
 			-- CS: Improvement required: It would be sufficient to call move_by
 			-- only once. The start point of an edge is the same as the end point
 			-- of the previous edge.
-			edge.start_point := to_point (move_by (p_walk_previous, arc_offset));
-			edge.end_point   := to_point (move_by (p_walk,          arc_offset));
+			edge.start_point := move_by (p_walk_previous, arc_offset);
+			edge.end_point   := move_by (p_walk,          arc_offset);
 
 			result.append (edge);
 
@@ -195,9 +195,9 @@ package body et_contour_to_polygon is
 		begin
 			case s.shape is
 				when LINE =>
-					-- Append the segment line as it is to the 
+					-- Convert the line to an edge and append to
 					-- edges of the resulting polygon:
-					result.edges.append (s.segment_line);
+					result.edges.append (to_edge (s.segment_line));
 
 				when ARC =>
 					-- Convert the arc to a list of small lines
@@ -226,7 +226,7 @@ package body et_contour_to_polygon is
 		result : type_contour;
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			l :  type_line := element (c);
+			l :  type_edge := element (c); -- CS use rename
 		begin
 			if debug then
 				put_line (to_string (l));
@@ -235,7 +235,7 @@ package body et_contour_to_polygon is
 			-- Add the edge as a line segment to the contour:
 			result.contour.segments.append ((
 				shape			=> LINE,
-				segment_line	=> l));
+				segment_line	=> to_line (l)));
 			
 		end query_edge;
 

@@ -53,15 +53,15 @@ package body et_geometry_2.polygons.offsetting is
 		
 		
 		function offset_line (
-			line : in type_line)
+			line : in type_edge)
 			return type_line_vector
 		is
-			line_new : type_line := line;
+			line_new : type_edge := line;
 			center : type_vector := get_center (line);
 			
 			line_direction : type_rotation := get_direction (line);
 			dir_scratch : type_rotation;			
-			test_point : type_point;
+			test_point : type_vector;
 
 			-- These two procedures move the line_new to the right or
 			-- to the left (seen relative to the line direction):
@@ -77,14 +77,14 @@ package body et_geometry_2.polygons.offsetting is
 			-- Set a test point that is very close to the center of the line.
 			-- The point is located in direction dir_scratch away from the center:
 			dir_scratch := add (line_direction, +90.0);
-			test_point := type_point (move (to_point (center), dir_scratch, type_distance'small));
+			test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
 			--put_line ("tp " & to_string (test_point));
 
 			-- Depending on the location of the test point, means inside or outside
 			-- the polygon and the mode we move the line to the right or to the left:
 			declare
 				tp_status : constant type_point_to_polygon_status :=
-					get_point_to_polygon_status (polygon, to_vector (test_point));
+					get_point_to_polygon_status (polygon, test_point);
 			begin
 				case mode is
 					when EXPAND =>
@@ -129,7 +129,7 @@ package body et_geometry_2.polygons.offsetting is
 
 		polygon_segments_new : pac_edges.list;
 		
-		INIT, LS, LE : type_point;
+		INIT, LS, LE : type_vector;
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
 
 		
@@ -147,7 +147,7 @@ package body et_geometry_2.polygons.offsetting is
 				cs := line_vectors.last;
 				I := get_intersection (element (cp), element (cs));
 
-				LS := to_point (I.intersection.vector);
+				LS := I.intersection.vector;
 				INIT := LS;
 
 				
@@ -155,7 +155,7 @@ package body et_geometry_2.polygons.offsetting is
 				cs := previous (cp);
 				I := get_intersection (element (cp), element (cs));
 
-				LE := to_point (I.intersection.vector);
+				LE := I.intersection.vector;
 
 				-- line complete. append to new segments:
 				--polygon_segments_new.segments.append (

@@ -514,11 +514,13 @@ package et_geometry_2 is
 		line	: in type_line)
 		return type_vector;
 
+	
 	-- Returns the direction vector of a line:
 	function direction_vector ( -- CS rename to get_direction_vector
 		line	: in type_line)
 		return type_vector;
 
+	
 	-- Converts a line (consisting of start and end point)
 	-- to a line vector consisting of start vector and
 	-- direction vector.
@@ -556,6 +558,7 @@ package et_geometry_2 is
 		line	: in type_line)
 		return type_rotation;
 
+	
 	-- Moves a line in the given direction by the given distance:
 	procedure move_by (
 		line		: in out type_line;
