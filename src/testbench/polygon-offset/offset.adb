@@ -68,7 +68,8 @@ begin
 
 	
 	C := type_contour (to_contour (S));
-
+	--put_line ("contour: " & to_string (C));
+	
 	-- expand polygon:
 	--P := to_polygon (C, tolerance);
 	--offset_polygon (P, +1.0); 

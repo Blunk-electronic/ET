@@ -1027,89 +1027,6 @@ package body et_geometry_2 is
 	end get_tangent_direction;
 
 	
-	function crosses_threshold ( -- CS remove ?
-		line		: in type_line;	
-		y_threshold	: in type_distance)
-		return boolean
-	is begin
-		if	
-			get_y (line.start_point) >= y_threshold and 
-			get_y (line.end_point)   <  y_threshold then
-			return true;
-			
-		elsif
-			get_y (line.end_point)   >= y_threshold and 
-			get_y (line.start_point) <  y_threshold then
-			return true;
-			
-		else
-			return false;
-		end if;
-	end crosses_threshold;
-
-
-	
-	
-	function get_center (
-		line	: in type_line)
-		return type_vector
-	is
-		dp : constant type_distance_polar := 
-			get_distance (line.start_point, line.end_point);
-	begin
-		--return to_vector (type_point (move (
-			--point		=> line.start_point,
-			--direction	=> get_angle (dp),
-			--distance	=> get_absolute (dp) * 0.5)));
-
-		return move_by (
-			v			=> to_vector (line.start_point),
-			direction	=> get_angle (dp),
-			distance	=> type_float_internal (get_absolute (dp) * 0.5));
-		
-		-- CS rework using line vector
-	end get_center;
-
-
-	
-	function get_nearest (
-		line	: in type_line;
-		point	: in type_vector;
-		place	: in type_nearest := AFTER)
-		return type_vector
-	is
-		result : type_vector := point;
-		d : constant type_distance_polar := get_distance (line.start_point, line.end_point);
-
-		--m : constant type_distance_positive := 10.0;
-	begin
-		case place is
-			when AFTER => -- move forward in direction of line
-				--result := type_point (move (
-					--point		=> point,
-					--direction	=> get_angle (d),
-					--distance	=> m * type_distance'small));
-
-				move_by (
-					v			=> result,
-					direction	=> get_angle (d),
-					distance	=> type_float_internal (type_distance'small));
-
-			when BEFORE => -- move backward in opposite direction
-				--result := type_point (move (
-					--point		=> point,
-					--direction	=> add (get_angle (d), 180.0),
-					--distance	=> m * type_distance'small));
-
-				move_by (
-					v			=> result,
-					direction	=> add (get_angle (d), 180.0),
-					distance	=> type_float_internal (type_distance'small));
-				
-		end case;
-		return result;
-	end get_nearest;
-
 	
 	
 	function get_intersection (
@@ -1204,19 +1121,6 @@ package body et_geometry_2 is
 	
 
 
-	function lines_overlap (
-		line_1, line_2 : in type_line)
-		return boolean
-	is
-		I2L : constant type_intersection_of_two_lines :=
-			get_intersection (line_1, line_2);
-	begin
-		if I2L.status = OVERLAP then
-			return true;
-		else
-			return false;
-		end if;
-	end lines_overlap;
 	
 	
 	function start_vector (

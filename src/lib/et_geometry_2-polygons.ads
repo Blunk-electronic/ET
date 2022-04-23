@@ -69,9 +69,9 @@ package et_geometry_2.polygons is
 		return type_line;
 
 	
-
+	-- Swaps start and end point of an edge:
 	function reverse_edge (
-		edge	: in type_edge)
+		edge : in type_edge)
 		return type_edge;
 	
 
@@ -140,6 +140,8 @@ package et_geometry_2.polygons is
 	
 
 
+	type type_nearest is (BEFORE, AFTER);
+	
 	-- Returns the nearest point after/before
 	-- a given point on the given line.
 	-- The argument "after" determines whether to return
@@ -152,25 +154,39 @@ package et_geometry_2.polygons is
 	
 
 	-- Returns true if the given two edges overlap each other.
-	-- Independend of start and end points, both lines are regarded as infinitely
+	-- Independend of start and end points, both edges are regarded as infinitely
 	-- long beyond their start and end points:
 	function lines_overlap (
 		edge_1, edge_2 : in type_edge)
 		return boolean;
 	
 
+	-- Tests whether the given line intersects the given candidate edge.
+	-- If there is an intersection between start and end point
+	-- of the candidate edge (start and end point included),
+	-- then returns the location vector of the intersection.
+	-- If the intersection is before start point or
+	-- beyond end point of the given line, return NOT_EXISTENT.
+	-- NOTE: The angle of intersection is measured between the 
+	-- start points of the two lines. It is always positive.
 	function get_intersection (
 		line : in type_line_vector;
 		edge : in type_edge)
 		return type_intersection_of_two_lines;
 	
 
+	-- Tests whether the given two edges intersect or overlap each other. 
+	-- Independend of start and end points, both edges are regarded as 
+	-- infinitely long beyond their start and end points:
 	function get_intersection (
 		edge_1 : in type_edge;
 		edge_2 : in type_edge)
 		return type_intersection_of_two_lines;
 	
 
+	-- If the start/end point of the candidate edge is ABOVE-OR-ON the 
+	-- threshold AND if the end/start point of the candidate line is BELOW the
+	-- threshold then we consider the edge to be threshold-crossing.
 	function crosses_threshold (
 		edge : in type_edge;
 		y_th : in type_float_internal)

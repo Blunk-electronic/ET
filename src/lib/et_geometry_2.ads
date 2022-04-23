@@ -442,37 +442,6 @@ package et_geometry_2 is
 		return type_line_direction;
 
 	
-	
-	-- If the start/end point of the candidate line is ABOVE-OR-ON the 
-	-- threshold AND if the end/start point of the candidate line is BELOW the
-	-- threshold then we consider the line to be threshold-crossing.
-	function crosses_threshold ( -- CS remove ?
-		line		: in type_line;	
-		y_threshold	: in type_distance)
-		return boolean;
-
-	
-	-- Returns the point on the given line
-	-- that is between its start and end point:
-	function get_center (
-		line	: in type_line)
-		return type_vector;
-
-
-
-	
-	type type_nearest is (BEFORE, AFTER);
-	
-	-- Returns the nearest point after/before
-	-- a given point on the given line.
-	-- The argument "after" determines whether to return
-	-- a point before or after the given point:
-	function get_nearest (
-		line	: in type_line;
-		point	: in type_vector;
-		place	: in type_nearest := AFTER)
-		return type_vector;
-
 
 
 	
@@ -499,14 +468,6 @@ package et_geometry_2 is
 	function get_intersection (
 		line_1, line_2 : in type_line)
 		return type_intersection_of_two_lines;
-
-	
-	-- Returns true if the given two lines overlap each other.
-	-- Independend of start and end points, both lines are regarded as infinitely
-	-- long beyond their start and end points:
-	function lines_overlap (
-		line_1, line_2 : in type_line)
-		return boolean;
 
 	
 	

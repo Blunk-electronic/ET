@@ -86,7 +86,7 @@ package body et_geometry_2.polygons is
 
 
 	function reverse_edge (
-		edge	: in type_edge)
+		edge : in type_edge)
 		return type_edge 
 	is begin
 		return (edge.end_point, edge.start_point);
