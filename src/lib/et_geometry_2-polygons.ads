@@ -90,27 +90,51 @@ package et_geometry_2.polygons is
 		return type_rotation;
 
 
-	-- Moves a line in the given direction by the given distance:
+	-- Moves an edge in the given direction by the given distance:
+	procedure move_by (
+		edge		: in out type_edge;
+		direction	: in type_rotation;
+		distance	: in type_float_internal_positive);
+
 	procedure move_by (
 		edge		: in out type_edge;
 		direction	: in type_rotation;
 		distance	: in type_distance_positive);
 
-
+	
 	function to_line_vector (
 		edge	: in type_edge)
 		return type_line_vector;
 
 
+	-- Computes the distance between a location vector and a line.
+	-- This computation does not care about end or start point of the line.
+	-- It assumes an indefinite long line without start or end point.
+	function get_distance (
+		edge	: in type_edge;
+		vector	: in type_vector)
+		return type_float_internal;
+
+	
+	-- Computes the shortest distance (perpendicular) of a
+	-- point to a line. 		
+	function get_distance (
+		vector		: in type_vector; 
+		edge		: in type_edge;
+		line_range	: in type_line_range)
+		return type_distance_point_line;
+
+	
+
 	function get_shortest_distance (
-		point	: in type_vector;
+		vector	: in type_vector;
 		edge	: in type_edge)
 		return type_float_internal;
 
 
 
 	function on_edge (
-		point	: in type_vector;
+		vector	: in type_vector;
 		edge	: in type_edge)
 		return boolean;
 	
@@ -122,7 +146,7 @@ package et_geometry_2.polygons is
 	-- a point before or after the given point:
 	function get_nearest (
 		edge	: in type_edge;
-		point	: in type_vector;
+		vector	: in type_vector;
 		place	: in type_nearest := AFTER)
 		return type_vector;
 	

@@ -162,6 +162,17 @@ package body et_geometry_2 is
 	end equals;
 
 
+	function get_displacement (
+		v1, v2 : in type_vector)
+		return type_vector
+	is begin
+		return (
+			v2.x - v1.x,
+			v2.y - v1.y,
+			v2.z - v1.z);
+	end get_displacement;
+
+	
 	procedure round (
 		vector	: in out type_vector;
 		accuracy: in type_rounding_accuracy)

@@ -101,6 +101,13 @@ package et_geometry_2 is
 		left, right : in type_vector)
 		return boolean;
 
+
+	-- Returns the displacement vector from v1 to v2:
+	function get_displacement (
+		v1, v2 : in type_vector)
+		return type_vector;
+
+	
 	-- Rounds the x,y,z components of a vector
 	-- to the given number of decimal places:
 	procedure round (
@@ -159,7 +166,7 @@ package et_geometry_2 is
 	--         the returned angle is zero. So it is wise to test the two vectors
 	--         for equality befor calling this function.
 	function get_distance (
-		vector_one, vector_two : in type_vector)
+		vector_one, vector_two : in type_vector) -- CS rename to v1 and v2
 		return type_distance_polar;
 
 	

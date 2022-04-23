@@ -51,10 +51,9 @@ package body et_geometry_2.polygons is
 	function to_string (
 		edge : in type_edge)
 		return string
-	is
-	begin
-		-- CS
-		return "";
+	is begin
+		return "edge: start: " & to_string (edge.start_point) 
+			& " end: " & to_string (edge.end_point);
 	end to_string;
 	
 
@@ -64,7 +63,8 @@ package body et_geometry_2.polygons is
 	is
 		result : type_edge;
 	begin
-		-- CS
+		result.start_point := to_vector (line.start_point);
+		result.end_point := to_vector (line.end_point);
 		return result;
 	end to_edge;
 	
@@ -75,7 +75,8 @@ package body et_geometry_2.polygons is
 	is
 		result : type_line;
 	begin
-		-- CS
+		result.start_point := to_point (edge.start_point);
+		result.end_point := to_point (edge.end_point);
 		return result;
 	end to_line;
 
@@ -93,8 +94,16 @@ package body et_geometry_2.polygons is
 		return type_vector
 	is
 		result : type_vector;
+		dp : type_vector; -- displacement vector
 	begin
-		-- CS
+		-- get the displacement:
+		dp := get_displacement (edge.start_point, edge.end_point);
+
+		-- halve the displacement
+		dp := scale (dp, 0.5);
+
+		-- move start point by displacement
+		result := add (edge.start_point, dp);
 		return result;
 	end get_center;
 
@@ -103,21 +112,42 @@ package body et_geometry_2.polygons is
 		edge : in type_edge)
 		return type_rotation
 	is
-		result : type_rotation := 0.0;
+		dp : type_vector;
 	begin
-		-- CS
-		return result;
+		-- get the displacement:
+		dp := get_displacement (edge.start_point, edge.end_point);
+
+		-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		if dp.x = 0.0 and dp.y = 0.0 then
+			return zero_rotation;
+		else
+			return to_rotation (arctan (dp.y, dp.x, units_per_cycle));
+		end if;
 	end get_direction;
 		
 
 	procedure move_by (
 		edge		: in out type_edge;
 		direction	: in type_rotation;
+		distance	: in type_float_internal_positive)
+	is begin
+		move_by (
+			v 			=> edge.start_point, 
+			direction	=> direction, 
+			distance	=> distance);
+	end move_by;
+
+	
+	procedure move_by (
+		edge		: in out type_edge;
+		direction	: in type_rotation;
 		distance	: in type_distance_positive)
-	is
-	begin
-		-- CS
-		null;
+	is begin
+		move_by (
+			v 			=> edge.start_point, 
+			direction	=> direction, 
+			distance	=> type_float_internal_positive (distance));
 	end move_by;
 
 
@@ -126,48 +156,342 @@ package body et_geometry_2.polygons is
 		return type_line_vector
 	is
 		result : type_line_vector;
+		dp : type_vector;
 	begin
-		-- CS
+		dp := get_displacement (edge.start_point, edge.end_point);
+		
+		result.v_start := edge.start_point;
+		result.v_direction := dp;
 		return result;
 	end to_line_vector;
 
 
+	function get_distance (
+		edge	: in type_edge;
+		vector	: in type_vector)
+		return type_float_internal
+	is
+		dv : constant type_vector := to_line_vector (edge).v_direction;
+		sv : constant type_vector := edge.start_point;
+		
+		d1 : constant type_vector := subtract (vector, sv);
+		m, n : type_float_internal;
+	begin
+		m := absolute (cross_product (dv, d1));
+		n := absolute (dv);
+		
+		return (m / n);
+	end get_distance;
+
+
+
+	function get_distance (
+		vector		: in type_vector;
+		edge		: in type_edge;
+		line_range	: in type_line_range)
+		return type_distance_point_line 
+	is
+		result : type_distance_point_line;
+	
+		-- Imagine a line that starts on the given location vector,
+		-- travels perpendicular towards
+		-- the given line and finally intersects the given line somewhere.
+		-- The intersection may be betweeen the start and end point of the given line.
+		-- The intersection may be virtual, before start or after end point 
+		-- of the given line.
+		
+		line_direction : constant type_rotation := get_direction (edge);
+		line_direction_vector : constant type_vector := to_line_vector (edge).v_direction;
+		line_start_vector, line_end_vector : type_vector;
+
+		iv : type_vector;
+
+		procedure compute_intersection is 
+			distance : type_float_internal;
+		begin
+			-- Compute the point of intersection: The intersection of a line that runs
+			-- from the given location vector perpendicular to the given line.
+			-- For the moment we do not know which direction to go. So we just try
+			-- to go in 90 degree direction. If the distance from iv to the line
+			-- is not zero, then we try in -90 degree direction.
+
+			iv := vector;
+			move_by (iv, line_direction + 90.0, result.distance);
+
+			distance := get_distance (edge, iv);
+			--log (text => "delta  :" & type_float_internal'image (distance));
+			
+			if distance > rounding_threshold then
+				--put_line ("wrong direction");
+				
+				-- we went the wrong direction
+				iv := vector; -- restore iv
+
+				-- try opposite direction:
+				move_by (iv, line_direction - 90.0, result.distance);
+			end if;
+
+			--put_line ("iv" & to_string (iv));
+			
+			-- Assign the direction (from point to intersection) to the result:
+			result.direction := get_angle (get_distance (vector, iv));
+			--put_line ("direction" & to_string (result.direction));
+
+			-- Assign the virtual point of intersection to the result:
+			result.intersection := iv;
+		end compute_intersection;
+		
+		lambda_forward, lambda_backward : type_float_internal;
+	begin
+		--put_line ("line direction vector: " & to_string (line_direction_vector));
+		--put_line ("line direction angle : " & to_string (line_direction));
+		
+		-- The first and simplest test is to figure out whether
+		-- the given point sits exactly on the start or end point of the line.
+		-- Mind: result.distance has default zero.
+		-- This test includes the start and end points of the line. 
+		-- On match we exit this function prematurely and return the result
+		-- with the appropiate flags set.
+		case line_range is
+			when WITH_END_POINTS | BEYOND_END_POINTS =>
+				
+				if vector = edge.start_point then
+					
+					result.sits_on_start := true;
+					result.out_of_range := false;
+					return result;
+
+				elsif vector = edge.end_point then
+					
+					result.sits_on_end := true;
+					result.out_of_range := false;
+					return result;
+
+				end if;
+				
+			when others => null;
+		end case;
+
+		---- If the ends of the line are included,
+		---- test whether the point is in the vicinity of the line start or end point.
+		---- Exit this function prematurely in that case.
+		--if line_range = WITH_END_POINTS then
+
+			---- compute distance of point to start of line:
+			--result.distance := get_distance_total (point, line.start_point);
+			
+			--if result.distance <= accuracy then
+				--result.out_of_range := false;
+				--return result;
+			--end if;
+
+			--if point = line.start_point then
+				--result.out_of_range := false;
+				--return result;
+			--end if;
+				
+
+			---- compute distance of point to end of line:
+			--result.distance := get_distance_total (point, line.end_point);
+			
+			--if result.distance <= accuracy then
+				--result.out_of_range := false;
+				--return result;
+			--end if;
+
+		--end if;
+		
+		-- Compute the distance from the given point to the given line.
+		-- This computation does not care about end or start point of the line.
+		-- It assumes an indefinite long line without start or end point.
+		result.distance := get_distance (edge, vector);
+
+		--put_line ("distance " & to_string (result.distance));
+
+		-- Set iv so that it points to the intersection. The
+		-- intersection can be anywhere on that indefinite long line.
+		compute_intersection;
+
+		
+		-- Any point on a line can be computed by this formula (see textbook on vector algebra):
+		-- iv = line.start_point + lambda_forward  * line_direction_vector
+		-- iv = line.end_point   + lambda_backward * line_direction_vector
+
+		-- Using these formula we can calculate whether iv points between 
+		-- (or to) the start and/or end points of the line:
+		
+		line_start_vector := edge.start_point;
+		lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
+
+		--put_line ("lambda forward:" & to_string (lambda_forward));
+		
+		if lambda_forward < 0.0 then -- iv points BEFORE start of line
+			--put_line ("before start point");
+			case line_range is
+				when BEYOND_END_POINTS => result.out_of_range := false;
+				when others => result.out_of_range := true;
+			end case;
+
+			return result; -- no more computations required
+		end if;
+		
+		if lambda_forward = 0.0 then -- iv points TO start point of line
+			--put_line ("on start point");
+			case line_range is
+				when BETWEEN_END_POINTS => result.out_of_range := true;
+				when others => result.out_of_range := false;
+			end case;
+
+			return result; -- no more computations required
+		end if;
+
+		--put_line ("after start point");
+
+		
+		line_end_vector := edge.end_point;
+		lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
+
+		--put_line ("lambda backward:" & to_string (lambda_backward));
+		
+		if lambda_backward > 0.0 then -- iv points AFTER end of line
+			--put_line ("after end point");
+			case line_range is
+				when BEYOND_END_POINTS => result.out_of_range := false;
+				when others => result.out_of_range := true;
+			end case;
+
+			return result; -- no more computations required
+		end if;
+
+		if lambda_backward = 0.0 then -- iv points TO end point of line
+			--put_line ("on end point");
+			case line_range is
+				when BETWEEN_END_POINTS => result.out_of_range := true;
+				when others => result.out_of_range := false;
+			end case;
+
+			return result; -- no more computations required
+		end if;
+
+		--put_line ("before end point");
+
+		result.out_of_range := false;
+
+		return result;
+	end get_distance;
+
+	
 	
 	function get_shortest_distance (
-		point	: in type_vector;
+		vector	: in type_vector;
 		edge	: in type_edge)
 		return type_float_internal
 	is
 		result : type_float_internal := 0.0;
+		
+		d : constant type_distance_point_line := get_distance (
+			vector		=> vector,
+			edge		=> edge,
+			line_range	=> WITH_END_POINTS);
+
+		d_to_start, d_to_end : type_float_internal;
 	begin
-		-- CS
+		--put_line ("point" & to_string (point) & " " & to_string (line));
+		
+		if on_start_point (d) or on_end_point (d) then
+			-- Point is on top of start or end point of line.
+			--log (text => "on start or end");
+			null; -- result keeps its default (zero distance, zero angle)
+		else
+
+			--if on_line (get_intersection (d), line) then 
+			if not out_of_range (d) then
+				
+				-- An imaginary line can be drawn perpendicular from
+				-- point to line. Both intersect each other.
+				result := get_distance (d);
+			else
+				
+				-- No imaginary line can be drawn perpendicular from
+				-- point to line.
+
+				-- Compare the distances to the end points of the line:
+				d_to_start := get_distance_total (edge.start_point, vector);
+				d_to_end   := get_distance_total (edge.end_point, vector);
+
+				if d_to_start < d_to_end then
+					result := d_to_start;
+				else
+					result := d_to_end;
+				end if;
+				
+			end if;
+
+		end if;
+
+		--put_line (to_string (result));
+		
 		return result;
 	end get_shortest_distance;
 
 
+
 	function on_edge (
-		point	: in type_vector;
+		vector	: in type_vector;
 		edge	: in type_edge)
 		return boolean
 	is
-		result : boolean := false;
+		distance : type_distance_point_line;
 	begin
-		-- CS
-		return result;
+		distance := get_distance (vector, edge, WITH_END_POINTS);
+		
+		if not distance.out_of_range and distance.distance < rounding_threshold then
+			return true;
+		else
+			return false;
+		end if;
 	end on_edge;
+
 
 
 	function get_nearest (
 		edge	: in type_edge;
-		point	: in type_vector;
+		vector	: in type_vector;
 		place	: in type_nearest := AFTER)
 		return type_vector
 	is
-		result : type_vector;
+		result : type_vector := vector;
+		d : constant type_distance_polar := get_distance (edge.start_point, edge.end_point);
 	begin
-		-- CS
+		case place is
+			when AFTER => -- move forward in direction of line
+				--result := type_point (move (
+					--point		=> point,
+					--direction	=> get_angle (d),
+					--distance	=> m * type_distance'small));
+
+				move_by (
+					v			=> result,
+					direction	=> get_angle (d),
+					distance	=> type_float_internal (type_distance'small));
+					--distance	=> type_float_internal (type_float_internal'small)); -- CS
+
+			when BEFORE => -- move backward in opposite direction
+				--result := type_point (move (
+					--point		=> point,
+					--direction	=> add (get_angle (d), 180.0),
+					--distance	=> m * type_distance'small));
+
+				move_by (
+					v			=> result,
+					direction	=> add (get_angle (d), 180.0),
+					distance	=> type_float_internal (type_distance'small));
+					--distance	=> type_float_internal (type_float_internal'small)); -- CS
+				
+		end case;
 		return result;
 	end get_nearest;
+
 
 
 	
@@ -176,10 +500,14 @@ package body et_geometry_2.polygons is
 		edge_1, edge_2 : in type_edge)
 		return boolean
 	is
-		result : boolean := false;
+		I2L : constant type_intersection_of_two_lines :=
+			get_intersection (edge_1, edge_2);
 	begin
-		-- CS
-		return result;
+		if I2L.status = OVERLAP then
+			return true;
+		else
+			return false;
+		end if;
 	end lines_overlap;
 
 
@@ -189,10 +517,34 @@ package body et_geometry_2.polygons is
 		edge : in type_edge)
 		return type_intersection_of_two_lines
 	is
-		result : type_intersection_of_two_lines (EXISTS); -- CS
+		i : constant type_intersection_of_two_lines := get_intersection (
+				line_1	=> line,
+				line_2	=> to_line_vector (edge));
+		
 	begin
-		-- CS
-		return result;
+		case i.status is
+			when EXISTS =>
+				--put_line ("exists");
+				--put_line (to_string (probe_line));
+				--put_line (to_string (candidate_line));
+				--put_line (to_string (i.intersection.point));
+				
+				-- The intersection must be between start and end point of
+				-- the candidate line (start and end point itself included).
+				-- If the intersection is between start and end point
+				-- of candidate line, then return the intersection as it is.
+				-- If the intersection is before start point or
+				-- beyond end point, then return NOT_EXISTENT.
+				if on_edge (i.intersection.vector, edge) then
+					return i;
+				else
+					return (status => NOT_EXISTENT);
+				end if;
+
+			when others =>		
+				return i;
+		end case;
+		
 	end get_intersection;
 
 
@@ -201,24 +553,77 @@ package body et_geometry_2.polygons is
 		edge_2 : in type_edge)
 		return type_intersection_of_two_lines
 	is
-		result : type_intersection_of_two_lines (EXISTS); -- CS
+		lv_1 : constant type_line_vector := to_line_vector (edge_1);
+		lv_2 : constant type_line_vector := to_line_vector (edge_2);
+
+		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, edge_2);
+		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, edge_1);
+
+		status : type_intersection_status_of_two_lines;
+		intersection : et_geometry_2.type_intersection;
+		
 	begin
-		-- CS
-		return result;
+		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
+			--status := NOT_EXISTENT;
+
+		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
+			status := OVERLAP;
+			
+		elsif int_A.status = EXISTS and int_B.status = EXISTS then
+
+			-- double check: location vectors must match !
+			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
+				status := EXISTS;
+				intersection.vector := int_A.intersection.vector;
+				intersection.angle := int_A.intersection.angle;
+			else
+				raise constraint_error with 
+					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
+					& to_string (int_B.intersection.vector);
+			end if;
+
+		else
+			status := NOT_EXISTENT;
+		end if;
+
+
+		case status is
+			when NOT_EXISTENT =>
+				return (status => NOT_EXISTENT);
+
+			when OVERLAP =>
+				return (status => OVERLAP);
+
+			when EXISTS =>
+				return (
+					status			=> EXISTS,
+					intersection	=> intersection);	   
+		end case;
+
 	end get_intersection;
+
 
 	
 	function crosses_threshold (
 		edge : in type_edge;
 		y_th : in type_float_internal)
 		return boolean
-	is
-		result : boolean := false;
-	begin
-
-		-- CS
-		return result;
+	is begin
+		if	
+			edge.start_point.y >= y_th and 
+			edge.end_point.y   <  y_th then
+			return true;
+			
+		elsif
+			edge.end_point.y   >= y_th and 
+			edge.start_point.y <  y_th then
+			return true;
+			
+		else
+			return false;
+		end if;
 	end crosses_threshold;
+
 	
 	
 	function get_boundaries (
@@ -504,7 +909,6 @@ package body et_geometry_2.polygons is
 		return pac_edges.cursor
 	is
 		result : pac_edges.cursor;
-		--segment : type_polygon_segment := (shape => LINE, segment_line => edge);
 	begin
 		result := polygon.edges.find (edge);
 		return result;
@@ -624,27 +1028,6 @@ package body et_geometry_2.polygons is
 		use ada.strings.unbounded;
 		
 		result : unbounded_string := to_unbounded_string ("polygon:");
-
-		--procedure query_segment (c : in pac_polygon_segments.cursor) is begin
-
-			---- We output the start points only (for arcs in addition the center).
-			---- Because: The end point of a segment is always the start point of the
-			---- next segment.
-			
-			--case element (c).shape is
-				--when LINE =>
-					----result := result & space & to_unbounded_string (to_string (element (c).segment_line));
-					--result := result & space
-						--& to_unbounded_string ("line start:" & to_string (element (c).segment_line.start_point));
-					
-				--when ARC =>
-					----result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
-					--result := result & space 
-						--& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
-						--& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
-					
-			--end case;
-		--end query_segment;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
 
