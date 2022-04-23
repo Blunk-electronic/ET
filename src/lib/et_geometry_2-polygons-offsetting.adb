@@ -52,43 +52,45 @@ package body et_geometry_2.polygons.offsetting is
 		mode : constant type_mode := to_mode (offset);	
 		
 		
-		function offset_line (
-			line : in type_edge)
+		function offset_edge (
+			edge : in type_edge)
 			return type_line_vector
 		is
-			line_new : type_edge := line;
-			center : type_vector := get_center (line);
+			edge_new : type_edge := edge;
+			center : type_vector := get_center (edge);
 			
-			line_direction : type_rotation := get_direction (line);
+			edge_direction : type_rotation := get_direction (edge);
 			dir_scratch : type_rotation;			
 			test_point : type_vector;
 
-			-- These two procedures move the line_new to the right or
-			-- to the left (seen relative to the line direction):
+			-- These two procedures move the edge_new to the right or
+			-- to the left (seen relative to the edge direction):
 			procedure move_right is begin
-				move_by (line_new, add (line_direction, -90.0), abs (offset));
+				move_by (edge_new, add (edge_direction, -90.0), abs (offset));
 			end move_right;
 
 			procedure move_left is begin
-				move_by (line_new, add (line_direction, +90.0), abs (offset));
+				move_by (edge_new, add (edge_direction, +90.0), abs (offset));
 			end move_left;
 			
 		begin
-			-- Set a test point that is very close to the center of the line.
+			--put_line ("edge direction:" & to_string (edge_direction));
+			
+			-- Set a test point that is very close to the center of the edge.
 			-- The point is located in direction dir_scratch away from the center:
-			dir_scratch := add (line_direction, +90.0);
+			dir_scratch := add (edge_direction, +90.0);
 			test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
 			--put_line ("tp " & to_string (test_point));
 
 			-- Depending on the location of the test point, means inside or outside
-			-- the polygon and the mode we move the line to the right or to the left:
+			-- the polygon and the mode we move the edge to the right or to the left:
 			declare
 				tp_status : constant type_point_to_polygon_status :=
 					get_point_to_polygon_status (polygon, test_point);
 			begin
 				case mode is
 					when EXPAND =>
-					-- move line toward outside. Polygon area becomes greater:
+					-- move edge toward outside. Polygon area becomes greater:
 						if tp_status.location = INSIDE then
 							move_right;
 						else
@@ -96,7 +98,7 @@ package body et_geometry_2.polygons.offsetting is
 						end if;
 
 					when SHRINK =>
-					-- move the line toward inside. Polygon area becomes smaller:
+					-- move the edge toward inside. Polygon area becomes smaller:
 						if tp_status.location = INSIDE then
 							move_left;
 						else
@@ -109,8 +111,8 @@ package body et_geometry_2.polygons.offsetting is
 					
 			end;
 			
-			return to_line_vector (line_new);
-		end offset_line;
+			return to_line_vector (edge_new);
+		end offset_edge;
 	
 
 		package pac_line_vectors is new doubly_linked_lists (type_line_vector);
@@ -121,8 +123,10 @@ package body et_geometry_2.polygons.offsetting is
 		procedure do_segment (c : in pac_edges.cursor) is
 			lv_tmp : type_line_vector;			
 		begin
-			lv_tmp := offset_line (element (c));
-			--put_line ("lv " & to_string (lv_tmp));
+			--put_line ("original edge: " & to_string (element (c)));
+			lv_tmp := offset_edge (element (c));
+			--put_line ("offset edge as line vector: " & to_string (lv_tmp));
+			--new_line;
 			line_vectors.append (lv_tmp);
 		end do_segment;
 

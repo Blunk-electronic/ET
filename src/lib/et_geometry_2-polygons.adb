@@ -52,8 +52,12 @@ package body et_geometry_2.polygons is
 		edge : in type_edge)
 		return string
 	is begin
-		return "edge: start: " & to_string (edge.start_point) 
-			& " end: " & to_string (edge.end_point);
+		return "edge: start (x/y): " 
+			& to_string (edge.start_point.x)
+			& to_string (edge.start_point.y) 
+			& " end (x/y): " 
+			& to_string (edge.end_point.x)
+			& to_string (edge.end_point.y);
 	end to_string;
 	
 
@@ -136,6 +140,11 @@ package body et_geometry_2.polygons is
 			v 			=> edge.start_point, 
 			direction	=> direction, 
 			distance	=> distance);
+
+		move_by (
+			v 			=> edge.end_point, 
+			direction	=> direction, 
+			distance	=> distance);
 	end move_by;
 
 	
@@ -146,6 +155,11 @@ package body et_geometry_2.polygons is
 	is begin
 		move_by (
 			v 			=> edge.start_point, 
+			direction	=> direction, 
+			distance	=> type_float_internal_positive (distance));
+
+		move_by (
+			v 			=> edge.end_point, 
 			direction	=> direction, 
 			distance	=> type_float_internal_positive (distance));
 	end move_by;
@@ -1027,7 +1041,7 @@ package body et_geometry_2.polygons is
 	is
 		use ada.strings.unbounded;
 		
-		result : unbounded_string := to_unbounded_string ("polygon:");
+		result : unbounded_string := to_unbounded_string ("polygon vertices (x/y):");
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
 
@@ -1036,7 +1050,10 @@ package body et_geometry_2.polygons is
 			-- next edge.
 			
 			result := result & space
-				& to_unbounded_string ("edge start:" & to_string (element (c).start_point));
+				--& to_unbounded_string ("edge start:" & to_string (element (c).start_point));
+				& to_unbounded_string (
+					"vertex: " & to_string (element (c).start_point.x)
+					& "/" & trim (to_string (element (c).start_point.y), left));
 
 		end query_edge;
 
