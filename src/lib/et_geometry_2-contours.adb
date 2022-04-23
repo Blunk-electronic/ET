@@ -1249,7 +1249,7 @@ package body et_geometry_2.contours is
 			-- In case we get two intersections (which speaks for a secant)
 			-- then they need to be ordered according to their distance to
 			-- the start point of the probe line (starts at given point);
-			ordered_intersections : type_ordered_line_circle_intersections_2;
+			ordered_intersections : type_ordered_line_circle_intersections;
 
 			
 			procedure count_two is begin
@@ -1331,7 +1331,7 @@ package body et_geometry_2.contours is
 			-- In case we get two intersections (which speaks for a secant)
 			-- then they need to be ordered according to their distance to
 			-- the start point of the probe line (starts at given point);
-			ordered_intersections : type_ordered_line_circle_intersections_2;
+			ordered_intersections : type_ordered_line_circle_intersections;
 		begin				
 			case i.status is
 				when NONE_EXIST | ONE_EXISTS => null;
