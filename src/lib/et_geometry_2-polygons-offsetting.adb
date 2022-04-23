@@ -161,21 +161,12 @@ package body et_geometry_2.polygons.offsetting is
 
 				LE := I.intersection.vector;
 
-				-- line complete. append to new segments:
-				--polygon_segments_new.segments.append (
-					--(shape => LINE, segment_line => (LS, LE)));
-
+				-- edge complete. append to new segments:
 				polygon_segments_new.append ((LS, LE));
-
 				
 				if cp = line_vectors.last then
-
-					--polygon_segments_new.segments.append (
-						--(shape => LINE, segment_line => (LE, INIT)));
 					polygon_segments_new.append ((LE, INIT));
-					
 				end if;
-
 				
 				-- The end point of this line will be the 
 				-- start point of the next line (irrelevant for last line vector):
