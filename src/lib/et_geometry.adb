@@ -46,6 +46,29 @@ with ada.characters.handling;	use ada.characters.handling;
 with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
+
+
+	function to_string (direction : in type_direction_of_rotation) return string is begin
+		return to_lower (type_direction_of_rotation'image (direction));
+	end to_string;
+
+	
+	function to_direction (direction : in string) return type_direction_of_rotation is begin
+		return type_direction_of_rotation'value (direction);
+	end to_direction;
+
+	
+	function reverse_direction (direction : in type_direction_of_rotation)
+		return type_direction_of_rotation is
+	begin
+		case direction is 
+			when CW => return CCW;
+			when CCW => return CW;
+		end case;
+	end reverse_direction;
+
+
+	
 	
 	function to_string (axis : in type_axis) return string is begin
 		return to_lower (type_axis'image (axis));

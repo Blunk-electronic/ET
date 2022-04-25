@@ -71,6 +71,19 @@ package et_geometry is
 	function to_axis (axis : in string) return type_axis;
 
 
+
+	type type_direction_of_rotation is (
+		CW,		-- clockwise
+		CCW);	-- counterclockwise
+
+	function to_string (direction : in type_direction_of_rotation) return string;
+	function to_direction (direction : in string) return type_direction_of_rotation;
+
+	-- Changes CCW to CW and vice versa.
+	function reverse_direction (direction : in type_direction_of_rotation)
+		return type_direction_of_rotation;
+
+	
 	
 	-- While drawing and editing we need information about the tool being used.
 	-- This is relevant for GUI operations only:
