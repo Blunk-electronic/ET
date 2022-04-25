@@ -464,147 +464,22 @@ package body et_geometry_1 is
 		--end if;
 	--end;
 	
-	function "<" (left, right : in type_point) return boolean is begin
-		if left.x < right.x then
-			return true;
-		elsif left.x > right.x then
-			return false;
+	--function "<" (left, right : in type_point) return boolean is begin
+		--if left.x < right.x then
+			--return true;
+		--elsif left.x > right.x then
+			--return false;
 
-		-- left.x = right.x -> compare y:
-		elsif left.y < right.y then
-			return true;
-		else 
-			-- if left.y greater or equal right.y
-			return false;
-		end if;
-	end;
-
-
-	--procedure append_point (
-		--points	: in out type_points;
-		--point	: in type_point)
-	--is begin
-		--pac_points.append (points.points, point);
-	--end append_point;
+		---- left.x = right.x -> compare y:
+		--elsif left.y < right.y then
+			--return true;
+		--else 
+			---- if left.y greater or equal right.y
+			--return false;
+		--end if;
+	--end;
 
 
-	function to_string (points : in pac_points.list) return string is
-		use pac_points;
-		use ada.strings.unbounded;
-		
-		result : unbounded_string;
-		
-		procedure query_point (p : in pac_points.cursor) is begin
-			result := result & " " 
-				& trim (to_string (get_x (element (p))), left)
-				& "/"
-				& trim (to_string (get_y (element (p))), left);
-		end query_point;
-			
-	begin
-		points.iterate (query_point'access);
-
-		return to_string (result);
-	end to_string;
-	
-
-	procedure splice_points (
-		points_target : in out pac_points.list;
-		points_source : in pac_points.list)
-	is 
-		scratch : pac_points.list := points_source;
-	begin
-		pac_points.splice (
-			target	=> points_target,
-			before	=> pac_points.no_element,
-			source	=> scratch);
-	end splice_points;
-	
-
-	procedure remove_redundant_points (
-		points : in out pac_points.list)
-	is
-		use pac_points;
-		target : pac_points.list;
-
-		procedure query_point (p : in pac_points.cursor) is begin
-			if not target.contains (element (p)) then
-				target.append (element (p));
-			end if;
-		end query_point;
-		
-	begin
-		points.iterate (query_point'access);
-
-		points := target;
-	end remove_redundant_points;
-
-
-	procedure sort_by_distance (
-		points 		: in out pac_points.list;
-		reference	: in type_point'class)
-	is
-		type type_item is record
-			point		: type_point;
-			distance	: type_float_internal_positive;
-		end record;
-
-		
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end;
-	
-			
-		package pac_items is new doubly_linked_lists (type_item);
-		use pac_items;
-		
-		items : pac_items.list;
-
-		
-		procedure query_point (p : in pac_points.cursor) is 
-			use pac_points;
-			d : type_distance_polar;
-		begin
-			d := get_distance (type_point (reference), type_point (element (p)));
-			
-			items.append (new_item => (
-				point		=> element (p),
-				distance	=> get_absolute (d)));
-		end query_point;
-
-		
-
-		package pac_sorting is new pac_items.generic_sorting;
-		use pac_sorting;
-		
-
-		procedure query_item (i : in pac_items.cursor) is begin
-			points.append (element (i).point);
-		end query_item;
-		
-		
-	begin
-		-- Collect points and their distance to the reference
-		-- in list "items":
-		points.iterate (query_point'access);
-
-		-- Sort items by distance to reference:
-		sort (items);
-
-		-- The old points are no longer required:
-		points.clear;
-		-- New points will be appended here.
-		
-
-		-- Traverse items and append them one by one to the
-		-- list of points:
-		items.iterate (query_item'access);
-	end sort_by_distance;
-	
 	
 	function to_string (point : in type_point) return string is begin
 		return point_preamble

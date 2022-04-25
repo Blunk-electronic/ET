@@ -285,7 +285,7 @@ package et_geometry_1 is
 	far_lower_right	: constant type_point;
 
 	
-	function "<" (left, right : in type_point) return boolean;
+	--function "<" (left, right : in type_point) return boolean;
 
 	--function "=" (left, right : in type_point) return boolean;
 
@@ -753,35 +753,6 @@ package et_geometry_1 is
 		position	: in out type_position;
 		offset		: in type_rotation);
 
-
-
-	
-	package pac_points is new doubly_linked_lists (type_point);
-
-
-	-- Returns a human readable string of points:
-	function to_string (points : in pac_points.list) return string;
-
-	
-	-- Appends all points of source to the target.
-	procedure splice_points (
-		points_target : in out pac_points.list;
-		points_source : in pac_points.list);
-
-
-	-- Removes points which are stored multiple times
-	-- from the given list:
-	procedure remove_redundant_points (
-		points : in out pac_points.list);
-										  
-
-	-- Sorts the given list of points by their distance to
-	-- the given reference point. The first point in the result
-	-- will be the one closest to the reference point:
-	procedure sort_by_distance (
-		points 		: in out pac_points.list;
-		reference	: in type_point'class);
-	
 	
 private
 	
