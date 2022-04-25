@@ -429,32 +429,6 @@ package body et_geometry_2 is
 	end toggle_status;
 
 	
-	procedure union (
-		boundaries	: in out type_boundaries;
-		point		: in type_point) 
-	is 
-		x : constant type_float_internal := type_float_internal (get_x (point));
-		y : constant type_float_internal := type_float_internal (get_y (point));
-	begin
-		-- X axis
-		if x < boundaries.smallest_x then 
-			boundaries.smallest_x := x; 
-		end if;
-		
-		if x > boundaries.greatest_x then
-			boundaries.greatest_x := x; 
-		end if;
-
-		-- Y axis
-		if y < boundaries.smallest_y then
-			boundaries.smallest_y := y;
-		end if;
-		
-		if y > boundaries.greatest_y then
-			boundaries.greatest_y := y;
-		end if;
-	end;
-
 	
 	procedure union (
 		left	: in out type_boundaries;
@@ -610,18 +584,6 @@ package body et_geometry_2 is
 
 	
 	
-	function get_distance_total (
-		point	: in type_point;
-		vector	: in type_vector)
-		return type_float_internal_positive
-	is 
-		pv : constant type_vector := to_vector (point);
-		
-		dx : constant type_float_internal := abs (vector.x - pv.x);
-		dy : constant type_float_internal := abs (vector.y - pv.y);
-	begin
-		return sqrt (dx ** 2.0 + dy ** 2.0);
-	end get_distance_total;
 	
 	
 	--function get_distance (
@@ -805,7 +767,7 @@ package body et_geometry_2 is
 		point	: in type_point)
 		return type_vector 
 	is begin
-		return (
+		return set (
 			x => type_float_internal (get_x (point)),
 			y => type_float_internal (get_y (point)),
 			z => 0.0
@@ -822,14 +784,16 @@ package body et_geometry_2 is
 		
 		-- Since the return is a 2D point,
 		-- the z component of v must be zero:
-		if v.z /= 0.0 then
+		if get_z (v) /= 0.0 then
 			raise constraint_error;
 		end if;
 					
 		return type_point (set (
-			x => to_distance (v.x),
-			y => to_distance (v.y)));
+			x => to_distance (get_x (v)),
+			y => to_distance (get_y (v))));
 
+			-- CS use type_distance (get_x (v)) ?
+		
 		exception
 			when constraint_error =>
 				raise constraint_error 
@@ -1492,37 +1456,34 @@ package body et_geometry_2 is
 	
 	function start_vector (
 		line	: in type_line)
-		return type_vector is
-	begin
-		return (
-			x => type_float_internal (get_x (line.start_point)),
-			y => type_float_internal (get_y (line.start_point)),
-			z => 0.0
-			);
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.start_point.x),
+			y => type_float_internal (line.start_point.y),
+			z => 0.0);
 	end start_vector;
 
 	
 	function end_vector (
 		line	: in type_line)
-		return type_vector is
-	begin
-		return (
-			x => type_float_internal (get_x (line.end_point)),
-			y => type_float_internal (get_y (line.end_point)),
-			z => 0.0
-			);
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.end_point.x),
+			y => type_float_internal (line.end_point.y),
+			z => 0.0);
 	end end_vector;
 
 	
 	function direction_vector (
 		line	: in type_line)
-		return type_vector is
-	begin
-		return (
-			x => type_float_internal (get_x (line.end_point) - get_x (line.start_point)),
-			y => type_float_internal (get_y (line.end_point) - get_y (line.start_point)),
-			z => 0.0
-			);
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.end_point.x - line.start_point.x),
+			y => type_float_internal (line.end_point.y - line.start_point.y),
+			z => 0.0);
 	end direction_vector;
 
 	
@@ -1578,14 +1539,18 @@ package body et_geometry_2 is
 		line	: in type_line)
 		return type_rotation 
 	is
-		dx : constant type_float_internal := type_float_internal (get_x (line.end_point) - get_x (line.start_point));
-		dy : constant type_float_internal := type_float_internal (get_y (line.end_point) - get_y (line.start_point));
+		dx : constant type_float_internal := 
+			type_float_internal (line.end_point.x - line.start_point.x);
+		
+		dy : constant type_float_internal := 
+			type_float_internal (line.end_point.y - line.start_point.y);
 	begin
 		-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
 		if dx = 0.0 and dy = 0.0 then
 			return zero_rotation;
 		else
+			-- CS return to_rotation (arctan (dy, dx, units_per_cycle));
 			return to_rotation (arctan (dy, dx, units_per_cycle));
 		end if;
 	end get_direction;
@@ -1676,25 +1641,25 @@ package body et_geometry_2 is
 			-- The direction vector of the first line can be zero in x (R1.x).
 			-- In order to avoid division by zero we must switch between
 			-- two ways to find the intersection:
-			if R1.x /= 0.0 then
-				a := S1.y;
-				b := S2.x * R1.y / R1.x;
-				c := S1.x * R1.y / R1.x;
-				d := S2.y;
-				e := R2.y;
-				f := R2.x * R1.y / R1.x;
+			if get_x (R1) /= 0.0 then
+				a := get_y (S1);
+				b := get_x (S2) * get_y (R1) / get_x (R1);
+				c := get_x (S1) * get_y (R1) / get_x (R1);
+				d := get_y (S2);
+				e := get_y (R2);
+				f := get_x (R2) * get_y (R1) / get_x (R1);
 				g := 1.0 / (e - f);
 
 				lambda_2 := (a + b - c - d) * g;
 
 				I := add (S2, scale (R2, lambda_2));
 			else
-				a := S2.y;
-				b := S1.x * R2.y / R2.x;
-				c := S2.x * R2.y / R2.x;
-				d := S1.y;
-				e := R1.y;
-				f := R1.x * R2.y / R2.x;
+				a := get_y (S2);
+				b := get_x (S1) * get_y (R2) / get_x (R2);
+				c := get_x (S2) * get_y (R2) / get_x (R2);
+				d := get_y (S1);
+				e := get_y (R1);
+				f := get_x (R1) * get_y (R2) / get_x (R2);
 				g := 1.0 / (e - f);
 
 				lambda_1 := (a + b - c - d) * g;
@@ -4722,6 +4687,20 @@ package body et_geometry_2 is
 	end mirror;
 
 
+	function get_distance_total (
+		point	: in type_point;
+		vector	: in type_vector)
+		return type_float_internal_positive
+	is 
+		pv : constant type_vector := to_vector (point);
+		
+		dx : constant type_float_internal := abs (get_x (vector) - get_x (pv));
+		dy : constant type_float_internal := abs (get_y (vector) - get_y (pv));
+	begin
+		return sqrt (dx ** 2.0 + dy ** 2.0);
+	end get_distance_total;
+
+	
 
 	function get_distance (
 		point_1	: in type_point;
@@ -5096,7 +5075,33 @@ package body et_geometry_2 is
 	end to_point;
 
 	
+	procedure union (
+		boundaries	: in out type_boundaries;
+		point		: in type_point) 
+	is 
+		x : constant type_float_internal := type_float_internal (get_x (point));
+		y : constant type_float_internal := type_float_internal (get_y (point));
+	begin
+		-- X axis
+		if x < boundaries.smallest_x then 
+			boundaries.smallest_x := x; 
+		end if;
+		
+		if x > boundaries.greatest_x then
+			boundaries.greatest_x := x; 
+		end if;
 
+		-- Y axis
+		if y < boundaries.smallest_y then
+			boundaries.smallest_y := y;
+		end if;
+		
+		if y > boundaries.greatest_y then
+			boundaries.greatest_y := y;
+		end if;
+	end union;
+
+	
 	function get_boundaries (
 		point_one	: in type_point;
 		point_two	: in type_point;

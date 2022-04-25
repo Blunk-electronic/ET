@@ -240,10 +240,6 @@ package et_geometry_2 is
 	procedure toggle_status (status : in out type_point_status);
 
 	
-	-- Unites the point with the boundaries. boundaries is updated.
-	procedure union (
-		boundaries	: in out type_boundaries;
-		point		: in type_point);
 	
 	-- Unites the boundaries "right" with boundaries "left". "left" is updated.
 	procedure union (
@@ -324,10 +320,10 @@ package et_geometry_2 is
 		--return type_float_internal_positive;
 
 	
-	function get_distance_total (
-		point	: in type_point;
-		vector	: in type_vector)
-		return type_float_internal_positive;
+	--function get_distance_total (
+		--point	: in type_point;
+		--vector	: in type_vector)
+		--return type_float_internal_positive;
 	
 	
 	---- Returns the distance of location vector_one to vector_two.	
@@ -1544,6 +1540,12 @@ package et_geometry_2 is
 		axis	: in type_axis_2d);	
 	
 
+	function get_distance_total (
+		point	: in type_point;
+		vector	: in type_vector)
+		return type_float_internal_positive;
+
+	
 	-- Returns the distance along the given axis between the given points.
 	function get_distance (
 		point_1	: in type_point;
@@ -1677,6 +1679,12 @@ package et_geometry_2 is
 		return type_point'class;
 
 
+	-- Unites the point with the boundaries. boundaries is updated.
+	procedure union (
+		boundaries	: in out type_boundaries;
+		point		: in type_point);
+
+	
 	-- Calculates the boundaries of the given points
 	-- connected with a line that has the
 	-- given width. The boundaries are extended
