@@ -257,71 +257,71 @@ package et_geometry_2 is
 	
 -- VECTOR OPERATIONS
 	
-	type type_vector is private;
+	--type type_vector is private;
 
-	null_vector : constant type_vector;
+	--null_vector : constant type_vector;
 
-	unity_vector : constant type_vector;
+	--unity_vector : constant type_vector;
 
-	function to_string (
-		v	: in type_vector)
-		return string;
-
-
-	-- Returns true if the given two location vectors are equal.
-	-- The x,y,z components are regarded as equal if their difference
-	-- is less or equal the rounding_threshold:
-	function equals (
-		left, right : in type_vector)
-		return boolean;
+	--function to_string (
+		--v	: in type_vector)
+		--return string;
 
 
-	-- Returns the displacement vector from v1 to v2:
-	function get_displacement (
-		v1, v2 : in type_vector)
-		return type_vector;
+	---- Returns true if the given two location vectors are equal.
+	---- The x,y,z components are regarded as equal if their difference
+	---- is less or equal the rounding_threshold:
+	--function equals (
+		--left, right : in type_vector)
+		--return boolean;
+
+
+	---- Returns the displacement vector from v1 to v2:
+	--function get_displacement (
+		--v1, v2 : in type_vector)
+		--return type_vector;
 
 	
 	-- Rounds the x,y,z components of a vector
 	-- to the given number of decimal places:
-	procedure round (
-		vector	: in out type_vector;
-		accuracy: in type_rounding_accuracy);
+	--procedure round (
+		--vector	: in out type_vector;
+		--accuracy: in type_rounding_accuracy);
 	
 	-- Rounds the x,y,z components of a vector
 	-- to the given number of decimal places:
-	function round (
-		vector	: in type_vector;
-		accuracy: in type_rounding_accuracy)
-		return type_vector;
+	--function round (
+		--vector	: in type_vector;
+		--accuracy: in type_rounding_accuracy)
+		--return type_vector;
 	
 
 
 	
-	function set (
-		x : in type_float_internal;
-		y : in type_float_internal;
-		z : in type_float_internal := 0.0)
-		return type_vector;
+	--function set (
+		--x : in type_float_internal;
+		--y : in type_float_internal;
+		--z : in type_float_internal := 0.0)
+		--return type_vector;
 	
 	
-	function get_x (
-		v	: in type_vector)
-		return type_float_internal;
+	--function get_x (
+		--v	: in type_vector)
+		--return type_float_internal;
 
-	function get_y (
-		v	: in type_vector)
-		return type_float_internal;
+	--function get_y (
+		--v	: in type_vector)
+		--return type_float_internal;
 
-	function get_z (
-		v	: in type_vector)
-		return type_float_internal;
+	--function get_z (
+		--v	: in type_vector)
+		--return type_float_internal;
 
 
-	function get_distance_total (
-		v_1	: in type_vector;
-		v_2	: in type_vector)
-		return type_float_internal_positive;
+	--function get_distance_total (
+		--v_1	: in type_vector;
+		--v_2	: in type_vector)
+		--return type_float_internal_positive;
 
 	
 	function get_distance_total (
@@ -330,49 +330,49 @@ package et_geometry_2 is
 		return type_float_internal_positive;
 	
 	
-	-- Returns the distance of location vector_one to vector_two.	
-	-- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
-	-- returns	total := sqrt ((vector_two.x - vector_one.x)**2 + (vector_two.y - vector_one.y)**2)
-	--			angle := arctan ((vector_two.y - vector_one.y) / (vector_two.x - vector_one.x)
-	-- Ignores z of both vectors because this is a 2D world.
-	-- NOTE 1: The angle ranges from -180 to 180 degrees.
-	-- NOTE 2: If the total distance between the location vectors is zero then
-	--         the returned angle is zero. So it is wise to test the two vectors
-	--         for equality befor calling this function.
-	function get_distance (
-		vector_one, vector_two : in type_vector) -- CS rename to v1 and v2
-		return type_distance_polar;
+	---- Returns the distance of location vector_one to vector_two.	
+	---- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
+	---- returns	total := sqrt ((vector_two.x - vector_one.x)**2 + (vector_two.y - vector_one.y)**2)
+	----			angle := arctan ((vector_two.y - vector_one.y) / (vector_two.x - vector_one.x)
+	---- Ignores z of both vectors because this is a 2D world.
+	---- NOTE 1: The angle ranges from -180 to 180 degrees.
+	---- NOTE 2: If the total distance between the location vectors is zero then
+	----         the returned angle is zero. So it is wise to test the two vectors
+	----         for equality befor calling this function.
+	--function get_distance (
+		--vector_one, vector_two : in type_vector) -- CS rename to v1 and v2
+		--return type_distance_polar;
 
 	
-	-- Rotates the given location vector BY the given angle about the origin.
-	-- Changes vector.x and vector.y only.
-	procedure rotate_by (
-		vector		: in out type_vector;
-		rotation	: in type_float_internal;
-		debug		: in boolean := false);
+	---- Rotates the given location vector BY the given angle about the origin.
+	---- Changes vector.x and vector.y only.
+	--procedure rotate_by (
+		--vector		: in out type_vector;
+		--rotation	: in type_float_internal;
+		--debug		: in boolean := false);
 	
 	
-	-- Moves the given vector by given offset.
-	-- Leaves z unchanged.
-	function move_by (
-		v		: in type_vector;
-		offset	: in type_distance_relative)
-		return type_vector;
+	---- Moves the given vector by given offset.
+	---- Leaves z unchanged.
+	--function move_by (
+		--v		: in type_vector;
+		--offset	: in type_distance_relative)
+		--return type_vector;
 
 	
-	-- Moves a location vector into given direction
-	-- by given distance. Leaves z unchanged.
-	procedure move_by (
-		v			: in out type_vector;
-		direction	: in type_rotation;
-		distance	: in type_float_internal); -- CS type_float_internal_positive ?
+	---- Moves a location vector into given direction
+	---- by given distance. Leaves z unchanged.
+	--procedure move_by (
+		--v			: in out type_vector;
+		--direction	: in type_rotation;
+		--distance	: in type_float_internal); -- CS type_float_internal_positive ?
 
 
-	function move_by (
-		v			: in type_vector;
-		direction	: in type_rotation;
-		distance	: in type_float_internal) -- CS type_float_internal_positive ?
-		return type_vector;
+	--function move_by (
+		--v			: in type_vector;
+		--direction	: in type_rotation;
+		--distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		--return type_vector;
 	
 	
 	function to_vector (
@@ -385,160 +385,160 @@ package et_geometry_2 is
 		v	: in type_vector)
 		return type_point;
 	
-	function absolute (
-		vector	: in type_vector)
-		return type_float_internal;
+	--function absolute (
+		--vector	: in type_vector)
+		--return type_float_internal;
 
-	function scale (
-		v	: in type_vector;
-		s	: in type_float_internal)
-		return type_vector;
+	--function scale (
+		--v	: in type_vector;
+		--s	: in type_float_internal)
+		--return type_vector;
 	
-	function add (
-		a, b	: in type_vector)
-		return type_vector;
+	--function add (
+		--a, b	: in type_vector)
+		--return type_vector;
 
-	-- Subtracts the components of b from those of a.
-	-- return.x = a.x - b.x, ...
-	function subtract (
-		a, b	: in type_vector)
-		return type_vector;
+	---- Subtracts the components of b from those of a.
+	---- return.x = a.x - b.x, ...
+	--function subtract (
+		--a, b	: in type_vector)
+		--return type_vector;
 	
-	function cross_product ( -- german: Vektorprodukt
-		a, b	: in type_vector)
-		return type_vector;
+	--function cross_product ( -- german: Vektorprodukt
+		--a, b	: in type_vector)
+		--return type_vector;
 	
-	function dot_product ( -- german: Skalarprodukt
-		a, b	: in type_vector)
-		return type_float_internal;
+	--function dot_product ( -- german: Skalarprodukt
+		--a, b	: in type_vector)
+		--return type_float_internal;
 
-	function mixed_product ( -- german: Spatprodukt
-		a, b, c	: in type_vector)
-		return type_float_internal;
-	-- NOTE: Also called scalar triple product or box product.
+	--function mixed_product ( -- german: Spatprodukt
+		--a, b, c	: in type_vector)
+		--return type_float_internal;
+	---- NOTE: Also called scalar triple product or box product.
 
 								
-	-- Divides the components x,y,z of vector a
-	-- by one of the components of vector b.
-	-- At least one of the components of b 
-	-- must not be zero.
-	function divide (
-		a, b	: in type_vector)
-		return type_float_internal;
+	---- Divides the components x,y,z of vector a
+	---- by one of the components of vector b.
+	---- At least one of the components of b 
+	---- must not be zero.
+	--function divide (
+		--a, b	: in type_vector)
+		--return type_float_internal;
 
 	
 
-	-- A ray has a fixed starting point, a direction and
-	-- no end point:
-	type type_ray is record
-		start_point	: type_vector;
-		direction	: type_rotation;
-	end record;
+	---- A ray has a fixed starting point, a direction and
+	---- no end point:
+	--type type_ray is record
+		--start_point	: type_vector;
+		--direction	: type_rotation;
+	--end record;
 
 	
-	-- Returns the location vector of the start point of a ray:
-	function start_vector (ray : in type_ray) 
-		return type_vector;
+	---- Returns the location vector of the start point of a ray:
+	--function start_vector (ray : in type_ray) 
+		--return type_vector;
 
-	-- Returns the direction vector of a ray:
-	function direction_vector (ray : in type_ray) 
-		return type_vector;
+	---- Returns the direction vector of a ray:
+	--function direction_vector (ray : in type_ray) 
+		--return type_vector;
 
 
-	type type_line_vector is record
-		v_start		: type_vector; -- start vector of line
-		v_direction	: type_vector; -- direction vector of line
-	end record;
+	--type type_line_vector is record
+		--v_start		: type_vector; -- start vector of line
+		--v_direction	: type_vector; -- direction vector of line
+	--end record;
 
 	
-	function to_string (
-		lv : in type_line_vector)
-		return string;
+	--function to_string (
+		--lv : in type_line_vector)
+		--return string;
 
-	-- Moves a line vector by the given offset.
-	-- Changes only the start vector. Leaves the
-	-- direction vector unchanged.
-	function move_by (
-		lv		: in type_line_vector;
-		offset	: in type_distance_relative)
-		return type_line_vector;
+	---- Moves a line vector by the given offset.
+	---- Changes only the start vector. Leaves the
+	---- direction vector unchanged.
+	--function move_by (
+		--lv		: in type_line_vector;
+		--offset	: in type_distance_relative)
+		--return type_line_vector;
 	
-	-- Returns the direction of travel of the given line
-	-- in degrees:
-	function get_angle (
-		line	: in type_line_vector)
-		return type_rotation;
+	---- Returns the direction of travel of the given line
+	---- in degrees:
+	--function get_angle (
+		--line	: in type_line_vector)
+		--return type_rotation;
 		
-	-- Converts a ray (consisting of start point and a direction)
-	-- to a line vector consisting of start vector and
-	-- direction vector:
-	function to_line_vector (
-		ray : in type_ray)
-		return type_line_vector;
+	---- Converts a ray (consisting of start point and a direction)
+	---- to a line vector consisting of start vector and
+	---- direction vector:
+	--function to_line_vector (
+		--ray : in type_ray)
+		--return type_line_vector;
 
-	-- Returns a line vector perpendicular (german: normalvektor)
-	-- to a line that crosses the given point at the given angle.
-	-- The start vector of the result starts at the given point.
-	-- CS not tested yet !
-	function to_perpendicular_line_vector (
-		point	: in type_vector;
-		angle	: in type_rotation)
-		return type_line_vector;
-
-	
-	
-	type type_intersection_status_of_two_lines is (
-		-- The two lines do NOT intersect each other:
-		NOT_EXISTENT,
-
-		-- The two lines DO intersect each other:
-		EXISTS,
-
-		-- The two lines are parallel to each other.
-		-- They overlap each other. 
-		-- One line lies exactly on the other. 
-		-- The distance between them is zero everywhere:
-		OVERLAP);
+	---- Returns a line vector perpendicular (german: normalvektor)
+	---- to a line that crosses the given point at the given angle.
+	---- The start vector of the result starts at the given point.
+	---- CS not tested yet !
+	--function to_perpendicular_line_vector (
+		--point	: in type_vector;
+		--angle	: in type_rotation)
+		--return type_line_vector;
 
 	
-	-- In general an intersection is composed of a 
-	-- location vector, where the two objects meet,
-	-- and and the angle at which they intersect:
-	type type_intersection is record
-		vector	: type_vector; -- location vector
-		angle	: type_rotation := zero_rotation;
-	end record;
+	
+	--type type_intersection_status_of_two_lines is (
+		---- The two lines do NOT intersect each other:
+		--NOT_EXISTENT,
+
+		---- The two lines DO intersect each other:
+		--EXISTS,
+
+		---- The two lines are parallel to each other.
+		---- They overlap each other. 
+		---- One line lies exactly on the other. 
+		---- The distance between them is zero everywhere:
+		--OVERLAP);
 
 	
-	function to_string (intersection : in type_intersection)
-		return string;
+	---- In general an intersection is composed of a 
+	---- location vector, where the two objects meet,
+	---- and and the angle at which they intersect:
+	--type type_intersection is record
+		--vector	: type_vector; -- location vector
+		--angle	: type_rotation := zero_rotation;
+	--end record;
 
 	
-	-- When finding intersections of two lines this type is required:
-	type type_intersection_of_two_lines (
-		status : type_intersection_status_of_two_lines) 
-	is record
-		case status is
-			when EXISTS => 
-				intersection : type_intersection;
+	--function to_string (intersection : in type_intersection)
+		--return string;
+
+	
+	---- When finding intersections of two lines this type is required:
+	--type type_intersection_of_two_lines (
+		--status : type_intersection_status_of_two_lines) 
+	--is record
+		--case status is
+			--when EXISTS => 
+				--intersection : type_intersection;
 				
-			when NOT_EXISTENT | OVERLAP => 
-				null;
-		end case;
-	end record;
+			--when NOT_EXISTENT | OVERLAP => 
+				--null;
+		--end case;
+	--end record;
 
 
 	
 
-	-- Tests whether the given two lines intersect.
-	-- If there is an intersection, returns the location vector.
-	function get_intersection (
-		line_1, line_2	: in type_line_vector)
-		return type_intersection_of_two_lines;
+	---- Tests whether the given two lines intersect.
+	---- If there is an intersection, returns the location vector.
+	--function get_intersection (
+		--line_1, line_2	: in type_line_vector)
+		--return type_intersection_of_two_lines;
 
-	function get_angle_of_itersection (
-		line_1, line_2	: in type_line_vector)
-		return type_rotation;
+	--function get_angle_of_itersection (
+		--line_1, line_2	: in type_line_vector)
+		--return type_rotation;
 	
 	
 	
@@ -609,6 +609,9 @@ package et_geometry_2 is
 	function get_direction (line : in type_line)
 		return type_line_direction;
 
+
+	
+	subtype type_tangent_angle is type_rotation range 0.0 .. 180.0 - type_rotation'small;
 	
 	-- Converts the angle of a tangent to a
 	-- line direction.
@@ -648,19 +651,19 @@ package et_geometry_2 is
 	-- Returns the location vector of the start point of a line:
 	function start_vector ( -- CS rename to get_start_vector
 		line	: in type_line)
-		return type_vector;
+		return type_vector; -- CS should be type_point
 
 	
 	-- Returns the location vector of the end point of a line:
 	function end_vector ( -- CS rename to get_end_vector
 		line	: in type_line)
-		return type_vector;
+		return type_vector; -- CS should be type_point
 
 	
 	-- Returns the direction vector of a line:
 	function direction_vector ( -- CS rename to get_direction_vector
 		line	: in type_line)
-		return type_vector;
+		return type_vector; -- CS should be type_distance_relative ?
 
 	
 	-- Converts a line (consisting of start and end point)
@@ -723,6 +726,11 @@ package et_geometry_2 is
 		rotation	: in type_rotation);
 
 
+	
+-- PATH
+	
+	-- CS rename "route" by "path" in the following:
+	
 	-- When creating a route from one point to another use this type.
 	-- NOTE: This is general stuff. This does apply to all kinds of lines
 	-- from one point to another (nets, documentation, tracks, ...) !
@@ -767,6 +775,8 @@ package et_geometry_2 is
 
 	-- Switches to the next bend style of the given live route:
 	procedure next_bend_style (route : in out type_route_live);
+
+
 	
 	-- Returns the boundaries of the given line.
 	-- The line has the given width. 
@@ -775,6 +785,8 @@ package et_geometry_2 is
 		line	: in type_line;	
 		width	: in type_distance_positive)
 		return type_boundaries;
+
+
 	
 	-- A line is divided into three zones. Their width is the ratio
 	-- of line length and the zone_division_factor.
@@ -793,13 +805,20 @@ package et_geometry_2 is
 		line	: in type_line'class) 
 		return type_line_zone;
 
+
+	
+
+	
 	type type_distance_point_line is private;
 
+	
 	-- These functions return the components of the given type_distance_point_line:
 	function out_of_range (d : in type_distance_point_line) return boolean;
+
 	
 	function get_distance (d : in type_distance_point_line) 
 		return type_float_internal;
+
 	
 	function get_intersection (d : in type_distance_point_line) 
 		return type_vector;
@@ -813,6 +832,7 @@ package et_geometry_2 is
 		WITH_END_POINTS,	-- start and end point included
 		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
 		);
+
 	
 	-- Computes the shortest distance (perpendicular) of a 
 	-- location vector to a line. 
@@ -823,6 +843,7 @@ package et_geometry_2 is
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
+	
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 		
 	function get_distance (
@@ -858,8 +879,10 @@ package et_geometry_2 is
 		line	: in type_line)
 		return type_float_internal;
 
+
 	
 -- ARC
+	
 	type type_arc_base is abstract tagged record  -- CS should be private ?
 		center			: type_point;
 		start_point		: type_point;
@@ -1095,6 +1118,7 @@ package et_geometry_2 is
 	
 	
 -- CIRCLE
+	
 	type type_circle_base is abstract tagged record
 		center			: type_point;
 		radius  		: type_float_internal_positive := 0.0;
@@ -1740,26 +1764,26 @@ package et_geometry_2 is
 
 	
 private
-	type type_vector is	record
-		x, y, z : type_float_internal := 0.0;
-	end record;
+	--type type_vector is	record
+		--x, y, z : type_float_internal := 0.0;
+	--end record;
 
-	null_vector		: constant type_vector := (others => 0.0);
-	unity_vector	: constant type_vector := (others => 1.0);
+	--null_vector		: constant type_vector := (others => 0.0);
+	--unity_vector	: constant type_vector := (others => 1.0);
 	
-	type type_distance_point_line is record
-		sits_on_start	: boolean := false;
-		sits_on_end		: boolean := false;
-		out_of_range	: boolean := true;
+	--type type_distance_point_line is record
+		--sits_on_start	: boolean := false;
+		--sits_on_end		: boolean := false;
+		--out_of_range	: boolean := true;
 
-		-- A virtual line runs from the given point perpendicular
-		-- to the given line. This is where the virtual line intersects
-		-- the given line:
-		--intersection	: type_point := origin; -- CS type_vector ?
-		intersection	: type_vector := null_vector;
-		distance		: type_float_internal := 0.0;
-		direction		: type_rotation := zero_rotation;
-	end record;
+		---- A virtual line runs from the given point perpendicular
+		---- to the given line. This is where the virtual line intersects
+		---- the given line:
+		----intersection	: type_point := origin; -- CS type_vector ?
+		--intersection	: type_vector := null_vector;
+		--distance		: type_float_internal := 0.0;
+		--direction		: type_rotation := zero_rotation;
+	--end record;
 
 	
 ------------------

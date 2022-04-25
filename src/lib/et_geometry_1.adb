@@ -1339,20 +1339,20 @@ package body et_geometry_1 is
 	--end get_distance;
 
 	
-	--function get_angle (
-		--distance : in type_distance_polar) 
-		--return type_rotation 
-	--is begin
-		--return distance.angle;
-	--end get_angle;
+	function get_angle (
+		distance : in type_distance_polar) 
+		return type_angle 
+	is begin
+		return distance.angle;
+	end get_angle;
 
 	
-	--function get_absolute (
-		--distance : in type_distance_polar) 
-		--return type_float_internal_positive
-	--is begin
-		--return distance.absolute;
-	--end get_absolute;
+	function get_absolute (
+		distance : in type_distance_polar) 
+		return type_float_internal_positive
+	is begin
+		return distance.absolute;
+	end get_absolute;
 
 
 	
@@ -1467,6 +1467,655 @@ package body et_geometry_1 is
 	--end;
 		
 
+-- VECTORS	
+
+	function to_string (
+		v	: in type_vector)
+		return string
+	is begin
+		return 
+			  " x: " & to_string (v.x) 
+			& " y: " & to_string (v.y)
+			& " z: " & to_string (v.z);
+	end to_string;
+
+
+	function set (
+		x : in type_float_internal;
+		y : in type_float_internal;
+		z : in type_float_internal := 0.0)
+		return type_vector
+	is begin
+		return (x, y, z);
+	end set;
+
+
+	
+	function get_x (
+		v	: in type_vector)
+		return type_float_internal is
+	begin
+		return v.x;
+	end get_x;
+	
+
+	function get_y (
+		v	: in type_vector)
+		return type_float_internal is
+	begin
+		return v.y;
+	end get_y;
+
+	
+	function get_z (
+		v	: in type_vector)
+		return type_float_internal is
+	begin
+		return v.z;
+	end get_z;
+
+
+	function absolute (
+		vector	: in type_vector)
+		return type_float_internal
+	is begin
+		return
+			sqrt (
+				vector.x * vector.x + 
+				vector.y * vector.y +
+				vector.z * vector.z);
+
+	end absolute;
+
+
+	function scale (
+		v	: in type_vector;
+		s	: in type_float_internal)
+		return type_vector
+	is begin
+		return (
+			x => s * v.x,
+			y => s * v.y,
+			z => s * v.z
+			);
+	end scale;
+
+	
+	function add (
+		a, b	: in type_vector)
+		return type_vector
+	is begin
+		return (
+			x => a.x + b.x,
+			y => a.y + b.y,
+			z => a.z + b.z);
+	end add;
+
+	
+	function subtract (
+		a, b	: in type_vector)
+		return type_vector
+	is begin
+		return (
+			x => a.x - b.x,
+			y => a.y - b.y,
+			z => a.z - b.z);
+	end subtract;
+
+	
+	function cross_product (
+		a, b	: in type_vector)
+		return type_vector
+	is begin
+		return (
+			x => a.y * b.z - a.z * b.y,
+			y => a.z * b.x - a.x * b.z,
+			z => a.x * b.y - a.y * b.x);
+	end cross_product;
+
+	
+	function dot_product (
+		a, b	: in type_vector)
+		return type_float_internal
+	is begin
+		return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
+	end dot_product;
+
+	
+	function mixed_product (
+		a, b, c	: in type_vector)
+		return type_float_internal
+	is
+		cp : type_vector;
+	begin
+		cp := cross_product (b, c);
+		return dot_product (a, cp);
+	end mixed_product;		
+
+	
+	function divide (
+		a, b	: in type_vector)
+		return type_float_internal
+	is
+		lambda : type_float_internal;
+	begin
+		-- It does not matter if we use
+		-- the x,y or z component for this calculation.
+		-- But we must skip the case when
+		-- a division by zero is ahead.
+		if b.x /= 0.0 then
+			lambda := a.x / b.x;
+		elsif b.y /= 0.0 then
+			lambda := a.y / b.y;
+		elsif b.z /= 0.0 then
+			lambda := a.z / b.z;
+		else
+			put_line ("ERROR while vector division ");
+		end if;
+		
+		return lambda;
+	end divide;
+
+
+	
+	function equals (
+		left, right : in type_vector)
+		return boolean 
+	is
+		lx : type_float_internal := get_x (left);
+		ly : type_float_internal := get_y (left);
+		lz : type_float_internal := get_z (left);
+
+		rx : type_float_internal := get_x (right);
+		ry : type_float_internal := get_y (right);
+		rz : type_float_internal := get_z (right);
+	begin
+		--new_line;
+		--put_line ("left: " & to_string (left));
+		--put_line ("right:" & to_string (right));
+		
+		if  abs (lx - rx) <= rounding_threshold
+		and abs (ly - ry) <= rounding_threshold
+		and abs (lz - rz) <= rounding_threshold
+		then
+			--put_line ("equal");
+			return true;
+		else
+			--put_line ("not equal");
+			return false;
+		end if;
+	end equals;
+
+
+	function get_displacement (
+		v1, v2 : in type_vector)
+		return type_vector
+	is begin
+		return (
+			v2.x - v1.x,
+			v2.y - v1.y,
+			v2.z - v1.z);
+	end get_displacement;
+
+
+	function get_distance_total (
+		v_1	: in type_vector;
+		v_2	: in type_vector)
+		return type_float_internal_positive
+	is 
+		dx : constant type_float_internal := abs (v_2.x - v_1.x);
+		dy : constant type_float_internal := abs (v_2.y - v_1.y);
+	begin
+		return sqrt (dx ** 2.0 + dy ** 2.0);
+	end get_distance_total;
+
+
+	function get_distance (
+		vector_one, vector_two : in type_vector)
+		return type_distance_polar
+	is
+		result : type_distance_polar;
+
+		dx : constant type_float_internal := vector_two.x - vector_one.x;
+		dy : constant type_float_internal := vector_two.y - vector_one.y;
+
+		abs_dx : constant type_float_internal := abs (dx);
+		abs_dy : constant type_float_internal := abs (dy);
+	begin
+		--put_line ("dx " & float'image (abs_dx));
+		--put_line ("dy " & float'image (abs_dy));
+		
+		set_absolute (result, sqrt (abs_dx ** 2 + abs_dy ** 2));
+		
+		-- NOTE: If the total distance between the location vectors is zero then
+		-- the arctan operation is not possible. In this case we assume
+		-- the resulting angle is zero.
+		-- So we do the angle computation only if there is a distance between the vectors:
+		if get_absolute (result) /= 0.0 then
+			
+			--set_angle (result, to_rotation (arctan (
+			set_angle (result, arctan (
+					x 		=> dx,
+					y		=> dy,
+					cycle	=> units_per_cycle));
+		else
+			-- distance is zero
+			set_angle (result, 0.0);
+		end if;
+		
+		return result;
+	end get_distance;
+
+
+	procedure rotate_by (
+		vector		: in out type_vector;
+		rotation	: in type_angle;
+		debug		: in boolean := false)
+	is
+		angle_out			: type_float_internal; -- degrees
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- Do nothing if the given rotation is zero.
+		if rotation /= 0.0 then
+
+			-- compute distance of given vector to origin
+			if vector.x = 0.0 and vector.y = 0.0 then
+				distance_to_origin := 0.0;
+				
+			elsif vector.x = 0.0 then
+				distance_to_origin := abs (vector.y);
+				
+			elsif vector.y = 0.0 then
+				distance_to_origin := abs (vector.x);
+				
+			else
+				--put_line ("A");
+
+				distance_to_origin := sqrt (
+					(abs (vector.x)) ** 2.0
+					+
+					(abs (vector.y)) ** 2.0
+					);
+
+				--put_line ("B");
+			end if;
+			
+			-- compute the current angle of the given vector (in degrees)
+
+			if vector.x = 0.0 then
+				if vector.y > 0.0 then
+					angle_out := 90.0;
+					
+				elsif vector.y < 0.0 then
+					angle_out := -90.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			elsif vector.y = 0.0 then
+				if vector.x > 0.0 then
+					angle_out := 0.0;
+					
+				elsif vector.x < 0.0 then
+					angle_out := 180.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				--put_line ("C");
+				
+				-- neither x nor y of vector is 0.0
+				angle_out := arctan (
+					x		=> vector.x,
+					y		=> vector.y,
+					cycle	=> units_per_cycle);
+
+				--put_line ("D");
+			end if;
+
+			-- Compute new angle by adding current angle and given angle.
+			angle_out := angle_out + rotation;
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (angle_out, units_per_cycle);
+			vector.x := scratch * distance_to_origin;
+			
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (angle_out, units_per_cycle);
+			vector.y := scratch * distance_to_origin;
+			
+		end if; -- if angle not zero			
+	end rotate_by;
+
+
+	function move_by (
+		v		: in type_vector;
+		offset	: in type_distance_relative)
+		return type_vector
+	is
+		result : type_vector := v;
+	begin
+		result.x := result.x + offset.x; -- CS good idea ?
+		result.y := result.y + offset.y;
+		return result;
+	end move_by;
+
+
+	procedure move_by (
+		v			: in out type_vector;
+		direction	: in type_angle;
+		distance	: in type_float_internal)
+	is
+		delta_x, delta_y : type_float_internal := 0.0;
+	begin
+		-- sin (direction) * distance = delta y
+		-- cos (direction) * distance = delty x
+
+		delta_y := sin (direction, units_per_cycle) * distance;
+		delta_x := cos (direction, units_per_cycle) * distance;
+
+		v.x := v.x + delta_x;
+		v.y := v.y + delta_y;
+	end move_by;
+
+
+	function move_by (
+		v			: in type_vector;
+		direction	: in type_angle;
+		distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		return type_vector
+	is
+		result : type_vector := v;
+	begin
+		move_by (result, direction, distance);
+		return result;
+	end move_by;
+
+
+	
+
+-- RAY
+
+	function start_vector (ray : in type_ray) 
+		return type_vector
+	is
+		v : type_vector;
+	begin
+		v.x := ray.start_point.x;
+		v.y := ray.start_point.y;
+		v.z := 0.0;
+
+		return v;
+	end start_vector;
+
+	
+	function direction_vector (ray : in type_ray) 
+		return type_vector
+	is 
+		v : type_vector;
+	begin
+		-- x = cos (direction) * 1
+		v.x := cos (type_float_internal (ray.direction), units_per_cycle);
+
+		-- y = sin (direction) * 1
+		v.y := sin (type_float_internal (ray.direction), units_per_cycle);
+
+		v.z := 0.0; -- we are in a 2D world
+		
+		return v;
+	end direction_vector;
+
+
+	
+
+-- LINE VECTOR
+
+	function to_string (
+		lv : in type_line_vector)
+		return string
+	is begin
+		return "location vector start:" & to_string (lv.v_start) 
+			& " direction vector" & to_string (lv.v_direction)
+			& " angle" & to_string (get_angle (lv));
+	end to_string;
+
+
+	function move_by (
+		lv		: in type_line_vector;
+		offset	: in type_distance_relative)
+		return type_line_vector
+	is 
+		result : type_line_vector := lv;
+	begin
+		result.v_start.x := result.v_start.x + type_float_internal (offset.x);
+		result.v_start.y := result.v_start.y + type_float_internal (offset.y);
+
+		return result;
+	end move_by;
+	
+
+	function get_angle (
+		line	: in type_line_vector)
+		return type_angle
+	is 
+		a : type_angle;
+	begin
+
+		--a := to_rotation (arctan (
+		a := arctan (
+				y		=> type_float_internal (line.v_direction.y), 
+				x		=> type_float_internal (line.v_direction.x), 
+				cycle	=> units_per_cycle);
+
+		-- dz ignored. we are in a 2D world
+		
+		return a;
+	end get_angle;
+
+
+	function to_line_vector (
+		ray : in type_ray)
+		return type_line_vector
+	is begin
+		return (
+			v_start		=> start_vector (ray),
+			v_direction	=> direction_vector (ray));
+	
+	end to_line_vector;
+
+	
+	function to_perpendicular_line_vector (
+		point	: in type_vector;
+		angle	: in type_angle)
+		return type_line_vector 
+	is
+		ap : type_angle; -- the angle of the resulting line
+		r : type_ray;
+	begin
+		--ap := add (angle, 90.0); -- perpendicular
+		ap := angle + 90.0; -- CS ? perpendicular
+
+		-- Build a ray that starts at point and travels
+		-- in direction ap:
+		r := (point, ap);
+
+		-- Convert the ray to a line vector:
+		return to_line_vector (r);
+	end to_perpendicular_line_vector;
+
+
+	
+-- INTERSECTIONS
+
+	function to_string (intersection : in type_intersection)
+		return string
+	is begin
+		return to_string (intersection.vector) 
+			& " angle" & to_string (intersection.angle);
+	end to_string;
+
+
+	function get_angle_of_itersection (
+		line_1, line_2	: in type_line_vector)
+		return type_angle
+	is 
+		a, b, c : type_float_internal;
+		r : type_angle;
+	begin
+		a := dot_product (line_1.v_direction, line_2.v_direction);
+		b := absolute (line_1.v_direction) * absolute (line_2.v_direction);
+		c := a / b;
+
+		-- c may be slightly greater than 1.0 or smaller than -1.0. In these cases
+		-- the rotation can be set without any calculation:
+		if c > 1.0 then
+			r := 0.0;
+
+		elsif c < -1.0 then
+			r := 180.0;
+
+		else
+			--r := to_rotation (arccos (X => a / b, cycle => units_per_cycle));
+			-- CS
+			r := arccos (X => a / b, cycle => units_per_cycle);
+		end if;
+
+		return r;
+	end get_angle_of_itersection;
+
+	
+	
+	function get_intersection (
+		line_1, line_2	: in type_line_vector)
+		return type_intersection_of_two_lines
+	is 
+		-- scratch variables:
+		a, b, c, d, e, f, g : type_float_internal;
+		lambda : type_float_internal;
+
+		-- location vector and angle of intersection to be returned:			
+		i : type_intersection;
+
+		
+		function exists_intersection return boolean is
+			v1, v2 : type_vector;
+		begin
+			-- The first condition to be fulfilled is that the
+			-- cross product of the direction vectors is not a null vector:
+			v1 := cross_product (line_1.v_direction, line_2.v_direction); 
+
+			if v1 /= null_vector then
+				
+				-- The second condition is:
+				-- The mixed product of line_2.v_start, line_1.v_start and
+				-- (line_2.v_start - line_1.v_start) must be zero.
+				
+				v2 := subtract (line_2.v_start, line_1.v_start);
+
+				if mixed_product (line_1.v_direction, line_2.v_direction, v2) = 0.0 then
+					return true; -- there is an intersection
+				else
+					return false;  -- no intersection exists
+				end if;
+				
+			else					
+				return false; -- no intersection exists
+			end if;
+		end exists_intersection;
+
+		
+		function lines_overlap return boolean is
+			a, b, distance : type_float_internal;
+			v1 : type_vector;
+
+			--th : constant type_float_internal := 1.0E-17;
+		begin
+			-- The first condition to be fulfilled is that the lines
+			-- must run parallel to each other. In this case the cross
+			-- product is zero.
+			v1 := cross_product (line_1.v_direction, line_2.v_direction); 
+			
+			if v1 = null_vector then -- the lines run parallel to each other.
+
+				-- Compute the distance between the lines.
+				-- If the distance is zero then the lines overlap.
+				
+				a := absolute (cross_product (line_1.v_direction, subtract (line_2.v_start, line_1.v_start)));
+				b := absolute (line_1.v_direction);
+
+				distance := a / b;
+
+				if abs (distance) <= rounding_threshold then						
+					return true; -- lines overlap each other
+				else
+					return false; -- distance greater zero -> hence no overlap
+				end if;
+				
+			else
+				return false; -- not parallel -> hence no overlap
+			end if;
+		end lines_overlap;
+
+		
+	begin -- get_intersection
+		--put_line ("");
+		--put_line ("line_1 start" & to_string (to_point (line_1.v_start)) & " direction" & to_string (to_point (line_1.v_direction)));
+		--put_line ("line_2 start" & to_string (to_point (line_2.v_start)) & " direction" & to_string (to_point (line_2.v_direction)));
+
+		-- Test whether the lines overlap:
+		if lines_overlap then
+			return (status => OVERLAP);
+		else
+			-- Test whether there is an intersection:
+			if exists_intersection then
+				
+				-- The direction vector of the first line can be zero in x.
+				-- In order to avoid division by zero we must switch between
+				-- two ways to find the intersection:
+				if line_1.v_direction.x /= 0.0 then
+					a := type_float_internal (line_1.v_start.y);
+					b := type_float_internal (line_2.v_start.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
+					c := type_float_internal (line_1.v_start.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
+					d := type_float_internal (line_2.v_start.y);
+					e := type_float_internal (line_2.v_direction.y);
+					f := type_float_internal (line_2.v_direction.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
+					g := 1.0 / (e - f);
+
+					lambda := (a + b - c - d) * g;
+
+					i.vector := add (line_2.v_start, scale (line_2.v_direction, lambda));
+				else
+					a := type_float_internal (line_2.v_start.y);
+					b := type_float_internal (line_1.v_start.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
+					c := type_float_internal (line_2.v_start.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
+					d := type_float_internal (line_1.v_start.y);
+					e := type_float_internal (line_1.v_direction.y);
+					f := type_float_internal (line_1.v_direction.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
+					g := 1.0 / (e - f);
+
+					lambda := (a + b - c - d) * g;
+
+					i.vector := add (line_1.v_start, scale (line_1.v_direction, lambda));
+				end if;
+
+				i.angle := get_angle_of_itersection (line_1, line_2);
+
+				--put_line ("get_intersection: " & to_string (i.vector));
+				return (status => EXISTS, intersection => i);
+			else
+
+				return (status => NOT_EXISTENT);
+			end if;
+		end if;
+		
+	end get_intersection;
+
+
+	
 end et_geometry_1;
 
 -- Soli Deo Gloria
