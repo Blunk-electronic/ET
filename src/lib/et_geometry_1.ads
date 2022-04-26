@@ -1057,20 +1057,6 @@ private
 
 	null_vector		: constant type_vector := (others => 0.0);
 	unity_vector	: constant type_vector := (others => 1.0);
-	
-	type type_distance_point_line is record
-		sits_on_start	: boolean := false;
-		sits_on_end		: boolean := false;
-		out_of_range	: boolean := true;
-
-		-- A virtual line runs from the given point perpendicular
-		-- to the given line. This is where the virtual line intersects
-		-- the given line:
-		--intersection	: type_point := origin; -- CS type_vector ?
-		intersection	: type_vector := null_vector;
-		distance		: type_float_internal := 0.0;
-		direction		: type_angle := 0.0;
-	end record;
 
 	
 	--origin : constant type_point := (others => zero);

@@ -763,44 +763,6 @@ package body et_geometry_2 is
 	--end move_by;
 	
 	
-	function to_vector (
-		point	: in type_point)
-		return type_vector 
-	is begin
-		return set (
-			x => type_float_internal (get_x (point)),
-			y => type_float_internal (get_y (point)),
-			z => 0.0
-			);
-	end to_vector;
-
-
-	
-	function to_point (
-		v	: in type_vector)
-		return type_point 
-	is begin
-		--log (text => "to point: vector" & to_string (v));
-		
-		-- Since the return is a 2D point,
-		-- the z component of v must be zero:
-		if get_z (v) /= 0.0 then
-			raise constraint_error;
-		end if;
-					
-		return type_point (set (
-			x => to_distance (get_x (v)),
-			y => to_distance (get_y (v))));
-
-			-- CS use type_distance (get_x (v)) ?
-		
-		exception
-			when constraint_error =>
-				raise constraint_error 
-					with "vector component too great:" & to_string (v);
-
-	end to_point;
-
 	
 	--function absolute (
 		--vector	: in type_vector)
@@ -1170,6 +1132,1149 @@ package body et_geometry_2 is
 	--end get_angle_of_itersection;
 
 
+
+	
+
+	
+	
+	
+
+	
+	
+
+	
+
+	
+	--function get_distance (
+		--line	: in type_line;
+		--vector	: in type_vector)
+		--return type_distance_positive
+	--is
+		--dv : constant type_vector := direction_vector (line);
+		--sv : constant type_vector := start_vector (line);
+		
+		--d1 : constant type_vector := subtract (vector, sv);
+		--m, n : type_float_internal;
+	--begin
+		--m := absolute (cross_product (dv, d1));
+		--n := absolute (dv);
+		
+		--return to_distance (m / n);
+	--end get_distance;
+
+	
+
+	
+
+
+
+-------------------
+
+
+-- ROTATION / ANGLE
+
+	
+	function get_direction (rotation : in type_rotation) 
+		return type_direction_of_rotation
+	is begin
+		if rotation < zero_rotation then
+			return CW;
+		else
+			return CCW;
+		end if;
+	end get_direction;
+
+
+	
+	function to_rotation (rotation : in string) return type_rotation is begin
+		return type_rotation'value (rotation);
+	end;
+
+	
+	function to_string (rotation : in type_rotation) return string is begin
+		if rotation < zero_rotation then
+			return space & type_rotation'image (rotation);
+		else
+			return type_rotation'image (rotation);
+		end if;
+		-- CS suppress trailing zeros
+	end;
+
+	
+	
+	function to_rotation (f : in type_float_internal)
+		return type_rotation 
+	is
+		use pac_distance_io;
+
+		d1 : type_rotation := type_rotation (f);
+		d2 : type_float_internal;
+
+		f1 : constant type_float_internal := 5.0 * type_float_internal (type_rotation'small);
+
+	begin
+		d2 := 10.0 * abs (f - type_float_internal (d1));
+		
+		if f < 0.0 then
+			if d2 > f1 then
+				d1 := d1 - type_rotation'small;
+			end if;
+		else
+			if d2 > f1 then
+				d1 := d1 + type_rotation'small;
+			end if;
+		end if;
+
+		return d1;
+		
+		--if f < 0.0 then
+			--declare
+				--r : string (1 .. type_rotation'digits + 2); -- sign + point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--else
+			--declare
+				--r : string (1 .. type_rotation'digits + 1); -- point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--end if;
+	end to_rotation;
+
+
+	function to_positive_rotation (
+		rotation	: in type_rotation)
+		return type_rotation_positive
+	is begin
+		if rotation < 0.0 then
+			return 360.0 + rotation;
+		else
+			return rotation;
+		end if;
+	end to_positive_rotation;
+
+	
+	
+	function add (
+		left, right : in type_rotation)
+		return type_rotation 
+	is
+		subtype type_rotation_wide is type_float_internal range -720.0 .. +720.0;
+		scratch : type_rotation_wide;
+		result : type_rotation; -- to be returned
+	begin
+		scratch := type_float_internal (left) + type_float_internal (right);
+		
+		if scratch >= 360.0 then
+			scratch := scratch - 360.0;
+			
+		elsif scratch <= -360.0 then
+			scratch := scratch + 360.0;
+		end if;
+
+		result := to_rotation (scratch);
+		return result;
+	end;
+
+	
+
+-- RELATIVE DISTANCE:
+
+
+	
+	function invert (
+		d : in type_distance_relative)
+		return type_distance_relative
+	is begin
+		return (-1.0 * d.x, -1.0 * d.y);
+	end invert;
+
+	
+	function to_string (
+		distance : in type_distance_relative)
+		return string
+	is begin
+		return "distance relative: x/y" 
+			& to_string (distance.x)
+			& "/"
+			& to_string (distance.y);
+	end to_string;
+
+
+	function to_distance_relative (
+		x,y : in type_distance)
+		return type_distance_relative
+	is begin
+		return (x, y);
+	end to_distance_relative;
+
+
+
+-- POLAR
+
+	function get_angle (
+		distance : in type_distance_polar) 
+		return type_rotation 
+	is begin
+		return distance.angle;
+	end get_angle;
+
+	
+	function get_absolute (
+		distance : in type_distance_polar) 
+		return type_float_internal_positive
+	is begin
+		return distance.absolute;
+	end get_absolute;
+
+	
+	
+-- POINT
+
+	function to_vector (
+		point	: in type_point)
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (get_x (point)),
+			y => type_float_internal (get_y (point)),
+			z => 0.0
+			);
+	end to_vector;
+
+
+	
+	function to_point (
+		v	: in type_vector)
+		return type_point 
+	is begin
+		--log (text => "to point: vector" & to_string (v));
+		
+		-- Since the return is a 2D point,
+		-- the z component of v must be zero:
+		if get_z (v) /= 0.0 then
+			raise constraint_error;
+		end if;
+					
+		return type_point (set (
+			x => to_distance (get_x (v)),
+			y => to_distance (get_y (v))));
+
+			-- CS use type_distance (get_x (v)) ?
+		
+		exception
+			when constraint_error =>
+				raise constraint_error 
+					with "vector component too great:" & to_string (v);
+
+	end to_point;
+
+	
+	function get_quadrant (
+		point : in type_point) 
+		return type_quadrant
+	is begin
+		if point.x >= zero then -- we are right of the y-axis or on top of it
+			if point.y >= zero then -- we are above the x-axis or on top of it
+				return ONE; 
+			else -- we are below the x-axis
+				return FOUR;
+			end if;
+			
+		else -- we are left of the y-axis
+			if point.y >= zero then -- we are above the x-axis or on top of it
+				return TWO;
+			else -- we are below the x-axis
+				return THREE;
+			end if;
+		end if;
+	end get_quadrant;
+
+	
+	
+	function to_distance_relative (
+		p : in type_point)
+		return type_distance_relative
+	is begin
+		return (p.x, p.y);
+	end to_distance_relative;
+
+
+	function get_distance (
+		point_one, point_two : in type_point) 
+		return type_distance_polar 
+	is
+		result : type_distance_polar;
+
+		delta_x, delta_y : type_float_internal := 0.0;
+	begin
+		result.absolute := get_distance_total (point_one, point_two);
+
+		-- NOTE: If the total distance between the points is zero then
+		-- the arctan operation is not possible. In this case we assume
+		-- the resulting angle is zero.
+		-- So we do the angle computation only if there is a distance between the points:
+		if result.absolute /= 0.0 then
+			
+			delta_x := type_float_internal (get_x (point_two) - get_x (point_one));
+			delta_y := type_float_internal (get_y (point_two) - get_y (point_one));
+
+			result.angle := to_rotation (arctan (
+					x 		=> delta_x,
+					y		=> delta_y,
+					cycle	=> units_per_cycle));
+		else
+			-- distance is zero
+			result.angle := zero_rotation;
+		end if;
+		
+		return result;
+	end get_distance;
+
+
+	
+	function get_x (
+		point : in type_point) 
+		return type_position_axis 
+	is begin
+		return point.x;
+	end;
+
+	
+	function get_y (
+		point : in type_point)
+		return type_position_axis 
+	is begin
+		return point.y;
+	end;
+
+
+
+	function set (
+		x, y : in type_position_axis)
+		return type_point'class 
+	is
+		point : type_point;
+	begin
+		point.x := x;
+		point.y := y;
+		return point;
+	end;
+
+	
+	procedure set (
+		point	: in out type_point;
+		axis 	: in type_axis_2d;
+		value	: in type_position_axis)
+	is begin
+		case axis is
+			when X => point.x := value;
+			when Y => point.y := value;
+		end case;
+	end;
+
+	
+	procedure set (
+		point	: in out type_point'class;
+		position: in type_point) 
+	is begin
+		point.x := position.x;
+		point.y := position.y;
+	end;
+
+
+
+	function invert (
+		point : in type_point'class)
+		return type_point'class 
+	is
+		pi : type_point'class := point;
+	begin
+		pi.x := - pi.x;
+		pi.y := - pi.y;
+		return pi;
+	end invert;
+
+	
+	function invert (
+		point	: in type_point;
+		axis	: in type_axis_2d)
+		return type_point'class
+	is
+		p : type_point := point;
+	begin
+		case axis is
+			when X => p.x := - p.x;
+			when Y => p.y := - p.y;
+		end case;
+
+		return p;
+	end invert;
+
+	
+	procedure reset (
+		point : in out type_point) 
+	is begin
+		point.x := zero;
+		point.y := zero;
+	end;
+
+
+	
+	procedure move_by (
+		point	: in out type_point;
+		offset	: in type_distance_relative) 
+	is begin
+		point.x := point.x + offset.x;
+		point.y := point.y + offset.y;
+	end move_by;
+
+	
+	procedure move_to (
+		point		: in out type_point;
+		destination	: in type_point'class) 
+	is begin
+		point.x := destination.x;
+		point.y := destination.y;
+	end move_to;
+
+
+	function move (
+		point		: in type_point;
+		direction	: in type_rotation;
+		distance	: in type_distance_positive;
+		clip		: in boolean := false)
+		return type_point'class 
+	is 			
+		delta_x, delta_y : type_float_internal := 0.0;
+
+		rx, ry : type_distance;			
+		result : type_point;			
+	begin
+		-- sin (direction) * distance = delta y
+		-- cos (direction) * distance = delty x
+
+		delta_y := sin (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
+		delta_x := cos (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
+
+		rx := point.x + to_distance (delta_x);
+		ry := point.y + to_distance (delta_y);
+
+		if clip then
+			clip_distance (rx);
+			clip_distance (ry);
+		end if;
+
+		result := (rx, ry);
+		return result;
+	end move;
+
+	
+	procedure mirror (
+		point	: in out type_point;
+		axis	: in type_axis_2d) 
+	is begin
+		case axis is
+			when X =>
+				point.y := point.y * (-1.0);
+			when Y =>
+				point.x := point.x * (-1.0);
+		end case;
+	end mirror;
+
+
+	function get_distance_total (
+		point	: in type_point;
+		vector	: in type_vector)
+		return type_float_internal_positive
+	is 
+		pv : constant type_vector := to_vector (point);
+		
+		dx : constant type_float_internal := abs (get_x (vector) - get_x (pv));
+		dy : constant type_float_internal := abs (get_y (vector) - get_y (pv));
+	begin
+		return sqrt (dx ** 2.0 + dy ** 2.0);
+	end get_distance_total;
+
+	
+
+	function get_distance (
+		point_1	: in type_point;
+		point_2	: in type_point;
+		axis	: in type_axis_2d) 
+		return type_distance 
+	is
+		d : type_distance;
+	begin
+		case axis is
+			when X =>
+				d := (point_2.x - point_1.x);
+
+			when Y =>
+				d := (point_2.y - point_1.y);
+		end case;
+
+		return d;
+	end get_distance;
+
+	
+	function get_distance_abs (
+		point_1	: in type_point;
+		point_2	: in type_point;
+		axis	: in type_axis_2d) 
+		return type_distance_positive
+	is
+		d : type_distance_positive;
+	begin
+		case axis is
+			when X =>
+				d := abs (point_2.x - point_1.x);
+
+			when Y =>
+				d := abs (point_2.y - point_1.y);
+		end case;
+				
+		return d;
+	end get_distance_abs;
+
+
+
+	function "+" (point_one, point_two : in type_point) return type_point'class is
+		d : type_point;
+	begin
+		d.x := point_one.x + point_two.x;
+		d.y := point_one.y + point_two.y;
+		return d;
+	end;
+
+	
+	function "-" (point_one, point_two : in type_point) return type_point'class is
+		d : type_point;
+	begin
+		d.x := point_one.x - point_two.x;
+		d.y := point_one.y - point_two.y;
+		return d;
+	end;
+
+
+	function get_distance_relative (
+		point_one, point_two : in type_point)
+		return type_distance_relative
+	is
+		d : type_distance_relative;
+	begin
+		d.x := point_two.x - point_one.x;
+		d.y := point_two.y - point_one.y;
+		return d;
+	end get_distance_relative;
+
+
+	function get_distance_total (
+		point_one, point_two : in type_point) 
+		return type_float_internal_positive 
+	is
+		distance : type_float_internal_positive; -- to be returned
+		delta_x, delta_y : type_float_internal := 0.0;
+	begin
+		if point_one = point_two then
+			distance := 0.0;
+			
+		elsif get_x (point_one) = get_x (point_two) then -- points are in a vertical line
+			distance := type_float_internal_positive (abs (get_y (point_two) - get_y (point_one)));
+			
+		elsif get_y (point_one) = get_y (point_two) then -- points are in a horizontal line
+			distance := type_float_internal_positive (abs (get_x (point_two) - get_x (point_one)));
+			
+		else
+			delta_x := type_float_internal (get_x (point_one) - get_x (point_two));
+			delta_y := type_float_internal (get_y (point_one) - get_y (point_two));
+
+			distance := sqrt ((delta_x ** 2) + (delta_y ** 2));
+		end if;
+			
+		return distance;
+	end get_distance_total;
+
+	
+
+	function in_catch_zone (
+		point_1		: in type_point; -- the reference point
+		catch_zone	: in type_catch_zone; -- zone around reference point
+		point_2 	: in type_point) -- the point being tested
+		return boolean 
+	is
+		d : type_float_internal_positive := get_distance_total (point_1, point_2);
+	begin
+		if d <= catch_zone then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
+
+
+	
+	
+	function to_string (point : in type_point) 
+		return string 
+	is begin
+		return point_preamble
+			& to_string (point.x)
+			& axis_separator
+			& to_string (point.y);
+	end to_string;
+
+	
+	function round_to_string (
+		point 	: in type_point;
+		grid	: in type_grid) 
+		return string 
+	is begin
+		return point_preamble
+			& to_string (round (point.x, grid.x))
+			& axis_separator
+			& to_string (round (point.y, grid.y));
+	end round_to_string;
+
+
+
+	function round (
+		point 	: in type_point;
+		grid	: in type_grid) 
+		return type_point'class 
+	is		
+		p : type_point := (
+			x => (round (point.x, grid.x)),
+			y => (round (point.y, grid.y)));
+	begin
+		return p;
+	end;
+
+	
+	
+	function round (
+		point : in type_point)
+		return type_point'class
+	is
+		r : type_point := (
+			x => type_distance (round (point.x)),
+			y => type_distance (round (point.y)));
+	begin
+		return r;
+	end round;
+
+
+	procedure round (
+		point : in out type_point)
+	is begin
+		point.x := type_distance (round (point.x));
+		point.y := type_distance (round (point.y));
+	end round;
+
+
+
+	
+
+	function get_rotation (
+		point : in type_point) 
+		return type_rotation 
+	is
+		x : constant type_float_internal := type_float_internal (point.x);
+		y : constant type_float_internal := type_float_internal (point.y);
+	begin
+		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		if x = 0.0 and y = 0.0 then
+			return zero_rotation;
+		else
+			return to_rotation (arctan (y, x, units_per_cycle));
+		end if;
+	end get_rotation;
+
+
+
+	procedure rotate_by (
+		point		: in out type_point;
+		rotation	: in type_rotation) 
+	is			
+		angle_out			: type_rotation; -- degrees
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- Do nothing if the given rotation is zero.
+		if rotation /= 0.0 then
+
+			-- compute distance of given point to origin
+			if get_x (point) = zero and get_y (point) = zero then
+				distance_to_origin := 0.0;
+				
+			elsif get_x (point) = zero then
+				distance_to_origin := type_float_internal (abs (get_y (point)));
+				
+			elsif get_y (point) = zero then
+				distance_to_origin := type_float_internal (abs (get_x (point)));
+				
+			else
+				distance_to_origin := sqrt (
+					type_float_internal (abs (get_x (point))) ** 2.0
+					+
+					type_float_internal (abs (get_y (point))) ** 2.0
+					);
+			end if;
+			
+			-- compute the current angle of the given point (in degrees)
+
+			if get_x (point) = zero then
+				if get_y (point) > zero then
+					angle_out := 90.0;
+					
+				elsif get_y (point) < zero then
+					angle_out := -90.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			elsif get_y (point) = zero then
+				if get_x (point) > zero then
+					angle_out := 0.0;
+					
+				elsif get_x (point) < zero then
+					angle_out := 180.0;
+					
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				-- neither x nor y of point is zero
+				--angle_out := arctan (
+				angle_out := to_rotation (arctan (
+					x		=> type_float_internal (get_x (point)),
+					y		=> type_float_internal (get_y (point)),
+					cycle	=> units_per_cycle));
+				
+			end if;
+
+			-- Compute new angle by adding current angle and given angle.
+			angle_out := add (angle_out, rotation);
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (type_float_internal (angle_out), units_per_cycle);
+			
+			set (
+				axis	=> X, 
+				point	=> point, 
+				value	=> to_distance (scratch * distance_to_origin)
+				);
+
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (type_float_internal (angle_out), units_per_cycle);
+			
+			set (
+				axis	=> Y,
+				point	=> point,
+				value	=> to_distance (scratch * distance_to_origin)
+				);
+	
+		end if; -- if angle not zero			
+	end rotate_by;
+
+
+
+	procedure rotate_to (
+		point		: in out type_point;
+		rotation	: in type_rotation) -- degrees
+	is
+		distance_to_origin	: type_float_internal; -- unit is mm
+		scratch				: type_float_internal;
+	begin
+		-- compute distance of given point to origin
+		if get_x (point) = zero and get_y (point) = zero then
+			distance_to_origin := 0.0;
+			
+		elsif get_x (point) = zero then
+			distance_to_origin := type_float_internal (abs (get_y (point)));
+			
+		elsif get_y (point) = zero then
+			distance_to_origin := type_float_internal (abs (get_x (point)));
+			
+		else
+			distance_to_origin := sqrt (
+				type_float_internal (abs (get_x (point))) ** 2.0 
+				+
+				type_float_internal (abs (get_y (point))) ** 2.0
+				);
+		end if;
+
+		-- The new angle is the given rotation.
+
+		-- compute new x   -- (cos rotation) * distance_to_origin
+		scratch := cos (type_float_internal (rotation), units_per_cycle);
+		set (
+			axis	=> X,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+
+		-- compute new y   -- (sin rotation) * distance_to_origin
+		scratch := sin (type_float_internal (rotation), units_per_cycle);
+		set (
+			axis 	=> Y,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+		
+	end rotate_to;
+	
+	
+
+	function to_point (
+		d 		: in type_distance_relative;
+		clip	: in boolean := false)
+		return type_point'class
+	is 
+		p : type_point;
+	begin
+		if clip then
+			p.x := clip_distance (d.x);
+			p.y := clip_distance (d.y);				
+		else
+			p.x := d.x;
+			p.y := d.y;
+		end if;
+		
+		return p;
+
+		exception
+			when constraint_error =>
+				log (text => "distance too great: x/y" 
+					& to_string (d.x)
+					& "/"
+					& to_string (d.y));
+				raise;
+		
+	end to_point;
+
+
+	function to_point (
+		x,y : in string)
+		return type_point'class
+	is 
+		result : type_point;					
+	begin
+		result.x := to_distance (dd => x);
+		result.y := to_distance (dd => y);
+		return result;
+
+		-- CS exception handler
+	end to_point;
+
+	
+	procedure union (
+		boundaries	: in out type_boundaries;
+		point		: in type_point) 
+	is 
+		x : constant type_float_internal := type_float_internal (get_x (point));
+		y : constant type_float_internal := type_float_internal (get_y (point));
+	begin
+		-- X axis
+		if x < boundaries.smallest_x then 
+			boundaries.smallest_x := x; 
+		end if;
+		
+		if x > boundaries.greatest_x then
+			boundaries.greatest_x := x; 
+		end if;
+
+		-- Y axis
+		if y < boundaries.smallest_y then
+			boundaries.smallest_y := y;
+		end if;
+		
+		if y > boundaries.greatest_y then
+			boundaries.greatest_y := y;
+		end if;
+	end union;
+
+	
+	function get_boundaries (
+		point_one	: in type_point;
+		point_two	: in type_point;
+		width		: in type_distance_positive) 
+		return type_boundaries
+	is
+		result : type_boundaries;
+
+		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+
+		--p1x : type_float_internal renames type_float_internal (point_one.x);
+		--p1y : type_float_internal renames point_one.y;
+
+		--p2x : type_float_internal renames point_two.x;
+		--p2y : type_float_internal renames point_two.y;
+	begin
+		-- X axis
+		if point_one.x = point_two.x then -- both points on a vertical line
+
+			result.smallest_x := type_float_internal (point_one.x);
+			result.greatest_x := type_float_internal (point_one.x);
+			
+		elsif point_one.x < point_two.x then
+			
+			result.smallest_x := type_float_internal (point_one.x);
+			result.greatest_x := type_float_internal (point_two.x);
+		else
+			result.smallest_x := type_float_internal (point_two.x);
+			result.greatest_x := type_float_internal (point_one.x);
+		end if;
+
+		-- Y axis
+		if point_one.y = point_two.y then -- both points on a horizontal line
+
+			result.smallest_y := type_float_internal (point_one.y);
+			result.greatest_y := type_float_internal (point_one.y);
+			
+		elsif point_one.y < point_two.y then
+			
+			result.smallest_y := type_float_internal (point_one.y);
+			result.greatest_y := type_float_internal (point_two.y);
+		else
+			result.smallest_y := type_float_internal (point_two.y);
+			result.greatest_y := type_float_internal (point_one.y);
+		end if;
+
+		
+		-- extend the boundaries by half the line width;
+		result.smallest_x := result.smallest_x - half_width;
+		result.smallest_y := result.smallest_y - half_width;
+
+		result.greatest_x := result.greatest_x + half_width;
+		result.greatest_y := result.greatest_y + half_width;
+		
+		return result;
+	end get_boundaries;
+
+
+	
+	
+	function "<" (left, right : in type_point) return boolean is begin
+		if left.x < right.x then
+			return true;
+		elsif left.x > right.x then
+			return false;
+
+		-- left.x = right.x -> compare y:
+		elsif left.y < right.y then
+			return true;
+		else 
+			-- if left.y greater or equal right.y
+			return false;
+		end if;
+	end;
+		
+
+	function to_string (points : in pac_points.list) return string is
+		use pac_points;
+		use ada.strings.unbounded;
+		
+		result : unbounded_string;
+		
+		procedure query_point (p : in pac_points.cursor) is begin
+			result := result & " " 
+				& trim (to_string (get_x (element (p))), left)
+				& "/"
+				& trim (to_string (get_y (element (p))), left);
+		end query_point;
+			
+	begin
+		points.iterate (query_point'access);
+		return to_string (result);
+	end to_string;
+
+	
+	
+	procedure splice_points (
+		points_target : in out pac_points.list;
+		points_source : in pac_points.list)
+	is 
+		scratch : pac_points.list := points_source;
+	begin
+		pac_points.splice (
+			target	=> points_target,
+			before	=> pac_points.no_element,
+			source	=> scratch);
+	end splice_points;
+
+	
+
+	procedure remove_redundant_points (
+		points : in out pac_points.list)
+	is
+		use pac_points;
+		target : pac_points.list;
+
+		procedure query_point (p : in pac_points.cursor) is begin
+			if not target.contains (element (p)) then
+				target.append (element (p));
+			end if;
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		points := target;
+	end remove_redundant_points;
+
+	
+	
+	procedure sort_by_distance (
+		points 		: in out pac_points.list;
+		reference	: in type_point'class)
+	is
+		type type_item is record
+			point		: type_point;
+			distance	: type_float_internal_positive;
+		end record;
+
+		
+		function "<" (left, right : in type_item) return boolean is begin
+			if left.distance < right.distance then
+				return true;
+			else
+				return false;
+			end if;
+		end;
+	
+			
+		package pac_items is new doubly_linked_lists (type_item);
+		use pac_items;
+		
+		items : pac_items.list;
+
+		
+		procedure query_point (p : in pac_points.cursor) is 
+			use pac_points;
+			d : type_distance_polar;
+		begin
+			d := get_distance (type_point (reference), type_point (element (p)));
+			
+			items.append (new_item => (
+				point		=> element (p),
+				distance	=> get_absolute (d)));
+		end query_point;
+
+		
+
+		package pac_sorting is new pac_items.generic_sorting;
+		use pac_sorting;
+		
+
+		procedure query_item (i : in pac_items.cursor) is begin
+			points.append (element (i).point);
+		end query_item;
+		
+		
+	begin
+		-- Collect points and their distance to the reference
+		-- in list "items":
+		points.iterate (query_point'access);
+
+		-- Sort items by distance to reference:
+		sort (items);
+
+		-- The old points are no longer required:
+		points.clear;
+		-- New points will be appended here.
+		
+
+		-- Traverse items and append them one by one to the
+		-- list of points:
+		items.iterate (query_item'access);
+	end sort_by_distance;
+
+
+
+
+	
+-- LINE
+
+	function to_string (line : in type_line) return string is begin
+		return 
+			"line: S:" & to_string (line.start_point) 
+			& " / E:" & to_string (line.end_point);
+	end;
+
+
+	
+	function start_vector (
+		line	: in type_line)
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.start_point.x),
+			y => type_float_internal (line.start_point.y),
+			z => 0.0);
+	end start_vector;
+
+	
+	function end_vector (
+		line	: in type_line)
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.end_point.x),
+			y => type_float_internal (line.end_point.y),
+			z => 0.0);
+	end end_vector;
+
+	
+	function direction_vector (
+		line	: in type_line)
+		return type_vector 
+	is begin
+		return set (
+			x => type_float_internal (line.end_point.x - line.start_point.x),
+			y => type_float_internal (line.end_point.y - line.start_point.y),
+			z => 0.0);
+	end direction_vector;
+
+
+	function get_direction (
+		line	: in type_line)
+		return type_rotation 
+	is
+		dx : constant type_float_internal := 
+			type_float_internal (line.end_point.x - line.start_point.x);
+		
+		dy : constant type_float_internal := 
+			type_float_internal (line.end_point.y - line.start_point.y);
+	begin
+		-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		if dx = 0.0 and dy = 0.0 then
+			return zero_rotation;
+		else
+			-- CS return to_rotation (arctan (dy, dx, units_per_cycle));
+			return to_rotation (arctan (dy, dx, units_per_cycle));
+		end if;
+	end get_direction;
+
+	
+	function to_line_vector (
+		line	: in type_line)
+		return type_line_vector
+	is begin
+		return (
+			v_start		=> start_vector (line),
+			v_direction	=> direction_vector (line));
+	end to_line_vector;
+	
+	
 	function make_line (
 		start_x, start_y, end_x, end_y : in type_distance)
 		return type_line'class
@@ -1203,6 +2308,135 @@ package body et_geometry_2 is
 		end if;
 	end make_line;
 
+
+
+
+	function get_left_end (
+		line		: in type_line;
+		boundaries	: in type_boundaries := boundaries_default)
+		return type_point
+	is
+		p : type_point; -- to be returned
+		b : type_boundaries := boundaries;								   
+	begin
+		-- If no boundaries provided, compute them.
+		-- Otherwise use provided boundaries as they are:
+		if b = boundaries_default then
+			b := get_boundaries (line, zero); -- a polygon line has zero width
+		end if;
+		
+		if b.smallest_x = type_float_internal (get_x (line.start_point)) then
+			p := line.start_point;
+			
+		elsif b.smallest_x = type_float_internal (get_x (line.end_point)) then
+			p := line.end_point;
+
+		else
+			-- If boundaries where provided and neither start nor end point
+			-- of line matches, issue exception:
+			raise constraint_error with to_string (b) 
+				& " invalid for line" & to_string (line) & " !";
+		end if;
+			
+		return p;
+	end get_left_end;
+
+	
+	function get_right_end (
+		line		: in type_line;
+		boundaries	: in type_boundaries := boundaries_default)
+		return type_point
+	is
+		p : type_point; -- to be returned
+		b : type_boundaries := boundaries;								   
+	begin
+		-- If no boundaries provided, compute them.
+		-- Otherwise use provided boundaries as they are:
+		if b = boundaries_default then
+			b := get_boundaries (line, zero); -- a polygon line has zero width
+		end if;
+		
+		if b.greatest_x = type_float_internal (get_x (line.start_point)) then
+			p := line.start_point;
+			
+		elsif b.greatest_x = type_float_internal (get_x (line.end_point)) then
+			p := line.end_point;
+
+		else
+			-- If boundaries where provided and neither start nor end point
+			-- of line matches, issue exception:
+			raise constraint_error with to_string (b) 
+				& " invalid for line" & to_string (line) & " !";
+		end if;
+			
+		return p;
+	end get_right_end;
+
+	
+	function get_lower_end (
+		line		: in type_line;
+		boundaries	: in type_boundaries := boundaries_default)
+		return type_point
+	is
+		p : type_point; -- to be returned
+		b : type_boundaries := boundaries;								   
+	begin
+		-- If no boundaries provided, compute them.
+		-- Otherwise use provided boundaries as they are:
+		if b = boundaries_default then
+			b := get_boundaries (line, zero); -- a polygon line has zero width
+		end if;
+		
+		if b.smallest_y = type_float_internal (get_x (line.start_point)) then
+			p := line.start_point;
+			
+		elsif b.smallest_y = type_float_internal (get_x (line.end_point)) then
+			p := line.end_point;
+
+		else
+			-- If boundaries where provided and neither start nor end point
+			-- of line matches, issue exception:
+			raise constraint_error with to_string (b) 
+				& " invalid for line" & to_string (line) & " !";
+		end if;
+			
+		return p;
+	end get_lower_end;
+
+	
+	function get_upper_end (
+		line		: in type_line;
+		boundaries	: in type_boundaries := boundaries_default)
+		return type_point
+	is
+		p : type_point; -- to be returned
+		b : type_boundaries := boundaries;								   
+	begin
+		-- If no boundaries provided, compute them.
+		-- Otherwise use provided boundaries as they are:
+		if b = boundaries_default then
+			b := get_boundaries (line, zero); -- a polygon line has zero width
+		end if;
+		
+		if b.greatest_y = type_float_internal (get_x (line.start_point)) then
+			p := line.start_point;
+			
+		elsif b.greatest_y = type_float_internal (get_x (line.end_point)) then
+			p := line.end_point;
+
+		else
+			-- If boundaries where provided and neither start nor end point
+			-- of line matches, issue exception:
+			raise constraint_error with to_string (b) 
+				& " invalid for line" & to_string (line) & " !";
+		end if;
+			
+		return p;
+	end get_upper_end;
+
+
+
+	
 	
 
 	function round (line : in type_line)
@@ -1288,6 +2522,30 @@ package body et_geometry_2 is
 	is begin
 		return " " & type_line_direction'image (direction);
 	end to_string;
+
+
+	function get_tangent_direction (
+		angle : in type_tangent_angle)
+		return type_line_direction
+	is
+		result : type_line_direction := HORIZONTAL;
+	begin
+		if angle = 0.0 then
+			result := HORIZONTAL;
+			
+		elsif angle < 90.0 then
+			result := FALLING;
+			
+		elsif angle = 90.0 then
+			result := VERTICAL;
+			
+		else -- angle > 90.0
+			result := RISING;
+		end if;
+
+		return result;
+	end get_tangent_direction;
+
 	
 	
 	function get_direction (line : in type_line)
@@ -1334,187 +2592,8 @@ package body et_geometry_2 is
 		
 		return result;
 	end get_direction;
-
-	
-	function get_tangent_direction (angle : in type_tangent_angle)
-		return type_line_direction
-	is
-		result : type_line_direction := HORIZONTAL;
-	begin
-		if angle = 0.0 then
-			result := HORIZONTAL;
-			
-		elsif angle < 90.0 then
-			result := FALLING;
-			
-		elsif angle = 90.0 then
-			result := VERTICAL;
-			
-		else -- angle > 90.0
-			result := RISING;
-		end if;
-
-		return result;
-	end get_tangent_direction;
-
-	
-	
-	
-	function get_intersection (
-		probe_line		: in type_line_vector;
-		candidate_line	: in type_line)
-		return type_intersection_of_two_lines
-	is
-		i : constant type_intersection_of_two_lines := get_intersection (
-				line_1	=> probe_line,
-				line_2	=> to_line_vector (candidate_line));
-		
-	begin
-		case i.status is
-			when EXISTS =>
-				--put_line ("exists");
-				--put_line (to_string (probe_line));
-				--put_line (to_string (candidate_line));
-				--put_line (to_string (i.intersection.point));
-				
-				-- The intersection must be between start and end point of
-				-- the candidate line (start and end point itself included).
-				-- If the intersection is between start and end point
-				-- of candidate line, then return the intersection as it is.
-				-- If the intersection is before start point or
-				-- beyond end point, then return NOT_EXISTENT.
-				if on_line (i.intersection.vector, candidate_line) then
-					return i;
-				else
-					return (status => NOT_EXISTENT);
-				end if;
-
-			when others =>		
-				return i;
-		end case;
-
-	end get_intersection;
-
-
-
-	function get_intersection (
-		line_1, line_2 : in type_line)
-		return type_intersection_of_two_lines
-	is
-		lv_1 : constant type_line_vector := to_line_vector (line_1);
-		lv_2 : constant type_line_vector := to_line_vector (line_2);
-
-		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
-		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
-
-		status : type_intersection_status_of_two_lines;
-		intersection : type_intersection;
-		
-	begin
-		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
-			--status := NOT_EXISTENT;
-
-		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
-			status := OVERLAP;
-			
-		elsif int_A.status = EXISTS and int_B.status = EXISTS then
-
-			-- double check: location vectors must match !
-			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
-				status := EXISTS;
-				intersection.vector := int_A.intersection.vector;
-				intersection.angle := int_A.intersection.angle;
-			else
-				raise constraint_error with 
-					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
-					& to_string (int_B.intersection.vector);
-			end if;
-
-		else
-			status := NOT_EXISTENT;
-		end if;
-
-
-		case status is
-			when NOT_EXISTENT =>
-				return (status => NOT_EXISTENT);
-
-			when OVERLAP =>
-				return (status => OVERLAP);
-
-			when EXISTS =>
-				return (
-					status			=> EXISTS,
-					intersection	=> intersection);	   
-		end case;
-
-	end get_intersection;
 	
 
-
-	
-	
-	function start_vector (
-		line	: in type_line)
-		return type_vector 
-	is begin
-		return set (
-			x => type_float_internal (line.start_point.x),
-			y => type_float_internal (line.start_point.y),
-			z => 0.0);
-	end start_vector;
-
-	
-	function end_vector (
-		line	: in type_line)
-		return type_vector 
-	is begin
-		return set (
-			x => type_float_internal (line.end_point.x),
-			y => type_float_internal (line.end_point.y),
-			z => 0.0);
-	end end_vector;
-
-	
-	function direction_vector (
-		line	: in type_line)
-		return type_vector 
-	is begin
-		return set (
-			x => type_float_internal (line.end_point.x - line.start_point.x),
-			y => type_float_internal (line.end_point.y - line.start_point.y),
-			z => 0.0);
-	end direction_vector;
-
-	
-	function to_line_vector (
-		line	: in type_line)
-		return type_line_vector
-	is begin
-		return (
-			v_start		=> start_vector (line),
-			v_direction	=> direction_vector (line));
-	end to_line_vector;
-
-	
-	--function get_distance (
-		--line	: in type_line;
-		--vector	: in type_vector)
-		--return type_distance_positive
-	--is
-		--dv : constant type_vector := direction_vector (line);
-		--sv : constant type_vector := start_vector (line);
-		
-		--d1 : constant type_vector := subtract (vector, sv);
-		--m, n : type_float_internal;
-	--begin
-		--m := absolute (cross_product (dv, d1));
-		--n := absolute (dv);
-		
-		--return to_distance (m / n);
-	--end get_distance;
-
-	
 	function get_distance (
 		line	: in type_line;
 		vector	: in type_vector)
@@ -1531,414 +2610,47 @@ package body et_geometry_2 is
 		
 		return (m / n);
 	end get_distance;
-
 	
-	
-	
-	function get_direction (
-		line	: in type_line)
-		return type_rotation 
-	is
-		dx : constant type_float_internal := 
-			type_float_internal (line.end_point.x - line.start_point.x);
-		
-		dy : constant type_float_internal := 
-			type_float_internal (line.end_point.y - line.start_point.y);
-	begin
-		-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
-		-- In this case we assume the resulting angle is zero.
-		if dx = 0.0 and dy = 0.0 then
-			return zero_rotation;
-		else
-			-- CS return to_rotation (arctan (dy, dx, units_per_cycle));
-			return to_rotation (arctan (dy, dx, units_per_cycle));
-		end if;
-	end get_direction;
 
-	
-	procedure move_by (
-		line		: in out type_line;
-		direction	: in type_rotation;
-		distance	: in type_distance_positive) 
-	is begin
-		-- Move start and and point of line into direction by distance.
-		line.start_point	:= type_point (move (line.start_point, direction, distance));
-		line.end_point		:= type_point (move (line.end_point,   direction, distance));
-	end move_by;
 
-	
-	procedure move_by (
-		line	: in out type_line;
-		offset	: in type_distance_relative)
-	is begin
-		move_by (point	=> line.start_point,	offset => offset);
-		move_by (point	=> line.end_point,		offset => offset);
-	end move_by;
-
-	
-	procedure mirror (
-		line		: in out type_line;
-		axis		: in type_axis_2d)
-	is begin
-		mirror (line.start_point, axis);
-		mirror (line.end_point, axis);
-	end mirror;
-
-	
-	procedure rotate_by (
-		line		: in out type_line;
-		rotation	: in type_rotation) 
-	is begin
-		rotate_by (line.start_point, rotation);
-		rotate_by (line.end_point, rotation);
-	end rotate_by;
-
-	
-	function to_route (
-		start_point, end_point	: in type_point;
-		style					: in type_bend_style)
-		return type_route
-	is
-		-- The area required for the route is a rectangle.
-		-- We will need to figure out whether it is wider than tall:
-		dx : constant type_distance := get_distance (start_point, end_point, X);
-		dy : constant type_distance := get_distance (start_point, end_point, Y);
-
-		sup_start, sup_end : type_point; -- support points near given start and end point
-
-		-- distance of support points from given start or end point:
-		ds : constant type_distance_positive := 1.0;
-
-		bended : type_bended := YES;
-		bend_point : type_point;
-
-		-- CS this procedure should be made public as "intersection" or similar
-		-- CS use function get_intersection with S1, R1, S2, R2 as input
-		-- to compute intersection I.
-		procedure compute_bend_point is 
-			first_line	: constant type_line := (start_point, sup_start);
-			second_line	: constant type_line := (end_point, sup_end);
-
-			-- first line start vector:
-			S1 : constant type_vector := start_vector (first_line);
-
-			-- first line direction vector:
-			R1 : constant type_vector := direction_vector (first_line);
-
-			-- second line start vector:
-			S2 : constant type_vector := start_vector (second_line);
-
-			-- second line direction vector
-			R2 : constant type_vector := direction_vector (second_line);
-
-			-- scratch variables:
-			a, b, c, d, e, f, g : type_float_internal;
-			lambda_1, lambda_2 : type_float_internal;
-
-			-- location vector of intersection
-			I : type_vector;
-		begin
-			-- The direction vector of the first line can be zero in x (R1.x).
-			-- In order to avoid division by zero we must switch between
-			-- two ways to find the intersection:
-			if get_x (R1) /= 0.0 then
-				a := get_y (S1);
-				b := get_x (S2) * get_y (R1) / get_x (R1);
-				c := get_x (S1) * get_y (R1) / get_x (R1);
-				d := get_y (S2);
-				e := get_y (R2);
-				f := get_x (R2) * get_y (R1) / get_x (R1);
-				g := 1.0 / (e - f);
-
-				lambda_2 := (a + b - c - d) * g;
-
-				I := add (S2, scale (R2, lambda_2));
-			else
-				a := get_y (S2);
-				b := get_x (S1) * get_y (R2) / get_x (R2);
-				c := get_x (S2) * get_y (R2) / get_x (R2);
-				d := get_y (S1);
-				e := get_y (R1);
-				f := get_x (R1) * get_y (R2) / get_x (R2);
-				g := 1.0 / (e - f);
-
-				lambda_1 := (a + b - c - d) * g;
-
-				I := add (S1, scale (R1, lambda_1));
-			end if;
-			
-			bend_point := to_point (I);
-		end compute_bend_point;
-		
-	begin -- to_route
-		
-		-- If start and end point are equally then do nothing
-		-- and return given start and end point as they are:
-		if start_point = end_point then
-			bended := NO;
-		else
-		
-			-- If start and end point have same x or y position, then we
-			-- have a straight direct line between them.
-			if dx = zero or dy = zero then
-				bended := NO;
-			else
-
-				case style is
-					when STRAIGTH_THEN_ANGLED =>
-						if abs (dx) = abs (dy) then -- diagonal line from start to end
-							bended := NO;
-						else
-							
-							-- compute support point near start point:
-							-- The first line must run straight from start point:
-							--if wider_than_tall then
-							if abs (dx) > abs (dy) then -- wider than tall
-								sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
-							else -- taller than wide
-								sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
-							end if;
-
-							-- compute support point near end point:
-							-- The second line must run angled from end point:
-							if dx > zero then -- to the right
-								if dy > zero then -- upwards
-									sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) + ds));
-									--  45 degree
-								else
-									sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) - ds));
-									-- -45 degree
-								end if;
-							else -- to the left
-								if dy > zero then -- upwards
-									sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) + ds));
-									-- 135 degree
-								else
-									sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) - ds));
-									-- 225 degree
-								end if;
-							end if;
-
-							compute_bend_point;
-
-						end if;
-						
-					when DIRECT => bended := NO;
-
-					when ANGLED_THEN_STRAIGHT =>
-						if abs (dx) = abs (dy) then -- diagonal line from start to end
-							bended := NO;
-						else
-							
-							-- Compute support point near start point:
-							-- The first line must run angled from start point:
-							if dx > zero then -- to the right
-								if dy > zero then -- upwards
-									sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) + ds));
-									--  45 degree
-								else -- downwards
-									sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) - ds));
-									-- -45 degree
-								end if;
-							else -- to the left
-								if dy > zero then -- upwards
-									sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) + ds));
-									-- 135 degree
-								else -- downwards
-									sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) - ds));
-									-- 225 degree
-								end if;
-							end if;
-
-							-- compute support point near end point:
-							-- The second line must run straight from end point:
-							if abs (dx) > abs (dy) then -- wider than tall
-								sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
-								-- horizontally
-							else -- taller than wide
-								sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
-								-- vertically
-							end if;
-
-							compute_bend_point;
-						end if;
-						
-					when VERTICAL_THEN_HORIZONTAL =>
-						-- Compute support point near start point:
-						-- The first line must run vertically from start point:
-						sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
-						-- vertically
-
-						-- The second line must run horizontally from end point:
-						sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
-						-- horizontally
-
-						compute_bend_point;
-						
-					when HORIZONTAL_THEN_VERTICAL =>
-						-- Compute support point near start point:
-						-- The first line must run horizontal from start point:
-						sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
-						-- horizontally
-
-						-- compute support point near end point:
-						-- The second line must run vertically from end point:
-						sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
-						-- vertically
-
-						compute_bend_point;
-						
-				end case;
-			end if;
-
-		end if;
-			
-		if bended = NO then
-			return (NO, start_point, end_point);
-		else
-			return (YES, start_point, end_point, bend_point);
-		end if;
-
-	end to_route;
-
-	
-	procedure next_bend_style (route : in out type_route_live) is
-		i : constant natural := type_bend_style'pos (route.bend_style);
-		-- i points now to the current bend style
-
-		-- get the index of the last available bend style:
-		max : constant natural := type_bend_style'pos (type_bend_style'last);
-	begin
-		if i < max then
-			-- jump to next bend style
-			route.bend_style := type_bend_style'succ (type_bend_style'val (i));
-		else 
-			-- After the last bend style, jump back to the first bend style:
-			route.bend_style := type_bend_style'first;
-		end if;
-	end next_bend_style;
-
-	
-	function get_boundaries (
-		line	: in type_line;	
-		width	: in type_distance_positive)
-		return type_boundaries 
-	is begin
-		return get_boundaries (line.start_point, line.end_point, width);
-	end get_boundaries;
-
-	
-	function which_zone (
-		point	: in type_point'class;
-		line	: in type_line'class) 
-		return type_line_zone 
-	is
-		zone : type_line_zone; -- to be returned
-	
-		line_length : type_distance;
-		zone_border : type_distance;
-		
-	begin -- which_zone
-		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
-		
-		-- The greater distance from start to end point in X or Y determines 
-		-- whether the line is handled like a horizontal or vertical drawn line.
-		if get_distance_abs (line.start_point, line.end_point, X) > 
-			get_distance_abs (line.start_point, line.end_point, Y) then
-
-			-- distance in X greater -> decision will be made along the X axis.
-			-- The line will be handled like a horizontal drawn line.
-			
-			-- calculate the zone border. This depends on the line length in X direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, X);
-			zone_border := line_length / type_distance (line_zone_division_factor);
-			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
-			
-			if get_x (line.start_point) < get_x (line.end_point) then 
-			-- DRAWN FROM LEFT TO THE RIGHT
-				if get_x (point) < get_x (line.start_point) + zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_x (point) > get_x (line.end_point) - zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
-				else
-					zone := CENTER;
-				end if;
-
-			else 
-			-- DRAWN FROM RIGHT TO THE LEFT
-				if get_x (point) > get_x (line.start_point) - zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_x (point) < get_x (line.end_point) + zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
-				else
-					zone := CENTER;
-				end if;
-			end if;
-
-			
-		else
-			-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
-			-- The line will be handled like a vertical drawn line.
-
-			-- calculate the zone border. This depends on the line length in Y direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, Y);
-			zone_border := line_length / type_distance (line_zone_division_factor);
-			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
-			
-			if get_y (line.start_point) < get_y (line.end_point) then 
-			-- DRAWN UPWARDS
-				if get_y (point) < get_y (line.start_point) + zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_y (point) > get_y (line.end_point) - zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
-				else
-					zone := CENTER;
-				end if;
-					
-			else 
-			-- DRAWN DOWNWARDS
-				if get_y (point) > get_y (line.start_point) - zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_y (point) < get_y (line.end_point) + zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
-				else
-					zone := CENTER;
-				end if;
-			end if;
-			
-			
-		end if;
-		
-		return zone;
-	end which_zone;
+-- DISTANCE POINT TO LINE
 
 	function out_of_range (d : in type_distance_point_line) return boolean is begin
 		return d.out_of_range;
 	end out_of_range;
 
+	
 	function get_distance (d : in type_distance_point_line) 
 		return type_float_internal
 	is begin
 		return d.distance;
 	end get_distance;
 
+	
 	function get_intersection (d : in type_distance_point_line) 
 		return type_vector 
 	is begin
 		return d.intersection;
 	end get_intersection;
 
+	
 	function get_direction (d : in type_distance_point_line) return type_rotation is begin
 		return d.direction;
 	end get_direction;
+
 	
 	function on_start_point (d : in type_distance_point_line) return boolean is begin
 		return d.sits_on_start;
 	end on_start_point;
 
+	
 	function on_end_point (d : in type_distance_point_line) return boolean is begin
 		return d.sits_on_end;
 	end on_end_point;
+
+
+
+
 
 	
 	function get_distance (
@@ -2146,8 +2858,9 @@ package body et_geometry_2 is
 	is begin
 		return get_distance (to_vector (point), line, line_range);
 	end get_distance;
-	
-	
+
+
+
 	function on_line (
 		vector	: in type_vector;
 		line	: in type_line)
@@ -2282,7 +2995,252 @@ package body et_geometry_2 is
 		return result;
 	end get_shortest_distance;
 
+	
+	
+	function get_intersection (
+		probe_line		: in type_line_vector;
+		candidate_line	: in type_line)
+		return type_intersection_of_two_lines
+	is
+		i : constant type_intersection_of_two_lines := get_intersection (
+				line_1	=> probe_line,
+				line_2	=> to_line_vector (candidate_line));
+		
+	begin
+		case i.status is
+			when EXISTS =>
+				--put_line ("exists");
+				--put_line (to_string (probe_line));
+				--put_line (to_string (candidate_line));
+				--put_line (to_string (i.intersection.point));
+				
+				-- The intersection must be between start and end point of
+				-- the candidate line (start and end point itself included).
+				-- If the intersection is between start and end point
+				-- of candidate line, then return the intersection as it is.
+				-- If the intersection is before start point or
+				-- beyond end point, then return NOT_EXISTENT.
+				if on_line (i.intersection.vector, candidate_line) then
+					return i;
+				else
+					return (status => NOT_EXISTENT);
+				end if;
 
+			when others =>		
+				return i;
+		end case;
+
+	end get_intersection;
+
+
+
+	function get_intersection (
+		line_1, line_2 : in type_line)
+		return type_intersection_of_two_lines
+	is
+		lv_1 : constant type_line_vector := to_line_vector (line_1);
+		lv_2 : constant type_line_vector := to_line_vector (line_2);
+
+		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
+		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
+
+		status : type_intersection_status_of_two_lines;
+		intersection : type_intersection;
+		
+	begin
+		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
+			--status := NOT_EXISTENT;
+
+		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
+			status := OVERLAP;
+			
+		elsif int_A.status = EXISTS and int_B.status = EXISTS then
+
+			-- double check: location vectors must match !
+			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
+				status := EXISTS;
+				intersection.vector := int_A.intersection.vector;
+				intersection.angle := int_A.intersection.angle;
+			else
+				raise constraint_error with 
+					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
+					& to_string (int_B.intersection.vector);
+			end if;
+
+		else
+			status := NOT_EXISTENT;
+		end if;
+
+
+		case status is
+			when NOT_EXISTENT =>
+				return (status => NOT_EXISTENT);
+
+			when OVERLAP =>
+				return (status => OVERLAP);
+
+			when EXISTS =>
+				return (
+					status			=> EXISTS,
+					intersection	=> intersection);	   
+		end case;
+
+	end get_intersection;
+	
+
+
+
+	procedure move_by (
+		line		: in out type_line;
+		direction	: in type_rotation;
+		distance	: in type_distance_positive) 
+	is begin
+		-- Move start and and point of line into direction by distance.
+		line.start_point	:= type_point (move (line.start_point, direction, distance));
+		line.end_point		:= type_point (move (line.end_point,   direction, distance));
+	end move_by;
+
+	
+	procedure move_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (point	=> line.start_point,	offset => offset);
+		move_by (point	=> line.end_point,		offset => offset);
+	end move_by;
+
+	
+	procedure mirror (
+		line		: in out type_line;
+		axis		: in type_axis_2d)
+	is begin
+		mirror (line.start_point, axis);
+		mirror (line.end_point, axis);
+	end mirror;
+
+	
+	procedure rotate_by (
+		line		: in out type_line;
+		rotation	: in type_rotation) 
+	is begin
+		rotate_by (line.start_point, rotation);
+		rotate_by (line.end_point, rotation);
+	end rotate_by;
+
+
+	
+	function get_boundaries (
+		line	: in type_line;	
+		width	: in type_distance_positive)
+		return type_boundaries 
+	is begin
+		return get_boundaries (line.start_point, line.end_point, width);
+	end get_boundaries;
+
+
+	
+
+-- ZONES OF A LINE
+	
+	function which_zone (
+		point	: in type_point'class;
+		line	: in type_line'class) 
+		return type_line_zone 
+	is
+		zone : type_line_zone; -- to be returned
+	
+		line_length : type_distance;
+		zone_border : type_distance;
+		
+	begin -- which_zone
+		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
+		
+		-- The greater distance from start to end point in X or Y determines 
+		-- whether the line is handled like a horizontal or vertical drawn line.
+		if get_distance_abs (line.start_point, line.end_point, X) > 
+			get_distance_abs (line.start_point, line.end_point, Y) then
+
+			-- distance in X greater -> decision will be made along the X axis.
+			-- The line will be handled like a horizontal drawn line.
+			
+			-- calculate the zone border. This depends on the line length in X direction.
+			line_length := get_distance_abs (line.start_point, line.end_point, X);
+			zone_border := line_length / type_distance (line_zone_division_factor);
+			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+			
+			if get_x (line.start_point) < get_x (line.end_point) then 
+			-- DRAWN FROM LEFT TO THE RIGHT
+				if get_x (point) < get_x (line.start_point) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_x (point) > get_x (line.end_point) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+
+			else 
+			-- DRAWN FROM RIGHT TO THE LEFT
+				if get_x (point) > get_x (line.start_point) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_x (point) < get_x (line.end_point) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+			end if;
+
+			
+		else
+			-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
+			-- The line will be handled like a vertical drawn line.
+
+			-- calculate the zone border. This depends on the line length in Y direction.
+			line_length := get_distance_abs (line.start_point, line.end_point, Y);
+			zone_border := line_length / type_distance (line_zone_division_factor);
+			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+			
+			if get_y (line.start_point) < get_y (line.end_point) then 
+			-- DRAWN UPWARDS
+				if get_y (point) < get_y (line.start_point) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_y (point) > get_y (line.end_point) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+					
+			else 
+			-- DRAWN DOWNWARDS
+				if get_y (point) > get_y (line.start_point) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_y (point) < get_y (line.end_point) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+			end if;
+			
+			
+		end if;
+		
+		return zone;
+	end which_zone;
+
+
+	
+
+-- ARC
+
+
+	function to_string (arc : in type_arc) return string is begin
+		return "arc: "
+			& "C:" & to_string (arc.center) 
+			& " / S:" & to_string (arc.start_point) 
+			& " / E:" & to_string (arc.end_point)
+			& " / D: " & to_string (arc.direction);
+	end to_string;
+
+	
 	
 	function round (arc : in type_arc)
 		return type_arc'class
@@ -2515,6 +3473,7 @@ package body et_geometry_2 is
 				end case;				
 			end if;				
 		end do_it;
+
 		
 	begin -- get_shortest_distance
 		--put_line ("point" & to_string (point) & " " & to_string (arc));
@@ -3350,10 +4309,11 @@ package body et_geometry_2 is
 		arc.direction := reverse_direction (arc.direction);
 	end mirror;
 
+	
 	procedure rotate_by (
 		arc			: in out type_arc;
-		rotation	: in type_rotation) is
-	begin
+		rotation	: in type_rotation) 
+	is begin
 		rotate_by (arc.center, rotation);
 		rotate_by (arc.start_point, rotation);
 		rotate_by (arc.end_point, rotation);
@@ -3535,6 +4495,18 @@ package body et_geometry_2 is
 	--end split_arc;
 
 
+
+	
+-- CIRCLE
+
+
+	function to_string (circle : in type_circle) return string is begin
+		return
+			"circle: C:" & to_string (circle.center) 
+			& " / R:" & to_string (circle.radius);
+	end to_string;
+	
+	
 	--function split_circle (circle_in : in type_circle) 
 		--return type_arcs
 	--is
@@ -3683,16 +4655,16 @@ package body et_geometry_2 is
 	
 	procedure mirror (
 		circle		: in out type_circle;
-		axis		: in type_axis_2d) is
-	begin
+		axis		: in type_axis_2d) 
+	is begin
 		mirror (circle.center, axis);
 	end mirror;
 
 	
 	procedure rotate_by (
 		circle		: in out type_circle;
-		rotation	: in type_rotation) is
-	begin
+		rotation	: in type_rotation) 
+	is begin
 		rotate_by (circle.center, rotation);
 	end;
 
@@ -4154,1152 +5126,240 @@ package body et_geometry_2 is
 		return result;
 	end order_intersections;
 
-	
-	
-	
-	function to_string (line : in type_line) return string is begin
-		return 
-			"line: S:" & to_string (line.start_point) 
-			& " / E:" & to_string (line.end_point);
-	end;
-
-	function to_string (arc : in type_arc) return string is begin
-		return "arc: "
-			& "C:" & to_string (arc.center) 
-			& " / S:" & to_string (arc.start_point) 
-			& " / E:" & to_string (arc.end_point)
-			& " / D: " & to_string (arc.direction);
-	end to_string;
-
-	function to_string (circle : in type_circle) return string is begin
-		return
-			"circle: C:" & to_string (circle.center) 
-			& " / R:" & to_string (circle.radius);
-	end to_string;
-
-
 
 
 	
-	function get_left_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
+	
+
+
+	
+-- PATH FROM POINT TO POINT
+	
+	function to_route (
+		start_point, end_point	: in type_point;
+		style					: in type_bend_style)
+		return type_route
 	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.smallest_x = type_float_internal (get_x (line.start_point)) then
-			p := line.start_point;
-			
-		elsif b.smallest_x = type_float_internal (get_x (line.end_point)) then
-			p := line.end_point;
+		-- The area required for the route is a rectangle.
+		-- We will need to figure out whether it is wider than tall:
+		dx : constant type_distance := get_distance (start_point, end_point, X);
+		dy : constant type_distance := get_distance (start_point, end_point, Y);
 
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_left_end;
+		sup_start, sup_end : type_point; -- support points near given start and end point
 
-	
-	function get_right_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.greatest_x = type_float_internal (get_x (line.start_point)) then
-			p := line.start_point;
-			
-		elsif b.greatest_x = type_float_internal (get_x (line.end_point)) then
-			p := line.end_point;
+		-- distance of support points from given start or end point:
+		ds : constant type_distance_positive := 1.0;
 
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_right_end;
+		bended : type_bended := YES;
+		bend_point : type_point;
 
-	
-	function get_lower_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.smallest_y = type_float_internal (get_x (line.start_point)) then
-			p := line.start_point;
-			
-		elsif b.smallest_y = type_float_internal (get_x (line.end_point)) then
-			p := line.end_point;
+		-- CS this procedure should be made public as "intersection" or similar
+		-- CS use function get_intersection with S1, R1, S2, R2 as input
+		-- to compute intersection I.
+		procedure compute_bend_point is 
+			first_line	: constant type_line := (start_point, sup_start);
+			second_line	: constant type_line := (end_point, sup_end);
 
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_lower_end;
+			-- first line start vector:
+			S1 : constant type_vector := start_vector (first_line);
 
-	
-	function get_upper_end (
-		line		: in type_line;
-		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
-	is
-		p : type_point; -- to be returned
-		b : type_boundaries := boundaries;								   
-	begin
-		-- If no boundaries provided, compute them.
-		-- Otherwise use provided boundaries as they are:
-		if b = boundaries_default then
-			b := get_boundaries (line, zero); -- a polygon line has zero width
-		end if;
-		
-		if b.greatest_y = type_float_internal (get_x (line.start_point)) then
-			p := line.start_point;
-			
-		elsif b.greatest_y = type_float_internal (get_x (line.end_point)) then
-			p := line.end_point;
+			-- first line direction vector:
+			R1 : constant type_vector := direction_vector (first_line);
 
-		else
-			-- If boundaries where provided and neither start nor end point
-			-- of line matches, issue exception:
-			raise constraint_error with to_string (b) 
-				& " invalid for line" & to_string (line) & " !";
-		end if;
-			
-		return p;
-	end get_upper_end;
+			-- second line start vector:
+			S2 : constant type_vector := start_vector (second_line);
 
+			-- second line direction vector
+			R2 : constant type_vector := direction_vector (second_line);
 
+			-- scratch variables:
+			a, b, c, d, e, f, g : type_float_internal;
+			lambda_1, lambda_2 : type_float_internal;
 
--------------------
-
-
--- ROTATION / ANGLE
-
-	
-	function get_direction (rotation : in type_rotation) 
-		return type_direction_of_rotation
-	is begin
-		if rotation < zero_rotation then
-			return CW;
-		else
-			return CCW;
-		end if;
-	end get_direction;
-
-
-	
-	function to_rotation (rotation : in string) return type_rotation is begin
-		return type_rotation'value (rotation);
-	end;
-
-	
-	function to_string (rotation : in type_rotation) return string is begin
-		if rotation < zero_rotation then
-			return space & type_rotation'image (rotation);
-		else
-			return type_rotation'image (rotation);
-		end if;
-		-- CS suppress trailing zeros
-	end;
-
-	
-	
-	function to_rotation (f : in type_float_internal)
-		return type_rotation 
-	is
-		use pac_distance_io;
-
-		d1 : type_rotation := type_rotation (f);
-		d2 : type_float_internal;
-
-		f1 : constant type_float_internal := 5.0 * type_float_internal (type_rotation'small);
-
-	begin
-		d2 := 10.0 * abs (f - type_float_internal (d1));
-		
-		if f < 0.0 then
-			if d2 > f1 then
-				d1 := d1 - type_rotation'small;
-			end if;
-		else
-			if d2 > f1 then
-				d1 := d1 + type_rotation'small;
-			end if;
-		end if;
-
-		return d1;
-		
-		--if f < 0.0 then
-			--declare
-				--r : string (1 .. type_rotation'digits + 2); -- sign + point
-			--begin
-				---- CS: IMPROVEMENT REQUIRED !!!
-				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
-				--return type_rotation'value (r);
-			--end;
-		--else
-			--declare
-				--r : string (1 .. type_rotation'digits + 1); -- point
-			--begin
-				---- CS: IMPROVEMENT REQUIRED !!!
-				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
-				--return type_rotation'value (r);
-			--end;
-		--end if;
-	end to_rotation;
-
-
-	function to_positive_rotation (
-		rotation	: in type_rotation)
-		return type_rotation_positive
-	is begin
-		if rotation < 0.0 then
-			return 360.0 + rotation;
-		else
-			return rotation;
-		end if;
-	end to_positive_rotation;
-
-	
-	
-	function add (
-		left, right : in type_rotation)
-		return type_rotation 
-	is
-		subtype type_rotation_wide is type_float_internal range -720.0 .. +720.0;
-		scratch : type_rotation_wide;
-		result : type_rotation; -- to be returned
-	begin
-		scratch := type_float_internal (left) + type_float_internal (right);
-		
-		if scratch >= 360.0 then
-			scratch := scratch - 360.0;
-			
-		elsif scratch <= -360.0 then
-			scratch := scratch + 360.0;
-		end if;
-
-		result := to_rotation (scratch);
-		return result;
-	end;
-
-	
-
--- RELATIVE DISTANCE:
-
-
-	
-	function invert (
-		d : in type_distance_relative)
-		return type_distance_relative
-	is begin
-		return (-1.0 * d.x, -1.0 * d.y);
-	end invert;
-
-	
-	function to_string (
-		distance : in type_distance_relative)
-		return string
-	is begin
-		return "distance relative: x/y" 
-			& to_string (distance.x)
-			& "/"
-			& to_string (distance.y);
-	end to_string;
-
-
-	function to_distance_relative (
-		x,y : in type_distance)
-		return type_distance_relative
-	is begin
-		return (x, y);
-	end to_distance_relative;
-
-
-
--- POLAR
-
-	function get_angle (
-		distance : in type_distance_polar) 
-		return type_rotation 
-	is begin
-		return distance.angle;
-	end get_angle;
-
-	
-	function get_absolute (
-		distance : in type_distance_polar) 
-		return type_float_internal_positive
-	is begin
-		return distance.absolute;
-	end get_absolute;
-
-	
-	
--- POINT
-
-	function get_quadrant (
-		point : in type_point) 
-		return type_quadrant
-	is begin
-		if point.x >= zero then -- we are right of the y-axis or on top of it
-			if point.y >= zero then -- we are above the x-axis or on top of it
-				return ONE; 
-			else -- we are below the x-axis
-				return FOUR;
-			end if;
-			
-		else -- we are left of the y-axis
-			if point.y >= zero then -- we are above the x-axis or on top of it
-				return TWO;
-			else -- we are below the x-axis
-				return THREE;
-			end if;
-		end if;
-	end get_quadrant;
-
-	
-	
-	function to_distance_relative (
-		p : in type_point)
-		return type_distance_relative
-	is begin
-		return (p.x, p.y);
-	end to_distance_relative;
-
-
-	function get_distance (
-		point_one, point_two : in type_point) 
-		return type_distance_polar 
-	is
-		result : type_distance_polar;
-
-		delta_x, delta_y : type_float_internal := 0.0;
-	begin
-		result.absolute := get_distance_total (point_one, point_two);
-
-		-- NOTE: If the total distance between the points is zero then
-		-- the arctan operation is not possible. In this case we assume
-		-- the resulting angle is zero.
-		-- So we do the angle computation only if there is a distance between the points:
-		if result.absolute /= 0.0 then
-			
-			delta_x := type_float_internal (get_x (point_two) - get_x (point_one));
-			delta_y := type_float_internal (get_y (point_two) - get_y (point_one));
-
-			result.angle := to_rotation (arctan (
-					x 		=> delta_x,
-					y		=> delta_y,
-					cycle	=> units_per_cycle));
-		else
-			-- distance is zero
-			result.angle := zero_rotation;
-		end if;
-		
-		return result;
-	end get_distance;
-
-
-	
-	function get_x (
-		point : in type_point) 
-		return type_position_axis 
-	is begin
-		return point.x;
-	end;
-
-	
-	function get_y (
-		point : in type_point)
-		return type_position_axis 
-	is begin
-		return point.y;
-	end;
-
-
-
-	function set (
-		x, y : in type_position_axis)
-		return type_point'class 
-	is
-		point : type_point;
-	begin
-		point.x := x;
-		point.y := y;
-		return point;
-	end;
-
-	
-	procedure set (
-		point	: in out type_point;
-		axis 	: in type_axis_2d;
-		value	: in type_position_axis)
-	is begin
-		case axis is
-			when X => point.x := value;
-			when Y => point.y := value;
-		end case;
-	end;
-
-	
-	procedure set (
-		point	: in out type_point'class;
-		position: in type_point) 
-	is begin
-		point.x := position.x;
-		point.y := position.y;
-	end;
-
-
-
-	function invert (
-		point : in type_point'class)
-		return type_point'class 
-	is
-		pi : type_point'class := point;
-	begin
-		pi.x := - pi.x;
-		pi.y := - pi.y;
-		return pi;
-	end invert;
-
-	
-	function invert (
-		point	: in type_point;
-		axis	: in type_axis_2d)
-		return type_point'class
-	is
-		p : type_point := point;
-	begin
-		case axis is
-			when X => p.x := - p.x;
-			when Y => p.y := - p.y;
-		end case;
-
-		return p;
-	end invert;
-
-	
-	procedure reset (
-		point : in out type_point) 
-	is begin
-		point.x := zero;
-		point.y := zero;
-	end;
-
-
-	
-	procedure move_by (
-		point	: in out type_point;
-		offset	: in type_distance_relative) 
-	is begin
-		point.x := point.x + offset.x;
-		point.y := point.y + offset.y;
-	end move_by;
-
-	
-	procedure move_to (
-		point		: in out type_point;
-		destination	: in type_point'class) 
-	is begin
-		point.x := destination.x;
-		point.y := destination.y;
-	end move_to;
-
-
-	function move (
-		point		: in type_point;
-		direction	: in type_rotation;
-		distance	: in type_distance_positive;
-		clip		: in boolean := false)
-		return type_point'class 
-	is 			
-		delta_x, delta_y : type_float_internal := 0.0;
-
-		rx, ry : type_distance;			
-		result : type_point;			
-	begin
-		-- sin (direction) * distance = delta y
-		-- cos (direction) * distance = delty x
-
-		delta_y := sin (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
-		delta_x := cos (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
-
-		rx := point.x + to_distance (delta_x);
-		ry := point.y + to_distance (delta_y);
-
-		if clip then
-			clip_distance (rx);
-			clip_distance (ry);
-		end if;
-
-		result := (rx, ry);
-		return result;
-	end move;
-
-	
-	procedure mirror (
-		point	: in out type_point;
-		axis	: in type_axis_2d) 
-	is begin
-		case axis is
-			when X =>
-				point.y := point.y * (-1.0);
-			when Y =>
-				point.x := point.x * (-1.0);
-		end case;
-	end mirror;
-
-
-	function get_distance_total (
-		point	: in type_point;
-		vector	: in type_vector)
-		return type_float_internal_positive
-	is 
-		pv : constant type_vector := to_vector (point);
-		
-		dx : constant type_float_internal := abs (get_x (vector) - get_x (pv));
-		dy : constant type_float_internal := abs (get_y (vector) - get_y (pv));
-	begin
-		return sqrt (dx ** 2.0 + dy ** 2.0);
-	end get_distance_total;
-
-	
-
-	function get_distance (
-		point_1	: in type_point;
-		point_2	: in type_point;
-		axis	: in type_axis_2d) 
-		return type_distance 
-	is
-		d : type_distance;
-	begin
-		case axis is
-			when X =>
-				d := (point_2.x - point_1.x);
-
-			when Y =>
-				d := (point_2.y - point_1.y);
-		end case;
-
-		return d;
-	end get_distance;
-
-	
-	function get_distance_abs (
-		point_1	: in type_point;
-		point_2	: in type_point;
-		axis	: in type_axis_2d) 
-		return type_distance_positive
-	is
-		d : type_distance_positive;
-	begin
-		case axis is
-			when X =>
-				d := abs (point_2.x - point_1.x);
-
-			when Y =>
-				d := abs (point_2.y - point_1.y);
-		end case;
-				
-		return d;
-	end get_distance_abs;
-
-
-
-	function "+" (point_one, point_two : in type_point) return type_point'class is
-		d : type_point;
-	begin
-		d.x := point_one.x + point_two.x;
-		d.y := point_one.y + point_two.y;
-		return d;
-	end;
-
-	
-	function "-" (point_one, point_two : in type_point) return type_point'class is
-		d : type_point;
-	begin
-		d.x := point_one.x - point_two.x;
-		d.y := point_one.y - point_two.y;
-		return d;
-	end;
-
-
-	function get_distance_relative (
-		point_one, point_two : in type_point)
-		return type_distance_relative
-	is
-		d : type_distance_relative;
-	begin
-		d.x := point_two.x - point_one.x;
-		d.y := point_two.y - point_one.y;
-		return d;
-	end get_distance_relative;
-
-
-	function get_distance_total (
-		point_one, point_two : in type_point) 
-		return type_float_internal_positive 
-	is
-		distance : type_float_internal_positive; -- to be returned
-		delta_x, delta_y : type_float_internal := 0.0;
-	begin
-		if point_one = point_two then
-			distance := 0.0;
-			
-		elsif get_x (point_one) = get_x (point_two) then -- points are in a vertical line
-			distance := type_float_internal_positive (abs (get_y (point_two) - get_y (point_one)));
-			
-		elsif get_y (point_one) = get_y (point_two) then -- points are in a horizontal line
-			distance := type_float_internal_positive (abs (get_x (point_two) - get_x (point_one)));
-			
-		else
-			delta_x := type_float_internal (get_x (point_one) - get_x (point_two));
-			delta_y := type_float_internal (get_y (point_one) - get_y (point_two));
-
-			distance := sqrt ((delta_x ** 2) + (delta_y ** 2));
-		end if;
-			
-		return distance;
-	end get_distance_total;
-
-	
-
-	function in_catch_zone (
-		point_1		: in type_point; -- the reference point
-		catch_zone	: in type_catch_zone; -- zone around reference point
-		point_2 	: in type_point) -- the point being tested
-		return boolean 
-	is
-		d : type_float_internal_positive := get_distance_total (point_1, point_2);
-	begin
-		if d <= catch_zone then
-			return true;
-		else
-			return false;
-		end if;
-	end in_catch_zone;
-
-
-	
-	
-	function to_string (point : in type_point) 
-		return string 
-	is begin
-		return point_preamble
-			& to_string (point.x)
-			& axis_separator
-			& to_string (point.y);
-	end to_string;
-
-	
-	function round_to_string (
-		point 	: in type_point;
-		grid	: in type_grid) 
-		return string 
-	is begin
-		return point_preamble
-			& to_string (round (point.x, grid.x))
-			& axis_separator
-			& to_string (round (point.y, grid.y));
-	end round_to_string;
-
-
-
-	function round (
-		point 	: in type_point;
-		grid	: in type_grid) 
-		return type_point'class 
-	is		
-		p : type_point := (
-			x => (round (point.x, grid.x)),
-			y => (round (point.y, grid.y)));
-	begin
-		return p;
-	end;
-
-	
-	
-	function round (
-		point : in type_point)
-		return type_point'class
-	is
-		r : type_point := (
-			x => type_distance (round (point.x)),
-			y => type_distance (round (point.y)));
-	begin
-		return r;
-	end round;
-
-
-	procedure round (
-		point : in out type_point)
-	is begin
-		point.x := type_distance (round (point.x));
-		point.y := type_distance (round (point.y));
-	end round;
-
-
-
-	
-
-	function get_rotation (
-		point : in type_point) 
-		return type_rotation 
-	is
-		x : constant type_float_internal := type_float_internal (point.x);
-		y : constant type_float_internal := type_float_internal (point.y);
-	begin
-		-- NOTE: If x and y are zero then the arctan operation is not possible. 
-		-- In this case we assume the resulting angle is zero.
-		if x = 0.0 and y = 0.0 then
-			return zero_rotation;
-		else
-			return to_rotation (arctan (y, x, units_per_cycle));
-		end if;
-	end get_rotation;
-
-
-
-	procedure rotate_by (
-		point		: in out type_point;
-		rotation	: in type_rotation) 
-	is			
-		angle_out			: type_rotation; -- degrees
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
-	begin
-		-- Do nothing if the given rotation is zero.
-		if rotation /= 0.0 then
-
-			-- compute distance of given point to origin
-			if get_x (point) = zero and get_y (point) = zero then
-				distance_to_origin := 0.0;
-				
-			elsif get_x (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_y (point)));
-				
-			elsif get_y (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_x (point)));
-				
-			else
-				distance_to_origin := sqrt (
-					type_float_internal (abs (get_x (point))) ** 2.0
-					+
-					type_float_internal (abs (get_y (point))) ** 2.0
-					);
-			end if;
-			
-			-- compute the current angle of the given point (in degrees)
-
-			if get_x (point) = zero then
-				if get_y (point) > zero then
-					angle_out := 90.0;
-					
-				elsif get_y (point) < zero then
-					angle_out := -90.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			elsif get_y (point) = zero then
-				if get_x (point) > zero then
-					angle_out := 0.0;
-					
-				elsif get_x (point) < zero then
-					angle_out := 180.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			else
-				-- neither x nor y of point is zero
-				--angle_out := arctan (
-				angle_out := to_rotation (arctan (
-					x		=> type_float_internal (get_x (point)),
-					y		=> type_float_internal (get_y (point)),
-					cycle	=> units_per_cycle));
-				
-			end if;
-
-			-- Compute new angle by adding current angle and given angle.
-			angle_out := add (angle_out, rotation);
-
-			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> X, 
-				point	=> point, 
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-
-			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> Y,
-				point	=> point,
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-	
-		end if; -- if angle not zero			
-	end rotate_by;
-
-
-
-	procedure rotate_to (
-		point		: in out type_point;
-		rotation	: in type_rotation) -- degrees
-	is
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
-	begin
-		-- compute distance of given point to origin
-		if get_x (point) = zero and get_y (point) = zero then
-			distance_to_origin := 0.0;
-			
-		elsif get_x (point) = zero then
-			distance_to_origin := type_float_internal (abs (get_y (point)));
-			
-		elsif get_y (point) = zero then
-			distance_to_origin := type_float_internal (abs (get_x (point)));
-			
-		else
-			distance_to_origin := sqrt (
-				type_float_internal (abs (get_x (point))) ** 2.0 
-				+
-				type_float_internal (abs (get_y (point))) ** 2.0
-				);
-		end if;
-
-		-- The new angle is the given rotation.
-
-		-- compute new x   -- (cos rotation) * distance_to_origin
-		scratch := cos (type_float_internal (rotation), units_per_cycle);
-		set (
-			axis	=> X,
-			point	=> point,
-			value	=> to_distance (scratch * distance_to_origin)
-			);
-
-		-- compute new y   -- (sin rotation) * distance_to_origin
-		scratch := sin (type_float_internal (rotation), units_per_cycle);
-		set (
-			axis 	=> Y,
-			point	=> point,
-			value	=> to_distance (scratch * distance_to_origin)
-			);
-		
-	end rotate_to;
-	
-	
-
-	function to_point (
-		d 		: in type_distance_relative;
-		clip	: in boolean := false)
-		return type_point'class
-	is 
-		p : type_point;
-	begin
-		if clip then
-			p.x := clip_distance (d.x);
-			p.y := clip_distance (d.y);				
-		else
-			p.x := d.x;
-			p.y := d.y;
-		end if;
-		
-		return p;
-
-		exception
-			when constraint_error =>
-				log (text => "distance too great: x/y" 
-					& to_string (d.x)
-					& "/"
-					& to_string (d.y));
-				raise;
-		
-	end to_point;
-
-
-	function to_point (
-		x,y : in string)
-		return type_point'class
-	is 
-		result : type_point;					
-	begin
-		result.x := to_distance (dd => x);
-		result.y := to_distance (dd => y);
-		return result;
-
-		-- CS exception handler
-	end to_point;
-
-	
-	procedure union (
-		boundaries	: in out type_boundaries;
-		point		: in type_point) 
-	is 
-		x : constant type_float_internal := type_float_internal (get_x (point));
-		y : constant type_float_internal := type_float_internal (get_y (point));
-	begin
-		-- X axis
-		if x < boundaries.smallest_x then 
-			boundaries.smallest_x := x; 
-		end if;
-		
-		if x > boundaries.greatest_x then
-			boundaries.greatest_x := x; 
-		end if;
-
-		-- Y axis
-		if y < boundaries.smallest_y then
-			boundaries.smallest_y := y;
-		end if;
-		
-		if y > boundaries.greatest_y then
-			boundaries.greatest_y := y;
-		end if;
-	end union;
-
-	
-	function get_boundaries (
-		point_one	: in type_point;
-		point_two	: in type_point;
-		width		: in type_distance_positive) 
-		return type_boundaries
-	is
-		result : type_boundaries;
-
-		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
-
-		--p1x : type_float_internal renames type_float_internal (point_one.x);
-		--p1y : type_float_internal renames point_one.y;
-
-		--p2x : type_float_internal renames point_two.x;
-		--p2y : type_float_internal renames point_two.y;
-	begin
-		-- X axis
-		if point_one.x = point_two.x then -- both points on a vertical line
-
-			result.smallest_x := type_float_internal (point_one.x);
-			result.greatest_x := type_float_internal (point_one.x);
-			
-		elsif point_one.x < point_two.x then
-			
-			result.smallest_x := type_float_internal (point_one.x);
-			result.greatest_x := type_float_internal (point_two.x);
-		else
-			result.smallest_x := type_float_internal (point_two.x);
-			result.greatest_x := type_float_internal (point_one.x);
-		end if;
-
-		-- Y axis
-		if point_one.y = point_two.y then -- both points on a horizontal line
-
-			result.smallest_y := type_float_internal (point_one.y);
-			result.greatest_y := type_float_internal (point_one.y);
-			
-		elsif point_one.y < point_two.y then
-			
-			result.smallest_y := type_float_internal (point_one.y);
-			result.greatest_y := type_float_internal (point_two.y);
-		else
-			result.smallest_y := type_float_internal (point_two.y);
-			result.greatest_y := type_float_internal (point_one.y);
-		end if;
-
-		
-		-- extend the boundaries by half the line width;
-		result.smallest_x := result.smallest_x - half_width;
-		result.smallest_y := result.smallest_y - half_width;
-
-		result.greatest_x := result.greatest_x + half_width;
-		result.greatest_y := result.greatest_y + half_width;
-		
-		return result;
-	end get_boundaries;
-
-
-	
-	
-	function "<" (left, right : in type_point) return boolean is begin
-		if left.x < right.x then
-			return true;
-		elsif left.x > right.x then
-			return false;
-
-		-- left.x = right.x -> compare y:
-		elsif left.y < right.y then
-			return true;
-		else 
-			-- if left.y greater or equal right.y
-			return false;
-		end if;
-	end;
-		
-
-	function to_string (points : in pac_points.list) return string is
-		use pac_points;
-		use ada.strings.unbounded;
-		
-		result : unbounded_string;
-		
-		procedure query_point (p : in pac_points.cursor) is begin
-			result := result & " " 
-				& trim (to_string (get_x (element (p))), left)
-				& "/"
-				& trim (to_string (get_y (element (p))), left);
-		end query_point;
-			
-	begin
-		points.iterate (query_point'access);
-		return to_string (result);
-	end to_string;
-
-	
-	
-	procedure splice_points (
-		points_target : in out pac_points.list;
-		points_source : in pac_points.list)
-	is 
-		scratch : pac_points.list := points_source;
-	begin
-		pac_points.splice (
-			target	=> points_target,
-			before	=> pac_points.no_element,
-			source	=> scratch);
-	end splice_points;
-
-	
-
-	procedure remove_redundant_points (
-		points : in out pac_points.list)
-	is
-		use pac_points;
-		target : pac_points.list;
-
-		procedure query_point (p : in pac_points.cursor) is begin
-			if not target.contains (element (p)) then
-				target.append (element (p));
-			end if;
-		end query_point;
-		
-	begin
-		points.iterate (query_point'access);
-		points := target;
-	end remove_redundant_points;
-
-	
-	
-	procedure sort_by_distance (
-		points 		: in out pac_points.list;
-		reference	: in type_point'class)
-	is
-		type type_item is record
-			point		: type_point;
-			distance	: type_float_internal_positive;
-		end record;
-
-		
-		function "<" (left, right : in type_item) return boolean is begin
-			if left.distance < right.distance then
-				return true;
-			else
-				return false;
-			end if;
-		end;
-	
-			
-		package pac_items is new doubly_linked_lists (type_item);
-		use pac_items;
-		
-		items : pac_items.list;
-
-		
-		procedure query_point (p : in pac_points.cursor) is 
-			use pac_points;
-			d : type_distance_polar;
+			-- location vector of intersection
+			I : type_vector;
 		begin
-			d := get_distance (type_point (reference), type_point (element (p)));
+			-- The direction vector of the first line can be zero in x (R1.x).
+			-- In order to avoid division by zero we must switch between
+			-- two ways to find the intersection:
+			if get_x (R1) /= 0.0 then
+				a := get_y (S1);
+				b := get_x (S2) * get_y (R1) / get_x (R1);
+				c := get_x (S1) * get_y (R1) / get_x (R1);
+				d := get_y (S2);
+				e := get_y (R2);
+				f := get_x (R2) * get_y (R1) / get_x (R1);
+				g := 1.0 / (e - f);
+
+				lambda_2 := (a + b - c - d) * g;
+
+				I := add (S2, scale (R2, lambda_2));
+			else
+				a := get_y (S2);
+				b := get_x (S1) * get_y (R2) / get_x (R2);
+				c := get_x (S2) * get_y (R2) / get_x (R2);
+				d := get_y (S1);
+				e := get_y (R1);
+				f := get_x (R1) * get_y (R2) / get_x (R2);
+				g := 1.0 / (e - f);
+
+				lambda_1 := (a + b - c - d) * g;
+
+				I := add (S1, scale (R1, lambda_1));
+			end if;
 			
-			items.append (new_item => (
-				point		=> element (p),
-				distance	=> get_absolute (d)));
-		end query_point;
+			bend_point := to_point (I);
+		end compute_bend_point;
+		
+	begin -- to_route
+		
+		-- If start and end point are equally then do nothing
+		-- and return given start and end point as they are:
+		if start_point = end_point then
+			bended := NO;
+		else
+		
+			-- If start and end point have same x or y position, then we
+			-- have a straight direct line between them.
+			if dx = zero or dy = zero then
+				bended := NO;
+			else
 
-		
+				case style is
+					when STRAIGTH_THEN_ANGLED =>
+						if abs (dx) = abs (dy) then -- diagonal line from start to end
+							bended := NO;
+						else
+							
+							-- compute support point near start point:
+							-- The first line must run straight from start point:
+							--if wider_than_tall then
+							if abs (dx) > abs (dy) then -- wider than tall
+								sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
+							else -- taller than wide
+								sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
+							end if;
 
-		package pac_sorting is new pac_items.generic_sorting;
-		use pac_sorting;
-		
+							-- compute support point near end point:
+							-- The second line must run angled from end point:
+							if dx > zero then -- to the right
+								if dy > zero then -- upwards
+									sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) + ds));
+									--  45 degree
+								else
+									sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) - ds));
+									-- -45 degree
+								end if;
+							else -- to the left
+								if dy > zero then -- upwards
+									sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) + ds));
+									-- 135 degree
+								else
+									sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) - ds));
+									-- 225 degree
+								end if;
+							end if;
 
-		procedure query_item (i : in pac_items.cursor) is begin
-			points.append (element (i).point);
-		end query_item;
-		
-		
+							compute_bend_point;
+
+						end if;
+						
+					when DIRECT => bended := NO;
+
+					when ANGLED_THEN_STRAIGHT =>
+						if abs (dx) = abs (dy) then -- diagonal line from start to end
+							bended := NO;
+						else
+							
+							-- Compute support point near start point:
+							-- The first line must run angled from start point:
+							if dx > zero then -- to the right
+								if dy > zero then -- upwards
+									sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) + ds));
+									--  45 degree
+								else -- downwards
+									sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) - ds));
+									-- -45 degree
+								end if;
+							else -- to the left
+								if dy > zero then -- upwards
+									sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) + ds));
+									-- 135 degree
+								else -- downwards
+									sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) - ds));
+									-- 225 degree
+								end if;
+							end if;
+
+							-- compute support point near end point:
+							-- The second line must run straight from end point:
+							if abs (dx) > abs (dy) then -- wider than tall
+								sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
+								-- horizontally
+							else -- taller than wide
+								sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
+								-- vertically
+							end if;
+
+							compute_bend_point;
+						end if;
+						
+					when VERTICAL_THEN_HORIZONTAL =>
+						-- Compute support point near start point:
+						-- The first line must run vertically from start point:
+						sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
+						-- vertically
+
+						-- The second line must run horizontally from end point:
+						sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
+						-- horizontally
+
+						compute_bend_point;
+						
+					when HORIZONTAL_THEN_VERTICAL =>
+						-- Compute support point near start point:
+						-- The first line must run horizontal from start point:
+						sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
+						-- horizontally
+
+						-- compute support point near end point:
+						-- The second line must run vertically from end point:
+						sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
+						-- vertically
+
+						compute_bend_point;
+						
+				end case;
+			end if;
+
+		end if;
+			
+		if bended = NO then
+			return (NO, start_point, end_point);
+		else
+			return (YES, start_point, end_point, bend_point);
+		end if;
+
+	end to_route;
+
+	
+	procedure next_bend_style (route : in out type_route_live) is
+		i : constant natural := type_bend_style'pos (route.bend_style);
+		-- i points now to the current bend style
+
+		-- get the index of the last available bend style:
+		max : constant natural := type_bend_style'pos (type_bend_style'last);
 	begin
-		-- Collect points and their distance to the reference
-		-- in list "items":
-		points.iterate (query_point'access);
+		if i < max then
+			-- jump to next bend style
+			route.bend_style := type_bend_style'succ (type_bend_style'val (i));
+		else 
+			-- After the last bend style, jump back to the first bend style:
+			route.bend_style := type_bend_style'first;
+		end if;
+	end next_bend_style;
 
-		-- Sort items by distance to reference:
-		sort (items);
-
-		-- The old points are no longer required:
-		points.clear;
-		-- New points will be appended here.
-		
-
-		-- Traverse items and append them one by one to the
-		-- list of points:
-		items.iterate (query_item'access);
-	end sort_by_distance;
-
-
-
-
-
+	
 	
 -- POSITION:
 
