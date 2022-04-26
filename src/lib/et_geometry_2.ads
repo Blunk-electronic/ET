@@ -42,7 +42,7 @@ with ada.containers.doubly_linked_lists;
 with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_string_processing;		use et_string_processing;
-
+with et_logging;				use et_logging;
 
 
 generic
@@ -196,7 +196,7 @@ package et_geometry_2 is
 	-- if the boundaries exceed the limits defined by type_position_axis:
 	procedure move_by (
 		boundaries	: in out type_boundaries;
-		offset		: in type_distance_relative;
+		offset		: in type_offset;
 		clip		: in boolean := false);
 
 	
@@ -625,10 +625,6 @@ package et_geometry_2 is
 	zero_rotation : constant type_rotation := 0.0;
 	
 	
-	-- Returns CW if rotation is negative. 
-	-- Returns CCW if rotation is positive or zero.
-	function get_direction (rotation : in type_rotation) 
-		return type_direction_of_rotation;
 
 	
 	function to_rotation (rotation : in string) return type_rotation;
@@ -641,15 +637,15 @@ package et_geometry_2 is
 		return type_rotation;
 
 
-	subtype type_rotation_positive is type_rotation
-		range 0.0 .. type_rotation'last;
+	--subtype type_rotation_positive is type_rotation
+		--range 0.0 .. type_rotation'last;
 	
-	-- Converts an angle like -90.0 degrees to 270 degrees.
-	-- Converts an angle like -1.0 degrees to 359 degrees.
-	-- Leaves a positive angle like 135 degree as it is and returns it.
-	function to_positive_rotation (
-		rotation : in type_rotation)
-		return type_rotation_positive;
+	---- Converts an angle like -90.0 degrees to 270 degrees.
+	---- Converts an angle like -1.0 degrees to 359 degrees.
+	---- Leaves a positive angle like 135 degree as it is and returns it.
+	--function to_positive_rotation (
+		--rotation : in type_rotation)
+		--return type_rotation_positive;
 
 	
 
@@ -688,18 +684,19 @@ package et_geometry_2 is
 
 
 
--- POLAR:
+	
+---- POLAR:
 
-	-- Returns the angle of the given polar distance:
-	function get_angle (
-		distance : in type_distance_polar)
-		return type_rotation;
+	---- Returns the angle of the given polar distance:
+	--function get_angle (
+		--distance : in type_distance_polar)
+		--return type_rotation;
 
 	
-	-- Returns the absolute of the given polar distance:
-	function get_absolute (
-		distance : in type_distance_polar)
-		return type_float_internal_positive;
+	---- Returns the absolute of the given polar distance:
+	--function get_absolute (
+		--distance : in type_distance_polar)
+		--return type_distance_positive;
 
 	
 	
@@ -726,20 +723,13 @@ package et_geometry_2 is
 		v	: in type_vector)
 		return type_point;
 
-	
-	
-	-- The quadrants of the coordinate system are numbered counter clockwise.
-	-- Quadrant ONE is top right.
-	type type_quadrant is (ONE, TWO, THREE, FOUR);
 
-	-- Returns the quadrant the point is located in.
-	-- ONE  : point is on the right of the y-axis or on it AND above the x-axis or on it
-	-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
-	-- THREE: point is left of the y-axis AND below the x-axis
-	-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
-	function get_quadrant (
-		point : in type_point) 
-		return type_quadrant;
+	function to_offset (
+		p : in type_point)
+		return type_offset;
+	
+	
+
 
 
 	
@@ -757,7 +747,7 @@ package et_geometry_2 is
 	--         the returned angle is zero. So it is wise to test the two points
 	--         for equality befor calling this function.
 	function get_distance (
-		point_one, point_two : in type_point)
+		point_one, point_two : in type_point'class)
 		return type_distance_polar;
 
 
@@ -996,34 +986,34 @@ package et_geometry_2 is
 	
 	
 	
-	function "<" (left, right : in type_point) return boolean;
+	--function "<" (left, right : in type_point) return boolean;
 
 	-- Use this package when lists of points must be handled:
-	package pac_points is new doubly_linked_lists (type_point);
+	--package pac_points is new doubly_linked_lists (type_point);
 
 
 	-- Returns a human readable string of points:
-	function to_string (points : in pac_points.list) return string;
+	--function to_string (points : in pac_points.list) return string;
 
 	
 	-- Appends all points of source to the target.
-	procedure splice_points (
-		points_target : in out pac_points.list;
-		points_source : in pac_points.list);
+	--procedure splice_points (
+		--points_target : in out pac_points.list;
+		--points_source : in pac_points.list);
 
 	
 	-- Removes points which are stored multiple times
 	-- from the given list:
-	procedure remove_redundant_points (
-		points : in out pac_points.list);
+	--procedure remove_redundant_points (
+		--points : in out pac_points.list);
 
 	
 	-- Sorts the given list of points by their distance to
 	-- the given reference point. The first point in the result
 	-- will be the one closest to the reference point:
-	procedure sort_by_distance (
-		points 		: in out pac_points.list;
-		reference	: in type_point'class);
+	--procedure sort_by_distance (
+		--points 		: in out pac_points.list;
+		--reference	: in type_point'class);
 	
 
 
@@ -1067,7 +1057,7 @@ package et_geometry_2 is
 	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
 	function get_direction (
 		line	: in type_line)
-		return type_rotation;
+		return type_angle;
 
 	
 	-- Converts a line (consisting of start and end point)
@@ -1105,7 +1095,7 @@ package et_geometry_2 is
 	function get_left_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point;
+		return type_point'class;
 
 	
 	-- Returns the end of a line that is on the right.
@@ -1113,7 +1103,7 @@ package et_geometry_2 is
 	function get_right_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point;
+		return type_point'class;
 
 	
 	-- Returns the lower end of a line.
@@ -1121,7 +1111,7 @@ package et_geometry_2 is
 	function get_lower_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point;
+		return type_point'class;
 
 	
 	-- Returns the upper end of a line.
@@ -1129,7 +1119,7 @@ package et_geometry_2 is
 	function get_upper_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point;
+		return type_point'class;
 
 	
 	
@@ -1214,8 +1204,13 @@ package et_geometry_2 is
 	
 	function get_intersection (d : in type_distance_point_line) 
 		return type_vector;
+
 	
-	function get_direction (d : in type_distance_point_line) return type_rotation;
+	function get_direction (
+		d : in type_distance_point_line) 
+		return type_angle;
+
+	
 	function on_start_point (d : in type_distance_point_line) return boolean;
 	function on_end_point (d : in type_distance_point_line) return boolean;
 	
@@ -1231,8 +1226,8 @@ package et_geometry_2 is
 	-- location vector to a line. 
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
-		vector		: in type_vector; 
 		line		: in type_line;
+		vector		: in type_vector; 
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
@@ -1240,30 +1235,31 @@ package et_geometry_2 is
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 		
 	function get_distance (
-		point		: in type_point; 
 		line		: in type_line;
+		point		: in type_point'class; 
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
 
 	-- Returns true if the given location vector lies on the given line.
 	function on_line (
-		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		vector	: in type_vector)
 		return boolean; 
 
+	
 	-- Returns true if the given point lies on the given line.
 	function on_line (
-		point	: in type_point;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_point'class)
 		return boolean;
 
 	
 	-- Returns the shortest distance from the given point to the
 	-- given line:
 	function get_shortest_distance (
-		point	: in type_point;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_point'class)
 		return type_distance_polar;
 
 	
@@ -1388,21 +1384,22 @@ package et_geometry_2 is
 
 	-- Returns true if start and end point of arc are equal:
 	function zero_length (arc : in type_arc) return boolean;
-		
+
+	
 	-- Returns the shortest distance between a point and an arc.
 	-- If the point is on the center of the arc, then the return is
 	-- absolute zero and angle zero degree:
 	-- CS: wrong, should be absolute distance to start and angle of start point.
 	function get_shortest_distance (
-		point	: in type_point;
-		arc		: in type_arc)
+		arc		: in type_arc;
+		point	: in type_point'class)
 		return type_distance_polar;
 
 
 	-- CS: INCOMPLETE !!! Returns always zero currently.
 	function get_shortest_distance (
-		point	: in type_vector;
-		arc		: in type_arc)
+		arc		: in type_arc;
+		point	: in type_vector)
 		return type_float_internal;
 
 	
@@ -1441,8 +1438,8 @@ package et_geometry_2 is
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_point;
 		radius		: type_float_internal_positive;
-		angle_start	: type_rotation;
-		angle_end	: type_rotation;
+		angle_start	: type_angle; -- CS type_angle_positive ?
+		angle_end	: type_angle; -- CS type_angle_positive ?
 		direction	: type_direction_of_rotation := CW;
 	end record;
 
@@ -1463,7 +1460,7 @@ package et_geometry_2 is
 	-- of an arc:
 	function get_span (
 		arc	: type_arc)
-		return type_rotation;
+		return type_angle;
 
 	
 	-- Returns the boundaries of the given arc.
@@ -1477,14 +1474,14 @@ package et_geometry_2 is
 	
 	-- Returns true if the given point sits on the given arc.
 	function on_arc (
-		vector		: in type_vector;
-		arc			: in type_arc)
+		arc			: in type_arc;
+		vector		: in type_vector)
 		return boolean; 
 
 	
 	function on_arc (
-		point		: in type_point;
-		arc			: in type_arc)
+		arc			: in type_arc;
+		point		: in type_point'class)
 		return boolean; 
 
 	
@@ -1542,8 +1539,8 @@ package et_geometry_2 is
 	-- on your LEFT is the angle of intersection.
 	-- The angle of intersection is always greater zero and less than 180 degrees.
 	function get_intersection (
-		line	: in type_line_vector;
-		arc		: in type_arc)
+		arc		: in type_arc;
+		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle;
 
 	
@@ -1552,7 +1549,7 @@ package et_geometry_2 is
 	function arc_end_point (
 		center		: in type_point;
 		start_point	: in type_point;	
-		angle 		: in type_rotation) -- unit is degrees
+		angle 		: in type_angle) -- CS: type_angle_positive ?
 		return type_point'class;
 	
 
@@ -1565,12 +1562,12 @@ package et_geometry_2 is
 	-- Moves an arc to the given position. 
 	procedure move_to (
 		arc			: in out type_arc;
-		position	: in type_point);
+		position	: in type_point'class);
 
 	
 	function move_to (
 		arc			: in type_arc;
-		position	: in type_point)
+		position	: in type_point'class)
 		return type_arc'class;
 
 	
@@ -1628,8 +1625,8 @@ package et_geometry_2 is
 	-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
 	-- The point must not be OUTSIDE the circle !
 	function get_distance_to_circumfence (
-		point	: in type_point;
-		circle	: in type_circle)
+		circle	: in type_circle;
+		point	: in type_point'class)
 		return type_distance_polar;
 		
 	
@@ -1637,8 +1634,8 @@ package et_geometry_2 is
 	-- given circle. The point may be inside or outside the circle.
 	-- However, the return is the distance to the circumfence of the circle.
 	function get_shortest_distance (
-		point	: in type_point;
-		circle	: in type_circle)
+		circle	: in type_circle;
+		point	: in type_point'class)
 		return type_distance_polar;
 
 
@@ -1679,16 +1676,16 @@ package et_geometry_2 is
 	
 	-- Returns true if the given point sits on the given circle circumfence.
 	function on_circle (
-		point		: in type_point;
-		circle		: in type_circle)
+		circle		: in type_circle;
+		point		: in type_point'class)
 		return boolean;
 
 	
 	-- Gives the status (inside/outside) of a point relative to a circle.
 	-- If the point lies exactly at the circumfence then the result is "outside".
 	function get_point_to_circle_status (
-		point		: in type_point;
-		circle		: in type_circle)
+		circle		: in type_circle;
+		point		: in type_point'class)
 		return type_point_status;
 	
 
@@ -1728,7 +1725,7 @@ package et_geometry_2 is
 
 	
 	-- The angle of a tangent to a circle:
-	subtype type_tangent_angle_circle is type_rotation range -90.0 .. 90.0;
+	subtype type_tangent_angle_circle is type_angle range -90.0 .. 90.0;
 
 	
 	-- Computes the angle of a tangent that touches a circle
@@ -1738,7 +1735,7 @@ package et_geometry_2 is
 	-- - If the tangent decreases in y, then its angle is negative.
 	-- - If it does not change in y, then the tangent runs horizontally and has zero angle.
 	-- - If it is vertical, then its angle is 90 degrees.
-	function get_tangent_angle (p : in type_point) 
+	function get_tangent_angle (p : in type_vector) 
 		return type_tangent_angle_circle;
 
 
@@ -1746,8 +1743,8 @@ package et_geometry_2 is
 	-- Computes the intersections of a line with a circle.
 	-- See more on overloaded function get_intersection (line, arc):
 	function get_intersection (
-		line	: in type_line_vector;
-		circle	: in type_circle)
+		circle	: in type_circle;
+		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle;
 
 	
@@ -1928,7 +1925,7 @@ private
 		-- the given line:
 		--intersection	: type_point := origin; -- CS type_vector ?
 		intersection	: type_vector := null_vector;
-		distance		: type_float_internal := 0.0;
+		distance		: type_float_internal := 0.0; -- CS type_float_internal_positive ?
 		direction		: type_angle := 0.0;
 	end record;
 

@@ -64,11 +64,18 @@ package et_geometry_1 is
 
 	
 	subtype type_angle is type_float_internal range -720.0 .. 720.0;
-
+	subtype type_angle_positive is type_angle range 0.0 .. (360.0 - type_angle'small);
+	
 	units_per_cycle : constant type_float_internal := 360.0;
 
 
+	-- Returns CW if rotation is negative. 
+	-- Returns CCW if rotation is positive or zero.
+	function get_direction (rotation : in type_angle) 
+		return type_direction_of_rotation;
 
+
+	
 
 	
 	rounding_threshold : constant type_float_internal := 1.0E-17;
@@ -261,20 +268,20 @@ package et_geometry_1 is
 		--x, y : type_distance := zero;
 	--end record;
 
-	type type_distance_relative is record
-		x, y : type_float_internal := 0.0;
-	end record;
+	--type type_distance_relative is record
+		--x, y : type_float_internal := 0.0;
+	--end record;
 
 	
-	function to_string (distance : in type_distance_relative)
-		return string;
+	--function to_string (distance : in type_distance_relative)
+		--return string;
 
 
 
 	
-	function to_distance_relative (
-		x,y : in type_float_internal)
-		return type_distance_relative;
+	--function to_distance_relative (
+		--x,y : in type_float_internal)
+		--return type_distance_relative;
 
 
 
@@ -382,8 +389,8 @@ package et_geometry_1 is
 	-- Inverts the given relative distance by 
 	-- multiplying x by -1 and y by -1.
 	function invert (
-		d : in type_distance_relative) 
-		return type_distance_relative;
+		d : in type_offset) 
+		return type_offset;
 
 	
 	
@@ -632,11 +639,20 @@ package et_geometry_1 is
 		--point_2 	: in type_point) -- the point being tested
 		--return boolean;
 	
-	---- Adds two angles.
-	---- If result greater 360 degree then 360 degree is subtracted from result.
-	---- If result less than 360 degree then 360 degree is added to the result.
-	--function add (left, right : in type_rotation) return type_rotation;
+	-- Adds two angles.
+	-- If result greater 360 degree then 360 degree is subtracted from result.
+	-- If result less than 360 degree then 360 degree is added to the result.
+	function add (
+		left, right : in type_angle) 
+		return type_angle;
 
+
+	-- Converts an angle like -90.0 degrees to 270 degrees.
+	-- Converts an angle like -1.0 degrees to 359 degrees.
+	-- Leaves a positive angle like 135 degree as it is and returns it.
+	function to_positive_rotation ( -- CS rename to to_angle_positive
+		rotation : in type_angle)
+		return type_angle_positive;
 
 	
 	
@@ -770,6 +786,13 @@ package et_geometry_1 is
 		--offset		: in type_rotation);
 
 	
+
+	-- The quadrants of the coordinate system are numbered counter clockwise.
+	-- Quadrant ONE is top right.
+	type type_quadrant is (ONE, TWO, THREE, FOUR);
+
+	
+	
 -- VECTORS
 	
 	type type_vector is private;
@@ -782,7 +805,17 @@ package et_geometry_1 is
 		v	: in type_vector)
 		return string;
 
+	
+	-- Returns the quadrant the point is located in.
+	-- ONE  : point is on the right of the y-axis or on it AND above the x-axis or on it
+	-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
+	-- THREE: point is left of the y-axis AND below the x-axis
+	-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
+	function get_quadrant ( -- CS move to et_geometry_1
+		point : in type_vector) 
+		return type_quadrant;
 
+	
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;
@@ -883,10 +916,16 @@ package et_geometry_1 is
 	-- Leaves z unchanged.
 	function move_by (
 		v		: in type_vector;
-		offset	: in type_distance_relative)
+		offset	: in type_offset)
 		return type_vector;
 
 
+	procedure move_by (
+		v		: in out type_vector;
+		offset	: in type_offset);
+
+
+	
 	-- Moves a location vector into given direction
 	-- by given distance. Leaves z unchanged.
 	procedure move_by (
@@ -955,7 +994,7 @@ package et_geometry_1 is
 	-- direction vector unchanged.
 	function move_by (
 		lv		: in type_line_vector;
-		offset	: in type_distance_relative)
+		offset	: in type_offset)
 		return type_line_vector;
 	
 

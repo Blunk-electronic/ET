@@ -80,6 +80,19 @@ package body et_geometry_1 is
 	function to_string (f : in type_float_internal) return string is begin
 		return type_float_internal'image (f);
 	end;
+
+
+	function get_direction (
+		rotation : in type_angle) 
+		return type_direction_of_rotation
+	is begin
+		if rotation < 0.0 then
+			return CW;
+		else
+			return CCW;
+		end if;
+	end get_direction;
+
 	
 
 	function get_info (editor: in string)
@@ -536,24 +549,24 @@ package body et_geometry_1 is
 
 	
 	
-	function to_string (
-		distance : in type_distance_relative)
-		return string
-	is begin
-		return "distance relative: x/y" 
-			& to_string (distance.x)
-			& "/"
-			& to_string (distance.y);
-	end to_string;
+	--function to_string (
+		--distance : in type_distance_relative)
+		--return string
+	--is begin
+		--return "distance relative: x/y" 
+			--& to_string (distance.x)
+			--& "/"
+			--& to_string (distance.y);
+	--end to_string;
 
 
 
-	function to_distance_relative (
-		x,y : in type_float_internal)
-		return type_distance_relative
-	is begin
-		return (x, y);
-	end to_distance_relative;
+	--function to_distance_relative (
+		--x,y : in type_float_internal)
+		--return type_distance_relative
+	--is begin
+		--return (x, y);
+	--end to_distance_relative;
 	
 
 	
@@ -772,8 +785,8 @@ package body et_geometry_1 is
 	
 	
 	function invert (
-		d : in type_distance_relative)
-		return type_distance_relative
+		d : in type_offset)
+		return type_offset
 	is begin
 		return (-1.0 * d.x, -1.0 * d.y);
 	end invert;
@@ -1245,25 +1258,39 @@ package body et_geometry_1 is
 	--end in_catch_zone;
 
 	
-	--function add (left, right : in type_rotation) return type_rotation is
-		--subtype type_rotation_wide is type_float_internal range -720.0 .. +720.0;
-		--scratch : type_rotation_wide;
-		--result : type_rotation; -- to be returned
-	--begin
-		--scratch := type_float_internal (left) + type_float_internal (right);
+	function add (
+		left, right : in type_angle) 
+		return type_angle 
+	is
+		scratch : type_angle;
+	begin
+		scratch := left + right;
 		
-		--if scratch >= 360.0 then
-			--scratch := scratch - 360.0;
+		if scratch >= 360.0 then
+			scratch := scratch - 360.0;
 			
-		--elsif scratch <= -360.0 then
-			--scratch := scratch + 360.0;
-		--end if;
+		elsif scratch <= -360.0 then
+			scratch := scratch + 360.0;
+		end if;
 
-		--result := to_rotation (scratch);
-		--return result;
-	--end;
+		--result := to_rotation (scratch); -- CS
+		return scratch;
+	end;
 
 
+	function to_positive_rotation (
+		rotation : in type_angle)
+		return type_angle_positive
+	is begin
+		if rotation < 0.0 then
+			return 360.0 + rotation;
+		else
+			return rotation;
+		end if;
+	end to_positive_rotation;
+
+
+	
 	function to_string (
 		distance : in type_distance_polar)
 		return string
@@ -1480,6 +1507,27 @@ package body et_geometry_1 is
 	end to_string;
 
 
+	function get_quadrant (
+		point : in type_vector) 
+		return type_quadrant
+	is begin
+		if point.x >= 0.0 then -- we are right of the y-axis or on top of it
+			if point.y >= 0.0 then -- we are above the x-axis or on top of it
+				return ONE; 
+			else -- we are below the x-axis
+				return FOUR;
+			end if;
+			
+		else -- we are left of the y-axis
+			if point.y >= 0.0 then -- we are above the x-axis or on top of it
+				return TWO;
+			else -- we are below the x-axis
+				return THREE;
+			end if;
+		end if;
+	end get_quadrant;
+
+	
 	function set (
 		x : in type_float_internal;
 		y : in type_float_internal;
@@ -1794,7 +1842,7 @@ package body et_geometry_1 is
 
 	function move_by (
 		v		: in type_vector;
-		offset	: in type_distance_relative)
+		offset	: in type_offset)
 		return type_vector
 	is
 		result : type_vector := v;
@@ -1805,6 +1853,15 @@ package body et_geometry_1 is
 	end move_by;
 
 
+	procedure move_by (
+		v		: in out type_vector;
+		offset	: in type_offset)
+	is begin
+		v.x := v.x + offset.x; -- CS good idea ?
+		v.y := v.y + offset.y;
+	end move_by;
+
+	
 	procedure move_by (
 		v			: in out type_vector;
 		direction	: in type_angle;
@@ -1886,7 +1943,7 @@ package body et_geometry_1 is
 
 	function move_by (
 		lv		: in type_line_vector;
-		offset	: in type_distance_relative)
+		offset	: in type_offset)
 		return type_line_vector
 	is 
 		result : type_line_vector := lv;
