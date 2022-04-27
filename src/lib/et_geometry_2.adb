@@ -1342,7 +1342,7 @@ package body et_geometry_2 is
 	
 	function to_point (
 		v	: in type_vector)
-		return type_point 
+		return type_point'class
 	is begin
 		--log (text => "to point: vector" & to_string (v));
 		
@@ -5205,7 +5205,7 @@ package body et_geometry_2 is
 				I := add (S1, scale (R1, lambda_1));
 			end if;
 			
-			bend_point := to_point (I);
+			bend_point := type_point (to_point (I));
 		end compute_bend_point;
 		
 	begin -- to_route

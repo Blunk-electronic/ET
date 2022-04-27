@@ -721,7 +721,7 @@ package et_geometry_2 is
 	
 	function to_point (
 		v	: in type_vector)
-		return type_point;
+		return type_point'class;
 
 
 	function to_offset (
