@@ -47,6 +47,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_geometry;
 with et_geometry_1;
+with et_geometry_2;
 with et_logging;				use et_logging;
 
 
@@ -104,6 +105,26 @@ package et_coordinates is
 	
 	use pac_geometry_sch;
 
+
+	package pac_geometry_2 is new et_geometry_2 (
+		pac_geometry_1			=> pac_geometry_sch,
+		type_distance			=> type_distance,
+		type_distance_coarse	=> type_distance_coarse,
+		axis_max				=> 1_000.0,
+		axis_min				=>  -100.0,
+		type_rotation			=> type_rotation);
+		
+	use pac_geometry_2;
+
+	package pac_contours is new pac_geometry_2.contours;
+	-- This package is never used in schematic. But it is mandatory
+	-- for the instantiation of the primitive draw operations package.
+
+	package pac_polygons is new pac_geometry_2.polygons;
+	-- This package is never used in schematic. But it is mandatory
+	-- for the instantiation of the primitive draw operations package.
+
+	
 	
 	--catch_zone_default : constant type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	

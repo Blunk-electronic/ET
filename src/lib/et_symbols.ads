@@ -68,17 +68,17 @@ package et_symbols is
 
 
 
-	-- Instantiation of the generic et_geometry_2 package:
-	package pac_geometry_2 is new et_geometry_2 (pac_geometry_sch);
-	use pac_geometry_2;
+	---- Instantiation of the generic et_geometry_2 package:
+	--package pac_geometry_2 is new et_geometry_2 (pac_geometry_sch);
+	--use pac_geometry_2;
 
-	package pac_contours is new pac_geometry_2.contours;
-	-- This package is never used in schematic. But it is mandatory
-	-- for the instantiation of the primitive draw operations package.
+	--package pac_contours is new pac_geometry_2.contours;
+	---- This package is never used in schematic. But it is mandatory
+	---- for the instantiation of the primitive draw operations package.
 
-	package pac_polygons is new pac_geometry_2.polygons;
-	-- This package is never used in schematic. But it is mandatory
-	-- for the instantiation of the primitive draw operations package.
+	--package pac_polygons is new pac_geometry_2.polygons;
+	---- This package is never used in schematic. But it is mandatory
+	---- for the instantiation of the primitive draw operations package.
 
 	
 	
