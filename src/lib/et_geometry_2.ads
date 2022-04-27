@@ -48,6 +48,13 @@ with et_logging;				use et_logging;
 generic
 	
 	with package pac_geometry_1 is new et_geometry_1 (<>);
+
+	type type_distance is delta <> digits <>;
+	axis_min, axis_max : type_distance;
+
+	type type_distance_coarse is delta <> digits <>;
+
+	type type_rotation is delta <> digits <>;
 	
 package et_geometry_2 is
 	
@@ -56,6 +63,15 @@ package et_geometry_2 is
 	use pac_functions_distance;
 
 
+	zero 		: constant type_distance := 0.0;
+	far_left	: constant type_distance := axis_min;
+	far_right	: constant type_distance := axis_max;
+
+
+	
+	function get_info (editor: in string)
+		return string;
+	
 
 		-- The distance between two objects:
 	subtype type_distance_positive is type_distance 
@@ -72,6 +88,9 @@ package et_geometry_2 is
 
 	function distance_to_mil (distance : in type_distance) return string;
 
+	
+	function to_distance (dd : in string) 
+		return type_distance;		
 
 	
 	function to_distance (f : in type_float_internal)

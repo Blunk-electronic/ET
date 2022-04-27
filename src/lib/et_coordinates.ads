@@ -94,18 +94,18 @@ package et_coordinates is
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry_1 (
-		type_distance			=> type_distance,
-		type_distance_coarse	=> type_distance_coarse,
-		type_float_internal		=> type_float_internal,
-		axis_max				=> 1_000.0,
-		axis_min				=>  -100.0,
-		type_rotation			=> type_rotation
+		--type_distance			=> type_distance,
+		--type_distance_coarse	=> type_distance_coarse,
+		type_float_internal		=> type_float_internal
+		--axis_max				=> 1_000.0,
+		--axis_min				=>  -100.0,
+		--type_rotation			=> type_rotation
 		);
 	
 	use pac_geometry_sch;
 
 	
-	catch_zone_default : constant type_catch_zone := 2.0; -- CS: should be a system setting in the future
+	--catch_zone_default : constant type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	
 
 	

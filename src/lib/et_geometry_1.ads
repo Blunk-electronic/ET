@@ -48,11 +48,11 @@ with et_logging;				use et_logging;
 
 
 generic
-	type type_distance is delta <> digits <>;
-	type type_distance_coarse is delta <> digits <>;
-	type type_float_internal is digits <>;
-	axis_min, axis_max : type_distance;
-	type type_rotation is delta <> digits <>;
+	--type type_distance is delta <> digits <>;
+	--type type_distance_coarse is delta <> digits <>;
+	type type_float_internal is digits <>; -- CS rename to type_float ?
+	--axis_min, axis_max : type_distance;
+	--type type_rotation is delta <> digits <>;
 
 
 package et_geometry_1 is
@@ -96,9 +96,6 @@ package et_geometry_1 is
 		return type_float_internal;
 
 	
-	zero 		: constant type_distance := 0.0;
-	far_left	: constant type_distance := axis_min;
-	far_right	: constant type_distance := axis_max;
 
 
 	package pac_functions_distance is new 
@@ -109,8 +106,7 @@ package et_geometry_1 is
 
 	
 	
-	function get_info (editor: in string)
-		return string;
+
 
 
 	-- Returns 1.0 if given x is greater or equal zero.
@@ -133,8 +129,6 @@ package et_geometry_1 is
 
 	
 	
-	function to_distance (dd : in string) 
-		return type_distance;		
 	
 	--function to_string (distance : in type_distance)
 		--return string;

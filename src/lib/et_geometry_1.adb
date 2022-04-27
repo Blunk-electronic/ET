@@ -95,55 +95,6 @@ package body et_geometry_1 is
 
 	
 
-	function get_info (editor: in string)
-		return string 
-	is 
-		use ada.characters.latin_1;
-		distance_digits_total : constant positive := type_distance'digits;
-		distance_digits_right : constant positive := type_distance'scale;
-
-		distance_coarse_digits_total : constant positive := type_distance_coarse'digits;
-		distance_coarse_digits_right : constant positive := type_distance_coarse'scale;
-
-		rotation_digits_total : constant positive := type_rotation'digits;
-		rotation_digits_right : constant positive := type_rotation'scale;
-	begin
-		return to_upper (editor & " editor:")
-		& lf & "distance fine [mm]"
-		& lf & "min:        " & type_distance'image (type_distance'first)
-		& lf & "max:        " & type_distance'image (type_distance'last)
-		& lf & "axis min:   " & type_distance'image (axis_min)
-		& lf & "axis max:   " & type_distance'image (axis_max)
-		& lf & "resolution: " & type_distance'image (type_distance'small)
-		& lf & "digits"
-		& lf & "left:       " & positive'image (distance_digits_total - distance_digits_right)
-		& lf & "right:      " & positive'image (distance_digits_right)
-		& lf & "total:      " & positive'image (type_distance'digits)
-		& lf
-		& lf & "distance coarse [mm]"
-		& lf & "min:        " & type_distance_coarse'image (type_distance_coarse'first)
-		& lf & "max:        " & type_distance_coarse'image (type_distance_coarse'last)
-		& lf & "resolution: " & type_distance_coarse'image (type_distance_coarse'small)
-		& lf & "digits"
-		& lf & "left:       " & positive'image (distance_coarse_digits_total - distance_coarse_digits_right)
-		& lf & "right:      " & positive'image (distance_coarse_digits_right)
-		& lf & "total:      " & positive'image (type_distance_coarse'digits)
-		& lf
-		& lf & "rotation/angle [degrees (1/360)], mathematical sense, ccw"
-		& lf & "min:        " & type_rotation'image (type_rotation'first)
-		& lf & "max:        " & type_rotation'image (type_rotation'last)
-		& lf & "resolution: " & type_rotation'image (type_rotation'small)
-		& lf & "digits"
-		& lf & "left:       " & positive'image (rotation_digits_total - rotation_digits_right)
-		& lf & "right:      " & positive'image (rotation_digits_right)
-		& lf & "total:      " & positive'image (type_rotation'digits)
-		& lf
-		& lf & "internal float"
-		& lf & "min:        " & type_float_internal'image (type_float_internal'first)
-		& lf & "max:        " & type_float_internal'image (type_float_internal'last)
-		& lf & "digits:     " & positive'image (type_float_internal'digits)
-		& lf;
-	end get_info;
 
 
 	function sgn (x : type_float_internal) return type_float_internal is begin
@@ -183,17 +134,6 @@ package body et_geometry_1 is
 	end get_smallest;
 
 	
-
-	function to_distance (dd : in string) 
-		return type_distance 
-	is begin
-		return type_distance'value (dd);
-
-		exception when event: others =>
-			raise syntax_error_2 with 
-				"ERROR: Expect a distance instead of " 
-				& enclose_in_quotes (dd) & " !";
-	end to_distance;
 
 	
 	--function to_string (distance : in type_distance) 
