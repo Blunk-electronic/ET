@@ -345,7 +345,7 @@ package body et_symbols is
 	
 	procedure rotate (
 		phs			: in out type_rotated_placeholders;
-		rotation	: in type_rotation)
+		rotation	: in et_coordinates.type_rotation)
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
 		-- the origin of the symbol:

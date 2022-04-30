@@ -55,6 +55,7 @@ with et_logging;				use et_logging;
 
 with et_geometry;
 with et_geometry_1;
+with et_geometry_2;
 
 
 package et_pcb_coordinates is
@@ -64,9 +65,12 @@ package et_pcb_coordinates is
 	type type_face is (TOP, BOTTOM);
 
 	face_default : constant type_face := TOP;
+	
 	function to_string (face : in type_face) return string;
+	
 	function to_face (face : in string) return type_face;
 
+	
 	-- Changes top to bottom and vice versa:
 	procedure flip (face : in out type_face);
 	
@@ -112,25 +116,38 @@ package et_pcb_coordinates is
 		
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry_1 (
-		type_distance			=> type_distance,
-		type_distance_coarse	=> type_distance_coarse,
-		type_float_internal		=> type_float_internal,
-		axis_max				=> +1_000.0,
-		axis_min				=> -1_000.0,
-		type_rotation 			=> type_rotation
+		--type_distance			=> type_distance,
+		--type_distance_coarse	=> type_distance_coarse,
+		type_float_internal		=> type_float_internal
+		--axis_max				=> +1_000.0,
+		--axis_min				=> -1_000.0,
+		--type_rotation 			=> type_rotation
 		);
 
 	use pac_geometry_brd;
 
 
+	package pac_geometry_2 is new et_geometry_2 (
+		pac_geometry_1			=> pac_geometry_brd,
+		type_distance			=> type_distance,
+		type_distance_coarse	=> type_distance_coarse,
+		--type_float_internal		=> type_float_internal
+		axis_max				=> +1_000.0,
+		axis_min				=> -1_000.0,
+		type_rotation 			=> type_rotation
+		);
+
+	use pac_geometry_2;
+	
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required) -- CS move to design rules
 	pcb_thickness_min : constant type_distance_positive := 0.1;
 	pcb_thickness_max : constant type_distance_positive := 20.0;	
 	subtype type_pcb_thickness is type_distance_positive 
 		range pcb_thickness_min .. pcb_thickness_max;
+
 	
-	type type_package_position is new pac_geometry_brd.type_position with private;
+	type type_package_position is new pac_geometry_2.type_position with private;
 
 	package_position_default : constant type_package_position;
 
@@ -142,8 +159,10 @@ package et_pcb_coordinates is
 			& "rotation"
 			& axis_separator
 			& "face)";
+
 	
 	overriding function to_string (p : in type_package_position) return string;
+
 	
 	function to_package_position (
 		point 		: in type_point;
@@ -159,8 +178,10 @@ package et_pcb_coordinates is
 		face	: in type_face;
 		position: in out type_package_position);
 
+	
 	function get_face (packge : in type_package_position)
 		return type_face;
+
 	
 	-- Composes from a given point and angle the terminal position.
 	function to_terminal_position (
@@ -172,15 +193,15 @@ package et_pcb_coordinates is
 	
 	private
 		
-		type type_package_position is new pac_geometry_brd.type_position with record
+		type type_package_position is new pac_geometry_2.type_position with record
 			face : type_face := TOP;
 		end record;
 
 		package_position_default : constant type_package_position := (
-			pac_geometry_brd.origin_zero_rotation with face => TOP);
+			pac_geometry_2.origin_zero_rotation with face => TOP);
 
 		placeholder_position_default : constant type_package_position := (
-			pac_geometry_brd.origin_zero_rotation with face => TOP);
+			pac_geometry_2.origin_zero_rotation with face => TOP);
 
 		
 end et_pcb_coordinates;

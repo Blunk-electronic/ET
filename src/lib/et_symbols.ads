@@ -65,6 +65,7 @@ with et_logging;				use et_logging;
 package et_symbols is
 
 	use pac_geometry_sch;
+	use pac_geometry_2;
 
 
 
@@ -596,12 +597,14 @@ package et_symbols is
 		purpose	: type_text_placeholder (meaning => et_symbols.PURPOSE);
 	end record;
 
+	
 	-- This procedure is called by function et_symbols.rotate_placeholders and
 	-- by the function et_devices.rotate_placeholders. It does the actual
 	-- rotating of placeholders of a symbol.
 	procedure rotate (
 		phs			: in out type_rotated_placeholders;
-		rotation	: in type_rotation); -- the rotation of the unit
+		rotation	: in et_coordinates.type_rotation); -- the rotation of the unit
+
 	
 	-- Use this function to adopt placeholder position and rotation 
 	-- of a external symbol. Exter

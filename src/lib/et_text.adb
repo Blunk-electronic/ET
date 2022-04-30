@@ -398,16 +398,21 @@ package body et_text is
 		function to_lines (char : in type_character) return pac_vector_text_lines.list is
 			use pac_vector_text_lines;
 			result : pac_vector_text_lines.list;
+			scratch : pac_geometry_1.type_line;
 		begin
 			for l in char'first .. char'last loop
-				
-				append (result, (
-					--start_point => type_point (set (char (l).start_x, char (l).start_y)),
-					--end_point   => type_point (set (char (l).end_x, char (l).end_y))
-					start_point => to_vector (set (char (l).start_x, char (l).start_y)),
-					end_point   => to_vector (set (char (l).end_x, char (l).end_y))
-					));
 
+				scratch.start_point := to_vector (set (char (l).start_x, char (l).start_y));
+				scratch.end_point   := to_vector (set (char (l).end_x, char (l).end_y));
+					
+				--append (result, (
+					----start_point => type_point (set (char (l).start_x, char (l).start_y)),
+					----end_point   => type_point (set (char (l).end_x, char (l).end_y))
+					--start_point => to_vector (set (char (l).start_x, char (l).start_y)),
+					--end_point   => to_vector (set (char (l).end_x, char (l).end_y))
+					--));
+
+				append (result, scratch);
 			end loop;
 
 			return result;
