@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -41,7 +41,8 @@ with et_logging;				use et_logging;
 
 
 package et_drills is
-	use pac_geometry_brd;
+	use pac_geometry_2;
+	
 	
 	-- We fit the diameter in a reasonable range via a subtype:
 	drill_size_min : constant type_distance_positive := 0.05;

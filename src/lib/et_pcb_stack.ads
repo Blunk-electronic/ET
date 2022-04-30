@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -89,10 +89,12 @@ package et_pcb_stack is
 	function to_layers (layers : in string) 
 		return type_signal_layers.set;
 	
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
 -- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
 
+	use pac_geometry_2;
+	
 	subtype type_dielectric_thickness is type_distance_positive range 0.01 .. 5.0; -- CS reasonable ?
 	dielectric_thickness_default : constant type_dielectric_thickness := 1.5;
 
