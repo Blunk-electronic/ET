@@ -746,7 +746,10 @@ package et_geometry_2 is
 		p : in type_point)
 		return type_offset;
 	
-	
+
+	function to_offset (
+		x, y : in type_distance)
+		return type_offset;
 
 
 
@@ -1003,9 +1006,10 @@ package et_geometry_2 is
 
 	
 	
-	
-	--function "<" (left, right : in type_point) return boolean;
+	-- Compares two points by their distance to the origin:
+	function "<" (left, right : in type_point) return boolean;
 
+	
 	-- Use this package when lists of points must be handled:
 	--package pac_points is new doubly_linked_lists (type_point);
 

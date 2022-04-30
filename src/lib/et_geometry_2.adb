@@ -1437,7 +1437,13 @@ package body et_geometry_2 is
 
 
 	
-
+	function to_offset (
+		x, y : in type_distance)
+		return type_offset
+	is begin
+		return (type_float_internal (x), type_float_internal (y));
+	end to_offset;
+	
 	
 	
 	function to_distance_relative (
@@ -2106,20 +2112,22 @@ package body et_geometry_2 is
 
 	
 	
-	--function "<" (left, right : in type_point) return boolean is begin
-		--if left.x < right.x then
-			--return true;
-		--elsif left.x > right.x then
-			--return false;
+	function "<" (left, right : in type_point) return boolean is begin
+		if left.x < right.x then
+			return true;
+		elsif left.x > right.x then
+			return false;
 
-		---- left.x = right.x -> compare y:
-		--elsif left.y < right.y then
-			--return true;
-		--else 
-			---- if left.y greater or equal right.y
-			--return false;
-		--end if;
-	--end;
+		-- left.x = right.x -> compare y:
+		elsif left.y < right.y then
+			return true;
+		else 
+			-- if left.y greater or equal right.y
+			return false;
+		end if;
+		
+		-- CS compare absolute distance to origin instead
+	end;
 		
 
 	--function to_string (points : in pac_points.list) return string is

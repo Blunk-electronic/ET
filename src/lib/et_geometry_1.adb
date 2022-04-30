@@ -1445,8 +1445,8 @@ package body et_geometry_1 is
 			& " y: " & to_string (v.y)
 			& " z: " & to_string (v.z);
 	end to_string;
-
-
+	
+	
 	function get_quadrant (
 		point : in type_vector) 
 		return type_quadrant
@@ -1516,6 +1516,18 @@ package body et_geometry_1 is
 	end absolute;
 
 
+	function "<" (
+		left, right : in type_vector) 
+		return boolean
+	is begin
+		if absolute (left) < absolute (right) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
 	function scale (
 		v	: in type_vector;
 		s	: in type_float_internal)
@@ -1605,6 +1617,20 @@ package body et_geometry_1 is
 	end divide;
 
 
+
+	procedure mirror (
+		v		: in out type_vector;
+		axis	: in type_axis_2d)
+	is begin
+		case axis is
+			when X =>
+				v.y := v.y * (-1.0);
+			when Y =>
+				v.x := v.x * (-1.0);
+		end case;
+	end mirror;
+	
+	
 	
 	function equals (
 		left, right : in type_vector)
@@ -2111,6 +2137,33 @@ package body et_geometry_1 is
 		
 	end get_intersection;
 
+
+
+	procedure move_by (
+		line	: in out type_line;
+		offset	: in type_offset)
+	is begin
+		move_by (line.start_point, offset);
+		move_by (line.end_point, offset);
+	end move_by;
+
+
+	procedure rotate_by (
+		line	: in out type_line;
+		offset	: in type_angle)
+	is begin
+		rotate_by (line.start_point, offset);
+		rotate_by (line.end_point, offset);
+	end rotate_by;
+	
+
+	procedure mirror (
+		line	: in out type_line;
+		axis	: in type_axis_2d)
+	is begin
+		mirror (line.start_point, axis);
+		mirror (line.start_point, axis);
+	end mirror;
 
 	
 end et_geometry_1;

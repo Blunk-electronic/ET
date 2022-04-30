@@ -282,10 +282,13 @@ package et_geometry_1 is
 
 	type type_offset is record
 		x, y : type_float_internal := 0.0;
+		-- CS z ?
 	end record;
 
+	
 	function to_offset (
 		x, y : in type_float_internal)
+		-- CS z zero as default
 		return type_offset;
 	
 	
@@ -838,11 +841,17 @@ package et_geometry_1 is
 		return type_float_internal;
 
 
-	function absolute (
+	function absolute ( -- CS rename to get_absolute
 		vector	: in type_vector)
 		return type_float_internal;
 
 
+	-- Compares two location vectors by their distance to the origin:
+	function "<" (
+		left, right : in type_vector) 
+		return boolean;
+
+	
 	function scale (
 		v	: in type_vector;
 		s	: in type_float_internal)
@@ -942,8 +951,13 @@ package et_geometry_1 is
 		distance	: in type_float_internal) -- CS type_float_internal_positive ?
 		return type_vector;
 
+
+	-- Mirrors the location vector along the given axis:
+	procedure mirror (
+		v		: in out type_vector;
+		axis	: in type_axis_2d);
 	
-	
+		
 	-- Returns true if the given two location vectors are equal.
 	-- The x,y,z components are regarded as equal if their difference
 	-- is less or equal the rounding_threshold:
@@ -991,6 +1005,7 @@ package et_geometry_1 is
 		lv : in type_line_vector)
 		return string;
 
+	
 	-- Moves a line vector by the given offset.
 	-- Changes only the start vector. Leaves the
 	-- direction vector unchanged.
@@ -1082,6 +1097,32 @@ package et_geometry_1 is
 		return type_intersection_of_two_lines;
 
 
+
+
+-- LINE
+	
+	type type_line is record
+		start_point	: type_vector;
+		end_point	: type_vector;
+	end record;
+
+
+	-- Moves a line by the given offset:
+	procedure move_by (
+		line	: in out type_line;
+		offset	: in type_offset);
+
+
+	-- Rotates a line about the origin (in the z-plane):
+	procedure rotate_by (
+		line	: in out type_line;
+		offset	: in type_angle);
+
+
+	-- Mirrors a line along the given axis:
+	procedure mirror (
+		line	: in out type_line;
+		axis	: in type_axis_2d);
 
 	
 private
