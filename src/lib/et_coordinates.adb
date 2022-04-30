@@ -89,6 +89,7 @@ package body et_coordinates is
 		return type_sheet_relative'value (sheet);
 	end;
 
+	
 	function "<" (left, right : in type_position) return boolean is
 		result : boolean := false;
 	begin
@@ -128,6 +129,7 @@ package body et_coordinates is
 			
 		return result;
 	end;
+
 	
 	procedure move (
 		position	: in out type_position'class;
@@ -135,12 +137,7 @@ package body et_coordinates is
 	is
 		use et_geometry;
 	begin
--- 		position.x := position.x + offset.x;
-		--set (X, get_x (position) + get_x (offset), position);
 		position.set (X, get_x (position) + get_x (offset));
-		
--- 		position.y := position.y + offset.y;
-		--set (Y, get_y (position) + get_y (offset), position);
 		position.set (Y, get_y (position) + get_y (offset));
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
@@ -149,10 +146,11 @@ package body et_coordinates is
 
 	
 	function to_position (
-		point 		: in type_point'class;
+		point 		: in type_point;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation := zero_rotation)
-		return type_position is
+		return type_position 
+	is
 		p : type_position;
 	begin
 		set (p, point);
@@ -163,10 +161,11 @@ package body et_coordinates is
 
 	
 	function to_position_relative (
-		point 		: in type_point'class;
+		point 		: in type_point;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := zero_rotation)
-		return type_position_relative is
+		return type_position_relative 
+	is
 		p : type_position_relative;
 	begin
 		set (p, point);

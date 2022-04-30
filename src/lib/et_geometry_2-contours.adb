@@ -140,7 +140,8 @@ package body et_geometry_2.contours is
 		procedure query_segment (c : in pac_contour_segments.cursor) is begin
 			case element (c).shape is
 				when LINE => 
-					if on_line (point, element (c).segment_line) then
+					--if on_line (point, element (c).segment_line) then
+					if element (c).segment_line.on_line (point) then
 						result := c;
 						proceed := false; -- abort iteration
 					end if;
@@ -231,7 +232,7 @@ package body et_geometry_2.contours is
 		point	: in type_point)
 		return type_distance_polar
 	is
-		result : type_distance_polar := to_polar (type_float_internal'last, zero_rotation);
+		result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
 		
 		procedure update (d : in type_distance_polar) is begin
 			--put_line (to_string (d));
@@ -247,11 +248,13 @@ package body et_geometry_2.contours is
 			case s.shape is
 				when LINE =>
 					--put_line (to_string (s.segment_line));
-					update (get_shortest_distance (point, s.segment_line));
+					--update (get_shortest_distance (point, s.segment_line));
+					update (s.segment_line.get_shortest_distance (point));
 
 				when ARC =>
 					--put_line (to_string (s.segment_arc));
-					update (get_shortest_distance (point, s.segment_arc));
+					--update (get_shortest_distance (point, s.segment_arc));
+					update (s.segment_arc.get_shortest_distance (point));
 					
 			end case;
 		end query_segment;
@@ -259,7 +262,8 @@ package body et_geometry_2.contours is
 		
 	begin -- get_shortest_distance
 		if contour.contour.circular then
-			result := get_shortest_distance (point, contour.contour.circle);
+			--result := get_shortest_distance (point, contour.contour.circle);
+			result := contour.contour.circle.get_shortest_distance (point);
 		else
 			contour.contour.segments.iterate (query_segment'access);				
 		end if;			
@@ -345,7 +349,8 @@ package body et_geometry_2.contours is
 			new_y : type_distance;
 		begin
 			new_y := offset - get_y (point);
-			point.set (Y, new_y);
+			--point.set (Y, new_y);
+			set (point, Y, new_y);
 		end move;
 
 		
@@ -983,11 +988,13 @@ package body et_geometry_2.contours is
 			case s.shape is
 				when LINE =>
 					--put_line (to_string (s.segment_line));
-					update (get_shortest_distance (point, s.segment_line));
+					--update (get_shortest_distance (point, s.segment_line));
+					update (s.segment_line.get_shortest_distance (point));
 
 				when ARC =>
 					--put_line (to_string (s.segment_arc));
-					update (get_shortest_distance (point, s.segment_arc));
+					--update (get_shortest_distance (point, s.segment_arc));
+					update (s.segment_arc.get_shortest_distance (point));
 					
 			end case;
 		end query_segment;
@@ -1184,7 +1191,7 @@ package body et_geometry_2.contours is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in et_geometry_2.type_intersection; -- incl. point and angle
+			intersection: in type_intersection; -- incl. point and angle
 			segment		: in type_intersected_segment)
 			--center		: in type_point := origin;
 			--radius		: in type_distance_positive := zero)
@@ -1244,7 +1251,7 @@ package body et_geometry_2.contours is
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate arc of the contour.
 			i : constant type_intersection_of_line_and_circle := 
-				get_intersection (probe_line, a_norm);
+				a_norm.get_intersection (probe_line);
 
 			-- In case we get two intersections (which speaks for a secant)
 			-- then they need to be ordered according to their distance to
@@ -1326,7 +1333,7 @@ package body et_geometry_2.contours is
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate circle of the contour.
 			i : constant type_intersection_of_line_and_circle := 
-				get_intersection (probe_line, c);
+				c.get_intersection (probe_line);
 
 			-- In case we get two intersections (which speaks for a secant)
 			-- then they need to be ordered according to their distance to

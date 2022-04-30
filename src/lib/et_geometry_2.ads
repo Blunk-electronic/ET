@@ -1282,8 +1282,8 @@ package et_geometry_2 is
 
 	
 	function get_shortest_distance (
-		point	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_vector)
 		return type_float_internal;
 	
 	
@@ -1853,8 +1853,8 @@ package et_geometry_2 is
 	--type type_position is new type_point with private;
 
 	type type_position is tagged record
-		position : type_point := origin;
-		rotation : type_rotation := zero_rotation;
+		place 		: type_point := origin;
+		rotation	: type_rotation := zero_rotation;
 	end record;
 
 	
@@ -1869,18 +1869,38 @@ package et_geometry_2 is
 	-- x and y from the origin:
 	far_upper_right_zero_rotation : constant type_position;
 
-
 	
 	function to_position (
 		point		: in type_point;
 		rotation	: in type_rotation)
 		return type_position'class;
 
-	
-	-- Sets the rotation of a position. (position.rotation)
+
 	procedure set (
 		position	: in out type_position;
+		axis 		: in type_axis_2d;
+		value		: in type_position_axis);
+
+	
+	procedure set (
+		position	: in out type_position;
+		place		: in type_point);
+	
+	
+	-- Sets the rotation of a position. (position.rotation)
+	procedure set ( -- CS rename to set_rotation
+		position	: in out type_position;
 		rotation	: in type_rotation);
+
+
+	function get_x (
+		position : in type_position)
+		return type_distance;
+	
+
+	function get_y (
+		position : in type_position)
+		return type_distance;
 
 	
 	-- Returns the rotation of the given position.

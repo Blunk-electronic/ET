@@ -83,17 +83,17 @@ package et_geometry_1 is
 
 	-- The number of decimal places when rounding or type_float_internal
 	-- is required:
-	subtype type_rounding_accuracy is positive 
-		range 1 .. type_float_internal'digits;
+	--subtype type_rounding_accuracy is positive 
+		--range 1 .. type_float_internal'digits;
 	
-	procedure round (
-		f : in out type_float_internal;	-- the number to be rounded
-		a : in type_rounding_accuracy);	-- the accuracy, the number of decimal places
+	--procedure round (
+		--f : in out type_float_internal;	-- the number to be rounded
+		--a : in type_rounding_accuracy);	-- the accuracy, the number of decimal places
 
-	function round (
-		f : in type_float_internal;
-		a : in type_rounding_accuracy)
-		return type_float_internal;
+	--function round (
+		--f : in type_float_internal;
+		--a : in type_rounding_accuracy)
+		--return type_float_internal;
 
 	
 
@@ -789,12 +789,20 @@ package et_geometry_1 is
 	
 -- VECTORS
 	
-	type type_vector is private;
+	--type type_vector is private;
 
-	null_vector : constant type_vector;
+	--null_vector : constant type_vector;
 
-	unity_vector : constant type_vector;
+	--unity_vector : constant type_vector;
 
+	type type_vector is	record
+		x, y, z : type_float_internal := 0.0;
+	end record;
+
+	null_vector		: constant type_vector := (others => 0.0);
+	unity_vector	: constant type_vector := (others => 1.0);
+
+	
 	function to_string (
 		v	: in type_vector)
 		return string;
@@ -1005,6 +1013,7 @@ package et_geometry_1 is
 		ray : in type_ray)
 		return type_line_vector;
 
+	
 	-- Returns a line vector perpendicular (german: normalvektor)
 	-- to a line that crosses the given point at the given angle.
 	-- The start vector of the result starts at the given point.
@@ -1084,12 +1093,12 @@ private
 	
 
 
-	type type_vector is	record
-		x, y, z : type_float_internal := 0.0;
-	end record;
+	--type type_vector is	record
+		--x, y, z : type_float_internal := 0.0;
+	--end record;
 
-	null_vector		: constant type_vector := (others => 0.0);
-	unity_vector	: constant type_vector := (others => 1.0);
+	--null_vector		: constant type_vector := (others => 0.0);
+	--unity_vector	: constant type_vector := (others => 1.0);
 
 	
 	--origin : constant type_point := (others => zero);

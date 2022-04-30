@@ -2990,8 +2990,8 @@ package body et_geometry_2 is
 
 
 	function get_shortest_distance (
-		point	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_vector)
 		return type_float_internal
 	is
 		result : type_float_internal;
@@ -5427,9 +5427,9 @@ package body et_geometry_2 is
 		return string 
 	is begin
 		return point_preamble_with_rotation
-			& to_string (point.position.x)
+			& to_string (point.place.x)
 			& axis_separator
-			& to_string (point.position.y)
+			& to_string (point.place.y)
 			& axis_separator
 			& to_string (get_rotation (point));
 	end;
@@ -5442,12 +5442,32 @@ package body et_geometry_2 is
 	is 
 		result : type_position;
 	begin
-		result.position := point;
+		result.place := point;
 		result.rotation := rotation;
 
 		return result;
 	end to_position;
 
+
+	procedure set (
+		position	: in out type_position;
+		axis 		: in type_axis_2d;
+		value		: in type_position_axis)
+	is begin
+		case axis is
+			when X => position.place.x := value;
+			when Y => position.place.y := value;
+		end case;
+	end set;
+
+
+	procedure set (
+		position	: in out type_position;
+		place		: in type_point)
+	is begin
+		position.place := place;
+	end set;
+	
 	
 	procedure set (
 		position	: in out type_position;
@@ -5455,6 +5475,23 @@ package body et_geometry_2 is
 	is begin
 		position.rotation := rotation;
 	end;
+
+
+	function get_x (
+		position : in type_position)
+		return type_distance
+	is begin
+		return position.place.x;
+	end get_x;
+	
+
+	function get_y (
+		position : in type_position)
+		return type_distance
+	is begin
+		return position.place.y;
+	end get_y;
+
 
 	
 	function get_rotation (

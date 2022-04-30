@@ -114,7 +114,7 @@ package body et_geometry_2.polygons is
 
 	function get_direction (
 		edge : in type_edge)
-		return type_rotation
+		return type_angle
 	is
 		dp : type_vector;
 	begin
@@ -124,16 +124,17 @@ package body et_geometry_2.polygons is
 		-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
 		if dp.x = 0.0 and dp.y = 0.0 then
-			return zero_rotation;
+			return 0.0;
 		else
-			return to_rotation (arctan (dp.y, dp.x, units_per_cycle));
+			--return to_rotation (arctan (dp.y, dp.x, units_per_cycle));
+			return arctan (dp.y, dp.x, units_per_cycle);
 		end if;
 	end get_direction;
 		
 
 	procedure move_by (
 		edge		: in out type_edge;
-		direction	: in type_rotation;
+		direction	: in type_angle;
 		distance	: in type_float_internal_positive)
 	is begin
 		move_by (
@@ -150,7 +151,7 @@ package body et_geometry_2.polygons is
 	
 	procedure move_by (
 		edge		: in out type_edge;
-		direction	: in type_rotation;
+		direction	: in type_angle;
 		distance	: in type_distance_positive)
 	is begin
 		move_by (
@@ -214,7 +215,7 @@ package body et_geometry_2.polygons is
 		-- The intersection may be virtual, before start or after end point 
 		-- of the given line.
 		
-		line_direction : constant type_rotation := get_direction (edge);
+		line_direction : constant type_angle := get_direction (edge);
 		line_direction_vector : constant type_vector := to_line_vector (edge).v_direction;
 		line_start_vector, line_end_vector : type_vector;
 
@@ -574,7 +575,7 @@ package body et_geometry_2.polygons is
 		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, edge_1);
 
 		status : type_intersection_status_of_two_lines;
-		intersection : et_geometry_2.type_intersection;
+		intersection : pac_geometry_1.type_intersection;
 		
 	begin
 		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
@@ -1583,7 +1584,7 @@ package body et_geometry_2.polygons is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in et_geometry_2.type_intersection; -- incl. point and angle
+			intersection: in pac_geometry_1.type_intersection; -- incl. point and angle
 			edge		: in type_edge)
 		is 
 			xi : constant type_float_internal := get_x (intersection.vector);
@@ -2141,9 +2142,10 @@ package body et_geometry_2.polygons is
 						-- Collect this intersection point if it has
 						-- not already been collected yet:
 
-						I_rounded := round (
-							vector		=> I2L.intersection.vector, 
-							accuracy	=> type_float_internal'digits -1);
+						--I_rounded := round (
+							--vector		=> I2L.intersection.vector, 
+							--accuracy	=> type_float_internal'digits -1);
+						-- CS no need anymore ?
 
 						if not contains (result.intersections, I_rounded) then
 							result.intersections.append ((

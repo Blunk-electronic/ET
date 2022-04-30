@@ -372,7 +372,7 @@ private
 	-- be described as:
 	type type_probe_line_intersection_contour is record
 		x_position	: type_float_internal;
-		angle		: type_rotation := zero_rotation;
+		angle		: type_angle := 0.0;
 		segment		: type_intersected_segment;
 	end record;
 

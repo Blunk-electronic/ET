@@ -48,6 +48,8 @@ with ada.containers.doubly_linked_lists;
 with et_geometry;
 with et_geometry_1;
 with et_geometry_2;
+with et_geometry_2.contours;
+with et_geometry_2.polygons;
 with et_logging;				use et_logging;
 
 
@@ -164,8 +166,8 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	type type_position is new pac_geometry_sch.type_position with private;
-	type type_position_relative is new pac_geometry_sch.type_position with private;
+	type type_position is new pac_geometry_2.type_position with private;
+	type type_position_relative is new pac_geometry_2.type_position with private;
 
 	greatest_position : constant type_position;
 		
@@ -174,15 +176,17 @@ package et_coordinates is
 	procedure move (
 		position	: in out type_position'class;
 		offset		: in type_position_relative);
+
 	
 	function to_position (
-		point 		: in type_point'class;
+		point 		: in type_point;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation := zero_rotation)
 		return type_position;
 
+	
 	function to_position_relative (
-		point 		: in type_point'class;
+		point 		: in type_point;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := zero_rotation)		
 		return type_position_relative;
@@ -209,11 +213,11 @@ package et_coordinates is
 	
 	private 
 
-		type type_position is new pac_geometry_sch.type_position with record
+		type type_position is new pac_geometry_2.type_position with record
 			sheet : type_sheet := type_sheet'first;
 		end record;
 
-		type type_position_relative is new pac_geometry_sch.type_position with record
+		type type_position_relative is new pac_geometry_2.type_position with record
 			sheet : type_sheet_relative := 0;
 		end record;
 

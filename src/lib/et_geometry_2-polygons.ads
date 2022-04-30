@@ -87,18 +87,18 @@ package et_geometry_2.polygons is
 	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
 	function get_direction (
 		edge : in type_edge)
-		return type_rotation;
+		return type_angle;
 
 
 	-- Moves an edge in the given direction by the given distance:
 	procedure move_by (
 		edge		: in out type_edge;
-		direction	: in type_rotation;
+		direction	: in type_angle;
 		distance	: in type_float_internal_positive);
 
 	procedure move_by (
 		edge		: in out type_edge;
-		direction	: in type_rotation;
+		direction	: in type_angle;
 		distance	: in type_distance_positive);
 
 	
@@ -394,7 +394,7 @@ private
 	-- be described as:
 	type type_probe_line_intersection_polygon is record
 		x_position	: type_float_internal;
-		angle		: type_rotation := zero_rotation;
+		angle		: type_angle := 0.0;
 		edge		: type_edge;
 	end record;
 
@@ -403,8 +403,8 @@ private
 	-- greater 90 degrees and returns the absolute value of the difference.
 	-- Otherwise returns the given angle unchanged.		
 	--function subtract_180_if_greater_90 (
-		--angle : in type_rotation)
-		--return type_rotation;
+		--angle : in type_angle)
+		--return type_angle;
 
 	
 
