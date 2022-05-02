@@ -48,9 +48,11 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 package et_ratsnest is
 	
 	use pac_geometry_brd;
-	use pac_geometry_2;
+	--use pac_geometry_2;
 	
 
+	-- CS type type_airwire is type_line;
+	
 
 	package pac_airwires is new doubly_linked_lists (type_line);
 
@@ -78,7 +80,7 @@ package et_ratsnest is
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
 	-- GUI relevant only:
-	airwire_line_width : constant type_distance_positive := 0.01;
+	airwire_line_width : constant type_float_internal_positive := 0.01;
 
 
 	-- Constructs from a list of nodes a list of airwires.
@@ -95,7 +97,7 @@ package et_ratsnest is
 	-- attempts to create an airwire that is already in virtual_airwires then
 	-- that particular airwire will be discarded and not appended to the return.
 	function make_airwires (
-		nodes				: in pac_points.list;
+		nodes				: in pac_vectors.list;
 		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list;
 	

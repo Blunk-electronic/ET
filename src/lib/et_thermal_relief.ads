@@ -63,7 +63,7 @@ with et_conductor_segment;
 
 package et_thermal_relief is
 	
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 	use pac_geometry_2;
 
 	
@@ -80,9 +80,10 @@ package et_thermal_relief is
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	
-	subtype type_thermal_width is pac_geometry_brd.type_distance_positive
+	subtype type_thermal_width is type_distance_positive
 		range thermal_width_min .. thermal_width_max;
 
+	
 	-- If a terminal is connected/associated with a polyon, then
 	-- this is the space between pad and fill_zone:
 	thermal_gap_min : constant type_track_clearance := type_track_clearance'first;

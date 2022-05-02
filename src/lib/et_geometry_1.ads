@@ -972,6 +972,9 @@ package et_geometry_1 is
 		return type_vector;
 
 
+	
+	package pac_vectors is new doubly_linked_lists (type_vector);
+	
 
 -- RAY
 	
@@ -1107,6 +1110,11 @@ package et_geometry_1 is
 	end record;
 
 
+	function make_line (
+		start_point, end_point : in type_vector)
+		return type_line;
+	
+		
 	-- Moves a line by the given offset:
 	procedure move_by (
 		line	: in out type_line;
@@ -1124,7 +1132,13 @@ package et_geometry_1 is
 		line	: in out type_line;
 		axis	: in type_axis_2d);
 
+
+	-- Swaps start and end point of a line:
+	function reverse_line (
+		line	: in type_line)
+		return type_line;
 	
+		
 private
 	
 	type type_distance_polar is record

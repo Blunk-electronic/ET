@@ -58,8 +58,10 @@ package body et_conductor_segment is
 	function to_line_segment (line : in type_conductor_line)
 		return type_conductor_line_segment
 	is
+		use pac_geometry_brd;
+		
 		result : type_conductor_line_segment;
-		direction : constant type_rotation := get_direction (line);
+		direction : constant type_angle := get_direction (line);
 		distance : constant type_track_width := line.width * 0.5;		
 	begin
 		--log (text => "cond line" & to_string (line) & " width" & to_string (line.width));

@@ -62,7 +62,8 @@ with et_text;					use et_text;
 
 package et_vias is
 	
-	use et_pcb_coordinates.pac_geometry_brd;
+	--use pac_geometry_brd;
+	use pac_geometry_2;
 
 	
 	type type_micro_vias_allowed is (NO, YES);

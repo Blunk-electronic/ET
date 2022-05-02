@@ -50,9 +50,7 @@ with et_logging;				use et_logging;
 
 
 package et_conductor_segment is
-
-	use pac_geometry_brd;
-
+	
 	use pac_geometry_2;
 	use pac_polygons;
 	use pac_text_fab;
@@ -70,9 +68,11 @@ package et_conductor_segment is
 	
 	type type_conductor_line_segment is private;
 
+	
 	function to_string (segment : in type_conductor_line_segment)
 		return string;
 
+	
 	function to_line_segment (line : in type_conductor_line)
 		return type_conductor_line_segment;
 

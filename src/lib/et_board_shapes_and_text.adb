@@ -42,8 +42,9 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 
 package body et_board_shapes_and_text is
 	
-	procedure validate_general_line_width (width : in type_distance) is
-	begin
+	procedure validate_general_line_width (
+		width : in et_pcb_coordinates.type_distance) 
+	is begin
 		if width not in type_general_line_width then
 			log (ERROR, "line width invalid ! Allowed range is" 
 				 & to_string (type_general_line_width'first) & " .."

@@ -296,17 +296,20 @@ package body et_packages is
 		package_pos	: in type_package_position) 
 	is 
 		package_rotation : constant type_rotation := get_rotation (package_pos);
-		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos);
+		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos.place);
 	begin
-		-- Rotate the given terminal position by the position of the package:
-		rotate_by (term_pos, package_rotation);
+		---- Rotate the given terminal position by the position of the package:
+		--rotate_by (term_pos, package_rotation);
+
+		-- Rotate the given terminal position by the rotation of the package:
+		rotate_by (term_pos.place, package_rotation);
 
 		-- If the package is flipped, then the terminal position
 		-- must be mirrored along the Y axis.
-		if flipped = YES then mirror (term_pos, Y); end if;
+		if flipped = YES then mirror (term_pos.place, Y); end if;
 		
 		-- Move the given terminal position by the position of the package.
-		move_by (term_pos, package_position_relative);
+		move_by (term_pos.place, package_position_relative);
 		-- The terminal position is now ready for drawing the terminal
 		-- name and the pad outline.
 
@@ -330,7 +333,7 @@ package body et_packages is
 		end if;
 		
 		-- Move the outline to its final position:
-		move_by (outline, to_distance_relative (term_pos));
+		move_by (outline, to_distance_relative (term_pos.place));
 	end move_contours;
 
 

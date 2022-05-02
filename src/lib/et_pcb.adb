@@ -107,7 +107,7 @@ package body et_pcb is
 	
 	function package_position (position : in type_package_position) return string is
 	begin
-		return (" position" & to_string (type_point (position))
+		return (" position" & to_string (position.place)
 			& " angle" & to_string (get_rotation (position))
 			& " face" & to_string (get_face (position)));
 	end package_position;

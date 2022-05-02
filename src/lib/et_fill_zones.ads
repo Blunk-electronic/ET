@@ -62,7 +62,7 @@ with et_design_rules;			use et_design_rules;
 
 package et_fill_zones is
 	
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;

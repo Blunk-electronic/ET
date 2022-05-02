@@ -181,7 +181,7 @@ package body et_terminals is
 	begin -- terminal_properties
 		log (text => "terminal name " & to_string (name)
 			& " technology" & to_string (terminal.technology)
-			& to_string (type_point (terminal.position))
+			& to_string (terminal.position.place)
 			& " rotation" & to_string (get_rotation (terminal.position)),
 			level => log_threshold);
 

@@ -53,7 +53,7 @@ with et_logging;				use et_logging;
 
 package et_stop_mask is
 
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 
 	use pac_geometry_2;
 	use pac_contours;

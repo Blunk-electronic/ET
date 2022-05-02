@@ -55,7 +55,7 @@ with et_symbols;				use et_symbols;
 
 package et_net_labels is
 
-	use pac_geometry_sch;
+	use pac_geometry_2;
 	
 	
 	type type_net_label_appearance is (
@@ -81,11 +81,12 @@ package et_net_labels is
 	
 	type type_net_label_base is tagged record
 		-- The position of the label is absolute (relative to drawing origin):
-		position	: pac_geometry_sch.type_point;
+		position	: type_point;
 		
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;
+
 	
 	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
 		case appearance is
@@ -97,7 +98,7 @@ package et_net_labels is
 				-- The rotation is about its own position. 
 				-- However, the shown text inside the label (net name and coordinates) is always readable
 				-- from the front or from the right.
-				rotation_tag	: type_rotation_relative := pac_geometry_sch.zero_rotation;
+				rotation_tag	: type_rotation_relative := 0.0;
 
 			when SIMPLE =>
 				-- The simple label can be read from the front or from the right.
@@ -116,15 +117,21 @@ package et_net_labels is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
+	
 	-- GUI relevant only: The alignment for simple labels:
 	net_label_alignment : constant et_text.type_text_alignment := (et_text.LEFT, et_text.BOTTOM);
+
+
+	use pac_geometry_sch;
 	
 	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
 	tag_label_box_line_width : constant type_distance_positive := 0.2;
 
+	
 	-- GUI relevant only: The spacing between anchor point of tag label and net name:
 	tag_label_text_offset : constant type_float_internal_positive := 1.0;
 
+	
 	-- GUI relevant only: The ratio of box height to text size of a tag label:
 	tag_label_height_to_size_ratio : constant type_float_internal_positive := 1.8;
 

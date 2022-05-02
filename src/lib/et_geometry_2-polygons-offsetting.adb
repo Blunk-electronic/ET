@@ -59,8 +59,8 @@ package body et_geometry_2.polygons.offsetting is
 			edge_new : type_edge := edge;
 			center : type_vector := get_center (edge);
 			
-			edge_direction : type_rotation := get_direction (edge);
-			dir_scratch : type_rotation;			
+			edge_direction : type_angle := get_direction (edge);
+			dir_scratch : type_angle;			
 			test_point : type_vector;
 
 			-- These two procedures move the edge_new to the right or

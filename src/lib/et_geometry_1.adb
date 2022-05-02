@@ -2138,7 +2138,14 @@ package body et_geometry_1 is
 	end get_intersection;
 
 
+	function make_line (
+		start_point, end_point : in type_vector)
+		return type_line
+	is begin
+		return (start_point, end_point);
+	end make_line;
 
+	
 	procedure move_by (
 		line	: in out type_line;
 		offset	: in type_offset)
@@ -2164,6 +2171,14 @@ package body et_geometry_1 is
 		mirror (line.start_point, axis);
 		mirror (line.start_point, axis);
 	end mirror;
+
+
+	function reverse_line (
+		line	: in type_line)
+		return type_line
+	is begin
+		return (line.end_point, line.start_point);
+	end reverse_line;
 
 	
 end et_geometry_1;

@@ -56,7 +56,7 @@ package body et_ratsnest is
 
 		-- The airwire could be reversed in the container
 		-- (means start and end point swapped):
-		elsif airwires.contains (type_line (reverse_line (airwire))) then
+		elsif airwires.contains (reverse_line (airwire)) then
 			result := true;
 
 		else
@@ -88,34 +88,34 @@ package body et_ratsnest is
 	
 	
 	function make_airwires (
-		nodes				: in pac_points.list;
+		nodes				: in pac_vectors.list;
 		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list
 	is		
 		use pac_airwires;
 		result : pac_airwires.list := pac_airwires.empty_list; -- to be returned
 		
-		use pac_points;
-		start : type_point;
+		use pac_vectors;
+		start : type_vector;
 
 		-- This is the list of unconneced nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
 		-- it is empty, the PRIM-algorithm ends:
-		nodes_isolated : pac_points.list := nodes;
+		nodes_isolated : pac_vectors.list := nodes;
 
 		-- These are the nodes of spann-graph that we are going to build.
 		-- Once a node gets linked (with an airwire), the the node
 		-- will be added to nodes_linked. So this list of nodes grows
 		-- over time until all given nodes have been added to the graph.
 		-- Initially it is empty:
-		nodes_linked : pac_points.list := pac_points.empty_list;
+		nodes_linked : pac_vectors.list := pac_vectors.empty_list;
 		
 
 		-- Moves the given node from the list of isolated nodes to
 		-- the list of linked nodes. So the list nodes_isolated gets
 		-- shorter by one node. The list nodes_linked gets longer by one node:
-		procedure move_to_linked_nodes (node : in type_point) is
-			nc : pac_points.cursor;
+		procedure move_to_linked_nodes (node : in type_vector) is
+			nc : pac_vectors.cursor;
 		begin
 			-- remove from isolated nodes:
 			nc := nodes_isolated.find (node);
@@ -142,13 +142,13 @@ package body et_ratsnest is
 		-- It does not probe the distance of the given node to itself (which would be zero).
 		-- This function works according to principle 1 (P1) of the PRIM-algorithm.
 		-- It searches in the list of isolated nodes: 
-		function get_nearest_neighbor_of_node (node_in : in type_point)
-			return type_point
+		function get_nearest_neighbor_of_node (node_in : in type_vector)
+			return type_vector
 		is
 			smallest_distance : type_float_internal_positive := type_float_internal_positive'last;
-			node_nearest : type_point; -- to be returned
+			node_nearest : type_vector; -- to be returned
 			
-			procedure query_node (c : in pac_points.cursor) is
+			procedure query_node (c : in pac_vectors.cursor) is
 				d_tmp : type_float_internal_positive;
 			begin
 				-- ignore the given node. For others nodes: get the distance
@@ -183,9 +183,9 @@ package body et_ratsnest is
 		-- 3. Find in the array the neigbor that is closest to the graph.
 		-- 4. Return that neigbor to the caller.
 		function get_nearest_neighbor_of_graph
-			return type_point
+			return type_vector
 		is
-			node_nearest : type_point; -- to be returned
+			node_nearest : type_vector; -- to be returned
 
 			-- The total number of nodes in the current graph. It is required
 			-- in order to set up the array, because for each node of the graph
@@ -196,13 +196,13 @@ package body et_ratsnest is
 			-- The neigboring node to be stored in the array:
 			type type_neigbor is record
 				-- the neigboring node itself:
-				node		: type_point; 
+				node		: type_vector; 
 
 				-- the distance to the graph:
 				distance	: type_float_internal_positive := 0.0; 
 
 				-- the referencing node in the graph:
-				origin		: type_point;
+				origin		: type_vector;
 			end record;
 
 			-- Set up the array of neigboring nodes:
@@ -215,7 +215,7 @@ package body et_ratsnest is
 
 			
 			-- Finds the nearest isolated neigbor of a linked node:
-			procedure query_node_linked (c : in pac_points.cursor) is
+			procedure query_node_linked (c : in pac_vectors.cursor) is
 				neigbor : type_neigbor;
 			begin
 				neigbor.node := get_nearest_neighbor_of_node (element (c));
@@ -248,7 +248,8 @@ package body et_ratsnest is
 						-- make an airwire from the node of the grap to
 						-- the neigboring node. If a closer neigbor has been
 						-- found, then aw_tmp will be overwritten accordingly:
-						aw_tmp := type_line (make_line (neigbors (i).origin, neigbors (i).node));
+						--aw_tmp := type_line (make_line (neigbors (i).origin, neigbors (i).node));
+						aw_tmp := make_line (neigbors (i).origin, neigbors (i).node);
 					end if;
 				end loop;
 
@@ -267,7 +268,7 @@ package body et_ratsnest is
 		end get_nearest_neighbor_of_graph;
 
 
-		node_tmp : type_point;
+		node_tmp : type_vector;
 				
 	begin -- make_airwires
 

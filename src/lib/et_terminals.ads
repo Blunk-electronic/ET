@@ -303,7 +303,7 @@ package et_terminals is
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	type type_terminal_position (technology	: type_assembly_technology) 
-	is new pac_geometry_brd.type_position with record
+	is new pac_geometry_2.type_position with record
 		case technology is
 			when SMT => face : type_face;
 			when THT => null;

@@ -53,7 +53,7 @@ with et_logging;				use et_logging;
 
 package et_keepout is
 	
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 
 	use pac_geometry_2;
 	use pac_contours;

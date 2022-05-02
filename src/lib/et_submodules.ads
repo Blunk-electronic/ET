@@ -55,6 +55,7 @@ with et_logging;				use et_logging;
 with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_text;
+with et_geometry;
 with et_coordinates;			use et_coordinates;
 with et_pcb;
 with et_pcb_stack;
@@ -62,11 +63,13 @@ with et_pcb_coordinates;
 with et_symbols;
 
 package et_submodules is
-	use pac_geometry_sch;
+
+	use pac_geometry_2;
+
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is pac_geometry_sch.type_distance_positive
+	subtype type_submodule_edge_length is type_distance_positive
 		range 20.0 .. 1000.0; -- unit is mm
 
 	keyword_size	: constant string := "size";
@@ -119,7 +122,8 @@ package et_submodules is
 	function to_string (name : in type_netchanger_port_name) return string;	
 
 
-	
+
+	use pac_geometry_sch;
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
 	port_symbol_width	: constant type_float_internal_positive := 4.0;
@@ -197,7 +201,7 @@ package et_submodules is
 		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
-		position_in_board	: et_pcb_coordinates.pac_geometry_brd.type_position := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;
+		position_in_board	: et_pcb_coordinates.pac_geometry_2.type_position := et_pcb_coordinates.pac_geometry_2.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: pac_submodule_ports.map;
 	end record;
@@ -264,8 +268,8 @@ package et_submodules is
 		rotation	: type_rotation;
 	end record;
 
-	position_master_port_default : constant type_point := type_point (set (x =>  10.0, y => 0.0));
-	position_slave_port_default  : constant type_point := type_point (set (x => -10.0, y => 0.0));	
+	position_master_port_default : constant type_point := (x =>  10.0, y => 0.0);
+	position_slave_port_default  : constant type_point := (x => -10.0, y => 0.0);
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
@@ -280,22 +284,24 @@ package et_submodules is
 
 		-- the arc that connects the ports
 		arc	: et_symbols.type_arc := (
-						center		=> type_point (set (x => 0.0, y => 0.0)),
-						start_point	=> type_point (set (x => -5.0, y => 0.0)),
-						end_point	=> type_point (set (x =>  5.0, y => 0.0)),
-						direction	=> CW,
+						center		=> (x => 0.0, y => 0.0),
+						start_point	=> (x => -5.0, y => 0.0),
+						end_point	=> (x =>  5.0, y => 0.0),
+						direction	=> et_geometry.CW,
 						width		=> et_symbols.port_line_width);
 	end record;
 
+	
 	type type_netchanger is record
 		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_pcb_coordinates.pac_geometry_brd.type_point; -- x,y
+		position_brd	: et_pcb_coordinates.pac_geometry_2.type_point; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;
 
+	
 	package pac_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);

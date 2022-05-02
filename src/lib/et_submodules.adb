@@ -123,7 +123,7 @@ package body et_submodules is
 			name	: in pac_net_name.bounded_string;
 			port	: in out type_submodule_port) is
 		begin
-			move_by (port.position, to_distance_relative (offset));
+			move_by (port.position, to_distance_relative (offset.place));
 		end;
 
 		procedure query_port (cursor : in pac_submodule_ports.cursor) is begin
@@ -181,8 +181,8 @@ package body et_submodules is
 		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
 
 		-- move the ports according to position in schematic
-		move_by (ports.master, to_distance_relative (element (netchanger_cursor).position_sch));
-		move_by (ports.slave,  to_distance_relative (element (netchanger_cursor).position_sch));
+		move_by (ports.master, to_distance_relative (element (netchanger_cursor).position_sch.place));
+		move_by (ports.slave,  to_distance_relative (element (netchanger_cursor).position_sch.place));
 				
 		return ports;
 	end netchanger_ports;

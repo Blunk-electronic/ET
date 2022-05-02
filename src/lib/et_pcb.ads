@@ -89,7 +89,7 @@ with et_ratsnest;
 
 package et_pcb is
 	
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 
 	use pac_geometry_2;
 	use pac_contours;
@@ -350,6 +350,7 @@ package et_pcb is
 
 	function package_position (position : in type_package_position) return string;
 	-- Returns the coordinates of a package (in a board) as string.
+	-- CS rename to to_string
 
 
 
@@ -394,7 +395,7 @@ package et_pcb is
 	-- The board origin is positioned x/y away from the lower left
 	-- corner of the drawing frame.
 	-- Unless specified by operator the board origin default is:
-	origin_default : constant type_point := type_point (pac_geometry_brd.set (20.0, 65.0));
+	origin_default : constant type_point := (20.0, 65.0);
 
 
 	
