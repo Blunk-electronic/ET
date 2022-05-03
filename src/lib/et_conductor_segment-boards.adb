@@ -67,7 +67,7 @@ package body et_conductor_segment.boards is
 		use pac_conductor_lines;
 	begin
 		if element (line).layer = layer then
-			if on_line (point, element (line)) then
+			if element (line).on_line (to_vector (point)) then
 				-- CS use 
 				--segment_line := to_line_segment (line);
 				--distance := get_shortest_distance (point, segment_line);

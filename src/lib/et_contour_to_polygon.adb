@@ -36,17 +36,18 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with et_geometry;				use et_geometry;
+
 
 package body et_contour_to_polygon is
 
 
 	function to_edges (
-		arc			: in type_arc;
+		arc			: in pac_geometry_2.type_arc;
 		tolerance	: in type_distance_positive;
 		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
-		use pac_functions_distance;
 
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;
@@ -57,10 +58,10 @@ package body et_contour_to_polygon is
 		-- The given arc is usually offset from the origin.
 		-- This offset is later required to create the actual edges 
 		-- where the given arc is:
-		arc_offset : constant type_distance_relative := to_distance_relative (arc.center);
+		arc_offset : constant type_offset := to_offset (arc.center);
 
 		-- Make a copy of the given arc with its center on the origin (0/0):
-		arc_origin : constant type_arc := type_arc (move_to (arc, origin));
+		arc_origin : constant pac_geometry_2.type_arc := pac_geometry_2.type_arc (move_to (arc, origin));
 
 		-- Get the start and end angles of the arc:
 		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
@@ -69,7 +70,7 @@ package body et_contour_to_polygon is
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
 		
 		-- This is the total angle between start and end point of the given arc:
-		span : type_float_internal;
+		span : type_angle;
 
 
 		
@@ -132,7 +133,7 @@ package body et_contour_to_polygon is
 		
 	begin
 		-- Get the span of the arc:
-		span := type_float_internal (get_span (arc_origin));
+		span := get_span (arc_angles);
 
 		-- Compute the minimal angle required between the segments:
 		angle_min := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);

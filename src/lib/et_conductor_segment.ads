@@ -50,47 +50,61 @@ with et_logging;				use et_logging;
 
 
 package et_conductor_segment is
-	
+
+	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_polygons;
 	use pac_text_fab;
 
 	
 -- LINES
-	
-	type type_conductor_line is new type_line with record
+
+	-- The center of a conductor line segment.
+	-- Drawn by the operator in the layout editor:
+	type type_conductor_line is new pac_geometry_2.type_line with record
 		width	: type_track_width;
 	end record;
 
 
 
 	
+	-- ? CS type_edge_cap is new type_arc with null record;
+	type type_edge_arc is new pac_geometry_brd.type_arc;
+	type type_edge_line is new pac_geometry_brd.type_line;
 	
+
+	-- The outline of a conductor line segment:
 	type type_conductor_line_segment is private;
 
 	
-	function to_string (segment : in type_conductor_line_segment)
+	function to_string (
+		segment : in type_conductor_line_segment)
 		return string;
 
 	
-	function to_line_segment (line : in type_conductor_line)
+	function to_line_segment (
+		line : in type_conductor_line)
 		return type_conductor_line_segment;
 
 
 	
 	
 	function get_left_edge (segment : in type_conductor_line_segment)
-		return type_line;
+		return type_edge_line;
 
+	
 	function get_right_edge (segment : in type_conductor_line_segment)
-		return type_line;
+		return type_edge_line;
 
+	
 	function get_start_cap (segment : in type_conductor_line_segment)
-		return type_arc;
+		return type_edge_arc;
 
+	
 	function get_end_cap (segment : in type_conductor_line_segment)
-		return type_arc;
+		return type_edge_arc;
 
+	
 	-- Computes the shortest distance from a point to
 	-- a conductor line segment. If the return is negative,
 	-- then the point is inside the segment.
@@ -105,6 +119,7 @@ package et_conductor_segment is
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 	
+
 	-- Logs the properties of the given line:
 	procedure line_conductor_properties (
 		face			: in type_face;
@@ -115,30 +130,40 @@ package et_conductor_segment is
 	
 
 -- ARCS
-	type type_conductor_arc is new type_arc with record
+
+	-- The center of a conductor arc segment.
+	-- Drawn by the operator in the layout editor:
+	type type_conductor_arc is new pac_geometry_2.type_arc with record
 		width	: type_track_width;
 	end record;
 
 	
 	type type_conductor_arc_segment is private;
 
+	
 	function to_string (segment : in type_conductor_arc_segment)
 		return string;
+
 	
-	function to_arc_segment (arc : in type_conductor_arc)
+	function to_arc_segment (
+		arc : in type_conductor_arc)
 		return type_conductor_arc_segment;
 
+	
 	function get_inner_edge (segment : in type_conductor_arc_segment)
-		return type_arc;
+		return type_edge_arc;
 
+	
 	function get_outer_edge (segment : in type_conductor_arc_segment)
-		return type_arc;
+		return type_edge_arc;
 
+	
 	function get_start_cap (segment : in type_conductor_arc_segment)
-		return type_arc;
+		return type_edge_arc;
 
+	
 	function get_end_cap (segment : in type_conductor_arc_segment)
-		return type_arc;
+		return type_edge_arc;
 
 
 	-- Computes the shortest distance from a point to
@@ -196,15 +221,15 @@ package et_conductor_segment is
 	
 	
 private
-
+	
 	type type_conductor_line_segment is record
-		left_edge, right_edge : type_line;
-		cap_start, cap_end : type_arc;
+		left_edge, right_edge : type_edge_line;
+		cap_start, cap_end : type_edge_arc;
 	end record;
 	
 	type type_conductor_arc_segment is record
-		inner_edge, outer_edge : type_arc;
-		cap_start, cap_end : type_arc;
+		inner_edge, outer_edge : type_edge_arc;
+		cap_start, cap_end : type_edge_arc;
 	end record;
 
 	

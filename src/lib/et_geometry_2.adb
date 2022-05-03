@@ -1364,8 +1364,14 @@ package body et_geometry_2 is
 	end to_distance_relative;
 
 	
+	function to_distance_relative (
+		v : in type_vector)
+		return type_distance_relative
+	is begin
+		return (type_distance (v.x), type_distance (v.y));
+	end to_distance_relative;
 
-
+	
 ---- POLAR
 
 	--function get_angle (
@@ -3285,7 +3291,34 @@ package body et_geometry_2 is
 
 -- ARC
 
+	function to_arc_fine (
+		arc : in type_arc)
+		return pac_geometry_1.type_arc
+	is begin
+		return (
+			center		=> to_vector (arc.center),
+			start_point	=> to_vector (arc.start_point),
+			end_point	=> to_vector (arc.end_point),
+			direction	=> arc.direction);
+	end to_arc_fine;
 
+
+	function to_arc_coarse (
+		arc : in pac_geometry_1.type_arc)
+		return type_arc'class
+	is 
+		result : type_arc;
+	begin
+		result := (
+			center		=> to_point (arc.center),
+			start_point	=> to_point (arc.start_point),
+			end_point	=> to_point (arc.end_point),
+			direction	=> arc.direction);
+
+		return result;
+	end to_arc_coarse;
+
+	
 	function to_string (arc : in type_arc) return string is begin
 		return "arc: "
 			& "C:" & to_string (arc.center) 
@@ -3296,26 +3329,26 @@ package body et_geometry_2 is
 
 	
 	
-	function round (arc : in type_arc)
-		return type_arc'class
-	is 
-		r : type_arc;
-	begin
-		r := (
-			center		=> round (arc.center),
-			start_point	=> round (arc.start_point),
-			end_point	=> round (arc.end_point),
-			direction	=> arc.direction);
+	--function round (arc : in type_arc)
+		--return type_arc'class
+	--is 
+		--r : type_arc;
+	--begin
+		--r := (
+			--center		=> round (arc.center),
+			--start_point	=> round (arc.start_point),
+			--end_point	=> round (arc.end_point),
+			--direction	=> arc.direction);
 
-		return r;
-	end round;
+		--return r;
+	--end round;
 
-	procedure round (arc : in out type_arc) 
-	is begin
-		arc.center		:= round (arc.center);
-		arc.start_point	:= round (arc.start_point);
-		arc.end_point	:= round (arc.end_point);
-	end round;
+	--procedure round (arc : in out type_arc) 
+	--is begin
+		--arc.center		:= round (arc.center);
+		--arc.start_point	:= round (arc.start_point);
+		--arc.end_point	:= round (arc.end_point);
+	--end round;
 
 
 	
@@ -3729,25 +3762,25 @@ package body et_geometry_2 is
 
 	
 	
-	function crosses_threshold ( -- CS remove ?
-		arc			: in type_arc;
-		y_threshold	: in type_distance)
-		return boolean
-	is begin
-		if	
-			get_y (arc.start_point) >= y_threshold and 
-			get_y (arc.end_point)   <  y_threshold then
-			return true;
+	--function crosses_threshold ( -- CS remove ?
+		--arc			: in type_arc;
+		--y_threshold	: in type_distance)
+		--return boolean
+	--is begin
+		--if	
+			--get_y (arc.start_point) >= y_threshold and 
+			--get_y (arc.end_point)   <  y_threshold then
+			--return true;
 			
-		elsif
-			get_y (arc.end_point)   >= y_threshold and 
-			get_y (arc.start_point) <  y_threshold then
-			return true;
+		--elsif
+			--get_y (arc.end_point)   >= y_threshold and 
+			--get_y (arc.start_point) <  y_threshold then
+			--return true;
 			
-		else
-			return false;
-		end if;
-	end crosses_threshold;
+		--else
+			--return false;
+		--end if;
+	--end crosses_threshold;
 
 	
 	
@@ -3801,7 +3834,10 @@ package body et_geometry_2 is
 
 	
 	
-	function to_arc_angles (arc : in type_arc) return type_arc_angles is
+	function to_arc_angles (
+		arc : in type_arc) 
+		return type_arc_angles 
+	is
 	-- The angles may be negative. For example instead of 270 degree
 	-- the angle can be -90 degree.
 		result : type_arc_angles;
@@ -3813,7 +3849,7 @@ package body et_geometry_2 is
 		move_to (arc_tmp, origin);
 
 		-- the center is not changed:
-		result.center := arc.center;
+		result.center := to_vector (arc.center);
 		
 		-- calculate the radius of the arc
 		result.radius := get_distance_total (arc_tmp.center, to_vector (arc_tmp.start_point));
@@ -3859,12 +3895,16 @@ package body et_geometry_2 is
 	end to_arc_angles;
 
 
-	function to_arc (arc : in type_arc_angles) return type_arc'class is
+	function to_arc (
+		arc : in type_arc_angles) 
+		return type_arc'class 
+	is
 		result : type_arc;
 		x, y : type_float_internal;
-		offset : constant type_distance_relative := (get_x (arc.center), get_y (arc.center));
+		--offset : constant type_distance_relative := (get_x (arc.center), get_y (arc.center));
+		offset : constant type_distance_relative := to_distance_relative (arc.center);
 	begin
-		result.center := arc.center;
+		result.center := to_point (arc.center);
 		result.direction := arc.direction;
 
 		-- start point:
@@ -3885,24 +3925,7 @@ package body et_geometry_2 is
 	end to_arc;
 	
 
-	function get_span (
-		arc	: type_arc)
-		return type_angle
-	is
-		result : type_angle;
-		arc_angles : constant type_arc_angles := to_arc_angles (arc);
-	begin
-		case arc.direction is
-			when CCW =>
-				result := abs (arc_angles.angle_end - arc_angles.angle_start);
-				
-			when CW =>
-				-- CS use function normalize_arc ?
-				result := abs (arc_angles.angle_start - arc_angles.angle_end);
-		end case;
 
-		return result;
-	end get_span;
 
 	
 	

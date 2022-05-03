@@ -60,7 +60,7 @@ package et_contour_to_polygon is
 	-- The tolerance is the maximum allowed deviation from
 	-- the ideal arc:
 	function to_edges (
-		arc			: in type_arc;
+		arc			: in pac_geometry_2.type_arc;
 		tolerance	: in type_distance_positive;
 		debug		: in boolean := false)				  
 		return pac_edges.list;

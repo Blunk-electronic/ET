@@ -290,7 +290,8 @@ package et_geometry_1 is
 		x, y : in type_float_internal)
 		-- CS z zero as default
 		return type_offset;
-	
+
+
 	
 -- TYPE POINT:
 
@@ -805,6 +806,16 @@ package et_geometry_1 is
 	null_vector		: constant type_vector := (others => 0.0);
 	unity_vector	: constant type_vector := (others => 1.0);
 
+
+	function get_offset (
+		v1, v2 : in type_vector)
+		return type_offset;
+
+	
+	function to_offset (
+		v : in type_vector)
+		return type_offset;
+
 	
 	function to_string (
 		v	: in type_vector)
@@ -1109,7 +1120,12 @@ package et_geometry_1 is
 		end_point	: type_vector;
 	end record;
 
-
+	
+	function to_string (
+		line	: in type_line)
+		return string;
+	
+						   
 	function make_line (
 		start_point, end_point : in type_vector)
 		return type_line;
@@ -1138,7 +1154,92 @@ package et_geometry_1 is
 		line	: in type_line)
 		return type_line;
 	
-		
+
+	procedure move_by (
+		line		: in out type_line;
+		direction	: in type_angle;
+		distance	: in type_float_internal_positive);
+
+
+
+-- ARC
+	
+	type type_arc is record
+		center		: type_vector;
+		start_point	: type_vector;
+		end_point	: type_vector;
+		direction	: type_direction_of_rotation := CW;
+	end record;
+
+
+	function to_string (
+		arc : in type_arc)
+		return string;
+
+	
+	-- Swaps start and end point of an arc. Reverses the direction of the arc:
+	function reverse_arc (
+		arc : in type_arc) 
+		return type_arc;
+	
+	procedure reverse_arc (
+		arc : in out type_arc);
+
+
+	-- Changes the direction of an arc to CCW (mathematical sense)
+	-- by swapping start and end point. If direction is already CCW
+	-- then nothing happens.
+	function normalize_arc (
+		arc: in type_arc) 
+		return type_arc;
+
+	
+	-- Returns true if start and end point of arc are equal:
+	function zero_length (
+		arc : in type_arc) 
+		return boolean;
+
+
+	-- Returns the total span in degree between start and end of an arc:
+	function get_span (
+		arc	: type_arc)
+		return type_angle;
+
+	
+	type type_arc_angles is record -- CS should be private ?
+		center		: type_vector;
+		radius		: type_float_internal_positive;
+		angle_start	: type_angle; -- CS type_angle_positive ?
+		angle_end	: type_angle; -- CS type_angle_positive ?
+		direction	: type_direction_of_rotation := CW;
+	end record;
+
+
+	-- Returns the total span in degree between start and end of an arc:
+	function get_span (
+		arc	: type_arc_angles)
+		return type_angle;
+
+	
+	-- Moves an arc to the given position. 
+	procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector);
+	
+	
+	function to_arc_angles (
+		arc : in type_arc) 
+		return type_arc_angles;
+
+	
+	function to_arc (
+		arc : in type_arc_angles) 
+		return type_arc;
+	
+
+
+
+	
 private
 	
 	type type_distance_polar is record

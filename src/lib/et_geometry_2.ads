@@ -700,6 +700,10 @@ package et_geometry_2 is
 		x,y : in type_distance)
 		return type_distance_relative;
 
+	
+	function to_distance_relative (
+		v : in type_vector)
+		return type_distance_relative;
 
 
 	
@@ -1384,14 +1388,25 @@ package et_geometry_2 is
 	-- CS use this type wherever a type_arc is declared unnessecarily.
 
 
+	
+	function to_arc_fine (
+		arc : in type_arc)
+		return pac_geometry_1.type_arc;
+
+	function to_arc_coarse (
+		arc : in pac_geometry_1.type_arc)
+		return type_arc'class;
+
+	
+	
 	-- Returns the start, end point and angle of the given arc as string.
 	function to_string (arc : in type_arc) return string;
 
 	
-	function round (arc : in type_arc)
-		return type_arc'class;
+	--function round (arc : in type_arc)
+		--return type_arc'class;
 
-	procedure round (arc : in out type_arc);
+	--procedure round (arc : in out type_arc);
 	
 
 	
@@ -1428,10 +1443,10 @@ package et_geometry_2 is
 	-- If start/end point of the candidate arc is ABOVE-OR-ON the 
 	-- threshold AND if the end/start point of the candidate arc is BELOW the
 	-- threshold then we consider the arc to be threshold-crossing.
-	function crosses_threshold ( -- CS remove ?
-		arc			: in type_arc;
-		y_threshold	: in type_distance)
-		return boolean;
+	--function crosses_threshold ( -- CS remove ?
+		--arc			: in type_arc;
+		--y_threshold	: in type_distance)
+		--return boolean;
 
 	
 	
@@ -1453,17 +1468,8 @@ package et_geometry_2 is
 	function is_valid (
 		arc : in type_arc)
 		return boolean;
-
 	
-	-- Sometimes (for example with cairo) an arc must be
-	-- expressed in terms of start and end angle:
-	type type_arc_angles is record -- CS should be private ?
-		center		: type_point;
-		radius		: type_float_internal_positive;
-		angle_start	: type_angle; -- CS type_angle_positive ?
-		angle_end	: type_angle; -- CS type_angle_positive ?
-		direction	: type_direction_of_rotation := CW;
-	end record;
+
 
 
 	function to_string (
@@ -1472,17 +1478,17 @@ package et_geometry_2 is
 	
 		
 	-- Returns the start and end angles of an arc.
-	function to_arc_angles (arc : in type_arc) return type_arc_angles;
+	function to_arc_angles (
+		arc : in type_arc) 
+		return type_arc_angles;
 
+	
 	-- Returns the start and end points of an arc.
-	function to_arc (arc : in type_arc_angles) return type_arc'class;
+	function to_arc (
+		arc : in type_arc_angles) 
+		return type_arc'class;
 
 
-	-- Returns the total span in degree between start and end
-	-- of an arc:
-	function get_span (
-		arc	: type_arc)
-		return type_angle;
 
 	
 	-- Returns the boundaries of the given arc.

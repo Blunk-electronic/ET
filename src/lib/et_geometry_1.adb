@@ -526,6 +526,8 @@ package body et_geometry_1 is
 	end to_offset;
 
 	
+
+	
 	
 	--function get_rotation (
 		--point : in type_point) 
@@ -1436,6 +1438,23 @@ package body et_geometry_1 is
 
 -- VECTORS	
 
+
+	function get_offset (
+		v1, v2 : in type_vector)
+		return type_offset
+	is begin
+		return (v2.x - v1.x, v2.y - v1.y);
+	end get_offset;
+
+	
+	function to_offset (
+		v : in type_vector)
+		return type_offset
+	is begin
+		return (v.x, v.y);
+	end to_offset;
+
+	
 	function to_string (
 		v	: in type_vector)
 		return string
@@ -2138,6 +2157,16 @@ package body et_geometry_1 is
 	end get_intersection;
 
 
+	function to_string (
+		line	: in type_line)
+		return string
+	is begin
+		return 
+			"line: S:" & to_string (line.start_point) 
+			& " / E:" & to_string (line.end_point);
+	end to_string;
+	
+
 	function make_line (
 		start_point, end_point : in type_vector)
 		return type_line
@@ -2179,6 +2208,225 @@ package body et_geometry_1 is
 	is begin
 		return (line.end_point, line.start_point);
 	end reverse_line;
+
+
+	procedure move_by (
+		line		: in out type_line;
+		direction	: in type_angle;
+		distance	: in type_float_internal_positive)
+	is begin
+		move_by (line.start_point, direction, distance);
+		move_by (line.end_point, direction, distance);
+	end move_by;
+
+
+	
+
+-- ARCS
+
+	function to_string (
+		arc : in type_arc)
+		return string 
+	is begin
+		return "arc: "
+			& "C:" & to_string (arc.center) 
+			& " / S:" & to_string (arc.start_point) 
+			& " / E:" & to_string (arc.end_point)
+			& " / D: " & to_string (arc.direction);
+	end to_string;
+
+
+	function reverse_arc (
+		arc : in type_arc) 
+		return type_arc
+	is
+		result : type_arc := arc;
+	begin
+		result.start_point := arc.end_point;
+		result.end_point := arc.start_point;
+
+		case arc.direction is
+			when CW  => result.direction := CCW;
+			when CCW => result.direction := CW;
+		end case;
+		
+		return result;
+	end reverse_arc;
+
+	
+	procedure reverse_arc (
+		arc : in out type_arc) 
+	is
+		scratch : type_vector := arc.start_point;
+	begin
+		arc.start_point := arc.end_point;
+		arc.end_point := scratch;
+
+		case arc.direction is
+			when CW	 => arc.direction := CCW;
+			when CCW => arc.direction := CW;
+		end case;
+	end reverse_arc;
+
+
+	function normalize_arc (
+		arc: in type_arc) 
+		return type_arc
+	is begin
+		case arc.direction is
+			when CW  => return reverse_arc (arc);					
+			when CCW => return arc;
+		end case;
+	end normalize_arc;
+
+
+	function zero_length (
+		arc : in type_arc) 
+		return boolean 
+	is begin
+		if arc.start_point = arc.end_point then
+			return true;
+		else
+			return false;
+		end if;
+	end zero_length;
+
+
+	function get_span (
+		arc	: type_arc)
+		return type_angle
+	is
+		result : type_angle;
+		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+	begin
+		case arc.direction is
+			when CCW =>
+				result := abs (arc_angles.angle_end - arc_angles.angle_start);
+				
+			when CW =>
+				-- CS use function normalize_arc ?
+				result := abs (arc_angles.angle_start - arc_angles.angle_end);
+		end case;
+
+		return result;
+	end get_span;
+	
+
+	function get_span (
+		arc	: type_arc_angles)
+		return type_angle
+	is
+		result : type_angle;
+	begin
+		case arc.direction is
+			when CCW =>
+				result := abs (arc.angle_end - arc.angle_start);
+				
+			when CW =>
+				-- CS use function normalize_arc ?
+				result := abs (arc.angle_start - arc.angle_end);
+		end case;
+
+		return result;
+	end get_span;
+
+	
+	procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector)
+	is
+		offset : constant type_offset := get_offset (arc.center, position);
+	begin
+		-- move the center of the arc to the given position
+		arc.center := position;
+
+		-- move start and end point of the arc by the offset
+		move_by (arc.start_point, offset);
+		move_by (arc.end_point,   offset);
+	end move_to;
+
+	
+	function to_arc_angles (
+		arc : in type_arc) 
+		return type_arc_angles 
+	is
+	-- The angles may be negative. For example instead of 270 degree
+	-- the angle can be -90 degree.
+		result : type_arc_angles;
+					
+		-- Take a copy of the given arc in arc_tmp.
+		arc_tmp : type_arc := arc;
+	begin
+		-- move arc_tmp so that its center is at 0/0
+		move_to (arc_tmp, null_vector);
+
+		
+		-- the center is not changed:
+		result.center := arc.center;
+		
+		-- calculate the radius of the arc
+		result.radius := get_distance_total (arc_tmp.center, arc_tmp.start_point);
+
+		-- calculate the angles where the arc begins and ends:
+
+		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		
+		if get_x (arc_tmp.start_point) = 0.0 and get_y (arc_tmp.start_point) = 0.0 then
+			result.angle_start := 0.0;
+		else
+			result.angle_start := arctan (
+					y => get_y (arc_tmp.start_point),
+					x => get_x (arc_tmp.start_point), 
+					cycle => units_per_cycle);
+		end if;
+
+		if get_x (arc_tmp.end_point) = 0.0 and get_y (arc_tmp.end_point) = 0.0 then
+			result.angle_end := 0.0;
+		else
+			result.angle_end := arctan (
+					y => get_y (arc_tmp.end_point),
+					x => get_x (arc_tmp.end_point),
+					cycle => units_per_cycle);
+		end if;
+
+		-- make sure start and end angle are not equal
+		if result.angle_start = result.angle_end then
+			raise constraint_error; -- CS warning instead ?
+		end if;
+		
+		-- direction is not changed:
+		result.direction := arc.direction;
+		
+		return result;
+	end to_arc_angles;
+
+
+	function to_arc (
+		arc : in type_arc_angles) 
+		return type_arc 
+	is
+		result : type_arc;
+		x, y : type_float_internal;
+		offset : constant type_offset := to_offset (arc.center);
+	begin
+		result.center := arc.center;
+		result.direction := arc.direction;
+
+		-- start point:
+		x := arc.radius * cos (arc.angle_start, units_per_cycle);
+		y := arc.radius * sin (arc.angle_start, units_per_cycle);
+		result.start_point := set (x, y);
+		move_by (result.start_point, offset);
+		
+		-- end point:
+		x := arc.radius * cos (arc.angle_end, units_per_cycle);
+		y := arc.radius * sin (arc.angle_end, units_per_cycle);
+		result.end_point := set (x, y);
+		move_by (result.end_point, offset);
+		
+		return result;
+	end to_arc;
 
 	
 end et_geometry_1;
