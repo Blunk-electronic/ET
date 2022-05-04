@@ -34,6 +34,10 @@
 --
 --   history of changes:
 --
+--   to do:
+--   - Some functions and procedures here can be applied to et_geometry_1.type_line.
+--     If required, move them to et_geometry_1 so that other callers can make use of them.
+
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -48,13 +52,14 @@ package et_geometry_2.polygons is
 	-- As system wide default for all kinds of polygons or contours:
 	winding_default : constant type_direction_of_rotation := CCW;
 
+	--type type_edge is record
+		--start_point, end_point : type_vector;
+	--end record;
 
-	type type_edge is record
-		start_point, end_point : type_vector;
-	end record;
+	type type_edge is new pac_geometry_1.type_line;
 
 	
-	function to_string (
+	overriding function to_string (
 		edge : in type_edge)
 		return string;
 
@@ -67,12 +72,6 @@ package et_geometry_2.polygons is
 	function to_line (
 		edge : in type_edge)
 		return type_line;
-
-	
-	-- Swaps start and end point of an edge:
-	function reverse_edge (
-		edge : in type_edge)
-		return type_edge;
 	
 
 	-- Returns the point on the given edge
@@ -91,11 +90,6 @@ package et_geometry_2.polygons is
 
 
 	-- Moves an edge in the given direction by the given distance:
-	procedure move_by (
-		edge		: in out type_edge;
-		direction	: in type_angle;
-		distance	: in type_float_internal_positive);
-
 	procedure move_by (
 		edge		: in out type_edge;
 		direction	: in type_angle;

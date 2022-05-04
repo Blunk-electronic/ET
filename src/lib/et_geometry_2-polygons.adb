@@ -85,13 +85,6 @@ package body et_geometry_2.polygons is
 	end to_line;
 
 
-	function reverse_edge (
-		edge : in type_edge)
-		return type_edge 
-	is begin
-		return (edge.end_point, edge.start_point);
-	end reverse_edge;
-
 	
 	function get_center (
 		edge : in type_edge)
@@ -131,22 +124,6 @@ package body et_geometry_2.polygons is
 		end if;
 	end get_direction;
 		
-
-	procedure move_by (
-		edge		: in out type_edge;
-		direction	: in type_angle;
-		distance	: in type_float_internal_positive)
-	is begin
-		move_by (
-			v 			=> edge.start_point, 
-			direction	=> direction, 
-			distance	=> distance);
-
-		move_by (
-			v 			=> edge.end_point, 
-			direction	=> direction, 
-			distance	=> distance);
-	end move_by;
 
 	
 	procedure move_by (
@@ -822,7 +799,7 @@ package body et_geometry_2.polygons is
 				edge_new : type_edge;
 				cursor_new : pac_edges.cursor;
 			begin
-				edge_new := reverse_edge (element (c));
+				edge_new := reverse_line (element (c));
 				
 				if polygon_new.edges.is_empty then
 					polygon_new.edges.append (edge_new);

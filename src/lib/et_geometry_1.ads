@@ -1161,6 +1161,9 @@ package et_geometry_1 is
 		distance	: in type_float_internal_positive);
 
 
+	-- CS Find more subprograms on type_line see et_geometry_2.polygons.
+	-- Move them there so that they can be used by other callers.
+	
 
 -- ARC
 	
