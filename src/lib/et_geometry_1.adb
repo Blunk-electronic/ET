@@ -2201,7 +2201,15 @@ package body et_geometry_1 is
 		mirror (line.start_point, axis);
 	end mirror;
 
+	procedure mirror_line (
+		line	: in out type_line;
+		axis	: in type_axis_2d)
+	is begin
+		mirror (line.start_point, axis);
+		mirror (line.start_point, axis);
+	end mirror_line;
 
+	
 	function reverse_line (
 		line	: in type_line)
 		return type_line

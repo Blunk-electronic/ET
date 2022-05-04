@@ -1144,11 +1144,15 @@ package et_geometry_1 is
 
 
 	-- Mirrors a line along the given axis:
-	procedure mirror (
+	procedure mirror ( -- CS remove
 		line	: in out type_line;
 		axis	: in type_axis_2d);
 
+	procedure mirror_line (
+		line	: in out type_line;
+		axis	: in type_axis_2d);
 
+	
 	-- Swaps start and end point of a line:
 	function reverse_line (
 		line	: in type_line)

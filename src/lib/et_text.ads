@@ -268,8 +268,8 @@ package et_text is
 -- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
 -- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
-		subtype type_character_height is pac_geometry_2.type_position_axis range -0.4 .. 1.0;
-		subtype type_character_width  is pac_geometry_2.type_position_axis range zero .. 0.7;
+		subtype type_character_height is type_float_internal range -0.4 .. 1.0;
+		subtype type_character_width  is type_float_internal range  0.0 .. 0.7;
 		character_width : constant type_character_height := 0.7;
 
 		-- A single segment of a character is defined as:
@@ -849,11 +849,22 @@ package et_text is
 			2	=> (x2, y1, x2, y1)
 			);
 
-		
-		package pac_vector_text_lines is new doubly_linked_lists (pac_geometry_1.type_line);
 
+		-- A character is a list of lines. These lines are machine made. They are
+		-- a result of rotation, scaling, mirroring, ...
+		-- The start and end points are expressed by float numbers.
+		-- In order to avoid confusion we derive from pac_geometry_1.type_line a new type
+		-- for these lines:
+		type type_character_line is new pac_geometry_1.type_line;
+		
+		package pac_vector_text_lines is new doubly_linked_lists (type_character_line); 
+		-- CS rename to pac_character_lines
+
+		
 		-- Converts a character to a list of lines:
-		function to_lines (char : in type_character) return pac_vector_text_lines.list;
+		function to_lines (
+			char : in type_character) 
+			return pac_vector_text_lines.list;
 
 
 		type type_text_fab_with_content is new type_text_fab with record

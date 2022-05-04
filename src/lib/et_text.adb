@@ -395,15 +395,18 @@ package body et_text is
 		
 	-- VECTORIZED TEXT
 
-		function to_lines (char : in type_character) return pac_vector_text_lines.list is
+		function to_lines (
+			char : in type_character) 
+			return pac_vector_text_lines.list 
+		is
 			use pac_vector_text_lines;
 			result : pac_vector_text_lines.list;
-			scratch : pac_geometry_1.type_line;
+			scratch : type_character_line;
 		begin
 			for l in char'first .. char'last loop
 
-				scratch.start_point := to_vector (set (char (l).start_x, char (l).start_y));
-				scratch.end_point   := to_vector (set (char (l).end_x, char (l).end_y));
+				scratch.start_point := set (char (l).start_x, char (l).start_y);
+				scratch.end_point   := set (char (l).end_x, char (l).end_y);
 					
 				--append (result, (
 					----start_point => type_point (set (char (l).start_x, char (l).start_y)),
@@ -422,9 +425,10 @@ package body et_text is
 		-- This function sorts lines by the distance of their start points
 		-- to the origin.
 		-- CS: The sorting could be improved but seems sufficient for now.
-		function "<" (left, right : in pac_geometry_1.type_line) return boolean is 
-			--result : boolean := false;
-		begin
+		function "<" (
+			left, right : in type_character_line) 
+			return boolean 
+		is begin
 			if left.start_point < right.start_point then
 				return true;
 			else
@@ -451,13 +455,13 @@ package body et_text is
 			-- this list gets filled with the lines of vectorized characters:
 			result : type_vector_text;
 
-			-- This is the text we will be displaying. It will be read
+			-- This is the text content we will be displaying. It will be read
 			-- character by character. Each character will be mapped 
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := pac_text_content.to_string (content);
 
-			package sorting is new generic_sorting;
-			use sorting;
+			package sorting is new pac_vector_text_lines.generic_sorting;
+			--use sorting;
 
 			half_line_width : constant type_float_internal_positive := 
 				type_float_internal (line_width) * 0.5;
@@ -471,7 +475,8 @@ package body et_text is
 
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
-			spacing : constant type_distance_positive := size * (0.25 + type_character_width'last);
+			spacing : constant type_distance_positive := 
+				size * (0.25 + type_distance_positive (type_character_width'last));
 			
 			-- The scaling is done so that text height and width are
 			-- independed of the line width.
@@ -489,7 +494,7 @@ package body et_text is
 			text_height_half : constant type_distance_positive := size * 0.5;
 
 			
-			procedure scale_line (l : in out pac_geometry_1.type_line) is
+			procedure scale_line (l : in out type_character_line) is
 				--Sx : constant type_distance := get_x (l.start_point);
 				--Sy : constant type_distance := get_y (l.start_point);
 				--Ex : constant type_distance := get_x (l.end_point);
@@ -509,29 +514,21 @@ package body et_text is
 				scratch : pac_vector_text_lines.list;
 
 				procedure query_line (c : in pac_vector_text_lines.cursor) is
-					l : pac_geometry_1.type_line := element (c);
+					l : type_character_line := element (c);
 				begin
 					-- According to the given text size, the line is now 
 					-- to be scaled:
 					scale_line (l);
 
 					-- Move the line by offset_due_to_line_width (see above):
-					--pac_geometry_2.move_by (
-						--line	=> pac_geometry_2.type_line (l),
-						--offset	=> offset_due_to_line_width);
-					pac_geometry_1.move_by (
+					move_by (
 						line	=> l,
 						offset	=> offset_due_to_line_width);
 										   
 					-- Move the line to the right according to the
 					-- position of the character inside the text. 
 					-- CS: depends on alignment ?
-					--pac_geometry_2.move_by (
-						--line	=> pac_geometry_2.type_line (l),
-						--offset	=> to_distance_relative (set (
-									--x => type_distance (place - 1) * spacing,
-									--y => zero)));
-					pac_geometry_1.move_by (
+					move_by (
 						line	=> l,
 						offset	=> to_offset (
 									x => type_distance (place - 1) * spacing,
@@ -553,7 +550,7 @@ package body et_text is
 				lines : pac_vector_text_lines.list := to_lines (char);
 			begin
 				move_character (lines);
-				merge (target => result.lines, source => lines);
+				sorting.merge (target => result.lines, source => lines);
 			end add;
 
 			
@@ -561,7 +558,7 @@ package body et_text is
 				scratch : pac_vector_text_lines.list;
 
 				procedure query_line (c : in pac_vector_text_lines.cursor) is 
-					l : pac_geometry_1.type_line := element (c);
+					l : type_character_line := element (c);
 
 					procedure align_vertical is begin
 						case alignment.vertical is
@@ -569,21 +566,13 @@ package body et_text is
 								null; -- text is already computed for bottom alignment. nothing to do
 							
 							when CENTER =>
-								--pac_geometry_2.move_by (
-									--line	=> pac_geometry_2.type_line (l),
-									--offset	=> to_distance_relative (set (zero, - text_height_half)));
-
-								pac_geometry_1.move_by (
+								move_by (
 									line	=> l,
 									offset	=> to_offset (zero, - text_height_half));
 
 								
 							when TOP =>
-								--pac_geometry_2.move_by (
-									--line	=> pac_geometry_2.type_line (l),
-									--offset	=> to_distance_relative (set (zero, - text_height)));
-
-								pac_geometry_1.move_by (
+								move_by (
 									line	=> l,
 									offset	=> to_offset (zero, - text_height));
 								
@@ -647,20 +636,14 @@ package body et_text is
 							align_vertical;
 
 						when CENTER =>
-							--pac_geometry_2.move_by (
-								--line	=> pac_geometry_2.type_line (l),
-								--offset	=> to_distance_relative (set (- text_length_half, zero)));
-							pac_geometry_1.move_by (
+							move_by (
 								line	=> l,
 								offset	=> to_offset (- text_length_half, zero));
 							
 							align_vertical;
 							
 						when RIGHT =>
-							--pac_geometry_2.move_by (
-								--line	=> pac_geometry_2.type_line (l),
-								--offset	=> to_distance_relative (set (- text_length, zero)));
-							pac_geometry_1.move_by (
+							move_by (
 								line	=> l,
 								offset	=> to_offset (- text_length, zero));
 							
@@ -670,30 +653,21 @@ package body et_text is
 					
 					-- Rotate the text (about the origin) if required:
 					if rotation /= zero_rotation then
-						--pac_geometry_2.rotate_by (
-							--line		=> pac_geometry_2.type_line (l),
-							--rotation	=> rotation);
-						pac_geometry_1.rotate_by (
+						rotate_by (
 							line	=> l,
 							offset	=> type_angle (rotation));
 					end if;
 
 					-- Mirror the text if required:
 					if mirror = YES then
-						--pac_geometry_2.mirror (
-							--line	=> pac_geometry_2.type_line (l),
-							--axis	=> Y);
-						pac_geometry_1.mirror (
+						mirror_line (
 							line	=> l,
 							axis	=> Y);
 					end if;
 					
 					-- Move the text by the given position. 
 					-- The given position is the anchor point of the text.
-					--pac_geometry_2.move_by (
-						--line	=> pac_geometry_2.type_line (l),
-						--offset	=> to_distance_relative (position));
-					pac_geometry_1.move_by (
+					move_by (
 						line	=> l,
 						offset	=> to_offset (position));
 					
