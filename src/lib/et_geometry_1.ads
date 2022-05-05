@@ -58,6 +58,8 @@ generic
 package et_geometry_1 is
 
 	function to_string (f : in type_float_internal) return string;
+
+	function to_float (s : in string) return type_float_internal;
 	
 	subtype type_float_internal_positive is type_float_internal range 0.0 .. type_float_internal'last;
 

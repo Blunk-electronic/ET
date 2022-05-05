@@ -35,23 +35,17 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
 with et_general;				use et_general;
-
 with et_general_rw;				use et_general_rw;
 with et_geometry;				use et_geometry;
-with et_text;					--use et_text;
+with et_text;
+
 
 package body et_symbol_rw is
 
@@ -88,7 +82,6 @@ package body et_symbol_rw is
 
 	
 	function position (pos : in type_point) return string is
-	-- Returns something like "x 12.34 y 45.0".
 
 		function text return string is begin return 
 			keyword_x & to_string (get_x (pos)) 
@@ -148,7 +141,6 @@ package body et_symbol_rw is
 
 	
 	procedure create_symbol (
-	-- Creates a symbol and stores it in container et_symbols.symbols.
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
@@ -189,7 +181,6 @@ package body et_symbol_rw is
 		symbol			: in type_symbol;
 		log_threshold	: in type_log_level)
 	is
-		--use pac_geometry_2;
 		use et_text;
 
 		use pac_lines;
@@ -353,7 +344,6 @@ package body et_symbol_rw is
 
 	
 	procedure save_symbol (
-	-- Saves the given symbol model in a file specified by file_name.
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level)
@@ -400,7 +390,6 @@ package body et_symbol_rw is
 
 	
 	procedure read_symbol (
-	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level) 
 	is
@@ -432,9 +421,9 @@ package body et_symbol_rw is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		appearance			: type_appearance;
 		symbol				: access type_symbol;
-		symbol_line			: type_line;
-		symbol_arc			: type_arc;
-		symbol_circle		: type_circle;
+		symbol_line			: et_symbols.type_line;
+		symbol_arc			: et_symbols.type_arc;
+		symbol_circle		: et_symbols.type_circle;
 		symbol_text_base	: type_text_basic;
 
 		symbol_cursor		: pac_symbols.cursor;
@@ -454,6 +443,7 @@ package body et_symbol_rw is
 		port_output_weakness	: type_output_weakness := output_weakness_default;
 		port_power_level		: type_power_level := port_power_level_default;
 
+		
 		procedure insert_port is 
 			inserted	: boolean;
 			cursor		: pac_ports.cursor;
@@ -581,6 +571,7 @@ package body et_symbol_rw is
 			port_output_weakness	:= output_weakness_default;
 			port_power_level		:= port_power_level_default;
 		end insert_port;
+
 		
 		procedure process_line is 
 
@@ -715,6 +706,7 @@ package body et_symbol_rw is
 
 			end execute_section;
 
+			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -761,6 +753,7 @@ package body et_symbol_rw is
 				end if;
 			end set;
 
+			
 		begin -- process_line
 			if set (section_draw, SEC_DRAW) then null;			
 			elsif set (section_line, SEC_LINE) then null;								
@@ -907,7 +900,7 @@ package body et_symbol_rw is
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := to_distance (f (line, 2));
+										symbol_circle.radius := pac_geometry_sch.to_float (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
@@ -1088,6 +1081,7 @@ package body et_symbol_rw is
 		end process_line;
 
 		previous_input : ada.text_io.file_type renames current_input;
+
 		
 	begin -- read_symbol
 		log_indentation_up;

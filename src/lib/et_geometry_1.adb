@@ -81,6 +81,11 @@ package body et_geometry_1 is
 		return type_float_internal'image (f);
 	end;
 
+	
+	function to_float (s : in string) return type_float_internal is begin
+		return type_float_internal'value (s);
+	end to_float;
+	
 
 	function get_direction (
 		rotation : in type_angle) 

@@ -43,8 +43,8 @@ with et_coordinates;			use et_coordinates;
 with et_symbols;				use et_symbols;
 
 package et_symbol_rw is
-
-	--use et_coordinates.pac_geometry_2;
+	
+	use pac_geometry_2;
 	
 -- 	keyword_style		: constant string := "style";
 	keyword_width 		: constant string := "width";
@@ -60,16 +60,19 @@ package et_symbol_rw is
 		return type_grid;
 
 
-	function position (pos : in type_point) return string;
 	-- Returns something like "x 12.34 y 45.0".
+	function position (pos : in type_point) return string;
 
+	
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
 		return type_point;
+
 	
 	procedure write_text_properties (t : in type_text_basic'class);
 
+	
 	type type_section is (
 		SEC_INIT,
 		SEC_DRAW,
@@ -83,25 +86,29 @@ package et_symbol_rw is
 		SEC_PORTS,
 		SEC_PORT
 		);
+	
 
-	procedure create_symbol (
 	-- Creates a symbol and stores it in container et_symbols.symbols.
+	procedure create_symbol (
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
+
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
 		log_threshold	: in type_log_level);
+
 	
-	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by file_name.
+	procedure save_symbol (
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level);
+
 	
-	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
+	procedure read_symbol (
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level);
 
