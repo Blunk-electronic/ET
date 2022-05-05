@@ -141,23 +141,24 @@ package body et_pcb_rw is
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
+	
 	procedure write_line (line : in type_line'class) is begin
-		write (keyword => keyword_start, parameters => position (line.start_point));
-		write (keyword => keyword_end  , parameters => position (line.end_point));
+		write (keyword => keyword_start, parameters => to_string (line.start_point));
+		write (keyword => keyword_end  , parameters => to_string (line.end_point));
 	end write_line;
 
 	
 	procedure write_arc (arc : in type_arc'class) is begin
-		write (keyword => keyword_center, parameters => position (arc.center));
-		write (keyword => keyword_start, parameters => position (arc.start_point));
-		write (keyword => keyword_end, parameters => position (arc.end_point));
-		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));		
+		write (keyword => keyword_center, parameters => to_string (arc.center));
+		write (keyword => keyword_start, parameters => to_string (arc.start_point));
+		write (keyword => keyword_end, parameters => to_string (arc.end_point));
+		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));
 	end write_arc;
 
 	
 	procedure write_circle (circle : in type_circle'class) is begin
-		write (keyword => keyword_center, parameters => position (circle.center));
-		write (keyword => keyword_radius, parameters => to_string (circle.radius));
+		write (keyword => keyword_center, parameters => to_string (circle.center));
+		write (keyword => keyword_radius, parameters => pac_geometry_brd.to_string (circle.radius));
 	end write_circle;
 
 	
@@ -420,11 +421,11 @@ package body et_pcb_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				set (point => point, axis => X, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => X, value => to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => Y, value => to_distance (f (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then
@@ -441,17 +442,18 @@ package body et_pcb_rw is
 	end to_position;
 
 	
-	function position (point : in type_point'class) return string is
+	--function position (point : in type_point'class) return string is
+	function position (point : in type_position'class) return string is
 		use ada.tags;
 
 		xy : constant string := space & keyword_x & to_string (get_x (point)) 
 				& space & keyword_y & to_string (get_y (point));
 	begin
-		if point'tag = type_point'tag then
-			return xy;
-			-- x 162.560 y 98.240
+		--if point'tag = type_point'tag then
+			--return xy;
+			---- x 162.560 y 98.240
 			
-		elsif point'tag = type_position'tag then
+		if point'tag = type_position'tag then
 			return xy 
 				& space & keyword_rotation & to_string (get_rotation (type_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00
@@ -781,7 +783,7 @@ package body et_pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := to_distance (f (line, 2));
+			board_circle.radius := pac_geometry_brd.to_float (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -804,7 +806,7 @@ package body et_pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := to_distance (f (line, 2));
+			board_circle.radius := pac_geometry_brd.to_float (f (line, 2));
 
 			return true;			
 		else

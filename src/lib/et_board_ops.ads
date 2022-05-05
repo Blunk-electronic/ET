@@ -61,7 +61,7 @@ with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_brd;
+use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;
 
@@ -94,7 +94,7 @@ package et_board_ops is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_shapes_and_text.pac_geometry_2;
+	--use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text;
 	use pac_contours;
 	use pac_text_fab;
@@ -239,7 +239,7 @@ package et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return pac_points.list;
+		return pac_vectors.list;
 
 	
 	-- Returns the positions (x/y) of all vias of the given net:

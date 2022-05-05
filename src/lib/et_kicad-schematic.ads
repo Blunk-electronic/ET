@@ -58,7 +58,7 @@ with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_pcb_coordinates;
 with et_text;
@@ -148,7 +148,7 @@ package et_kicad.schematic is
 	-- A kicad unit:
 	type type_unit_schematic is record
 		appearance	: et_schematic.type_appearance_schematic;
-		rotation	: et_coordinates.type_rotation := pac_geometry_sch.zero_rotation;
+		rotation	: type_rotation := zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: et_kicad_coordinates.type_position;		
 
@@ -388,7 +388,7 @@ package et_kicad.schematic is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : type_net_label_appearance) is record
-		coordinates	: pac_geometry_sch.type_point;
+		coordinates	: type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: pac_net_name.bounded_string;
         size		: et_symbols.pac_text.type_text_size;
@@ -772,7 +772,7 @@ package et_kicad.schematic is
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
 		text_size	: et_symbols.pac_text.type_text_size;
-		coordinates	: pac_geometry_sch.type_point;
+		coordinates	: type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;

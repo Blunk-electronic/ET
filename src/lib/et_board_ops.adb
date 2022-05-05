@@ -74,15 +74,15 @@ package body et_board_ops is
 	is begin
 		log (importance => WARNING, 
 			 text => "nothing found at" & to_string (point) &
-			 " in vicinity of" & to_string (accuracy));
-	end;
+			 " in vicinity of" & pac_geometry_brd.to_string (accuracy));
+	end no_segment_found;
 
 	
 	procedure terminal_not_found (terminal_name : in pac_terminal_name.bounded_string) is begin
 		log (ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
 			 console => true);
 		raise constraint_error;
-	end;
+	end terminal_not_found;
 
 	
 	procedure move_board (
@@ -368,15 +368,15 @@ package body et_board_ops is
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (point => device.position, position => point); 
+						set (point => device.position.place, position => point); 
 						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position, offset => to_distance_relative (point));
+						move_by (point => device.position.place, offset => to_distance_relative (point));
 						-- preserve angle and face
 						
 				end case;
-			end;
+			end set_position;
 
 			
 			procedure set_position ( -- of a non-electric device
@@ -385,15 +385,15 @@ package body et_board_ops is
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (point => device.position, position => point); 
+						set (point => device.position.place, position => point); 
 						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position, offset => to_distance_relative (point)); 
+						move_by (point => device.position.place, offset => to_distance_relative (point)); 
 						-- preserve angle and face
 						
 				end case;
-			end;
+			end set_position;
 
 			
 		begin -- query_devices
@@ -681,8 +681,10 @@ package body et_board_ops is
 			scratch : et_packages.pac_text_placeholders.list;
 			
 			-- Mirrors the position of a placeholder along the y-axis:
-			procedure mirror_placeholder (p : in out et_packages.type_text_placeholder) is begin
-				mirror (point => p.position, axis => Y);
+			procedure mirror_placeholder (
+				p : in out et_packages.type_text_placeholder) 
+			is begin
+				mirror (point => p.position.place, axis => Y);
 			end mirror_placeholder;
 
 			
@@ -901,7 +903,7 @@ package body et_board_ops is
 						set (submodule.position_in_board, point);
 
 					when RELATIVE =>
-						move_by (submodule.position_in_board, to_distance_relative (point));
+						move_by (submodule.position_in_board.place, to_distance_relative (point));
 				end case;
 
 				exception
@@ -998,13 +1000,15 @@ package body et_board_ops is
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
-						et_pcb_coordinates.type_package_position is 
+						et_pcb_coordinates.type_package_position 
+					is 
+						-- Get the device position in the generic submodule:.
 						device_position : et_pcb_coordinates.type_package_position := position_generic;
 					begin
-						-- Get the device position in the generic submodule.
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
-						move_by (device_position, to_distance_relative (position_in_board));
+						--move_by (device_position, to_distance_relative (position_in_board));
+						move_by (device_position.place, to_distance_relative (position_in_board.place));
 
 						log (text => "generic" & to_string (position_generic) &
 							" -> " & "in instance" & to_string (device_position),
@@ -1012,6 +1016,7 @@ package body et_board_ops is
 
 						return device_position;
 					end;
+
 					
 					procedure test_inserted is begin
 						if not inserted then
@@ -1021,6 +1026,7 @@ package body et_board_ops is
 						end if;
 					end;
 
+					
 					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
@@ -1058,6 +1064,7 @@ package body et_board_ops is
 						end if;
 					end query_properties_default;
 
+					
 					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
@@ -1131,6 +1138,7 @@ package body et_board_ops is
 							end if;
 						end if;
 					end query_properties_variants;
+
 					
 				begin -- query_devices
 					-- if default variant given, then assembly variants are irrelevant:
@@ -1172,16 +1180,19 @@ package body et_board_ops is
 					log_indentation_down;
 				end query_devices;
 
+				
 			begin -- collect
 				et_project.modules.pac_generic_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
 				
 			end collect;
-	
+
+			
 			submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
 			tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
 
+			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_general.stack_lifo (
 				item	=> et_numbering.pac_modules.cursor,
@@ -1201,6 +1212,7 @@ package body et_board_ops is
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
 			position_in_board : type_position := origin_zero_rotation;
+
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -1266,8 +1278,9 @@ package body et_board_ops is
 
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
-					move_by (position_in_board, to_distance_relative (get_position (parent_name, module_instance)));
-
+					--move_by (position_in_board, to_distance_relative (get_position (parent_name, module_instance)));
+					move_by (position_in_board.place, to_distance_relative (get_position (parent_name, module_instance).place));
+					
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
 					
@@ -1490,17 +1503,17 @@ package body et_board_ops is
 			end case;
 
 			-- mirror terminal position on Y axis (swap right x with left x)
-			mirror (terminal_position_base, Y);
+			mirror (terminal_position_base.place, Y);
 			
 		else -- not flipped
 			terminal_position_face := get_face (package_position);
 		end if;
 
 		-- rotate
-		rotate_by (point => terminal_position_base, rotation => get_rotation (package_position));
+		rotate_by (point => terminal_position_base.place, rotation => get_rotation (package_position));
 
 		-- move
-		move_by (point => terminal_position_base, offset => to_distance_relative (package_position));
+		move_by (point => terminal_position_base.place, offset => to_distance_relative (package_position.place));
 
 		-- compose the return depending on the terminal technology:
 		case terminal_technology is
@@ -1519,10 +1532,10 @@ package body et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return pac_points.list
+		return pac_vectors.list
 	is
-		use pac_points;
-		result : pac_points.list;
+		use pac_vectors;
+		result : pac_vectors.list;
 
 		ports : et_schematic.type_ports;
 
@@ -1555,9 +1568,11 @@ package body et_board_ops is
 				-- port_properties.terminal -- 14, H6
 
 				-- get x/y of the terminal:
-				terminal_position := type_point (
-					get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
-
+				--terminal_position := type_point (
+					--get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
+				terminal_position := 
+					get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
+				
 				-- Add the terminal position to the result:
 				append (result, terminal_position);
 			end if;

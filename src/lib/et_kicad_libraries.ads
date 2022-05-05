@@ -56,7 +56,7 @@ with et_kicad_coordinates;		use et_kicad_coordinates;
 
 with et_import;
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_kicad_packages;			use et_kicad_packages;
 
@@ -258,7 +258,7 @@ package et_kicad_libraries is
 	type type_symbol_arc is new et_symbols.type_arc with record
 		start_angle		: et_coordinates.type_rotation;
 		end_angle		: et_coordinates.type_rotation;
-		radius			: pac_geometry_sch.type_distance_positive;
+		radius			: type_distance_positive;
  		fill			: type_fill;
 	end record;
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);

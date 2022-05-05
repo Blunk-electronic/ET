@@ -923,6 +923,7 @@ package et_geometry_2 is
 		& "y"
 		& axis_separator
 		& "rotation)";
+
 	
 	function to_string (
 		point : in type_point) 
@@ -1015,7 +1016,7 @@ package et_geometry_2 is
 
 	
 	-- Use this package when lists of points must be handled:
-	--package pac_points is new doubly_linked_lists (type_point);
+	package pac_points is new doubly_linked_lists (type_point);
 
 
 	-- Returns a human readable string of points:
@@ -1030,8 +1031,8 @@ package et_geometry_2 is
 	
 	-- Removes points which are stored multiple times
 	-- from the given list:
-	--procedure remove_redundant_points (
-		--points : in out pac_points.list);
+	procedure remove_redundant_points (
+		points : in out pac_points.list);
 
 	
 	-- Sorts the given list of points by their distance to

@@ -51,7 +51,7 @@ with et_net_names;				use et_net_names;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -529,13 +529,15 @@ package et_schematic_ops is
 		unit	: in et_schematic.pac_units.cursor)
 		return et_coordinates.type_position;
 
+	
 	-- Returns the position (x/y) of the given placeholder.
 	-- Raises constraint error if device or unit does not exist.
-	function position (
+	function position ( -- CS rename to get_position
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in et_schematic.pac_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
-		return pac_geometry_sch.type_point;
+		return type_point;
+
 	
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.

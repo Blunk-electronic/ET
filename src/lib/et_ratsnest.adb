@@ -42,11 +42,25 @@
 --with ada.containers.multiway_trees;
 
 package body et_ratsnest is
-	
 
+	
+	function to_airwire (
+		line : in et_conductor_segment.boards.type_conductor_line)
+		return type_airwire
+	is 
+		use pac_geometry_2;
+		result : type_airwire;
+	begin
+		result.start_point := to_vector (line.start_point);
+		result.end_point   := to_vector (line.end_point);
+
+		return result;
+	end to_airwire;
+
+	
 	function contains_airwire (
 		airwires	: in pac_airwires.list;
-		airwire		: in type_line)
+		airwire		: in type_airwire)
 		return boolean
 	is
 		result : boolean := false;
@@ -128,7 +142,7 @@ package body et_ratsnest is
 
 		-- Appends the given airwire to the result if it
 		-- is not already in the given list of virtual_airwires:
-		procedure add_airwire (aw : in type_line) is begin
+		procedure add_airwire (aw : in type_airwire) is begin
 			-- CS make sure length is greater zero ? Since we assume unique positions
 			-- of the given nodes, this check should not be required.
 
@@ -235,7 +249,7 @@ package body et_ratsnest is
 			-- Generates an airwire to that neigbor.
 			procedure find_nearest_among_neigbors is
 				smallest_distance : type_float_internal_positive := type_float_internal_positive'last;
-				aw_tmp : type_line;
+				aw_tmp : type_airwire;
 			begin
 				for i in neigbors'first .. neigbors'last loop
 

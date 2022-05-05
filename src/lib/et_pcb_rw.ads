@@ -65,7 +65,7 @@ with et_keepout;				use et_keepout;
 
 package et_pcb_rw is
 
-	use pac_geometry_brd;
+	--use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
 	
@@ -171,7 +171,10 @@ package et_pcb_rw is
 		from : in count_type)
 		return type_position;
 
-	function position (point : in type_point'class) return string;
+	
+	--function position (point : in type_point'class) return string;
+	function position (point : in type_position'class) return string; -- CS rename to to_string
+
 	
 	function to_grid (
 		line : in type_fields_of_line; -- "default x 1 y 1"

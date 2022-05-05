@@ -152,27 +152,27 @@ package et_routing is
 
 	
 	-- The dimensions of a track:
-	type type_track_dimensions is record
-		direction	: type_rotation; -- the direction of travel
-		offset		: type_distance_relative; -- start point relative to the origin
-		boundaries	: type_boundaries; -- incl. clearance
-		upper_edge	: type_line; -- a horizontal line
-		center_line	: type_line; -- a horizontal line
-		lower_edge	: type_line; -- a horizontal line
-	end record;
+	--type type_track_dimensions is record
+		--direction	: type_rotation; -- the direction of travel
+		--offset		: type_distance_relative; -- start point relative to the origin
+		--boundaries	: type_boundaries; -- incl. clearance
+		--upper_edge	: type_line; -- a horizontal line
+		--center_line	: type_line; -- a horizontal line
+		--lower_edge	: type_line; -- a horizontal line
+	--end record;
 
 	-- Calculates the dimensions of a track:
 	--function get_dimensions (
 		--track	:  in type_track)
 		--return type_track_dimensions;
 
-	type type_obstacle (shape : type_shape) is record
-		case shape is
-			when LINE	=> line : type_line;
-			when ARC	=> arc : type_arc;
-			when CIRCLE	=> circle : type_circle;
-		end case;
-	end record;
+	--type type_obstacle (shape : type_shape) is record
+		--case shape is
+			--when LINE	=> line : type_line;
+			--when ARC	=> arc : type_arc;
+			--when CIRCLE	=> circle : type_circle;
+		--end case;
+	--end record;
 	
 
 	-- This function searches the break point before or after

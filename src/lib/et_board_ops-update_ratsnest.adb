@@ -57,8 +57,9 @@ is
 		procedure query_net (net_cursor : in pac_nets.cursor) is
 
 			use et_nets;
-			use pac_points;
-			nodes : pac_points.list;
+			use pac_geometry_brd;
+			use pac_vectors;
+			nodes : pac_vectors.list;
 
 			use pac_airwires;
 
@@ -76,11 +77,13 @@ is
 				
 				procedure query_line (l : in pac_conductor_lines.cursor) is begin
 					--put_line ("virtual airwire: " & to_string (element (l)));
-					virtual_airwires.append (type_line (element (l)));
+					virtual_airwires.append (to_airwire (element (l)));
 				end query_line;
 
 				procedure query_arc (a : in pac_conductor_arcs.cursor) is begin
-					virtual_airwires.append ((element (a).start_point, element (a).end_point));
+					virtual_airwires.append ((
+						start_point => to_vector (element (a).start_point), 
+						end_point   => to_vector (element (a).end_point)));
 				end query_arc;
 				
 			begin
@@ -103,7 +106,7 @@ is
 			end assign_airwires;
 
 
-			procedure query_node (c : in pac_points.cursor) is begin
+			procedure query_node (c : in pac_vectors.cursor) is begin
 				put_line (to_string (element (c)));
 			end query_node;
 			

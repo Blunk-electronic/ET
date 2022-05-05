@@ -44,6 +44,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_conductor_segment.boards;
 
 package et_ratsnest is
 	
@@ -51,16 +52,21 @@ package et_ratsnest is
 	--use pac_geometry_2;
 	
 
-	-- CS type type_airwire is type_line;
+	type type_airwire is new pac_geometry_brd.type_line;
 	
+	package pac_airwires is new doubly_linked_lists (type_airwire);
 
-	package pac_airwires is new doubly_linked_lists (type_line);
-
+	
+	function to_airwire (
+		line : in et_conductor_segment.boards.type_conductor_line)
+		return type_airwire;
+	
+	
 	-- Returns true if the container airwires contains the given
 	-- candidate airwire:
 	function contains_airwire (
 		airwires	: in pac_airwires.list;
-		airwire		: in type_line)
+		airwire		: in type_airwire)
 		return boolean;
 	
 	

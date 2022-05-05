@@ -3517,13 +3517,14 @@ package body et_schematic_ops is
 		return unit_position;
 	end position;
 
+	
 	function position (
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
-		return pac_geometry_sch.type_point
+		return type_point
 	is
-		placeholder_position : pac_geometry_sch.type_point; -- to be returned
+		placeholder_position : type_point; -- to be returned
 
 		use pac_devices_sch;
 		unit_position : et_coordinates.type_position;

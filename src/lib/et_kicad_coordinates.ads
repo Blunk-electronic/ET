@@ -48,7 +48,8 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_logging;				use et_logging;
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
+
 
 package et_kicad_coordinates is
 	
@@ -88,7 +89,8 @@ package et_kicad_coordinates is
 	-- If top_module = false, the name of the top module is omitted.
 
 	
-	type type_position is new type_point with private;
+	--type type_position is new type_point with private;
+	type type_position is private;
 	
 
 	function path (position : in type_position) return type_path_to_submodule.list;
@@ -125,7 +127,9 @@ package et_kicad_coordinates is
 	
 	private 
 	
-		type type_position is new type_point with record
+		--type type_position is new type_point with record
+		type type_position is record
+			point			: type_point;
 			path            : type_path_to_submodule.list; 
 			sheet_number	: type_sheet := type_sheet'first;
 		end record;
