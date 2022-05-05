@@ -151,9 +151,9 @@ package body et_schematic is
 	
 	function stub_direction (
 		segment	: in pac_net_segments.cursor;
-		point	: in pac_geometry_sch.type_point)
-		return type_stub is
-
+		point	: in type_point)
+		return type_stub 
+	is
 		use pac_net_segments;
 
 		is_stub : boolean := true;
@@ -308,7 +308,9 @@ package body et_schematic is
 		use pac_units;
 	begin
 		return et_devices.to_string (key (unit)) 
-			& to_string (type_point (element (unit).position));
+			--& to_string (type_point (element (unit).position));
+			& to_string (element (unit).position.place);
+			-- CS output sheet number and rotation ?
 	end to_string;
 
 	

@@ -41,50 +41,50 @@
 package body et_conductor_text.boards is
 
 
-	procedure iterate (
-		segments	: in pac_conductor_line_segments.list;
-		process		: not null access procedure (position : in pac_conductor_line_segments.cursor);
-		proceed		: not null access boolean)
-	is
-		use pac_conductor_line_segments;
-		c : pac_conductor_line_segments.cursor := segments.first;
-	begin
-		while c /= pac_conductor_line_segments.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
+	--procedure iterate (
+		--segments	: in pac_conductor_line_segments.list;
+		--process		: not null access procedure (position : in pac_conductor_line_segments.cursor);
+		--proceed		: not null access boolean)
+	--is
+		--use pac_conductor_line_segments;
+		--c : pac_conductor_line_segments.cursor := segments.first;
+	--begin
+		--while c /= pac_conductor_line_segments.no_element and proceed.all = TRUE loop
+			--process (c);
+			--next (c);
+		--end loop;
+	--end iterate;
 
 	
 
-	function make_segments (
-		v_text	: in type_vector_text;
-		width	: in type_distance_positive)
-		return pac_conductor_line_segments.list
-	is 
-		result : pac_conductor_line_segments.list;
+	--function make_segments (
+		--v_text	: in type_vector_text;
+		--width	: in type_distance_positive)
+		--return pac_conductor_line_segments.list
+	--is 
+		--result : pac_conductor_line_segments.list;
 
-		procedure query_line (c : in pac_vector_text_lines.cursor) is
-			use pac_vector_text_lines;
-			cl : et_conductor_segment.type_conductor_line;
-			segment : type_conductor_line_segment;
+		--procedure query_line (c : in pac_vector_text_lines.cursor) is
+			--use pac_vector_text_lines;
+			--cl : et_conductor_segment.type_conductor_line;
+			--segment : type_conductor_line_segment;
 
-			use pac_conductor_line_segments;
-		begin
-			-- Convert the line of the vector text to a conductor line.
-			cl := (element (c) with width);
+			--use pac_conductor_line_segments;
+		--begin
+			---- Convert the line of the vector text to a conductor line.
+			--cl := (element (c) with width);
 				
-			segment := to_line_segment (cl);
+			--segment := to_line_segment (cl);
 
-			append (result, segment);
-		end query_line;
+			--append (result, segment);
+		--end query_line;
 		
-	begin
+	--begin
 
-		pac_text_fab.iterate (v_text, query_line'access);
+		--pac_text_fab.iterate (v_text, query_line'access);
 		
-		return result;
-	end make_segments;
+		--return result;
+	--end make_segments;
 
 
 

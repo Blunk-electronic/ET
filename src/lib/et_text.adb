@@ -453,7 +453,7 @@ package body et_text is
 
 			-- We return a list of lines. In the course of this function
 			-- this list gets filled with the lines of vectorized characters:
-			result : type_vector_text;
+			result : type_vector_text := (width => line_width, others => <>);
 
 			-- This is the text content we will be displaying. It will be read
 			-- character by character. Each character will be mapped 

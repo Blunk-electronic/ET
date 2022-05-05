@@ -188,7 +188,9 @@ package body et_nets is
 
 
 	
-	procedure set_strand_position (strand : in out type_strand) is
+	procedure set_strand_position (
+		strand : in out type_strand) 
+	is
 		point_1, point_2 : type_point;
 	
 		use pac_net_segments;
@@ -210,7 +212,8 @@ package body et_nets is
 				point_1 := point_2;
 			end if;
 		end query_strand;
-	
+
+		
 	begin
 		--log (text => "set strand position");
 		
@@ -223,10 +226,8 @@ package body et_nets is
 		iterate (strand.segments, query_strand'access);
 
 		-- build and assign the final strand position from point_1
-		set (
-			point	 => strand.position,
-			position => point_1);
-
+		strand.position.set (point_1);
+		
 	end set_strand_position;
 
 
@@ -288,7 +289,7 @@ package body et_nets is
 	is 
 		use pac_net_segments;
 	begin
-		return on_line (point, element (segment_cursor));
+		return element (segment_cursor).on_line (point);
 	end on_segment;
 	
 	
@@ -306,7 +307,8 @@ package body et_nets is
 		use pac_net_segments;
 		
 		procedure query_segment (s : in pac_net_segments.cursor) is begin
-			if on_segment (s, type_point (place)) then
+			--if on_segment (s, type_point (place)) then
+			if on_segment (s, place.place) then
 				proceed := false; -- abort iteration
 			end if;
 		end query_segment;

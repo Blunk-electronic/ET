@@ -86,6 +86,7 @@ package body et_symbol_rw is
 		return grid;
 	end to_grid;
 
+	
 	function position (pos : in type_point) return string is
 	-- Returns something like "x 12.34 y 45.0".
 
@@ -115,11 +116,11 @@ package body et_symbol_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				point.set (X, to_distance (f (line, place + 1)));
+				set (point, X, to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				point.set (Y, to_distance (f (line, place + 1)));
+				set (point, Y, to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));
@@ -150,7 +151,8 @@ package body et_symbol_rw is
 	-- Creates a symbol and stores it in container et_symbols.symbols.
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		use et_string_processing;
 		use pac_symbols;
 	begin
@@ -181,12 +183,13 @@ package body et_symbol_rw is
 
 		log_indentation_down;
 	end create_symbol;
+
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
 		log_threshold	: in type_log_level)
 	is
-		use pac_geometry_2;
+		--use pac_geometry_2;
 		use et_text;
 
 		use pac_lines;
@@ -195,6 +198,7 @@ package body et_symbol_rw is
 		use pac_texts;
 		use pac_ports;
 
+		
 		procedure write_line (cursor : in pac_lines.cursor) is begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -203,6 +207,7 @@ package body et_symbol_rw is
 			section_mark (section_line, FOOTER);
 		end write_line;
 
+		
 		procedure write_arc (cursor : in pac_arcs.cursor) is begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -213,7 +218,10 @@ package body et_symbol_rw is
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
-		procedure write_circle (cursor : in pac_circles.cursor) is begin
+		
+		procedure write_circle (cursor : in pac_circles.cursor) is 
+			use et_coordinates.pac_geometry_sch;
+		begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
@@ -221,6 +229,7 @@ package body et_symbol_rw is
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_circle, FOOTER);
 		end write_circle;
+		
 
 		procedure write_text (cursor : in pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
@@ -229,6 +238,7 @@ package body et_symbol_rw is
 			write_text_properties (element (cursor));
 			section_mark (section_text, FOOTER);
 		end write_text;
+		
 
 		procedure write_placeholders is begin
 			case symbol.appearance is
@@ -260,6 +270,7 @@ package body et_symbol_rw is
 			end case;
 		end write_placeholders;
 
+		
 		procedure write_port (cursor : in pac_ports.cursor) is begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
@@ -302,6 +313,7 @@ package body et_symbol_rw is
 			write (keyword => keyword_terminal_name_size, parameters => to_string (element (cursor).terminal_name_size));
 			section_mark (section_port, FOOTER);			
 		end write_port;
+
 		
 	begin -- write_symbol
 		-- appearance
@@ -338,12 +350,14 @@ package body et_symbol_rw is
 		iterate (symbol.ports, write_port'access);
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
+
 	
 	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by file_name.
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level)
+	is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
 	begin
@@ -383,11 +397,13 @@ package body et_symbol_rw is
 			raise;
 		
 	end save_symbol;
+
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		use et_string_processing;
 		use et_text;
 		
@@ -404,12 +420,14 @@ package body et_symbol_rw is
 			item	=> type_section,
 			max 	=> max_section_depth);
 
+		
 		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_DRAW to a string "draw".
 			len : positive := type_section'image (section)'length;
 		begin
 			return to_lower (type_section'image (section) (5..len));
 		end to_string;
+
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		appearance			: type_appearance;

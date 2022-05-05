@@ -1929,21 +1929,20 @@ package body et_conventions is
 				
 				raise constraint_error;
 	end to_text;
+
 	
-	function to_string (text : in type_text_schematic) return string is
-	-- returns the given text type as string.
-	begin
+	function to_string (text : in type_text_schematic) return string is begin
 		return type_text_schematic'image (text);
 	end to_string;
 
+	
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates.pac_geometry_sch.type_distance_positive) is
-	-- Checks the given text size by its category. Does nothing if no text sizes
-	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
+		size		: in et_coordinates.pac_geometry_2.type_distance_positive) 
+	is
 		use et_string_processing;
 		use et_coordinates;
-		use et_coordinates.pac_geometry_sch;
+		use pac_geometry_2;
 		use type_text_sizes_schematic;
 		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
 	
@@ -2409,10 +2408,10 @@ package body et_conventions is
 	
 	procedure make_default_conventions (
 		file_name		: in pac_file_name.bounded_string;
-		log_threshold	: in type_log_level) is
-	-- Creates a default conventions file.
+		log_threshold	: in type_log_level) 
+	is
 		use et_general;
-		use et_coordinates.pac_geometry_sch;
+		use et_coordinates.pac_geometry_2;
 		
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 
@@ -2637,7 +2636,8 @@ package body et_conventions is
 			"="				=> lines_equally);
 		use type_lines;
 		lines : type_lines.list := type_lines.empty_list;
-			
+
+		
 		procedure process_previous_section is
 		-- Processes the section indicated by section_entered. 
 		-- The lines of the section are in container "lines".
@@ -2653,7 +2653,8 @@ package body et_conventions is
 			use et_devices;
 			use et_symbols;
 			use et_coordinates;
-			use et_coordinates.pac_geometry_sch;
+			use pac_geometry_2;
+
 			
 			procedure test_multiple_occurences is begin
 				if not inserted then

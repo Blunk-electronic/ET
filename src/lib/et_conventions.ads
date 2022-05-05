@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -375,25 +375,31 @@ package et_conventions is
 		FILE_NAME
 		);
 
-	function to_text (text : in string) return type_text_schematic;
+	
 	-- Converts a string to type_text_schematic.
+	function to_text (text : in string) return type_text_schematic;
 
+	
 	-- Text sizes of various categories are collected in a map:
 	package type_text_sizes_schematic is new ordered_maps (
 		key_type		=> type_text_schematic,
-		element_type	=> et_coordinates.pac_geometry_sch.type_distance_positive,
+		element_type	=> et_coordinates.pac_geometry_2.type_distance_positive,
 		"="				=> et_coordinates."=");
 
+	
 	-- After reading the conventions file, text sizes are collected here:
 	text_sizes_schematic : type_text_sizes_schematic.map;
 
-	function to_string (text : in type_text_schematic) return string;
+	
 	-- returns the given text type as string.
+	function to_string (text : in type_text_schematic) return string;
 
+	
+	-- Checks the given text size by its category. Does nothing if no text sizes
+	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates.pac_geometry_sch.type_distance_positive);
-	-- Checks the given text size by its category.
+		size		: in et_coordinates.pac_geometry_2.type_distance_positive);
 
 
 

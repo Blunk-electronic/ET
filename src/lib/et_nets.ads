@@ -59,8 +59,8 @@ with et_pcb;
 
 package et_nets is
 
-	use pac_geometry_sch;
-	use et_symbols.pac_geometry_2;
+	--use pac_geometry_sch;
+	use pac_geometry_2;
 
 	
 

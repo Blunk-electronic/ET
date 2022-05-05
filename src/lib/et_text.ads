@@ -923,6 +923,7 @@ package et_text is
 	private
 		type type_vector_text is record
 			lines		: pac_vector_text_lines.list;
+			width		: pac_geometry_2.type_distance_positive;
 			boundaries	: pac_geometry_2.type_boundaries;
 		end record;
 		
