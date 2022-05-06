@@ -655,6 +655,11 @@ package et_geometry_2 is
 		return type_rotation;
 
 
+	function to_angle (
+		a : in type_rotation)
+		return type_float_internal;
+	
+	
 	--subtype type_rotation_positive is type_rotation
 		--range 0.0 .. type_rotation'last;
 	
@@ -906,7 +911,13 @@ package et_geometry_2 is
 	
 	subtype type_catch_zone is type_float_internal_positive
 		range 0.0 .. type_float_internal (type_distance_positive'last/100.0);
+
+
+	function catch_zone_to_string (
+		c : in type_catch_zone)
+		return string;
 	
+		
 	-- Returns true if point_2 is within the 
 	-- catch zone around point_1:
 	function in_catch_zone (
@@ -1019,6 +1030,12 @@ package et_geometry_2 is
 	package pac_points is new doubly_linked_lists (type_point);
 
 
+	-- Converts a list of points to vectors:
+	function to_vectors (
+		points : in pac_points.list)
+		return pac_vectors.list;
+
+	
 	-- Returns a human readable string of points:
 	--function to_string (points : in pac_points.list) return string;
 

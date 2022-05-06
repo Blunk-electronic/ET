@@ -987,8 +987,19 @@ package et_geometry_1 is
 
 	
 	package pac_vectors is new doubly_linked_lists (type_vector);
-	
 
+
+	-- Appends all location vectors of source to the target:
+	procedure splice_vectors (
+		v_target : in out pac_vectors.list;
+		v_source : in pac_vectors.list);
+
+
+	-- Removes vectors which are stored multiple times from the given list:
+	procedure remove_redundant_vectors (
+		vectors : in out pac_vectors.list);
+
+	
 -- RAY
 	
 	-- A ray has a fixed starting point, a direction and

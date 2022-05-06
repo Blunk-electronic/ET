@@ -597,7 +597,7 @@ is
 				boundaries : type_boundaries;
 
 				-- The total height of the polygon:
-				height : type_float_internal_positive;
+				height : pac_geometry_brd.type_float_internal_positive;
 				
 			begin
 				while zone_cursor /= pac_route_hatched.no_element loop

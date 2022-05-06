@@ -1297,6 +1297,14 @@ package body et_geometry_2 is
 	end to_rotation;
 
 
+	function to_angle (
+		a : in type_rotation)
+		return type_float_internal
+	is begin
+		return type_float_internal (a);
+	end to_angle;
+
+	
 	--function to_positive_rotation (
 		--rotation	: in type_rotation)
 		--return type_rotation_positive
@@ -1756,7 +1764,14 @@ package body et_geometry_2 is
 	end get_distance_total;
 
 	
+	function catch_zone_to_string (
+		c : in type_catch_zone)
+		return string
+	is begin
+		return pac_geometry_1.to_string (c);
+	end catch_zone_to_string;
 
+	
 	function in_catch_zone (
 		point_1		: in type_point; -- the reference point
 		catch_zone	: in type_catch_zone; -- zone around reference point
@@ -2136,6 +2151,25 @@ package body et_geometry_2 is
 	end;
 		
 
+
+	function to_vectors (
+		points : in pac_points.list)
+		return pac_vectors.list
+	is
+		result : pac_vectors.list;
+
+		use pac_points;
+		
+		procedure query_point (c : in pac_points.cursor) is begin
+			result.append (to_vector (element (c)));
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end to_vectors;
+
+	
 	--function to_string (points : in pac_points.list) return string is
 		--use pac_points;
 		--use ada.strings.unbounded;

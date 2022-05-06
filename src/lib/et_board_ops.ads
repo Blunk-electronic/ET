@@ -206,10 +206,10 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 	--     See comment in procedure query_submodules.
+	procedure make_pick_and_place (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
@@ -230,7 +230,7 @@ package et_board_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
-		return type_terminal_position;
+		return type_terminal_position_fine;
 
 
 	-- Returns the positions (x/y) of the terminals of
@@ -239,10 +239,12 @@ package et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return pac_vectors.list;
+		return pac_geometry_brd.pac_vectors.list;
 
 	
-	-- Returns the positions (x/y) of all vias of the given net:
+	-- Returns the positions (x/y) of all vias of the given net.
+	-- The list of returned points uses fixed point coordinates
+	-- as the vias are placed by the operator (their positions are man-made):
 	function get_via_positions (
 		net_cursor : in et_schematic.pac_nets.cursor)
 		return pac_points.list;
@@ -250,6 +252,8 @@ package et_board_ops is
 
 	-- Returns the start and end positions (x/y) of all track 
 	-- segments (lines and arcs) of the given net:
+	-- The list of returned points uses fixed point coordinates
+	-- as the tracks are placed by the operator (their ends are man-made):
 	function get_track_ends (
 		net_cursor : in et_schematic.pac_nets.cursor)
 		return pac_points.list;

@@ -88,7 +88,7 @@ package body et_routing is
 		lth				: in type_log_level)
 		return type_distance_polar
 	is
-		result : type_distance_polar := to_polar (type_float_internal'last, zero_rotation);
+		result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
 
 		procedure update (d : in type_distance_polar) is begin
 			--log (text => " dh" & to_string (get_absolute (d)), level => lth + 1);

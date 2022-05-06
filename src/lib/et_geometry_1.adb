@@ -1696,6 +1696,40 @@ package body et_geometry_1 is
 	end get_displacement;
 
 
+	procedure splice_vectors (
+		v_target : in out pac_vectors.list;
+		v_source : in pac_vectors.list)
+	is
+		scratch : pac_vectors.list := v_source;
+	begin
+		pac_vectors.splice (
+			target	=> v_target,
+			before	=> pac_vectors.no_element,
+			source	=> scratch);
+
+	end splice_vectors;
+
+
+
+	procedure remove_redundant_vectors (
+		vectors : in out pac_vectors.list)
+	is
+		use pac_vectors;
+		target : pac_vectors.list;
+
+		procedure query_vector (c : in pac_vectors.cursor) is begin
+			if not target.contains (element (c)) then
+				target.append (element (c));
+			end if;
+		end query_vector;
+		
+	begin
+		vectors.iterate (query_vector'access);
+		vectors := target;
+	end remove_redundant_vectors;
+
+	
+	
 	function get_distance_total (
 		v_1	: in type_vector;
 		v_2	: in type_vector)

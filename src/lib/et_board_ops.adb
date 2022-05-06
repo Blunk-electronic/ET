@@ -74,7 +74,7 @@ package body et_board_ops is
 	is begin
 		log (importance => WARNING, 
 			 text => "nothing found at" & to_string (point) &
-			 " in vicinity of" & pac_geometry_brd.to_string (accuracy));
+			 " in vicinity of" & catch_zone_to_string (accuracy));
 	end no_segment_found;
 
 	
@@ -1445,15 +1445,16 @@ package body et_board_ops is
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
-		return type_terminal_position 
+		return type_terminal_position_fine
 	is
-		use et_pcb;
-
 		-- This is the position of the package as it is in the layout:
 		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
 
 		-- Since the return is a controlled type we handle its components separately:
-		terminal_position_base : type_position; -- x/y/rotation
+		--terminal_position_base : type_position; -- x/y/rotation
+		use pac_geometry_brd;
+		terminal_position : type_vector; -- x/y
+		terminal_rotation : type_angle; -- rotation
 		terminal_position_face : type_face; -- top/bottom
 
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
@@ -1465,27 +1466,29 @@ package body et_board_ops is
 		
 		terminal_technology : type_assembly_technology;
 	begin
-		-- get the package model of the given device:
+		-- Get the package model of the given device:
 		model := get_package_model (device_cursor);
 
-		-- get the position of the package as it is in the layout
+		-- Get the position of the package as it is in the layout:
 		package_position := pac_devices_sch.element (device_cursor).position;
 		
-		-- set the cursor to package model:
+		-- Set the cursor to package model:
 		package_model_cursor := locate_package_model (model);
 
-		-- locate the desired terminal in the package model:
+		-- Locate the desired terminal in the package model:
 		terminal_cursor := terminal_properties (package_model_cursor, terminal_name);
 		if terminal_cursor = pac_terminals.no_element then
 			terminal_not_found (terminal_name);
 		end if;
 
-		-- get the assembly technology of the terminal (SMT or THT):
+		-- Get the assembly technology of the terminal (SMT or THT):
 		terminal_technology := element (terminal_cursor).technology;
 
 		-- get x/y/rotation of the terminal as given by the package model:
-		terminal_position_base := pac_terminals.element (terminal_cursor).position;
-
+		--terminal_position_base := pac_terminals.element (terminal_cursor).position;
+		terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
+		terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
+		
 		-- In the board: If the package has been flipped (to any side) by the operator
 		-- then the terminal must be flipped also.
 		-- If the package has not been flipped, then the terminal face assumes the face of the package.
@@ -1503,27 +1506,41 @@ package body et_board_ops is
 			end case;
 
 			-- mirror terminal position on Y axis (swap right x with left x)
-			mirror (terminal_position_base.place, Y);
+			--mirror (terminal_position_base.place, Y);
+			mirror (terminal_position, Y);
 			
 		else -- not flipped
 			terminal_position_face := get_face (package_position);
 		end if;
 
-		-- rotate
-		rotate_by (point => terminal_position_base.place, rotation => get_rotation (package_position));
+		--rotate_by (point => terminal_position_base.place, rotation => get_rotation (package_position));
+		-- Rotate the terminal position (x/y) by the rotation of the package:
+		rotate_by (terminal_position, to_angle (get_rotation (package_position)));
 
 		-- move
-		move_by (point => terminal_position_base.place, offset => to_distance_relative (package_position.place));
+		--move_by (point => terminal_position_base.place, offset => to_distance_relative (package_position.place));
+		-- Move the terminal position by the position of the package:
+		move_by (terminal_position, to_offset (package_position.place));
 
 		-- compose the return depending on the terminal technology:
 		case terminal_technology is
 			when SMT =>
-				return (terminal_position_base with
-						technology	=> SMT,
-						face		=> terminal_position_face);
+				--return (terminal_position_base with
+						--technology	=> SMT,
+						--face		=> terminal_position_face);
+				return (
+					place		=> terminal_position,
+					rotation	=> terminal_rotation,	   
+					technology	=> SMT,
+					face		=> terminal_position_face);
 
+				
 			when THT =>
-				return (terminal_position_base with technology => THT);
+				--return (terminal_position_base with technology => THT);
+				return (
+					place		=> terminal_position,
+					rotation	=> terminal_rotation,	   
+					technology	=> THT);
 
 		end case;
 	end get_terminal_position;
@@ -1532,8 +1549,9 @@ package body et_board_ops is
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
-		return pac_vectors.list
+		return pac_geometry_brd.pac_vectors.list
 	is
+		use pac_geometry_brd;
 		use pac_vectors;
 		result : pac_vectors.list;
 
@@ -1546,9 +1564,7 @@ package body et_board_ops is
 		
 		procedure query_device (d : in pac_device_ports.cursor) is
 			device_cursor : pac_devices_sch.cursor;
-			terminal_position : type_point;
-
-			--use et_symbols;
+			terminal_position : type_vector;
 		begin
 			device_cursor := locate_device (module_cursor, element (d).device_name);
 
@@ -1567,9 +1583,7 @@ package body et_board_ops is
 
 				-- port_properties.terminal -- 14, H6
 
-				-- get x/y of the terminal:
-				--terminal_position := type_point (
-					--get_terminal_position (module_cursor, device_cursor, port_properties.terminal));
+				-- Get for the candidate port the position of the associated terminal:
 				terminal_position := 
 					get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
 				
@@ -1627,8 +1641,7 @@ package body et_board_ops is
 		result : pac_points.list;
 
 		use pac_vias;
-		procedure query_via (v : in pac_vias.cursor) is
-		begin
+		procedure query_via (v : in pac_vias.cursor) is begin
 			append (result, element (v).position);
 		end query_via;
 		
@@ -2012,7 +2025,6 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			use et_pcb;
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
@@ -2024,7 +2036,7 @@ package body et_board_ops is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_route_restrict_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
+				if element (line_cursor).on_line (point) then
 					delete (module.board.route_restrict.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -2036,7 +2048,7 @@ package body et_board_ops is
 			if not deleted then
 				while arc_cursor /= pac_route_restrict_arcs.no_element loop
 					
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						delete (module.board.route_restrict.arcs, arc_cursor);
 						deleted := true;
 						exit;
@@ -2050,7 +2062,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_route_restrict_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						delete (module.board.route_restrict.circles, circle_cursor);
 						deleted := true;
 						exit;
@@ -2065,12 +2077,13 @@ package body et_board_ops is
 			end if;
 			
 		end delete;
+
 		
 	begin -- delete_route_restrict
 		log (text => "module " & to_string (module_name) &
 			" deleting route restrict segment" &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -2098,8 +2111,8 @@ package body et_board_ops is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			append (
 				container	=> module.board.via_restrict.lines,
 				new_item	=> line);
@@ -2136,8 +2149,8 @@ package body et_board_ops is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			append (
 				container	=> module.board.via_restrict.arcs,
 				new_item	=> arc);
@@ -2175,8 +2188,8 @@ package body et_board_ops is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			append (
 				container	=> module.board.via_restrict.circles,
 				new_item	=> circle);
@@ -2225,7 +2238,7 @@ package body et_board_ops is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_via_restrict_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
+				if element (line_cursor).on_line (point) then
 				-- CS use get_shortest_distance (point, element (line_cursor)
 				-- and compare distance with accuracy	
 					delete (module.board.via_restrict.lines, line_cursor);
@@ -2239,7 +2252,7 @@ package body et_board_ops is
 			if not deleted then
 				while arc_cursor /= pac_via_restrict_arcs.no_element loop
 					
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element (arc_cursor)
 						-- and compare distance with accuracy	
 
@@ -2256,7 +2269,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_via_restrict_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						delete (module.board.via_restrict.circles, circle_cursor);
@@ -2278,7 +2291,7 @@ package body et_board_ops is
 		log (text => "module " & to_string (module_name) &
 			" deleting via restrict segment" &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -2376,7 +2389,7 @@ package body et_board_ops is
 
 					case element (c).shape is
 						when LINE =>
-							if on_line (point, element (c).segment_line) then
+							if element (c).segment_line.on_line (point) then
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
@@ -2389,7 +2402,7 @@ package body et_board_ops is
 							end if;
 
 						when ARC =>
-							if on_arc (point, element (c).segment_arc) then
+							if element (c).segment_arc.on_arc (point) then
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
@@ -2408,14 +2421,15 @@ package body et_board_ops is
 			end delete_segment;
 
 			procedure delete_circle is begin
-				if on_circle (point, module.board.contours.outline.contour.circle) then
-								-- CS use get_shortest_distance (point, element)
-								-- and compare distance with accuracy	
+				if module.board.contours.outline.contour.circle.on_circle (point) then
+					-- CS use get_shortest_distance (point, element)
+					-- and compare distance with accuracy	
 
 					module.board.contours.outline.contour := (others => <>);					
 					deleted := true;
 				end if;
 			end delete_circle;
+
 			
 		begin -- delete
 			if module.board.contours.outline.contour.circular then
@@ -2433,7 +2447,7 @@ package body et_board_ops is
 	begin -- delete_outline
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
 			& " deleting outline segment at" & to_string (point) 
-			& " accuracy" & to_string (accuracy),
+			& " accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
@@ -2527,7 +2541,7 @@ package body et_board_ops is
 	begin -- delete_hole
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
 			& " deleting hole segment at" & to_string (point) 
-			& " accuracy" & to_string (accuracy),
+			& " accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
@@ -2595,14 +2609,14 @@ package body et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;		
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_silk_arcs;
 		begin
 			case face is
@@ -2642,14 +2656,14 @@ package body et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_silk_circles;
 		begin
 			case face is
@@ -2689,14 +2703,14 @@ package body et_board_ops is
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_silk_lines;
 			use pac_silk_arcs;
 			use pac_silk_circles;
@@ -2718,7 +2732,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_silk_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
+				if element (line_cursor).on_line (point) then
 				-- CS use get_shortest_distance (point, element)
 				-- and compare distance with accuracy	
 
@@ -2736,7 +2750,7 @@ package body et_board_ops is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_silk_arcs.no_element loop
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -2755,7 +2769,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_silk_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -2775,12 +2789,13 @@ package body et_board_ops is
 			end if;
 			
 		end delete;
+
 		
 	begin -- delete_silk_screen
 		log (text => "module " & to_string (module_name) &
 			" deleting silk screen segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -2793,6 +2808,7 @@ package body et_board_ops is
 		
 	end delete_silk_screen;
 
+	
 	
 -- ASSEMBLY DOCUMENTATION
 	
@@ -2840,18 +2856,19 @@ package body et_board_ops is
 
 	end draw_assy_doc_line;
 
+	
 	procedure draw_assy_doc_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_doc_arcs;
 		begin
 			case face is
@@ -2866,7 +2883,7 @@ package body et_board_ops is
 						new_item	=> arc);
 			end case;
 		end;
-							   
+		
 	begin -- draw_assy_doc_arc
 		log (text => "module " & to_string (module_name) &
 			" drawing assembly documentation arc" &
@@ -2886,18 +2903,19 @@ package body et_board_ops is
 
 	end draw_assy_doc_arc;
 
+	
 	procedure draw_assy_doc_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_doc_circles;
 		begin
 			case face is
@@ -2966,7 +2984,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_doc_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
+				if element (line_cursor).on_line (point) then
 					-- CS use get_shortest_distance (point, element)
 					-- and compare distance with accuracy	
 
@@ -2984,7 +3002,7 @@ package body et_board_ops is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_doc_arcs.no_element loop
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3003,7 +3021,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_doc_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3028,7 +3046,7 @@ package body et_board_ops is
 		log (text => "module " & to_string (module_name) &
 			" deleting assembly documentation segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -3040,6 +3058,7 @@ package body et_board_ops is
 			process		=> delete'access);
 		
 	end delete_assy_doc;
+
 
 	
 -- KEEPOUT
@@ -3215,9 +3234,9 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_keepout_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+				if element (line_cursor).on_line (point) then
+					-- CS use get_shortest_distance (point, element)
+					-- and compare distance with accuracy	
 					if face = TOP then
 						delete (module.board.keepout.top.lines, line_cursor);
 					else
@@ -3232,7 +3251,7 @@ package body et_board_ops is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_keepout_arcs.no_element loop
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3251,7 +3270,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_keepout_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3271,12 +3290,13 @@ package body et_board_ops is
 			end if;
 			
 		end delete;
+
 		
 	begin -- delete_keepout
 		log (text => "module " & to_string (module_name) &
 			" deleting keepout segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -3288,6 +3308,7 @@ package body et_board_ops is
 			process		=> delete'access);
 		
 	end delete_keepout;
+
 
 	
 -- STOP MASK
@@ -3336,18 +3357,19 @@ package body et_board_ops is
 
 	end draw_stop_line;
 
+	
 	procedure draw_stop_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_stop_arcs;
 		begin
 			case face is
@@ -3463,7 +3485,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stop_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
+				if element (line_cursor).on_line (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 					if face = TOP then
@@ -3480,7 +3502,7 @@ package body et_board_ops is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_stop_arcs.no_element loop
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3499,7 +3521,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_stop_circles.no_element loop
 
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3524,7 +3546,7 @@ package body et_board_ops is
 		log (text => "module " & to_string (module_name) &
 			" deleting stop mask segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -3536,6 +3558,7 @@ package body et_board_ops is
 			process		=> delete'access);
 		
 	end delete_stop;
+
 
 	
 -- STENCIL
@@ -3659,7 +3682,8 @@ package body et_board_ops is
 
 			end case;
 		end;
-							   
+
+		
 	begin -- draw_stencil_circle
 		log (text => "module " & to_string (module_name) &
 			" drawing stencil circle" &
@@ -3712,9 +3736,9 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stencil_lines.no_element loop
-				if on_line (point, element (line_cursor)) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+				if element (line_cursor).on_line (point) then
+					-- CS use get_shortest_distance (point, element)
+					-- and compare distance with accuracy	
 					if face = TOP then
 						delete (module.board.stencil.top.lines, line_cursor);
 					else
@@ -3729,7 +3753,7 @@ package body et_board_ops is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_stencil_arcs.no_element loop
-					if on_arc (point, element (arc_cursor)) then
+					if element (arc_cursor).on_arc (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3748,7 +3772,7 @@ package body et_board_ops is
 			if not deleted then
 				while circle_cursor /= pac_stencil_circles.no_element loop
 					
-					if on_circle (point, element (circle_cursor)) then
+					if element (circle_cursor).on_circle (point) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
@@ -3773,7 +3797,7 @@ package body et_board_ops is
 		log (text => "module " & to_string (module_name) &
 			" deleting stencil segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -3794,6 +3818,7 @@ package body et_board_ops is
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
 	is 
+		
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -3819,7 +3844,7 @@ package body et_board_ops is
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> get_rotation (text.position),
-				position	=> type_point (text.position),
+				position	=> text.position.place,
 				mirror		=> mirror,
 				line_width	=> text.line_width
 				-- CS alignment
@@ -3901,7 +3926,7 @@ package body et_board_ops is
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> get_rotation (text.position),
-				position	=> type_point (text.position),
+				position	=> text.position.place,
 				line_width	=> text.line_width
 				-- CS alignment
 				); 
@@ -3963,7 +3988,7 @@ package body et_board_ops is
 				content		=> text.content,
 				size		=> text.size,
 				rotation	=> get_rotation (text.position),
-				position	=> type_point (text.position),
+				position	=> text.position.place,
 				mirror		=> mirror,
 				line_width	=> text.line_width
 				-- CS alignment
@@ -3972,8 +3997,9 @@ package body et_board_ops is
 			-- assemble the conductor text:
 			c_text := (text with 
 				layer		=> signal_layer,
-				vectors		=> v_text, -- CS call vectorize_text here directly
-				segments	=> make_segments (v_text, text.line_width));
+				vectors		=> v_text -- CS call vectorize_text here directly
+				--segments	=> make_segments (v_text, text.line_width)
+				);
 
 			
 			case layer_category is

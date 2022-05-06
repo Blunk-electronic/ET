@@ -119,19 +119,19 @@ is
 
 			-- nodes.iterate (query_node'access); -- for debugging
 			
-			-- Get x/y of all vias and append their positions to nodes:
-			splice_points (nodes, get_via_positions (net_cursor));
+			-- Get x/y of all vias and append their positions to nodes.
+			-- The via positions must be converted to location vectors:
+			splice_vectors (nodes, to_vectors (get_via_positions (net_cursor)));
 
 			-- Get x/y track segments (start and end points)
-			-- and append their positions to nodes:
-			splice_points (nodes, get_track_ends (net_cursor));
-
+			-- and append their positions to nodes.
+			-- The end points of the tracks must be converted to location vectors:
+			splice_vectors (nodes, to_vectors (get_track_ends (net_cursor)));
 
 			-- CS submodules ?
-
 			
 			-- remove redundant/overlapping nodes
-			remove_redundant_points (nodes);
+			remove_redundant_vectors (nodes);
 
 			-- Create from the tracks a list of virtual_airwires. These airwires
 			-- are later required in order to create the real airwires.

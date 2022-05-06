@@ -45,7 +45,7 @@ with et_exceptions;					use et_exceptions;
 
 package body et_schematic_ops.nets is
 
-	use et_symbols.pac_geometry_2;
+	use pac_geometry_2;
 	use et_symbols.pac_text;
 	use pac_net_segments;
 	use pac_strands;
@@ -603,8 +603,8 @@ package body et_schematic_ops.nets is
 			module		: in out type_module) 
 		is
 			
-			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
+			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -620,9 +620,9 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in place),
 						-- delete the segment.
 						if between_start_and_end_point (
-							point	=> type_point (place),
-							segment	=> segment_cursor) then
-
+							point	=> place.place,
+							segment	=> segment_cursor) 
+						then
 							delete (strand.segments, segment_cursor);
 
 							-- signal the calling unit to abort the search
@@ -992,8 +992,8 @@ package body et_schematic_ops.nets is
 					
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
 						-- In case absolute movement is required we need these values:
-						dx : constant type_distance := get_distance (type_point (point_of_attack), destination, X);
-						dy : constant type_distance := get_distance (type_point (point_of_attack), destination, Y);
+						dx : constant type_distance := get_distance (point_of_attack.place, destination, X);
+						dy : constant type_distance := get_distance (point_of_attack.place, destination, Y);
 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := segment;
@@ -1233,7 +1233,7 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
 						if on_segment (
-							point		=> type_point (point_of_attack),
+							point		=> point_of_attack.place,
 							segment		=> segment_cursor,
 							catch_zone	=> catch_zone_default)
 						then
@@ -1241,7 +1241,7 @@ package body et_schematic_ops.nets is
 							
 							-- Calculate the zone of attack:
 							zone := which_zone (
-								point	=> point_of_attack,
+								point	=> point_of_attack.place,
 								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
@@ -1424,12 +1424,12 @@ package body et_schematic_ops.nets is
 
 				procedure query_segments (strand : in type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-				begin -- query_segments
+				begin
 					while segment_cursor /= pac_net_segments.no_element loop
 						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
 
 						if on_line (
-							point 	=> type_point (place),
+							point 	=> place.place,
 							line	=> element (segment_cursor)) then
 						
 							log (text => " match", level => log_threshold + 2);
@@ -1705,9 +1705,9 @@ package body et_schematic_ops.nets is
 			is
 				result : type_which_strand; -- to be returned
 
-				procedure query_strands (
 				-- Searches strands of given net for a segment that crosses place.
 				-- Cancels search on first match.
+				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) is
 					segment_found : boolean := false;
@@ -1720,7 +1720,7 @@ package body et_schematic_ops.nets is
 
 							-- Test if place sits on segment.
 							if on_line (
-								point 	=> type_point (place),
+								point 	=> place.place,
 								line	=> element (segment_cursor)) then
 
 -- 								-- It is not allowed to place a junction in a sloped segment,
@@ -1733,7 +1733,7 @@ package body et_schematic_ops.nets is
 -- 								segment_found := true;
 								
 								-- test whether a junction is required at place
-								if between_start_and_end_point (type_point (place), segment_cursor) then
+								if between_start_and_end_point (place.place, segment_cursor) then
 
 									-- It is not allowed to place a junction in a sloped segment,
 									-- because splitting sloping segments seems a rare, difficult and dangerous task.
@@ -2183,7 +2183,7 @@ package body et_schematic_ops.nets is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- build the segment from given start and end point
-		segment.start_point := type_point (start_point);
+		segment.start_point := start_point.place;
 		segment.end_point := end_point;
 		
 		log_indentation_up;
@@ -2372,6 +2372,7 @@ package body et_schematic_ops.nets is
 								end if;									  
 							end query_labels_horizontal;
 
+							
 							procedure query_labels_vertical (cursor : in pac_net_labels.cursor) is begin
 								-- All labels below place go into segment_1,
 								-- whereas labels above go into segment_2:
@@ -2381,6 +2382,7 @@ package body et_schematic_ops.nets is
 									append (segment_2.labels, element (cursor));
 								end if;									  
 							end query_labels_vertical;
+
 							
 						begin -- update_labels
 							log (text => "updating net labels ...", level => log_threshold + 1);
@@ -2399,9 +2401,9 @@ package body et_schematic_ops.nets is
 						end update_labels;
 
 						
-						procedure update_device_ports is 
 						-- Queries the positions of the device ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
+						procedure update_device_ports is 
 							use pac_device_ports;
 							use et_symbols;
 
@@ -2414,7 +2416,7 @@ package body et_schematic_ops.nets is
 								port_name	:= element (cursor).port_name;
 
 								-- locate the port by module, device and port name:
-								port_position := type_point (position (module_name, device_name, port_name, log_threshold + 1));
+								port_position := position (module_name, device_name, port_name, log_threshold + 1).place;
 								log_indentation_up;
 								
 								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &
@@ -2449,9 +2451,9 @@ package body et_schematic_ops.nets is
 						end update_device_ports;
 
 						
-						procedure update_submodule_ports is 
 						-- Queries the positions of the submodule ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
+						procedure update_submodule_ports is 
 							use pac_submodule_ports;
 
 							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
@@ -2463,7 +2465,7 @@ package body et_schematic_ops.nets is
 								port_name	:= element (cursor).port_name;	-- RESET
 
 								-- locate the port by module, submodule and port name:
-								port_position := type_point (position (module_name, submod_name, port_name, log_threshold + 1));
+								port_position := position (module_name, submod_name, port_name, log_threshold + 1).place;
 								log_indentation_up;
 								
 								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &
@@ -2498,9 +2500,9 @@ package body et_schematic_ops.nets is
 						end update_submodule_ports;
 
 						
-						procedure update_netchanger_ports is 
 						-- Queries the positions of the netchanger ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
+						procedure update_netchanger_ports is 
 							use et_netlists;
 							use et_netlists.pac_netchanger_ports;
 							use et_submodules;
@@ -2514,7 +2516,7 @@ package body et_schematic_ops.nets is
 								port := element (cursor).port;
 
 								-- locate the port by module, netchanger index and port:
-								port_position := type_point (position (module_name, index, port, log_threshold + 1));
+								port_position := position (module_name, index, port, log_threshold + 1).place;
 								log_indentation_up;
 								
 								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &
@@ -2553,8 +2555,8 @@ package body et_schematic_ops.nets is
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
 						segment_1.start_point := old_segment.start_point;
-						segment_1.end_point := type_point (place);
-						segment_2.start_point := type_point (place);
+						segment_1.end_point := place.place;
+						segment_2.start_point := place.place;
 						segment_2.end_point := old_segment.end_point;
 
 						-- set junctions
@@ -2602,7 +2604,7 @@ package body et_schematic_ops.nets is
 						--log_indentation_up;
 						--log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 
-						if type_point (place) = element (segment_cursor).start_point then
+						if place.place = element (segment_cursor).start_point then
 
 							-- place junction at start point of segment
 							update_element (
@@ -2613,7 +2615,7 @@ package body et_schematic_ops.nets is
 							segment_found := true;
 							exit; -- no need to search for other segments
 							
-						elsif type_point (place) = element (segment_cursor).end_point then
+						elsif place.place = element (segment_cursor).end_point then
 
 							-- place junction at end point of segment
 							update_element (
@@ -2625,8 +2627,9 @@ package body et_schematic_ops.nets is
 							exit; -- no need to search for other segments
 							
 						elsif between_start_and_end_point (
-							point	=> type_point (place),
-							segment	=> segment_cursor) then -- targeted segment found
+							point	=> place.place,
+							segment	=> segment_cursor) 
+						then -- targeted segment found
 
 							log (text => "net " & to_string (net_name) & " strand" &
 								 to_string (position => strand.position), level => log_threshold + 1);
@@ -2787,7 +2790,7 @@ package body et_schematic_ops.nets is
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
-						move_by (label.position, to_distance_relative (segment_position));
+						move_by (label.position, to_distance_relative (segment_position.place));
 						-- now label.position is absolute
 						
 						-- CS: label size, style and line width assume default. could be provided by further
@@ -2833,7 +2836,7 @@ package body et_schematic_ops.nets is
 					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
 
 						if on_line (
-							point 	=> type_point (segment_position),
+							point 	=> segment_position.place,
 							line	=> element (segment_cursor)) then
 							
 							update_element (
@@ -2873,7 +2876,8 @@ package body et_schematic_ops.nets is
 				process		=> query_strands'access);
 
 		end query_nets;
-				
+
+		
 	begin -- place_net_label
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" labeling segment at"  &
@@ -2955,7 +2959,7 @@ package body et_schematic_ops.nets is
 
 							-- If label sits at position, delete it from the label list
 							-- of that segment:
-							if element (label_cursor).position = type_point (position) then
+							if element (label_cursor).position = position.place then
 								delete (segment.labels, label_cursor);
 								label_found := true;
 								exit;
@@ -3047,8 +3051,8 @@ package body et_schematic_ops.nets is
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net) is
-			
+			net			: in type_net) 
+		is			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
@@ -3059,7 +3063,7 @@ package body et_schematic_ops.nets is
 				procedure probe_direction is
 					-- Get the stub direction. If the segment is sloped then it
 					-- does not qualify as stub.
-					s : constant type_stub := stub_direction (segment_cursor, type_point (position));
+					s : constant type_stub := stub_direction (segment_cursor, position.place);
 				begin
 					-- get stub direction
 					if s.is_stub then -- stub is horizontal or vertical
@@ -3075,11 +3079,11 @@ package body et_schematic_ops.nets is
 				while segment_cursor /= pac_net_segments.no_element loop
 					
 					-- The given position must be a start or end point of a segment,
-					if element (segment_cursor).start_point = type_point (position) then
+					if element (segment_cursor).start_point = position.place then
 						log (text => "match with start point of a segment", level => log_threshold + 2);
 						probe_direction;
 						
-					elsif element (segment_cursor).end_point = type_point (position) then
+					elsif element (segment_cursor).end_point = position.place then
 						log (text => "match with end point of a segment", level => log_threshold + 2);						
 						probe_direction;
 

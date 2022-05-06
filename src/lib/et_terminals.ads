@@ -302,6 +302,8 @@ package et_terminals is
 
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
+	-- NOTE: This type is used in a package model. It uses fixed point numbers for
+	-- the terminal positions because the package model is man-made.
 	type type_terminal_position (technology	: type_assembly_technology) 
 	is new pac_geometry_2.type_position with record
 		case technology is
@@ -310,7 +312,22 @@ package et_terminals is
 		end case;
 	end record;
 
+	
+	-- NOTE: This type is used in the board when inquiring for terminal positions.
+	-- It uses floating point numbers for the terminal positions because: 
+	-- After rotating the package in the board the x/y coordinates are machine-made. 
+	-- Fixed point coordinates would not be useful here.
+	type type_terminal_position_fine (technology : type_assembly_technology) is record
+		place		: type_vector;
+		rotation	: type_angle := 0.0;
+		
+		case technology is
+			when SMT => face : type_face;
+			when THT => null;
+		end case;
+	end record;
 
+	
 	-- package pac_terminal_positions is new indefinite_doubly_linked_lists (type_terminal_position);
 
 	
