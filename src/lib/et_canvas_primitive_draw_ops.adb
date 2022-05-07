@@ -105,7 +105,7 @@ package body pac_draw is
 	
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal; -- pac_shapes.pac_geometry_1.type_distance;
-		boundaries	: in pac_geometry_1.type_boundaries)
+		boundaries	: in pac_geometry_2.type_boundaries)
 		return type_bounding_box 
 	is begin
 		--put_line (to_string (boundaries));
@@ -126,11 +126,64 @@ package body pac_draw is
 			);
 	end make_bounding_box;
 
+
+	-- Returns the boundaries of the given line.
+	-- The line has the given width. 
+	-- The boundaries are extended by half the given width.
+	function get_boundaries (
+		line	: in pac_geometry_1.type_line;	
+		width	: in type_distance_positive)
+		return type_boundaries
+	is
+		result : type_boundaries;
+		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+	begin
+		-- X axis
+		if line.start_point.x = line.end_point.x then -- both points on a vertical line
+
+			result.smallest_x := type_float_internal (line.start_point.x);
+			result.greatest_x := type_float_internal (line.start_point.x);
+			
+		elsif line.start_point.x < line.end_point.x then
+			
+			result.smallest_x := type_float_internal (line.start_point.x);
+			result.greatest_x := type_float_internal (line.end_point.x);
+		else
+			result.smallest_x := type_float_internal (line.end_point.x);
+			result.greatest_x := type_float_internal (line.start_point.x);
+		end if;
+
+		-- Y axis
+		if line.start_point.y = line.end_point.y then -- both points on a horizontal line
+
+			result.smallest_y := type_float_internal (line.start_point.y);
+			result.greatest_y := type_float_internal (line.start_point.y);
+			
+		elsif line.start_point.y < line.end_point.y then
+			
+			result.smallest_y := type_float_internal (line.start_point.y);
+			result.greatest_y := type_float_internal (line.end_point.y);
+		else
+			result.smallest_y := type_float_internal (line.end_point.y);
+			result.greatest_y := type_float_internal (line.start_point.y);
+		end if;
+
+		
+		-- extend the boundaries by half the line width;
+		result.smallest_x := result.smallest_x - half_width;
+		result.smallest_y := result.smallest_y - half_width;
+
+		result.greatest_x := result.greatest_x + half_width;
+		result.greatest_y := result.greatest_y + half_width;
+		
+		return result;
+	end get_boundaries;
+
 	
 	procedure draw_line (
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
-		line	: in type_line'class;
+		line	: in pac_geometry_1.type_line;
 		width	: in type_distance_positive;
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
@@ -177,11 +230,166 @@ package body pac_draw is
 		end if;
 	end draw_line;
 
+
+
+	function get_boundaries (
+		arc			: in pac_geometry_1.type_arc;
+		line_width	: in type_distance_positive) 
+		return type_boundaries
+	is
+		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
+		
+		result : type_boundaries; -- to be returned
+
+		-- normalize the given arc
+		arc_norm : type_arc := type_arc (normalize_arc (arc));
+
+		-- Calculate the radius of the arc:
+		radius : constant type_float_internal_positive := get_radius_start (arc_norm);
+
+		-- The quadrant of start and end point:
+		q_start : type_quadrant;
+		q_end   : type_quadrant;
+		
+		procedure set_sx is begin result.smallest_x := - radius; end;
+		procedure set_gx is begin result.greatest_x :=   radius; end;
+		procedure set_sy is begin result.smallest_y := - radius; end;
+		procedure set_gy is begin result.greatest_y :=   radius; end;
+
+		procedure same_quadrant is 
+			angles : type_arc_angles;
+		begin
+			-- get start and end angles of normalized arc:
+			angles := to_arc_angles (arc_norm);
+
+			if angles.angle_start <= angles.angle_end then
+				null; -- arc is only in this quadrant
+			else
+				-- arc runs through all quadrants
+				set_gy;
+				set_sx;
+				set_sy;
+				set_gx;
+			end if;
+		end same_quadrant;
+		
+	begin -- get_boundaries
+
+		-- move arc_norm so that its center is at 0/0
+		move_to (arc_norm, origin);
+
+		-- Calculate the quadrants of start and end point:
+		q_start := get_quadrant (to_vector (arc_norm.start_point));
+		q_end   := get_quadrant (to_vector (arc_norm.end_point));
+
+		--put_line ("Q Start:" & type_quadrant'image (q_start));
+		--put_line ("Q End:  " & type_quadrant'image (q_end));
+		
+		-- Calculate the boundaries of start and end point.
+		-- For the moment we regard start and end point of the arc being
+		-- connected with a straight line, ignoring the line width:
+		result := get_boundaries (arc_norm.start_point, arc_norm.end_point, zero);
+
+		--put_line ("result: " & to_string (result));
+		
+		-- Depending on the quadrants of start and end point, other quadrants may
+		-- be crossed. The boundaries (held in result) must be pushed away into x
+		-- or y direction if start and end point are not in the same quadrant.
+		case q_start is
+			when ONE =>
+				case q_end is
+					when ONE =>
+						same_quadrant;
+						
+					when TWO => 
+						set_gy;
+
+					when THREE =>
+						set_gy;
+						set_sx;
+
+					when FOUR =>
+						set_gy;
+						set_sx;
+						set_sy;
+				end case;
+
+			when TWO =>
+				case q_end is
+					when ONE => 
+						set_sx;
+						set_sy;
+						set_gx;
+
+					when TWO =>
+						same_quadrant;
+							
+					when THREE =>
+						set_sx;
+
+					when FOUR =>
+						set_sx;
+						set_sy;
+				end case;
+				
+			when THREE =>
+				case q_end is
+					when ONE =>
+						set_sy;
+						set_gx;
+
+					when TWO =>
+						set_sy;
+						set_gx;
+						set_gy;
+
+					when THREE =>
+						same_quadrant;
+
+					when FOUR =>
+						set_sy;
+				end case;
+
+			when FOUR =>
+				case q_end is
+					when ONE =>
+						set_gx;
+
+					when TWO =>
+						set_gx;
+						set_gy;
+
+					when THREE =>
+						set_gx;
+						set_gy;
+						set_sx;
+
+					when FOUR =>
+						same_quadrant;
+				end case;
+				
+		end case;
+
+		-- The boundaries held in "result" are still relative to the origin (0/0).
+		-- They must be moved back to where the given arc is positioned.
+		move_by (result, to_offset (arc.center));
+
+		-- extend the boundaries by half the line width;
+		result.smallest_x := result.smallest_x - half_width;
+		result.smallest_y := result.smallest_y - half_width;
+
+		result.greatest_x := result.greatest_x + half_width;
+		result.greatest_y := result.greatest_y + half_width;
+		
+		return result;
+	end get_boundaries;
+
+	
 	
 	procedure draw_arc (
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
-		arc		: in type_arc'class;
+		arc		: in pac_geometry_1.type_arc;
 		width	: in type_distance_positive;
 		--		height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
@@ -641,7 +849,7 @@ package body pac_draw is
 	procedure draw_rectangle (
 		area			: in type_bounding_box;
 		context			: in type_draw_context;
-		position		: in type_point'class; -- the lower left corner
+		position		: in type_point; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
 		width			: in type_float_internal_positive;
 		--height			: in pac_shapes.pac_geometry_1.type_distance;
@@ -745,6 +953,7 @@ package body pac_draw is
 	end draw_rectangle;
 
 
+	
 -- TEXT
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble is
@@ -839,7 +1048,7 @@ package body pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
 		origin		: in boolean;
-		rotation	: in pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment) 
 	is
 		-- Here we will store the extents of the given text:
@@ -926,7 +1135,7 @@ package body pac_draw is
 		font		: in et_text.type_font;
 		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
-		rotation	: in pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment;
 		--height		: in pac_shapes.pac_geometry_1.type_distance)  -- the height of the drawing frame
 		height		: in type_float_internal_positive)

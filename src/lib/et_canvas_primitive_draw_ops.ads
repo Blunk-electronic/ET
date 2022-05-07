@@ -103,7 +103,7 @@ package pac_draw is
 	
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal;
-		boundaries	: in pac_geometry_1.type_boundaries)
+		boundaries	: in pac_geometry_2.type_boundaries)
 		return type_bounding_box;
 
 	
@@ -115,7 +115,7 @@ package pac_draw is
 	procedure draw_line (
 		area	: in type_bounding_box;	
 		context	: in type_draw_context;
-		line	: in type_line'class;
+		line	: in pac_geometry_1.type_line;
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
@@ -131,7 +131,7 @@ package pac_draw is
 	procedure draw_arc (
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
-		arc		: in type_arc'class;
+		arc		: in pac_geometry_1.type_arc;
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
@@ -278,7 +278,7 @@ package pac_draw is
 	procedure draw_rectangle (
 		area			: in type_bounding_box;
 		context			: in type_draw_context;
-		position		: in type_point'class;	-- position of the rectangle (lower left corner)
+		position		: in type_point;	-- position of the rectangle (lower left corner)
 		width			: in type_float_internal_positive; -- widht of the rectangle
 		height			: in type_float_internal_positive; -- height of the rectangle
 		frame_height	: in type_float_internal_positive;
@@ -298,6 +298,7 @@ package pac_draw is
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble;
 
+	
 	-- Draws a text right in the view.
 	-- Does not care about area and bounding box. It is assumed that the calling
 	-- unit has decided whether the text is to be drawn or not. No area check here.
@@ -308,7 +309,7 @@ package pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble; -- the anchor point in the view
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
-		rotation	: in pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment);
 
 	
@@ -333,7 +334,7 @@ package pac_draw is
 		font		: in et_text.type_font;
 		position	: in type_point; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
-		rotation	: in pac_geometry_1.type_rotation;
+		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment;
 		height		: in type_float_internal_positive); -- the height of the drawing frame
 

@@ -46,7 +46,7 @@ with et_geometry;					use et_geometry;
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
 with et_coordinates;				use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_text;
 with et_project.modules;			use et_project.modules;
@@ -64,7 +64,6 @@ package et_canvas_schematic_nets is
 	use et_project.modules.pac_generic_modules;
 
 	use pac_net_name;
-	use et_symbols.pac_geometry_2;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;

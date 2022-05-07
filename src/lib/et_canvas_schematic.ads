@@ -71,6 +71,7 @@ with et_geometry;					use et_geometry;
 
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_project.modules;			use et_project.modules;
 with et_symbols;
@@ -93,7 +94,6 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package et_canvas_schematic is
 
-	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
 	
 	use et_project.modules.pac_generic_modules;
@@ -109,9 +109,10 @@ package et_canvas_schematic is
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_symbols.pac_geometry_2);
+		pac_geometry_2	=> et_coordinates.pac_geometry_2);
 
 	use pac_canvas;
+
 
 
 	
@@ -127,8 +128,8 @@ package et_canvas_schematic is
 	-- For primitve draw operations:
 	package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas		=> pac_canvas,
-		pac_polygons	=> et_symbols.pac_polygons,
-		pac_contours	=> et_symbols.pac_contours,
+		pac_polygons	=> pac_polygons,
+		pac_contours	=> pac_contours,
 		pac_text		=> et_symbols.pac_text);
 
 	use pac_draw;

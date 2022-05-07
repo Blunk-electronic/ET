@@ -43,7 +43,7 @@ with ada.containers.doubly_linked_lists;
 with gtk.window;					use gtk.window;
 
 with et_coordinates;				use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_geometry;					use et_geometry;
 with et_general;					use et_general;
@@ -63,7 +63,6 @@ with et_canvas_schematic_nets;
 
 package et_canvas_schematic_units is
 
-	use et_symbols.pac_geometry_2;
 	use et_project.modules.pac_generic_modules;
 
 	-- Whenever a unit (or the whole device with all its units)
