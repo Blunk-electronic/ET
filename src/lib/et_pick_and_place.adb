@@ -119,7 +119,7 @@ package body et_pick_and_place is
 
 			procedure query_device (cursor : in pac_devices.cursor) is
 				use pac_devices;
-				use et_pcb_coordinates.pac_geometry_brd;
+				use et_pcb_coordinates.pac_geometry_2;
 			begin
 				put_field (file => pnp_handle); -- CS item number
 				put_field (file => pnp_handle, text => to_string (key (cursor))); -- R4

@@ -464,17 +464,26 @@ package body et_canvas_board is
 		in_area	: in type_bounding_box;
 		context	: in type_draw_context) 
 	is		
-		use et_board_shapes_and_text;
-		use pac_geometry_2;
+		--use et_board_shapes_and_text;
+		--use pac_geometry_2;
 		
-		line_horizontal : constant type_line := ( -- from left to right
-			start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
-			end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
+		--line_horizontal : constant type_line := ( -- from left to right
+			--start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
+			--end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
 
-		line_vertical : constant type_line := ( -- from bottom to top
-			start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
-			end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
+		--line_vertical : constant type_line := ( -- from bottom to top
+			--start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
+			--end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
+		line_horizontal : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from left to right
+			start_point		=> to_vector (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
+			end_point		=> to_vector (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
+
+		line_vertical : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from bottom to top
+			start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
+			end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
+
+		
 		use pac_draw_fab;
 	begin -- draw_text_origin
 		-- CS if text_origins_enabled then

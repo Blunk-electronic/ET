@@ -47,9 +47,9 @@ package body et_canvas_primitive_draw_ops is
 package body pac_draw is
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	function convert_x (x : in pac_geometry_1.type_distance) 
-		return type_view_coordinate is 
-	begin
+	function convert_x (x : in pac_geometry_2.type_distance) 
+		return type_view_coordinate 
+	is begin
 		return type_view_coordinate (x);
 	end;
 
@@ -60,17 +60,17 @@ package body pac_draw is
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		y		: in type_float_internal;
 		height	: in type_float_internal)
-		return type_view_coordinate is
-	begin
+		return type_view_coordinate 
+	is begin
 		return type_view_coordinate (height - y);
 	end;
 
 	
 	function shift_y (
-		y		: in pac_geometry_1.type_distance;
+		y		: in pac_geometry_2.type_distance;
 		height	: in type_float_internal)
-		return type_view_coordinate is
-	begin
+		return type_view_coordinate 
+	is begin
 		return type_view_coordinate (height - type_float_internal (y));
 	end;
 
@@ -87,8 +87,8 @@ package body pac_draw is
 	function shift_y (
 		y		: in type_float_internal;
 		height	: in type_float_internal)
-		return type_float_internal is
-	begin
+		return type_float_internal 
+	is begin
 		return (height - y);
 	end;
 
@@ -127,6 +127,59 @@ package body pac_draw is
 	end make_bounding_box;
 
 
+
+	function get_boundaries (
+		point_one	: in type_vector;
+		point_two	: in type_vector;
+		width		: in type_distance_positive) 
+		return type_boundaries
+	is
+		result : type_boundaries;
+
+		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+	begin
+		-- X axis
+		if point_one.x = point_two.x then -- both points on a vertical line
+
+			result.smallest_x := point_one.x;
+			result.greatest_x := point_one.x;
+			
+		elsif point_one.x < point_two.x then
+			
+			result.smallest_x := point_one.x;
+			result.greatest_x := point_two.x;
+		else
+			result.smallest_x := point_two.x;
+			result.greatest_x := point_one.x;
+		end if;
+
+		-- Y axis
+		if point_one.y = point_two.y then -- both points on a horizontal line
+
+			result.smallest_y := point_one.y;
+			result.greatest_y := point_one.y;
+			
+		elsif point_one.y < point_two.y then
+			
+			result.smallest_y := point_one.y;
+			result.greatest_y := point_two.y;
+		else
+			result.smallest_y := point_two.y;
+			result.greatest_y := point_one.y;
+		end if;
+
+		
+		-- extend the boundaries by half the line width;
+		result.smallest_x := result.smallest_x - half_width;
+		result.smallest_y := result.smallest_y - half_width;
+
+		result.greatest_x := result.greatest_x + half_width;
+		result.greatest_y := result.greatest_y + half_width;
+		
+		return result;
+	end get_boundaries;
+
+	
 	-- Returns the boundaries of the given line.
 	-- The line has the given width. 
 	-- The boundaries are extended by half the given width.
@@ -242,7 +295,7 @@ package body pac_draw is
 		result : type_boundaries; -- to be returned
 
 		-- normalize the given arc
-		arc_norm : type_arc := type_arc (normalize_arc (arc));
+		arc_norm : pac_geometry_1.type_arc := pac_geometry_1.type_arc (normalize_arc (arc));
 
 		-- Calculate the radius of the arc:
 		radius : constant type_float_internal_positive := get_radius_start (arc_norm);
@@ -276,11 +329,11 @@ package body pac_draw is
 	begin -- get_boundaries
 
 		-- move arc_norm so that its center is at 0/0
-		move_to (arc_norm, origin);
+		move_to (arc_norm, null_vector);
 
 		-- Calculate the quadrants of start and end point:
-		q_start := get_quadrant (to_vector (arc_norm.start_point));
-		q_end   := get_quadrant (to_vector (arc_norm.end_point));
+		q_start := get_quadrant (arc_norm.start_point);
+		q_end   := get_quadrant (arc_norm.end_point);
 
 		--put_line ("Q Start:" & type_quadrant'image (q_start));
 		--put_line ("Q End:  " & type_quadrant'image (q_end));
@@ -1094,7 +1147,7 @@ package body pac_draw is
 		-- Since our angles increase in counterclockwise direction (mathematically)
 		-- the angle must change the sign.		
 		translate (context.cr, x, y);
-		rotate (context.cr, gdouble (to_radians (- rotation)));
+		rotate (context.cr, gdouble (to_radians (- type_angle (rotation))));
 		translate (context.cr, -x, -y);
 		
 		-- draw the text. start at calculated start position
@@ -1212,7 +1265,7 @@ package body pac_draw is
 			-- Since our angles increase in counterclockwise direction (mathematically)
 			-- the angle must change the sign.		
 			translate (context.cr, ox, oy);
-			rotate (context.cr, gdouble (to_radians (- rotation)));
+			rotate (context.cr, gdouble (to_radians (- type_angle (rotation))));
 			translate (context.cr, -ox, -oy);
 			
 			-- draw the text. start at calculated start position
@@ -1242,7 +1295,7 @@ package body pac_draw is
 		procedure query_line (c : in pac_vector_text_lines.cursor) is 
 
 			-- compute the boundaries (greatest/smallest x/y) of the given line:
-			b : type_boundaries := get_boundaries (element (c), width);
+			b : type_boundaries := get_boundaries (pac_geometry_1.type_line (element (c)), width);
 
 			-- compute the bounding box of the given line
 			bounding_box : constant type_bounding_box := 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017- 2020 Mario Blunk, Blunk electronic           --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -300,7 +300,8 @@ package body et_scripting_interactive_schematic is
 		use pac_proposed_units;
 		su : type_selected_unit;
 
-		pos : pac_geometry_sch.type_point;
+		use pac_geometry_2;
+		pos : type_point;
 		use et_geometry;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed units.
@@ -318,10 +319,14 @@ package body et_scripting_interactive_schematic is
 		su := element (selected_unit);
 
 		-- Get the x/y position of the unit:
-		pos := pac_geometry_sch.type_point (position (
-				device	=> su.device,
-				unit	=> su.unit));
+		--pos := pac_geometry_sch.type_point (position (
+				--device	=> su.device,
+				--unit	=> su.unit));
 
+		pos := position (
+				device	=> su.device,
+				unit	=> su.unit).place;
+		
 		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 		
 	end select_unit_for_move;
@@ -537,10 +542,10 @@ package body et_scripting_interactive_schematic is
 	procedure select_placeholder_for_move is
 		use pac_proposed_placeholders;
 		sp : type_selected_placeholder;
-		
-		pos : pac_geometry_sch.type_point;
-		use et_geometry;
 
+		use pac_geometry_2;
+		pos : type_point;
+		use et_geometry;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed placeholders.
 		-- There will be only one single item in that list.

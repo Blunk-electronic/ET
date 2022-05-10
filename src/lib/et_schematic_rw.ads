@@ -36,7 +36,7 @@
 --
 
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 package et_schematic_rw is
 

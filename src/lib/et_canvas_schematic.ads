@@ -291,7 +291,8 @@ package et_canvas_schematic is
 
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new type_line with null record;
+	type type_cursor_line is new et_coordinates.pac_geometry_2.type_line with null record;
+	-- CS: Cursor stuff must be based on float numbers.
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

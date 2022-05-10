@@ -98,6 +98,23 @@ package body et_geometry_2 is
 		& lf;
 	end get_info;
 
+
+	function clip_distance (d : in type_distance)
+		return type_position_axis
+	is begin
+		if d > axis_max then return axis_max;
+		elsif d < axis_min then return axis_min;
+		else return d;
+		end if;
+	end clip_distance;
+
+	
+	procedure clip_distance (d : in out type_distance) is begin
+		if d > axis_max then d := axis_max;
+		elsif d < axis_min then d := axis_min;
+		end if;
+	end clip_distance;
+
 	
 	
 	function mil_to_distance (mil : in string) return type_distance is
@@ -444,22 +461,6 @@ package body et_geometry_2 is
 		end if;
 	end get_smallest;
 
-
-	function clip_distance (d : in type_distance)
-		return type_position_axis
-	is begin
-		if d > axis_max then return axis_max;
-		elsif d < axis_min then return axis_min;
-		else return d;
-		end if;
-	end clip_distance;
-
-	
-	procedure clip_distance (d : in out type_distance) is begin
-		if d > axis_max then d := axis_max;
-		elsif d < axis_min then d := axis_min;
-		end if;
-	end clip_distance;
 
 	
 	
@@ -1771,6 +1772,14 @@ package body et_geometry_2 is
 		return pac_geometry_1.to_string (c);
 	end catch_zone_to_string;
 
+
+	function to_catch_zone (
+		c : in string)
+		return type_catch_zone
+	is begin
+		return pac_geometry_1.to_distance (c);
+	end to_catch_zone;
+
 	
 	function in_catch_zone (
 		point_1		: in type_point; -- the reference point
@@ -2072,7 +2081,12 @@ package body et_geometry_2 is
 		end if;
 	end union;
 
-	
+
+
+	-- Calculates the boundaries of the given points
+	-- connected with a line that has the
+	-- given width. The boundaries are extended
+	-- by half the given width.
 	function get_boundaries (
 		point_one	: in type_point;
 		point_two	: in type_point;
@@ -2082,12 +2096,6 @@ package body et_geometry_2 is
 		result : type_boundaries;
 
 		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
-
-		--p1x : type_float_internal renames type_float_internal (point_one.x);
-		--p1y : type_float_internal renames point_one.y;
-
-		--p2x : type_float_internal renames point_two.x;
-		--p2y : type_float_internal renames point_two.y;
 	begin
 		-- X axis
 		if point_one.x = point_two.x then -- both points on a vertical line
@@ -2301,6 +2309,28 @@ package body et_geometry_2 is
 	end;
 
 
+	function to_line_fine (
+		line : in type_line)
+		return pac_geometry_1.type_line
+	is begin
+		return (
+			start_point	=> to_vector (line.start_point),
+			end_point	=> to_vector (line.end_point));
+	end to_line_fine;
+
+	
+	function to_line_coarse (
+		line : in pac_geometry_1.type_line)
+		return type_line'class
+	is 
+		l : type_line;
+	begin
+		l.start_point := to_point (line.start_point);
+		l.end_point := to_point (line.end_point);		
+		return l;
+	end to_line_coarse;
+
+	
 	
 	function start_vector (
 		line	: in type_line)
@@ -4625,7 +4655,23 @@ package body et_geometry_2 is
 			"circle: C:" & to_string (circle.center) 
 			& " / R:" & to_string (circle.radius);
 	end to_string;
+
 	
+	function to_radius (
+		r : in string)
+		return type_float_internal_positive
+	is begin
+		return pac_geometry_1.to_distance (r);
+	end to_radius;
+
+
+	function to_diameter (
+		d : in string)
+		return type_float_internal_positive
+	is begin
+		return pac_geometry_1.to_distance (d);
+	end to_diameter;
+
 	
 	--function split_circle (circle_in : in type_circle) 
 		--return type_arcs

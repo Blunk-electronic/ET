@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -65,6 +65,7 @@ is
 
 	use pac_draw_frame;
 
+	
 	procedure draw_cam_markers is
 		cms : constant type_cam_markers := self.get_frame.title_block_pcb.cam_markers;
 

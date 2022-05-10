@@ -76,9 +76,10 @@ is
 		rotate_by (line, unit_rotation);
 		move_by (line, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_line (in_area, context, line, element (c).width, self.frame_height);
+		draw_line (in_area, context, to_line_fine (line), element (c).width, self.frame_height);
 	end draw_line;
 
+	
 	procedure draw_arc (c : in pac_arcs.cursor) is 
 		-- Take a copy of the given arc:
 		arc : type_arc := (pac_geometry_2.type_arc (element (c)) with null record);
@@ -86,9 +87,10 @@ is
 		rotate_by (arc, unit_rotation);
 		move_by (arc, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_arc (in_area, context, arc, element (c).width, self.frame_height);
+		draw_arc (in_area, context, to_arc_fine (arc), element (c).width, self.frame_height);
 	end draw_arc;
 
+	
 	procedure draw_circle (c : in pac_circles.cursor) is 
 		circle : type_circle := (pac_geometry_2.type_circle (element (c)) with null record);
 	begin
@@ -161,6 +163,7 @@ is
 
 		end draw_port_name;
 
+		
 		procedure draw_terminal_name is
 			use et_text;
 			-- The vertical alignment is untouched and is always BOTTOM.
@@ -229,6 +232,7 @@ is
 				height		=> self.frame_height);
 
 		end draw_terminal_name;
+
 		
 	begin -- draw_port
 		set_color_symbols (context.cr, brightness);
@@ -305,7 +309,7 @@ is
 		move_by (line, to_distance_relative (unit_position));
 		
 		-- Draw the line of the port:
-		draw_line (in_area, context, line, port_line_width, self.frame_height);
+		draw_line (in_area, context, to_line_fine (line), port_line_width, self.frame_height);
 
 
 		-- Draw the circle around a port if the layer is enabled:
@@ -350,6 +354,7 @@ is
 		
 	end draw_port;
 
+	
 	-- This procedure draws fixed documentational texts like "MUX" or "CT16" as they 
 	-- are frequently placed inside symbols.
 	-- Call this procedure after drawing the symbol body because it
@@ -385,6 +390,7 @@ is
 			);
 	end draw_text;
 
+	
 	-- This procedure draws text placeholders for device name, value and purpose:
 	procedure draw_placeholders is 
 		use et_devices;
@@ -485,6 +491,7 @@ is
 		
 	end draw_placeholders;
 
+	
 	procedure draw_origin is
 		ohz : constant type_distance_positive := et_symbols.origin_half_size;
 		
@@ -513,9 +520,10 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		draw_line (in_area, context, line_horizontal, et_symbols.origin_line_width, self.frame_height);
-		draw_line (in_area, context, line_vertical, et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, context, to_line_fine (line_horizontal), et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, context, to_line_fine (line_vertical), et_symbols.origin_line_width, self.frame_height);
 	end draw_origin;
+
 	
 begin -- draw_symbol
 	

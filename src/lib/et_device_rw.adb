@@ -53,7 +53,7 @@ with et_material;
 with et_general;				--use et_general;
 
 with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
+use et_coordinates.pac_geometry_2;
 
 with et_string_processing;
 with et_general_rw;				use et_general_rw;
@@ -391,9 +391,9 @@ package body et_device_rw is
 		units_external		: pac_units_external.map;
 
 		-- CS move to et_schematic_rw ? wrong ? better to et_symbol_rw ?
-		symbol_line			: type_line;
-		symbol_arc			: type_arc;
-		symbol_circle		: type_circle;
+		symbol_line			: et_symbols.type_line;
+		symbol_arc			: et_symbols.type_arc;
+		symbol_circle		: et_symbols.type_circle;
 		symbol_text_base	: type_text_basic;
 		
 		symbol_text_position		: type_point;
@@ -1204,7 +1204,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := to_distance (f (line, 2));
+										symbol_circle.radius := to_radius (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);

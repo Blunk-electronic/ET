@@ -58,8 +58,10 @@ is
 	use et_schematic_ops.nets;
 	use et_schematic_ops.units;
 	use et_schematic_ops.netlists;
+
 	use et_coordinates;
-	use pac_geometry_sch;
+	use pac_geometry_2;
+
 	use et_symbols.pac_text;
 	use et_devices;
 	use et_canvas_schematic;
@@ -222,7 +224,7 @@ is
 						current_active_sheet := get_sheet (location.position);
 
 						-- center on the first unit
-						center_on (canvas, type_point (location.position));
+						center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
@@ -249,7 +251,7 @@ is
 						current_active_sheet := get_sheet (location.position);
 
 						-- center on the unit
-						center_on (canvas, type_point (location.position));
+						center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
@@ -276,7 +278,7 @@ is
 						if get_sheet (location.position) = current_active_sheet then
 
 							-- center on the unit
-							center_on (canvas, type_point (location.position));
+							center_on (canvas, location.position.place);
 
 							-- Make the whole device (with all its units) selected:
 							proposed_units.append (new_item =>
@@ -338,7 +340,7 @@ is
 					current_active_sheet := get_sheet (element (strand_cursor).position);
 
 					-- center drawing where the strand starts:
-					center_on (canvas, type_point (element (strand_cursor).position));
+					center_on (canvas, element (strand_cursor).position.place);
 					
 					proposed_segments.append (new_item => (
 						net		=> net_cursor,
@@ -360,7 +362,7 @@ is
 					if strand_cursor /= pac_strands.no_element then
 
 						-- center drawing where the strand starts:
-						center_on (canvas, type_point (element (strand_cursor).position));
+						center_on (canvas, element (strand_cursor).position.place);
 
 						proposed_segments.append (new_item => (
 							net		=> net_cursor,

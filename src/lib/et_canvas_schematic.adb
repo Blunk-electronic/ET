@@ -468,7 +468,7 @@ package body et_canvas_schematic is
 		context : in type_draw_context)
 	is
 		use et_nets;
-		line : type_line;
+		line : pac_geometry_2.type_line;
 
 		procedure compute_route (s, e : in type_point) is 
 
@@ -480,7 +480,7 @@ package body et_canvas_schematic is
 				draw_line (
 					area		=> in_area,
 					context		=> context,
-					line		=> line,
+					line		=> to_line_fine (line),
 					width		=> net_line_width,
 					height		=> type_float_internal_positive (self.frame_height));
 			end draw;
@@ -522,6 +522,7 @@ package body et_canvas_schematic is
 				
 			end if;
 		end compute_route;
+
 		
 	begin -- draw_net_route_being_drawn
 		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
@@ -646,6 +647,7 @@ package body et_canvas_schematic is
 		-- in the status bar.
 	end set_module;
 
+	
 	procedure init_drawing (
 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
@@ -678,6 +680,7 @@ package body et_canvas_schematic is
 		set_grid (current_active_module, grid, log_threshold + 1);
 		redraw (canvas);
 	end set_grid_x;
+
 	
 	procedure set_grid_y (self : access gtk_entry_record'class) is
 		use et_schematic_ops;
@@ -705,6 +708,7 @@ package body et_canvas_schematic is
 		self.update_coordinates_display;
 	end reset_grid_and_cursor;
 
+	
 	procedure set_grid (
 		self	: not null access type_view;
 		density	: in type_grid_density)
@@ -737,6 +741,7 @@ package body et_canvas_schematic is
 		self.shift_area (cursor);		
 	end move_cursor;
 
+	
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
@@ -815,14 +820,14 @@ package body et_canvas_schematic is
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> lh,
+			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
 			height		=> type_float_internal_positive (self.frame_height));
 
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> lv,
+			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
 			height		=> type_float_internal_positive (self.frame_height));
 		
@@ -835,6 +840,7 @@ package body et_canvas_schematic is
 				
 	end draw_cursor;
 
+	
 	function get_grid (
 		self : not null access type_view)
 		return type_grid
@@ -851,6 +857,7 @@ package body et_canvas_schematic is
 				
 		return g;
 	end get_grid;
+
 	
 	function get_frame (
 		self : not null access type_view)

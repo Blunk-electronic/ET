@@ -82,13 +82,14 @@ package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
 
-	use et_symbols.pac_geometry_2;
+
 	
 	procedure clear_proposed_units is begin
 		clear (proposed_units);
 		selected_unit := pac_proposed_units.no_element;
 	end clear_proposed_units;
-		
+
+	
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
@@ -120,7 +121,11 @@ package body et_canvas_schematic_units is
 						log (text => "probing unit " & to_string (unit_cursor),
 							level => log_threshold + 1);
 
-						if in_catch_zone (place, catch_zone, element (unit_cursor).position) then
+						if in_catch_zone (
+							point_1		=> place.place, 
+							catch_zone	=> catch_zone, 
+							point_2		=> element (unit_cursor).position.place) 
+						then
 							log_indentation_up;
 
 							log (text => "in catch zone", level => log_threshold + 1);
@@ -152,9 +157,10 @@ package body et_canvas_schematic_units is
 			end loop;
 		end query_devices;
 
+		
 	begin -- collect_units
 		log (text => "looking up units at" & to_string (place) 
-			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
 
 		log_indentation_up;
 		
@@ -1534,6 +1540,7 @@ package body et_canvas_schematic_units is
 		
 		reset_placeholder;
 	end finalize_move_placeholder;
+
 	
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
@@ -1561,12 +1568,13 @@ package body et_canvas_schematic_units is
 
 				placeholder_position : type_point;
 
+				
 				procedure test_placeholder_position is 
 					pos_abs : et_coordinates.type_position;
 				begin
 					-- The current placeholder_position is relative to the unit position.
 					-- It must be moved by the unit position in order to get the absolute position:
-					move_by (placeholder_position, to_distance_relative (element (unit_cursor).position));
+					move_by (placeholder_position, to_distance_relative (element (unit_cursor).position.place));
 
 					-- Add the sheet information to the position:
 					pos_abs := to_position (placeholder_position, get_sheet (place));
@@ -1574,7 +1582,7 @@ package body et_canvas_schematic_units is
 					--log (text => to_string (pos_abs), level => log_threshold + 1);
 
 					-- Test whether the placeholder is inside the catch zone around the given place:
-					if in_catch_zone (place, catch_zone, pos_abs) then
+					if in_catch_zone (place.place, catch_zone, pos_abs.place) then
 						log_indentation_up;
 
 						log (text => "in catch zone", level => log_threshold + 1);
@@ -1583,7 +1591,8 @@ package body et_canvas_schematic_units is
 						log_indentation_down;
 					end if;
 				end test_placeholder_position;
-		
+
+				
 			begin -- query_units
 				while unit_cursor /= pac_units.no_element loop
 					
@@ -1616,6 +1625,7 @@ package body et_canvas_schematic_units is
 				end loop;
 				
 			end query_units;
+
 			
 		begin -- query_devices
 			while device_cursor /= pac_devices_sch.no_element loop
@@ -1639,11 +1649,12 @@ package body et_canvas_schematic_units is
 			end loop;
 		end query_devices;
 
+		
 	begin -- collect_placeholders
 		log (text => "looking up placeholders of category " 
 			& enclose_in_quotes (to_string (category))
 			& " at " & to_string (place) 
-			& " catch zone" & to_string (catch_zone),
+			& " catch zone" & catch_zone_to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1657,6 +1668,7 @@ package body et_canvas_schematic_units is
 		return result;
 		
 	end collect_placeholders;
+	
 	
 	procedure find_placeholders (
 		point		: in type_point;
@@ -1699,6 +1711,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_placeholders;
 
+	
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		unit			: in type_selected_unit;

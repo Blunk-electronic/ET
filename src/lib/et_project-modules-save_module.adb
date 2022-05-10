@@ -120,10 +120,10 @@ is
 	end write_footer;
 
 	
-	function rotation (pos : in et_pcb_coordinates.pac_geometry_brd.type_position'class)  -- CS make generic ?
+	function rotation (pos : in et_pcb_coordinates.pac_geometry_2.type_position'class)  -- CS make generic ?
 		return string
 	is
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates.pac_geometry_2;
 	begin
 		return to_string (get_rotation (pos));
 	end rotation;
@@ -229,11 +229,12 @@ is
 
 		log_indentation_down;
 	end query_rules;
-		
+
+	
 	procedure query_net_classes is
 		use et_pcb;
 		use et_pcb.pac_net_classes;
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates.pac_geometry_2;
 
 		procedure write (class_cursor : in pac_net_classes.cursor) is begin
 			log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
@@ -261,9 +262,10 @@ is
 		log_indentation_down;
 	end query_net_classes;
 
+	
 	procedure query_drawing_grid is 
-		use et_coordinates.pac_geometry_sch;
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_coordinates.pac_geometry_2;
+		use et_pcb_coordinates.pac_geometry_2;
 	begin
 		log_indentation_up;
 		
@@ -286,8 +288,9 @@ is
 		log_indentation_down;
 	end query_drawing_grid;
 
+	
 	procedure query_layer_stack is
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates.pac_geometry_2;
 		use et_pcb_stack;
 		use package_layers;
 
@@ -347,7 +350,8 @@ is
 		is
 			use et_schematic;
 			use pac_strands;
-			use et_coordinates.pac_geometry_sch;
+			use et_coordinates.pac_geometry_2;
+			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			
@@ -492,6 +496,7 @@ is
 				end loop;
 				section_mark (section_segments, FOOTER);
 			end query_segments;
+
 			
 		begin -- query_strands
 			section_mark (section_strands, HEADER);
@@ -516,13 +521,13 @@ is
 			net			: in type_net) 
 		is
 			use et_board_shapes_and_text;
-			use pac_geometry_2;
+			--use pac_geometry_2;
 			use pac_contours;
 
 			use et_terminals;
 			use et_pcb;
 			use et_pcb_stack;
-			use et_pcb_coordinates.pac_geometry_brd;
+			use et_pcb_coordinates.pac_geometry_2;
 			
 			use et_conductor_segment.boards;
 			use pac_conductor_lines;
@@ -550,7 +555,8 @@ is
 					section_mark (section_via, HEADER);
 
 					write (keyword => keyword_via_category, parameters => to_string (element (c).category));
-					write (keyword => keyword_position, parameters => position (element (c).position));
+					--write (keyword => keyword_position, parameters => position (element (c).position));
+					write (keyword => keyword_position, parameters => to_string (element (c).position)); -- CS correct ?
 					write (keyword => keyword_diameter, parameters => to_string (element (c).diameter));
 
 					case element (c).category is
@@ -579,6 +585,7 @@ is
 			begin
 				net.route.vias.iterate (query_via'access);
 			end write_vias;
+
 			
 		begin -- query_route
 			section_mark (section_route, HEADER);
@@ -586,8 +593,8 @@ is
 			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
 				
-				write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
+				write (keyword => keyword_start, parameters => to_string (element (line_cursor).start_point));
+				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).end_point));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 				write (keyword => et_pcb_rw.keyword_width, parameters => to_string (element (line_cursor).width));
 
@@ -598,9 +605,9 @@ is
 			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
-				write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
-				write (keyword => keyword_start , parameters => position (element (arc_cursor).start_point));
-				write (keyword => keyword_end   , parameters => position (element (arc_cursor).end_point));
+				write (keyword => keyword_center, parameters => to_string (element (arc_cursor).center));
+				write (keyword => keyword_start , parameters => to_string (element (arc_cursor).start_point));
+				write (keyword => keyword_end   , parameters => to_string (element (arc_cursor).end_point));
 				write (keyword => et_pcb_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				
@@ -709,6 +716,7 @@ is
 			section_mark (section_net, FOOTER);
 			new_line;
 		end write;
+
 		
 	begin -- query_nets
 		log_indentation_up;
@@ -734,7 +742,7 @@ is
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
-			use et_coordinates.pac_geometry_sch;
+			use et_coordinates.pac_geometry_2;
 			
 			procedure write_placeholder (ph : in type_text_placeholder) is begin
 				section_mark (section_placeholder, HEADER);
@@ -992,7 +1000,7 @@ is
 		use pac_netchangers;
 
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
-			use pac_geometry_sch;
+			use pac_geometry_2;
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
@@ -1002,7 +1010,10 @@ is
 				keyword => keyword_rotation_in_schematic, 
 				parameters => to_string (get_rotation (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 
-			write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+			write (
+				keyword => keyword_position_in_board, 
+				parameters => et_pcb_coordinates.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+			
 			write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);
 		end query_netchanger;
@@ -1073,12 +1084,13 @@ is
 		-- write the board origin like "origin x 40 y 60"
 		write (
 			keyword		=> keyword_origin,
-			parameters	=> position (element (module_cursor).board.origin));
+			parameters	=> et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin));
 			
 		section_mark (section_board, FOOTER);			
 		section_mark (section_drawing_frames, FOOTER);
 	end query_frames;
 
+	
 	procedure query_submodules is		
 		use et_schematic;
 		use et_submodules;
@@ -1095,7 +1107,7 @@ is
 		end;
 
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
-			use et_coordinates.pac_geometry_sch;
+			use et_coordinates.pac_geometry_2;
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
@@ -1127,7 +1139,7 @@ is
 	procedure query_texts is	
 		use et_symbols.pac_text;
 		use et_coordinates;
-		use et_coordinates.pac_geometry_sch;
+		use et_coordinates.pac_geometry_2;
 		use et_schematic;
 		use pac_texts;
 		
@@ -1171,7 +1183,7 @@ is
 		use pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates.pac_geometry_2;
 
 		--use et_packages.pac_texts_with_content;
 		use pac_text_fab;

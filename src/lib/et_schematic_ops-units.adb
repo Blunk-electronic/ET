@@ -42,11 +42,12 @@ with et_board_ops;					use et_board_ops;
 
 package body et_schematic_ops.units is
 
-	use et_symbols.pac_geometry_2;
 	use et_symbols.pac_text;
 	
 	use pac_generic_modules;
 
+
+	
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -835,7 +836,7 @@ package body et_schematic_ops.units is
 							
 						when RELATIVE =>
 							move_by (
-								point	=> unit.position,
+								point	=> unit.position.place,
 								offset	=> to_distance_relative (point));
 					end case;
 					

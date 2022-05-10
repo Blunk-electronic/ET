@@ -221,18 +221,19 @@ package body et_schematic_ops is
 	end;
 
 	
-	procedure log_package_position (
 	-- Writes the position of the package in the log file. If device is virtual, nothing happens.
+	procedure log_package_position (
 		device_cursor	: in pac_devices_sch.cursor;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		use et_pcb_coordinates;
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates.pac_geometry_2;
 		use pac_devices_sch;
 		use et_symbols;
 	begin
 		if element (device_cursor).appearance = PCB then
 			log (text => "location in board:" & 
-				to_string (pac_geometry_brd.type_point (element (device_cursor).position)) &
+				to_string (element (device_cursor).position.place) &
 				" face" & 
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
@@ -578,9 +579,9 @@ package body et_schematic_ops is
 
 		procedure move (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_port) is
-		begin
-			move_by (port.position, to_distance_relative (offset));
+			port	: in out type_port) 
+		is begin
+			move_by (port.position, to_distance_relative (offset.place));
 		end;
 
 		procedure query_port (cursor : in et_symbols.pac_ports.cursor) is begin
@@ -608,15 +609,16 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 			unit_position : et_coordinates.type_position;
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) is
-				
+				device		: in type_device_sch) 
+			is				
 				use pac_units;
 				unit_cursor : pac_units.cursor := device.units.first;
 				unit_name : pac_unit_name.bounded_string;
@@ -648,15 +650,15 @@ package body et_schematic_ops is
 						-- first rotating port_xy, and then moving port_xy:
 						
 						rotate_by (
-							point		=> port_position,
+							point		=> port_position.place,
 							rotation	=> get_rotation (element (unit_cursor).position));
 						
 						-- CS mirror ?
 						
 						-- Calculate the absolute port position in the schematic:
 						move_by (
-							point 	=> port_position,
-							offset	=> to_distance_relative (unit_position));
+							point 	=> port_position.place,
+							offset	=> to_distance_relative (unit_position.place));
 						
 						exit; -- no need to look at other units
 					end if;
@@ -699,8 +701,8 @@ package body et_schematic_ops is
 	end position;
 
 	
-	function position (
 	-- Returns the sheet/x/y position of the given submodule port.
+	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
@@ -736,7 +738,7 @@ package body et_schematic_ops is
 					-- Calculate the absolute port position:
 					move_by (
 						point	=> port_xy,
-						offset	=> to_distance_relative (submod_position));
+						offset	=> to_distance_relative (submod_position.place));
 
 					-- Now port_xy holds the absolute x/y of the port in the schematic.
 
@@ -834,7 +836,7 @@ package body et_schematic_ops is
 				
 				move_by (
 					point	=> port_xy,
-					offset	=> to_distance_relative (nc_position));
+					offset	=> to_distance_relative (nc_position.place));
 
 				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
@@ -864,6 +866,7 @@ package body et_schematic_ops is
 		
 		return port_position;
 	end position;
+
 	
 -- 	procedure delete_unit (
 -- 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -995,6 +998,7 @@ package body et_schematic_ops is
 -- 				raise;
 -- 	end;
 
+	
 	procedure insert_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;					-- the device
@@ -1184,9 +1188,9 @@ package body et_schematic_ops is
 				is
 					-- In case absolute movement is required, calculate the
 					-- new position of the placeholder relative to the unit origin:
-					pos_abs : constant type_point := type_point (
-						to_point (get_distance_relative (type_point (unit.position), point)));
-						
+					pos_abs : constant type_point :=
+						to_point (get_distance_relative (unit.position.place, point));
+					
 				begin -- move_placeholder
 					
 					-- The given meaning determines the placeholder to be moved:
@@ -1302,15 +1306,15 @@ package body et_schematic_ops is
 	
 	procedure rotate_ports (
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
-		angle	: in et_coordinates.type_rotation) is -- 90
-
+		angle	: in et_coordinates.type_rotation)  -- 90
+	is
 		use et_symbols;
 		use et_symbols.pac_ports;
 
 		procedure rotate (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_port) is
-		begin
+			port	: in out type_port) 
+		is begin
 			rotate_by (port.position, angle);
 		end;
 
@@ -1874,13 +1878,13 @@ package body et_schematic_ops is
 
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
-						if segment.start_point = type_point (place) then
+						if segment.start_point = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
 						-- if place is an end point of a segment
-						if segment.end_point = type_point (place) then
+						if segment.end_point = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
@@ -1932,12 +1936,14 @@ package body et_schematic_ops is
 		return segment_found;
 	end net_segment_at_place;
 
+	
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
-		return type_ports is
+		return type_ports 
+	is
 		ports : type_ports; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -1967,7 +1973,7 @@ package body et_schematic_ops is
 							 level => log_threshold + 2);
 
 						-- If the port sits at x/y of place then we have a match:
-						if element (port_cursor).position = type_point (place) then
+						if element (port_cursor).position = place.place then
 							log (text => " match", level => log_threshold + 2);
 							
 							-- Insert the port in the portlist to be returned:
@@ -2035,7 +2041,7 @@ package body et_schematic_ops is
 							level => log_threshold + 2);
 
 					-- If the port sits at x/y of place then we have a match:
-					if element (port_cursor).position = type_point (place) then
+					if element (port_cursor).position = place.place then
 						log (text => " match", level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
@@ -2090,7 +2096,7 @@ package body et_schematic_ops is
 					-- The match can/should NEVER be at both ports simultaneously.
 					
 					-- First test whether the master port sits here:
-					if ports.master = type_point (place) then
+					if ports.master = place.place then
 
 						log (text => "port " & et_submodules.to_string (et_submodules.MASTER) &
 							" at" & to_string (ports.master),
@@ -2108,7 +2114,7 @@ package body et_schematic_ops is
 							);
 
 					-- Second, test wheter slave port sits here:
-					elsif ports.slave = type_point (place) then
+					elsif ports.slave = place.place then
 
 						log (text => "port " & et_submodules.to_string (et_submodules.SLAVE) &
 							" at" & to_string (ports.slave),
@@ -2162,12 +2168,12 @@ package body et_schematic_ops is
 		device_before	: in type_device_name;					-- the device name before like IC1
 		device_after	: in type_device_name;					-- the device name after like IC23
 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 				use pac_nets;
 
@@ -3551,7 +3557,7 @@ package body et_schematic_ops is
 					placeholder_position := element (unit).value.position;
 			end case;
 
-			move_by (placeholder_position, to_distance_relative (unit_position));
+			move_by (placeholder_position, to_distance_relative (unit_position.place));
 			
 		end query_unit;
 	begin
@@ -4512,7 +4518,7 @@ package body et_schematic_ops is
 						-- the move operation shifted by the given point (x/y).
 						-- The sheet number does not change.
 						move_by (
-							point		=> location,
+							point		=> location.place,
 							offset		=> to_distance_relative (point));
 				end case;
 
@@ -4554,6 +4560,7 @@ package body et_schematic_ops is
 			end if;
 			
 		end query_netchangers;
+
 		
 	begin -- drag_netchanger
 		case coordinates is
@@ -4578,6 +4585,7 @@ package body et_schematic_ops is
 
 	end drag_netchanger;
 
+	
 	procedure rotate_netchanger (
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
@@ -4585,8 +4593,8 @@ package body et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_submodules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -4696,7 +4704,8 @@ package body et_schematic_ops is
 			process		=> query_netchangers'access);
 
 	end rotate_netchanger;
-		
+
+	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -4704,8 +4713,8 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		full_file_name : constant string := expand (et_submodules.to_string (file));
@@ -4789,6 +4798,7 @@ package body et_schematic_ops is
 
 	end add_submodule;
 
+	
 	procedure insert_port (
 	-- Inserts the given submodule port in the net segments.
 	-- If the port lands on either the start or end point of a segment, it will
@@ -4801,12 +4811,13 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port			: in pac_net_name.bounded_string; -- clock_output
 		position		: in et_coordinates.type_position; -- the port position
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- This flag goes true on the first match. It signals
 			-- all iterations to cancel prematurely.
 			port_processed : boolean := false;
@@ -4824,13 +4835,13 @@ package body et_schematic_ops is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-					procedure change_segment (segment : in out type_net_segment) is
-					begin
+					procedure change_segment (segment : in out type_net_segment) is begin
 						-- If port sits on start OR end point of segment AND if it
 						-- is not already in the segment then append it to the 
 						-- portlist of the segment.
-						if 	segment.start_point = type_point (position) or
-							segment.end_point = type_point (position) then
+						if 	segment.start_point = position.place or
+							segment.end_point = position.place
+						then
 
 							-- If port not already in segment, append it.
 							-- Otherwise it must not be appended again. constraint_error would arise.
@@ -4910,6 +4921,7 @@ package body et_schematic_ops is
 				next (net_cursor);
 			end loop;
 		end query_nets;
+
 		
 	begin -- insert_port
 		log (text => "inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" & 
@@ -4924,6 +4936,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 
 	end insert_port;
+
 	
 	procedure add_port (
 	-- Adds a port to a submodule instance (the box in the parent sheet).
@@ -4936,8 +4949,8 @@ package body et_schematic_ops is
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
 		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_submodules;
@@ -5026,6 +5039,7 @@ package body et_schematic_ops is
 			end if;
 		end query_submodules;
 
+		
 	begin -- add_port
 		log (text => "module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
@@ -5052,13 +5066,13 @@ package body et_schematic_ops is
 
 		-- 1. assume x/y as given by position (which is the relative position):
 		set (
-			point		=> port_position,
+			point		=> port_position.place,
 			position	=> position); -- the relative port position
 
 		-- 2. move port_position by x/y of submodule_position:
 		move_by (
-			point		=> port_position,
-			offset		=> to_distance_relative (submodule_position));
+			point		=> port_position.place,
+			offset		=> to_distance_relative (submodule_position.place));
 
 		-- x/y of port_position is now absolute
 
@@ -5077,16 +5091,19 @@ package body et_schematic_ops is
 		
 	end add_port;
 
+	
 	procedure delete_submodule_port (
 	-- Removes a port from the net segments.
 		module			: in pac_generic_modules.cursor;		-- the module
 		port			: in type_submodule_port; -- OSC1 / clock_output
 		position		: in et_coordinates.type_position; -- the submodule position (only sheet matters)
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			-- This flag goes true on the first match. It signals
 			-- all iterations to cancel prematurely.
@@ -5179,6 +5196,7 @@ package body et_schematic_ops is
 
 			-- CS warning if port_processed still false ?
 		end query_nets;
+
 		
 	begin -- delete_submodule_port
 		log (text => "deleting submodule port in nets ...", level => log_threshold);
@@ -5193,14 +5211,15 @@ package body et_schematic_ops is
 		log_indentation_down;
 
 	end delete_submodule_port;
+
 	
 	procedure delete_port (
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_submodules;
@@ -5216,7 +5235,8 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
+				submodule	: in out type_submodule) 
+			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 			begin
@@ -5280,6 +5300,7 @@ package body et_schematic_ops is
 		
 	end delete_port;
 
+	
 	procedure move_port (
 	-- Moves the given submodule port. Disconnects the port from
 	-- start or end points of net segments BEFORE the move. 
@@ -5289,8 +5310,8 @@ package body et_schematic_ops is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
@@ -5318,7 +5339,7 @@ package body et_schematic_ops is
 					port_name	: in pac_net_name.bounded_string;
 					port		: in out et_submodules.type_submodule_port) 
 				is
-					submod_pos_tmp : type_point := type_point (submodule_position);
+					submod_pos_tmp : type_point := submodule_position.place;
 					point_tmp : type_point := point;
 				begin
 					case coordinates is
@@ -5356,8 +5377,8 @@ package body et_schematic_ops is
 									sheet	=> get_sheet (submodule_position));
 
 						move_by (
-							point	=> port_position,
-							offset	=> to_distance_relative (submodule_position));
+							point	=> port_position.place,
+							offset	=> to_distance_relative (submodule_position.place));
 						-- now port_position contains the absolute port position
 
 					else
@@ -5450,6 +5471,7 @@ package body et_schematic_ops is
 		
 	end move_port;
 
+	
 	procedure drag_net_segments (
 	-- Drags the net segments according to the given submodule ports.
 	-- Changes the position of start or end points of segments.
@@ -5461,12 +5483,12 @@ package body et_schematic_ops is
 		port			: in type_submodule_port;	-- instance and port name
 		pos_before		: in et_coordinates.type_position;	-- the old port position
 		pos_after		: in et_coordinates.type_position;	-- the new port position
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module)
+		is
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -5491,12 +5513,12 @@ package body et_schematic_ops is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.start_point = type_point (pos_before) then
+						if segment.start_point = pos_before.place then
 							log (text => "move segment start point from" & 
 								to_string (segment.start_point),
 								level => log_threshold + 3);
 
-							segment.start_point := type_point (pos_after);
+							segment.start_point := pos_after.place;
 
 							log (text => "to" & 
 								to_string (segment.start_point),
@@ -5507,12 +5529,12 @@ package body et_schematic_ops is
 						end if;
 
 						-- if port sits on an end point of a segment -> move end point
-						if segment.end_point = type_point (pos_before) then
+						if segment.end_point = pos_before.place then
 							log (text => "move segment end point from" & 
 								to_string (segment.end_point),
 								level => log_threshold + 3);
 
-							segment.end_point := type_point (pos_after);
+							segment.end_point := pos_after.place;
 
 							log (text => "to" & 
 								to_string (segment.end_point),
@@ -5609,6 +5631,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end drag_net_segments;
 
+	
 	procedure movable_test (
 	-- Tests whether the submodule port at the given point is movable. The criteria
 	-- for movement are: no device, no netchanger ports there.
@@ -5617,7 +5640,8 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string;
 		port_name		: in pac_net_name.bounded_string;
 		point 			: in et_coordinates.type_position;
-		log_threshold	: in type_log_level) is 
+		log_threshold	: in type_log_level) 
+	is 
 		ports : type_ports;
 		port : type_submodule_port;
 
@@ -5672,6 +5696,7 @@ package body et_schematic_ops is
 		
 		log_indentation_down;
 	end movable_test;
+
 	
 	procedure drag_port (
 	-- Drags the given submodule port along the edge of the box.
@@ -5714,7 +5739,7 @@ package body et_schematic_ops is
 					port_name	: in pac_net_name.bounded_string;
 					port		: in out et_submodules.type_submodule_port)
 				is
-					submod_pos_tmp : type_point := type_point (submodule_position);
+					submod_pos_tmp : type_point := submodule_position.place;
 					point_tmp : type_point := point;
 				begin
 					-- BACKUP THE PORT POSITION BEFORE THE DRAG OPERATION:
@@ -5723,8 +5748,8 @@ package body et_schematic_ops is
 								sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
 					move_by (
-						point	=> port_position_before,
-						offset	=> to_distance_relative (submodule_position));
+						point	=> port_position_before.place,
+						offset	=> to_distance_relative (submodule_position.place));
 					-- Now port_position_before contains the absolute port position of 
 					-- the port BEFORE the drag operation.
 
@@ -5772,8 +5797,8 @@ package body et_schematic_ops is
 									sheet	=> get_sheet (submodule_position)); -- same sheet as submodule box
 
 						move_by (
-							point	=> port_position_after,
-							offset	=> to_distance_relative (submodule_position));
+							point	=> port_position_after.place,
+							offset	=> to_distance_relative (submodule_position.place));
 						-- Now port_position_after contains the absolute port position of 
 						-- the port AFTER the drag operation.
 
@@ -5801,6 +5826,7 @@ package body et_schematic_ops is
 				end if;
 					
 			end query_ports;
+
 			
 		begin -- query_submodules
 			if contains (module.submods, instance) then
@@ -5858,18 +5884,19 @@ package body et_schematic_ops is
 		
 	end drag_port;
 
+	
 	procedure delete_ports (
 	-- Deletes all references to the given submodule in the nets.
 		module_cursor	: in pac_generic_modules.cursor;					-- the module
 		instance		: in pac_module_instance_name.bounded_string; -- the submodule instance
 		position		: in et_coordinates.type_position; 		-- the location in the schematic (only sheet matters)
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		procedure query_nets (
 		-- Removes all references to the submodule instance from the net segments.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -6196,6 +6223,7 @@ package body et_schematic_ops is
 		package type_drags is new doubly_linked_lists (type_drag);
 		drag_list : type_drags.list;
 
+		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -6227,7 +6255,7 @@ package body et_schematic_ops is
 					drag.before := submodule.position;
 
 					move_by (
-						point	=> drag.before,
+						point	=> drag.before.place,
 						offset	=> to_distance_relative (port.position));
 			
 					-- Now drag.before contains the absolute port position of 
@@ -6255,13 +6283,13 @@ package body et_schematic_ops is
 							drag.after := submodule.position;
 
 							move_by (
-								point	=> drag.after,
+								point	=> drag.after.place,
 								offset	=> to_distance_relative (point));
 
 					end case;
 
 					move_by (
-						point	=> drag.after,
+						point	=> drag.after.place,
 						offset	=> to_distance_relative (port.position));
 
 					-- Now drag.after contains the absolute port position of 
@@ -6282,11 +6310,12 @@ package body et_schematic_ops is
 				end loop;
 			end query_ports;
 
+			
 			procedure move_box (
 			-- Moves the box on the sheet according to given target position.
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
-			begin
+				submodule	: in out type_submodule) 
+			is begin
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
 					when ABSOLUTE =>
@@ -6294,7 +6323,7 @@ package body et_schematic_ops is
 
 					when RELATIVE =>
 						move_by (
-							point	=> submodule.position,
+							point	=> submodule.position.place,
 							offset	=> to_distance_relative (point));
 				end case;
 
@@ -6349,6 +6378,7 @@ package body et_schematic_ops is
 				
 			end loop;
 		end drag_segments;
+
 		
 	begin -- drag_submodule
 		case coordinates is
@@ -6378,14 +6408,15 @@ package body et_schematic_ops is
 
 	end drag_submodule;
 
+	
 	procedure copy_submodule (
 	-- Copies a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		destination		: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		use et_submodules;
@@ -6446,7 +6477,7 @@ package body et_schematic_ops is
 
 				-- Overwrite position in schematic by zero so that the new instance sits at 
 				-- the lower left corner of the layout drawing:
-				submodule.position_in_board := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;
+				submodule.position_in_board := et_pcb_coordinates.pac_geometry_2.origin_zero_rotation;
 
 				insert (
 					container	=> module.submods,
@@ -6497,13 +6528,14 @@ package body et_schematic_ops is
 		
 	end copy_submodule;
 
+	
 	procedure rename_submodule (
 	-- Renames a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_old	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		use et_submodules;

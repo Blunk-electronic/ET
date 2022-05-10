@@ -418,7 +418,7 @@ is
 			draw_line (
 				area		=> in_area,
 				context		=> context,
-				line		=> element (s),
+				line		=> to_line_fine (element (s)),
 				width		=> net_line_width,
 				height		=> self.frame_height);
 
@@ -439,7 +439,7 @@ is
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> segment,
+			line		=> to_line_fine (segment),
 			width		=> net_line_width,
 			height		=> self.frame_height);
 
@@ -684,6 +684,7 @@ is
 			draw_labels (net_cursor, strand_cursor, element (original_segment));
 		end if;
 	end draw_moving_segments;
+	
 
 	-- Draws the segments attached to a unit being dragged.
 	-- If the list segments_being_dragged is empty, nothing happens.
@@ -720,7 +721,7 @@ is
 				draw_line (
 					area		=> in_area,
 					context		=> context,
-					line		=> copy_of_original_segment,
+					line		=> to_line_fine (copy_of_original_segment),
 					width		=> net_line_width,
 					height		=> self.frame_height);
 
@@ -729,6 +730,7 @@ is
 				
 			end if;
 		end query_segment;
+
 		
 	begin -- draw_segment_being_dragged_along_with_unit
 		if not is_empty (segments_being_dragged) then
@@ -757,8 +759,8 @@ is
 	
 	procedure query_nets (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) is
-
+		module		: in type_module) 
+	is
 		-- This cursor points to the current net being drawn:
 		net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -767,7 +769,8 @@ is
 		-- This is the case when the verb VERB_SHOW is not active.
 		procedure query_strands_normal (
 			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net) is
+			net			: in type_net) 
+		is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
@@ -853,7 +856,8 @@ is
 		-- This is the case when the verb VERB_SHOW is active.
 		procedure query_strands_show (
 			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net) is
+			net			: in type_net)
+		is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is

@@ -47,7 +47,7 @@ with et_canvas_general;				use et_canvas_general;
 with et_canvas_schematic;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_brd;
+use et_pcb_coordinates.pac_geometry_2;
 
 --with et_terminals;					use et_terminals;
 

@@ -87,6 +87,26 @@ package body et_geometry_1 is
 	end to_float;
 	
 
+
+	function to_radians (degrees : in type_angle) return type_float_internal is
+		use ada.numerics;
+	begin
+		return (pi * type_float_internal (degrees)) / (units_per_cycle * 0.5);
+	end to_radians;
+
+	
+	function to_degrees (
+		radians : in type_float_internal)
+		return type_angle 
+	is
+		use ada.numerics;
+	begin
+		--return to_rotation ((units_per_cycle * 0.5 * radians) / pi); -- CS
+		return (units_per_cycle * 0.5 * radians) / pi;
+	end to_degrees;
+
+
+	
 	function get_direction (
 		rotation : in type_angle) 
 		return type_direction_of_rotation
@@ -309,21 +329,6 @@ package body et_geometry_1 is
 	--end round;
 
 	
-	--function clip_distance (d : in type_distance)
-		--return type_position_axis
-	--is begin
-		--if d > axis_max then return axis_max;
-		--elsif d < axis_min then return axis_min;
-		--else return d;
-		--end if;
-	--end clip_distance;
-
-	
-	--procedure clip_distance (d : in out type_distance) is begin
-		--if d > axis_max then d := axis_max;
-		--elsif d < axis_min then d := axis_min;
-		--end if;
-	--end clip_distance;
 
 
 	
@@ -1385,21 +1390,6 @@ package body et_geometry_1 is
 	--end reverse_direction;
 
 	
-	--function to_radians (degrees : in type_rotation) return type_float_internal is
-		--use ada.numerics;
-	--begin
-		--return (pi * type_float_internal (degrees)) / (units_per_cycle * 0.5);
-	--end to_radians;
-
-	
-	--function to_degrees (
-		--radians : in type_float_internal)
-		--return type_rotation 
-	--is
-		--use ada.numerics;
-	--begin
-		--return to_rotation ((units_per_cycle * 0.5 * radians) / pi);
-	--end to_degrees;
 
 	
 	--function to_position (
@@ -2281,6 +2271,22 @@ package body et_geometry_1 is
 			& " / E:" & to_string (arc.end_point)
 			& " / D: " & to_string (arc.direction);
 	end to_string;
+
+
+	function get_radius_start (
+		arc : in type_arc) 
+		return type_float_internal_positive 
+	is begin
+		return get_distance_total (arc.center, arc.start_point);
+	end get_radius_start;
+
+	
+	function get_radius_end (
+		arc : in type_arc)
+		return type_float_internal_positive
+	is begin
+		return get_distance_total (arc.center, arc.end_point);
+	end get_radius_end;
 
 
 	function reverse_arc (

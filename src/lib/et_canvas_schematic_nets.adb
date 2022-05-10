@@ -310,7 +310,7 @@ package body et_canvas_schematic_nets is
 						-- If the segment is within the catch zone, append
 						-- the current net, stand and segment cursor to the result:
 						if on_line (
-							point		=> type_point (place),
+							point		=> place.place,
 							line		=> element (segment_cursor)) 
 						then
 						-- CS use get_shortest_distance (point, element)
@@ -356,7 +356,8 @@ package body et_canvas_schematic_nets is
 		
 	begin -- collect_segments
 		log (text => "looking up net segments at" & to_string (place) 
-			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+			 & " catch zone" & catch_zone_to_string (catch_zone), 
+			 level => log_threshold);
 
 		log_indentation_up;
 		
@@ -1019,7 +1020,7 @@ package body et_canvas_schematic_nets is
 						procedure test_distance is 
 							d : constant type_float_internal := get_distance_total (
 								point_one	=> element (label_cursor).position,
-								point_two	=> type_point (place));
+								point_two	=> place.place);
 						begin
 							-- If the label position is within the catch zone, append
 							-- the current net, stand, segment and label cursor to the result:
@@ -1104,7 +1105,8 @@ package body et_canvas_schematic_nets is
 
 	begin -- collect_labels
 		log (text => "looking up net labels at" & to_string (place) 
-			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
 		-- CS output category of label
 		
 		log_indentation_up;

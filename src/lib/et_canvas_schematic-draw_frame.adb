@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -46,8 +46,8 @@ separate (et_canvas_schematic)
 procedure draw_frame (
 	self	: not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use et_frames;
 	
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
@@ -65,6 +65,7 @@ procedure draw_frame (
 	use pac_draw_frame;
 	use pac_lines;
 
+	
 	procedure draw_additional_placeholders is
 		
 		-- get placeholders:

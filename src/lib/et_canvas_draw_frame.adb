@@ -52,7 +52,7 @@ package body pac_draw_frame is
 		draw_ops.draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> line,
+			line		=> to_line_fine (line),
 			width		=> type_distance_positive (line_width_thin),
 			height		=> type_float_internal_positive (frame_size.y));
 	end draw_line;
@@ -159,7 +159,7 @@ package body pac_draw_frame is
 		use et_text;
 		procedure draw_index (
 			content	: in pac_text_content.bounded_string;
-			pos		: in pac_geometry_1.type_point) 
+			pos		: in pac_geometry_2.type_point) 
 		is begin
 			draw_ops.draw_text (
 				area		=> in_area,
@@ -169,13 +169,13 @@ package body pac_draw_frame is
 				font		=> font_indexes,
 				position	=> pos,
 				origin		=> false,
-				rotation	=> pac_geometry_1.zero_rotation,
+				rotation	=> 0.0,
 				alignment	=> (CENTER, CENTER),
 				height		=> type_float_internal_positive (frame_size.y));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
-		xo, yo	: pac_geometry_1.type_distance;
+		xo, yo	: pac_geometry_2.type_distance;
 		
 	begin -- draw_sector_delimiters
 		-- COLUMN DELIMITERS:

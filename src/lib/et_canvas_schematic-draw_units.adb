@@ -40,8 +40,8 @@ separate (et_canvas_schematic)
 procedure draw_units (
 	self	: not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use et_schematic;
 	use pac_devices_sch;
 	use et_schematic.pac_units;
@@ -275,7 +275,7 @@ procedure draw_units (
 			-- Get the position of the unit (as it is according to the module database).
 			-- If the unit is selected and being moved the the x/y position
 			-- will be overwritten by the position of the mouse or the cursor.
-			unit_position := type_point (element (unit_cursor).position);
+			unit_position := element (unit_cursor).position.place;
 
 			-- There are two cases when a unit is to be drawn:
 			-- 1. The unit is on the current active sheet.

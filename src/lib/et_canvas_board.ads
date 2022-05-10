@@ -60,6 +60,7 @@ with et_geometry;					use et_geometry;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
+use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_vias;						use et_vias;
@@ -101,7 +102,7 @@ package et_canvas_board is
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_board_shapes_and_text.pac_geometry_2);
+		pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2);
 
 	use pac_canvas;	
 
@@ -232,8 +233,9 @@ package et_canvas_board is
 	
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new et_board_shapes_and_text.pac_geometry_2.type_line with null record;
-
+	type type_cursor_line is new et_pcb_coordinates.pac_geometry_2.type_line with null record;
+	-- CS: Cursor stuff must be based on float numbers.
+	
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

@@ -81,6 +81,12 @@ package et_geometry_2 is
 		range axis_min .. axis_max;
 
 
+	function clip_distance (d : in type_distance)
+		return type_position_axis;
+
+	procedure clip_distance (d : in out type_distance);
+
+
 	
 	-- Converts a mil number (given as a string) to millimeters.	
 	function mil_to_distance (mil : in string) return type_distance;
@@ -767,7 +773,7 @@ package et_geometry_2 is
 		p : in type_point)
 		return type_distance_relative;
 
-
+	
 	-- Returns the distance of point_two to point_one.	
 	-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 	-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
@@ -916,8 +922,12 @@ package et_geometry_2 is
 	function catch_zone_to_string (
 		c : in type_catch_zone)
 		return string;
+
+	function to_catch_zone (
+		c : in string)
+		return type_catch_zone;
+
 	
-		
 	-- Returns true if point_2 is within the 
 	-- catch zone around point_1:
 	function in_catch_zone (
@@ -1019,7 +1029,7 @@ package et_geometry_2 is
 		point_two	: in type_point;
 		width		: in type_distance_positive) 
 		return type_boundaries;
-
+	-- CS obsolete ?
 	
 	
 	-- Compares two points by their distance to the origin:
@@ -1072,6 +1082,16 @@ package et_geometry_2 is
 
 	
 	type type_line is new type_line_base with null record;
+
+
+	function to_line_fine (
+		line : in type_line)
+		return pac_geometry_1.type_line;
+
+	
+	function to_line_coarse (
+		line : in pac_geometry_1.type_line)
+		return type_line'class;
 
 
 	-- Returns the start and end point of the given line as string.
@@ -1658,6 +1678,15 @@ package et_geometry_2 is
 	-- Returns the center and radius of the given circle as string.
 	function to_string (circle : in type_circle) return string;
 
+
+	function to_radius (
+		r : in string)
+		return type_float_internal_positive;
+
+	function to_diameter (
+		d : in string)
+		return type_float_internal_positive;
+	
 	
 	-- Splits a circle in 2 arcs.
 	-- The circle will be split by a vertical line that crosses the center.

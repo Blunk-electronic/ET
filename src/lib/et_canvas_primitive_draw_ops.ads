@@ -90,7 +90,7 @@ package pac_draw is
 	
 	use pac_canvas;
 	use pac_geometry_2;
-
+	
 	use pac_geometry_1;
 	-- NOTE: This use clause does not work properly. 
 	-- For some reason the package name must be explicitely provided

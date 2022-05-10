@@ -54,7 +54,7 @@ with et_project.modules;		use et_project.modules;
 with et_terminals;				use et_terminals;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_brd;
+use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;
 
@@ -64,7 +64,6 @@ package et_board_ops.tracks is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_shapes_and_text.pac_geometry_2;
 	use et_board_shapes_and_text;
 	use pac_net_name;
 

@@ -57,7 +57,7 @@ is
 	procedure query_submods (cursor : in pac_submodules.cursor) is
 
 		-- The lower left corner of the submodule box in the schematic:
-		submod_position : constant type_point := type_point (element (cursor).position);
+		submod_position : constant type_point := element (cursor).position.place;
 		
 		procedure draw_box is begin
 			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
@@ -130,7 +130,7 @@ is
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
-			use et_pcb_coordinates.pac_geometry_brd;
+			use et_pcb_coordinates.pac_geometry_2;
 			pos_x : constant string := to_string (get_x (element (cursor).position_in_board));
 			pos_y : constant string := to_string (get_y (element (cursor).position_in_board));
 			rotation : constant string := to_string (get_rotation (element (cursor).position_in_board));
@@ -150,7 +150,7 @@ is
 				font		=> position_board_font,
 				position	=> position,
 				origin		=> false,
-				rotation	=> pac_geometry_sch.zero_rotation,
+				rotation	=> 0.0,
 				alignment	=> (LEFT, TOP),
 				height		=> pac_geometry_sch.type_float_internal_positive (self.frame_height));
 

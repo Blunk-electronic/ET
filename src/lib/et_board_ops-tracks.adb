@@ -86,7 +86,7 @@ package body et_board_ops.tracks is
 		log (importance => WARNING, 
 			 text => "no net segment found in layer" & to_string (layer) &
 			 " at" & to_string (point) &
-			 " in vicinity of" & to_string (accuracy));
+			 " in vicinity of" & catch_zone_to_string (accuracy));
 	end no_net_segment_found;
 
 	
@@ -96,7 +96,7 @@ package body et_board_ops.tracks is
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
 	procedure check_terminal_face_vs_layer (
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;											   
-		terminal		: in type_terminal_position;
+		terminal		: in type_terminal_position_fine;
 		layer			: in et_pcb_stack.type_signal_layer) 
 	is
 		procedure warning is begin
@@ -285,13 +285,13 @@ package body et_board_ops.tracks is
 		device_cursor : pac_devices_sch.cursor;
 
 		
-		procedure make_line (terminal_position : in type_terminal_position) is begin
+		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> type_point (terminal_position),
+				start_point	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -299,10 +299,14 @@ package body et_board_ops.tracks is
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction at given length:
-			line.end_point := type_point (move (
-					point 		=> type_point (terminal_position),
+			--line.end_point := type_point (move (
+					--point 		=> terminal_position.place,
+					--direction	=> direction,
+					--distance	=> length));
+			line.end_point := move (
+					point 		=> line.start_point,
 					direction	=> direction,
-					distance	=> length));
+					distance	=> length);
 			
 		end make_line;
 
@@ -354,13 +358,13 @@ package body et_board_ops.tracks is
 		device_cursor : pac_devices_sch.cursor;
 
 		
-		procedure make_line (terminal_position : in type_terminal_position) is begin
+		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> type_point (terminal_position),
+				start_point	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -420,13 +424,13 @@ package body et_board_ops.tracks is
 		device_cursor : pac_devices_sch.cursor;
 
 		
-		procedure make_line (terminal_position : in type_terminal_position) is begin
+		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> type_point (terminal_position),
+				start_point	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				end_point	=> end_point); -- as given by operator
@@ -480,13 +484,13 @@ package body et_board_ops.tracks is
 		
 		device_cursor : pac_devices_sch.cursor;
 		
-		procedure make_line (terminal_position : in type_terminal_position) is begin
+		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
 			-- Build the start point of the line:
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> type_point (terminal_position),
+				start_point	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -743,7 +747,7 @@ package body et_board_ops.tracks is
 			" ripping up segment" &
 			" in layer " & to_string (layer) &
 			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+			" accuracy" & catch_zone_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module

@@ -71,6 +71,20 @@ package et_geometry_1 is
 	units_per_cycle : constant type_float_internal := 360.0;
 
 
+	radians_max : constant type_float_internal := - 2.0 * ada.numerics.pi;
+	-- CS should be: radians_max : constant type_float_internal := 2.0 * ada.numerics.pi;
+
+	subtype type_radians is type_float_internal range (- radians_max) .. radians_max;
+
+	
+	--Converts degrees to radians.
+	function to_radians (degrees : in type_angle) return type_float_internal;
+
+	--Converts radians to degrees.
+	function to_degrees (radians : in type_float_internal) return type_angle;
+
+	
+	
 	-- Returns CW if rotation is negative. 
 	-- Returns CCW if rotation is positive or zero.
 	function get_direction (rotation : in type_angle) 
@@ -172,10 +186,6 @@ package et_geometry_1 is
 		--mode	: in type_rounding_mode := rounding_mode_default) 
 		--return type_distance_coarse;
 	
-	--function clip_distance (d : in type_distance)
-		--return type_position_axis;
-
-	--procedure clip_distance (d : in out type_distance);
 
 	
 	---- The distance between two objects:
@@ -750,15 +760,6 @@ package et_geometry_1 is
 	
 
 
-	--radians_max : constant type_float_internal := - 2.0 * ada.numerics.pi;
-	
-	--subtype type_radians is type_float_internal range (- radians_max) .. radians_max;
-	
-	--function to_radians (degrees : in type_rotation) return type_float_internal;
-	-- Converts degrees to radians.
-
-	--function to_degrees (radians : in type_float_internal) return type_rotation;
-	-- Converts radians to degrees.
 
 
 	--function to_position (
@@ -1195,6 +1196,18 @@ package et_geometry_1 is
 	function to_string (
 		arc : in type_arc)
 		return string;
+
+
+	-- Returns the distance between the start point and the center of the arc.
+	function get_radius_start (
+		arc : in type_arc) 
+		return type_float_internal_positive;
+	
+	
+	-- Returns the distance between the end point and the center of the arc.
+	function get_radius_end (
+		arc : in type_arc) 
+		return type_float_internal_positive;
 
 	
 	-- Swaps start and end point of an arc. Reverses the direction of the arc:

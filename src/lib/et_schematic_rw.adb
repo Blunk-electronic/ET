@@ -44,8 +44,8 @@ package body et_schematic_rw is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 
 		function text return string is begin return 
-			space & keyword_x & to_string (get_x (pos)) 
-			& space & keyword_y & to_string (get_y (pos));
+			space & keyword_x & to_string (get_x (pos.place)) 
+			& space & keyword_y & to_string (get_y (pos.place));
 		end text;
 		
 	begin

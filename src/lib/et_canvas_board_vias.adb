@@ -131,6 +131,7 @@ package body et_canvas_board_vias is
 		
 		-- CS display layer ?
 	end upper_layer_changed;
+	
 
 	procedure lower_layer_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
@@ -164,6 +165,7 @@ package body et_canvas_board_vias is
 		et_canvas_board.redraw_board;
 	end apply_drill_size;
 	
+	
 	function drill_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
@@ -187,6 +189,7 @@ package body et_canvas_board_vias is
 		
 		return event_handled;
 	end drill_key_pressed;
+
 	
 	procedure drill_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -207,6 +210,7 @@ package body et_canvas_board_vias is
 
 		et_canvas_board.redraw_board;
 	end apply_restring_inner;
+	
 	
 	function restring_inner_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -232,6 +236,7 @@ package body et_canvas_board_vias is
 		return event_handled;
 	end restring_inner_key_pressed;
 	
+	
 	procedure restring_inner_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
@@ -251,6 +256,7 @@ package body et_canvas_board_vias is
 
 		et_canvas_board.redraw_board;
 	end apply_restring_outer;
+
 	
 	function restring_outer_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -275,6 +281,7 @@ package body et_canvas_board_vias is
 		
 		return event_handled;
 	end restring_outer_key_pressed;
+	
 	
 	procedure restring_outer_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);

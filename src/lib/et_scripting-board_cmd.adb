@@ -68,13 +68,14 @@ is
 	use et_board_ops.tracks;
 	use et_packages;
 	use et_board_shapes_and_text;
-	use pac_geometry_2;
 	use pac_contours;
 	use et_drills;
 	use et_vias;
 	use et_pcb;
+
 	use et_pcb_coordinates;
-	use et_pcb_coordinates.pac_geometry_brd;
+	use pac_geometry_2;
+
 	use et_pcb_stack;
 	use et_canvas_board.pac_canvas;
 	use et_display.board;
@@ -380,7 +381,7 @@ is
 				delete_outline (
 					module_name 	=> module,
 					point			=> type_point (to_point (f (5), f (6))),
-					accuracy		=> to_distance (f (7)),					
+					accuracy		=> to_catch_zone (f (7)),					
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -397,7 +398,7 @@ is
 				delete_hole (
 					module_name 	=> module,
 					point			=> type_point (to_point (f (5), f (6))),
-					accuracy		=> to_distance (f (7)),
+					accuracy		=> to_catch_zone (f (7)),
 					
 					log_threshold	=> log_threshold + 1);
 
@@ -476,7 +477,7 @@ is
 									fill_style		=> fill_style_default, -- don't care here
 									border_width	=> to_distance (f (7)),
 									center			=> type_point (to_point (f (8), f (9))),
-									radius			=> to_distance (f (10))),
+									radius			=> to_radius (f (10))),
 								log_threshold	=> log_threshold + 1);
 						else
 							
@@ -509,7 +510,7 @@ is
 												filled		=> YES,
 												fill_style	=> SOLID,
 												center	=> type_point (to_point (f (8), f (9))),
-												radius	=> to_distance (f (10))),
+												radius	=> to_radius (f (10))),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -536,7 +537,7 @@ is
 												filled		=> YES,
 												fill_style	=> HATCHED,
 												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_distance (f (10)),
+												radius		=> to_radius (f (10)),
 												hatching	=> (
 													line_width	=> to_distance (f (11)),
 													spacing		=> to_distance (f (12)),
@@ -628,7 +629,7 @@ is
 									fill_style		=> fill_style_default, -- don't care here
 									border_width	=> to_distance (f (7)),
 									center			=> type_point (to_point (f (8), f (9))),
-									radius			=> to_distance (f (10))),
+									radius			=> to_radius (f (10))),
 								log_threshold	=> log_threshold + 1);
 						else
 							
@@ -661,7 +662,7 @@ is
 												filled		=> YES,
 												fill_style	=> SOLID,
 												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_distance (f (10))),
+												radius		=> to_radius (f (10))),
 										log_threshold	=> log_threshold + 1);
 
 								when HATCHED =>
@@ -686,7 +687,7 @@ is
 												filled		=> YES,
 												fill_style	=> HATCHED,
 												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_distance (f (10)),
+												radius		=> to_radius (f (10)),
 												hatching	=> (
 													line_width	=> to_distance (f (11)),
 													spacing		=> to_distance (f (12)),
@@ -771,7 +772,7 @@ is
 											(
 											filled		=> NO,
 											center	=> type_point (to_point (f (7), f (8))),
-											radius	=> to_distance (f (9))
+											radius	=> to_radius (f (9))
 											),
 								log_threshold	=> log_threshold + 1);
 						else
@@ -792,7 +793,7 @@ is
 											(
 											filled		=> YES,
 											center	=> type_point (to_point (f (8), f (9))),
-											radius	=> to_distance (f (10))
+											radius	=> to_radius (f (10))
 											),
 								log_threshold	=> log_threshold + 1);
 						else
@@ -876,7 +877,7 @@ is
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
 										filled		=> NO,
 										center	=> type_point (to_point (f (7), f (8))),
-										radius	=> to_distance (f (9))), -- 40
+										radius	=> to_radius (f (9))), -- 40
 						
 								log_threshold	=> log_threshold + 1);
 						else
@@ -896,7 +897,7 @@ is
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> YES,
 											center	=> type_point (to_point (f (8), f (9))),
-											radius	=> to_distance (f (10)) -- 40
+											radius	=> to_radius (f (10)) -- 40
 											),
 											
 								log_threshold	=> log_threshold + 1);
@@ -971,7 +972,7 @@ is
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> NO,
 											center	=> type_point (to_point (f (7), f (8))),
-											radius	=> to_distance (f (9)) -- 40
+											radius	=> to_radius (f (9)) -- 40
 											),
 											
 								log_threshold	=> log_threshold + 1);
@@ -992,7 +993,7 @@ is
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 											filled		=> YES,
 											center	=> type_point (to_point (f (8), f (9))),
-											radius	=> to_distance (f (10)) -- 40
+											radius	=> to_radius (f (10)) -- 40
 											),
 											
 								log_threshold	=> log_threshold + 1);
@@ -1075,7 +1076,7 @@ is
 										fill_style		=> fill_style_default, -- don't care here
 										border_width	=> to_distance (f (7)),
 										center			=> type_point (to_point (f (8), f (9))),
-										radius			=> to_distance (f (10))
+										radius			=> to_radius (f (10))
 										),
 								log_threshold	=> log_threshold + 1);
 						else
@@ -1109,7 +1110,7 @@ is
 													filled		=> YES,
 													fill_style	=> SOLID,
 													center	=> type_point (to_point (f (8), f (9))),
-													radius	=> to_distance (f (10))
+													radius	=> to_radius (f (10))
 													),
 										log_threshold	=> log_threshold + 1);
 
@@ -1135,7 +1136,7 @@ is
 												filled		=> YES,
 												fill_style	=> HATCHED,
 												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_distance (f (10)),
+												radius		=> to_radius (f (10)),
 												hatching	=> (
 															line_width	=> to_distance (f (11)),
 															spacing		=> to_distance (f (12)),
@@ -1224,7 +1225,7 @@ is
 										fill_style		=> fill_style_default, -- don't care here
 										border_width	=> to_distance (f (7)),
 										center			=> type_point (to_point (f (8), f (9))),
-										radius			=> to_distance (f (10))
+										radius			=> to_radius (f (10))
 										),
 								log_threshold	=> log_threshold + 1);
 						else
@@ -1258,7 +1259,7 @@ is
 													filled		=> YES,
 													fill_style	=> SOLID,
 													center	=> type_point (to_point (f (8), f (9))),
-													radius	=> to_distance (f (10))
+													radius	=> to_radius (f (10))
 													),
 										log_threshold	=> log_threshold + 1);
 
@@ -1284,7 +1285,7 @@ is
 												filled		=> YES,
 												fill_style	=> HATCHED,
 												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_distance (f (10)),
+												radius		=> to_radius (f (10)),
 												hatching	=> (
 															line_width	=> to_distance (f (11)),
 															spacing		=> to_distance (f (12)),
@@ -2706,8 +2707,7 @@ is
 								-- board tree_1 delete layer 2
 								delete_layer (
 									module_name 	=> module,
-									layer			=> to_signal_layer (f (5)),
-									
+									layer			=> to_signal_layer (f (5)),									
 									log_threshold	=> log_threshold + 1);
 
 							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -2733,7 +2733,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2756,7 +2756,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2777,7 +2777,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2798,7 +2798,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2819,7 +2819,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2839,7 +2839,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
-									accuracy		=> to_distance (f (7)),
+									accuracy		=> to_catch_zone (f (7)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2859,7 +2859,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
-									accuracy		=> to_distance (f (7)),
+									accuracy		=> to_catch_zone (f (7)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -3159,7 +3159,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_distance (f (8)),
+									accuracy		=> to_catch_zone (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -3182,7 +3182,7 @@ is
 									point			=> type_point (set (
 											x => to_distance (dd => f (7)),
 											y => to_distance (dd => f (8)))),
-									accuracy		=> to_distance (f (9)),
+									accuracy		=> to_catch_zone (f (9)),
 									
 									log_threshold	=> log_threshold + 1
 									);
