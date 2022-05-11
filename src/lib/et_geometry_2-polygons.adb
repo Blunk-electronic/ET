@@ -169,8 +169,8 @@ package body et_geometry_2.polygons is
 		d1 : constant type_vector := subtract (vector, sv);
 		m, n : type_float_internal;
 	begin
-		m := absolute (cross_product (dv, d1));
-		n := absolute (dv);
+		m := get_absolute (cross_product (dv, d1));
+		n := get_absolute (dv);
 		
 		return (m / n);
 	end get_distance;

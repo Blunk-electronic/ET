@@ -1249,7 +1249,7 @@ package body et_geometry_1 is
 	end;
 
 
-	function to_positive_rotation (
+	function to_angle_positive (
 		rotation : in type_angle)
 		return type_angle_positive
 	is begin
@@ -1258,7 +1258,7 @@ package body et_geometry_1 is
 		else
 			return rotation;
 		end if;
-	end to_positive_rotation;
+	end to_angle_positive;
 
 
 	
@@ -1536,7 +1536,7 @@ package body et_geometry_1 is
 	end get_z;
 
 
-	function absolute (
+	function get_absolute (
 		vector	: in type_vector)
 		return type_float_internal
 	is begin
@@ -1546,14 +1546,14 @@ package body et_geometry_1 is
 				vector.y * vector.y +
 				vector.z * vector.z);
 
-	end absolute;
+	end get_absolute;
 
 
 	function "<" (
 		left, right : in type_vector) 
 		return boolean
 	is begin
-		if absolute (left) < absolute (right) then
+		if get_absolute (left) < get_absolute (right) then
 			return true;
 		else
 			return false;
@@ -1752,13 +1752,13 @@ package body et_geometry_1 is
 
 
 	function get_distance (
-		vector_one, vector_two : in type_vector)
+		v1, v2 : in type_vector)
 		return type_distance_polar
 	is
 		result : type_distance_polar;
 
-		dx : constant type_float_internal := vector_two.x - vector_one.x;
-		dy : constant type_float_internal := vector_two.y - vector_one.y;
+		dx : constant type_float_internal := v2.x - v1.x;
+		dy : constant type_float_internal := v2.y - v1.y;
 
 		abs_dx : constant type_float_internal := abs (dx);
 		abs_dy : constant type_float_internal := abs (dy);
@@ -2057,7 +2057,7 @@ package body et_geometry_1 is
 		r : type_angle;
 	begin
 		a := dot_product (line_1.v_direction, line_2.v_direction);
-		b := absolute (line_1.v_direction) * absolute (line_2.v_direction);
+		b := get_absolute (line_1.v_direction) * get_absolute (line_2.v_direction);
 		c := a / b;
 
 		-- c may be slightly greater than 1.0 or smaller than -1.0. In these cases
@@ -2134,8 +2134,8 @@ package body et_geometry_1 is
 				-- Compute the distance between the lines.
 				-- If the distance is zero then the lines overlap.
 				
-				a := absolute (cross_product (line_1.v_direction, subtract (line_2.v_start, line_1.v_start)));
-				b := absolute (line_1.v_direction);
+				a := get_absolute (cross_product (line_1.v_direction, subtract (line_2.v_start, line_1.v_start)));
+				b := get_absolute (line_1.v_direction);
 
 				distance := a / b;
 

@@ -2722,8 +2722,8 @@ package body et_geometry_2 is
 		d1 : constant type_vector := subtract (vector, sv);
 		m, n : type_float_internal;
 	begin
-		m := absolute (cross_product (dv, d1));
-		n := absolute (dv);
+		m := get_absolute (cross_product (dv, d1));
+		n := get_absolute (dv);
 		
 		return (m / n);
 	end get_distance;
@@ -4204,7 +4204,7 @@ package body et_geometry_2 is
 			
 			-- Compute the angle of the point relative to the center
 			-- of the given arc:
-			P := to_positive_rotation (get_angle (get_distance (arc.center, vector)));
+			P := to_angle_positive (get_angle (get_distance (arc.center, vector)));
 			--log (text => "P" & to_string (P));
 			
 			-- The angle of the point must be between start and end point

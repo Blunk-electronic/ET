@@ -661,7 +661,7 @@ package et_geometry_1 is
 	-- Converts an angle like -90.0 degrees to 270 degrees.
 	-- Converts an angle like -1.0 degrees to 359 degrees.
 	-- Leaves a positive angle like 135 degree as it is and returns it.
-	function to_positive_rotation ( -- CS rename to to_angle_positive
+	function to_angle_positive (
 		rotation : in type_angle)
 		return type_angle_positive;
 
@@ -856,7 +856,7 @@ package et_geometry_1 is
 		return type_float_internal;
 
 
-	function absolute ( -- CS rename to get_absolute
+	function get_absolute (
 		vector	: in type_vector)
 		return type_float_internal;
 
@@ -926,7 +926,7 @@ package et_geometry_1 is
 	--         the returned angle is zero. So it is wise to test the two vectors
 	--         for equality befor calling this function.
 	function get_distance (
-		vector_one, vector_two : in type_vector) -- CS rename to v1 and v2
+		v1, v2 : in type_vector)
 		return type_distance_polar;
 
 
