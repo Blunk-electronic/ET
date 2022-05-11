@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -65,7 +65,7 @@ is
 		pac_draw_fab.draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> element (c),
+			line		=> to_line_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
 
@@ -78,7 +78,7 @@ is
 		pac_draw_fab.draw_arc (
 			area		=> in_area,
 			context		=> context,
-			arc			=> element (c),
+			arc			=> to_arc_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
 

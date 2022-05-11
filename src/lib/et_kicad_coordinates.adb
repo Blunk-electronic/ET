@@ -42,17 +42,22 @@ with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
+with et_geometry;
+
 
 package body et_kicad_coordinates is
+
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
 		return type_schematic_file_name.to_string (schematic);
 	end;
 
+	
 	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string is begin
 		return type_schematic_file_name.to_bounded_string (file);
 	end;
 
+	
 	procedure check_submodule_name_characters (
 	-- Checks for forbidden characters in submodule name.
 		name		: in type_submodule_name.bounded_string;
@@ -110,10 +115,39 @@ package body et_kicad_coordinates is
 		return to_string (result);
 	end to_string;
 
+
+	function get_point (position : in type_position) return type_point is begin
+		return position.point;
+	end get_point;
+
+	
+	function get_x (position : in type_position) return type_distance is begin
+		return position.point.x;
+	end get_x;
+
+	
+	function get_y (position : in type_position) return type_distance is begin
+		return position.point.y;
+	end get_y;
+
+
+	procedure set (
+		position	: in out type_position;
+		axis		: in type_axis_2D;
+		value		: in type_distance)
+	is begin
+		case axis is
+			when X => position.point.x := value;
+			when Y => position.point.y := value;
+		end case;
+	end set;
+	
+	
 	function path (position : in type_position) return type_path_to_submodule.list is begin
 		return position.path;
 	end;
 
+	
 	procedure set_path (
 		position	: in out type_position;
 		path		: in type_path_to_submodule.list) is begin
@@ -211,8 +245,10 @@ package body et_kicad_coordinates is
 	-- be displayed. See specification of type_scope.
 		position	: in type_position;
 		scope		: in type_scope := SHEET)
-		return string is
-
+		return string 
+	is
+		use et_geometry;
+		
 		coordinates_preamble_xy : constant string := " pos "
 			& "(x"
 			& axis_separator
@@ -242,31 +278,33 @@ package body et_kicad_coordinates is
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (get_x (position))
+					& to_string (get_x (position.point))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (get_y (position));
+					& to_string (get_y (position.point));
 				
 			when SHEET =>
 				return coordinates_preamble_sheet
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (get_x (position))
+					& to_string (get_x (position.point))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (get_y (position));
+					& to_string (get_y (position.point));
 
 			when XY =>
 				return coordinates_preamble_xy
-					& to_string (get_x (position))
+					& to_string (get_x (position.point))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (get_y (position));
+					& to_string (get_y (position.point));
 
 		end case;
 	end to_string;
 
+	
 	function sheet (position : in type_position) return type_sheet is begin
 		return position.sheet_number;
 	end sheet;
 
+	
 	function same_path_and_sheet (left, right : in type_position) return boolean is
 	-- Returns true if the given coordinates have same path and sheet.
 		same : boolean := false;

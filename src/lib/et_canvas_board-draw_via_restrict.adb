@@ -70,7 +70,7 @@ is
 			draw_line (
 				area		=> in_area,
 				context		=> context,
-				line		=> element (c),
+				line		=> to_line_fine (element (c)),
 				width		=> via_restrict_line_width,
 				height		=> self.frame_height);
 
@@ -86,7 +86,7 @@ is
 			draw_arc (
 				area		=> in_area,
 				context		=> context,
-				arc			=> element (c),
+				arc			=> to_arc_fine (element (c)),
 				width		=> via_restrict_line_width,
 				height		=> self.frame_height);
 

@@ -62,7 +62,7 @@ with et_design_rules;			use et_design_rules;
 
 package et_fill_zones is
 	
-	--use pac_geometry_brd;
+	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;
@@ -78,7 +78,7 @@ package et_fill_zones is
 	overlap_factor : constant type_distance_positive := 0.99;
 	
 	
-	package pac_stripes is new doubly_linked_lists (type_line);
+	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 

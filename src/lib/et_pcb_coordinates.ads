@@ -53,7 +53,7 @@ with et_general;				use et_general;
 with et_coordinates;
 with et_logging;				use et_logging;
 
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2;
 

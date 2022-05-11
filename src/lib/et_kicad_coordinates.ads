@@ -47,6 +47,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
 with et_logging;				use et_logging;
+with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_2;
 
@@ -91,8 +92,17 @@ package et_kicad_coordinates is
 	
 	--type type_position is new type_point with private;
 	type type_position is private;
-	
 
+	function get_point (position : in type_position) return type_point;	
+	function get_x (position : in type_position) return type_distance;
+	function get_y (position : in type_position) return type_distance;
+
+	procedure set (
+		position	: in out type_position;
+		axis		: in type_axis_2D;
+		value		: in type_distance);
+
+	
 	function path (position : in type_position) return type_path_to_submodule.list;
 
 	procedure set_path (position : in out type_position; path : in type_path_to_submodule.list);

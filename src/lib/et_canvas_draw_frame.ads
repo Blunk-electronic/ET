@@ -67,11 +67,11 @@ generic
 
 	
 package pac_draw_frame is
-	use draw_ops;
+	--use draw_ops;
 	
-	use pac_canvas;
+	use draw_ops.pac_canvas;
 	use pac_geometry_2;
-	use pac_geometry_1;
+	use pac_geometry_2.pac_geometry_1;
 	
 	use et_frames;
 	use pac_lines;

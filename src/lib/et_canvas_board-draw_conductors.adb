@@ -131,7 +131,7 @@ is
 			draw_line (
 				area		=> in_area,
 				context		=> context,
-				line		=> element (c),
+				line		=> to_line_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
 
@@ -149,7 +149,7 @@ is
 			draw_arc (
 				area		=> in_area,
 				context		=> context,
-				arc			=> element (c),
+				arc			=> to_arc_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
 
@@ -400,7 +400,7 @@ is
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
 				rotation	=> get_rotation (element (c).position),
-				position	=> type_point (element (c).position),
+				position	=> element (c).position.place,
 
 				-- Mirror the text only if it is in the bottom layer:
 				mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
@@ -777,8 +777,8 @@ is
 					draw_line (
 						area		=> in_area,
 						context		=> context,
-						line		=> element (c),
-						width		=> airwire_line_width,
+						line		=> pac_geometry_brd.type_line (element (c)),
+						width		=> type_distance (airwire_line_width),
 						height		=> self.frame_height);
 					
 				end query_airwire;

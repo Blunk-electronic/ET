@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -71,6 +71,16 @@ package et_geometry is
 	function to_axis (axis : in string) return type_axis;
 
 
+	axis_separator : constant string := "/";
+	point_preamble : constant string := " (x" & axis_separator & "y) ";
+	--point_preamble_with_rotation : constant string := 
+		--" (x"
+		--& axis_separator
+		--& "y"
+		--& axis_separator
+		--& "rotation)";
+
+	
 
 	type type_direction_of_rotation is (
 		CW,		-- clockwise

@@ -1072,14 +1072,14 @@ package body et_canvas_board is
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> lh,
+			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
 			height		=> self.frame_height);
 
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> lv,
+			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
 			height		=> self.frame_height);
 		
@@ -1182,7 +1182,7 @@ package body et_canvas_board is
 		use pac_text_fab;
 	begin
 		if text_place.being_moved then
-			move_to (text_place.text.position, destination);
+			move_to (text_place.text.position.place, destination);
 			
 			if text_place.category in type_layer_category_non_conductor then
 

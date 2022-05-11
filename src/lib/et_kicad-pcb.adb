@@ -545,7 +545,7 @@ package body et_kicad.pcb is
 		terminal_pad_drill_offset : type_point;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
-		terminal_position	: pac_geometry_brd.type_position;
+		terminal_position	: pac_geometry_2.type_position;
 		
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;		
@@ -1368,9 +1368,10 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set (axis => X, point => package_position, value => to_distance (to_string (arg)));
+									--set (axis => X, point => package_position, value => to_distance (to_string (arg)));
+									set (point => package_position.place, axis => X, value => to_distance (to_string (arg)));
 								when 2 =>
-									set (axis => Y, point => package_position, value => to_distance (to_string (arg)));
+									set (point => package_position.place, axis => Y, value => to_distance (to_string (arg)));
 								when 3 =>
 									set (package_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
@@ -1499,9 +1500,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => package_text.position, value => to_distance (to_string (arg)));
+									set (point => package_text.position.place, axis => X, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
+									set (point => package_text.position.place, axis => Y, value => to_distance (to_string (arg)));
 								when 3 => 
 									--package_text.angle := to_angle (to_string (arg));
 									set (package_text.position, to_rotation (to_string (arg)));
@@ -1543,9 +1544,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => board_text.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_text.position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_text.position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									--board_text.angle := to_angle (to_string (arg));
 									set (board_text.position, to_rotation (to_string (arg)));
@@ -1868,9 +1869,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => X, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									set (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;

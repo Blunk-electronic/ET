@@ -113,22 +113,23 @@ package body et_kicad_to_native is
 
 		-- Here the height of the layout sheet is kept. It is required for move ops of 
 		-- layout objects from the kicad frame to the native frame.
-		layout_sheet_height : et_pcb_coordinates.pac_geometry_brd.type_distance_positive;
+		layout_sheet_height : et_pcb_coordinates.pac_geometry_2.type_distance_positive;
 
-		function board_available return boolean is
+		
 		-- Returns true if the current kicad module has a layout file.
-		begin
+		function board_available return boolean is begin
 			if element (module_cursor).board_available then
 				return true;
 			else 
 				return false;
 			end if;
 		end board_available;
+
 		
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_sheet)
 		-- Returns for a given sheet number the respective paper size.
-			return et_frames.type_paper_size is
-
+			return et_frames.type_paper_size 
+		is
 			use et_frames;
 
 			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
@@ -177,7 +178,7 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			use pac_geometry_sch;
+			use pac_geometry_2;
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
@@ -198,12 +199,12 @@ package body et_kicad_to_native is
 			new_y				:= sheet_height - et_kicad_coordinates.get_y (point);
 
 			-- assign the new y position to the given point
-			point.set (Y, new_y);
+			et_kicad_coordinates.set (point, Y, new_y);
 		end move;
 
 		
 		procedure move (
-			point_actual	: in out et_coordinates.pac_geometry_sch.type_point;	-- the point it is about
+			point_actual	: in out et_coordinates.pac_geometry_2.type_point;	-- the point it is about
 			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
 		is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
@@ -211,7 +212,7 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			use pac_geometry_sch;
+			use pac_geometry_2;
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
@@ -234,7 +235,7 @@ package body et_kicad_to_native is
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
-			point_actual.set (Y, new_y);
+			set (point_actual, Y, new_y);
 		end move;
 
 		
@@ -242,7 +243,7 @@ package body et_kicad_to_native is
 		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
 			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates;
-			use pac_geometry_brd;
+			use pac_geometry_2;
 			use et_frames;
 			board_paper_size : type_paper_size;
 		begin -- prepare_layout_y_movements
@@ -257,16 +258,17 @@ package body et_kicad_to_native is
 		end prepare_layout_y_movements;
 
 		
-		procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_point'class) is
+		--procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_point'class) is
+		procedure move (point : in out et_pcb_coordinates.pac_geometry_2.type_point) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_pcb_coordinates;
-			use pac_geometry_brd;
+			use pac_geometry_2;
 			new_y : type_position_axis;
 		begin
 			new_y := layout_sheet_height - get_y (point);
-			point.set (Y, new_y);
+			set (point, Y, new_y);
 		end move;
 
 		
@@ -370,6 +372,7 @@ package body et_kicad_to_native is
 				use et_kicad.schematic.type_units_schematic;
 				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
 
+				
 				procedure change_path (
 					unit_name	: in et_devices.pac_unit_name.bounded_string;
 					unit		: in out et_kicad.schematic.type_unit_schematic) is
@@ -391,11 +394,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end change_path;
 
+				
 				procedure move_package is
 				-- moves the position of the package in layout
 					use et_symbols;
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					if component.appearance = PCB then
 						log_indentation_up;
@@ -403,14 +407,15 @@ package body et_kicad_to_native is
 						log (text => "package", level => log_threshold + 4);
 						
 						log_indentation_up;
-						log (text => before & to_string (type_point (component.position)), level => log_threshold + 4);
-						move (point => component.position);
-						log (text => now & to_string (type_point (component.position)), level => log_threshold + 4);
+						log (text => before & to_string (component.position.place), level => log_threshold + 4);
+						move (point => component.position.place);
+						log (text => now & to_string (component.position.place), level => log_threshold + 4);
 						
 						log_indentation_down;
 						log_indentation_down;
 					end if;
 				end move_package;
+
 				
 			begin -- query_units
 				log (text => to_string (key (component_cursor)), level => log_threshold + 3);
@@ -450,6 +455,7 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_components;
+		
 
 		procedure flatten_nets (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
@@ -468,7 +474,7 @@ package body et_kicad_to_native is
 				strand_cursor : et_kicad.schematic.type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out et_kicad.schematic.type_strand) is
-					use et_coordinates.pac_geometry_sch;
+					use et_coordinates.pac_geometry_2;
 					use et_kicad.schematic.type_net_segments;
 					segment_cursor : et_kicad.schematic.type_net_segments.cursor := strand.segments.first;
 
@@ -478,6 +484,7 @@ package body et_kicad_to_native is
 						use et_kicad.schematic.type_simple_labels;
 						simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
 
+						
 						procedure move_simple_label (label : in out et_kicad.schematic.type_net_label_simple) is
 						-- Moves the given simple label from kicad frame to native frame.
 						begin
@@ -489,10 +496,12 @@ package body et_kicad_to_native is
 
 							log (text => "simple label " & now & to_string (label.coordinates), level => log_threshold + 3);							
 						end move_simple_label;
+
 						
 						use et_kicad.schematic.type_tag_labels;
 						tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
 
+						
 						procedure move_tag_label (label : in out et_kicad.schematic.type_net_label_tag) is
 						-- Moves the given tag label from kicad frame to native frame.
 						begin
@@ -505,9 +514,11 @@ package body et_kicad_to_native is
 							log (text => "tag label " & now & to_string (label.coordinates), level => log_threshold + 3);
 						end move_tag_label;
 
+						
 						use et_kicad.schematic.type_junctions;
 						junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
 
+						
 						procedure change_path_of_junction (junction : in out et_kicad.schematic.type_net_junction) is
 						-- Moves the given net junction from kicad frame to native frame.
 							use et_kicad_coordinates;
@@ -524,7 +535,8 @@ package body et_kicad_to_native is
 								level => log_threshold + 3);
 								 
 						end change_path_of_junction;
-								 
+
+						
 					begin -- change_path_of_segment
 						log (text => "schematic net segment", level => log_threshold + 3);
 						log_indentation_up;
@@ -585,13 +597,19 @@ package body et_kicad_to_native is
 						log_indentation_down;
 
 					end change_path_of_segment;
+
 					
 				begin -- query_segments
 
 					-- Move the start coordinates of the strand from kicad frame to native frame:
-					log (text => "schematic strand start " & before & to_string (type_point (strand.position)), level => log_threshold + 3);
+					log (text => "schematic strand start " & before 
+						 & to_string (et_kicad_coordinates.get_point (strand.position)), 
+						 level => log_threshold + 3);
+					
 					move (strand.position); 
-					log (text => "schematic strand start " & now & to_string (type_point (strand.position)), level => log_threshold + 3);
+					log (text => "schematic strand start " & now 
+						 & to_string (et_kicad_coordinates.get_point (strand.position)), 
+						 level => log_threshold + 3);
 
 					-- Change path of segments:
 					while segment_cursor /= et_kicad.schematic.type_net_segments.no_element loop
@@ -658,7 +676,7 @@ package body et_kicad_to_native is
 
 					
 					procedure move_via (via : in out type_via) is
-						use et_pcb_coordinates.pac_geometry_brd;
+						use et_pcb_coordinates.pac_geometry_2;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
@@ -828,7 +846,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle) is 
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -850,14 +868,14 @@ package body et_kicad_to_native is
 
 				
 				procedure move_text (text : in out type_silkscreen_text) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
-					move (text.position);
+					move (text.position.place);
 					
 					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
@@ -1042,7 +1060,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle) is 
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1065,14 +1083,14 @@ package body et_kicad_to_native is
 				
 				procedure move_text (text : in out type_assy_doc_text) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
-					move (text.position);
+					move (text.position.place);
 					
 					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
@@ -1255,7 +1273,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1430,7 +1448,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1453,14 +1471,14 @@ package body et_kicad_to_native is
 				
 				procedure move_text (text : in out type_stop_mask_text) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
-					move (text.position);
+					move (text.position.place);
 					
 					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
@@ -1644,7 +1662,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1660,7 +1678,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_fillable_circle_solid) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1936,7 +1954,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_conductor_circle) is
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1965,14 +1983,14 @@ package body et_kicad_to_native is
 				
 				procedure move_text (text : in out type_conductor_text) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
-					move (text.position);
+					move (text.position.place);
 					
 					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
@@ -1982,20 +2000,21 @@ package body et_kicad_to_native is
 				
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_conductors) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.pac_geometry_brd;
+					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
-					move (text.position);
+					move (text.position.place);
 					
 					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_placeholder;
 
+				
 			begin -- move_copper
 				
 				-- LINES
@@ -2084,6 +2103,7 @@ package body et_kicad_to_native is
 				
 			end move_copper;
 
+			
 		begin -- move_general_board_stuff
 			move_silk_screen;
 			move_assembly_documentation;
@@ -2099,8 +2119,8 @@ package body et_kicad_to_native is
 		-- Changes the path and y position of ports.
 		-- NOTE: The netlist contains nets with their connected ports.
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
-
+			module		: in out et_kicad.pcb.type_module) 
+		is
 			use et_kicad.schematic.type_netlist;
 			net_cursor : et_kicad.schematic.type_netlist.cursor := module.netlist.first;
 
@@ -2238,27 +2258,29 @@ package body et_kicad_to_native is
 	end transpose;
 
 	
+	-- Converts kicad schematic coordinates to native schematic coordinates.
 	function to_native_coordinates (
 		point 		: in et_kicad_coordinates.type_position;
-		rotation	: in et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation)
-	-- Converts kicad schematic coordinates to native schematic coordinates.
-		return et_coordinates.type_position is
+		rotation	: in et_coordinates.type_rotation := et_coordinates.pac_geometry_2.zero_rotation)
+		return et_coordinates.type_position 
+	is
 		point_out : et_coordinates.type_position;
 	begin
 		point_out := et_coordinates.to_position (
-			point		=> point, -- x,y
+			point		=> et_kicad_coordinates.get_point (point), -- x,y
 			sheet		=> et_kicad_coordinates.sheet (point), -- sheet
 			rotation	=> rotation);
 
 		return point_out;
 	end;
 
+	
 	-- Converts shapes of symbols to native shapes:
 	function convert_shapes (
 		shapes			: in et_kicad_libraries.type_symbol_shapes;
 		log_threshold	: in type_log_level)
-		return et_symbols.type_shapes is
-
+		return et_symbols.type_shapes 
+	is
 		use et_kicad_libraries;
 		
 		use et_symbols;		
@@ -2332,6 +2354,7 @@ package body et_kicad_to_native is
 			end loop;
 		end copy_polyline;
 
+		
 		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
 		-- Converts a rectangle to four lines and appends them to native_shapes.lines.
 			use et_kicad;
@@ -2346,7 +2369,7 @@ package body et_kicad_to_native is
 			width, height : et_coordinates.type_distance;
 
 			-- These two points are required to form the final rectangle:
-			corner_C, corner_D : pac_geometry_sch.type_point;
+			corner_C, corner_D : pac_geometry_2.type_point;
 			
 			procedure append_line is begin
 				et_symbols.pac_lines.append (
@@ -2354,7 +2377,8 @@ package body et_kicad_to_native is
 					new_item	=> line);
 			end;
 
-			use pac_geometry_sch;
+			use pac_geometry_2;
+
 			
 		begin -- copy_rectangle
 			log_indentation_up;
@@ -2426,6 +2450,7 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end copy_rectangle;
 
+		
 	begin -- convert_shapes
 		log (text => "converting shapes ...", level => log_threshold);
 		log_indentation_up;
@@ -2452,8 +2477,8 @@ package body et_kicad_to_native is
 	
 	procedure to_native (
 		project_name	: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 -- 		-- When the native project is created we need a project path and a project name:
 -- 		project_path : et_project.type_et_project_path.bounded_string :=
 -- 						et_project.type_et_project_path.to_bounded_string (
@@ -2491,7 +2516,8 @@ package body et_kicad_to_native is
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
 				--text_native.position := to_native_coordinates (text_kicad.position);
-				text_native.position := et_coordinates.pac_geometry_sch.type_point (text_kicad.position);
+				--text_native.position := et_coordinates.pac_geometry_2.type_point (text_kicad.position);
+				text_native.position := et_kicad_coordinates.get_point (text_kicad.position);
 				text_native.sheet := et_kicad_coordinates.sheet (text_kicad.position);
 				text_native.rotation := snap (text_kicad.rotation);
 				
@@ -2815,7 +2841,7 @@ package body et_kicad_to_native is
 					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
 
 					use et_coordinates;
-					use et_coordinates.pac_geometry_sch;
+					use et_coordinates.pac_geometry_2;
 
 					-- Simple labels require to be shifted slightly both to the right and up.
 					-- This prevents them to sit directly on the net segment:
@@ -2922,7 +2948,7 @@ package body et_kicad_to_native is
 				is
 					junctions : et_nets.type_junctions; -- to be returned
 
-					use et_coordinates.pac_geometry_sch;
+					use et_coordinates.pac_geometry_2;
 					use et_kicad_coordinates;
 					use et_kicad.schematic.type_junctions;
 					junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
@@ -2932,7 +2958,7 @@ package body et_kicad_to_native is
 					while junction_cursor /= et_kicad.schematic.type_junctions.no_element loop
 
 						log (text => "junction" & to_string (
-							point => element (junction_cursor).coordinates),
+							point => get_point (element (junction_cursor).coordinates)),
 							level => log_threshold + 5);
 
 						-- Test if junction sits at start point of segment:
@@ -2969,10 +2995,9 @@ package body et_kicad_to_native is
 					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
 
 					use et_coordinates;
-					use pac_geometry_sch;
-					use et_symbols.pac_geometry_2;
+					use pac_geometry_2;
 					
-					dist : et_symbols.pac_geometry_2.type_distance_point_line;
+					dist : pac_geometry_2.type_distance_point_line;
 
 					terminal : et_devices.type_terminal;
 				begin
@@ -3006,13 +3031,13 @@ package body et_kicad_to_native is
 
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
-								type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+								type type_line_scratch is new pac_geometry_2.type_line with null record;
 								line : type_line_scratch := (
-									start_point	=> type_point (segment.coordinates_start), 
-									end_point	=> type_point (segment.coordinates_end));
+									start_point	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
+									end_point	=> et_kicad_coordinates.get_point (segment.coordinates_end));
 							begin
-								dist := et_symbols.pac_geometry_2.get_distance (
-									point 		=> type_point (element (port_cursor_kicad).coordinates),
+								dist := pac_geometry_2.get_distance (
+									point 		=> et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates),
 									line 		=> type_line (line),
 									line_range	=> WITH_END_POINTS);
 							end;
@@ -3077,8 +3102,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.start_point := et_coordinates.pac_geometry_sch.type_point (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.end_point   := et_coordinates.pac_geometry_sch.type_point (element (kicad_segment_cursor).coordinates_end);
+						net_segment_native.start_point := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.end_point   := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));

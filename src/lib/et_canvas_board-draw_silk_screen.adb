@@ -66,7 +66,7 @@ is
 		pac_draw_fab.draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> element (c),
+			line		=> to_line_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
 
@@ -79,7 +79,7 @@ is
 		pac_draw_fab.draw_arc (
 			area		=> in_area,
 			context		=> context,
-			arc			=> element (c),
+			arc			=> to_arc_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
 
@@ -181,7 +181,7 @@ is
 			content		=> to_placeholder_content (element (c).meaning),
 			size		=> element (c).size,
 			rotation	=> get_rotation (element (c).position),
-			position	=> type_point (element (c).position),
+			position	=> element (c).position.place,
 			mirror		=> face_to_mirror (face),
 			line_width	=> element (c).line_width,
 			alignment	=> element (c).alignment -- right, bottom

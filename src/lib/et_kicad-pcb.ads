@@ -95,10 +95,11 @@ with et_kicad_packages;			use et_kicad_packages;
 
 package et_kicad.pcb is
 
-	use et_board_shapes_and_text.pac_geometry_2;
+	use pac_geometry_brd;
+	use pac_geometry_2;
+	
 	use et_board_shapes_and_text.pac_contours;
 	use et_board_shapes_and_text.pac_text_fab;
-	use et_pcb_coordinates.pac_geometry_brd;
 
 	use pac_net_name;
 	

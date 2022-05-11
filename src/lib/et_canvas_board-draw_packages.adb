@@ -93,8 +93,8 @@ is
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
 		-- CS should improve performance:
-		-- package_offset : constant type_distance_relative := to_distance_relative (package_position)
-		-- use package_offset instead of many calls of to_distance_relative (package_position)
+		-- package_offset : constant type_distance_relative := to_distance_relative (package_position.place)
+		-- use package_offset instead of many calls of to_distance_relative (package_position.place)
 		
 		use pac_geometry_2;	
 		use pac_contours;
@@ -104,6 +104,7 @@ is
 
 		use pac_packages_lib;
 
+		
 		function flipped return boolean is 
 			use et_pcb;
 		begin
@@ -112,12 +113,14 @@ is
 			end if;
 		end flipped;
 
+		
 		-- Destination is the face on which an object is to be drawn.
 		-- (We can not assume that all objects of a package are on the same side
 		-- of the board.)
 		destination : type_face;
 		type type_destination_inversed is (INVERSE, NOT_INVERSE);
 
+		
 		-- If the package is flipped, then objects of the former top side
 		-- change to the bottom side and vice versa. 
 		-- By default set_destination sets the destination side to BOTTOM if the package is flipped.
@@ -144,6 +147,7 @@ is
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.pac_packages_lib.cursor := locate_package_model (model);
 
+		
 		-- Maps from meaning of given placeholder to text content:
 		function to_placeholder_content (ph : in type_text_placeholder)
 			return et_text.pac_text_content.bounded_string 
@@ -163,13 +167,13 @@ is
 
 		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
-				end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
+			line_horizontal : constant pac_geometry_brd.type_line := ( -- from left to right
+				start_point		=> to_vector (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
+				end_point		=> to_vector (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
 
-			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
-				end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
+			line_vertical : constant pac_geometry_brd.type_line := ( -- from bottom to top
+				start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
+				end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
@@ -199,15 +203,15 @@ is
 
 			-- Rotate the position of the text by the rotation of the package.
 			-- NOTE: This does not affect the rotation of the text itself.
-			rotate_by (t.position, get_rotation (package_position));
+			rotate_by (t.position.place, get_rotation (package_position));
 			
-			if flipped then mirror (t.position, Y); end if;
+			if flipped then mirror (t.position.place, Y); end if;
 
 			-- Move the text by the package position to 
 			-- its final position:
-			move_by (t.position, to_distance_relative (package_position));
+			move_by (t.position.place, to_distance_relative (package_position.place));
 
-			draw_text_origin (type_point (t.position), f);
+			draw_text_origin (t.position.place, f);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (t.line_width));
@@ -217,7 +221,7 @@ is
 				content		=> t.content,
 				size		=> t.size,
 				rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
-				position	=> type_point (t.position),
+				position	=> t.position.place,
 				mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 				line_width	=> t.line_width,
 				alignment	=> t.alignment -- right, bottom
@@ -245,15 +249,16 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_silk_lines.cursor) is begin
 				line := element (c);
@@ -261,6 +266,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_silk_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -280,15 +286,16 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_silk_arcs.cursor) is begin
 				arc := element (c);
@@ -296,6 +303,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_silk_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -317,7 +325,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -350,6 +358,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
@@ -374,7 +383,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -406,6 +415,7 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
@@ -430,7 +440,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -449,6 +459,7 @@ is
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
+			
 			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
 				cutout : type_contour := element (c);
 			begin
@@ -476,18 +487,18 @@ is
 						-- the rotation about the origin of the package.
 						-- If the package has been flipped, then the rotation is counterclockwise.
 						if flipped then
-							rotate_by (ph.position, - get_rotation (package_position));
+							rotate_by (ph.position.place, - get_rotation (package_position));
 						else
-							rotate_by (ph.position, get_rotation (package_position));
+							rotate_by (ph.position.place, get_rotation (package_position));
 						end if;
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
-						move_by (ph.position, to_distance_relative (package_position));
+						move_by (ph.position.place, to_distance_relative (package_position.place));
 
 						set_color_silkscreen (context.cr, f);
 
-						draw_text_origin (type_point (ph.position), f);
+						draw_text_origin (ph.position.place, f);
 
 						-- Set the line width of the vector text:
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
@@ -497,7 +508,7 @@ is
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							position	=> type_point (ph.position),
+							position	=> ph.position.place,
 							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 							line_width	=> ph.line_width,
 							alignment	=> ph.alignment -- right, bottom
@@ -523,6 +534,7 @@ is
 				end if;
 			end query_placeholder_top;
 
+			
 			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
@@ -551,6 +563,7 @@ is
 				end if;
 			end draw_text;
 
+			
 			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
 				t : type_text_fab_with_content := element (c);
 			begin
@@ -561,6 +574,7 @@ is
 				end if;
 			end query_text_top;
 
+			
 			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
 				t : type_text_fab_with_content := element (c);
 			begin
@@ -619,11 +633,11 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -654,15 +668,16 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_doc_arcs.cursor) is begin
 				arc := element (c);
@@ -670,6 +685,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_doc_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -691,7 +707,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -715,6 +731,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_doc_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
@@ -723,6 +740,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_doc_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
@@ -747,7 +765,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -770,6 +788,7 @@ is
 
 				end if;				
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
@@ -778,6 +797,7 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
@@ -802,7 +822,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -814,6 +834,7 @@ is
 				end if;
 				
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
 				cutout : type_contour := element (c);
@@ -821,6 +842,7 @@ is
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
+
 
 			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
 				cutout : type_contour := element (c);
@@ -849,18 +871,18 @@ is
 						-- the rotation about the origin of the package.
 						-- If the package has been flipped, then the rotation is counterclockwise.
 						if flipped then
-							rotate_by (ph.position, - get_rotation (package_position));
+							rotate_by (ph.position.place, - get_rotation (package_position));
 						else
-							rotate_by (ph.position, get_rotation (package_position));
+							rotate_by (ph.position.place, get_rotation (package_position));
 						end if;
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
-						move_by (ph.position, to_distance_relative (package_position));
+						move_by (ph.position.place, to_distance_relative (package_position.place));
 
 						set_color_assy_doc (context.cr, f);
 
-						draw_text_origin (type_point (ph.position), f);
+						draw_text_origin (ph.position.place, f);
 
 						-- Set the line width of the vector text:
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
@@ -870,7 +892,7 @@ is
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							position	=> type_point (ph.position),
+							position	=> ph.position.place,
 							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
 							line_width	=> ph.line_width,
 							alignment	=> ph.alignment -- right, bottom
@@ -989,14 +1011,15 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
-						pac_draw_fab.draw_line (in_area, context, line, keepout_line_width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), keepout_line_width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_keepout_lines.cursor) is begin
 				line := element (c);
@@ -1004,6 +1027,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_keepout_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -1023,14 +1047,15 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
-						pac_draw_fab.draw_arc (in_area, context, arc, keepout_line_width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), keepout_line_width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_keepout_arcs.cursor) is begin
 				arc := element (c);
@@ -1038,6 +1063,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_keepout_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -1059,7 +1085,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
 
@@ -1070,6 +1096,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
@@ -1078,6 +1105,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
 			begin
@@ -1102,7 +1130,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
 
@@ -1145,7 +1173,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -1213,15 +1241,16 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_stop_lines.cursor) is begin
 				line := element (c);
@@ -1229,6 +1258,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_stop_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -1248,15 +1278,16 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_stop_arcs.cursor) is begin
 				arc := element (c);
@@ -1264,6 +1295,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_stop_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -1285,7 +1317,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 
@@ -1309,6 +1341,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_stop_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
@@ -1317,6 +1350,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_stop_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
@@ -1341,7 +1375,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 
@@ -1364,6 +1398,7 @@ is
 
 				end if;
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_stop_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
@@ -1372,6 +1407,7 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_stop_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
@@ -1396,7 +1432,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -1407,6 +1443,7 @@ is
 
 				end if;				
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
 				cutout : type_contour := element (c);
@@ -1415,6 +1452,7 @@ is
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
+			
 			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
 				cutout : type_contour := element (c);
 			begin
@@ -1498,15 +1536,16 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_stencil_lines.cursor) is begin
 				line := element (c);
@@ -1514,6 +1553,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_stencil_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -1533,15 +1573,16 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_stencil_arcs.cursor) is begin
 				arc := element (c);
@@ -1549,6 +1590,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_stencil_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -1570,7 +1612,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_stencil (context.cr, f, self.scale);
 
@@ -1595,6 +1637,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_stencil_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
@@ -1603,6 +1646,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_stencil_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
@@ -1627,7 +1671,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_stencil (context.cr, f, self.scale);
 
@@ -1650,6 +1694,7 @@ is
 
 				end if;
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
@@ -1658,6 +1703,7 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
 				polygon : type_contour_non_conductor := element (c);
 			begin
@@ -1682,7 +1728,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -1747,8 +1793,8 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
-						pac_draw_fab.draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
+						move_by (line, to_distance_relative (package_position.place));
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), route_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -1779,12 +1825,13 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
-						pac_draw_fab.draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
+						move_by (arc, to_distance_relative (package_position.place));
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), route_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_route_restrict_arcs.cursor) is begin
 				arc := element (c);
@@ -1792,6 +1839,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_route_restrict_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -1811,13 +1859,14 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 						pac_draw_fab.draw_circle (in_area, context, circle, NO, route_restrict_line_width, self.frame_height);
 						-- NO means circle is not filled
 					end if;
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_route_restrict_circles.cursor) is begin
 				circle := element (c);
@@ -1825,6 +1874,7 @@ is
 				draw_circle (destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_route_restrict_circles.cursor) is begin
 				circle := element (c);
 				set_destination (INVERSE);
@@ -1846,7 +1896,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							route_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
@@ -1854,6 +1904,7 @@ is
 
 				end if;
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
@@ -1861,6 +1912,7 @@ is
 				draw_contour (destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_route_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
@@ -1872,6 +1924,7 @@ is
 			use pac_route_restrict_cutouts;
 			cutout : type_route_restrict_cutout;
 
+			
 			procedure draw_cutout (f : in type_face) is 
 				drawn : boolean := false;
 			begin
@@ -1882,7 +1935,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
@@ -1891,6 +1944,7 @@ is
 					end if;
 				end if;
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (c : in pac_route_restrict_cutouts.cursor) is begin
 				cutout := element (c);
@@ -1898,6 +1952,7 @@ is
 				draw_cutout (destination);
 			end query_cutout_top;
 
+			
 			procedure query_cutout_bottom (c : in pac_route_restrict_cutouts.cursor) is begin
 				cutout := element (c);
 				set_destination (INVERSE);
@@ -1978,12 +2033,13 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
-						pac_draw_fab.draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
+						move_by (line, to_distance_relative (package_position.place));
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), via_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_via_restrict_lines.cursor) is begin
 				line := element (c);
@@ -1991,6 +2047,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_via_restrict_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -2010,12 +2067,13 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
-						pac_draw_fab.draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
+						move_by (arc, to_distance_relative (package_position.place));
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), via_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_via_restrict_arcs.cursor) is begin
 				arc := element (c);
@@ -2023,6 +2081,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_via_restrict_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -2042,13 +2101,14 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 						pac_draw_fab.draw_circle (in_area, context, circle, NO, via_restrict_line_width, self.frame_height);
 						-- NO means circle is not filled
 					end if;
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_via_restrict_circles.cursor) is begin
 				circle := element (c);
@@ -2056,6 +2116,7 @@ is
 				draw_circle (destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_via_restrict_circles.cursor) is begin
 				circle := element (c);
 				set_destination (INVERSE);
@@ -2077,7 +2138,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
 							via_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
@@ -2085,6 +2146,7 @@ is
 
 				end if;
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_via_restrict_contours.cursor) is begin
 				polygon := element (c);
@@ -2092,6 +2154,7 @@ is
 				draw_contour (destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_via_restrict_contours.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
@@ -2113,7 +2176,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
@@ -2210,7 +2273,7 @@ is
 				
 					--if flipped then mirror (line, Y); end if;
 					
-					--move_by (line, to_distance_relative (package_position));
+					--move_by (line, to_distance_relative (package_position.place));
 
 					--draw_line (in_area, context, line,
 						--pcb_contour_line_width, self.frame_height);
@@ -2232,7 +2295,7 @@ is
 					
 					--if flipped then mirror (arc, Y); end if;
 					
-					--move_by (arc, to_distance_relative (package_position));
+					--move_by (arc, to_distance_relative (package_position.place));
 
 					--draw_arc (in_area, context, arc, 
 						--pcb_contour_line_width, self.frame_height);
@@ -2252,7 +2315,7 @@ is
 					
 					--if flipped then mirror (circle, Y); end if;
 						
-					--move_by (circle, to_distance_relative (package_position));
+					--move_by (circle, to_distance_relative (package_position.place));
 
 					--draw_circle (in_area, context, circle, NO,
 						--pcb_contour_line_width, self.frame_height);
@@ -2271,7 +2334,7 @@ is
 				
 				if flipped then mirror (circle, Y); end if;
 					
-				move_by (circle, to_distance_relative (package_position));
+				move_by (circle, to_distance_relative (package_position.place));
 
 				pac_draw_fab.draw_circle (in_area, context, circle, NO,
 					pcb_contour_line_width, self.frame_height);
@@ -2280,8 +2343,8 @@ is
 
 			
 			procedure draw_segment (c : in pac_contour_segments.cursor) is
-				l : type_line;
-				a : type_arc;
+				l : pac_geometry_2.type_line;
+				a : pac_geometry_2.type_arc;
 			begin
 				case element (c).shape is
 					when LINE =>
@@ -2291,11 +2354,12 @@ is
 				
 						if flipped then mirror (l, Y); end if;
 						
-						move_by (l, to_distance_relative (package_position));
+						move_by (l, to_distance_relative (package_position.place));
 
-						pac_draw_fab.draw_line (in_area, context, l,
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (l),
 							pcb_contour_line_width, self.frame_height);
 
+						
 					when ARC =>
 						a := element (c).segment_arc;
 
@@ -2303,9 +2367,9 @@ is
 						
 						if flipped then mirror (a, Y); end if;
 						
-						move_by (a, to_distance_relative (package_position));
+						move_by (a, to_distance_relative (package_position.place));
 
-						pac_draw_fab.draw_arc (in_area, context, a, 
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (a), 
 							pcb_contour_line_width, self.frame_height);
 						
 				end case;
@@ -2375,15 +2439,16 @@ is
 
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, to_distance_relative (package_position));
+						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, line, line.width, self.frame_height);
+						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
 			end draw_line;
+
 			
 			procedure query_line_top (c : in pac_conductor_lines.cursor) is begin
 				line := element (c);
@@ -2391,6 +2456,7 @@ is
 				draw_line (destination);
 			end query_line_top;
 
+			
 			procedure query_line_bottom (c : in pac_conductor_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
@@ -2412,15 +2478,16 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, to_distance_relative (package_position));
+						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, arc, arc.width, self.frame_height);
+						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
 			end draw_arc;
+
 			
 			procedure query_arc_top (c : in pac_conductor_arcs.cursor) is begin
 				arc := element (c);
@@ -2428,6 +2495,7 @@ is
 				draw_arc (destination);
 			end query_arc_top;
 
+			
 			procedure query_arc_bottom (c : in pac_conductor_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
@@ -2450,7 +2518,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, to_distance_relative (package_position));
+						move_by (circle, to_distance_relative (package_position.place));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2474,6 +2542,7 @@ is
 
 				end if;
 			end draw_circle;
+
 			
 			procedure query_circle_top (c : in pac_conductor_circles.cursor) is 
 				circle : type_conductor_circle := element (c);
@@ -2482,6 +2551,7 @@ is
 				draw_circle (circle, destination);
 			end query_circle_top;
 
+			
 			procedure query_circle_bottom (c : in pac_conductor_circles.cursor) is 
 				circle : type_conductor_circle := element (c);
 			begin
@@ -2509,7 +2579,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2561,7 +2631,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, to_distance_relative (package_position));
+						move_by (polygon, to_distance_relative (package_position.place));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2615,7 +2685,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, to_distance_relative (package_position));
+						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
 
@@ -2659,15 +2729,15 @@ is
 
 				-- Rotate the position of the text by the rotation of the package.
 				-- NOTE: This does not affect the rotation of the text itself.
-				rotate_by (t.position, get_rotation (package_position));
+				rotate_by (t.position.place, get_rotation (package_position));
 				
-				if flipped then mirror (t.position, Y); end if;
+				if flipped then mirror (t.position.place, Y); end if;
 
 				-- Move the text by the package position to 
 				-- its final position:
-				move_by (t.position, to_distance_relative (package_position));
+				move_by (t.position.place, to_distance_relative (package_position.place));
 
-				draw_text_origin (type_point (t.position), f);
+				draw_text_origin (t.position.place, f);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (t.line_width));
@@ -2677,7 +2747,7 @@ is
 					content		=> t.content,
 					size		=> t.size,
 					rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
-					position	=> type_point (t.position),
+					position	=> t.position.place,
 					mirror		=> face_to_mirror (f),
 					line_width	=> t.line_width,
 					alignment	=> t.alignment -- right, bottom
@@ -2709,6 +2779,7 @@ is
 				end if;
 			end draw_text;
 
+			
 			procedure query_text_top (c : in pac_conductor_texts.cursor) is
 				t : type_conductor_text := element (c);
 			begin
@@ -2716,6 +2787,7 @@ is
 				draw_text (t, destination);
 			end query_text_top;
 
+			
 			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
 				t : type_conductor_text := element (c);
 			begin
@@ -2756,6 +2828,7 @@ is
 		end draw_conductors;
 
 
+		
 		-- TERMINALS
 
 		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
@@ -2824,7 +2897,7 @@ is
 						content		=> to_content (name),
 						size		=> terminal_name_size,
 						font		=> terminal_name_font,
-						position	=> type_point (pad_pos_in),
+						position	=> pad_pos_in.place,
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (center, center),
@@ -2844,7 +2917,7 @@ is
 					pad_pos_in	: in type_position)  -- the center of the pad
 				is
 					use et_text;
-					pad_pos : type_point := type_point (pad_pos_in);
+					pad_pos : type_point := pad_pos_in.place;
 					
 				begin
 					if conductors_enabled then
@@ -2859,7 +2932,7 @@ is
 							if flipped then mirror (pad_pos, Y); end if;
 							
 							-- Move the pad by the position of the package:
-							move_by (pad_pos, to_distance_relative (package_position));
+							move_by (pad_pos, to_distance_relative (package_position.place));
 							
 							set_color_terminal_name (context.cr);
 							
@@ -3063,7 +3136,7 @@ is
 									
 										draw_tht_pad_with_circular_cutout (
 											outer_border	=> pad_outline_outer_layer,
-											drill_position	=> type_point (pad_pos),
+											drill_position	=> pad_pos.place,
 											drill_size		=> drill_size);
 
 
@@ -3199,16 +3272,16 @@ is
 					if inner_conductors_enabled (bottom_layer) then
 						
 						-- Rotate the position of the drill by the rotation of the package:
-						rotate_by (pad_pos, get_rotation (package_position));
+						rotate_by (pad_pos.place, get_rotation (package_position));
 
-						if flipped then mirror (pad_pos, Y); end if;
+						if flipped then mirror (pad_pos.place, Y); end if;
 
 						-- Move the drill by the position of the package:
-						move_by (pad_pos, to_distance_relative (package_position));
+						move_by (pad_pos.place, to_distance_relative (package_position.place));
 
 
 						-- Build a circle to show the restring of inner layers:
-						circle.center := type_point (pad_pos);
+						circle.center := pad_pos.place;
 
 						-- set line width and radius:
 						--set_line_width (context.cr, type_view_coordinate (restring));
@@ -3327,13 +3400,13 @@ is
 
 		
 		procedure draw_package_origin is
-			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => get_x (package_position) - et_packages.origin_half_size, y => get_y (package_position))),
-				end_point		=> type_point (set (x => get_x (package_position) + et_packages.origin_half_size, y => get_y (package_position))));
+			line_horizontal : constant pac_geometry_brd.type_line := ( -- from left to right
+				start_point		=> to_vector (set (x => get_x (package_position) - et_packages.origin_half_size, y => get_y (package_position))),
+				end_point		=> to_vector (set (x => get_x (package_position) + et_packages.origin_half_size, y => get_y (package_position))));
 
-			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => get_x (package_position), y => get_y (package_position) - et_packages.origin_half_size)),
-				end_point		=> type_point (set (x => get_x (package_position), y => get_y (package_position) + et_packages.origin_half_size)));
+			line_vertical : constant pac_geometry_brd.type_line := ( -- from bottom to top
+				start_point		=> to_vector (set (x => get_x (package_position), y => get_y (package_position) - et_packages.origin_half_size)),
+				end_point		=> to_vector (set (x => get_x (package_position), y => get_y (package_position) + et_packages.origin_half_size)));
 
 		begin -- draw_package_origin
 			if face = get_face (package_position) then

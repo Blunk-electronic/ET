@@ -64,7 +64,7 @@ is
 				draw_line (
 					area		=> in_area,
 					context		=> context,
-					line		=> element (c).segment_line,
+					line		=> to_line_fine (element (c).segment_line),
 					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
 
@@ -72,7 +72,7 @@ is
 				draw_arc (
 					area		=> in_area,
 					context		=> context,
-					arc			=> element (c).segment_arc,
+					arc			=> to_arc_fine (element (c).segment_arc),
 					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
 		end case;
