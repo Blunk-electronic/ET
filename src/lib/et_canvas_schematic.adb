@@ -473,7 +473,7 @@ package body et_canvas_schematic is
 		procedure compute_route (s, e : in type_point) is 
 
 			-- Do the actual route calculation.
-			r : type_route := to_route (s, e, route.path.bend_style);
+			r : type_path := to_path (s, e, route.path.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:

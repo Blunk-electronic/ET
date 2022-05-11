@@ -185,8 +185,8 @@ package et_geometry_2 is
 	-- Returns false if boundaries do not intersect and if they
 	-- touch each other:
 	function intersect (
-		boundaries_one : in type_boundaries; -- CS rename to b1,b2. do so with other functions below
-		boundaries_two : in type_boundaries)
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
 		return boolean;
 	
 
@@ -202,15 +202,15 @@ package et_geometry_2 is
 	-- boundaries. If the boundaries do not overlap each other
 	-- then a constraint error is raised:
 	function get_intersection (
-		boundaries_one : in type_boundaries;
-		boundaries_two : in type_boundaries)
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
 		return type_boundaries_intersection;
 
 	
 	-- Adds two boundaries.
 	procedure add (
-		boundaries_one : in out type_boundaries;
-		boundaries_two : in type_boundaries);
+		b1 : in out type_boundaries;
+		b2 : in type_boundaries);
 
 	
 	-- Moves the boundaries by the given offset.
@@ -1099,19 +1099,19 @@ package et_geometry_2 is
 
 	
 	-- Returns the location vector of the start point of a line:
-	function start_vector ( -- CS rename to get_start_vector
+	function get_start_vector (
 		line	: in type_line)
 		return type_vector; -- CS should be type_point
 
 	
 	-- Returns the location vector of the end point of a line:
-	function end_vector ( -- CS rename to get_end_vector
+	function get_end_vector (
 		line	: in type_line)
 		return type_vector; -- CS should be type_point
 
 	
 	-- Returns the direction vector of a line:
-	function direction_vector ( -- CS rename to get_direction_vector
+	function get_direction_vector (
 		line	: in type_line)
 		return type_vector; -- CS should be type_distance_relative ?
 
@@ -1855,17 +1855,14 @@ package et_geometry_2 is
 
 -- PATH FROM POINT TO POINT
 	
-	
-	-- CS rename "route" by "path" in the following:
-	
-	-- When creating a route from one point to another use this type.
+	-- When creating a path from one point to another use this type.
 	-- NOTE: This is general stuff. This does apply to all kinds of lines
 	-- from one point to another (nets, documentation, tracks, ...) !
 	-- If no bend, then we have just a start and an end point which 
 	--  will result in a direct line between the two points.
 	-- If bended, then we get an extra point where the bending takes place
 	--  which will result in two lines that connect the two points:
-	type type_route (bended : type_bended) is record
+	type type_path (bended : type_bended) is record
 		start_point, end_point : type_point;
 		case bended is
 			when NO		=> null; -- no bend
@@ -1873,21 +1870,23 @@ package et_geometry_2 is
 		end case;
 	end record;
 
-	-- Computes a route between two points according to the given bend style:
-	function to_route (
+	
+	-- Computes a path between two points according to the given bend style:
+	function to_path (
 		start_point, end_point	: in type_point;
 		style					: in type_bend_style)
-		return type_route;
+		return type_path;
 
-	-- When a route is being drawn from one point to another
-	-- then we speak about a route from start point to end point
-	-- and optionally a bending point where the route changes
+	
+	-- When a path is being drawn from one point to another
+	-- then we speak about a path from start point to end point
+	-- and optionally a bending point where the path changes
 	-- direction.
 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 	-- when being drawn via the GUI.
-	-- The route being drawn must provide information about the tool it is
+	-- The path being drawn must provide information about the tool it is
 	-- being drawn with (mouse, touchpad, keyboard).
-	type type_route_live is record
+	type type_path_live is record
 		being_drawn	: boolean := false;
 
 		start_point	: type_point;
@@ -1900,15 +1899,17 @@ package et_geometry_2 is
 		tool		: type_tool := MOUSE;
 	end record;
 
-	-- Switches to the next bend style of the given live route:
-	procedure next_bend_style (route : in out type_route_live);
+	
+	-- Switches to the next bend style of the given live path:
+	procedure next_bend_style (path : in out type_path_live);
 
 
 	
 -- POSITION:
 
-	--type type_position is new type_point with private;
-
+	-- The position of an object is a composite
+	-- of the place (x/y) and the rotation of the object about
+	-- its own center:
 	type type_position is tagged record
 		place 		: type_point := origin;
 		rotation	: type_rotation := zero_rotation;
@@ -1916,7 +1917,7 @@ package et_geometry_2 is
 
 	
 	function to_string (
-		point : in type_position) -- CS rename point to position
+		position : in type_position)
 		return string;
 	
 	

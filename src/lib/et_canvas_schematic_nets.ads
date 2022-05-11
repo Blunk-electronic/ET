@@ -180,7 +180,7 @@ package et_canvas_schematic_nets is
 	-- When a net route is being drawn, then this global variable
 	-- shall be used:
 	type type_net_route is record
-		path	: type_route_live;
+		path	: type_path_live;
 		name	: pac_net_name.bounded_string := to_net_name ("");
 	end record;
 

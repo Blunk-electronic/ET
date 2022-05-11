@@ -317,16 +317,16 @@ package body et_geometry_2 is
 	
 	
 	function intersect (
-		boundaries_one : in type_boundaries;
-		boundaries_two : in type_boundaries)
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
 		return boolean
 	is begin
-		if	boundaries_two.greatest_x > boundaries_one.smallest_x
-		and boundaries_two.smallest_x < boundaries_one.greatest_x
+		if	b2.greatest_x > b1.smallest_x
+		and b2.smallest_x < b1.greatest_x
 		then -- boundaries intersect in x-direction
 
-			if	boundaries_two.greatest_y > boundaries_one.smallest_y
-			and boundaries_two.smallest_y < boundaries_one.greatest_y
+			if	b2.greatest_y > b1.smallest_y
+			and b2.smallest_y < b1.greatest_y
 			then -- boundaries intersect in y-direction
 				return true;
 			else
@@ -341,22 +341,22 @@ package body et_geometry_2 is
 
 
 	function get_intersection (
-		boundaries_one : in type_boundaries;
-		boundaries_two : in type_boundaries)
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
 		return type_boundaries_intersection
 	is
 		i : type_boundaries;
 	begin
-		if intersect (boundaries_one, boundaries_two) then
+		if intersect (b1, b2) then
 
-			--log (text => "b1" & to_string (boundaries_one));
-			--log (text => "b2" & to_string (boundaries_two));
+			--log (text => "b1" & to_string (b1));
+			--log (text => "b2" & to_string (b2));
 			
-			i.smallest_x := get_greatest (boundaries_one.smallest_x, boundaries_two.smallest_x);
-			i.greatest_x := get_smallest (boundaries_one.greatest_x, boundaries_two.greatest_x);
+			i.smallest_x := get_greatest (b1.smallest_x, b2.smallest_x);
+			i.greatest_x := get_smallest (b1.greatest_x, b2.greatest_x);
 
-			i.smallest_y := get_greatest (boundaries_one.smallest_y, boundaries_two.smallest_y);
-			i.greatest_y := get_smallest (boundaries_one.greatest_y, boundaries_two.greatest_y);
+			i.smallest_y := get_greatest (b1.smallest_y, b2.smallest_y);
+			i.greatest_y := get_smallest (b1.greatest_y, b2.greatest_y);
 
 			--log (text => "b " & to_string (i));
 			
@@ -370,9 +370,9 @@ package body et_geometry_2 is
 	
 	-- Adds two boundaries.
 	procedure add (
-		boundaries_one : in out type_boundaries;
-		boundaries_two : in type_boundaries) is
-	begin
+		b1 : in out type_boundaries;
+		b2 : in type_boundaries) 
+	is begin
 -- 			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
 -- 			greatest_x, greatest_y : type_distance := type_distance'first;
 		null; -- CS
@@ -2328,7 +2328,7 @@ package body et_geometry_2 is
 
 	
 	
-	function start_vector (
+	function get_start_vector (
 		line	: in type_line)
 		return type_vector 
 	is begin
@@ -2336,10 +2336,10 @@ package body et_geometry_2 is
 			x => type_float_internal (line.start_point.x),
 			y => type_float_internal (line.start_point.y),
 			z => 0.0);
-	end start_vector;
+	end get_start_vector;
 
 	
-	function end_vector (
+	function get_end_vector (
 		line	: in type_line)
 		return type_vector 
 	is begin
@@ -2347,10 +2347,10 @@ package body et_geometry_2 is
 			x => type_float_internal (line.end_point.x),
 			y => type_float_internal (line.end_point.y),
 			z => 0.0);
-	end end_vector;
+	end get_end_vector;
 
 	
-	function direction_vector (
+	function get_direction_vector (
 		line	: in type_line)
 		return type_vector 
 	is begin
@@ -2358,7 +2358,7 @@ package body et_geometry_2 is
 			x => type_float_internal (line.end_point.x - line.start_point.x),
 			y => type_float_internal (line.end_point.y - line.start_point.y),
 			z => 0.0);
-	end direction_vector;
+	end get_direction_vector;
 
 
 	function get_direction (
@@ -2387,8 +2387,8 @@ package body et_geometry_2 is
 		return type_line_vector
 	is begin
 		return (
-			v_start		=> start_vector (line),
-			v_direction	=> direction_vector (line));
+			v_start		=> get_start_vector (line),
+			v_direction	=> get_direction_vector (line));
 	end to_line_vector;
 	
 	
@@ -2716,8 +2716,8 @@ package body et_geometry_2 is
 		vector	: in type_vector)
 		return type_float_internal
 	is
-		dv : constant type_vector := direction_vector (line);
-		sv : constant type_vector := start_vector (line);
+		dv : constant type_vector := get_direction_vector (line);
+		sv : constant type_vector := get_start_vector (line);
 		
 		d1 : constant type_vector := subtract (vector, sv);
 		m, n : type_float_internal;
@@ -2789,7 +2789,7 @@ package body et_geometry_2 is
 		-- of the given line.
 		
 		line_direction : constant type_angle := get_direction (line);
-		line_direction_vector : constant type_vector := direction_vector (line);
+		line_direction_vector : constant type_vector := get_direction_vector (line);
 		line_start_vector, line_end_vector : type_vector;
 
 		iv : type_vector;
@@ -2909,7 +2909,7 @@ package body et_geometry_2 is
 		-- Using these formula we can calculate whether iv points between 
 		-- (or to) the start and/or end points of the line:
 		
-		line_start_vector := start_vector (line);
+		line_start_vector := get_start_vector (line);
 		lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
 
 		--put_line ("lambda forward:" & to_string (lambda_forward));
@@ -2937,7 +2937,7 @@ package body et_geometry_2 is
 		--put_line ("after start point");
 
 		
-		line_end_vector := end_vector (line);
+		line_end_vector := get_end_vector (line);
 		lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
 
 		--put_line ("lambda backward:" & to_string (lambda_backward));
@@ -5301,12 +5301,12 @@ package body et_geometry_2 is
 	
 -- PATH FROM POINT TO POINT
 	
-	function to_route (
+	function to_path (
 		start_point, end_point	: in type_point;
 		style					: in type_bend_style)
-		return type_route
+		return type_path
 	is
-		-- The area required for the route is a rectangle.
+		-- The area required for the path is a rectangle.
 		-- We will need to figure out whether it is wider than tall:
 		dx : constant type_distance := get_distance (start_point, end_point, X);
 		dy : constant type_distance := get_distance (start_point, end_point, Y);
@@ -5327,16 +5327,16 @@ package body et_geometry_2 is
 			second_line	: constant type_line := (end_point, sup_end);
 
 			-- first line start vector:
-			S1 : constant type_vector := start_vector (first_line);
+			S1 : constant type_vector := get_start_vector (first_line);
 
 			-- first line direction vector:
-			R1 : constant type_vector := direction_vector (first_line);
+			R1 : constant type_vector := get_direction_vector (first_line);
 
 			-- second line start vector:
-			S2 : constant type_vector := start_vector (second_line);
+			S2 : constant type_vector := get_start_vector (second_line);
 
 			-- second line direction vector
-			R2 : constant type_vector := direction_vector (second_line);
+			R2 : constant type_vector := get_direction_vector (second_line);
 
 			-- scratch variables:
 			a, b, c, d, e, f, g : type_float_internal;
@@ -5377,7 +5377,7 @@ package body et_geometry_2 is
 			bend_point := to_point (I);
 		end compute_bend_point;
 		
-	begin -- to_route
+	begin -- to_path
 		
 		-- If start and end point are equally then do nothing
 		-- and return given start and end point as they are:
@@ -5506,11 +5506,11 @@ package body et_geometry_2 is
 			return (YES, start_point, end_point, bend_point);
 		end if;
 
-	end to_route;
+	end to_path;
 
 	
-	procedure next_bend_style (route : in out type_route_live) is
-		i : constant natural := type_bend_style'pos (route.bend_style);
+	procedure next_bend_style (path : in out type_path_live) is
+		i : constant natural := type_bend_style'pos (path.bend_style);
 		-- i points now to the current bend style
 
 		-- get the index of the last available bend style:
@@ -5518,10 +5518,10 @@ package body et_geometry_2 is
 	begin
 		if i < max then
 			-- jump to next bend style
-			route.bend_style := type_bend_style'succ (type_bend_style'val (i));
+			path.bend_style := type_bend_style'succ (type_bend_style'val (i));
 		else 
 			-- After the last bend style, jump back to the first bend style:
-			route.bend_style := type_bend_style'first;
+			path.bend_style := type_bend_style'first;
 		end if;
 	end next_bend_style;
 
@@ -5530,16 +5530,16 @@ package body et_geometry_2 is
 -- POSITION:
 
 	function to_string (
-		point : in type_position)
+		position : in type_position)
 		return string 
 	is begin
 		return point_preamble_with_rotation
-			& to_string (point.place.x)
+			& to_string (position.place.x)
 			& axis_separator
-			& to_string (point.place.y)
+			& to_string (position.place.y)
 			& axis_separator
-			& to_string (get_rotation (point));
-	end;
+			& to_string (position.rotation);
+	end to_string;
 
 	
 	function to_position (
