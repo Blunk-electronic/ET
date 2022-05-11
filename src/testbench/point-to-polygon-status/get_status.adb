@@ -43,12 +43,14 @@ with ada.strings.unbounded;		use ada.strings.unbounded;
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_string_processing;		use et_string_processing;
 
 procedure get_status is
 
-	use pac_geometry_2;
 	use pac_geometry_brd;
+	use pac_geometry_2;
+	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_clipping;
 
@@ -57,13 +59,17 @@ procedure get_status is
 	V : type_vector;
 	
 
+	tolerance : type_distance_positive := fab_tolerance;
+	
+	
+	-- Builds the polygon P:
 	procedure make_polygon (
 		s : in string)
 	is
-		F : type_fields_of_line;
+		C : type_contour;
 	begin
-		F := read_line (line => s, comment_mark => "#");
-		P := type_polygon (to_polygon (F));
+		C := type_contour (to_contour (s));
+		P := to_polygon (C, tolerance);
 	end;
 	
 	
@@ -74,10 +80,10 @@ procedure get_status is
 
 	
 	procedure print_status (PPS : in type_point_to_polygon_status) is
-		use pac_probe_line_intersections;
-		use pac_polygon_segments;
+		use pac_probe_line_intersections_polygon;
+		use pac_edges;
 		
-		procedure query_intersection (i : in pac_probe_line_intersections.cursor) is 
+		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is 
 		begin
 			put_line ("x-pos : " & type_float_internal'image (element (i).x_position));
 			--put_line ("edge  : " & to_string (element (EC).segment_line));
@@ -142,6 +148,7 @@ begin
 	--V := set (0.00000000001, 20.0000000000); -- go
 	--V := set (1.0E-12, 20.0000000000); -- go
 	V := set (1.0E-16, 20.0000000000); -- go
+
 	
 	do_test;
 	

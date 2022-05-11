@@ -85,8 +85,8 @@ begin
 
 	new_line;
 	
-	--offset_polygon (P, -0.4);
-	offset_polygon (P, -1.0);
+	offset_polygon (P, -0.4);
+	--offset_polygon (P, -1.0);
 	put_line ("shrank  : " & to_string (P));
 	
 end offset;

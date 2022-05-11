@@ -103,6 +103,7 @@ package et_geometry_1 is
 
 	
 	rounding_threshold : constant type_float_internal := 1.0E-17;
+	--rounding_threshold : constant type_float_internal := type_float_internal'small;
 
 
 	-- The number of decimal places when rounding or type_float_internal

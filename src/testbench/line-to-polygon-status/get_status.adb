@@ -248,6 +248,8 @@ begin
 	do_test;
 
 
+-- goto skip;
+	
 	
 	
 	L := make_edge (0.0, 0.0, 110.0, 110.0);
@@ -264,6 +266,8 @@ begin
 	do_test;
 	
 
+
+	
 	
 	L := make_edge (0.0, 0.0, 200.0, 0.0);
 	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
@@ -277,6 +281,8 @@ begin
 	do_test;
 
 
+	
+	
 	L := make_edge (0.0, 0.0, 100.0, 100.0);
 	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -290,6 +296,8 @@ begin
 	do_test;
 	
 
+	
+	
 	L := make_edge (0.0, 0.0, 50.0, 50.0);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	set_expect (
@@ -311,6 +319,8 @@ begin
 		intersections	=> I_list); -- empty
 
 	do_test;
+
+
 
 	
 	L := make_edge (-10.0, -10.0, 110.0, 110.0);
@@ -342,6 +352,7 @@ begin
 
 
 	
+	
 	L := make_edge (-10.0, 50.0, 110.0, 50.0);
 	edge := get_segment_edge (P, make_edge (0.0, 100.0, 0.0, 0.0));
 	append_expected_intersection (0.0, 50.0, ENTERING, edge);
@@ -367,6 +378,7 @@ begin
 
 	do_test;
 
+	
 
 	L := make_edge (-10.0, 10.0, 10.0, -10.0);
 	set_expect (
@@ -425,6 +437,8 @@ begin
 	do_test;
 
 
+
+
 	make_polygon (P_staircase_inside);
 	L := make_edge (70.0, 30.0, 100.0, 0.0);
 	end_point_neigbors := get_neigboring_edges (P, L.end_point);
@@ -439,7 +453,6 @@ begin
 
 	--P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 "
 									--& "line 90 10 line 10 10 line 10 100 line 0 100";
-
 
 	
 	make_polygon (P_u_shaped);
@@ -461,7 +474,6 @@ begin
 		intersections	=> I_list); -- empty
 
 	do_test;
-
 
 
 	
@@ -504,7 +516,6 @@ begin
 
 
 
-
 	L := make_edge (10.0, 10.0, 110.0, 90.0);
 
 	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
@@ -526,6 +537,8 @@ begin
 
 
 
+	
+
 	L := make_edge (10.0, 10.0, 110.0, 10.0);
 
 	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
@@ -546,6 +559,7 @@ begin
 
 
 
+	
 	
 	L := make_edge (0.0, 100.0, 100.0, 100.0);
 
@@ -595,6 +609,7 @@ begin
 	--L := make_edge (-10.0, 110.0, 10.0, 10.0)); -- go
 	--do_test;
 
+<<skip>>
 	
 
 	put_line ("ERRORS:" & natural'image (errors));

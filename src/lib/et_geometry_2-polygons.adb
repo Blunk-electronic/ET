@@ -436,6 +436,8 @@ package body et_geometry_2.polygons is
 		distance : type_distance_point_line;
 	begin
 		distance := get_distance (vector, edge, WITH_END_POINTS);
+
+		--put_line ("on edge distance: " & to_string (distance.distance));
 		
 		if not distance.out_of_range and distance.distance < rounding_threshold then
 			return true;
@@ -564,7 +566,10 @@ package body et_geometry_2.polygons is
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
 			-- double check: location vectors must match !
-			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
+			--if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
+			if get_absolute (
+				get_distance (int_A.intersection.vector, int_B.intersection.vector)) <= rounding_threshold 
+			then
 				status := EXISTS;
 				intersection.vector := int_A.intersection.vector;
 				intersection.angle := int_A.intersection.angle;
@@ -1530,26 +1535,6 @@ package body et_geometry_2.polygons is
 		y_threshold : constant type_float_internal := get_y (point);
 
 
-		function crosses_threshold (
-			line		: in type_line;	
-			y_threshold	: in type_float_internal)
-			return boolean
-		is begin
-			if	
-				type_float_internal (get_y (line.start_point)) >= y_threshold and 
-				type_float_internal (get_y (line.end_point))   <  y_threshold then
-				return true;
-				
-			elsif
-				type_float_internal (get_y (line.end_point))   >= y_threshold and 
-				type_float_internal (get_y (line.start_point)) <  y_threshold then
-				return true;
-				
-			else
-				return false;
-			end if;
-		end crosses_threshold;
-
 		
 		-- This is the variable for the number of intersections detected.
 		-- From this number we will later deduce the position of the given point,
@@ -2093,14 +2078,18 @@ package body et_geometry_2.polygons is
 			end case;
 		end set_line_end;
 
-		
+
+		-- Traverses the edges of the given polygon and tests for
+		-- intersections with the given candidate edge.
+		-- If there is an intersection then it will be collected in
+		-- result.intersections:
 		procedure find_intersections is
 			
 			procedure query_edge (c : in pac_edges.cursor) is 
 				I2L : constant type_intersection_of_two_lines := 
 					get_intersection (element (c), edge);
 
-				I_rounded : type_vector;
+				--I_rounded : type_vector;
 				IP : type_vector;
 	
 			begin
@@ -2109,6 +2098,8 @@ package body et_geometry_2.polygons is
 				if I2L.status = EXISTS then
 					IP := I2L.intersection.vector;
 
+					--put_line ("XI: " & to_string (IP));
+					
 					-- If the intersection is right on the start or the end
 					-- of the given edge the the candidate edge is to be skipped:
 					if IP = edge.start_point 
@@ -2119,14 +2110,24 @@ package body et_geometry_2.polygons is
 						-- Collect this intersection point if it has
 						-- not already been collected yet:
 
+						
+						
 						--I_rounded := round (
 							--vector		=> I2L.intersection.vector, 
 							--accuracy	=> type_float_internal'digits -1);
 						-- CS no need anymore ?
 
-						if not contains (result.intersections, I_rounded) then
+						--if not contains (result.intersections, I_rounded) then
+							--result.intersections.append ((
+								--position => I_rounded, edge => c, others => <>));
+							---- The direction will be set later.
+						--end if;
+						if not contains (result.intersections, IP) then
+
+							
+							
 							result.intersections.append ((
-								position => I_rounded, edge => c, others => <>));
+								position => IP, edge => c, others => <>));
 							-- The direction will be set later.
 						end if;
 					end if;
