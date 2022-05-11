@@ -131,6 +131,38 @@ package body et_kicad_coordinates is
 	end get_y;
 
 
+	procedure set_point (
+		position	: in out type_position;
+		place		: in type_point)
+	is begin
+		position.point := place;
+	end set_point;
+
+
+	procedure rotate_point (
+		position	: in out type_position;
+		angle		: in type_rotation)
+	is begin
+		rotate_by (position.point, angle);
+	end rotate_point;
+
+
+	procedure mirror_point (
+		position	: in out type_position;
+		axis		: in type_axis_2D)
+	is begin
+		mirror (position.point, axis);
+	end mirror_point;
+
+
+	procedure move_point (
+		position	: in out type_position;
+		offset		: in type_distance_relative)
+	is begin
+		move_by (position.point, offset);
+	end move_point;
+
+	
 	procedure set (
 		position	: in out type_position;
 		axis		: in type_axis_2D;

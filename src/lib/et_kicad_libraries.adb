@@ -457,8 +457,8 @@ package body et_kicad_libraries is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		point.set (et_geometry.X, x);
-		point.set (et_geometry.Y, y);
+		set (point, et_geometry.X, x);
+		set (point, et_geometry.Y, y);
 		
 		return point;
 	end to_point;
@@ -1434,9 +1434,9 @@ package body et_kicad_libraries is
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					point.set (X, mil_to_distance (mil => f (line, pos))); -- set x
+					set (point, X, mil_to_distance (mil => f (line, pos))); -- set x
 				
-					point.set (Y, mil_to_distance (mil => f (line, pos + 1))); -- set y (right after the x-field)
+					set (point, Y, mil_to_distance (mil => f (line, pos + 1))); -- set y (right after the x-field)
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1468,15 +1468,15 @@ package body et_kicad_libraries is
 				-- #9 : fill style N/F/f no fill/foreground/background
 
 			begin -- to_rectangle
-				rectangle.corner_A.set (X, mil_to_distance (mil => f (line,2)));
-				rectangle.corner_A.set (Y, mil_to_distance (mil => f (line,3)));
+				set (rectangle.corner_A, X, mil_to_distance (mil => f (line,2)));
+				set (rectangle.corner_A, Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.corner_A, axis => x);
 				
-				rectangle.corner_B.set (X, mil_to_distance (mil => f (line,4)));
-				rectangle.corner_B.set (Y, mil_to_distance (mil => f (line,5)));
+				set (rectangle.corner_B, X, mil_to_distance (mil => f (line,4)));
+				set (rectangle.corner_B, Y, mil_to_distance (mil => f (line,5)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1510,15 +1510,16 @@ package body et_kicad_libraries is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
+				use et_coordinates.pac_geometry_sch;
 			begin -- to_circle
-				circle.center.set (X, mil_to_distance (mil => f (line,2)));
-				circle.center.set (Y, mil_to_distance (mil => f (line,3)));
+				set (circle.center, X, mil_to_distance (mil => f (line,2)));
+				set (circle.center, Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => circle.center, axis => x);
 	
-				circle.radius := type_float_internal_positive (mil_to_distance (mil => f (line,4)));
+				circle.radius := mil_to_distance (mil => f (line,4));
 
 				-- If line width is too small, use a lower limit instead.
 				if mil_to_distance (f (line,7)) < type_line_width'first then
@@ -1553,9 +1554,10 @@ package body et_kicad_libraries is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
+				use et_coordinates.pac_geometry_sch;
 			begin -- to_arc
-				arc.center.set (X, mil_to_distance (mil => f (line,2)));
-				arc.center.set (Y, mil_to_distance (mil => f (line,3)));
+				set (arc.center, X, mil_to_distance (mil => f (line,2)));
+				set (arc.center, Y, mil_to_distance (mil => f (line,3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1563,8 +1565,8 @@ package body et_kicad_libraries is
 
 				arc.radius		:= mil_to_distance (mil => f (line,4));
 
-				arc.start_angle	:= to_degrees (f (line,5)); -- CS multiply by -1 ?
-				arc.end_angle	:= to_degrees (f (line,6)); -- CS multiply by -1 ?
+				arc.start_angle	:= to_angle (f (line,5)); -- CS multiply by -1 ?
+				arc.end_angle	:= to_angle (f (line,6)); -- CS multiply by -1 ?
 				--arc.direction	:= to_direction (arc);
 				if arc.start_angle > arc.end_angle then
 					arc.direction := CCW;
@@ -1581,15 +1583,15 @@ package body et_kicad_libraries is
 
 				arc.fill		:= to_fill (f (line,10));
 				
-				arc.start_point.set (X, mil_to_distance (mil => f (line,11)));
-				arc.start_point.set (Y, mil_to_distance (mil => f (line,12)));
+				set (arc.start_point, X, mil_to_distance (mil => f (line,11)));
+				set (arc.start_point, Y, mil_to_distance (mil => f (line,12)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.start_point, axis => x);
 
-				arc.end_point.set (X, mil_to_distance (mil => f (line,13)));
-				arc.end_point.set (Y, mil_to_distance (mil => f (line,14)));
+				set (arc.end_point, X, mil_to_distance (mil => f (line,13)));
+				set (arc.end_point, Y, mil_to_distance (mil => f (line,14)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1666,11 +1668,13 @@ package body et_kicad_libraries is
 					return et_text.pac_text_content.to_bounded_string (t);
 				end to_content;
 
+				use et_coordinates.pac_geometry_sch;
+				
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
 				
-				text.position.set (X, mil_to_distance (mil => f (line,3)));
-				text.position.set (Y, mil_to_distance (mil => f (line,4)));
+				set (text.position, X, mil_to_distance (mil => f (line,3)));
+				set (text.position, Y, mil_to_distance (mil => f (line,4)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1811,6 +1815,7 @@ package body et_kicad_libraries is
 				end to_rotation;
 
 				use et_conventions;
+				use et_coordinates.pac_geometry_sch;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -1822,8 +1827,8 @@ package body et_kicad_libraries is
 				tmp_terminal_name := et_terminals.pac_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
 
 				-- compose position
-				port.position.set (X, mil_to_distance (mil => f (line,4)));
-				port.position.set (Y, mil_to_distance (mil => f (line,5)));
+				set (port.position, X, mil_to_distance (mil => f (line,4)));
+				set (port.position, Y, mil_to_distance (mil => f (line,5)));
 				--mirror (point => port.position, axis => x);
 
 				-- compose length
@@ -1840,6 +1845,7 @@ package body et_kicad_libraries is
 				end if;
 				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
 
+				
 				if mil_to_distance (mil => f (line,9)) < et_symbols.pac_text.type_text_size'first then
 					port.port_name_size	:= et_symbols.pac_text.type_text_size'first;
 				else
@@ -1884,7 +1890,8 @@ package body et_kicad_libraries is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
 				use et_text.pac_text_content;
-
+				use et_coordinates.pac_geometry_sch;
+				
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);
 
@@ -1936,8 +1943,8 @@ package body et_kicad_libraries is
 
 				end case;
 				
-				text.position.set (X, mil_to_distance (mil => f (line,3)));
-				text.position.set (Y, mil_to_distance (mil => f (line,4)));
+				set (text.position, X, mil_to_distance (mil => f (line,3)));
+				set (text.position, Y, mil_to_distance (mil => f (line,4)));
 				
 				text.size := mil_to_distance (mil => f (line,5));
 
@@ -1970,8 +1977,7 @@ package body et_kicad_libraries is
 				-- CS: check vert aligment.
 				-- CS: check style.
 			
-				procedure missing_field (meaning : in type_placeholder_meaning) is 
-				begin
+				procedure missing_field (meaning : in type_placeholder_meaning) is begin
 					log (ERROR, "text field " & to_string (meaning) & " missing !",
 						console => true);
 					raise constraint_error;
@@ -2076,8 +2082,8 @@ package body et_kicad_libraries is
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
 				key			: in type_device_library_name.bounded_string;
-				components	: in out type_components_library.map) is
-			begin
+				components	: in out type_components_library.map) 
+			is begin
 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.

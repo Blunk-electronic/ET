@@ -141,7 +141,7 @@ package et_kicad_packages is
 
 	type type_arc is new pac_geometry_2.type_arc with record
 		width 	: type_text_line_width;
-		angle 	: et_pcb_coordinates.type_rotation;
+		angle 	: et_pcb_coordinates.pac_geometry_brd.type_angle;
 		layer	: type_layer_abbrevation;
 	end record;
 

@@ -76,6 +76,21 @@ package body et_geometry_1 is
 	--end round;
 
 
+	function mil_to_distance (mil : in string) return type_float_internal is
+		distance_mil : type_float_internal := type_float_internal'value (mil);
+	begin
+		return distance_mil * (25.4 * 0.001);
+	end mil_to_distance;
+	
+
+	function distance_to_mil (d : in type_float_internal) return string is
+		scratch : type_float_internal;
+	begin
+		scratch := d * 1000.00 / 25.4;
+		return to_string (scratch);
+	end;
+
+	
 	
 	function to_string (f : in type_float_internal) return string is begin
 		return type_float_internal'image (f);
@@ -87,7 +102,11 @@ package body et_geometry_1 is
 	end to_float;
 	
 
+	function to_angle (a : in string) return type_angle is begin
+		return type_angle'value (a);
+	end to_angle;
 
+	
 	function to_radians (degrees : in type_angle) return type_float_internal is
 		use ada.numerics;
 	begin

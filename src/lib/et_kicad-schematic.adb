@@ -51,7 +51,6 @@ package body et_kicad.schematic is
 
 	use et_net_names.pac_net_name;
 
-	use et_symbols.pac_geometry_2;
 	
 	-- Returns the base name of the given schematic file name as submodule name.
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
@@ -504,6 +503,7 @@ package body et_kicad.schematic is
 		end if;
 	end validate_prefix;
 
+	
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
@@ -523,7 +523,8 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
-			
+
+	
 	function to_point (x_in, y_in : in string) return type_point is
 		point : type_point;
 		x, y : type_position_axis;
@@ -531,14 +532,13 @@ package body et_kicad.schematic is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		--set_x (point, x);
-		point.set (et_geometry.X, x);
-		--set_y (point, y);
-		point.set (et_geometry.Y, y);
+		set (point, et_geometry.X, x);
+		set (point, et_geometry.Y, y);
 		
 		return point;
 	end to_point;
 
+	
 	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
@@ -553,10 +553,12 @@ package body et_kicad.schematic is
 				);
 	end library_name;
 
+	
 	function to_string (dir : in type_library_directory.bounded_string) return string is
 	begin
 		return type_library_directory.to_string (dir);
 	end to_string;
+
 	
 	function package_name (text : in string) return et_packages.pac_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
@@ -1335,7 +1337,8 @@ package body et_kicad.schematic is
 		-- (to the net being examined) here. Once the net has been examined completely
 		-- we append hierarchic_strands_tmp to the strands of the net.
 		hierarchic_strands_tmp : type_strands.list := type_strands.empty_list;
-	
+
+		
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
         type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
@@ -1343,6 +1346,7 @@ package body et_kicad.schematic is
 			name		: pac_net_name.bounded_string := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
         end record;
 
+		
 		function on_segment (
 			port 	: in type_hierarchic_sheet_port;
 			segment : in type_net_segment_base)
@@ -1350,15 +1354,16 @@ package body et_kicad.schematic is
 		-- Returns true if given port sits on given segment.
 
 			-- CS this is a workaround in order to provide a line for function on_line:
-			type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+			type type_line_scratch is new pac_geometry_2.type_line with null record;
 			line : type_line_scratch := (
-				start_point	=> type_point (segment.coordinates_start), 
-				end_point	=> type_point (segment.coordinates_end));
+				start_point	=> get_point (segment.coordinates_start), 
+				end_point	=> get_point (segment.coordinates_end));
 			
 		begin -- on_segment
-			return on_line (port.coordinates, line);
+			return line.on_line (port.coordinates);
 		end on_segment;
 
+		
 		function hierarchic_net (segment : in type_net_segments.cursor) return type_hierachic_net is
 		-- Tests if the given segment is connected with a hierarchic net via a gui_submodule.
 		-- When positive: marks the port as "processed" and returns a type_hierachic_net (see spec above):
@@ -3334,6 +3339,7 @@ package body et_kicad.schematic is
 					raise;
 		
 	end import_design;
+
 	
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
@@ -3346,15 +3352,15 @@ package body et_kicad.schematic is
 		d : type_distance_point_line;
 
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> type_point (segment.coordinates_start), 
-			end_point	=> type_point (segment.coordinates_end));
+			start_point	=> get_point (segment.coordinates_start), 
+			end_point	=> get_point (segment.coordinates_end));
 		
 	begin
 		-- calculate the shortes distance of point from line.
 		d := get_distance (
-			point 		=> type_point (junction.coordinates),
+			point 		=> get_point (junction.coordinates),
 			line		=> line,
 			line_range	=> BETWEEN_END_POINTS);
 
@@ -3728,10 +3734,10 @@ package body et_kicad.schematic is
 		end test_junction;
 
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> type_point (segment.coordinates_start), 
-			end_point	=> type_point (segment.coordinates_end));
+			start_point	=> get_point (segment.coordinates_start), 
+			end_point	=> get_point (segment.coordinates_end));
 		
 	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
@@ -3745,7 +3751,7 @@ package body et_kicad.schematic is
 
 				-- calculate the shortes distance of point from line.
 				distance_port_segment := get_distance (
-					point 		=> type_point (port.coordinates),
+					point 		=> get_point (port.coordinates),
 					line		=> line,
 					line_range	=> WITH_END_POINTS);
 
@@ -4193,25 +4199,32 @@ package body et_kicad.schematic is
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_point and must be converted to type_position.
-					set (
-						point		=> port_coordinates,
-						position	=> element (port_cursor).position);
+					set_point (
+						position	=> port_coordinates,
+						place		=> element (port_cursor).position);
 
 					-- rotate port coordinates
-					rotate_by (
-						point		=> port_coordinates,
-						rotation	=> orientation_of_unit (unit_name_lib, units_sch)
+					--rotate_by (
+						--point		=> port_coordinates,
+						--rotation	=> orientation_of_unit (unit_name_lib, units_sch)
+						--);
+
+					rotate_point (
+						position	=> port_coordinates,
+						angle		=> orientation_of_unit (unit_name_lib, units_sch)
 						);
 
+					
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when NO => null; -- unit not mirrored in schematic
-						when X_AXIS => mirror (point => port_coordinates, axis => X);
-						when Y_AXIS => mirror (point => port_coordinates, axis => Y);
+						when X_AXIS => mirror_point (port_coordinates, X);
+						when Y_AXIS => mirror_point (port_coordinates, Y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
-					move_by (point => port_coordinates, offset => to_distance_relative (unit_position));
+					--move_by (point => port_coordinates, offset => to_distance_relative (unit_position));
+					move_point (port_coordinates, to_distance_relative (get_point (unit_position)));
 
 					-- path remains unchanged because the port is still where the unit is
 					set_path (
@@ -5351,15 +5364,15 @@ package body et_kicad.schematic is
 
 								-- CS this is a workaround in order to provide a line for function distance_point_line:
 								declare
-									type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> type_point (element (segment_cursor_sec).coordinates_start), 
-										end_point	=> type_point (element (segment_cursor_sec).coordinates_end));
+										start_point	=> get_point (element (segment_cursor_sec).coordinates_start), 
+										end_point	=> get_point (element (segment_cursor_sec).coordinates_end));
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
 									dist := get_distance (
-										point 		=> type_point (element (segment_cursor_prim).coordinates_start),
+										point 		=> get_point (element (segment_cursor_prim).coordinates_start),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 								
@@ -5373,7 +5386,7 @@ package body et_kicad.schematic is
 									-- exit prematurely and return the coordinates of the expected junction.
 
 									dist := get_distance (
-										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
+										point 		=> get_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 
@@ -5561,12 +5574,12 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> type_point (element (segment_cursor).coordinates_end));
+										start_point	=> get_point (element (segment_cursor).coordinates_start), 
+										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
-									if on_line (type_point (element (junction_cursor).coordinates), line) then
+									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_found := true;
 										exit;
 									end if;
@@ -5677,13 +5690,14 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> type_point (element (segment_cursor).coordinates_end));
+										start_point	=> get_point (element (segment_cursor).coordinates_start), 
+										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
 									-- count segments
-									if on_line (type_point (element (junction_cursor).coordinates), line) then
+									--if on_line (type_point (element (junction_cursor).coordinates), line) then
+									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_counter := segment_counter + 1;
 									end if;
 								end;
@@ -5859,12 +5873,12 @@ package body et_kicad.schematic is
 								element (segment_cursor).coordinates_start) then
 
 								declare
-									type type_line_scratch is new et_symbols.pac_geometry_2.type_line with null record;
+									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> type_point (element (segment_cursor).coordinates_end));
+										start_point	=> get_point (element (segment_cursor).coordinates_start), 
+										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
-									if on_line (type_point (element (no_connection_flag_cursor).coordinates), line) then
+									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 
 											& to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 									end if;
@@ -6131,6 +6145,7 @@ package body et_kicad.schematic is
 		log_indentation_down;
 
 	end write_label_properties;
+	
 
 	function to_string (label : in type_net_label) return string is
 	-- Returns the coordinates of the given label as string.
@@ -6156,7 +6171,8 @@ package body et_kicad.schematic is
 		len : type_distance;
 		--use et_string_processing;
 	begin
-		len := to_distance (get_distance_total (segment.coordinates_start, segment.coordinates_end));
+		len := to_distance (get_distance_total (
+			get_point (segment.coordinates_start), get_point (segment.coordinates_end)));
 		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
 		return len;
 	end length;

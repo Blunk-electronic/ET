@@ -93,10 +93,30 @@ package et_kicad_coordinates is
 	--type type_position is new type_point with private;
 	type type_position is private;
 
-	function get_point (position : in type_position) return type_point;	
+	function get_point (position : in type_position) return type_point;
 	function get_x (position : in type_position) return type_distance;
 	function get_y (position : in type_position) return type_distance;
 
+	procedure set_point (
+		position	: in out type_position;
+		place		: in type_point);
+
+	
+	procedure rotate_point (
+		position	: in out type_position;
+		angle		: in type_rotation);
+
+
+	procedure mirror_point (
+		position	: in out type_position;
+		axis		: in type_axis_2D);
+
+
+	procedure move_point (
+		position	: in out type_position;
+		offset		: in type_distance_relative);
+
+	
 	procedure set (
 		position	: in out type_position;
 		axis		: in type_axis_2D;

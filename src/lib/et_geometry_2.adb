@@ -117,18 +117,14 @@ package body et_geometry_2 is
 
 	
 	
-	function mil_to_distance (mil : in string) return type_distance is
-		distance_mil : type_float_internal := type_float_internal'value (mil);
-	begin
-		return to_distance (distance_mil * (25.4 * 0.001));
+	function mil_to_distance (mil : in string) return type_distance is begin
+		return type_distance (pac_geometry_1.mil_to_distance (mil));
+		-- CS use to_distance instead of type_distance ?
 	end mil_to_distance;
 	
 
-	function distance_to_mil (distance : in type_distance) return string is
-		scratch : type_float_internal;
-	begin
-		scratch := type_float_internal (distance) * 1000.00 / 25.4;
-		return to_string (to_distance (scratch));
+	function distance_to_mil (distance : in type_distance) return string is begin
+		return pac_geometry_1.distance_to_mil (type_float_internal (distance));
 	end;
 
 

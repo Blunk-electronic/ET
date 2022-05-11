@@ -37,6 +37,8 @@
 --   ToDo: 
 
 
+with et_geometry;			use et_geometry;
+
 
 package body et_submodules is
 

@@ -37,11 +37,9 @@
 
 with ada.text_io;				use ada.text_io;
 
---with et_pcb_coordinates;
+with et_geometry;				use et_geometry;
 with et_schematic;
-
 with et_submodules;				use et_submodules;
-
 with et_display.schematic;
 
 separate (et_canvas_schematic)
@@ -136,8 +134,8 @@ is
 			rotation : constant string := to_string (get_rotation (element (cursor).position_in_board));
 			
 			text : constant string := "board (x/y/rot.):" &
-					pos_x & et_pcb_coordinates.pac_geometry_brd.axis_separator &
-					pos_y & et_pcb_coordinates.pac_geometry_brd.axis_separator &
+					pos_x & axis_separator &
+					pos_y & axis_separator &
 					rotation;
 		begin
 			move_by (position, offset);

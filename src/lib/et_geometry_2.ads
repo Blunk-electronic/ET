@@ -72,7 +72,7 @@ package et_geometry_2 is
 		return string;
 	
 
-		-- The distance between two objects:
+	-- The distance between two objects:
 	subtype type_distance_positive is type_distance 
 		range zero .. type_distance'last;
 

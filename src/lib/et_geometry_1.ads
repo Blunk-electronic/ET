@@ -57,6 +57,12 @@ generic
 
 package et_geometry_1 is
 
+	-- Converts a mil number (given as a string) to millimeters.	
+	function mil_to_distance (mil : in string) return type_float_internal;
+
+	function distance_to_mil (d : in type_float_internal) return string;
+
+	
 	function to_string (f : in type_float_internal) return string;
 
 	function to_float (s : in string) return type_float_internal;
@@ -67,6 +73,8 @@ package et_geometry_1 is
 	
 	subtype type_angle is type_float_internal range -720.0 .. 720.0;
 	subtype type_angle_positive is type_angle range 0.0 .. (360.0 - type_angle'small);
+
+	function to_angle (a : in string) return type_angle;
 	
 	units_per_cycle : constant type_float_internal := 360.0;
 

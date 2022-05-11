@@ -110,9 +110,11 @@ package body et_kicad_packages is
 	is
 		shape : type_contour; -- to be returned
 		c : type_circle;
+
+		use et_pcb_coordinates.pac_geometry_brd;
 	begin
-		c.center := type_point (position);
-		c.radius := type_float_internal_positive (diameter / 2.0);
+		c.center := position.place;
+		c.radius := type_angle (diameter / 2.0);
 		move_by (c.center, offset);
 
 		shape.set_circle (c);
@@ -563,10 +565,10 @@ package body et_kicad_packages is
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
 		terminal_milling_size_y		: type_pad_milling_size; 
-		terminal_pad_drill_offset	: pac_geometry_brd.type_point;
+		terminal_pad_drill_offset	: pac_geometry_2.type_point;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
-		terminal_position	: pac_geometry_brd.type_position; 
+		terminal_position	: pac_geometry_2.type_position; 
 		
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
@@ -1186,7 +1188,7 @@ package body et_kicad_packages is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => arc.angle := to_rotation (to_string (arg));
+								when 1 => arc.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -1425,13 +1427,13 @@ package body et_kicad_packages is
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
-							set (terminal_position, pac_geometry_brd.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
+							set (terminal_position, pac_geometry_2.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => X, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									set (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
@@ -1439,13 +1441,13 @@ package body et_kicad_packages is
 
 						when SEC_FP_TEXT =>
 							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (text.position, pac_geometry_brd.zero_rotation);
+							set (text.position, pac_geometry_2.zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => text.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => text.position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => text.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => text.position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
 									set (text.position, to_rotation (to_string (arg)));
