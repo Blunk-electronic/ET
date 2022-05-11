@@ -77,7 +77,7 @@ begin
 
 	--new_line;
 
-	tolerance := 0.1;
+	--tolerance := 0.1;
 	
 	-- shrink polygon:
 	P := to_polygon (C, tolerance);

@@ -79,7 +79,8 @@ package body et_geometry_2.polygons.offsetting is
 			-- Set a test point that is very close to the center of the edge.
 			-- The point is located in direction dir_scratch away from the center:
 			dir_scratch := add (edge_direction, +90.0);
-			test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
+			--test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
+			test_point := move_by (center, dir_scratch, rounding_threshold);
 			--put_line ("tp " & to_string (test_point));
 
 			-- Depending on the location of the test point, means inside or outside
@@ -120,7 +121,7 @@ package body et_geometry_2.polygons.offsetting is
 		line_vectors : pac_line_vectors.list;
 		
 		
-		procedure do_segment (c : in pac_edges.cursor) is
+		procedure do_edge (c : in pac_edges.cursor) is
 			lv_tmp : type_line_vector;			
 		begin
 			--put_line ("original edge: " & to_string (element (c)));
@@ -128,7 +129,7 @@ package body et_geometry_2.polygons.offsetting is
 			--put_line ("offset edge as line vector: " & to_string (lv_tmp));
 			--new_line;
 			line_vectors.append (lv_tmp);
-		end do_segment;
+		end do_edge;
 
 
 		polygon_segments_new : pac_edges.list;
@@ -179,7 +180,7 @@ package body et_geometry_2.polygons.offsetting is
 
 		if mode /= NOTHING then
 			
-			polygon.edges.iterate (do_segment'access);
+			polygon.edges.iterate (do_edge'access);
 
 			-- Compute the intersections of the line_vectors.
 			-- The intersections become the start and end points
