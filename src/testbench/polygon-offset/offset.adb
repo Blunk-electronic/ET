@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -85,6 +85,7 @@ begin
 
 	new_line;
 	
+	--offset_polygon (P, -0.4);
 	offset_polygon (P, -1.0);
 	put_line ("shrank  : " & to_string (P));
 	

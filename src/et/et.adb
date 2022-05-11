@@ -693,8 +693,8 @@ procedure et is
 
 	procedure log_sys_info is 
 	begin
-		log (text => et_pcb_coordinates.pac_geometry_brd.get_info ("layout/board"));
-		log (text => et_coordinates.pac_geometry_sch.get_info ("schematic"));
+		log (text => et_pcb_coordinates.pac_geometry_2.get_info ("layout/board"));
+		log (text => et_coordinates.pac_geometry_2.get_info ("schematic"));
 	end log_sys_info;
 
 

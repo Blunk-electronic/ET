@@ -345,7 +345,7 @@ package et_geometry_2.polygons is
 
 	
 	
-private
+--private
 					   
 		
 	function get_shortest_distance (

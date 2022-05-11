@@ -44,12 +44,14 @@ with ada.containers.doubly_linked_lists;
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_string_processing;		use et_string_processing;
 
 procedure get_status is
 
 	use pac_geometry_2;
 	use pac_geometry_brd;
+	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_clipping;
 
@@ -59,8 +61,17 @@ procedure get_status is
 	P : type_polygon;
 
 	-- The line under test:
-	L : type_line;
+	L : type_edge;
 
+	
+	function make_edge (sx, sy, ex, ey : in type_float_internal) return type_edge is 
+		start_point : type_vector := set (sx, sy);
+		end_point   : type_vector := set (ex, ey);
+	begin
+		return (start_point, end_point);
+	end make_edge;
+
+	
 	-- The actual test result:
 	S_actual : type_line_to_polygon_status;
 
@@ -69,24 +80,27 @@ procedure get_status is
 	I : type_intersection_line_edge;
 	use pac_line_edge_intersections;
 	I_list : pac_line_edge_intersections.list;
-	edge : pac_polygon_segments.cursor;
+	edge : pac_edges.cursor;
 	S_expect : type_line_to_polygon_status;
 
-	start_point_edge : pac_polygon_segments.cursor;
+	start_point_edge : pac_edges.cursor;
 	start_point_neigbors : type_neigboring_edges;
 
-	end_point_edge : pac_polygon_segments.cursor;
+	end_point_edge : pac_edges.cursor;
 	end_point_neigbors : type_neigboring_edges;
 
+
+	tolerance : type_distance_positive := fab_tolerance;
+	
 	
 	-- Builds the polygon P:
 	procedure make_polygon (
 		s : in string)
 	is
-		F : type_fields_of_line;
+		C : type_contour;
 	begin
-		F := read_line (line => s, comment_mark => "#");
-		P := type_polygon (to_polygon (F));
+		C := type_contour (to_contour (s));
+		P := to_polygon (C, tolerance);
 	end;
 	
 	
@@ -106,13 +120,13 @@ procedure get_status is
 	
 	procedure print_status (LPS : in type_line_to_polygon_status) is
 		use pac_line_edge_intersections;
-		use pac_polygon_segments;
+		use pac_edges;
 		
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
-			EC : pac_polygon_segments.cursor := element (i).edge;
+			EC : pac_edges.cursor := element (i).edge;
 		begin
 			put_line (" place : " & to_string (element (i).position));
-			put_line (" edge  : " & to_string (element (EC).segment_line));
+			put_line (" edge  : " & to_string (element (EC)));
 			put_line (" drctn : " & type_intersection_direction'image (element (i).direction));
 			new_line;
 		end;
@@ -166,7 +180,7 @@ procedure get_status is
 	procedure append_expected_intersection (
 		x, y		: in type_float_internal;
 		direction	: in type_intersection_direction;
-		edge		: in pac_polygon_segments.cursor)
+		edge		: in pac_edges.cursor)
 	is 
 		v : type_vector := set (x, y);
 	begin
@@ -216,13 +230,13 @@ begin
 
 	
 	-- the line it is about:
-	L := type_line (make_line (50.0, 0.0, 60.0, 0.0));
+	L := make_edge (50.0, 0.0, 60.0, 0.0);
 
 	-- the intersected edge of the polygon:
-	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+	edge := get_segment_edge (P, make_edge (0.0, 0.0, 100.0, 0.0));
 
 	-- expect the start and end point (of the line) to lie on these edges:
-	start_point_edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+	start_point_edge := get_segment_edge (P, make_edge (0.0, 0.0, 100.0, 0.0));
 	end_point_edge := start_point_edge;
 
 	set_expect (
@@ -236,8 +250,8 @@ begin
 
 	
 	
-	L := type_line (make_line (0.0, 0.0, 110.0, 110.0));
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	L := make_edge (0.0, 0.0, 110.0, 110.0);
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 
 	-- expect the intersection: on x/y, with direction, affected edge:
 	append_expected_intersection (100.0, 100.0, LEAVING, edge);
@@ -251,8 +265,8 @@ begin
 	
 
 	
-	L := type_line (make_line (0.0, 0.0, 200.0, 0.0));
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	L := make_edge (0.0, 0.0, 200.0, 0.0);
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 0.0, LEAVING, edge);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	set_expect (
@@ -263,8 +277,8 @@ begin
 	do_test;
 
 
-	L := type_line (make_line (0.0, 0.0, 100.0, 100.0));
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	L := make_edge (0.0, 0.0, 100.0, 100.0);
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	end_point_neigbors := get_neigboring_edges (P, L.end_point);
 	set_expect (
@@ -276,7 +290,7 @@ begin
 	do_test;
 	
 
-	L := type_line (make_line (0.0, 0.0, 50.0, 50.0));
+	L := make_edge (0.0, 0.0, 50.0, 50.0);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	set_expect (
 		start_point		=> (ON_VERTEX, start_point_neigbors, ENTERING),
@@ -287,7 +301,7 @@ begin
 	do_test;
 
 	
-	L := type_line (make_line (0.0, 0.0, 100.0, 0.0));
+	L := make_edge (0.0, 0.0, 100.0, 0.0);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	end_point_neigbors := get_neigboring_edges (P, L.end_point);
 	set_expect (
@@ -299,10 +313,10 @@ begin
 	do_test;
 
 	
-	L := type_line (make_line (-10.0, -10.0, 110.0, 110.0));
-	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+	L := make_edge (-10.0, -10.0, 110.0, 110.0);
+	edge := get_segment_edge (P, make_edge (0.0, 0.0, 100.0, 0.0));
 	append_expected_intersection (0.0, 0.0, ENTERING, edge);
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 100.0, LEAVING, edge);
 	set_expect (
 		start_point		=> (location => OUTSIDE), 
@@ -314,8 +328,8 @@ begin
 
 
 	
-	L := type_line (make_line (0.0, 0.0, 200.0, 1.0));
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	L := make_edge (0.0, 0.0, 200.0, 1.0);
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 0.5, LEAVING, edge);
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
 	set_expect (
@@ -328,10 +342,10 @@ begin
 
 
 	
-	L := type_line (make_line (-10.0, 50.0, 110.0, 50.0));
-	edge := get_segment_edge (P, type_line (make_line (0.0, 100.0, 0.0, 0.0)));
+	L := make_edge (-10.0, 50.0, 110.0, 50.0);
+	edge := get_segment_edge (P, make_edge (0.0, 100.0, 0.0, 0.0));
 	append_expected_intersection (0.0, 50.0, ENTERING, edge);
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 50.0, LEAVING, edge);
 	set_expect (
 		start_point		=> (location => OUTSIDE), 
@@ -342,8 +356,8 @@ begin
 	do_test;
 
 	
-	L := type_line (make_line (10.0, 50.0, 110.0, 50.0));
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	L := make_edge (10.0, 50.0, 110.0, 50.0);
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 50.0, LEAVING, edge);
 	set_expect (
 		start_point		=> (location => INSIDE),
@@ -354,7 +368,7 @@ begin
 	do_test;
 
 
-	L := type_line (make_line (-10.0, 10.0, 10.0, -10.0));
+	L := make_edge (-10.0, 10.0, 10.0, -10.0);
 	set_expect (
 		start_point		=> (location => OUTSIDE), 
 		end_point		=> (location => OUTSIDE), 
@@ -367,7 +381,7 @@ begin
 -------------	
 	make_polygon (P_1_shaped);
 
-	L := type_line (make_line (-10.0, 60.0, 60.0, -10.0));
+	L := make_edge (-10.0, 60.0, 60.0, -10.0);
 	set_expect (
 		start_point		=> (location => OUTSIDE),
 		end_point		=> (location => OUTSIDE), 
@@ -377,7 +391,7 @@ begin
 	do_test;
 
 
-	L := type_line (make_line (40.0, 60.0, 60.0, 40.0));
+	L := make_edge (40.0, 60.0, 60.0, 40.0);
 	set_expect (
 		start_point		=> (location => INSIDE),
 		end_point		=> (location => INSIDE), 
@@ -388,7 +402,7 @@ begin
 
 	
 
-	L := type_line (make_line (40.0, 60.0, 61.0, 40.0));
+	L := make_edge (40.0, 60.0, 61.0, 40.0);
 	set_expect (
 		start_point		=> (location => INSIDE),
 		end_point		=> (location => INSIDE), 
@@ -401,7 +415,7 @@ begin
 	
 	
 	make_polygon (P_staircase_inside);
-	L := type_line (make_line (70.0, 30.0, 95.0, 5.0));
+	L := make_edge (70.0, 30.0, 95.0, 5.0);
 	set_expect (
 		start_point		=> (location => INSIDE),
 		end_point		=> (location => INSIDE), 
@@ -412,7 +426,7 @@ begin
 
 
 	make_polygon (P_staircase_inside);
-	L := type_line (make_line (70.0, 30.0, 100.0, 0.0));
+	L := make_edge (70.0, 30.0, 100.0, 0.0);
 	end_point_neigbors := get_neigboring_edges (P, L.end_point);
 	set_expect (
 		start_point		=> (location => INSIDE),
@@ -430,15 +444,15 @@ begin
 	
 	make_polygon (P_u_shaped);
 	
-	L := type_line (make_line (10.0, 50.0, 110.0, 50.0));
+	L := make_edge (10.0, 50.0, 110.0, 50.0);
 
-	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
 	append_expected_intersection (90.0, 50.0, ENTERING, edge);
 
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 50.0, LEAVING, edge);
 
-	start_point_edge := get_segment_edge (P, type_line (make_line (10.0, 10.0, 10.0, 100.0)));
+	start_point_edge := get_segment_edge (P, make_edge (10.0, 10.0, 10.0, 100.0));
 	
 	set_expect (
 		start_point		=> (ON_EDGE, start_point_edge, LEAVING),
@@ -452,12 +466,12 @@ begin
 
 	
 
-	L := type_line (make_line (10.0, 50.0, -10.0, 50.0));
+	L := make_edge (10.0, 50.0, -10.0, 50.0);
 
-	edge := get_segment_edge (P, type_line (make_line (0.0, 100.0, 0.0, 0.0)));
+	edge := get_segment_edge (P, make_edge (0.0, 100.0, 0.0, 0.0));
 	append_expected_intersection (0.0, 50.0, LEAVING, edge);
 
-	start_point_edge := get_segment_edge (P, type_line (make_line (10.0, 10.0, 10.0, 100.0)));
+	start_point_edge := get_segment_edge (P, make_edge (10.0, 10.0, 10.0, 100.0));
 	
 	set_expect (
 		start_point		=> (ON_EDGE, start_point_edge, ENTERING),
@@ -471,9 +485,9 @@ begin
 
 
 	
-	L := type_line (make_line (10.0, 10.0, -10.0, 10.0));
+	L := make_edge (10.0, 10.0, -10.0, 10.0);
 
-	edge := get_segment_edge (P, type_line (make_line (0.0, 100.0, 0.0, 0.0)));
+	edge := get_segment_edge (P, make_edge (0.0, 100.0, 0.0, 0.0));
 	append_expected_intersection (0.0, 10.0, LEAVING, edge);
 
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -491,12 +505,12 @@ begin
 
 
 
-	L := type_line (make_line (10.0, 10.0, 110.0, 90.0));
+	L := make_edge (10.0, 10.0, 110.0, 90.0);
 
-	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
 	append_expected_intersection (90.0, 74.0, ENTERING, edge);
 
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 82.0, LEAVING, edge);
 
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -512,12 +526,12 @@ begin
 
 
 
-	L := type_line (make_line (10.0, 10.0, 110.0, 10.0));
+	L := make_edge (10.0, 10.0, 110.0, 10.0);
 
-	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
 	append_expected_intersection (90.0, 10.0, ENTERING, edge);
 
-	edge := get_segment_edge (P, type_line (make_line (100.0, 0.0, 100.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (100.0, 0.0, 100.0, 100.0));
 	append_expected_intersection (100.0, 10.0, LEAVING, edge);
 
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -533,12 +547,12 @@ begin
 
 
 	
-	L := type_line (make_line (0.0, 100.0, 100.0, 100.0));
+	L := make_edge (0.0, 100.0, 100.0, 100.0);
 
-	edge := get_segment_edge (P, type_line (make_line (10.0, 10.0, 10.0, 100.0)));
+	edge := get_segment_edge (P, make_edge (10.0, 10.0, 10.0, 100.0));
 	append_expected_intersection (10.0, 100.0, LEAVING, edge);
 
-	edge := get_segment_edge (P, type_line (make_line (90.0, 100.0, 90.0, 10.0)));
+	edge := get_segment_edge (P, make_edge (90.0, 100.0, 90.0, 10.0));
 	append_expected_intersection (90.0, 100.0, ENTERING, edge);
 	
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -557,11 +571,11 @@ begin
 
 
 	make_polygon (default_polygon);
-	L := type_line (make_line (100.0, 0.0, 100.001, 50.0));
-	--L := type_line (make_line (100.0, 0.0, 150.0, 50.0));
+	L := make_edge (100.0, 0.0, 100.001, 50.0);
+	--L := make_edge (100.0, 0.0, 150.0, 50.0));
 
 	-- the intersected edge of the polygon:
-	edge := get_segment_edge (P, type_line (make_line (0.0, 0.0, 100.0, 0.0)));
+	edge := get_segment_edge (P, make_edge (0.0, 0.0, 100.0, 0.0));
 
 	-- expect the start and end point (of the line) to lie on these edges:
 	start_point_neigbors := get_neigboring_edges (P, L.start_point);
@@ -575,10 +589,10 @@ begin
 
 	
 	
-	--L := type_line (make_line (5.0, 100.0, 100.0, 100.0)); -- go
-	--L := type_line (make_line (5.0, 100.0, 95.0, 100.0)); -- go
-	--L := type_line (make_line (-10.0, 50.0, 110.0, 50.0)); -- go
-	--L := type_line (make_line (-10.0, 110.0, 10.0, 10.0)); -- go
+	--L := make_edge (5.0, 100.0, 100.0, 100.0)); -- go
+	--L := make_edge (5.0, 100.0, 95.0, 100.0)); -- go
+	--L := make_edge (-10.0, 50.0, 110.0, 50.0)); -- go
+	--L := make_edge (-10.0, 110.0, 10.0, 10.0)); -- go
 	--do_test;
 
 	
