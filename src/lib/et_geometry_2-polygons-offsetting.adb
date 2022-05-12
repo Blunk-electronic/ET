@@ -37,11 +37,54 @@
 
 
 with et_exceptions;				use et_exceptions;
-
+with ada.exceptions;			use ada.exceptions;
 
 
 package body et_geometry_2.polygons.offsetting is
 
+
+	function get_next_direct_intersection (
+		candidate	: in pac_offset_edges.cursor;
+		first		: in pac_offset_edges.cursor)									  
+		return type_next_direct_intersection
+	is
+		result : type_next_direct_intersection;
+
+		c : pac_offset_edges.cursor := next (candidate);
+	begin
+		while c /= candidate loop
+			
+			declare
+				I : constant type_intersection_of_two_lines := get_intersection (
+					edge_1 => element (candidate).edge,
+					edge_2 => element (c).edge);
+			begin
+				--put_line ("NEXT");
+				
+				if I.status = EXISTS then
+					result.cursor := c;
+					result.place := I.intersection.vector;
+
+					exit;
+				end if;
+			end;
+			
+			next (c);
+
+			if c = pac_offset_edges.no_element then
+				c := first;
+			end if;
+		end loop;
+
+		return result;
+
+		exception when event: others =>
+			put_line (exception_message (event));
+			raise;
+		
+	end get_next_direct_intersection;
+	
+	
 
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
@@ -54,8 +97,8 @@ package body et_geometry_2.polygons.offsetting is
 
 		function offset_edge (
 			edge : in type_edge)
-			return type_line_vector
-			--return type_offset_edge
+			--return type_line_vector
+			return type_offset_edge
 		is
 			edge_new : type_edge := edge;
 			center : type_vector := get_center (edge);
@@ -80,8 +123,10 @@ package body et_geometry_2.polygons.offsetting is
 			-- Set a test point that is very close to the center of the edge.
 			-- The point is located in direction dir_scratch away from the center:
 			dir_scratch := add (edge_direction, +90.0);
-			--test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
-			test_point := move_by (center, dir_scratch, rounding_threshold);
+
+			-- CS:
+			test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
+			--test_point := move_by (center, dir_scratch, 100.0 * type_float_internal'small);
 			--put_line ("tp " & to_string (test_point));
 
 			-- Depending on the location of the test point, means inside or outside
@@ -113,31 +158,31 @@ package body et_geometry_2.polygons.offsetting is
 					
 			end;
 
-			return to_line_vector (edge_new);
-			--return (
-				--edge => edge_new,
-				--line => to_line_vector (edge_new));
+			--return to_line_vector (edge_new);
+			return (
+				edge => edge_new,
+				line => to_line_vector (edge_new));
 		end offset_edge;
 	
 
-		package pac_line_vectors is new doubly_linked_lists (type_line_vector);
-		use pac_line_vectors;
-		line_vectors : pac_line_vectors.list;
-		--edges : pac_offset_edges.list;
+		--package pac_line_vectors is new doubly_linked_lists (type_line_vector);
+		--use pac_line_vectors;
+		--line_vectors : pac_line_vectors.list;
+		edges : pac_offset_edges.list;
 		
 
-		procedure do_edge (c : in pac_edges.cursor) is
 		--procedure do_edge (c : in pac_edges.cursor) is
-			lv_tmp : type_line_vector;
-			--OE : type_offset_edge;
+		procedure do_edge (c : in pac_edges.cursor) is
+			--lv_tmp : type_line_vector;
+			OE : type_offset_edge;
 		begin
 			--put_line ("original edge: " & to_string (element (c)));
-			lv_tmp := offset_edge (element (c));
-			--OE := offset_edge (element (c));
+			--lv_tmp := offset_edge (element (c));
+			OE := offset_edge (element (c));
 			--put_line ("offset edge as line vector: " & to_string (lv_tmp));
 			--new_line;
-			line_vectors.append (lv_tmp);
-			--edges.append (OE);
+			--line_vectors.append (lv_tmp);
+			edges.append (OE);
 		end do_edge;
 
 
@@ -147,24 +192,24 @@ package body et_geometry_2.polygons.offsetting is
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
 
 
-		procedure query_offset_edge (cp : in pac_line_vectors.cursor) is
-		--procedure query_offset_edge (cp : in pac_offset_edges.cursor) is
+		--procedure query_offset_edge (cp : in pac_line_vectors.cursor) is
+		procedure query_offset_edge (cp : in pac_offset_edges.cursor) is
 			-- cp is the primary cursor that points to the current line.
 			
 			-- The secondary cursor that points to the line that is
 			-- before the candidate line:
-			--cs : pac_offset_edges.cursor;
-			cs : pac_line_vectors.cursor;
+			cs : pac_offset_edges.cursor;
+			--cs : pac_line_vectors.cursor;
 
 		begin
 			--put_line ("lv " & to_string (element (cp)));
 
-			--if cp = edges.first then
-			if cp = line_vectors.first then
-				cs := line_vectors.last;
-				--cs := edges.last;
-				--I := get_intersection (element (cp).line, element (cs).line);
-				I := get_intersection (element (cp), element (cs));
+			if cp = edges.first then
+			--if cp = line_vectors.first then
+				--cs := line_vectors.last;
+				cs := edges.last;
+				I := get_intersection (element (cp).line, element (cs).line);
+				--I := get_intersection (element (cp), element (cs));
 
 				LS := I.intersection.vector;
 				INIT := LS;
@@ -172,16 +217,16 @@ package body et_geometry_2.polygons.offsetting is
 				
 			else
 				cs := previous (cp);
-				--I := get_intersection (element (cp).line, element (cs).line);
-				I := get_intersection (element (cp), element (cs));
+				I := get_intersection (element (cp).line, element (cs).line);
+				--I := get_intersection (element (cp), element (cs));
 
 				LE := I.intersection.vector;
 
 				-- edge complete. append to new segments:
 				polygon_segments_new.append ((LS, LE));
 				
-				--if cp = edges.last then
-				if cp = line_vectors.last then
+				if cp = edges.last then
+				--if cp = line_vectors.last then
 					polygon_segments_new.append ((LE, INIT));
 				end if;
 				
@@ -191,6 +236,9 @@ package body et_geometry_2.polygons.offsetting is
 			end if;
 		end query_offset_edge;
 
+
+		E : pac_offset_edges.cursor;
+		N : type_next_direct_intersection;
 		
 	begin -- offset_polygon
 
@@ -201,8 +249,29 @@ package body et_geometry_2.polygons.offsetting is
 			-- Compute the intersections of the line_vectors.
 			-- The intersections become the start and end points
 			-- of the new line-segments:
-			line_vectors.iterate (query_offset_edge'access);
 			--edges.iterate (query_offset_edge'access);
+			E := edges.first;
+			while E /= pac_offset_edges.no_element loop
+				put_line ("EDGE:" & to_string (element (E).edge));
+				
+				N := get_next_direct_intersection (E, edges.first);
+
+				--if N.cursor /= pac_offset_edges.no_element then
+					--put_line ("NEXT DIRECT:" & to_string (element (N.cursor).edge));
+					
+					--LS := N.place;
+					--LE := element (N.cursor).edge.end_point;
+					--polygon_segments_new.append ((LS, LE));
+					
+					---- advance candidate cursor
+					--E := N.cursor;
+				--else
+					put_line ("search INDIRECT ...");
+					query_offset_edge (E);
+					next (E);
+				--end if;
+				
+			end loop;
 
 			polygon.edges := polygon_segments_new;
 

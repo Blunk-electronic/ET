@@ -78,6 +78,7 @@ begin
 	--new_line;
 
 	--tolerance := 0.1;
+	tolerance := 2.0;
 	
 	-- shrink polygon:
 	P := to_polygon (C, tolerance);
@@ -85,7 +86,8 @@ begin
 
 	new_line;
 	
-	offset_polygon (P, -0.4);
+	--offset_polygon (P, -0.4);
+	offset_polygon (P, -1.0);
 	--offset_polygon (P, -1.0);
 	put_line ("shrank  : " & to_string (P));
 	

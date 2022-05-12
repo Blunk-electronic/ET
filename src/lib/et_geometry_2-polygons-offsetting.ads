@@ -58,7 +58,13 @@ package et_geometry_2.polygons.offsetting is
 	
 	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
 	use pac_offset_edges;
+
 	
+	type type_next_direct_intersection is record
+		cursor : pac_offset_edges.cursor;
+		place  : type_vector;
+	end record;
+
 	
 	-- Offsets (the edges of) a polygon. 
 	-- If offset is positive then the edges are moved toward the outside
