@@ -46,6 +46,20 @@ package et_geometry_2.polygons.offsetting is
 
 	-- CS subtype for offset
 
+
+	type type_offset_edge is record
+		-- The new edge after the offset operation:
+		edge	: type_edge;
+
+		-- The new edge expressed as an infinite long line:
+		line	: type_line_vector;
+	end record;
+
+	
+	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
+	use pac_offset_edges;
+	
+	
 	-- Offsets (the edges of) a polygon. 
 	-- If offset is positive then the edges are moved toward the outside
 	-- of the polygon. The polygon area then becomes greater.

@@ -51,10 +51,11 @@ package body et_geometry_2.polygons.offsetting is
 		-- or whether there is nothing to do:
 		mode : constant type_mode := to_mode (offset);	
 		
-		
+
 		function offset_edge (
 			edge : in type_edge)
 			return type_line_vector
+			--return type_offset_edge
 		is
 			edge_new : type_edge := edge;
 			center : type_vector := get_center (edge);
@@ -111,24 +112,32 @@ package body et_geometry_2.polygons.offsetting is
 				end case;
 					
 			end;
-			
+
 			return to_line_vector (edge_new);
+			--return (
+				--edge => edge_new,
+				--line => to_line_vector (edge_new));
 		end offset_edge;
 	
 
 		package pac_line_vectors is new doubly_linked_lists (type_line_vector);
 		use pac_line_vectors;
 		line_vectors : pac_line_vectors.list;
+		--edges : pac_offset_edges.list;
 		
-		
+
 		procedure do_edge (c : in pac_edges.cursor) is
-			lv_tmp : type_line_vector;			
+		--procedure do_edge (c : in pac_edges.cursor) is
+			lv_tmp : type_line_vector;
+			--OE : type_offset_edge;
 		begin
 			--put_line ("original edge: " & to_string (element (c)));
 			lv_tmp := offset_edge (element (c));
+			--OE := offset_edge (element (c));
 			--put_line ("offset edge as line vector: " & to_string (lv_tmp));
 			--new_line;
 			line_vectors.append (lv_tmp);
+			--edges.append (OE);
 		end do_edge;
 
 
@@ -137,19 +146,24 @@ package body et_geometry_2.polygons.offsetting is
 		INIT, LS, LE : type_vector;
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
 
-		
-		procedure query_line (cp : in pac_line_vectors.cursor) is
+
+		procedure query_offset_edge (cp : in pac_line_vectors.cursor) is
+		--procedure query_offset_edge (cp : in pac_offset_edges.cursor) is
 			-- cp is the primary cursor that points to the current line.
 			
 			-- The secondary cursor that points to the line that is
 			-- before the candidate line:
+			--cs : pac_offset_edges.cursor;
 			cs : pac_line_vectors.cursor;
 
 		begin
 			--put_line ("lv " & to_string (element (cp)));
 
+			--if cp = edges.first then
 			if cp = line_vectors.first then
 				cs := line_vectors.last;
+				--cs := edges.last;
+				--I := get_intersection (element (cp).line, element (cs).line);
 				I := get_intersection (element (cp), element (cs));
 
 				LS := I.intersection.vector;
@@ -158,6 +172,7 @@ package body et_geometry_2.polygons.offsetting is
 				
 			else
 				cs := previous (cp);
+				--I := get_intersection (element (cp).line, element (cs).line);
 				I := get_intersection (element (cp), element (cs));
 
 				LE := I.intersection.vector;
@@ -165,6 +180,7 @@ package body et_geometry_2.polygons.offsetting is
 				-- edge complete. append to new segments:
 				polygon_segments_new.append ((LS, LE));
 				
+				--if cp = edges.last then
 				if cp = line_vectors.last then
 					polygon_segments_new.append ((LE, INIT));
 				end if;
@@ -173,7 +189,7 @@ package body et_geometry_2.polygons.offsetting is
 				-- start point of the next line (irrelevant for last line vector):
 				LS := LE;
 			end if;
-		end query_line;
+		end query_offset_edge;
 
 		
 	begin -- offset_polygon
@@ -185,7 +201,8 @@ package body et_geometry_2.polygons.offsetting is
 			-- Compute the intersections of the line_vectors.
 			-- The intersections become the start and end points
 			-- of the new line-segments:
-			line_vectors.iterate (query_line'access);
+			line_vectors.iterate (query_offset_edge'access);
+			--edges.iterate (query_offset_edge'access);
 
 			polygon.edges := polygon_segments_new;
 
