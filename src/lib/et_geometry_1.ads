@@ -1146,13 +1146,15 @@ package et_geometry_1 is
 		return type_line;
 	
 		
-	-- Moves a line by the given offset:
+	-- Moves the start and end points of a 
+	-- line by the given offset:
 	procedure move_by (
 		line	: in out type_line;
 		offset	: in type_offset);
 
 
-	-- Rotates a line about the origin (in the z-plane):
+	-- Rotates the start and end points of a line 
+	-- about the origin (in the z-plane):
 	procedure rotate_by (
 		line	: in out type_line;
 		offset	: in type_angle);
