@@ -43,43 +43,73 @@ with ada.exceptions;			use ada.exceptions;
 package body et_geometry_2.polygons.offsetting is
 
 
+	function to_string (oe : in type_offset_edge) return string is begin
+		return to_string (oe.edge);
+			--& " line: " & to_string (oe.line);
+	end to_string;
+
+
+	function to_string (oe : in pac_offset_edges.cursor) return string is begin
+		return to_string (element (oe));
+	end to_string;
+
+
 	function get_next_direct_intersection (
-		candidate	: in pac_offset_edges.cursor;
-		first		: in pac_offset_edges.cursor)									  
+		start	: in pac_offset_edges.cursor;
+		first	: in pac_offset_edges.cursor;
+		debug	: in boolean := false)
 		return type_next_direct_intersection
 	is
 		result : type_next_direct_intersection;
 
-		c : pac_offset_edges.cursor := next (candidate);
+		c : pac_offset_edges.cursor := next (start);
 	begin
-		while c /= candidate loop
+		--put_line ("start " & to_string (start));
+
+		--goto skip;
+		
+		--while c /= start loop
+		while c /= pac_offset_edges.no_element loop
+
+			--if c = start then
+				--exit;
+			--end if;
+			
+			--put_line ("probe " & to_string (c));
 			
 			declare
 				I : constant type_intersection_of_two_lines := get_intersection (
-					edge_1 => element (candidate).edge,
+					edge_1 => element (start).edge,
 					edge_2 => element (c).edge);
 			begin
-				--put_line ("NEXT");
-				
 				if I.status = EXISTS then
+					--put_line ("EXISTS");
+					
 					result.cursor := c;
 					result.place := I.intersection.vector;
 
+					--put_line ("intersects " 
+						--& to_string (result.cursor) 
+						--& " at " & to_string (result.place));
+					
 					exit;
 				end if;
 			end;
 			
 			next (c);
 
-			if c = pac_offset_edges.no_element then
-				c := first;
-			end if;
+			--if c = pac_offset_edges.no_element then
+				--c := first;
+			--end if;
 		end loop;
 
+		<<skip>>
+		
 		return result;
 
 		exception when event: others =>
-			put_line (exception_message (event));
+			put_line (exception_information (event));
+			--put_line (exception_occurrence (event));
 			raise;
 		
 	end get_next_direct_intersection;
@@ -88,7 +118,8 @@ package body et_geometry_2.polygons.offsetting is
 
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_distance) 
+		offset		: in type_distance;
+		debug		: in boolean := false) 
 	is
 		-- Mode tells whether we are shrinking, expanding
 		-- or whether there is nothing to do:
@@ -187,13 +218,16 @@ package body et_geometry_2.polygons.offsetting is
 
 
 		polygon_segments_new : pac_edges.list;
-		
-		INIT, LS, LE : type_vector;
+
+		INIT : type_vector;		
+		LE : type_vector;
+		LS : type_vector;
 		I : type_intersection_of_two_lines := (status => EXISTS, others => <>);
 
 
-		--procedure query_offset_edge (cp : in pac_line_vectors.cursor) is
-		procedure query_offset_edge (cp : in pac_offset_edges.cursor) is
+		procedure get_intersection_with_previous_edge (
+			cp : in pac_offset_edges.cursor) 
+		is
 			-- cp is the primary cursor that points to the current line.
 			
 			-- The secondary cursor that points to the line that is
@@ -234,7 +268,7 @@ package body et_geometry_2.polygons.offsetting is
 				-- start point of the next line (irrelevant for last line vector):
 				LS := LE;
 			end if;
-		end query_offset_edge;
+		end get_intersection_with_previous_edge;
 
 
 		E : pac_offset_edges.cursor;
@@ -249,28 +283,32 @@ package body et_geometry_2.polygons.offsetting is
 			-- Compute the intersections of the line_vectors.
 			-- The intersections become the start and end points
 			-- of the new line-segments:
-			--edges.iterate (query_offset_edge'access);
 			E := edges.first;
 			while E /= pac_offset_edges.no_element loop
-				put_line ("EDGE:" & to_string (element (E).edge));
-				
-				N := get_next_direct_intersection (E, edges.first);
+				if debug then
+					new_line;
+					put_line ("EDGE: " & to_string (element (E).edge));
+				end if;
 
-				--if N.cursor /= pac_offset_edges.no_element then
-					--put_line ("NEXT DIRECT:" & to_string (element (N.cursor).edge));
-					
-					--LS := N.place;
-					--LE := element (N.cursor).edge.end_point;
-					--polygon_segments_new.append ((LS, LE));
-					
-					---- advance candidate cursor
-					--E := N.cursor;
-				--else
-					put_line ("search INDIRECT ...");
-					query_offset_edge (E);
-					next (E);
-				--end if;
+				get_intersection_with_previous_edge (E);
 				
+				N := get_next_direct_intersection (E, edges.first, debug);
+
+				if N.cursor /= pac_offset_edges.no_element then
+					if debug then
+						put_line (" FFW: " & to_string (element (N.cursor).edge));
+						put_line (" I: " & to_string (N.place));
+					end if;
+					
+					LE := N.place;
+
+					polygon_segments_new.append ((LS, LE));
+					LS := LE;
+
+					E := N.cursor;
+				end if;
+				
+				next (E);
 			end loop;
 
 			polygon.edges := polygon_segments_new;

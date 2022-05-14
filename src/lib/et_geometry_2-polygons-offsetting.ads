@@ -55,11 +55,15 @@ package et_geometry_2.polygons.offsetting is
 		line	: type_line_vector;
 	end record;
 
+	function to_string (oe : in type_offset_edge) return string;
+
 	
 	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
 	use pac_offset_edges;
 
-	
+	function to_string (oe : in pac_offset_edges.cursor) return string;
+
+		
 	type type_next_direct_intersection is record
 		cursor : pac_offset_edges.cursor;
 		place  : type_vector;
@@ -73,7 +77,8 @@ package et_geometry_2.polygons.offsetting is
 	-- then shrinks.
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_distance);
+		offset		: in type_distance;
+		debug		: in boolean := false);
 
 
 	-- Offsets a list of polygons:

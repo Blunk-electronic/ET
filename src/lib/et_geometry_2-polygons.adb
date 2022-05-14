@@ -1023,28 +1023,33 @@ package body et_geometry_2.polygons is
 		return string
 	is
 		use ada.strings.unbounded;
+		use ada.characters.latin_1;
 		
 		result : unbounded_string := to_unbounded_string ("polygon vertices (x/y):");
 
+		ct : natural := 0;
+		
 		procedure query_edge (c : in pac_edges.cursor) is begin
 
 			-- We output the start points only.
 			-- Because: The end point of an edge is always the start point of the
 			-- next edge.
 			
-			result := result & space
+			--result := result & space
+			result := result & LF
 				--& to_unbounded_string ("edge start:" & to_string (element (c).start_point));
 				& to_unbounded_string (
 					"vertex: " & to_string (element (c).start_point.x)
 					& "/" & trim (to_string (element (c).start_point.y), left));
 
+			ct := ct + 1;
 		end query_edge;
 
 		
 	begin
 		polygon.edges.iterate (query_edge'access);
 		
-		return to_string (result);
+		return to_string (result) & LF & "total:" & positive'image (ct);
 	end to_string;
 
 
