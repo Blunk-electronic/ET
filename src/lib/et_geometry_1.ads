@@ -981,7 +981,8 @@ package et_geometry_1 is
 		return boolean;
 
 
-	-- Returns the displacement vector from v1 to v2:
+	-- Returns the displacement vector from v1 to v2.
+	-- by doing v2.x - v1.x, v2.y - v1.y, v2.z - v1.z
 	function get_displacement (
 		v1, v2 : in type_vector)
 		return type_vector;
@@ -1134,6 +1135,11 @@ package et_geometry_1 is
 		start_point	: type_vector;
 		end_point	: type_vector;
 	end record;
+
+
+	function to_line_vector (
+		line : in type_line)
+		return type_line_vector;
 
 	
 	function to_string (

@@ -143,19 +143,19 @@ package body et_geometry_2.polygons is
 	end move_by;
 
 
-	function to_line_vector (
-		edge	: in type_edge)
-		return type_line_vector
-	is
-		result : type_line_vector;
-		dp : type_vector;
-	begin
-		dp := get_displacement (edge.start_point, edge.end_point);
+	--function to_line_vector (
+		--edge	: in type_edge)
+		--return type_line_vector
+	--is
+		--result : type_line_vector;
+		--dp : type_vector;
+	--begin
+		--dp := get_displacement (edge.start_point, edge.end_point);
 		
-		result.v_start := edge.start_point;
-		result.v_direction := dp;
-		return result;
-	end to_line_vector;
+		--result.v_start := edge.start_point;
+		--result.v_direction := dp;
+		--return result;
+	--end to_line_vector;
 
 
 	function get_distance (

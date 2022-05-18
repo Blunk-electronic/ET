@@ -2205,6 +2205,23 @@ package body et_geometry_1 is
 	end get_intersection;
 
 
+
+	function to_line_vector (
+		line : in type_line)
+		return type_line_vector
+	is
+		result : type_line_vector;
+		dp : type_vector;
+	begin
+		dp := get_displacement (line.start_point, line.end_point);
+		
+		result.v_start := line.start_point;
+		result.v_direction := dp;
+		return result;
+	end to_line_vector;
+
+	
+
 	function to_string (
 		line	: in type_line)
 		return string

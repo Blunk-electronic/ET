@@ -96,9 +96,9 @@ package et_geometry_2.polygons is
 		distance	: in type_distance_positive);
 
 	
-	function to_line_vector (
-		edge	: in type_edge)
-		return type_line_vector;
+	--function to_line_vector (
+		--edge	: in type_edge)
+		--return type_line_vector;
 
 
 	-- Computes the distance between a location vector and a line.

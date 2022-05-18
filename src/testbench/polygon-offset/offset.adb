@@ -64,6 +64,16 @@ procedure offset is
 
 	tolerance : type_distance_positive := fab_tolerance;
 
+	shrank_polygon_1 : constant type_polygon := to_polygon (
+		  --"1.00000000000000000E+00 1.00000000000000000E+00 "
+          "9.58578643762690495E+00 1.00000000000000000E+00 "
+		& "2.00000000000000000E+01 1.14142135623730950E+01 "
+		& "3.04142135623730950E+01 1.00000000000000000E+00 "
+		& "4.90000000000000000E+01 1.00000000000000000E+00 "
+		& "4.90000000000000000E+01 4.90000000000000000E+01 "
+		& "1.00000000000000000E+00 4.90000000000000000E+01 "
+		& "1.00000000000000000E+00 1.00000000000000000E+00");
+	
 begin
 
 	
@@ -78,7 +88,7 @@ begin
 	--new_line;
 
 	--tolerance := 0.1;
-	tolerance := 2.0;
+	tolerance := 10.0;
 	
 	-- shrink polygon:
 	P := to_polygon (C, tolerance);
@@ -87,10 +97,19 @@ begin
 	new_line;
 	
 	--offset_polygon (P, -0.4);
-	offset_polygon (P, -1.0);
+	offset_polygon (P, -1.0); -- debug messages off
+	--offset_polygon (P, -1.0, true); -- debug messages on
 	--offset_polygon (P, -1.0);
+	new_line;
 	put_line ("shrank  : " & to_string (P));
-	
+
+	if not are_congruent (P, shrank_polygon_1) then
+	--if shrank_polygon_1 /= P then
+		put_line ("ERROR");
+		put_line ("expected: " & to_string (shrank_polygon_1));
+		put_line ("found   : " & to_string (P));
+				  
+	end if;
 end offset;
 
 -- Soli Deo Gloria
@@ -99,3 +118,4 @@ end offset;
 -- his one and only Son, that whoever believes in him 
 -- shall not perish but have eternal life.
 -- The Bible, John 3.16
+	

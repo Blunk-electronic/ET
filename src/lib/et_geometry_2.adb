@@ -3469,7 +3469,7 @@ package body et_geometry_2 is
 
 		procedure do_it is 
 			-- Build a line that runs from the given point to the center of the arc:
-			line : constant type_line_vector := to_line_vector (line => (point, arc.center));
+			line : constant type_line_vector := et_geometry_2.to_line_vector (line => (point, arc.center));
 			-- IMPORTANT NOTE: Function to_line_vector computes the direction vector of line as:
 			--  arc.center.x - point.x and arc.center.y - point.y.
 			--  Function after_center (see below) bases on this fact. Otherwise its result
