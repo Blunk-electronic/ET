@@ -49,6 +49,16 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_1 is
 
 
+	function "=" (left, right : in type_float_internal) return boolean is begin
+		--put_line ("=" & to_string (abs (left - right)));
+
+		if abs (left - right) <= accuracy then
+			return true;
+		else
+			return false;
+		end if;
+	end "=";
+	
 	--procedure round (
 		--f : in out type_float_internal;
 		--a : in type_rounding_accuracy)
@@ -1452,7 +1462,38 @@ package body et_geometry_1 is
 
 -- VECTORS	
 
+	function "=" (
+		left, right : in type_vector)
+		return boolean 
+	is
+		--lx : type_float_internal := get_x (left);
+		--ly : type_float_internal := get_y (left);
+		--lz : type_float_internal := get_z (left);
 
+		--rx : type_float_internal := get_x (right);
+		--ry : type_float_internal := get_y (right);
+		--rz : type_float_internal := get_z (right);
+	begin
+		--new_line;
+		--put_line ("left: " & to_string (left));
+		--put_line ("right:" & to_string (right));
+		
+		--if  abs (lx - rx) <= rounding_threshold
+		--and abs (ly - ry) <= rounding_threshold
+		--and abs (lz - rz) <= rounding_threshold
+		if  left.x = right.x 
+		and left.y = right.y
+		and left.z = right.z
+		then
+			--put_line ("equal");
+			return true;
+		else
+			--put_line ("not equal");
+			return false;
+		end if;
+	end "=";
+
+	
 	function get_offset (
 		v1, v2 : in type_vector)
 		return type_offset
@@ -1663,35 +1704,7 @@ package body et_geometry_1 is
 		end case;
 	end mirror;
 	
-	
-	
-	function equals (
-		left, right : in type_vector)
-		return boolean 
-	is
-		lx : type_float_internal := get_x (left);
-		ly : type_float_internal := get_y (left);
-		lz : type_float_internal := get_z (left);
 
-		rx : type_float_internal := get_x (right);
-		ry : type_float_internal := get_y (right);
-		rz : type_float_internal := get_z (right);
-	begin
-		--new_line;
-		--put_line ("left: " & to_string (left));
-		--put_line ("right:" & to_string (right));
-		
-		if  abs (lx - rx) <= rounding_threshold
-		and abs (ly - ry) <= rounding_threshold
-		and abs (lz - rz) <= rounding_threshold
-		then
-			--put_line ("equal");
-			return true;
-		else
-			--put_line ("not equal");
-			return false;
-		end if;
-	end equals;
 
 
 	function get_displacement (
@@ -2006,7 +2019,8 @@ package body et_geometry_1 is
 		return a;
 	end get_angle;
 
-
+	
+	
 	function to_line_vector (
 		ray : in type_ray)
 		return type_line_vector

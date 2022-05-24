@@ -61,6 +61,9 @@ package body et_geometry_2 is
 		rotation_digits_total : constant positive := type_rotation'digits;
 		rotation_digits_right : constant positive := type_rotation'scale;
 	begin
+		--CS put_line ("rounding error:" & pac_geometry_1.to_string (type_float_internal'small));
+		-- CS write accuracy
+		
 		return to_upper (editor & " editor:")
 		& lf & "distance fine [mm]"
 		& lf & "min:        " & type_distance'image (type_distance'first)

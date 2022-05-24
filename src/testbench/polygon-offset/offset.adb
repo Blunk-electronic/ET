@@ -75,7 +75,7 @@ procedure offset is
 		& "1.00000000000000000E+00 1.00000000000000000E+00");
 	
 begin
-
+	--put_line ("rounding error:" & pac_geometry_brd.to_string (type_float_internal'small));
 	
 	C := type_contour (to_contour (S));
 	--put_line ("contour: " & to_string (C));
@@ -103,7 +103,8 @@ begin
 	new_line;
 	put_line ("shrank  : " & to_string (P));
 
-	if not are_congruent (P, shrank_polygon_1) then
+	--if not are_congruent (P, shrank_polygon_1, true) then -- debug messages on
+	if not are_congruent (P, shrank_polygon_1) then -- debug messages off
 	--if shrank_polygon_1 /= P then
 		put_line ("ERROR");
 		put_line ("expected: " & to_string (shrank_polygon_1));

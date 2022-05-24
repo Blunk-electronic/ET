@@ -47,7 +47,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_2.polygons is
 
-
+	
 	function to_string (
 		edge : in type_edge)
 		return string
@@ -832,7 +832,9 @@ package body et_geometry_2.polygons is
 	
 
 	function are_congruent (
-		polygon_A, polygon_B : in type_polygon)
+		polygon_A 	: in type_polygon;
+		polygon_B 	: in type_polygon;
+		debug		: in boolean := false)			   
 		return boolean
 	is 
 		result : boolean := false;
@@ -851,8 +853,17 @@ package body et_geometry_2.polygons is
 			procedure query_A_edge (edge_A_cursor : pac_edges.cursor) is begin
 				-- If the two edges are not equal then abort 
 				-- the iteration:
+				if debug then
+					put_line ("comparing " & to_string (element (edge_A_cursor)) 
+					& " " & to_string (element (edge_B_cursor)));
+				end if;
+				
 				if element (edge_A_cursor) /= element (edge_B_cursor) then
 					proceed := false;
+
+					if debug then
+						put_line ("not equal");
+					end if;
 				end if;
 
 				-- Prepare for the next edge of polygon B:
@@ -872,25 +883,46 @@ package body et_geometry_2.polygons is
 
 		
 	begin
+		if debug then
+			put_line ("congruent test:");
+		end if;
+		
 		-- The first and easiest test is to compare the number of edges.
 		-- If they differ, then the polygons are definitely not congruent:
 		if ct_A /= ct_B then
+			if debug then
+				put_line ("edge count mismatch. ct A:" & count_type'image (ct_A)
+				& " ct B:" & count_type'image (ct_B));
+			end if;
+				
 			result := false;
 		else
+			--put_line ("A");
+			
 			-- Get the first segment of polygon A:
 			edge_A := polygon_A.edges.first_element;
 
+			--put_line ("B");
+			
 			-- Search for that element in polygon B:
 			edge_B_cursor := polygon_B.edges.find (edge_A);
 
+			--put_line ("C");
+			
 			-- If polygon B contains this edge then proceed comparing
 			-- the segments from this position on.
 			-- If polygon B does not contain this starting edge then
 			-- the polygons are not congruent:
 			if edge_B_cursor /= pac_edges.no_element then
+				--put_line ("D");
 				compare_edges;
 			else
 				-- not congruent
+				if debug then
+					put_line (to_string (edge_A) 
+					& " not found in polygon B.");
+				end if;
+					
 				result := false;
 			end if;
 		end if;
@@ -1996,7 +2028,7 @@ package body et_geometry_2.polygons is
 			--if element (i_left.edge) = element (i_right.edge) 
 			if i_left.edge = i_right.edge				
 			and	i_left.direction = i_right.direction
-			and equals (i_left.position, i_right.position)
+			and i_left.position = i_right.position
 			then			
 				null;
 			else

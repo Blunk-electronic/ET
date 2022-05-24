@@ -57,6 +57,15 @@ generic
 
 package et_geometry_1 is
 
+	rounding_threshold : constant type_float_internal := 1.0E-17;
+	--rounding_threshold : constant type_float_internal := type_float_internal'small;
+	accuracy : constant type_float_internal := 1.0E-16;
+
+	-- Returns true if the given arguments are equal.
+	-- Considers them as equal if their difference is less or equal 
+	-- the constant "accuracy":
+	function "=" (left, right : in type_float_internal) return boolean;
+	
 	-- Converts a mil number (given as a string) to millimeters.	
 	function mil_to_distance (mil : in string) return type_float_internal;
 
@@ -102,8 +111,6 @@ package et_geometry_1 is
 	
 
 	
-	rounding_threshold : constant type_float_internal := 1.0E-17;
-	--rounding_threshold : constant type_float_internal := type_float_internal'small;
 
 
 	-- The number of decimal places when rounding or type_float_internal
@@ -807,10 +814,18 @@ package et_geometry_1 is
 		x, y, z : type_float_internal := 0.0;
 	end record;
 
+	-- Returns true if the given two location vectors are equal:
+	function "=" (
+		left, right : in type_vector)
+		return boolean;
+
+	
 	null_vector		: constant type_vector := (others => 0.0);
 	unity_vector	: constant type_vector := (others => 1.0);
 
 
+
+	
 	function get_offset (
 		v1, v2 : in type_vector)
 		return type_offset;
@@ -971,14 +986,6 @@ package et_geometry_1 is
 	procedure mirror (
 		v		: in out type_vector;
 		axis	: in type_axis_2d);
-	
-		
-	-- Returns true if the given two location vectors are equal.
-	-- The x,y,z components are regarded as equal if their difference
-	-- is less or equal the rounding_threshold:
-	function equals (
-		left, right : in type_vector)
-		return boolean;
 
 
 	-- Returns the displacement vector from v1 to v2.
@@ -1136,7 +1143,7 @@ package et_geometry_1 is
 		end_point	: type_vector;
 	end record;
 
-
+	
 	function to_line_vector (
 		line : in type_line)
 		return type_line_vector;

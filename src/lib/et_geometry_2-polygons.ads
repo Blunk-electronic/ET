@@ -58,6 +58,8 @@ package et_geometry_2.polygons is
 
 	type type_edge is new pac_geometry_1.type_line;
 
+	--function are_equal (e1, e2 : in type_edge) return boolean;
+	--function "=" (left, right : in type_edge) return boolean;
 	
 	overriding function to_string (
 		edge : in type_edge)
@@ -193,7 +195,11 @@ package et_geometry_2.polygons is
 
 
 	
-	package pac_edges is new doubly_linked_lists (type_edge);
+	package pac_edges is new doubly_linked_lists (
+		element_type => type_edge
+		--, "="		=> are_equal
+		);
+	
 	use pac_edges;
 	
 	-- Iterates the edges. Aborts the process when the proceed-flag goes false:
@@ -246,7 +252,9 @@ package et_geometry_2.polygons is
 	-- means if they are equal in outline and size.
 	-- The start points of the two polygons does not matter.
 	function are_congruent (
-		polygon_A, polygon_B : in type_polygon)
+		polygon_A 	: in type_polygon;
+		polygon_B 	: in type_polygon;
+		debug		: in boolean := false)
 		return boolean;
 	
 	
