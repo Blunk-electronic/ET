@@ -46,7 +46,14 @@ package et_geometry_2.polygons.offsetting is
 
 	-- CS subtype for offset
 
-
+	-- A single edge of a polygon is offset so that a new
+	-- edge is formed. It runs parallel to the original edge but
+	-- is shifted to the left or right (according to the desired offset).
+	-- An intersection of this edge with another "offset edge" is called 
+	-- a "direct intersection".
+	-- Furthermore we get an infinite long line (overlapping the edge).
+	-- An intersection of this line with the previous line can be considered
+	-- as a new vertex.
 	type type_offset_edge is record
 		-- The new edge after the offset operation:
 		edge	: type_edge;
@@ -57,7 +64,8 @@ package et_geometry_2.polygons.offsetting is
 
 	function to_string (oe : in type_offset_edge) return string;
 
-	
+	-- When preprocessing the polygon for each edge an "offset edge" is
+	-- created and stored in a list:
 	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
 	use pac_offset_edges;
 
@@ -68,6 +76,19 @@ package et_geometry_2.polygons.offsetting is
 		cursor : pac_offset_edges.cursor;
 		place  : type_vector;
 	end record;
+
+
+	-- Looks for a direct intersection after the edge "start"
+	-- in counter-clockwise direction. If there is a direct
+	-- intersection then the cursor to the corresponding "offset edge"
+	-- along with the location vector of the actual intersection is returned. 
+	-- If no direct intersection found, returns cursor no_element. The returned
+	-- location vector is then irrelevant:
+	function get_next_direct_intersection (
+		start	: in pac_offset_edges.cursor;
+		first	: in pac_offset_edges.cursor;
+		debug	: in boolean := false)
+		return type_next_direct_intersection;
 
 	
 	-- Offsets (the edges of) a polygon. 

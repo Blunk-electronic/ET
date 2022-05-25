@@ -52,14 +52,8 @@ package et_geometry_2.polygons is
 	-- As system wide default for all kinds of polygons or contours:
 	winding_default : constant type_direction_of_rotation := CCW;
 
-	--type type_edge is record
-		--start_point, end_point : type_vector;
-	--end record;
-
 	type type_edge is new pac_geometry_1.type_line;
 
-	--function are_equal (e1, e2 : in type_edge) return boolean;
-	--function "=" (left, right : in type_edge) return boolean;
 	
 	overriding function to_string (
 		edge : in type_edge)
@@ -97,10 +91,6 @@ package et_geometry_2.polygons is
 		direction	: in type_angle;
 		distance	: in type_distance_positive);
 
-	
-	--function to_line_vector (
-		--edge	: in type_edge)
-		--return type_line_vector;
 
 
 	-- Computes the distance between a location vector and a line.
@@ -195,12 +185,9 @@ package et_geometry_2.polygons is
 
 
 	
-	package pac_edges is new doubly_linked_lists (
-		element_type => type_edge
-		--, "="		=> are_equal
-		);
-	
+	package pac_edges is new doubly_linked_lists (type_edge);
 	use pac_edges;
+
 	
 	-- Iterates the edges. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -214,6 +201,14 @@ package et_geometry_2.polygons is
 	end record;
 
 
+	-- Rotates the edges of a polygon according to the given direction.
+	-- NOTE: The polygon does not change its appearance. Only the order
+	-- of the edges is changed !
+	procedure rotate (
+		polygon 	: in out type_polygon;
+		direction	: in type_direction_of_rotation := CCW);
+
+	
 	package pac_polygons is new doubly_linked_lists (type_polygon);
 	
 
@@ -261,8 +256,7 @@ package et_geometry_2.polygons is
 	-- Returns the cursor to the given edge of the
 	-- given polygon. If the edge does not exist, then the
 	-- return is no_element.
-	-- If the polygon consist of just a circle then an exception is raised: -- CS remove
-	function get_segment_edge ( -- CS rename to get_edge
+	function get_edge (
 		polygon	: in type_polygon;
 		edge	: in type_edge)
 		return pac_edges.cursor;

@@ -679,6 +679,33 @@ package body et_geometry_2.polygons is
 	end iterate;
 	
 
+	procedure rotate (
+		polygon 	: in out type_polygon;
+		direction	: in type_direction_of_rotation := CCW)
+	is
+		scratch : type_edge;
+	begin
+		case direction is
+			when CCW =>
+				scratch := polygon.edges.last_element;
+
+				polygon.edges.insert (
+					before		=> polygon.edges.first,
+					new_item	=> scratch);
+
+				polygon.edges.delete_last;
+					
+			when CW =>
+				scratch := polygon.edges.first_element;
+
+				polygon.edges.delete_first;
+				polygon.edges.append (scratch);
+				
+		end case;
+	end rotate;
+
+
+	
 	function to_polygon (vertices : in string)
 		return type_polygon
 	is
@@ -932,7 +959,7 @@ package body et_geometry_2.polygons is
 
 	
 
-	function get_segment_edge (
+	function get_edge (
 		polygon	: in type_polygon;
 		edge	: in type_edge)
 		return pac_edges.cursor
@@ -941,7 +968,7 @@ package body et_geometry_2.polygons is
 	begin
 		result := polygon.edges.find (edge);
 		return result;
-	end get_segment_edge;
+	end get_edge;
 	
 
 
