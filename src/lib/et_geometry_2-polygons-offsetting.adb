@@ -105,15 +105,15 @@ package body et_geometry_2.polygons.offsetting is
 
 	<<skip>>
 
-		goto skip2;
+	--goto skip2;
 		
 		--if c = pac_offset_edges.no_element then
 		if result.cursor = pac_offset_edges.no_element then
-			put_line ("nothing");
+			--put_line ("nothing");
 			
 			c := first;
 
-			while c /= start loop
+			while c /= previous (start) loop
 				
 				declare
 					I : constant type_intersection_of_two_lines := get_intersection (
@@ -125,6 +125,7 @@ package body et_geometry_2.polygons.offsetting is
 						
 						result.cursor := c;
 						result.place := I.intersection.vector;
+						--result.restarted := true;
 
 						--put_line ("intersects " 
 							--& to_string (result.cursor) 
@@ -149,6 +150,20 @@ package body et_geometry_2.polygons.offsetting is
 		
 	end get_next_direct_intersection;
 	
+
+	function get_relevant (
+		intersection : in pac_edge_intersections.cursor) 
+		return type_vector
+	is 
+		use pac_edge_intersections;
+	begin
+		if element (intersection).direct_available then
+			return element (intersection).place_direct;
+		else
+			return element (intersection).place_indirect;
+		end if;
+	end get_relevant;
+
 	
 
 	procedure offset_polygon (
@@ -316,8 +331,76 @@ package body et_geometry_2.polygons.offsetting is
 		end get_intersection_with_previous_edge;
 
 
+		function get_intersection_with_next_edge (
+			cp : in pac_offset_edges.cursor) 
+			return type_vector
+		is
+			-- cp is the primary cursor that points to the current edge.
+			-- The secondary cursor that points to the edge that comes
+			-- after the candidate edge:
+			cs : pac_offset_edges.cursor;
+		begin
+			-- In case the candidate edge is the last, then the intersection
+			-- with the first edge among the offset_edges must be computed:
+			if cp = offset_edges.last then
+				cs := offset_edges.first;
+			else
+			-- In case the candidate edge is not the last, set the secondary
+			-- cursor to the next edge and compute the intersection:
+				cs := next (cp);
+			end if;
+
+			return get_intersection (element (cp).line, element (cs).line).intersection.vector;
+		end get_intersection_with_next_edge;
+
+		
 		E : pac_offset_edges.cursor;
 		N : type_next_direct_intersection;
+
+		use pac_edge_intersections;
+		intersections : pac_edge_intersections.list;
+		
+		
+		procedure query_intersection (c : in pac_edge_intersections.cursor) is
+			i : type_vector;
+		begin
+			--new_line;
+			i := get_relevant (c);
+			--put_line (" indirect " & to_string (element (c).place_indirect));
+
+			--if element (c).direct_available then
+				--put_line (" direct   " & to_string (element (c).place_direct));
+			--end if;
+
+			put_line (" " & to_string (i));
+			--if c = intersections.first then
+				--INIT := i;
+			--else
+				--LE := v;
+		end query_intersection;
+
+		
+		--procedure connect_edges is
+			--c : pac_edge_intersections.cursor := intersections.first;
+			--i : type_vector;
+		--begin
+			--if debug then
+				--put_line ("intersections:");
+			--end if;
+
+			--while c /= pac_edge_intersections.no_element loop
+				----i := get_relevant (c);
+				--if element (c).direct_available then
+					
+
+				--if debug then
+					--put_line (" " & to_string (i));
+				--end if;
+
+				--next (c);
+			--end loop;
+		--end connect_edges;
+
 		
 	begin -- offset_polygon
 
@@ -340,7 +423,9 @@ package body et_geometry_2.polygons.offsetting is
 				-- Get the intersection of the candidate edge with the previous edge
 				-- and form a new edge:
 				-- NOTE: The edges in list offset_edge are orderd counter clockwise.
-				get_intersection_with_previous_edge (E);
+				--get_intersection_with_previous_edge (E);
+				--indirect_intersection := get_intersection_with_next_edge (E);
+				--intersections.append (get_intersection_with_next_edge (E));
 
 				-- Get the next direct intersection with an "offset edge" in
 				-- counter-clockwise direction after the candidate "offset edge":
@@ -348,28 +433,51 @@ package body et_geometry_2.polygons.offsetting is
 
 				-- If there is a direct intersection then fast-forward to the
 				-- corresponding "offset edge":
-				if N.cursor /= pac_offset_edges.no_element then
+				--if N.cursor /= pac_offset_edges.no_element then
+				if N.cursor = pac_offset_edges.no_element then
 					if debug then
-						put_line (" FFW: " & to_string (element (N.cursor).edge));
-						put_line (" I: " & to_string (N.place));
+						put_line (" no direct intersection found");
 					end if;
+
+					intersections.append ((
+						direct_available	=> FALSE,
+						place_indirect		=> get_intersection_with_next_edge (E)));
+						
 
 					-- The end point of the new edge is where
 					-- the direct intersection is:
-					LE := N.place;
+					--LE := N.place;
 
-					polygon_segments_new.append ((LS, LE));
+					--polygon_segments_new.append ((LS, LE));
 
 					-- This point of intersection will also serve as start point
 					-- of the next edge:
-					LS := LE;
+					--LS := LE;
 
+					--if N.restarted then
+						--exit;
+					--end if;
+					
 					-- Fast-forward to the intersected edge:
-					E := N.cursor;
+					--E := N.cursor;
+				else
+					if debug then
+						put_line (" next direct intersection: " & to_string (N.place));
+					end if;
+
+					intersections.append ((
+						direct_available	=> TRUE,
+						place_direct		=> N.place,
+						place_indirect		=> get_intersection_with_next_edge (E)));
 				end if;
 				
 				next (E);
 			end loop;
+
+			intersections.iterate (query_intersection'access);
+
+			--connect_edges;
+			
 
 			-- Overwrite the old edges of the given polygon with the new edges:
 			polygon.edges := polygon_segments_new;

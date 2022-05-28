@@ -90,6 +90,32 @@ package et_geometry_2.polygons.offsetting is
 		debug	: in boolean := false)
 		return type_next_direct_intersection;
 
+
+	
+	type type_edge_intersection (direct_available : boolean) is record
+		--edge_indirect : pac_offset_edges.cursor;
+		
+		-- An indirect intersection (via infinite long line) is
+		-- always there:
+		place_indirect : type_vector;
+		
+		case direct_available is
+			when TRUE => 
+				place_direct : type_vector;
+				--edge_direct : pac_offset_edges.cursor;
+				
+			when FALSE => null;
+		end case;
+	end record;
+
+	
+	package pac_edge_intersections is new indefinite_doubly_linked_lists (type_edge_intersection);
+
+
+	function get_relevant (
+		intersection : in pac_edge_intersections.cursor) 
+		return type_vector;
+	
 	
 	-- Offsets (the edges of) a polygon. 
 	-- If offset is positive then the edges are moved toward the outside
