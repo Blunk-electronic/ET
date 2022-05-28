@@ -38,6 +38,7 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
+with ada.containers;			use ada.containers;
 with ada.strings.unbounded;
 
 with et_geometry;				use et_geometry;
@@ -56,7 +57,8 @@ procedure offset is
 	use pac_polygon_offsetting;
 
 	C : type_contour;
-	P : type_polygon;
+	P_original, P_scratch, P_offset : type_polygon;
+	E_CT : count_type;
 
 	--S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	--S : string := "line 0 1 line 100 1 line 100 100 line 0 100";
@@ -90,27 +92,44 @@ begin
 	--tolerance := 0.1;
 	tolerance := 10.0;
 	
-	-- shrink polygon:
-	P := to_polygon (C, tolerance);
-	put_line ("original: " & to_string (P));
+	-- convert contour to polygon:
+	P_original := to_polygon (C, tolerance);
+	P_scratch := P_original;
+	put_line ("original: " & to_string (P_original));
 
-	new_line;
-	
-	--offset_polygon (P, -0.4);
-	offset_polygon (P, -1.0); -- debug messages off
-	--offset_polygon (P, -1.0, true); -- debug messages on
-	--offset_polygon (P, -1.0);
-	new_line;
-	put_line ("shrank  : " & to_string (P));
+	--new_line;
 
-	--if not are_congruent (P, shrank_polygon_1, true) then -- debug messages on
-	if not are_congruent (P, shrank_polygon_1) then -- debug messages off
-	--if shrank_polygon_1 /= P then
-		put_line ("ERROR");
-		put_line ("expected: " & to_string (shrank_polygon_1));
-		put_line ("found   : " & to_string (P));
-				  
-	end if;
+	E_CT := get_edges_total (P_original);
+	--E_CT := 2;
+
+	for i in 1 .. E_CT loop
+		P_offset := P_scratch;
+
+		--offset_polygon (P_offset, -1.0); -- debug messages off
+		offset_polygon (P_offset, -1.0, true); -- debug messages on
+
+		new_line;
+		put_line ("offset  : " & to_string (P_offset));
+		
+		--if not are_congruent (P_offset, shrank_polygon_1, true) then -- debug messages on
+		if not are_congruent (P_offset, shrank_polygon_1) then -- debug messages off
+			put_line ("ERROR");
+			put_line ("expected: " & to_string (shrank_polygon_1));
+			put_line ("found   : " & to_string (P_offset));
+		end if;
+		
+		rotate (P_scratch);
+		new_line;
+		put_line ("rotation #" & count_type'image (i)
+			& " / P_scratch: " & to_string (P_scratch));
+
+		if not are_congruent (P_original, P_scratch) then -- debug messages off
+			put_line ("ERROR");
+			--put_line ("expected: " & to_string (P_original));
+			--put_line ("found   : " & to_string (P_scratch));
+		end if;
+
+	end loop;
 end offset;
 
 -- Soli Deo Gloria

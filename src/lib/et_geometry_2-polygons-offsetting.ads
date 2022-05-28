@@ -72,7 +72,7 @@ package et_geometry_2.polygons.offsetting is
 	function to_string (oe : in pac_offset_edges.cursor) return string;
 
 		
-	type type_next_direct_intersection is record
+	type type_next_intersection is record
 		cursor : pac_offset_edges.cursor;
 		place  : type_vector;
 	end record;
@@ -88,7 +88,7 @@ package et_geometry_2.polygons.offsetting is
 		start	: in pac_offset_edges.cursor;
 		first	: in pac_offset_edges.cursor;
 		debug	: in boolean := false)
-		return type_next_direct_intersection;
+		return type_next_intersection;
 
 
 	
@@ -97,12 +97,13 @@ package et_geometry_2.polygons.offsetting is
 		
 		-- An indirect intersection (via infinite long line) is
 		-- always there:
-		place_indirect : type_vector;
+		--place_indirect : type_vector;
+		indirect : type_next_intersection;
 		
 		case direct_available is
 			when TRUE => 
-				place_direct : type_vector;
-				--edge_direct : pac_offset_edges.cursor;
+				--place_direct : type_vector;
+				direct : type_next_intersection;
 				
 			when FALSE => null;
 		end case;
@@ -112,9 +113,9 @@ package et_geometry_2.polygons.offsetting is
 	package pac_edge_intersections is new indefinite_doubly_linked_lists (type_edge_intersection);
 
 
-	function get_relevant (
-		intersection : in pac_edge_intersections.cursor) 
-		return type_vector;
+	--function get_relevant (
+		--intersection : in pac_edge_intersections.cursor) 
+		--return type_vector;
 	
 	
 	-- Offsets (the edges of) a polygon. 

@@ -738,6 +738,26 @@ package body et_geometry_2.polygons is
 	end to_polygon;
 
 
+	function to_polygon (vectors : in pac_vectors.list)
+		return type_polygon
+	is 
+		v_list : pac_vertices.list;
+
+		use pac_vectors;
+
+		procedure query_vector (c : in pac_vectors.cursor) is
+			v : type_vertex := (category => REGULAR, location => OUTSIDE, position => null_vector);
+		begin
+			v.position := element (c);
+			v_list.append (v);
+		end query_vector;
+		
+	begin
+		vectors.iterate (query_vector'access);
+		return to_polygon (v_list);
+	end to_polygon;
+
+	
 	
 	function get_boundaries (
 		polygon		: in type_polygon;

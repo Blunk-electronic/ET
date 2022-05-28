@@ -221,6 +221,11 @@ package et_geometry_2.polygons is
 		return type_polygon;
 
 	
+	-- Converts a list of location vectors to a polygon:
+	function to_polygon (vectors : in pac_vectors.list)
+		return type_polygon;
+	
+	
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
 		polygon		: in type_polygon;
@@ -681,7 +686,7 @@ package et_geometry_2.polygons is
 
 	
 	-- In connection with polygon operation like clipping or union
-	-- there are always two polygon we operate with. In this package 
+	-- there are always two polygons we are operating with. In this package 
 	-- we refer to them as polygon A and polygon B.
 	-- A vertex of a polygon can be described as follows:
 	type type_vertex (category : type_category) is record
