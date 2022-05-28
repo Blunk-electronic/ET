@@ -54,91 +54,6 @@ package body et_geometry_2.polygons.offsetting is
 	end to_string;
 
 
-	function get_next_direct_intersection (
-		start	: in pac_offset_edges.cursor;
-		first	: in pac_offset_edges.cursor;
-		debug	: in boolean := false)
-		return type_next_intersection
-	is
-		result : type_next_intersection;
-
-		c : pac_offset_edges.cursor := next (start);
-	begin
-		--put_line ("start " & to_string (start));
-
-		--goto skip;
-
-		while c /= pac_offset_edges.no_element loop
-
-			declare
-				I : constant type_intersection_of_two_lines := get_intersection (
-					edge_1 => element (start).edge,
-					edge_2 => element (c).edge);
-			begin
-				if I.status = EXISTS then
-					--put_line ("EXISTS");
-					
-					result.cursor := c;
-					result.place := I.intersection.vector;
-
-					--put_line ("intersects " 
-						--& to_string (result.cursor) 
-						--& " at " & to_string (result.place));
-					
-					exit;
-				end if;
-			end;
-			
-			next (c);
-		end loop;
-
-	<<skip>>
-
-	--goto skip2;
-		
-		--if c = pac_offset_edges.no_element then
-		if result.cursor = pac_offset_edges.no_element then
-			put_line ("nothing");
-			
-			c := first;
-
-			while c /= previous (start) loop
-				
-				declare
-					I : constant type_intersection_of_two_lines := get_intersection (
-						edge_1 => element (start).edge,
-						edge_2 => element (c).edge);
-				begin
-					if I.status = EXISTS then
-						--put_line ("EXISTS");
-						
-						result.cursor := c;
-						result.place := I.intersection.vector;
-						--result.restarted := true;
-
-						--put_line ("intersects " 
-							--& to_string (result.cursor) 
-							--& " at " & to_string (result.place));
-						
-						exit;
-					end if;
-				end;
-				
-				next (c);
-			end loop;
-		end if;
-
-	<<skip2>>
-		
-		return result;
-
-		exception when event: others =>
-			put_line (exception_information (event));
-			--put_line (exception_occurrence (event));
-			raise;
-		
-	end get_next_direct_intersection;
-	
 
 	--function get_relevant (
 		--intersection : in pac_edge_intersections.cursor) 
@@ -284,7 +199,113 @@ package body et_geometry_2.polygons.offsetting is
 		use pac_edge_intersections;
 		intersections : pac_edge_intersections.list;
 
+		
+		-- Looks for a direct intersection after the edge "start"
+		-- in counter-clockwise direction. If there is a direct
+		-- intersection then the cursor to the corresponding "offset edge"
+		-- along with the location vector of the actual intersection is returned. 
+		-- If no direct intersection found, returns cursor no_element. The returned
+		-- location vector is then irrelevant:
+		function get_next_direct_intersection (
+			start	: in pac_offset_edges.cursor;
+			first	: in pac_offset_edges.cursor;
+			debug	: in boolean := false)
+			return type_next_intersection
+		is
+			result : type_next_intersection;
 
+			c : pac_offset_edges.cursor := next (start);
+
+			premature_abort : boolean := false;
+		begin
+			--put_line ("start " & to_string (start));
+
+			--goto skip;
+
+			while c /= pac_offset_edges.no_element loop
+
+				if start = offset_edges.first 
+				and c = offset_edges.last
+				then
+					premature_abort := true;
+					exit;
+				end if;
+
+				
+				declare
+					I : constant type_intersection_of_two_lines := get_intersection (
+						edge_1 => element (start).edge,
+						edge_2 => element (c).edge);
+				begin
+					if I.status = EXISTS then
+						--put_line ("EXISTS");
+						
+						result.cursor := c;
+						result.place := I.intersection.vector;
+
+						--put_line ("intersects " 
+							--& to_string (result.cursor) 
+							--& " at " & to_string (result.place));
+						
+						exit;
+					end if;
+				end;
+				
+				next (c);
+			end loop;
+
+		--<<skip>>
+
+		if premature_abort then
+			goto skip2;
+		end if;
+		
+			
+			--if c = pac_offset_edges.no_element then
+			if result.cursor = pac_offset_edges.no_element then
+				--put_line ("nothing");
+				
+				c := first;
+
+				while c /= previous (start) loop
+					
+					declare
+						I : constant type_intersection_of_two_lines := get_intersection (
+							edge_1 => element (start).edge,
+							edge_2 => element (c).edge);
+					begin
+						if I.status = EXISTS then
+							--put_line ("EXISTS");
+							
+							result.cursor := c;
+							result.place := I.intersection.vector;
+							--result.restarted := true;
+
+							--put_line ("intersects " 
+								--& to_string (result.cursor) 
+								--& " at " & to_string (result.place));
+							
+							exit;
+						end if;
+					end;
+					
+					next (c);
+				end loop;
+			end if;
+
+		<<skip2>>
+			
+			return result;
+
+			exception when event: others =>
+				put_line (exception_information (event));
+				--put_line (exception_occurrence (event));
+				raise;
+			
+		end get_next_direct_intersection;
+	
+
+		
 		-- Traverse through the offset_edges and finds intersections between them.
 		-- Fills the list "intersections":
 		procedure compute_intersections is

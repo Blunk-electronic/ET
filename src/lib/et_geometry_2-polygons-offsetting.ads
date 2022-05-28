@@ -84,11 +84,11 @@ package et_geometry_2.polygons.offsetting is
 	-- along with the location vector of the actual intersection is returned. 
 	-- If no direct intersection found, returns cursor no_element. The returned
 	-- location vector is then irrelevant:
-	function get_next_direct_intersection (
-		start	: in pac_offset_edges.cursor;
-		first	: in pac_offset_edges.cursor;
-		debug	: in boolean := false)
-		return type_next_intersection;
+	--function get_next_direct_intersection (
+		--start	: in pac_offset_edges.cursor;
+		--first	: in pac_offset_edges.cursor;
+		--debug	: in boolean := false)
+		--return type_next_intersection;
 
 
 	

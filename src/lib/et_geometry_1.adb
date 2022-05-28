@@ -1776,8 +1776,8 @@ package body et_geometry_1 is
 		abs_dx : constant type_float_internal := abs (dx);
 		abs_dy : constant type_float_internal := abs (dy);
 	begin
-		--put_line ("dx " & float'image (abs_dx));
-		--put_line ("dy " & float'image (abs_dy));
+		put_line ("dx " & type_float_internal'image (abs_dx));
+		put_line ("dy " & type_float_internal'image (abs_dy));
 		
 		set_absolute (result, sqrt (abs_dx ** 2 + abs_dy ** 2));
 		
