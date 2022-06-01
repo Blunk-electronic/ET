@@ -82,13 +82,20 @@ begin
 	C := type_contour (to_contour (S));
 	--put_line ("contour: " & to_string (C));
 	
-	-- expand polygon:
-	--P := to_polygon (C, tolerance);
-	--offset_polygon (P, +1.0); 
-	--put_line ("expanded: " & to_string (P));
+	--tolerance := 0.01;
+	
+	P_original := to_polygon (C, tolerance);
+	put_line ("original: " & to_string (P_original));
+	
+	offset_polygon (P_original, -0.4, true);
+	--offset_polygon (P_original, -1.0, true); 
+	put_line ("result  : " & to_string (P_original));
 
 	--new_line;
 
+	goto skip_1;
+
+	
 	--tolerance := 0.1;
 	tolerance := 10.0;
 	
@@ -130,6 +137,8 @@ begin
 		end if;
 
 	end loop;
+
+	<<skip_1>>
 end offset;
 
 -- Soli Deo Gloria

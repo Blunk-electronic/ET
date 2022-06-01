@@ -46,6 +46,9 @@ package et_geometry_2.polygons.offsetting is
 
 	-- CS subtype for offset
 
+	
+-- STEP 1 related:
+------------------
 	-- A single edge of a polygon is offset so that a new
 	-- edge is formed. It runs parallel to the original edge but
 	-- is shifted to the left or right (according to the desired offset).
@@ -64,6 +67,7 @@ package et_geometry_2.polygons.offsetting is
 
 	function to_string (oe : in type_offset_edge) return string;
 
+	
 	-- When preprocessing the polygon for each edge an "offset edge" is
 	-- created and stored in a list:
 	package pac_offset_edges is new doubly_linked_lists (type_offset_edge);
@@ -71,48 +75,51 @@ package et_geometry_2.polygons.offsetting is
 
 	function to_string (oe : in pac_offset_edges.cursor) return string;
 
-		
+
+
+-- STEP 2 related:
+------------------
+	-- For each "offset edge" there is another edge that intersects the 
+	-- candidate edge. This composite type has a cursor that points to
+	-- the next "offset edge" that is intersecting the candidate edge.
+	-- It also provides via "place" the exact point of intersection:
 	type type_next_intersection is record
 		cursor : pac_offset_edges.cursor;
 		place  : type_vector;
 	end record;
 
 
-	-- Looks for a direct intersection after the edge "start"
-	-- in counter-clockwise direction. If there is a direct
-	-- intersection then the cursor to the corresponding "offset edge"
-	-- along with the location vector of the actual intersection is returned. 
-	-- If no direct intersection found, returns cursor no_element. The returned
-	-- location vector is then irrelevant:
-	--function get_next_direct_intersection (
-		--start	: in pac_offset_edges.cursor;
-		--first	: in pac_offset_edges.cursor;
-		--debug	: in boolean := false)
-		--return type_next_intersection;
 
-
-	
 	type type_edge_intersection (direct_available : boolean) is record
-		--edge_indirect : pac_offset_edges.cursor;
-		
 		-- An indirect intersection (via infinite long line) is
-		-- always there:
-		--place_indirect : type_vector;
+		-- ALWAYS THERE:
 		indirect : type_next_intersection;
-		
+
+		-- A direct intersection MAY exist:
 		case direct_available is
 			when TRUE => 
-				--place_direct : type_vector;
 				direct : type_next_intersection;
 				
 			when FALSE => null;
 		end case;
 	end record;
 
-	
+
+	-- The result of step 2 is a list of edge intersection:
 	package pac_edge_intersections is new indefinite_doubly_linked_lists (type_edge_intersection);
 
 
+	
+-- STEP 3 related:
+------------------	
+	-- The result of step 2 is examined and converted to a list of
+	-- final vertices. These vertices in turn are converted to the final polygon.
+	-- See body of procedure offset_polygon for details.
+
+
+
+	
+	
 	--function get_relevant (
 		--intersection : in pac_edge_intersections.cursor) 
 		--return type_vector;

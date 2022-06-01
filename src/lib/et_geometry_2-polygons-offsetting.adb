@@ -193,11 +193,6 @@ package body et_geometry_2.polygons.offsetting is
 		end get_intersection_with_next_edge;
 
 
-		-- Here we store the the offset edges and their individual
-		-- indirect intersection with the next neigboring edge and the
-		-- direct intersection with another edge:
-		use pac_edge_intersections;
-		intersections : pac_edge_intersections.list;
 
 		
 		-- Looks for a direct intersection after the edge "start"
@@ -305,25 +300,43 @@ package body et_geometry_2.polygons.offsetting is
 		end get_next_direct_intersection;
 	
 
+
+		-- Here we store the indirect and direct intersections as a result of STEP 2:
+		use pac_edge_intersections;
+		intersections : pac_edge_intersections.list;
+
 		
-		-- Traverse through the offset_edges and finds intersections between them.
-		-- Fills the list "intersections":
-		procedure compute_intersections is
-			E : pac_offset_edges.cursor;
+		-- Traverse through the list "offset_edges" and finds intersections between them.
+		-- Fills the list "intersections".
+		-- For each "offset edge" the next indirect intersection is computed. An indirect
+		-- intersection DOES ALWAYS exist. In contrast, a direct intersection MAY exist.
+		procedure find_intersections is
+			-- This cursor points to the candidate "offset_edge":
+			OE : pac_offset_edges.cursor := offset_edges.first;
+
+			-- This variable may point to the next direct intersection.
+			-- If no direct intersection exists, then it points to no_element:
 			N : type_next_intersection;
 		begin			
-			E := offset_edges.first;
-			while E /= pac_offset_edges.no_element loop
+			while OE /= pac_offset_edges.no_element loop
+				
 				if debug then
 					new_line;
-					put_line ("EDGE: " & to_string (element (E).edge));
+					put_line (to_string (element (OE).edge));
 				end if;
 
 				-- Get the intersection of the candidate edge with the next edge:
 				-- NOTE: The edges in list offset_edge are orderd counter clockwise.
-				N := get_next_direct_intersection (E, offset_edges.first, debug);
+				N := get_next_direct_intersection (OE, offset_edges.first, debug);
 
+				-- N.cursor now tells whether there is a direct intersection or not.
+				-- If none exists, then we add to the list "intersections" only the next indirect
+				-- intersection.
+				-- If a direct intersection exists, then we add to "intersections" both
+				-- the next indirect and the next direct intersection:
+				
 				if N.cursor = pac_offset_edges.no_element then
+					
 					if debug then
 						put_line (" no direct intersection found");
 					end if;
@@ -331,11 +344,12 @@ package body et_geometry_2.polygons.offsetting is
 					intersections.append ((
 						direct_available	=> FALSE,
 						indirect			=> (
-							place	=> get_intersection_with_next_edge (E),
-							cursor	=> E)));
+							place	=> get_intersection_with_next_edge (OE),
+							cursor	=> OE)));
 
 
 				else
+					
 					if debug then
 						put_line (" next direct intersection: " & to_string (N.place));
 					end if;
@@ -347,34 +361,40 @@ package body et_geometry_2.polygons.offsetting is
 							cursor	=> N.cursor),
 						
 						indirect			=> (
-							place	=> get_intersection_with_next_edge (E),
-							cursor	=> E)));
+							place	=> get_intersection_with_next_edge (OE),
+							cursor	=> OE)));
 
 				end if;
 				
-				next (E);
+				next (OE);
 			end loop;
-		end compute_intersections;
+		end find_intersections;
+
 
 		
-		-- The vertices of the final polygon:
+		-- The result of STEP 3 are the vertices of the final polygon:
 		vertices : pac_vectors.list;
 
-		
+		-- Step 3:
 		-- Traverses through list "intersections" and builds the list "vertices":
-		procedure collect_vertices is
+		procedure build_vertices is
+			-- This primary cursor points to an entry in list "intersections":
 			c : pac_edge_intersections.cursor := intersections.first;
-			i : type_vector;
-			e : pac_offset_edges.cursor;
 
-			function fast_forward (to : in pac_offset_edges.cursor) 
+			-- A single vertex (taken from an indirect or a direct intersection):
+			vertex : type_vector;
+			
+
+			-- This function searches in list "intersections" for a target entry that
+			-- contains the given "offset edge" and returns the cursor to that entry:
+			function fast_forward (target : in pac_offset_edges.cursor) 
 				return pac_edge_intersections.cursor
 			is 
 				result : pac_edge_intersections.cursor;
 				i : pac_edge_intersections.cursor := intersections.first;
 			begin
 				while i /= pac_edge_intersections.no_element loop
-					if element (i).indirect.cursor = to then
+					if element (i).indirect.cursor = target then
 						result := i;						
 						exit;						
 					end if;
@@ -385,52 +405,101 @@ package body et_geometry_2.polygons.offsetting is
 				return result;
 			end fast_forward;
 
-			--n : natural := 0;
-		begin
+
+			
+			-- This secondary cursor is used to "look back" after fast forwarding.
+			-- It is required to handle special case A (see details below):
+			s : pac_edge_intersections.cursor;
+
+			-- Used to handle special case A:
+			ignore_next_direct : boolean := false;
+			
+		begin -- build_vertices
+			
 			if debug then
 				new_line;
 				put_line ("intersections:");
 			end if;
 
 			while c /= pac_edge_intersections.no_element loop
-				--n := n + 1;
-				--if n = 10 then exit; end if;
+				-- CS safety counter to prevent infinite looping
+				-- limit could be the number of items in "intersections" ?
 
-				if element (c).direct_available then
-					i := element (c).direct.place;
+				-- If a direct intersection with any following edge exists then
+				-- fast forward to that edge (this skipping the edges inbetween).
+				if element (c).direct_available 
+				and not ignore_next_direct then
+
+					-- Save the primary cursor in order to handle special case A:
+					s := c;
+
+					-- Take the direct intersection as vertex:
+					vertex := element (c).direct.place;
+
+					-- Jump to the edge that intersects the candidate directly:
 					c := fast_forward (element (c).direct.cursor);
+					-- The primary cursor has now skipped some edges and is
+					-- pointing to another edge.
+				
+					-- Special case A:
+					-- Look ahead for another direct intersection.
+					-- If the current edge has a direct intersection with the
+					-- edge indicated by the secondary cursor then the next
+					-- direct intersection is to be ignored and the next
+					-- indirect intersection used instead.
+					-- Otherwise we would end up with just a single vertex:
+					if element (c).direct_available then
+						if s = fast_forward (element (c).direct.cursor) then
+							ignore_next_direct := true;
+						end if;
+					end if;
+
+					
+				-- If no direct intersection is available or if a certain
+				-- direct intersection is to be ignored then take the current
+				-- indirect intersection as vertex:
 				else
-					i := element (c).indirect.place;
+					vertex := element (c).indirect.place;
+
+					-- Reset the ignore-flag:
+					ignore_next_direct := false;
 					next (c);
 				end if;
-				
 
-				if not vertices.is_empty and then vertices.first_element = i then
+
+				-- Special case B:
+				-- If the just computed vertex has already been found as the very
+				-- first vertex then the round trip along the edges is complete.
+				-- Otherwise the just computed vertex is to be added to the list "vertices":
+				if not vertices.is_empty and then vertices.first_element = vertex then
 					exit;
 				else
 					if debug then
-						put_line (" " & to_string (i));
+						put_line (" " & to_string (vertex));
 					end if;
 
-					vertices.append (i);
+					vertices.append (vertex);
 				end if;
 
 			end loop;
-		end collect_vertices;
+		end build_vertices;
 
 		
 	begin -- offset_polygon
 
 		if mode /= NOTHING then
 
+		-- STEP 1:
 			-- Preprocessing the polygon edges.
 			-- For each edge an "offset edge" is computed and stored
 			-- in list offset_edges:
 			polygon.edges.iterate (preprocess_edge'access);
 
-			compute_intersections;
+		-- STEP 2:
+			find_intersections;
 
-			collect_vertices;
+		-- STEP 3:
+			build_vertices;
 			
 			-- Convert the list "vertices" to a polygon.
 			-- Overwrite the given polygon with a new one:

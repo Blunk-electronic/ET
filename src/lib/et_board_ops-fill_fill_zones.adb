@@ -704,6 +704,7 @@ begin -- fill_fill_zones
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
 	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
+	--offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge, true);
 	-- CS consider half the line width !
 
 	--put_line ("board outer edge 2: " & to_string (board_outer_edge));

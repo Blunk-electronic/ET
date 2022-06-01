@@ -212,6 +212,11 @@ package et_geometry_2.polygons is
 	package pac_polygons is new doubly_linked_lists (type_polygon);
 	
 
+	-- A polygon requires at least 3 vertices. 
+	-- Use this string when outputting error messages related to 
+	-- this requirement:
+	error_message_too_few_vertices : constant string := "At least 3 vertices required to create a polygon !";
+	
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.

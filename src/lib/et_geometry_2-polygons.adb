@@ -42,6 +42,7 @@ with ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with ada.exceptions;			use ada.exceptions;
 with et_exceptions;				use et_exceptions;
 
 
@@ -723,6 +724,8 @@ package body et_geometry_2.polygons is
 		v_list : pac_vertices.list;
 
 	begin
+		-- CS Check number of given vertices. See function to_polygon below.
+		
 		-- Iterate all fields of given list of arguments:
 		while place <= field_count (v_fields) loop
 
@@ -753,8 +756,16 @@ package body et_geometry_2.polygons is
 		end query_vector;
 		
 	begin
+		if vectors.length < 3 then
+			raise semantic_error_1;
+		end if;
+		
 		vectors.iterate (query_vector'access);
 		return to_polygon (v_list);
+
+		exception when event: others =>
+			put_line (error_message_too_few_vertices);
+			raise;
 	end to_polygon;
 
 	
@@ -1119,7 +1130,7 @@ package body et_geometry_2.polygons is
 				--& to_unbounded_string ("edge start:" & to_string (element (c).start_point));
 				& to_unbounded_string (
 					"vertex: " & to_string (element (c).start_point.x)
-					& "/" & trim (to_string (element (c).start_point.y), left));
+					& "/" & to_string (element (c).start_point.y));
 
 			ct := ct + 1;
 		end query_edge;
