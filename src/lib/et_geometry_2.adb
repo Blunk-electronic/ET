@@ -4672,35 +4672,54 @@ package body et_geometry_2 is
 	end to_diameter;
 
 	
-	--function split_circle (circle_in : in type_circle) 
-		--return type_arcs
+	function split_circle (
+		circle_in : in type_circle) 
+		return type_arcs
+	is
+		center : constant type_vector := to_vector (circle_in.center);
+		
+		-- the x and y-position of the center of the given circle:
+		CX : constant type_float_internal := center.x;
+		CY : constant type_float_internal := center.y;
+		R  : constant type_float_internal_positive := circle_in.radius;
+
+		-- The connecting points between the resulting arcs are where an
+		-- imaginary vertical line intersects the circle at its highest and 
+		-- lowest point:
+		PU : constant type_point := to_point (set (CX, CY + R));
+		PL : constant type_point := to_point (set (CX, CY - R));
+
+		-- There will be only 2 arcs.
+		result : type_arcs (1 .. 2);
+	begin
+		-- the arc on the left:
+		result (1) := (center => circle_in.center, start_point => PU, 
+						end_point => PL, direction => CCW);
+
+		-- the arc on the right:
+		result (2) := (center => circle_in.center, start_point => PL,
+						end_point => PU, direction => CCW);			
+
+		return result;
+	end split_circle;
+
+
+	--function to_arc (
+		--c : in type_circle)
+		--return type_arc'class
 	--is
-		---- the x and y-position of the center of the given circle:
-		--CX : constant type_distance := get_x (circle_in.center);
-		--CY : constant type_distance := get_y (circle_in.center);
-		--R  : constant type_distance_positive := circle_in.radius;
-
-		---- The connecting points between the resulting arcs are where an
-		---- imaginary vertical line intersects the circle at its highest and 
-		---- lowest point:
-		--PU : constant type_point := type_point (set (CX, CY + R));
-		--PL : constant type_point := type_point (set (CX, CY - R));
-
-		---- There will be only 2 arcs.
-		--result : type_arcs (1..2);
+		--a1 : type_arc_angles;
 	--begin
-		---- the arc on the left:
-		--result (1) := (center => circle_in.center, start_point => PU, 
-						--end_point => PL, direction => CCW);
+		--a1.center := to_vector (c.center);
+		--a1.radius := c.radius;
+		--a1.angle_start := 0.0;
+		--a1.angle_end := 360.0;
+		--a1.direction := CCW;
+		
+		--return to_arc (a1);
+	--end to_arc;
 
-		---- the arc on the right:
-		--result (2) := (center => circle_in.center, start_point => PL,
-						--end_point => PU, direction => CCW);			
-
-		--return result;
-	--end split_circle;
 	
-
 	function get_distance_to_circumfence (
 		circle	: in type_circle;
 		point	: in type_point)
@@ -4816,6 +4835,26 @@ package body et_geometry_2 is
 	is begin
 		move_by (point	=> circle.center,	offset => offset);
 	end move_by;
+
+
+	procedure move_to (
+		circle		: in out type_circle;
+		position	: in type_point)
+	is begin
+		move_to (circle.center,	position);
+	end move_to;
+
+
+	function move_to (
+		circle		: in type_circle;
+		position	: in type_point)
+		return type_circle'class
+	is 
+		result : type_circle := circle;
+	begin
+		move_to (result, position);
+		return result;
+	end move_to;
 
 	
 	procedure mirror (

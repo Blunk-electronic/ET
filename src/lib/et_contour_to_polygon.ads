@@ -43,9 +43,6 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 package et_contour_to_polygon is
 
 
-	use pac_geometry_brd;
-	use pac_functions_distance;
-	
 	use pac_geometry_2;
 	
 	use pac_contours;
@@ -60,11 +57,22 @@ package et_contour_to_polygon is
 	-- The tolerance is the maximum allowed deviation from
 	-- the ideal arc:
 	function to_edges (
-		arc			: in pac_geometry_2.type_arc;
+		arc			: in type_arc;
 		tolerance	: in type_distance_positive;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
 	
+
+	-- Converts a circle to a list of edges.
+	-- The accuracy is determined by the given tolerance.
+	-- The tolerance is the maximum allowed deviation from
+	-- the ideal circle:
+	function to_edges (
+		circle		: in type_circle;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)				  
+		return pac_edges.list;
+
 	
 	-- Converts a contour to a polygon.
 	-- A contour consists of line and arc segments. Since polygons 

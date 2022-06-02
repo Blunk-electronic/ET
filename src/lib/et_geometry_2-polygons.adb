@@ -53,12 +53,13 @@ package body et_geometry_2.polygons is
 		edge : in type_edge)
 		return string
 	is begin
-		return "edge: start (x/y): " 
-			& to_string (edge.start_point.x)
-			& to_string (edge.start_point.y) 
-			& " end (x/y): " 
-			& to_string (edge.end_point.x)
-			& to_string (edge.end_point.y);
+		return "edge: start: " 
+			--& to_string (edge.start_point.x)
+		--& to_string (edge.start_point.y) 
+			& to_string (edge.start_point)
+			& " end: " 
+			& to_string (edge.end_point);
+			--& to_string (edge.end_point.y);
 	end to_string;
 	
 

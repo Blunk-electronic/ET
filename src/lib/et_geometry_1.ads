@@ -1260,7 +1260,7 @@ package et_geometry_1 is
 		radius		: type_float_internal_positive;
 		angle_start	: type_angle; -- CS type_angle_positive ?
 		angle_end	: type_angle; -- CS type_angle_positive ?
-		direction	: type_direction_of_rotation := CW;
+		direction	: type_direction_of_rotation := CW; -- CS default should be mathematical sense CCW ?
 	end record;
 
 

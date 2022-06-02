@@ -471,6 +471,10 @@ is
 				lower_left_corner : type_point;
 
 
+				-- The width of a fill line:
+				line_width : type_track_width;
+
+				
 				-- Deletes the complete fill of the zone:
 				procedure clear_fill (
 					zone	: in out type_route_solid)
@@ -520,9 +524,15 @@ is
 					-- clear the complete fill:
 					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
 
+					-- Get the width of the fill lines:
+					line_width := element (zone_cursor).width_min;
+					
 					-- Convert the contour of the candidate fill zone to a polygon:
 					zone := to_polygon (element (zone_cursor), fab_tolerance);
 
+					-- Shrink the zone by half the line width so that the border of the zone
+					-- does not extend further than the user defined contour:
+					offset_polygon (zone, - line_width * 0.5);
 					
 					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:

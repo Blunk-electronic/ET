@@ -1650,9 +1650,6 @@ package et_geometry_2 is
 
 
 
-	-- This type is required when an arc or a circle is to be 
-	-- split into smaller arc segments:
-	--type type_arcs is array (positive range <>) of type_arc;
 
 	-- Splits an arc in 2 or 3 smaller arcs.
 	-- The arc will be split by a vertical line that crosses the center.
@@ -1682,20 +1679,36 @@ package et_geometry_2 is
 	function to_radius (
 		r : in string)
 		return type_float_internal_positive;
+	
 
 	function to_diameter (
 		d : in string)
 		return type_float_internal_positive;
 	
-	
-	-- Splits a circle in 2 arcs.
-	-- The circle will be split by a vertical line that crosses the center.
-	-- The resulting arcs have all the same center and radius as the given circle.
-	-- The resulting arcs have both direction CCW:
-	--function split_circle (circle_in : in type_circle) 
-		--return type_arcs;
 
 	
+	-- This type is required when an arc or a circle is to be 
+	-- split into smaller arc segments:
+	type type_arcs is array (positive range <>) of type_arc;
+	
+	-- Splits a circle into 2 arcs.
+	-- The circle will be split by a vertical line that crosses the center.
+	-- The resulting arcs have all the same center and radius as the given circle.
+	-- The resulting arcs have both direction CCW.
+	-- The left arc runs from the top to the bottom.
+	-- The right arc runs from bottom to top:
+	function split_circle (
+		circle_in : in type_circle) 
+		return type_arcs;
+
+	
+	-- Converts a circle to an arc.
+	-- The start and end point of the arc will be the same:
+	--function to_arc (
+		--c : in type_circle)
+		--return type_arc'class;
+	
+		
 	-- Returns the distance of point to circumfence of circle.
 	-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
 	-- The point must not be OUTSIDE the circle !
@@ -1727,9 +1740,21 @@ package et_geometry_2 is
 		circle	: in out type_circle;
 		offset	: in type_distance_relative);
 	
+
+	-- Moves a circle to the given position. 
+	procedure move_to (
+		circle		: in out type_circle;
+		position	: in type_point);
+
 	
-	procedure mirror (
+	function move_to (
+		circle		: in type_circle;
+		position	: in type_point)
+		return type_circle'class;
+
+	
 	-- Mirrors the center of a circle along the given axis.
+	procedure mirror (
 		circle		: in out type_circle;
 		axis		: in type_axis_2d);
 	

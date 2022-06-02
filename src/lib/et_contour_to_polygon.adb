@@ -43,12 +43,14 @@ package body et_contour_to_polygon is
 
 
 	function to_edges (
-		arc			: in pac_geometry_2.type_arc;
+		arc			: in type_arc;
 		tolerance	: in type_distance_positive;
 		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
-
+		use pac_geometry_brd;
+		use pac_functions_distance;
+		
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;
 
@@ -61,12 +63,13 @@ package body et_contour_to_polygon is
 		arc_offset : constant type_offset := to_offset (arc.center);
 
 		-- Make a copy of the given arc with its center on the origin (0/0):
-		arc_origin : constant pac_geometry_2.type_arc := pac_geometry_2.type_arc (move_to (arc, origin));
+		arc_origin : constant pac_geometry_2.type_arc := 
+			pac_geometry_2.type_arc (move_to (arc, origin));
 
 		-- Get the start and end angles of the arc:
 		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
 
-		-- Get the radius of the given angle:
+		-- Get the radius of the given arc:
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
 		
 		-- This is the total angle between start and end point of the given arc:
@@ -126,7 +129,7 @@ package body et_contour_to_polygon is
 			result.append (edge);
 
 			if debug then
-				put_line ("edge: " & to_string (edge));
+				put_line (to_string (edge));
 			end if;
 		end make_edge;
 		
@@ -148,6 +151,7 @@ package body et_contour_to_polygon is
 
 		
 		if debug then
+			new_line;
 			--put_line ("arc    : " & to_string (arc));
 			put_line ("arc          : " & to_string (arc_angles));
 			put_line ("span         : " & to_string (span));
@@ -156,6 +160,7 @@ package body et_contour_to_polygon is
 			--put_line ("edge ct float: " & to_string (edge_ct_float));
 			put_line ("edge ct final: " & positive'image (edge_ct_final));
 			put_line ("angle final  : " & to_string (angle_final));
+			new_line;
 		end if;
 
 
@@ -180,6 +185,39 @@ package body et_contour_to_polygon is
 		return result;
 	end to_edges;
 
+
+	function to_edges (
+		circle		: in type_circle;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)				  
+		return pac_edges.list
+	is
+		-- This is the list of edges to be returned:
+		result : pac_edges.list;
+
+		-- Convert the given circle to an arc (same start and end point):
+		arcs : type_arcs (1 .. 2);
+
+		edges_left, edges_right : pac_edges.list;
+		
+	begin
+		arcs := split_circle (circle);
+		
+		if debug then
+			put_line ("arc left : " & to_string (arcs (1)));
+			put_line ("arc right: " & to_string (arcs (2)));
+		end if;
+
+		-- The left arc (1) runs from the top to the bottom.
+		-- The right arc (2) runs from bottom to top.		
+		edges_left  := to_edges (arcs (1), tolerance, debug);
+		edges_right := to_edges (arcs (2), tolerance, debug);
+
+		-- Join the two arcs to a single one:
+		edges_left.splice (before => pac_edges.no_element, source => edges_right);
+
+		return edges_left;
+	end to_edges;
 	
 	
 	function to_polygon (
@@ -213,8 +251,21 @@ package body et_contour_to_polygon is
 		end query_segment;
 		
 	begin
-		-- Iterate the contour segments:
-		contour.contour.segments.iterate (query_segment'access);
+		if contour.contour.circular then
+
+			if debug then
+				new_line;
+				put_line ("converting circular contour to polygon ...");
+			end if;
+			
+			-- Convert the single circle of the given contour
+			-- to a list of edges:
+			result.edges := to_edges (contour.contour.circle, tolerance, debug);
+		else
+			-- Iterate the contour segments:
+			contour.contour.segments.iterate (query_segment'access);
+		end if;
+		
 		return result;
 	end to_polygon;
 
