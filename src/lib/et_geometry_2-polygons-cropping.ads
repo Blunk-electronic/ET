@@ -34,7 +34,10 @@
 --
 --
 --  Description:
---
+--	- "to crop" german: stutzen, abschneiden
+--    Im Zusammenhang zwei Polygonen A und B: 
+--			- "den ueberlappenden Bereich beider Polygone ermitteln
+--			  und diesen vom zu bescheidenen Polygon B abziehen"
 --
 --   history of changes:
 --
@@ -67,7 +70,7 @@ package et_geometry_2.polygons.cropping is
 	-- Crops polygon A by polygon B:
 	function crop (
 		polygon_A	: in type_polygon; -- the cropping polygon
-		polygon_B	: in type_polygon; -- the cropped polygon
+		polygon_B	: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
 		debug		: in boolean := false)
 		return type_crop;
 

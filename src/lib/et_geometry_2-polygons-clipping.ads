@@ -49,6 +49,10 @@
 --
 --   history of changes:
 --
+--	- "to clip" german: kappen, begrenzen.
+--    Im Zusammenhang mit zwei Polygonen A und B: 
+--			- "ueberlappende/gemeinsame Bereiche beider Polygone ermitteln"
+--			- "Schnittmenge zweier Polygone ermitteln"
 
 generic
 	

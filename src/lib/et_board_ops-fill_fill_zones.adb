@@ -90,7 +90,7 @@ is
 		begin
 			result.append ((
 				border	=> type_outer_border (element (p)),
-				others	=> <>));
+				others	=> <>)); -- cutout, stripes
 		end query_polygon;
 		
 	begin
@@ -544,7 +544,7 @@ is
 					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
 
 
-					
+					-- Find the area where fill zone and board area overlap.
 					-- Clip the contour of the fill zone by the outer edge of the board.
 					-- The result can be a single polygon or many polygons:
 					zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge);

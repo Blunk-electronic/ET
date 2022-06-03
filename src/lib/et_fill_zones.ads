@@ -112,10 +112,10 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 	
 	type type_zone (fill_style : type_fill_style) 
-		is new type_contour with
+		is new type_contour with -- outer contour as drawn by the operator
 	record
 
-		-- the minimum width or borders and fill lines:
+		-- the minimum width of borders and fill lines:
 		width_min : type_track_width := type_track_width'first;
 
 		-- the space between the fill_zone and foreign conductor objects:
