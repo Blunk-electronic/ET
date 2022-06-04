@@ -53,6 +53,7 @@ package et_geometry_2.polygons.cropping is
 
 
 	type type_crop (exists : boolean := true) is record
+		-- CS: overl_status : type_overlap_status;
 		case exists is
 			when TRUE => crop : pac_cropped.list;
 			when FALSE => null;
@@ -60,14 +61,20 @@ package et_geometry_2.polygons.cropping is
 	end record;
 	
 
-	-- CS
-	-- function "=" (
-	--	left, right : in type_crop)
-	-- return boolean;
-	-- -- Use function are_congruent to compare the polygon edges
+	function "=" (
+		left, right : in type_crop)
+		return boolean;
 	
 	
-	-- Crops polygon A by polygon B:
+	-- Crops polygon A by polygon B.
+	-- These scenarios may exist:
+	-- 1. A and B are congruent. Result: B is cropped to zero area. List "cropped" is empty.
+	-- 2. A does not overlap B. Result: B is returned unchanged as the one and only polygon
+	--    in list "cropped".
+	-- 3. A inside B. Result: no crop. List "cropped" does not exist in the result.
+	-- 4. B inside A. Result: B is cropped to zero area. List "cropped" is empty.
+	-- 5. A overlaps B. Result: B is cropped by A. List "cropped" contains at 
+	--    least one polygon.
 	function crop (
 		polygon_A	: in type_polygon; -- the cropping polygon
 		polygon_B	: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon

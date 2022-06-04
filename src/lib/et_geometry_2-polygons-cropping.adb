@@ -45,6 +45,61 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_2.polygons.cropping is
 
 
+	function "=" (
+		left, right : in type_crop)
+		return boolean
+	is
+		use pac_cropped;
+		
+		result : boolean := true;
+
+		procedure search_left_in_right (c_left : pac_cropped.cursor) is
+			c_right : pac_cropped.cursor := right.crop.first;
+			found : boolean := false;
+		begin
+			while c_right /= pac_cropped.no_element loop
+				
+				if are_congruent (element (c_left), element (c_right)) then
+					found := true;
+					exit;
+				end if;
+				
+				next (c_right);
+			end loop;
+
+			if not found then
+				result := false;
+				-- CS signal the iterator to abort
+			end if;			
+		end search_left_in_right;
+
+		
+	begin
+		--put_line ("CROP COMPARE");
+		
+		-- Test whether both operands provide a cropped area:
+		if left.exists and right.exists then
+
+			-- Compare the number of cropped areas:
+			if length (left.crop) = length (right.crop) then
+
+				-- Search the left cropped areas in the right:
+				left.crop.iterate (search_left_in_right'access);
+				-- CS abort iteration as soon as the first left 
+				-- has not been found in right.
+			else
+				result := false;
+			end if;
+
+		else
+			result := false;
+		end if;			
+
+		return result;
+	end "=";
+
+
+	
 	function crop (
 		polygon_A	: in type_polygon;
 		polygon_B	: in type_polygon;
@@ -262,7 +317,7 @@ package body et_geometry_2.polygons.cropping is
 				--show_overlap_status;
 				
 				-- Polygon B is completely inside A. B is completey cropped to zero area
-				-- So the result is an empty list of polygon:
+				-- So the result is an empty list of polygons:
 				result_exists := true;
 				
 			when A_OVERLAPS_B => 

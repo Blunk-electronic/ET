@@ -43,6 +43,7 @@ with ada.strings.unbounded;		use ada.strings.unbounded;
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_string_processing;		use et_string_processing;
 
 procedure crop is
@@ -51,6 +52,8 @@ procedure crop is
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
+
+	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_cropping;
 
@@ -101,12 +104,14 @@ procedure crop is
 	procedure add_to_expect (
 		s : in string)
 	is
-		F : type_fields_of_line;
+		--F : type_fields_of_line;
+		C : type_contour;
 		P : type_polygon;
 		W : type_direction_of_rotation;
 	begin
-		F := read_line (line => s, comment_mark => "#");
-		P := type_polygon (to_polygon (F));
+		--F := read_line (line => s, comment_mark => "#");
+		C := type_contour (to_contour (s));
+		P := to_polygon (C, fab_tolerance);
 
 		W := get_winding (P);
 		--put_line ("winding: " & to_string (W));
@@ -127,7 +132,8 @@ procedure crop is
 		
 	
 	procedure make_test is 
-		F	: type_fields_of_line;
+		--F	: type_fields_of_line;
+		C : type_contour;
 		A, B: type_polygon;
 
 		procedure query_polygon (p : in pac_cropped.cursor) is begin
@@ -140,12 +146,16 @@ procedure crop is
 			put_line ("TEST:" & natural'image (i));
 			put_line ("-------------");
 			
-			F := read_line (line => to_string (set(i).A), comment_mark => "#");
-			A := type_polygon (to_polygon (F));
+			--F := read_line (line => to_string (set(i).A), comment_mark => "#");
+			C := type_contour (to_contour (to_string (set(i).A)));
+			--A := type_polygon (to_polygon (F));
+			A := to_polygon (C, fab_tolerance);
 			--put_line ("A: " & to_string (A));
 
-			F := read_line (line => to_string (set(i).B), comment_mark => "#");
-			B := type_polygon (to_polygon (F));
+			--F := read_line (line => to_string (set(i).B), comment_mark => "#");
+			C := type_contour (to_contour (to_string (set(i).B)));
+			--B := type_polygon (to_polygon (F));
+			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
 
 			set (i).result_actual := crop (A, B);
@@ -267,9 +277,9 @@ begin
 
 	-- TEST 6:
 	init_test;
-	add_to_expect ("line 20.8333333333 0 line 25 50 line 20.8333333333 100 line 0 100 line 0 0");
+	add_to_expect ("line 2.08333333333333333E+01 0 line 25 50 line 2.08333333333333333E+01 100 line 0 100 line 0 0");
 	add_to_expect ("line 100 42.5 line 43.3333333333 0 line 100 0");
-	add_to_expect ("line 43.3333333333 100 line 100 57.5 line 100 100");
+	add_to_expect ("line 4.33333333333333333E+01 100 line 100 57.5 line 100 100");
 	
 	make_set (
 		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",

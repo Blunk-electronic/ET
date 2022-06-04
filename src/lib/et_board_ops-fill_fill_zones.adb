@@ -87,10 +87,18 @@ is
 
 		procedure query_polygon (p : in pac_clipped.cursor) is 
 			use pac_clipped;
+
+			procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
+				
+			begin
+				
 		begin
+			
 			result.append ((
 				border	=> type_outer_border (element (p)),
 				others	=> <>)); -- cutout, stripes
+
+			board_holes.iterate (query_hole'access);
 		end query_polygon;
 		
 	begin
