@@ -76,6 +76,11 @@ package body et_geometry_2.polygons.cropping is
 		
 	begin
 		--put_line ("CROP COMPARE");
+
+		if not left.exists and not right.exists then
+			goto none_exists;
+		end if;
+		
 		
 		-- Test whether both operands provide a cropped area:
 		if left.exists and right.exists then
@@ -95,6 +100,8 @@ package body et_geometry_2.polygons.cropping is
 			result := false;
 		end if;			
 
+		<<none_exists>>
+		
 		return result;
 	end "=";
 

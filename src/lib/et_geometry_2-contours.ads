@@ -64,6 +64,12 @@ package et_geometry_2.contours is
 		segment	: in type_contour_segment)
 		return string;
 
+
+	-- As system wide default for all contours:
+	winding_default : constant type_direction_of_rotation := CCW;
+
+	-- CS subprograms to get and set the winding.
+	-- See et_geometry_2.polygons
 	
 	-- IMPORTANT: The segments of the contour are assumend to be
 	-- ordered as defined in constant winding_default !	

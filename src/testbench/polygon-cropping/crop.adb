@@ -93,7 +93,10 @@ procedure crop is
 
 	
 	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	B_default_vertices : constant string := "0 0  100 0  100 100  0 100";
+	
 	B_default_cw : constant string := "line 0 0 line 0 100 line 100 100 line 100 0";
+	B_default_cw_vertices : constant string := "0 0  0 100  100 100  100 0";
 	
 
 	procedure init_test is begin
@@ -104,15 +107,12 @@ procedure crop is
 	procedure add_to_expect (
 		s : in string)
 	is
-		--F : type_fields_of_line;
-		C : type_contour;
 		P : type_polygon;
 		W : type_direction_of_rotation;
 	begin
-		--F := read_line (line => s, comment_mark => "#");
-		C := type_contour (to_contour (s));
-		P := to_polygon (C, fab_tolerance);
-
+		P := to_polygon (s);
+		-- CS set winding ?
+		
 		W := get_winding (P);
 		--put_line ("winding: " & to_string (W));
 		
@@ -132,7 +132,6 @@ procedure crop is
 		
 	
 	procedure make_test is 
-		--F	: type_fields_of_line;
 		C : type_contour;
 		A, B: type_polygon;
 
@@ -146,15 +145,13 @@ procedure crop is
 			put_line ("TEST:" & natural'image (i));
 			put_line ("-------------");
 			
-			--F := read_line (line => to_string (set(i).A), comment_mark => "#");
 			C := type_contour (to_contour (to_string (set(i).A)));
-			--A := type_polygon (to_polygon (F));
+			-- CS set winding ?
 			A := to_polygon (C, fab_tolerance);
 			--put_line ("A: " & to_string (A));
 
-			--F := read_line (line => to_string (set(i).B), comment_mark => "#");
 			C := type_contour (to_contour (to_string (set(i).B)));
-			--B := type_polygon (to_polygon (F));
+			-- CS set winding ?
 			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
 
@@ -220,7 +217,8 @@ begin
 
 	-- TEST 1:
 	init_test;
-	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("50 0  50 50  100 50  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
@@ -232,7 +230,8 @@ begin
 	
 	-- TEST 2:
 	init_test;
-	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("50 0  50 50  100 50  100 100  0 100  0 0");
 
 	make_set (
 		A => "line 50 0 line 101 0 line 101 50 line 50 50",
@@ -243,7 +242,8 @@ begin
 	
 	-- TEST 3:
 	init_test;
-	add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
+	--add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
+	add_to_expect ("100 10  80 10  80 20  100 20  100 100  0 100  0 0  100 0");
 	
 	make_set (
 		A => "line 80 10 line 150 10 line 150 20 line 80 20",
@@ -254,7 +254,8 @@ begin
 
 	-- TEST 4:
 	init_test;
-	add_to_expect ("line 0.5 1 line 1 1 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5");
+	--add_to_expect ("line 0.5 1 line 1 1 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5");
+	add_to_expect ("0.5 1  1 1  1 0.5  1.5 0.5  1.5 1.5  0.5 1.5");
 	
 	make_set (
 		A => "line 0 0 line 1 0 line 1 1 line 0 1",
@@ -266,7 +267,8 @@ begin
 
 	-- TEST 5:
 	init_test;
-	add_to_expect ("line 40 0 line 40 50 lien 60 50 line 60 0 line 80 0 line 80 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 40 0 line 40 50 lien 60 50 line 60 0 line 80 0 line 80 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("40 0  40 50  60 50  60 0  80 0  80 50  100 50  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
@@ -277,9 +279,13 @@ begin
 
 	-- TEST 6:
 	init_test;
-	add_to_expect ("line 2.08333333333333333E+01 0 line 25 50 line 2.08333333333333333E+01 100 line 0 100 line 0 0");
-	add_to_expect ("line 100 42.5 line 43.3333333333 0 line 100 0");
-	add_to_expect ("line 4.33333333333333333E+01 100 line 100 57.5 line 100 100");
+	--add_to_expect ("line 2.08333333333333333E+01 0 line 25 50 line 2.08333333333333333E+01 100 line 0 100 line 0 0");
+	--add_to_expect ("line 100 42.5 line 43.3333333333 0 line 100 0");
+	--add_to_expect ("line 4.33333333333333333E+01 100 line 100 57.5 line 100 100");
+	add_to_expect ("2.08333333333333333E+01 0  25 50  2.08333333333333333E+01 100  0 100  0 0");
+	add_to_expect ("100 42.5  4.33333333333333333E+01 0  100 0");
+	add_to_expect ("4.33333333333333333E+01 100  100 57.5  100 100");
+
 	
 	make_set (
 		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
@@ -291,8 +297,11 @@ begin
 
 	-- TEST 7:
 	init_test;
-	add_to_expect ("line 40 0 line 40 100 line 0 100 line 0 0");
-	add_to_expect ("line 50 100 line 50 0 line 100 0 line 100 100");
+	--add_to_expect ("line 40 0 line 40 100 line 0 100 line 0 0");
+	--add_to_expect ("line 50 100 line 50 0 line 100 0 line 100 100");
+	add_to_expect ("40 0  40 100  0 100  0 0");
+	add_to_expect ("50 100  50 0  100 0  100 100");
+
 	
 	make_set (
 		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
@@ -304,7 +313,8 @@ begin
 	
 	-- TEST 8:
 	init_test;
-	add_to_expect ("line 0 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
+	--add_to_expect ("line 0 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
+	add_to_expect ("0 50  50 50  50 0  100 0  100 100  0 100");
 	
 	make_set (
 		A => "line 0 0 line 50 0 line 50 50 line 0 50",
@@ -315,7 +325,8 @@ begin
 
 	-- TEST 9:
 	init_test;
-	add_to_expect ("line 30 0 line 30 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 30 0 line 30 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("30 0  30 50  50 50  50 0  100 0  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 30 0 line 50 0 line 50 50 line 30 50",
@@ -327,7 +338,8 @@ begin
 
 	-- TEST 10:
 	init_test;
-	add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 50 0 line 50 50 line 100 50 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("50 0  50 50  100 50  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 101 50 line 50 50",
@@ -338,8 +350,11 @@ begin
 
 	-- TEST 11:
 	init_test;
-	add_to_expect ("line 50 0 line 50 60 line 100 60 line 100 100 line 0 100 line 0 0");
-	add_to_expect ("line 100 40 line 80 40 line 80 20 line 100 0");
+	--add_to_expect ("line 50 0 line 50 60 line 100 60 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 100 40 line 80 40 line 80 20 line 100 0");
+	add_to_expect ("50 0  50 60  100 60  100 100  0 100  0 0");
+	add_to_expect ("100 40  80 40  80 20  100 0");
+
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
@@ -350,9 +365,13 @@ begin
 
 	-- TEST 12:
 	init_test;
-	add_to_expect ("line 50 0 line 50 50 line 0 100 line 0 0");
-	add_to_expect ("line 100 20 line 60 20 line 60 0 line 100 0");
-	add_to_expect ("line 100 100 line 60 60 line 100 60");
+	--add_to_expect ("line 50 0 line 50 50 line 0 100 line 0 0");
+	--add_to_expect ("line 100 20 line 60 20 line 60 0 line 100 0");
+	--add_to_expect ("line 100 100 line 60 60 line 100 60");
+	add_to_expect ("50 0  50 50  0 100  0 0");
+	add_to_expect ("100 20  60 20  60 0  100 0");
+	add_to_expect ("100 100  60 60  100 60");
+
 	
 	make_set (
 		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
@@ -363,7 +382,8 @@ begin
 
 	-- TEST 13:
 	init_test;
-	add_to_expect ("line 0 0 line 100 100 line 0 100");
+	--add_to_expect ("line 0 0 line 100 100 line 0 100");
+	add_to_expect ("0 0  100 100  0 100");
 	
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",
@@ -383,7 +403,7 @@ begin
 
 	-- TEST 15:
 	init_test;
-	add_to_expect (B_default);
+	add_to_expect (B_default_vertices);
 	-- B is not cropped at all because A is outside B.
 	
 	make_set (
@@ -395,7 +415,7 @@ begin
 	
 	-- TEST 16:
 	init_test;
-	add_to_expect (B_default);
+	add_to_expect (B_default_vertices);
 	-- B is not cropped at all because A is outside B.
 	
 	make_set (
@@ -407,7 +427,8 @@ begin
 
 	-- TEST 17:
 	init_test;
-	add_to_expect ("line 50 0 line 100 50 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 50 0 line 100 50 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("50 0  100 50  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
@@ -418,7 +439,8 @@ begin
 	
 	-- TEST 18:
 	init_test;
-	add_to_expect ("line 0 0 line 25 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
+	--add_to_expect ("line 0 0 line 25 50 line 50 50 line 50 0 line 100 0 line 100 100 line 0 100");
+	add_to_expect ("0 0  25 50  50 50  50 0  100 0  100 100  0 100");
 	
 	make_set (
 		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
@@ -429,7 +451,8 @@ begin
 	
 	-- TEST 19:
 	init_test;
-	add_to_expect ("line 10 0 line 20 10 line 80 10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0");
+	--add_to_expect ("line 10 0 line 20 10 line 80 10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0");
+	add_to_expect ("10 0  20 10  80 10  90 0  100 0  100 100  0 100  0 0");
 	
 	make_set (
 		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
@@ -462,10 +485,14 @@ begin
 
 	-- TEST 22:
 	init_test;
-	add_to_expect ("line 10 0 line 10 10 line 20 10 line 20 0 line 100 0 line 100 10 "
-		& "line 90 10 line 90 80 line 40 80 line 40 100 line 0 100 line 0 0");
+	--add_to_expect ("line 10 0 line 10 10 line 20 10 line 20 0 line 100 0 line 100 10 "
+		--& "line 90 10 line 90 80 line 40 80 line 40 100 line 0 100 line 0 0");
+	add_to_expect ("10 0  10 10  20 10  20 0  100 0  100 10 "
+		& " 90 10  90 80  40 80  40 100  0 100  0 0");
 
-	add_to_expect ("line 60 100 line 60 90 line 90 90 line 90 100");
+	
+	--add_to_expect ("line 60 100 line 60 90 line 90 90 line 90 100");
+	add_to_expect ("60 100  60 90  90 90  90 100");
 
 	
 	make_set (
@@ -479,7 +506,8 @@ begin
 
 	-- TEST 23 (wie Test 3 aber mit polygon B in CW orientiert):
 	init_test;
-	add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
+	--add_to_expect ("line 100 10 line 80 10 line 80 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0");
+	add_to_expect ("100 10  80 10  80 20  100 20  100 100  0 100  0 0  100 0");
 	
 	make_set (
 		A => "line 80 10 line 150 10 line 150 20 line 80 20",

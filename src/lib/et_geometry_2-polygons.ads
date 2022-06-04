@@ -49,7 +49,7 @@ generic
 package et_geometry_2.polygons is
 
 
-	-- As system wide default for all kinds of polygons or contours:
+	-- As system wide default for all polygons:
 	winding_default : constant type_direction_of_rotation := CCW;
 
 	type type_edge is new pac_geometry_1.type_line;
