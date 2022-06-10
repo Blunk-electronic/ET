@@ -85,17 +85,30 @@ package body et_geometry_2.polygons.cropping is
 		-- Test whether both operands provide a cropped area:
 		if left.exists and right.exists then
 
-			-- Compare the number of cropped areas:
-			if length (left.crop) = length (right.crop) then
+			if left.status = right.status then
 
-				-- Search the left cropped areas in the right:
-				left.crop.iterate (search_left_in_right'access);
-				-- CS abort iteration as soon as the first left 
-				-- has not been found in right.
+				-- Compare the number of cropped areas:
+				if left.count = right.count then
+				
+					-- Double check: Compare the number of cropped areas:
+					if length (left.crop) = length (right.crop) then
+
+						-- Search the left cropped areas in the right:
+						left.crop.iterate (search_left_in_right'access);
+						-- CS abort iteration as soon as the first left 
+						-- has not been found in right.
+					else
+						result := false;
+					end if;
+
+				else
+					result := false;
+				end if;
+				
 			else
 				result := false;
 			end if;
-
+			
 		else
 			result := false;
 		end if;			
@@ -338,9 +351,16 @@ package body et_geometry_2.polygons.cropping is
 
 		
 		if result_exists then
-			return (exists => TRUE, crop => result_crop);
+			return (
+				exists	=> TRUE, 
+				status	=> overlap_status, 
+				crop	=> result_crop, 
+				count	=> result_crop.length);
+			
 		else
-			return (exists => FALSE);
+			return (
+				exists	=> FALSE, 
+				status	=> overlap_status);
 		end if;
 		
 

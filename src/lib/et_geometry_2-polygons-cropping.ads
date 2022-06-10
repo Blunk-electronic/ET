@@ -53,9 +53,17 @@ package et_geometry_2.polygons.cropping is
 
 
 	type type_crop (exists : boolean := true) is record
-		-- CS: overl_status : type_overlap_status;
+		-- The status of polygon A in relation to polygon B:
+		status : type_overlap_status;
+		
 		case exists is
-			when TRUE => crop : pac_cropped.list;
+			when TRUE =>
+				-- The list of sub-polygons:
+				crop	: pac_cropped.list;
+
+				-- The number of sub-polygons:
+				count	: count_type;
+				
 			when FALSE => null;
 		end case;
 	end record;

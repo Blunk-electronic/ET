@@ -91,6 +91,9 @@ is
 			procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
 				
 			begin
+				null;
+			end query_hole;
+			
 				
 		begin
 			
