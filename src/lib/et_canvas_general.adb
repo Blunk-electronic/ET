@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --         Bases on the package gtkada.canvas_view written by               --
 --         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
@@ -214,6 +214,7 @@ package body pac_canvas is
 		return result;
 	end on_key_event;
 
+	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
@@ -225,6 +226,7 @@ package body pac_canvas is
 		redraw (canvas);
 	end set_cursor_position_x;
 
+	
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
@@ -269,10 +271,12 @@ package body pac_canvas is
 		--insert (toolbar_right, button_demo);		
 	end build_toolbars;
 
+	
 	procedure update_primary_tool_display is begin
 		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
 	end update_primary_tool_display;
 
+	
 	procedure build_primary_tool_display is
 		spacing : gint;
 	begin
@@ -445,6 +449,7 @@ package body pac_canvas is
 		
 	end build_coordinates_display;
 
+	
 	procedure update_coordinates_display (
 		self	: not null access type_view'class)
 	is 
@@ -496,6 +501,7 @@ package body pac_canvas is
 
 	end update_coordinates_display;
 
+	
 	procedure build_mode_display is
 		spacing : gint;
 	begin
@@ -548,6 +554,7 @@ package body pac_canvas is
 		gtk_entry (mode.cbox_mode_noun.get_child).set_text (n);
 	end update_mode_display;
 
+	
 	procedure append_argument_to_command (
 		cmd		: in out type_fields_of_line;
 		argument: in string;
@@ -561,6 +568,7 @@ package body pac_canvas is
 		
 		gtk_entry (console.get_child).set_text (to_string (cmd));
 	end append_argument_to_command;
+
 	
 	procedure build_console is 
 		spacing : gint;
@@ -585,6 +593,7 @@ package body pac_canvas is
 		console.grab_focus;
 	end build_console;
 
+	
 	-- Builds the drawing area and places it in box_right.
 	procedure build_canvas is begin
 		-- drawing area on the right bottom
@@ -601,14 +610,17 @@ package body pac_canvas is
 		set_policy (scrolled, policy_automatic, policy_automatic);
 		add (frame, scrolled);
 	end build_canvas;
+
 	
 	function to_string (d : in gdouble) return string is begin
 		return gdouble'image (d);
 	end;
 
+	
 	function to_string (d : in gint) return string is begin
 		return gint'image (d);
 	end;
+
 	
 	function to_string (p : in type_view_point) return string is begin
 		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
@@ -760,6 +772,7 @@ package body pac_canvas is
 		restore (cr);
 	end refresh;
 
+	
 	function on_view_draw (
 		view	: system.address; 
 		cr		: cairo_context) 
@@ -782,6 +795,7 @@ package body pac_canvas is
 			return 0;
 	end on_view_draw;
 
+	
 	procedure on_view_realize (widget : system.address) is
 		w          : constant gtk_widget := gtk_widget (get_user_data_or_null (widget));
 		allocation : gtk_allocation;
@@ -818,6 +832,7 @@ package body pac_canvas is
 		end if;
 	end on_view_realize;
 
+	
 	procedure on_layout_changed_for_view (view : not null access gobject_record'class) is
 		alloc : gtk_allocation;
 	begin
@@ -833,10 +848,12 @@ package body pac_canvas is
 
 	end on_layout_changed_for_view;
 
+
 	procedure viewport_changed (self : not null access type_view'class) is begin
 		object_callback.emit_by_name (self, signal_viewport_changed);
 	end viewport_changed;
 
+	
 	function get_scale (self : not null access type_view) return type_scale is
 	begin
 		return self.scale;
@@ -1046,6 +1063,7 @@ package body pac_canvas is
 		end case;
 	end view_set_property;
 
+	
 	procedure view_get_property (
 		object        : access glib.object.gobject_record'class;
 		prop_id       : property_id;
@@ -1062,6 +1080,7 @@ package body pac_canvas is
 			when others => null;
 		end case;
 	end view_get_property;
+
 	
 	procedure on_size_allocate (
 		view	: system.address;
@@ -1099,6 +1118,7 @@ package body pac_canvas is
 		end if;
 	end on_size_allocate;
 
+	
 	procedure view_class_init (self : gobject_class) is begin
 		set_properties_handlers (self, access_view_set_property, access_view_get_property);
 
@@ -1112,6 +1132,7 @@ package body pac_canvas is
 		set_default_realize_handler (self, access_on_view_realize);
 	end;
 
+	
 	function view_get_type return glib.gtype is
 		--info : access ginterface_info; -- came with gtkada release 17.0
 		info : ginterface_info_access;
@@ -1345,6 +1366,7 @@ package body pac_canvas is
 	function to_string (density : in type_grid_density) return string is begin
 		return type_grid_density'image (density);
 	end to_string;
+
 	
 	procedure next_grid_density is begin
 		if grid_density = type_grid_density'last then
@@ -1354,6 +1376,7 @@ package body pac_canvas is
 		end if;
 	end next_grid_density;
 
+	
 	procedure reset_grid_density is begin
 		grid_density := grid_density_default;
 	end reset_grid_density;
@@ -1423,21 +1446,25 @@ package body pac_canvas is
 
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
+					canvas.update_coordinates_display;
 					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 
 				when GDK_Left =>
 					canvas.move_cursor (LEFT, cursor_main);
+					canvas.update_coordinates_display;
 					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 					
 				when GDK_Up =>
 					canvas.move_cursor (UP, cursor_main);
+					canvas.update_coordinates_display;
 					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 					
 				when GDK_Down =>
 					canvas.move_cursor (DOWN, cursor_main);
+					canvas.update_coordinates_display;
 					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 
@@ -1904,6 +1931,7 @@ package body pac_canvas is
 		update_primary_tool_display;
 	end change_primary_tool;
 
+	
 	function tool_position (
 		view : not null access type_view'class)
 		return type_point 
@@ -1978,6 +2006,7 @@ package body pac_canvas is
 		return window_properties.open;
 	end window_properties_is_open;
 
+	
 	function window_properties_key_event (
 		self	: access gtk_widget_record'class;
 		event	: gdk.event.gdk_event_key) 
@@ -2008,6 +2037,7 @@ package body pac_canvas is
 		
 		return result;		
 	end window_properties_key_event;
+
 	
 	procedure close_window_properties (self : access gtk_widget_record'class) is begin
 		-- Call the schematic specific subprogram to
@@ -2017,6 +2047,7 @@ package body pac_canvas is
 		-- Mark the window as closed:
 		window_properties.open := false;
 	end close_window_properties;
+
 	
 	procedure build_window_properties is begin
 		properties_confirmed := false;
@@ -2036,10 +2067,12 @@ package body pac_canvas is
 		window_properties.window.set_title ("Properties");
 	end build_window_properties;
 
+	
 	procedure set_status_properties (text : in string) is begin
 		label_properties_status.set_text (text);
 	end set_status_properties;
 
+	
 	procedure set_property_before (text : in string) is begin
 		entry_property_old.set_text (text);
 	end set_property_before;

@@ -975,7 +975,7 @@ package body et_canvas_board is
 		cursor		: in out type_cursor;
 		position	: in type_point) 
 	is
-		use et_canvas_schematic;		
+		--use et_canvas_schematic;		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -987,7 +987,6 @@ package body et_canvas_board is
 				cursor.position := type_point (round (cursor.position + position, self.get_grid));
 		end case;
 
-		update_coordinates_display (self);
 		self.shift_area (cursor);		
 	end move_cursor;
 
@@ -998,7 +997,7 @@ package body et_canvas_board is
 		cursor		: in out type_cursor) 
 	is
 		-- Get the currently active grid:
-		use et_canvas_schematic;		
+		--use et_canvas_schematic;		
 		--grid : constant type_grid := element (current_active_module).board.grid;
 		grid : constant type_grid := self.get_grid;
 
@@ -1022,7 +1021,6 @@ package body et_canvas_board is
 				cursor.position := type_point (move (position_snapped, -90.0, grid.y, clip => true));
 		end case;
 		
-		update_coordinates_display (self);
 		self.shift_area (cursor);
 	end move_cursor;
 
@@ -1502,10 +1500,11 @@ package body et_canvas_board is
 	is
 		snap_point : constant type_point := snap_to_grid (self, point);
 
-		procedure left_button is
-		begin
+		procedure left_button is begin
+			-- A left click always moves the cursor:
 			self.move_cursor (ABSOLUTE, cursor_main, point);
-
+			self.update_coordinates_display;
+			
 			case verb is
 				when VERB_PLACE =>
 					case noun is
@@ -1547,7 +1546,6 @@ package body et_canvas_board is
 
 			-- CS reset_selections;
 			redraw;
-
 		
 	end button_pressed;
 

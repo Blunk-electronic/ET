@@ -737,7 +737,6 @@ package body et_canvas_schematic is
 				cursor.position := type_point (round (cursor.position + position, self.get_grid));
 		end case;
 
-		update_coordinates_display (self);
 		self.shift_area (cursor);		
 	end move_cursor;
 
@@ -772,7 +771,6 @@ package body et_canvas_schematic is
 				cursor.position := type_point (move (position_snapped, -90.0, grid.y, clip => true));
 		end case;
 		
-		update_coordinates_display (self);
 		self.shift_area (cursor);
 	end move_cursor;
 
@@ -906,6 +904,7 @@ package body et_canvas_schematic is
 		return to_string (verb);
 	end get_verb;
 
+	
 	function get_noun (
 		self	: not null access type_view)
 		return string is
@@ -1001,6 +1000,7 @@ package body et_canvas_schematic is
 		end if;
 	end make_net_route;
 
+	
 	procedure reset_selections is begin
 
 		-- Verb and noun remain as they are
@@ -1023,10 +1023,12 @@ package body et_canvas_schematic is
 		reset_activate_counter;
 	end reset_selections;
 
+	
 	procedure clear_proposed_objects is begin
 		clear_proposed_units;
 		clear_proposed_segments;
 	end clear_proposed_objects;
+
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -2171,7 +2173,9 @@ package body et_canvas_schematic is
 		procedure left_button is 
 			use pac_devices_lib;
 		begin
+			-- A left click always moves the cursor:
 			self.move_cursor (ABSOLUTE, cursor_main, point);
+			self.update_coordinates_display;
 
 			case verb is
 				when VERB_ADD =>
@@ -2591,6 +2595,7 @@ package body et_canvas_schematic is
 			
 		end left_button;
 
+		
 		-- If right button clicked, then the operator is clarifying:
 		procedure right_button is begin
 			case verb is
@@ -2755,7 +2760,8 @@ package body et_canvas_schematic is
 			end case;
 
 		end right_button;
-			
+
+		
 	begin -- button_pressed
 		--log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
@@ -2789,6 +2795,7 @@ package body et_canvas_schematic is
 		-- CS reset other stuff ?
 	end reset_properties_selection;
 
+	
 	procedure save_module is
 		use ada.directories;
 		use et_project;
