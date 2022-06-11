@@ -95,7 +95,16 @@ package et_design_rules is
 	end record;
 
 
+	dru_parameter_clearance_conductor_to_board_edge : constant string := 
+		"clearance conductor to board edge [mm]";
+
+	-- CS: other clearances. see above
+
+
+	
+	
 -- RESTRING
+	
 	restring_width_max : constant type_distance_positive := 5.0;
 	subtype type_restring_width is type_distance_positive 
 		range conductor_width_min .. restring_width_max;

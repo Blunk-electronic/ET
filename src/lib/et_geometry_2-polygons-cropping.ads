@@ -59,10 +59,10 @@ package et_geometry_2.polygons.cropping is
 		case exists is
 			when TRUE =>
 				-- The list of sub-polygons:
-				crop	: pac_cropped.list;
+				fragments : pac_cropped.list; 
 
-				-- The number of sub-polygons:
-				count	: count_type;
+				-- The number of fragments:
+				count : count_type;
 				
 			when FALSE => null;
 		end case;

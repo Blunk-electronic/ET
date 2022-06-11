@@ -85,7 +85,8 @@ package et_pcb_contour is
 	-- holes can only become greater:
 	procedure offset_holes (
 		holes		: in out pac_holes_as_polygons.list;
-		offset		: in type_distance_positive);
+		offset		: in type_distance_positive;
+		debug		: in boolean := false);
 
 	
 		

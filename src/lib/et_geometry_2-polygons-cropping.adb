@@ -54,7 +54,7 @@ package body et_geometry_2.polygons.cropping is
 		result : boolean := true;
 
 		procedure search_left_in_right (c_left : pac_cropped.cursor) is
-			c_right : pac_cropped.cursor := right.crop.first;
+			c_right : pac_cropped.cursor := right.fragments.first;
 			found : boolean := false;
 		begin
 			while c_right /= pac_cropped.no_element loop
@@ -91,10 +91,10 @@ package body et_geometry_2.polygons.cropping is
 				if left.count = right.count then
 				
 					-- Double check: Compare the number of cropped areas:
-					if length (left.crop) = length (right.crop) then
+					if length (left.fragments) = length (right.fragments) then
 
 						-- Search the left cropped areas in the right:
-						left.crop.iterate (search_left_in_right'access);
+						left.fragments.iterate (search_left_in_right'access);
 						-- CS abort iteration as soon as the first left 
 						-- has not been found in right.
 					else
@@ -352,10 +352,10 @@ package body et_geometry_2.polygons.cropping is
 		
 		if result_exists then
 			return (
-				exists	=> TRUE, 
-				status	=> overlap_status, 
-				crop	=> result_crop, 
-				count	=> result_crop.length);
+				exists		=> TRUE, 
+				status		=> overlap_status, 
+				fragments	=> result_crop, 
+				count		=> result_crop.length);
 			
 		else
 			return (

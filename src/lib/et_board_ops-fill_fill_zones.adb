@@ -52,6 +52,7 @@ procedure fill_fill_zones (
 is 
 	use pac_polygons;
 	use pac_polygon_clipping;
+	use pac_polygon_cropping;
 	use pac_polygon_offsetting;
 	
 	use pac_net_names;
@@ -67,6 +68,8 @@ is
 
 
 	board_outer_edge : type_polygon;
+
+	use pac_holes_as_polygons;
 	board_holes : pac_holes_as_polygons.list;
 
 		
@@ -85,24 +88,35 @@ is
 	is
 		result : pac_islands.list;
 
+		
 		procedure query_polygon (p : in pac_clipped.cursor) is 
 			use pac_clipped;
 
+			p_tmp : type_polygon := element (p);
+			
 			procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
-				
+				cr : type_crop := crop (
+						polygon_A => element (h), -- the hole is cropping
+						polygon_B => p_tmp); -- element (p));					 
 			begin
-				null;
+				if cr.status = A_OVERLAPS_B and then cr.count = 1 then
+					null;
+					p_tmp := cr.fragments.first_element;
+						
+				end if;
+					
 			end query_hole;
 			
 				
 		begin
+			board_holes.iterate (query_hole'access);
 			
 			result.append ((
-				border	=> type_outer_border (element (p)),
+				border	=> type_outer_border (p_tmp),
 				others	=> <>)); -- cutout, stripes
 
-			board_holes.iterate (query_hole'access);
 		end query_polygon;
+
 		
 	begin
 		polygons.iterate (query_polygon'access);
@@ -712,27 +726,51 @@ is
 	
 begin -- fill_fill_zones
 
+	log (text => "module " 
+		& enclose_in_quotes (to_string (key (module_cursor)))
+		& " filling zones. Log category " 
+		& to_string (log_category) & " ...",
+		level => log_threshold);
+
+	log_indentation_up;
+
+	log (text => "converting outer board contour to polygon ...", level => log_threshold + 1);
+	
 	board_outer_edge := to_polygon (
 		contour		=> get_outline (module_cursor),
 		tolerance	=> fab_tolerance);
 
-	--put_line ("board outer edge 1: " & to_string (board_outer_edge));
+	-- Shrink the outer board edge by the conductor-to-edge clearance
+	-- as given by the design rules:
+	log (text => "offsetting by DRU parameter " 
+		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+		& to_string (- design_rules.clearances.conductor_to_board_edge),
+		level => log_threshold + 1);
+	
+	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
+	-- for debuggin use:
+	--offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge, true);
+	-- CS consider half the line width !
+
+
+	
+	log (text => "converting holes to polygons ...", level => log_threshold + 1);
 	
 	board_holes := to_polygons (
 		holes		=> get_holes (module_cursor),
 		tolerance	=> fab_tolerance);
 
-	-- Shrink the outer board edge by the conductor-to-edge clearance
-	-- as given by the design rules:
-	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
-	--offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge, true);
-	-- CS consider half the line width !
-
-	--put_line ("board outer edge 2: " & to_string (board_outer_edge));
-	
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
+	log (text => "offsetting by DRU parameter " 
+		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+		& to_string (design_rules.clearances.conductor_to_board_edge),
+		level => log_threshold + 1);
+
 	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
+	
+	-- for debugging use:
+	--offset_holes (board_holes, 10.0 * design_rules.clearances.conductor_to_board_edge, true);
 	-- CS consider half the line width !
 
 	
@@ -740,11 +778,7 @@ begin -- fill_fill_zones
 		
 		-- Fill floating zones if no explicit net names given:
 		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " filling all zones. Log category " 
-			& to_string (log_category) & " ...",
-			level => log_threshold);
+		log (text => "filling all zones ...", level => log_threshold + 1);
 
 		all_zones := true;
 		
@@ -757,11 +791,7 @@ begin -- fill_fill_zones
 		log_indentation_down;
 					
 	else
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " filling zones of dedicated nets. Log category " 
-			& to_string (log_category) & " ...",
-			level => log_threshold);
+		log (text => "filling zones of dedicated nets ...", level => log_threshold + 1);
 
 		all_zones := false;
 		
@@ -771,6 +801,8 @@ begin -- fill_fill_zones
 		
 	end if;
 
+	log_indentation_down;
+	
 end fill_fill_zones;
 	
 -- Soli Deo Gloria

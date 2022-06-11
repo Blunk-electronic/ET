@@ -36,6 +36,8 @@
 --
 --   to do:
 
+with ada.text_io;				use ada.text_io;
+
 
 package body et_pcb_contour is
 
@@ -70,19 +72,44 @@ package body et_pcb_contour is
 
 	procedure offset_holes (
 		holes		: in out pac_holes_as_polygons.list;
-		offset		: in type_distance_positive)
+		offset		: in type_distance_positive;
+		debug		: in boolean := false)
 	is
 		result : pac_holes_as_polygons.list;
 	
 		procedure query_hole (c : in pac_holes_as_polygons.cursor) is
 			p : type_polygon := element (c);
 		begin
+			if debug then
+				put_line (" hole in : " & to_string (element (c)));
+			end if;
+			
 			offset_polygon (p, offset);
+
+			if debug then
+				put_line (" hole out: " & to_string (p));
+			end if;
+
 			result.append (p);
 		end query_hole;
 			
 	begin
+		if debug then
+			put_line ("offsetting holes by " & to_string (offset) & "mm");
+		end if;
+		
 		holes.iterate (query_hole'access);
+
+		holes := result;
+		
+		--if debug then
+			--put_line (count_type'image (holes.length));
+		--end if;
+
+		--if debug then
+			--put_line (to_string (holes.first_element));
+		--end if;
+		
 	end offset_holes;
 
 
