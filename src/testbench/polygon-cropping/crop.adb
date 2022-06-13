@@ -172,10 +172,10 @@ procedure crop is
 				
 				put_line ("EXPECTED:");
 				if set (i).result_expected.exists then
-					if set(i).result_expected.crop.is_empty then
+					if set(i).result_expected.fragments.is_empty then
 						put_line ("no area");
 					else
-						set(i).result_expected.crop.iterate (query_polygon'access);
+						set(i).result_expected.fragments.iterate (query_polygon'access);
 					end if;
 				else
 					put_line ("no cropping possible");
@@ -184,10 +184,10 @@ procedure crop is
 				
 				put_line ("FOUND:");
 				if set (i).result_actual.exists then
-					if set (i).result_actual.crop.is_empty then
+					if set (i).result_actual.fragments.is_empty then
 						put_line ("no area");
 					else
-						set (i).result_actual.crop.iterate (query_polygon'access);
+						set (i).result_actual.fragments.iterate (query_polygon'access);
 					end if;
 				else
 					put_line ("no cropping possible");
@@ -222,7 +222,7 @@ begin
 	make_set (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -234,7 +234,7 @@ begin
 	make_set (
 		A => "line 50 0 line 101 0 line 101 50 line 50 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 	
@@ -245,7 +245,7 @@ begin
 	make_set (
 		A => "line 80 10 line 150 10 line 150 20 line 80 20",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -256,7 +256,7 @@ begin
 	make_set (
 		A => "line 0 0 line 1 0 line 1 1 line 0 1",
 		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 	
@@ -268,7 +268,7 @@ begin
 	make_set (
 		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -282,7 +282,7 @@ begin
 	make_set (
 		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 3));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 3));
 	-- go
 
 	
@@ -296,7 +296,7 @@ begin
 	make_set (
 		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 2));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 2));
 	-- go
 
 
@@ -308,7 +308,7 @@ begin
 	make_set (
 		A => "line 0 0 line 50 0 line 50 50 line 0 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -319,7 +319,7 @@ begin
 	make_set (
 		A => "line 30 0 line 50 0 line 50 50 line 30 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -331,7 +331,7 @@ begin
 	make_set (
 		A => "line 50 0 line 100 0 line 101 50 line 50 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
 
@@ -344,7 +344,7 @@ begin
 	make_set (
 		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 2));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 2));
 	-- go
 
 
@@ -358,7 +358,7 @@ begin
 	make_set (
 		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 3));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 3));
 	-- go
 
 
@@ -369,7 +369,7 @@ begin
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	
 
 	-- TEST 14:
@@ -390,7 +390,7 @@ begin
 	make_set (
 		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
 		B => B_default,
-		expect => (exists => true, status => A_DOES_NOT_OVERLAP_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_DOES_NOT_OVERLAP_B, fragments => EXP_list, count => 1));
 
 
 	
@@ -402,7 +402,7 @@ begin
 	make_set (
 		A => "line 200 10 line 250 10 line 250 50",
 		B => B_default,
-		expect => (exists => true, status => A_DOES_NOT_OVERLAP_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_DOES_NOT_OVERLAP_B, fragments => EXP_list, count => 1));
 
 
 
@@ -413,7 +413,7 @@ begin
 	make_set (
 		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
 
 	
@@ -424,7 +424,7 @@ begin
 	make_set (
 		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
 
 	
@@ -435,7 +435,7 @@ begin
 	make_set (
 		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 1));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
 
 	-- TEST 20:
@@ -445,7 +445,7 @@ begin
 	make_set (
 		A => "line 0 0 line 100 0 line 100 100 line 0 100",
 		B => "line 10 10 line 90 10 line 90 90 line 10 90",
-		expect => (exists => true, status => B_INSIDE_A, crop => EXP_list, count => 0));
+		expect => (exists => true, status => B_INSIDE_A, fragments => EXP_list, count => 0));
 
 
 
@@ -456,7 +456,7 @@ begin
 	make_set (
 		B => B_default,
 		A => B_default,
-		expect => (exists => true, status => CONGRUENT, crop => EXP_list, count => 0));
+		expect => (exists => true, status => CONGRUENT, fragments => EXP_list, count => 0));
 	-- go
 
 	
@@ -473,7 +473,7 @@ begin
 			& "line 60 90 line 60 110 line 40 110 line 40 80 line 90 80 line 90 10 line 110 10 "
 			& "line 110 -5 line 20 -5 line 20 10",
 		B => B_default,
-		expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list, count => 2));
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 2));
 	-- go
 
 
@@ -484,7 +484,7 @@ begin
 	--make_set (
 		--A => "line 80 10 line 150 10 line 150 20 line 80 20",
 		--B => B_default_cw,
-		--expect => (exists => true, status => A_OVERLAPS_B, crop => EXP_list));
+		--expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list));
 	-- nogo
 	
 	

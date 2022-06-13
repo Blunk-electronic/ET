@@ -67,12 +67,19 @@ is
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
 
-	board_outer_edge : type_polygon;
+	-- The outer edge of the board. After offsetting by the
+	-- couductor-to-edge clearance this serves as master for
+	-- filling zones of nets. Each net may have an individual setting for 
+	-- the with of the fill lines.
+	board_outer_edge_master : type_polygon;
 
 	use pac_holes_as_polygons;
-	board_holes : pac_holes_as_polygons.list;
+	board_holes_master : pac_holes_as_polygons.list;
 
-		
+
+	offset_scratch : type_distance;
+	
+	
 	procedure log_lower_left_corner (
 		corner	: in type_point;
 		lth		: in type_log_level) 
@@ -82,46 +89,6 @@ is
 	end log_lower_left_corner;
 
 
-	function make_islands (
-		polygons	: in pac_clipped.list)
-		return pac_islands.list
-	is
-		result : pac_islands.list;
-
-		
-		procedure query_polygon (p : in pac_clipped.cursor) is 
-			use pac_clipped;
-
-			p_tmp : type_polygon := element (p);
-			
-			procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
-				cr : type_crop := crop (
-						polygon_A => element (h), -- the hole is cropping
-						polygon_B => p_tmp); -- element (p));					 
-			begin
-				if cr.status = A_OVERLAPS_B and then cr.count = 1 then
-					null;
-					p_tmp := cr.fragments.first_element;
-						
-				end if;
-					
-			end query_hole;
-			
-				
-		begin
-			board_holes.iterate (query_hole'access);
-			
-			result.append ((
-				border	=> type_outer_border (p_tmp),
-				others	=> <>)); -- cutout, stripes
-
-		end query_polygon;
-
-		
-	begin
-		polygons.iterate (query_polygon'access);
-		return result;
-	end make_islands;
 	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
@@ -477,7 +444,7 @@ is
 		is
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;
-
+		
 			
 			procedure route_solid (
 				net_name	: in pac_net_name.bounded_string;
@@ -508,77 +475,115 @@ is
 				end clear_fill;
 
 
-				-- The rows to be computed:
-				--use pac_rows;
-				--rows : pac_rows.list;
 
+				-- Crops the fill zone by the outer board edges and the
+				-- inner holes.
+				procedure process_board_contours is
 				
-				-- Assigns the rows to the current polygon:
-				--procedure add_rows (
-					--polygon	: in out type_route_solid)
-				--is begin
-					--polygon.properties.fill.rows := rows;
-				--end add_rows;
-				
-				
-				-- The border (which consists of fill lines in arbitrary directions)
-				--borders : pac_borders.list;
-				
-				-- Assigns the borders to the current polygon:
-				--procedure add_borders (
-					--polygon	: in out type_route_solid)
-				--is begin
-					--polygon.properties.fill.borders := borders;
-				--end add_borders;
+					outer_edge : type_polygon := board_outer_edge_master;
+					holes : pac_holes_as_polygons.list := board_holes_master;
+
+					clipped_by_outer_edge : pac_clipped.list;
+					
+					
+					procedure process_holes (
+						zone : in out type_route_solid)
+					is 
+						result : pac_islands.list;
+
+						
+						procedure query_clipped (c : in pac_clipped.cursor) is 
+							use pac_clipped;
+
+							p_tmp : type_polygon := element (c);
+							
+							procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
+								cr : type_crop := crop (
+										polygon_A => element (h), -- the hole is cropping !
+										polygon_B => p_tmp);
+							begin
+								if cr.status = A_OVERLAPS_B and then cr.count = 1 then
+									null;
+									p_tmp := cr.fragments.first_element;
+										
+								end if;									
+							end query_hole;
+							
+								
+						begin -- query_clipped
+							holes.iterate (query_hole'access);
+							
+							result.append ((
+								border	=> type_outer_border (p_tmp),
+								others	=> <>)); -- cutout, stripes
+
+						end query_clipped;
+
+						
+					begin
+						clipped_by_outer_edge.iterate (query_clipped'access);
+						zone.fill := result;
+					end process_holes;
+
+					
+				begin
+					-- Shrink the outer edge (of the board) by half the line 
+					-- width of the fill lines:
+					offset_polygon (outer_edge, - line_width * 0.5);
+
+					-- Clip the contour of the fill zone by the outer edge of the board.
+					-- The result is a list of islands:
+					clipped_by_outer_edge := clip (zone, outer_edge);
+
+					-- for debugging use this line:
+					--clipped_by_outer_edge := clip (zone, board_outer_edge, true);
 
 
-				zone_clipped_by_board_outer_edge : pac_clipped.list;
-
-				procedure set_islands (
-					zone : in out type_route_solid)
-				is begin
-					zone.fill := make_islands (zone_clipped_by_board_outer_edge);
-				end set_islands;
-	
+					-- Expand the holes by half the line width of the fill lines:
+					offset_holes (holes, line_width * 0.5);
+					
+					-- Crop the islands (held by clipped_by_outer_edge) by the holes.
+					-- The result is a list of even more islands. 
+					-- In the end they will form the fill of the zone:
+					net.route.fill_zones.solid.update_element (zone_cursor, process_holes'access);
+					
+				end process_board_contours;
+			
 				
 			begin -- route_solid
-
 				
 				while zone_cursor /= pac_route_solid.no_element loop
-
+					
 					-- clear the complete fill:
 					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
 
 					-- Get the width of the fill lines:
 					line_width := element (zone_cursor).width_min;
-					
-					-- Convert the contour of the candidate fill zone to a polygon:
-					zone := to_polygon (element (zone_cursor), fab_tolerance);
 
+					
+					-- Convert the contour of the candidate fill zone to a polygon.
 					-- Shrink the zone by half the line width so that the border of the zone
 					-- does not extend further than the user defined contour:
-					offset_polygon (zone, - line_width * 0.5);
+					zone := to_polygon (element (zone_cursor), fab_tolerance);
+
+					-- CS log lowest left vertex
 					
+					offset_polygon (zone, - line_width * 0.5);
+
+					process_board_contours;
+
+
+
+					
+
 					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:
 					boundaries := get_boundaries (zone, zero);
-					log (text => to_string (boundaries), level => log_threshold + 2);
+					--log (text => to_string (boundaries), level => log_threshold + 2);
 					
 					-- obtain the lower left corner of the zone from the boundaries:
 					--lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
-
-
-					-- Find the area where fill zone and board area overlap.
-					-- Clip the contour of the fill zone by the outer edge of the board.
-					-- The result can be a single polygon or many polygons:
-					zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge);
-
-					-- for debugging use this line:
-					--zone_clipped_by_board_outer_edge := clip (zone, board_outer_edge, true);
-
-					-- Convert the polygon(s) to islands and assign them to the zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
 
 					
 					log_indentation_up;
@@ -595,20 +600,6 @@ is
 						--lth				=> log_threshold + 3);
 
 					--update_element (net.route.fill_zones.solid, polygon_cursor, add_rows'access);
-
-					
-					-- compute the border:
-					--borders := make_borders (
-						--rows			=> rows,
-						--net_cursor		=> net_cursor,
-						--net_class		=> net_class,
-						--fill_zone		=> (observe => true, outline => et_fill_zones.type_zone (element (polygon_cursor))),
-						--layer			=> element (polygon_cursor).properties.layer,
-						--width			=> element (polygon_cursor).width_min,
-						--lth				=> log_threshold + 3);
-
-					--update_element (net.route.fill_zones.solid, polygon_cursor, add_borders'access);
-
 					
 					log_indentation_down;
 
@@ -640,8 +631,7 @@ is
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:
 					boundaries := get_boundaries (element (zone_cursor), zero);
-
-					log (text => to_string (boundaries), level => log_threshold + 2);
+					--log (text => to_string (boundaries), level => log_threshold + 2);
 
 					-- Get the total height of the polygon:
 					height := get_height (boundaries);
@@ -669,11 +659,6 @@ is
 				
 				update_element (module.nets, net_cursor, route_solid'access);
 				update_element (module.nets, net_cursor, route_hatched'access);
-
-
-				-- CS draw contours around obstacles ?
-				
-				-- CS draw thermals ?
 
 				log_indentation_down;
 			end query_net;
@@ -736,41 +721,46 @@ begin -- fill_fill_zones
 
 	log (text => "converting outer board contour to polygon ...", level => log_threshold + 1);
 	
-	board_outer_edge := to_polygon (
+	board_outer_edge_master := to_polygon (
 		contour		=> get_outline (module_cursor),
 		tolerance	=> fab_tolerance);
-
+	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
+
+	offset_scratch := - design_rules.clearances.conductor_to_board_edge;
+	
 	log (text => "offsetting by DRU parameter " 
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-		& to_string (- design_rules.clearances.conductor_to_board_edge),
+		& to_string (offset_scratch),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge);
+	offset_polygon (board_outer_edge_master, offset_scratch);
 	-- for debuggin use:
-	--offset_polygon (board_outer_edge, - design_rules.clearances.conductor_to_board_edge, true);
+	--offset_polygon (board_outer_edge_master, offset_scratch, true);
 	-- CS consider half the line width !
 
 
 	
 	log (text => "converting holes to polygons ...", level => log_threshold + 1);
 	
-	board_holes := to_polygons (
+	board_holes_master := to_polygons (
 		holes		=> get_holes (module_cursor),
 		tolerance	=> fab_tolerance);
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
+
+	offset_scratch := - offset_scratch;
+	
 	log (text => "offsetting by DRU parameter " 
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-		& to_string (design_rules.clearances.conductor_to_board_edge),
+		& to_string (offset_scratch),
 		level => log_threshold + 1);
 
-	offset_holes (board_holes, design_rules.clearances.conductor_to_board_edge);
-	
+	offset_holes (board_holes_master, offset_scratch);
 	-- for debugging use:
-	--offset_holes (board_holes, 10.0 * design_rules.clearances.conductor_to_board_edge, true);
+	--offset_holes (board_holes, offset_scratch, true);
 	-- CS consider half the line width !
 
 	
