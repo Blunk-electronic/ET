@@ -64,14 +64,21 @@ package et_pcb_contour is
 	-- There can be many inner edges due to holes:
 	type type_inner_edge is new type_contour with null record;
 	package pac_holes is new doubly_linked_lists (type_inner_edge);
-	use pac_holes;
+	use pac_holes; -- CS rename to pac_inner_edges
 	
 	
 	-- In order to handle fill zones, the holes must be converted to
 	-- a list of polygons:
 	package pac_holes_as_polygons is new doubly_linked_lists (type_polygon);
-	use pac_holes_as_polygons;
+	use pac_holes_as_polygons; -- CS rename to pac_holes
 
+	
+	-- Iterates the holes. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		holes	: in pac_holes_as_polygons.list;
+		process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
+		proceed	: not null access boolean);
+	
 	
 	-- Converts a list of holes to a list of polygons:
 	function to_polygons (

@@ -67,6 +67,33 @@ is
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
 
+	use pac_islands;
+	use pac_cropped;
+	use pac_clipped;
+	
+
+	-- Converts the result of a cropping operation to a list
+	-- of islands.
+	-- NOTE: The given crop MUST contain something. If it 
+	-- is empty then a constraint error is raised here !
+	function to_islands (crop : in type_crop) 
+		return pac_islands.list 
+	is
+		islands : pac_islands.list;
+
+		procedure query_fragment (f : in pac_cropped.cursor) is begin
+			islands.append ((
+				border	=> type_outer_border (element (f)),
+				others	=> <>)); -- cutout, stripes
+			
+		end query_fragment;
+		
+	begin
+		crop.fragments.iterate (query_fragment'access);
+		return islands;
+	end to_islands;
+
+	
 	-- The outer edge of the board. After offsetting by the
 	-- couductor-to-edge clearance this serves as master for
 	-- filling zones of nets. Each net may have an individual setting for 
@@ -483,30 +510,45 @@ is
 					outer_edge : type_polygon := board_outer_edge_master;
 					holes : pac_holes_as_polygons.list := board_holes_master;
 
-					clipped_by_outer_edge : pac_clipped.list;
+					islands : pac_clipped.list;
 					
 					
-					procedure process_holes (
+					procedure crop_by_holes_at_border (
 						zone : in out type_route_solid)
 					is 
 						result : pac_islands.list;
 
 						
 						procedure query_clipped (c : in pac_clipped.cursor) is 
-							use pac_clipped;
-
 							p_tmp : type_polygon := element (c);
 							
+							
 							procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
-								cr : type_crop := crop (
-										polygon_A => element (h), -- the hole is cropping !
-										polygon_B => p_tmp);
+								
+								-- Get the status of the hole relative to the candidate island.
+								intersections : pac_intersections.list := get_intersections (element (h), p_tmp);
+								
+								ol_sts : constant type_overlap_status := get_overlap_status (
+									polygon_A		=> element (h), -- the hole is cropping !
+									polygon_B		=> p_tmp,
+									intersections	=> intersections);
+								
 							begin
-								if cr.status = A_OVERLAPS_B and then cr.count = 1 then
-									null;
-									p_tmp := cr.fragments.first_element;
+								case ol_sts is
+									when A_OVERLAPS_B =>
+										declare
+											cr : constant type_crop := crop (
+												polygon_A => element (h), -- the hole is cropping !
+												polygon_B => p_tmp);
+										begin
+											if cr.count = 1 then
+												p_tmp := cr.fragments.first_element;
+											end if;
+										end;
+
+									when others => null;
 										
-								end if;									
+								end case;
 							end query_hole;
 							
 								
@@ -521,10 +563,76 @@ is
 
 						
 					begin
-						clipped_by_outer_edge.iterate (query_clipped'access);
+						islands.iterate (query_clipped'access);
 						zone.fill := result;
-					end process_holes;
+					end crop_by_holes_at_border;
 
+
+					
+					procedure crop_by_splitting_holes (
+						zone : in out type_route_solid)
+					is
+						island_cursor : pac_islands.cursor := zone.fill.first;
+						proceed : aliased boolean := true;
+
+						fragments : pac_islands.list;
+						
+						procedure query_hole (h : in pac_holes_as_polygons.cursor) is
+
+							-- Get the status of the hole relative to the candidate island:
+							intersections : pac_intersections.list := 
+								get_intersections (element (h), type_polygon (element (island_cursor).border));
+								
+							ol_sts : constant type_overlap_status := get_overlap_status (
+								polygon_A		=> element (h), -- the hole is cropping !
+								polygon_B		=> type_polygon (element (island_cursor).border),
+								intersections	=> intersections);
+								
+						begin
+							case ol_sts is
+								when A_OVERLAPS_B =>
+									declare
+										cr : constant type_crop := crop (
+											polygon_A => element (h), -- the hole is cropping !
+											polygon_B => type_polygon (element (island_cursor).border));
+									begin
+										if cr.count > 1 then
+											proceed := false;
+											fragments := to_islands (cr);
+										end if;
+									end;
+
+								when others => null;
+									
+							end case;
+						end query_hole;
+						
+					begin
+						while island_cursor /= pac_islands.no_element loop
+
+							iterate (holes, query_hole'access, proceed'access);
+
+							if not proceed then
+								--exit;
+								if not proceed then
+									zone.fill.splice (before => island_cursor, source => fragments);
+									zone.fill.delete (island_cursor);
+									island_cursor := zone.fill.first;
+									proceed := true;
+								end if;
+							else
+								next (island_cursor);								
+							end if;
+							
+						end loop;
+
+						--if not proceed then
+							--zone.fill.splice (before => island_cursor, source => fragments);
+							--zone.fill.delete (island_cursor);
+						--end if;
+							
+					end crop_by_splitting_holes;
+					
 					
 				begin
 					-- Shrink the outer edge (of the board) by half the line 
@@ -533,19 +641,23 @@ is
 
 					-- Clip the contour of the fill zone by the outer edge of the board.
 					-- The result is a list of islands:
-					clipped_by_outer_edge := clip (zone, outer_edge);
+					islands := clip (zone, outer_edge);
 
 					-- for debugging use this line:
-					--clipped_by_outer_edge := clip (zone, board_outer_edge, true);
+					--islands := clip (zone, board_outer_edge, true);
 
 
 					-- Expand the holes by half the line width of the fill lines:
 					offset_holes (holes, line_width * 0.5);
 					
-					-- Crop the islands (held by clipped_by_outer_edge) by the holes.
+					-- Crop the islands by the holes that overlap the borders of the islands.
+					-- This is about holes that DO NOT split the islands into fragments.
+					-- In the end the cropped islands will form the fill of the zone:
+					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_holes_at_border'access);
+
+					-- Crop the islands by the holes that split the islands into fragments.
 					-- The result is a list of even more islands. 
-					-- In the end they will form the fill of the zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, process_holes'access);
+					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_splitting_holes'access);
 					
 				end process_board_contours;
 			

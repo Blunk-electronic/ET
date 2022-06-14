@@ -41,7 +41,21 @@ with ada.text_io;				use ada.text_io;
 
 package body et_pcb_contour is
 
+	procedure iterate (
+		holes	: in pac_holes_as_polygons.list;
+		process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_holes_as_polygons.cursor := holes.first;
+	begin
+		while c /= pac_holes_as_polygons.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
+	
+	
 	function to_polygons (
 		holes		: in pac_holes.list;
 		tolerance	: in type_distance_positive)

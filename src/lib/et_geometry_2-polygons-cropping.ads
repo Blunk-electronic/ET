@@ -89,7 +89,9 @@ package et_geometry_2.polygons.cropping is
 		debug		: in boolean := false)
 		return type_crop;
 
-
+	-- CS improve function crop:
+	-- parameter for already existing overlap status
+	-- parameter for already existing intersections
 	
 	
 	

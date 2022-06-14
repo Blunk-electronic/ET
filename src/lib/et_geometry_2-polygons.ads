@@ -774,6 +774,7 @@ package et_geometry_2.polygons is
 		A_OVERLAPS_B,
 		A_DOES_NOT_OVERLAP_B);
 
+	
 	function get_overlap_status (
 		polygon_A, polygon_B	: in type_polygon;
 		intersections			: in pac_intersections.list;
