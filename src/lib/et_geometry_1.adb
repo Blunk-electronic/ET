@@ -1151,8 +1151,6 @@ package body et_geometry_1 is
 		function lines_overlap return boolean is
 			a, b, distance : type_float_internal;
 			v1 : type_vector;
-
-			--th : constant type_float_internal := 1.0E-17;
 		begin
 			-- The first condition to be fulfilled is that the lines
 			-- must run parallel to each other. In this case the cross
@@ -1169,7 +1167,8 @@ package body et_geometry_1 is
 
 				distance := a / b;
 
-				if abs (distance) <= rounding_threshold then						
+				if abs (distance) <= rounding_threshold then
+				-- CS: use: if abs (distance) <= accuracy then
 					return true; -- lines overlap each other
 				else
 					return false; -- distance greater zero -> hence no overlap
@@ -1197,24 +1196,24 @@ package body et_geometry_1 is
 				-- In order to avoid division by zero we must switch between
 				-- two ways to find the intersection:
 				if line_1.v_direction.x /= 0.0 then
-					a := type_float_internal (line_1.v_start.y);
-					b := type_float_internal (line_2.v_start.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
-					c := type_float_internal (line_1.v_start.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
-					d := type_float_internal (line_2.v_start.y);
-					e := type_float_internal (line_2.v_direction.y);
-					f := type_float_internal (line_2.v_direction.x * line_1.v_direction.y) / type_float_internal (line_1.v_direction.x);
+					a := line_1.v_start.y;
+					b := line_2.v_start.x * line_1.v_direction.y / line_1.v_direction.x;
+					c := line_1.v_start.x * line_1.v_direction.y / line_1.v_direction.x;
+					d := line_2.v_start.y;
+					e := line_2.v_direction.y;
+					f := line_2.v_direction.x * line_1.v_direction.y / line_1.v_direction.x;
 					g := 1.0 / (e - f);
 
 					lambda := (a + b - c - d) * g;
 
 					i.vector := add (line_2.v_start, scale (line_2.v_direction, lambda));
 				else
-					a := type_float_internal (line_2.v_start.y);
-					b := type_float_internal (line_1.v_start.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
-					c := type_float_internal (line_2.v_start.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
-					d := type_float_internal (line_1.v_start.y);
-					e := type_float_internal (line_1.v_direction.y);
-					f := type_float_internal (line_1.v_direction.x * line_2.v_direction.y) / type_float_internal (line_2.v_direction.x);
+					a := line_2.v_start.y;
+					b := line_1.v_start.x * line_2.v_direction.y / line_2.v_direction.x;
+					c := line_2.v_start.x * line_2.v_direction.y / line_2.v_direction.x;
+					d := line_1.v_start.y;
+					e := line_1.v_direction.y;
+					f := line_1.v_direction.x * line_2.v_direction.y / line_2.v_direction.x;
 					g := 1.0 / (e - f);
 
 					lambda := (a + b - c - d) * g;
