@@ -1040,6 +1040,14 @@ package et_geometry_2 is
 	package pac_points is new doubly_linked_lists (type_point);
 
 
+	-- Returns from a list of point the one that is closest to
+	-- the given reference point:
+	function get_nearest (
+		points		: in pac_points.list;
+		reference	: in type_point := origin)
+		return type_point;
+
+	
 	-- Converts a list of points to vectors:
 	function to_vectors (
 		points : in pac_points.list)

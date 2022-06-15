@@ -478,6 +478,7 @@ is
 				net			: in out type_net)
 			is 
 				-- The cursor that points to the zone being filled:
+				use pac_route_solid;
 				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
 
 				-- The candidate fill zone must be converted to a polygon:
@@ -635,8 +636,12 @@ is
 					
 					
 				begin
+					log (text => "processing board contours ...", level => log_threshold + 4);
+					log_indentation_up;
+					
 					-- Shrink the outer edge (of the board) by half the line 
 					-- width of the fill lines:
+					log (text => "outer edge ...", level => log_threshold + 4);
 					offset_polygon (outer_edge, - line_width * 0.5);
 
 					-- Clip the contour of the fill zone by the outer edge of the board.
@@ -646,10 +651,13 @@ is
 					-- for debugging use this line:
 					--islands := clip (zone, board_outer_edge, true);
 
+					
 
+					log (text => "holes ...", level => log_threshold + 4);
+					
 					-- Expand the holes by half the line width of the fill lines:
 					offset_holes (holes, line_width * 0.5);
-					
+
 					-- Crop the islands by the holes that overlap the borders of the islands.
 					-- This is about holes that DO NOT split the islands into fragments.
 					-- In the end the cropped islands will form the fill of the zone:
@@ -658,13 +666,21 @@ is
 					-- Crop the islands by the holes that split the islands into fragments.
 					-- The result is a list of even more islands. 
 					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_splitting_holes'access);
-					
+
+					log_indentation_down;
 				end process_board_contours;
 			
 				
 			begin -- route_solid
 				
 				while zone_cursor /= pac_route_solid.no_element loop
+
+					log (text => "zone with corner nearest to origin:" 
+						 & to_string (get_corner_nearest_to_origin (element (zone_cursor))),
+						level => log_threshold + 3);
+
+					log_indentation_up;
+
 					
 					-- clear the complete fill:
 					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
@@ -698,7 +714,7 @@ is
 					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
 
 					
-					log_indentation_up;
+					--log_indentation_up;
 
 					---- compute the rows:
 					--rows := make_rows (
@@ -713,8 +729,9 @@ is
 
 					--update_element (net.route.fill_zones.solid, polygon_cursor, add_rows'access);
 					
+					--log_indentation_down;
 					log_indentation_down;
-
+					
 					next (zone_cursor);
 				end loop;
 			end route_solid;

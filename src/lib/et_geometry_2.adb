@@ -2159,6 +2159,34 @@ package body et_geometry_2 is
 		
 
 
+	function get_nearest (
+		points		: in pac_points.list;
+		reference	: in type_point := origin)
+		return type_point
+	is
+		use pac_points;
+		
+		result : type_point;
+
+		distance : type_float_internal_positive := type_float_internal_positive'last;
+		
+		procedure query_point (p : in pac_points.cursor) is
+			d_scratch : constant type_float_internal_positive := 
+				get_absolute (get_distance (reference, element (p)));
+		begin
+			if d_scratch < distance then
+				distance := d_scratch;
+				result := element (p);
+			end if;
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_nearest;
+
+	
+
 	function to_vectors (
 		points : in pac_points.list)
 		return pac_vectors.list

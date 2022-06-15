@@ -929,6 +929,39 @@ package body et_geometry_2.contours is
 	end get_lower_left_corner;
 
 
+	function get_corner_nearest_to_origin (
+		contour	: in type_contour)
+		return type_point
+	is
+		use pac_points;
+		corners : pac_points.list;
+		
+		use pac_contour_segments;
+		
+		procedure query_segment (c : in pac_contour_segments.cursor) is
+			s : type_contour_segment renames element (c);
+		begin
+			case element (c).shape is
+				when LINE => 
+					corners.append (s.segment_line.start_point);
+					corners.append (s.segment_line.end_point);
+					
+				when ARC =>
+					corners.append (s.segment_arc.start_point);
+					corners.append (s.segment_arc.end_point);
+			end case;
+		end query_segment;
+		
+	begin
+		if contour.contour.circular then
+			return contour.contour.circle.center;
+		else
+			contour.contour.segments.iterate (query_segment'access);
+			return get_nearest (corners);
+		end if;
+		
+	end get_corner_nearest_to_origin;
+	
 	
 	function is_vertex (
 		contour	: in type_contour;

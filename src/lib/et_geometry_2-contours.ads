@@ -326,12 +326,21 @@ package et_geometry_2.contours is
 
 	
 
-	-- Searches the lower left corner of a contour:
+	-- Searches the lower left corner of a contour.
+	-- This function uses the boundaries of the contour.
+	-- So the lower left corner can also be virtual, means
+	-- outside the contour:
 	function get_lower_left_corner (
 		contour	: in type_contour)
 		return type_lower_left_corner;
 
 
+	-- Returns the corner that is closest to the origin of the drawing:
+	function get_corner_nearest_to_origin (
+		contour	: in type_contour)
+		return type_point;
+
+	
 	function is_vertex (
 		contour	: in type_contour;
 		point	: in type_point)
