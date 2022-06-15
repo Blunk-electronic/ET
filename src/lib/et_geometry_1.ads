@@ -48,17 +48,11 @@ with et_logging;				use et_logging;
 
 
 generic
-	--type type_distance is delta <> digits <>;
-	--type type_distance_coarse is delta <> digits <>;
 	type type_float_internal is digits <>; -- CS rename to type_float ?
-	--axis_min, axis_max : type_distance;
-	--type type_rotation is delta <> digits <>;
-
 
 package et_geometry_1 is
 
 	rounding_threshold : constant type_float_internal := 1.0E-17;
-	--rounding_threshold : constant type_float_internal := type_float_internal'small;
 	accuracy : constant type_float_internal := 1.0E-16;
 
 	-- Returns true if the given arguments are equal.
@@ -153,26 +147,12 @@ package et_geometry_1 is
 		left, right : in type_float_internal)
 		return type_float_internal;
 
+	
 	-- Returns the smallest of the given numbers. 
 	-- If both are equal then "right" will be returned.
 	function get_smallest (
 		left, right : in type_float_internal)
 		return type_float_internal;
-
-	
-	
-	
-	--function to_string (distance : in type_distance)
-		--return string;
-
-	--function to_string (d_coarse : in type_distance_coarse)
-		--return string;
-
-
-	
-	---- The position along an axis:
-	--subtype type_position_axis is type_distance 
-		--range axis_min .. axis_max;
 
 
 
@@ -203,34 +183,6 @@ package et_geometry_1 is
 		--return type_distance_coarse;
 	
 
-	
-	---- The distance between two objects:
-	--subtype type_distance_positive is type_distance 
-		--range zero .. type_distance'last;
-
-	
-	--subtype type_catch_zone is type_float_internal_positive
-		--range 0.0 .. type_float_internal (type_distance_positive'last/100.0);
-
-	
-	--subtype type_rotation_positive is type_rotation
-		--range 0.0 .. type_rotation'last;
-
-	
-	
-	
-	---- Returns the greatest of the given distances. 
-	---- If both are equal then "right" will be returned.
-	--function get_greatest (
-		--left, right : in type_distance)
-		--return type_distance;
-
-	---- Returns the smallest of the given distances. 
-	---- If both are equal then "right" will be returned.
-	--function get_smallest (
-		--left, right : in type_distance)
-		--return type_distance;
-
 
 	
 	---- Converts an angle like -90.0 degrees to 270 degrees.
@@ -244,66 +196,6 @@ package et_geometry_1 is
 	
 	--subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 	
-	
-	---- For collecting and sorting distances:
-	--package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
-	--package pac_distances_positive_sorting is new pac_distances_positive.generic_sorting;
-	
-	--package pac_distances is new doubly_linked_lists (type_distance);
-	--package pac_distances_sorting is new pac_distances.generic_sorting;
-
-
-	---- Returns the greatest distance from a list of positive distances:
-	--function get_greatest (
-		--distances	: in pac_distances_positive.list)
-		--return type_distance_positive;
-	
-	
-	--grid_max : constant type_distance_positive := axis_max * 0.1;
-	--subtype type_distance_grid is type_distance_positive range zero .. grid_max;
-	--grid_default : constant type_distance_grid := 2.5;
-
-
-	---- Returns a position along an axis rounded according to given grid.		
-	--function round (
-		--distance	: in type_position_axis;
-		--grid		: in type_distance_grid)
-		--return type_position_axis;
-
-	
-	--type type_grid is record
-		--x,y	: type_distance_grid := grid_default;
-	--end record;
-
-	
-	
-	
-	--procedure scale_grid (
-		--grid	: in out type_grid;
-		--scale	: in type_distance_positive);			
-	
-	--function to_string (grid : in type_grid) return string;
-
-
-
-	--type type_distance_relative is record
-		--x, y : type_distance := zero;
-	--end record;
-
-	--type type_distance_relative is record
-		--x, y : type_float_internal := 0.0;
-	--end record;
-
-	
-	--function to_string (distance : in type_distance_relative)
-		--return string;
-
-
-
-	
-	--function to_distance_relative (
-		--x,y : in type_float_internal)
-		--return type_distance_relative;
 
 
 
@@ -320,96 +212,6 @@ package et_geometry_1 is
 		return type_offset;
 
 
-	
--- TYPE POINT:
-
-	--type type_point is tagged record
-		--x, y : type_position_axis := zero;
-	--end record;
-
-	
-	--origin			: constant type_point;		
-	--far_upper_left	: constant type_point;
-	--far_upper_right	: constant type_point;
-	--far_lower_left	: constant type_point;
-	--far_lower_right	: constant type_point;
-
-	
-	--function "<" (left, right : in type_point) return boolean;
-
-	--function "=" (left, right : in type_point) return boolean;
-
-
-	--function to_string (point : in type_point) return string;
-
-
-
-
-
-	
-
-	---- Returns x/y of point rounded according to given grid.
-	--function round_to_string (
-		--point	: in type_point;
-		--grid	: in type_grid)
-		--return string;
-
-
-	---- Returns point rounded according to given grid.		
-	---- Use this function for operations like "snap to grid" etc...
-	--function round (
-		--point	: in type_point;
-		--grid	: in type_grid)
-		--return type_point'class;
-	
-	
-	--function round (
-		--point : in type_point)
-		--return type_point'class;
-
-	
-	--procedure round (
-		--point : in out type_point);
-
-		
-	--function to_distance_relative (
-		--p : in type_point)
-		--return type_distance_relative;
-
-
-
-	-- Returns the rotation of the given point about the origin.
-	-- If for example point is (1/1) then the return is 45 degree.
-	-- if point is (-1/-1) then the return is -135 degree.
-	--function get_rotation (
-		--point : in type_point)
-		--return type_rotation;
-
-	
-	-- Rotates the given point BY the given angle about the origin.
-	-- Changes point.x and point.y only.
-	--procedure rotate_by (
-		--point		: in out type_point;
-		--rotation	: in type_rotation);
-	
-	
-	---- Rotates the given point TO the given angle about the origin.
-	---- Changes point.x and point.y only.
-	--procedure rotate_to (
-		--point		: in out type_point;
-		--rotation	: in type_rotation);
-
-	
-	
-	--function to_point (
-		--d 		: in type_distance_relative;
-		--clip	: in boolean := false)
-		--return type_point'class;
-
-
-	--function to_point (
-		--x,y : in string)
-		--return type_point'class;
 
 
 	-- Inverts the given relative distance by 
@@ -419,243 +221,6 @@ package et_geometry_1 is
 		return type_offset;
 
 	
-	
-	
-	
-	--function get_x (
-		--point : in type_point)
-		--return type_position_axis;
-	
-	--function get_y (
-		--point : in type_point)
-		--return type_position_axis;	
-
-
-	
-	
-	---- The area (a rectangular box around an object)
-	---- occupied by the object.
-	---- The boundaries are always relative to a certain origin that
-	---- sits somewhere inside the rectangular box. 
-	--type type_boundaries is record
-		--smallest_x, smallest_y : type_float_internal := type_float_internal'last;
-		--greatest_x, greatest_y : type_float_internal := type_float_internal'first;
-		--distance_of_topleft_to_default : type_float_internal := 0.0;
-	--end record;
-
-	--boundaries_default : constant type_boundaries;
-
-	---- Returns the height of the given boundaries by
-	---- calculating boundaries.greatest_y - boundaries.smallest_y:
-	--function get_height (boundaries : in type_boundaries)
-		--return type_float_internal_positive;
-
-	
-	---- Returns the width of the given boundaries by
-	---- calculating boundaries.greatest_x - boundaries.smallest_x:
-	--function get_width (boundaries : in type_boundaries)
-		--return type_float_internal_positive;
-
-	
-	--function to_string (boundaries : in type_boundaries) return string;
-
-	---- Returns true if the given boundaries intersect each other.
-	---- Returns false if boundaries do not intersect and if they
-	---- touch each other:
-	--function intersect (
-		--boundaries_one : in type_boundaries; -- CS rename to b1,b2. do so with other functions below
-		--boundaries_two : in type_boundaries)
-		--return boolean;
-	
-
-	--type type_boundaries_intersection (exists : boolean := true) is record
-		--case exists is
-			--when TRUE => intersection : type_boundaries;
-			--when FALSE => null;
-		--end case;
-	--end record;
-
-	
-	---- Returns the intersection area (german: Schnittmenge) of two
-	---- boundaries. If the boundaries do not overlap each other
-	---- then a constraint error is raised:
-	--function get_intersection (
-		--boundaries_one : in type_boundaries;
-		--boundaries_two : in type_boundaries)
-		--return type_boundaries_intersection;
-
-	
-	---- Adds two boundaries.
-	--procedure add (
-		--boundaries_one : in out type_boundaries;
-		--boundaries_two : in type_boundaries);
-
-	
-	---- Calculates the boundaries of the given points
-	---- connected with a line that has the
-	---- given width. The boundaries are extended
-	---- by half the given width.
-	--function get_boundaries (
-		--point_one	: in type_point;
-		--point_two	: in type_point;
-		--width		: in type_distance_positive) 
-		--return type_boundaries;
-
-	
-	---- Moves the boundaries by the given offset.
-	---- If clip is true, then the boundaries will assume
-	---- the min or max value as defined by type_position_axis.
-	---- If clip is false, then a constraint error may arise
-	---- if the boundaries exceed the limits defined by type_position_axis:
-	--procedure move_by (
-		--boundaries	: in out type_boundaries;
-		--offset		: in type_distance_relative;
-		--clip		: in boolean := false);
-
-	
-
-	
-	
-	
-	---- Converts a mil number (given as a string) to millimeters.	
-	--function mil_to_distance (mil : in string) return type_distance;
-
-	--function distance_to_mil (distance : in type_distance) return string;
-
-	
-
-
-
-	
-	--function set (
-		--x, y : in type_position_axis) 
-		--return type_point'class;
-
-	
-	--procedure set (
-		--point	: in out type_point;
-		--axis 	: in type_axis_2d;
-		--value	: in type_position_axis);
-
-	
-	--procedure set (
-		--point	: in out type_point'class;
-		--position: in type_point);
-
-	
-	---- The quadrants of the coordinate system are numbered counter clockwise.
-	---- Quadrant ONE is top right.
-	--type type_quadrant is (ONE, TWO, THREE, FOUR);
-
-	---- Returns the quadrant the point is located in.
-	---- ONE  : point is on the right of the y-axis or on it AND above the x-axis or on it
-	---- TWO  : point is left of the y-axis AND above the x-axis or on top of it
-	---- THREE: point is left of the y-axis AND below the x-axis
-	---- FOUR : point is right of the y-axis or on top of it AND below the x-axis
-	--function get_quadrant (
-		--point : in type_point) 
-		--return type_quadrant;
-
-	
-	---- Inverts the given point by multiplying x by -1 and y by -1.
-	--function invert (
-		--point : in type_point'class) 
-		--return type_point'class;
-
-	
-	---- Inverts the point on the given axis.
-	--function invert (
-		--point	: in type_point;
-		--axis	: in type_axis_2d)
-		--return type_point'class;
-
-	
-	---- Moves the given point to the origin (0/0).
-	--procedure reset (
-		--point : in out type_point);
-
-	
-	---- Moves a point by the given offset.
-	--procedure move_by (
-		--point	: in out type_point;
-		--offset	: in type_distance_relative);
-
-	
-	---- Moves a point to the given destination:
-	--procedure move_to (
-		--point		: in out type_point;
-		--destination	: in type_point'class);
-
-	
-	---- Moves a point into direction by distance.
-	--function move (
-		--point		: in type_point;
-		--direction	: in type_rotation;
-		--distance	: in type_distance_positive;
-		--clip		: in boolean := false)
-		--return type_point'class;
-
-	
-	---- If axis is Y then it swaps right x with left x.
-	---- If axis is X then it swaps upper y with lower y.
-	--procedure mirror (
-		--point	: in out type_point;
-		--axis	: in type_axis_2d);	
-
-	
-	---- Returns the distance along the given axis between the given points.
-	--function get_distance (
-		--point_1	: in type_point;
-		--point_2	: in type_point;
-		--axis	: in type_axis_2d) 
-		--return type_distance;
-
-	
-	---- Returns the absolute distance along the given axis between the given points.
-	---- NOTE: The result in both x and y is always greater or equal zero.
-	--function get_distance_abs (
-		--point_1	: in type_point;
-		--point_2	: in type_point;
-		--axis	: in type_axis_2d) 
-		--return type_distance_positive;
-
-	
-	---- Adds x and y of given points as:
-	---- result.x = point_one.x + point_two.x and
-	---- result.y = point_one.y + point_two.y and
-	--function "+" (point_one, point_two : in type_point) return type_point'class;
-
-	---- Subtracts x and y of given points as:
-	---- result.x = point_one.x - point_two.x and
-	---- result.y = point_one.y - point_two.y and
-	--function "-" (point_one, point_two : in type_point) return type_point'class;
-
-
-	
-	
-	---- Returns the relative distance of point_two to point_one.	
-	---- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
-	---- returns	d.x := point_two.x - point_one.x
-	----			d.y := point_two.y - point_one.y;
-	--function get_distance_relative (
-		--point_one, point_two : in type_point) 
-		--return type_distance_relative;
-
-	
-	
-	-- Computes the total distance between point_one and point_two.
-	--function get_distance_total (
-		--point_one, point_two : in type_point)
-		--return type_float_internal_positive;
-
-	
-	---- Returns true if point_2 is within the 
-	---- catch zone around point_1:
-	--function in_catch_zone (
-		--point_1		: in type_point; -- the reference point
-		--catch_zone	: in type_catch_zone; -- zone around reference point
-		--point_2 	: in type_point) -- the point being tested
-		--return boolean;
 	
 	-- Adds two angles.
 	-- If result greater 360 degree then 360 degree is subtracted from result.
@@ -731,69 +296,6 @@ package et_geometry_1 is
 		distance : in type_distance_polar)
 		return type_float_internal_positive;
 
-
-
-	
--- TYPE POSITION:
-	
-	--type type_position is new type_point with private;
-
-	--overriding function to_string (point : in type_position) return string;
-	
-	--function to_rotation (rotation : in string) return type_rotation;
-	--function to_string (rotation : in type_rotation) return string;
-
-	
-	--type type_direction_of_rotation is (
-		--CW,		-- clockwise
-		--CCW);	-- counterclockwise
-
-	--function to_string (direction : in type_direction_of_rotation) return string;
-	--function to_direction (direction : in string) return type_direction_of_rotation;
-
-	---- Returns CW if rotation is negative. 
-	---- Returns CCW if rotation is positive or zero.
-	--function get_direction (rotation : in type_rotation) 
-		--return type_direction_of_rotation;
-
-	-- Changes CCW to CW and vice versa.
-	--function reverse_direction (direction : in type_direction_of_rotation)
-		--return type_direction_of_rotation;
-	
-	--origin_zero_rotation : constant type_position;
-
-	---- A position at the greatest distance in
-	---- x and y from the origin:
-	--far_upper_right_zero_rotation : constant type_position;
-	
-
-
-
-
-	--function to_position (
-		--point		: in type_point;
-		--rotation	: in type_rotation)
-		--return type_position'class;
-
-	
-	---- Sets the rotation of a position. (position.rotation)
-	--procedure set (
-		--position	: in out type_position;
-		--rotation	: in type_rotation);
-
-	
-	---- Returns the rotation of the given position.
-	--function get_rotation (
-		--position : in type_position) 
-		--return type_rotation;
-	
-	
-	---- Changes the rotation of the given position by the given offset.
-	---- Preserves x/y. Changes position.rotation only.
-	--procedure rotate_about_itself (
-		--position	: in out type_position;
-		--offset		: in type_rotation);
-
 	
 
 	-- The quadrants of the coordinate system are numbered counter clockwise.
@@ -803,17 +305,12 @@ package et_geometry_1 is
 	
 	
 -- VECTORS
-	
-	--type type_vector is private;
-
-	--null_vector : constant type_vector;
-
-	--unity_vector : constant type_vector;
 
 	type type_vector is	record
 		x, y, z : type_float_internal := 0.0;
 	end record;
 
+	
 	-- Returns true if the given two location vectors are equal:
 	function "=" (
 		left, right : in type_vector)
@@ -1295,48 +792,6 @@ private
 		absolute: type_float_internal_positive := 0.0;
 		angle	: type_angle := 0.0;
 	end record;
-	
-
-
-	--type type_vector is	record
-		--x, y, z : type_float_internal := 0.0;
-	--end record;
-
-	--null_vector		: constant type_vector := (others => 0.0);
-	--unity_vector	: constant type_vector := (others => 1.0);
-
-	
-	--origin : constant type_point := (others => zero);
-
-	--far_upper_left : constant type_point :=
-		--(x => type_position_axis'first,
-			--y => type_position_axis'last);
-	
-	--far_upper_right : constant type_point :=
-		--(x => type_position_axis'last,
-			--y => type_position_axis'last);
-
-	--far_lower_left : constant type_point :=
-		--(x => type_position_axis'first,
-			--y => type_position_axis'first);
-	
-	--far_lower_right : constant type_point :=
-		--(x => type_position_axis'last,
-			--y => type_position_axis'first);
-
-	
-	--type type_position is new type_point with record
-		--rotation : type_rotation := zero_rotation;
-	--end record;
-
-	--origin_zero_rotation : constant type_position := (others => <>);
-
-	--far_upper_right_zero_rotation : constant type_position :=
-		--((far_upper_right with zero_rotation));
-	
-	--boundaries_default : constant type_boundaries := (others => <>);
-	
-
 	
 end et_geometry_1;
 
