@@ -270,19 +270,7 @@ package et_geometry_1 is
 	-- Example: changes 45 degrees to 225 degrees:
 	procedure reverse_angle (
 		distance : in out type_distance_polar);
-								
-	
-	---- Returns the distance of point_two to point_one.	
-	---- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
-	---- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
-	----			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
-	---- NOTE 1: The angle ranges from -180 to 180 degrees.
-	---- NOTE 2: If the total distance between the points is zero then
-	----         the returned angle is zero. So it is wise to test the two points
-	----         for equality befor calling this function.
-	--function get_distance (
-		--point_one, point_two : in type_point)
-		--return type_distance_polar;
+
 
 	
 	-- Returns the angle of the given polar distance:

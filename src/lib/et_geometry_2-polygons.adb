@@ -557,8 +557,18 @@ package body et_geometry_2.polygons is
 
 		status : type_intersection_status_of_two_lines;
 		intersection : pac_geometry_1.type_intersection;
+
+		-- This constant is required when the intersection vectors are compared.
+		-- Due to preceeding operations a greater rounding error than "accuracy" must be assumed.
+		-- CS: refinement required:
+		rounding_error : constant type_float_internal_positive := accuracy * 10.0;
 		
 	begin
+		--put_line ("get intersection");
+		--put_line ("edge 1: " & to_string (edge_1));
+		--put_line ("edge 2: " & to_string (edge_2));
+
+		
 		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
 			--status := NOT_EXISTENT;
 
@@ -568,17 +578,33 @@ package body et_geometry_2.polygons is
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
 			-- double check: location vectors must match !
-			--if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
-			if get_absolute (
-				get_distance (int_A.intersection.vector, int_B.intersection.vector)) <= rounding_threshold 
-			then
+			if get_absolute (get_distance (
+				int_A.intersection.vector, int_B.intersection.vector)) <= rounding_error
+			then 
+			--if int_A.intersection.vector = int_B.intersection.vector then
 				status := EXISTS;
 				intersection.vector := int_A.intersection.vector;
 				intersection.angle := int_A.intersection.angle;
+
+				--put_line ("intersections match:");
+				--put_line ("int  A: " & to_string (int_A.intersection.vector));
+				--put_line ("int  B: " & to_string (int_B.intersection.vector));
+
 			else
+				put_line ("intersection mismatch:");
+				--put_line ("edge 1: " & to_string (edge_1));
+				--put_line ("edge 2: " & to_string (edge_2));
+				put_line ("int  A: " & to_string (int_A.intersection.vector));
+				put_line ("int  B: " & to_string (int_B.intersection.vector));
+
+				put_line ("delta : " & to_string (
+					subtract (int_A.intersection.vector, int_B.intersection.vector)));
+													 
 				raise constraint_error with 
-					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
+					"Intersection mismatch: " & to_string (int_A.intersection.vector)
 					& to_string (int_B.intersection.vector);
+
+				
 			end if;
 
 		else

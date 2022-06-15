@@ -152,7 +152,7 @@ package body et_geometry_2.polygons.cropping is
 			
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
-			safety_counter_limit : constant natural := 100;
+			safety_counter_limit : constant natural := 1000;
 			safety_counter : natural := 0;
 
 		begin
