@@ -37,7 +37,7 @@
 
 
 with ada.exceptions; 			use ada.exceptions;
---with gnat.source_info;
+with gnat.source_info;
 
 with et_exceptions;				use et_exceptions;
 
@@ -287,7 +287,9 @@ package body et_geometry_2.polygons.cropping is
 		overlap_status : type_overlap_status;
 
 		procedure show_overlap_status is begin
-			put_line ("OVERLAP STATUS: " & type_overlap_status'image (overlap_status));
+			if debug then
+				put_line ("OVERLAP STATUS: " & type_overlap_status'image (overlap_status));
+			end if;
 		end;
 
 		
@@ -309,40 +311,31 @@ package body et_geometry_2.polygons.cropping is
 
 
 		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
+		show_overlap_status;
 		
 		case overlap_status is
 			when CONGRUENT =>
-				--show_overlap_status;
-				
 				-- Both polygons have the same outline. B is completely cropped to zero area.
 				-- So the result is an empty list of polygons:
 				result_exists := true;
 				
 			when A_DOES_NOT_OVERLAP_B => 
-				--show_overlap_status;
-				
 				-- Nothing to do. Polygon B is unchanged so it is the one and only polygon
 				-- to be returned:
 				result_exists := true;
 				result_crop.append (type_polygon (polygon_B));
 
 			when A_INSIDE_B => 
-				--show_overlap_status;
-				
 				-- Polygon A is completely inside B. A crop operation is
 				-- not possible (The outcome would be a cutout area in polygon B.):
 				result_exists := false;
 
 			when B_INSIDE_A => 
-				--show_overlap_status;
-				
 				-- Polygon B is completely inside A. B is completey cropped to zero area
 				-- So the result is an empty list of polygons:
 				result_exists := true;
 				
 			when A_OVERLAPS_B => 
-				--show_overlap_status;
-				
 				result_exists := true;
 				-- Do the actual cropping work:
 				do_cropping;
@@ -365,19 +358,19 @@ package body et_geometry_2.polygons.cropping is
 		
 
 		--exception
-			----when event: operator_error =>
-				----put_line(exception_message(event));
-			--when event: constraint_error =>
-				----put_line ("Constraint error occured !");
+			--when event: others =>
+				------put_line(exception_message(event));
+			----when event: constraint_error =>
+				------put_line ("Constraint error occured !");
 				--put_line (exception_information (event));
 				--put_line (exception_message (event));
 
 				--put_line (gnat.source_info.file & " :" & integer'image (gnat.source_info.line));
 				
-				--raise;
+				----raise;
 				
-			--when others =>
-				--put_line ("Other error occured !");
+			----when others =>
+				----put_line ("Other error occured !");
 				--raise;
 		
 	end crop;

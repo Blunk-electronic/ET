@@ -2899,7 +2899,7 @@ package body et_geometry_2.polygons is
 							intersections.append (IAB);
 
 							if debug then
-								put_line ("intersection (end on edge): " & to_string (intersections.last_element));
+								put_line ("intersection (end on edge)  : " & to_string (intersections.last_element));
 							end if;
 						end if;
 						
@@ -2918,7 +2918,7 @@ package body et_geometry_2.polygons is
 							intersections.append (IAB);
 
 							if debug then
-								put_line ("intersection (end on vertex): " & to_string (intersections.last_element));
+								put_line ("intersection (end on vertex)  : " & to_string (intersections.last_element));
 							end if;
 						end if;
 

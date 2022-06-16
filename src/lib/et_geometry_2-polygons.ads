@@ -771,9 +771,14 @@ package et_geometry_2.polygons is
 		CONGRUENT,
 		A_INSIDE_B,
 		B_INSIDE_A,							
-		A_OVERLAPS_B,
+
+		A_OVERLAPS_B, 
+		-- NOTE: This includes the case when edges overlap each other.
+		--       The polygons just touch each other via a common edge.
+
 		A_DOES_NOT_OVERLAP_B);
 
+	
 	
 	function get_overlap_status (
 		polygon_A, polygon_B	: in type_polygon;

@@ -74,7 +74,7 @@ package et_geometry_2.polygons.cropping is
 		return boolean;
 	
 	
-	-- Crops polygon A by polygon B.
+	-- Crops polygon B by polygon A.
 	-- These scenarios may exist:
 	-- 1. A and B are congruent. Result: B is cropped to zero area. List "cropped" is empty.
 	-- 2. A does not overlap B. Result: B is returned unchanged as the one and only polygon
