@@ -763,12 +763,12 @@ package body et_geometry_1 is
 	
 	
 	function get_distance_total (
-		v_1	: in type_vector;
-		v_2	: in type_vector)
+		v1 : in type_vector;
+		v2 : in type_vector)
 		return type_float_internal_positive
 	is 
-		dx : constant type_float_internal := abs (v_2.x - v_1.x);
-		dy : constant type_float_internal := abs (v_2.y - v_1.y);
+		dx : constant type_float_internal := abs (v2.x - v1.x);
+		dy : constant type_float_internal := abs (v2.y - v1.y);
 	begin
 		return sqrt (dx ** 2.0 + dy ** 2.0);
 	end get_distance_total;

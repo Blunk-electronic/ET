@@ -409,10 +409,12 @@ package et_geometry_1 is
 		a, b	: in type_vector)
 		return type_float_internal;
 
-	
+
+	-- Returns the total distance between the given two location vectors.
+	-- Ignores z of both vectors because this is a 2D world:
 	function get_distance_total (
-		v_1	: in type_vector;
-		v_2	: in type_vector)
+		v1 : in type_vector;
+		v2 : in type_vector)
 		return type_float_internal_positive;
 
 

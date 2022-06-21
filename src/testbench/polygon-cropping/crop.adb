@@ -48,7 +48,7 @@ with et_string_processing;		use et_string_processing;
 
 procedure crop is
 
-	test_count : constant positive := 25;
+	test_count : constant positive := 26;
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
@@ -155,10 +155,10 @@ procedure crop is
 			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
 
-			set (i).result_actual := crop (A, B);
+			--set (i).result_actual := crop (A, B);
 
 			-- Use this statement if more debug messages required:
-			--set (i).result_actual := crop (A, B, true);
+			set (i).result_actual := crop (A, B, true);
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
@@ -512,6 +512,20 @@ begin
 	make_set (
 		A => "line 100 10 line 200 10 line 200 110 line 100 110",
 		B => B_default,
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
+
+
+
+
+	-- TEST 26:
+	init_test;
+	add_to_expect ("0 0  0 100  100 100  100 0  110 0  110 110  -10 110  -10 0");
+	-- B wraps around A. Edges do overlap.
+	-- B remains unchanged. B will not be cropped.
+	
+	make_set (
+		A => B_default,
+		B =>  "line 0 0 line 0 100 line 100 100 line 100 0 line 110 0 line 110 110 line -10 110 line -10 0",
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
 	

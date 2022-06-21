@@ -471,6 +471,7 @@ package body et_geometry_2.polygons is
 					direction	=> get_angle (d),
 					distance	=> type_float_internal (type_distance'small));
 					--distance	=> type_float_internal (type_float_internal'small)); -- CS
+					--distance	=> 10.0 * accuracy); -- CS
 
 			when BEFORE => -- move backward in opposite direction
 				--result := type_point (move (
@@ -483,6 +484,7 @@ package body et_geometry_2.polygons is
 					direction	=> add (get_angle (d), 180.0),
 					distance	=> type_float_internal (type_distance'small));
 					--distance	=> type_float_internal (type_float_internal'small)); -- CS
+					--distance	=> 10.0 * accuracy); -- CS
 				
 		end case;
 		return result;
@@ -2591,7 +2593,7 @@ package body et_geometry_2.polygons is
 		result : unbounded_string;
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is begin
-			result := result & " " 
+			result := result & ada.characters.latin_1.LF & " " 
 				& trim (to_string (get_x (element (v).position)), left)
 				& "/"
 				& trim (to_string (get_y (element (v).position)), left)
@@ -2601,7 +2603,7 @@ package body et_geometry_2.polygons is
 				result := result & " " & type_intersection_direction'image (element (v).direction);
 			end if;
 
-			result := result & ".";
+			--result := result & ".";
 		end query_vertex;
 			
 	begin
@@ -3351,6 +3353,70 @@ package body et_geometry_2.polygons is
 	end delete_regular_before_intersection;
 
 
+	-- Replaces two successive vertices which meet these criterions:
+	-- - having same position
+	-- - the first is entering
+	-- - the second is leaving
+	procedure replace_entering_leaving_by_regular (
+		vertices : in out pac_vertices.list)
+	is
+		c : pac_vertices.cursor := vertices.first;
+		replace, skip : boolean := false;
+		result : pac_vertices.list;
+
+		function is_to_be_replaced (v1, v2 : in pac_vertices.cursor) return boolean is begin
+			if get_distance_total (element (v1).position, element (v2).position) < 10.0 * accuracy
+			and is_entering (v1) and is_leaving (v2) then
+				return true;
+			else
+				return false;
+			end if;
+		end is_to_be_replaced;
+			
+	begin
+		while c /= pac_vertices.no_element loop
+			replace := false;
+			skip := false;
+
+			--if c = vertices.first then
+				--if is_to_be_replaced (c, vertices.last) then
+					--null;
+				--end if;
+			
+			if c = vertices.last then
+				if is_to_be_replaced (c, vertices.first) then
+					replace := true;
+				end if;
+				
+			else
+				if is_to_be_replaced (c, next (c)) then
+					replace := true;
+					skip := true;
+				end if;			
+			end if;
+
+			
+			if replace then
+				result.append ((
+					category	=> REGULAR,
+					position	=> element (c).position,
+					location	=> ON_VERTEX));
+			else
+				result.append (element (c));
+			end if;
+
+			
+			if skip then
+				next (c);
+			end if;
+			
+			next (c);
+		end loop;
+
+		vertices := result;
+	end replace_entering_leaving_by_regular;
+
+	
 
 	function get_vertices (
 		polygon_primary		: in type_polygon;
@@ -3436,7 +3502,8 @@ package body et_geometry_2.polygons is
 		--put_line ("vertices pre: " & to_string (vertices));
 		delete_regular_after_intersection (vertices);
 		delete_regular_before_intersection (vertices);
-		
+
+		replace_entering_leaving_by_regular (vertices);
 		return vertices;
 	end get_vertices;
 

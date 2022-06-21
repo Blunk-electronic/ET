@@ -595,17 +595,23 @@ is
 									declare
 										cr : constant type_crop := crop (
 											polygon_A => element (h), -- the hole is cropping !
-											polygon_B => type_polygon (element (island_cursor).border));
+											polygon_B => type_polygon (element (island_cursor).border),
+											debug => true
+											);
 									begin
-										if cr.count > 1 then
-											proceed := false;
-											fragments := to_islands (cr);
-										end if;
+										null;
+										
+										--if cr.count > 1 then
+											--proceed := false;
+											--fragments := to_islands (cr);
+										--end if;
 									end;
 
 								when others => null;
 									
 							end case;
+							
+							null;
 						end query_hole;
 						
 					begin
@@ -613,17 +619,17 @@ is
 
 							iterate (holes, query_hole'access, proceed'access);
 
-							if not proceed then
-								--exit;
-								if not proceed then
-									zone.fill.splice (before => island_cursor, source => fragments);
-									zone.fill.delete (island_cursor);
-									island_cursor := zone.fill.first;
-									proceed := true;
-								end if;
-							else
+							--if not proceed then
+								----exit;
+								--if not proceed then
+									--zone.fill.splice (before => island_cursor, source => fragments);
+									--zone.fill.delete (island_cursor);
+									--island_cursor := zone.fill.first;
+									--proceed := true;
+								--end if;
+							--else
 								next (island_cursor);								
-							end if;
+							--end if;
 							
 						end loop;
 

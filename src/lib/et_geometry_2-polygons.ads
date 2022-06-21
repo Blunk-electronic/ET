@@ -130,11 +130,11 @@ package et_geometry_2.polygons is
 	
 	-- Returns the nearest point after/before
 	-- a given point on the given line.
-	-- The argument "after" determines whether to return
+	-- The argument "place" determines whether to return
 	-- a point before or after the given point:
 	function get_nearest (
 		edge	: in type_edge;
-		vector	: in type_vector;
+		vector	: in type_vector; -- the given point
 		place	: in type_nearest := AFTER)
 		return type_vector;
 	
@@ -738,7 +738,8 @@ package et_geometry_2.polygons is
 	function is_outside (v : pac_vertices.cursor) return boolean;
 	
 	
-	-- Returns true if x/y of the given two vertices are equal:
+	-- Returns true if x/y of the given two vertices are 
+	-- both regular and have the same position:
 	function same_position (
 		vertex_1, vertex_2 : in pac_vertices.cursor)
 		return boolean;
