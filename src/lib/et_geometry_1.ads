@@ -52,9 +52,8 @@ generic
 
 package et_geometry_1 is
 
-	rounding_threshold : constant type_float_internal := 1.0E-17; -- CS remove ?
 	accuracy : constant type_float_internal := 1.0E-16;
-
+	
 	-- Returns true if the given arguments are equal.
 	-- Considers them as equal if their difference is less or equal 
 	-- the constant "accuracy":

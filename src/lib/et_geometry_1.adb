@@ -475,22 +475,11 @@ package body et_geometry_1 is
 	function "=" (
 		left, right : in type_vector)
 		return boolean 
-	is
-		--lx : type_float_internal := get_x (left);
-		--ly : type_float_internal := get_y (left);
-		--lz : type_float_internal := get_z (left);
-
-		--rx : type_float_internal := get_x (right);
-		--ry : type_float_internal := get_y (right);
-		--rz : type_float_internal := get_z (right);
-	begin
+	is begin
 		--new_line;
 		--put_line ("left: " & to_string (left));
 		--put_line ("right:" & to_string (right));
-		
-		--if  abs (lx - rx) <= rounding_threshold
-		--and abs (ly - ry) <= rounding_threshold
-		--and abs (lz - rz) <= rounding_threshold
+
 		if  left.x = right.x 
 		and left.y = right.y
 		and left.z = right.z
@@ -1167,8 +1156,7 @@ package body et_geometry_1 is
 
 				distance := a / b;
 
-				if abs (distance) <= rounding_threshold then
-				-- CS: use: if abs (distance) <= accuracy then
+				if abs (distance) <= accuracy then
 					return true; -- lines overlap each other
 				else
 					return false; -- distance greater zero -> hence no overlap

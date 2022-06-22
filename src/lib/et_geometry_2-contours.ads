@@ -44,7 +44,7 @@ generic
 	
 package et_geometry_2.contours is
 	
-	-- A contour is list of lines, arcs or a single circle that form a path.
+	-- A contour is a list of lines, arcs or a single circle that form a path.
 	-- If a contour consist of just a single circle then no other 
 	-- segments are allowed.
 	-- On the other hand, a contour may consist of lines and arcs. In that

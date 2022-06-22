@@ -215,7 +215,7 @@ package body et_geometry_2.polygons is
 			distance := get_distance (edge, iv);
 			--log (text => "delta  :" & type_float_internal'image (distance));
 			
-			if distance > rounding_threshold then
+			if distance > accuracy then
 				--put_line ("wrong direction");
 				
 				-- we went the wrong direction
@@ -441,7 +441,7 @@ package body et_geometry_2.polygons is
 
 		--put_line ("on edge distance: " & to_string (distance.distance));
 		
-		if not distance.out_of_range and distance.distance < rounding_threshold then
+		if not distance.out_of_range and distance.distance < accuracy then
 			return true;
 		else
 			return false;
@@ -2462,12 +2462,7 @@ package body et_geometry_2.polygons is
 	is
 		result : boolean := false;
 	begin
-		-- CS: Due to inevitable rounding errors this direction comparison may not
-		-- work in all cases:
 		if element (intersection_1).position = element (intersection_2).position then
-
-		-- ? Instead use this:
-		--if equals (element (intersection_1).position, element (intersection_2).position) then
 			result := true;
 		end if;
 
@@ -3365,7 +3360,7 @@ package body et_geometry_2.polygons is
 		result : pac_vertices.list;
 
 		function is_to_be_replaced (v1, v2 : in pac_vertices.cursor) return boolean is begin
-			if get_distance_total (element (v1).position, element (v2).position) < 10.0 * accuracy
+			if element (v1).position = element (v2).position
 			and is_entering (v1) and is_leaving (v2) then
 				return true;
 			else

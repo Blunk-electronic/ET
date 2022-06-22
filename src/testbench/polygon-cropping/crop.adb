@@ -155,10 +155,10 @@ procedure crop is
 			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
 
-			--set (i).result_actual := crop (A, B);
+			set (i).result_actual := crop (A, B);
 
 			-- Use this statement if more debug messages required:
-			set (i).result_actual := crop (A, B, true);
+			--set (i).result_actual := crop (A, B, true);
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
