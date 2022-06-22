@@ -55,9 +55,6 @@ with et_logging;				use et_logging;
 package et_board_shapes_and_text is
 
 	use pac_geometry_brd;
-
-
-	--package pac_geometry_2 is new et_geometry_2 (pac_geometry_brd);
 	use pac_geometry_2;
 		
 

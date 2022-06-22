@@ -559,12 +559,7 @@ package body et_geometry_2.polygons is
 
 		status : type_intersection_status_of_two_lines;
 		intersection : pac_geometry_1.type_intersection;
-
-		-- This constant is required when the intersection vectors are compared.
-		-- Due to preceeding operations a greater rounding error than "accuracy" must be assumed.
-		-- CS: refinement required:
-		rounding_error : constant type_float_internal_positive := accuracy * 10.0;
-		
+	
 	begin
 		--put_line ("get intersection");
 		--put_line ("edge 1: " & to_string (edge_1));
@@ -580,34 +575,35 @@ package body et_geometry_2.polygons is
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
 			-- double check: location vectors must match !
-			if get_absolute (get_distance (
-				int_A.intersection.vector, int_B.intersection.vector)) <= rounding_error
-			then 
 			--if int_A.intersection.vector = int_B.intersection.vector then
 				status := EXISTS;
-				intersection.vector := int_A.intersection.vector;
-				intersection.angle := int_A.intersection.angle;
+				--intersection.vector := int_A.intersection.vector;
+				--intersection.angle := int_A.intersection.angle;
 
+				-- CS: return the average of intersection A and B ?
+				intersection.vector := get_average (int_A.intersection.vector, int_B.intersection.vector);
+				intersection.angle := get_average (int_A.intersection.angle, int_B.intersection.angle);
+				
 				--put_line ("intersections match:");
 				--put_line ("int  A: " & to_string (int_A.intersection.vector));
 				--put_line ("int  B: " & to_string (int_B.intersection.vector));
 
-			else
-				put_line ("intersection mismatch:");
-				--put_line ("edge 1: " & to_string (edge_1));
-				--put_line ("edge 2: " & to_string (edge_2));
-				put_line ("int  A: " & to_string (int_A.intersection.vector));
-				put_line ("int  B: " & to_string (int_B.intersection.vector));
+			--else
+				--put_line ("intersection mismatch:");
+				----put_line ("edge 1: " & to_string (edge_1));
+				----put_line ("edge 2: " & to_string (edge_2));
+				--put_line ("int  A: " & to_string (int_A.intersection.vector));
+				--put_line ("int  B: " & to_string (int_B.intersection.vector));
 
-				put_line ("delta : " & to_string (
-					subtract (int_A.intersection.vector, int_B.intersection.vector)));
+				--put_line ("delta : " & to_string (
+					--subtract (int_A.intersection.vector, int_B.intersection.vector)));
 													 
-				raise constraint_error with 
-					"Intersection mismatch: " & to_string (int_A.intersection.vector)
-					& to_string (int_B.intersection.vector);
+				--raise constraint_error with 
+					--"Intersection mismatch: " & to_string (int_A.intersection.vector)
+					--& to_string (int_B.intersection.vector);
 
 				
-			end if;
+			--end if;
 
 		else
 			status := NOT_EXISTENT;
@@ -3225,7 +3221,7 @@ package body et_geometry_2.polygons is
 		polygon_A.edges.iterate (query_A_edge'access);
 
 		remove_redundant_intersections;
-
+		
 		return intersections;
 	end get_intersections;
 
@@ -3499,6 +3495,10 @@ package body et_geometry_2.polygons is
 		delete_regular_before_intersection (vertices);
 
 		replace_entering_leaving_by_regular (vertices);
+
+		-- CS count entering and leaving intersections
+		-- numbers must match. abort if mismatch.
+		
 		return vertices;
 	end get_vertices;
 

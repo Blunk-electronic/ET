@@ -58,6 +58,12 @@ package et_geometry_1 is
 	-- Considers them as equal if their difference is less or equal 
 	-- the constant "accuracy":
 	function "=" (left, right : in type_float_internal) return boolean;
+
+
+	function get_average (
+		f1, f2 : in type_float_internal)
+		return type_float_internal;
+
 	
 	-- Converts a mil number (given as a string) to millimeters.	
 	function mil_to_distance (mil : in string) return type_float_internal;
@@ -92,6 +98,7 @@ package et_geometry_1 is
 
 	--Converts radians to degrees.
 	function to_degrees (radians : in type_float_internal) return type_angle;
+
 
 	
 	
@@ -308,7 +315,10 @@ package et_geometry_1 is
 	unity_vector	: constant type_vector := (others => 1.0);
 
 
-
+	function get_average (
+		v1, v2 : in type_vector)
+		return type_vector;
+	
 	
 	function get_offset (
 		v1, v2 : in type_vector)

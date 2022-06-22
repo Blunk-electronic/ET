@@ -58,6 +58,15 @@ package body et_geometry_1 is
 			return false;
 		end if;
 	end "=";
+
+
+	function get_average (
+		f1, f2 : in type_float_internal)
+		return type_float_internal
+	is begin
+		return (f1 + f2) * 0.5;
+	end get_average;
+
 	
 	--procedure round (
 		--f : in out type_float_internal;
@@ -491,6 +500,19 @@ package body et_geometry_1 is
 			return false;
 		end if;
 	end "=";
+
+
+	function get_average (
+		v1, v2 : in type_vector)
+		return type_vector
+	is 
+		result : type_vector;
+	begin
+		result.x := (v1.x + v2.x) * 0.5;
+		result.y := (v1.y + v2.y) * 0.5;
+		result.z := (v1.z + v2.z) * 0.5;
+		return result;
+	end get_average;
 
 	
 	function get_offset (
