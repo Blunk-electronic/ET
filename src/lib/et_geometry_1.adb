@@ -1259,6 +1259,13 @@ package body et_geometry_1 is
 		return result;
 	end to_line_vector;
 
+
+	function get_length (
+		line : in type_line)
+		return type_float_internal_positive
+	is begin
+		return get_distance_total (line.start_point, line.end_point);
+	end get_length;
 	
 
 	function to_string (

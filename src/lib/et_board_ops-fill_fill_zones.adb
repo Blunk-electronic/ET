@@ -579,7 +579,7 @@ is
 						fragments : pac_islands.list;
 						
 						procedure query_hole (h : in pac_holes_as_polygons.cursor) is
-
+							
 							-- Get the status of the hole relative to the candidate island:
 							intersections : pac_intersections.list := 
 								get_intersections (element (h), type_polygon (element (island_cursor).border));
@@ -592,7 +592,10 @@ is
 						begin
 							case ol_sts is
 								when A_OVERLAPS_B =>
-									declare
+									--put_line ("hole");
+									check_length (element (h));
+									
+									declare										
 										cr : constant type_crop := crop (
 											polygon_A => element (h), -- the hole is cropping !
 											polygon_B => type_polygon (element (island_cursor).border),
@@ -617,6 +620,8 @@ is
 					begin
 						while island_cursor /= pac_islands.no_element loop
 
+							check_length (type_polygon (element (island_cursor).border));
+							
 							iterate (holes, query_hole'access, proceed'access);
 
 							--if not proceed then

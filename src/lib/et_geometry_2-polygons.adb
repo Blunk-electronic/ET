@@ -1028,6 +1028,60 @@ package body et_geometry_2.polygons is
 	
 
 
+	function get_shortest_edge (
+		polygon	: in type_polygon)
+		return pac_edges.cursor
+	is
+		length : type_float_internal_positive := line_length_max;
+		result : pac_edges.cursor; -- to be returned
+
+		procedure query_edge (c : in pac_edges.cursor) is
+			l_tmp : type_float_internal_positive := get_length (element (c));
+		begin
+			if l_tmp < length then
+				length := l_tmp;
+				result := c;
+			end if;
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+		return result;
+	end get_shortest_edge;
+	
+
+
+	function get_shortest_edge (
+		polygon	: in type_polygon)
+		return type_float_internal_positive
+	is begin
+		return get_length (element (get_shortest_edge (polygon)));
+	end get_shortest_edge;
+
+
+	procedure check_length (
+		polygon	: in type_polygon)
+	is 
+		edge_length_min : constant type_float_internal_positive := 1.0E-6;
+		-- CS use constant defined in package spec
+		
+		procedure query_edge (c : in pac_edges.cursor) is
+			l : type_float_internal_positive := get_length (element (c));
+		begin
+			--put_line ("edge length" & to_string (l));
+			
+			if l < edge_length_min then
+				put_line ("WARNING: Edge too short. Length:" & to_string (l));
+				put_line (to_string (element (c)));
+				new_line;
+			end if;
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+	end check_length;
+	
+	
 	--function get_segment_edge (
 		--polygon	: in type_polygon;
 		--point	: in type_point)

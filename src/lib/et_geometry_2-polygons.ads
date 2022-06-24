@@ -54,6 +54,8 @@ package et_geometry_2.polygons is
 
 	type type_edge is new pac_geometry_1.type_line;
 
+	edge_length_min : constant type_float_internal_positive := 0.1;
+	
 	
 	overriding function to_string (
 		edge : in type_edge)
@@ -89,7 +91,7 @@ package et_geometry_2.polygons is
 	procedure move_by (
 		edge		: in out type_edge;
 		direction	: in type_angle;
-		distance	: in type_distance_positive);
+		distance	: in type_distance_positive); -- CS type_float_internal_positive ?
 
 
 
@@ -272,7 +274,25 @@ package et_geometry_2.polygons is
 		return pac_edges.cursor;
 
 
+	-- Returns the cursor to the shortest edge of the given polygon:
+	function get_shortest_edge (
+		polygon	: in type_polygon)
+		return pac_edges.cursor;
 	
+
+	-- Returns the length of the shortest edge of the given polygon:
+	function get_shortest_edge (
+		polygon	: in type_polygon)
+		return type_float_internal_positive;
+
+
+	-- Checks the length of the edges of the given polygon.
+	-- If an edge is shorter than edge_length_min a warning is issued
+	-- to the current output:
+	procedure check_length (
+		polygon	: in type_polygon);
+	
+		
 	-- Returns the cursor to the edge
 	-- where the given point lies on.
 	-- If the given point is a vertex then an

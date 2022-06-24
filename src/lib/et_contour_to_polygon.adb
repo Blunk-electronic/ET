@@ -250,6 +250,7 @@ package body et_contour_to_polygon is
 			end case;			
 		end query_segment;
 		
+		
 	begin
 		if contour.contour.circular then
 
@@ -265,6 +266,9 @@ package body et_contour_to_polygon is
 			-- Iterate the contour segments:
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
+
+
+		-- check edge lengths, remove edges too short ?
 		
 		return result;
 	end to_polygon;

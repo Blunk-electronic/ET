@@ -53,6 +53,8 @@ generic
 package et_geometry_1 is
 
 	accuracy : constant type_float_internal := 1.0E-16;
+
+	function equal (left, right : in type_float_internal) return boolean renames "=";
 	
 	-- Returns true if the given arguments are equal.
 	-- Considers them as equal if their difference is less or equal 
@@ -421,7 +423,7 @@ package et_geometry_1 is
 
 	-- Returns the total distance between the given two location vectors.
 	-- Ignores z of both vectors because this is a 2D world:
-	function get_distance_total (
+	function get_distance_total ( -- CS rename to get_distance_absolute
 		v1 : in type_vector;
 		v2 : in type_vector)
 		return type_float_internal_positive;
@@ -638,6 +640,15 @@ package et_geometry_1 is
 		start_point	: type_vector;
 		end_point	: type_vector;
 	end record;
+
+
+	line_length_max : constant type_float_internal_positive := type_float_internal_positive'last;
+	line_length_min : constant type_float_internal_positive := 1.0E-10; -- CS refine
+
+	
+	function get_length (
+		line : in type_line)
+		return type_float_internal_positive;
 
 	
 	function to_line_vector (
