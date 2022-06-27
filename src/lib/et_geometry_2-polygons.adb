@@ -215,7 +215,8 @@ package body et_geometry_2.polygons is
 			distance := get_distance (edge, iv);
 			--log (text => "delta  :" & type_float_internal'image (distance));
 			
-			if distance > accuracy then
+			--if distance > accuracy then
+			if distance /= 0.0 then
 				--put_line ("wrong direction");
 				
 				-- we went the wrong direction
@@ -266,34 +267,6 @@ package body et_geometry_2.polygons is
 			when others => null;
 		end case;
 
-		---- If the ends of the line are included,
-		---- test whether the point is in the vicinity of the line start or end point.
-		---- Exit this function prematurely in that case.
-		--if line_range = WITH_END_POINTS then
-
-			---- compute distance of point to start of line:
-			--result.distance := get_distance_total (point, line.start_point);
-			
-			--if result.distance <= accuracy then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-
-			--if point = line.start_point then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-				
-
-			---- compute distance of point to end of line:
-			--result.distance := get_distance_total (point, line.end_point);
-			
-			--if result.distance <= accuracy then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-
-		--end if;
 		
 		-- Compute the distance from the given point to the given line.
 		-- This computation does not care about end or start point of the line.
@@ -329,7 +302,9 @@ package body et_geometry_2.polygons is
 			return result; -- no more computations required
 		end if;
 		
+		
 		if lambda_forward = 0.0 then -- iv points TO start point of line
+		--if equal (lambda_forward, 0.0) then -- iv points TO start point of line
 			--put_line ("on start point");
 			case line_range is
 				when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -358,6 +333,7 @@ package body et_geometry_2.polygons is
 		end if;
 
 		if lambda_backward = 0.0 then -- iv points TO end point of line
+		--if equal (lambda_backward, 0.0) then -- iv points TO end point of line
 			--put_line ("on end point");
 			case line_range is
 				when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -569,8 +545,16 @@ package body et_geometry_2.polygons is
 		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
 			--status := NOT_EXISTENT;
 
+		-- CS: Safety measure:
+		if int_A.status = OVERLAP xor int_B.status = OVERLAP then
+			raise constraint_error;
+		end if;
+
+		
 		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
+		--if int_A.status = OVERLAP or int_B.status = OVERLAP then
 			status := OVERLAP;
+
 			
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 

@@ -48,7 +48,25 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_1 is
 
+	--function is_zero (f : in type_float_internal) return boolean is begin
+		--if equal (f, 0.0) then
+			--return true;
+		--else 
+			--return false;
+		--end if;
+	--end is_zero;
 
+
+	--function is_not_zero (f : in type_float_internal) return boolean is begin
+		--if not equal (f, 0.0) then
+			--return true;
+		--else 
+			--return false;
+		--end if;
+	--end is_not_zero;
+
+	
+	
 	function "=" (left, right : in type_float_internal) return boolean is begin
 		--put_line ("=" & to_string (abs (left - right)));
 
@@ -699,15 +717,22 @@ package body et_geometry_1 is
 		-- But we must skip the case when
 		-- a division by zero is ahead.
 		if b.x /= 0.0 then
+		--if is_not_zero (b.x) then
 			lambda := a.x / b.x;
+			
 		elsif b.y /= 0.0 then
+		--elsif is_not_zero (b.y) then
 			lambda := a.y / b.y;
+			
 		elsif b.z /= 0.0 then
+		--elsif is_not_zero (b.z) then
 			lambda := a.z / b.z;
+			
 		else
 			put_line ("ERROR while vector division ");
 		end if;
-		
+
+		-- CS divide all components and take the average of all lambdas ?
 		return lambda;
 	end divide;
 

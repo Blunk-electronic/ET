@@ -55,6 +55,9 @@ package et_geometry_1 is
 	accuracy : constant type_float_internal := 1.0E-16;
 
 	function equal (left, right : in type_float_internal) return boolean renames "=";
+
+	--function is_zero (f : in type_float_internal) return boolean;
+	--function is_not_zero (f : in type_float_internal) return boolean;
 	
 	-- Returns true if the given arguments are equal.
 	-- Considers them as equal if their difference is less or equal 

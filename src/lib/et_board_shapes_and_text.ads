@@ -86,8 +86,8 @@ package et_board_shapes_and_text is
 
 -- FAB RELEVANT
 
-	fab_tolerance : constant type_distance_positive := 0.001;
-	--fab_tolerance : constant type_distance_positive := 0.01;
+	--fab_tolerance : constant type_distance_positive := 0.001;
+	fab_tolerance : constant type_distance_positive := 0.01;
 	
 	
 	text_parameters_fab : constant type_text_parameters := (
