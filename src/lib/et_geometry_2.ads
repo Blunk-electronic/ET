@@ -2052,7 +2052,7 @@ private
 			y => type_position_axis'first);
 	
 
-	type type_distance_point_line is record
+	type type_distance_point_line is record -- CS move to et_geometry_1
 		sits_on_start	: boolean := false;
 		sits_on_end		: boolean := false;
 		out_of_range	: boolean := true;
@@ -2063,7 +2063,7 @@ private
 		--intersection	: type_point := origin; -- CS type_vector ?
 		intersection	: type_vector := null_vector;
 		distance		: type_float_internal := 0.0; -- CS type_float_internal_positive ?
-		direction		: type_angle := 0.0;
+		direction		: type_angle := 0.0; -- CS no need ?
 	end record;
 
 	

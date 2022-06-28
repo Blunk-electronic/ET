@@ -381,6 +381,11 @@ package et_geometry_1 is
 		return type_float_internal;
 
 
+	function get_sum_of_squared_components (
+		vector	: in type_vector)
+		return type_float_internal;
+
+	
 	-- Compares two location vectors by their distance to the origin:
 	function "<" (
 		left, right : in type_vector) 

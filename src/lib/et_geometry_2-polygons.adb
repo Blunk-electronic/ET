@@ -198,44 +198,66 @@ package body et_geometry_2.polygons is
 		line_direction_vector : constant type_vector := to_line_vector (edge).v_direction;
 		line_start_vector, line_end_vector : type_vector;
 
-		iv : type_vector;
+		iv : type_vector renames result.intersection;
 
-		procedure compute_intersection is 
-			distance : type_float_internal;
-		begin
-			-- Compute the point of intersection: The intersection of a line that runs
-			-- from the given location vector perpendicular to the given line.
-			-- For the moment we do not know which direction to go. So we just try
-			-- to go in 90 degree direction. If the distance from iv to the line
-			-- is not zero, then we try in -90 degree direction.
-
-			iv := vector;
-			move_by (iv, line_direction + 90.0, result.distance);
-
-			distance := get_distance (edge, iv);
-			--log (text => "delta  :" & type_float_internal'image (distance));
-			
-			--if distance > accuracy then
-			if distance /= 0.0 then
-				--put_line ("wrong direction");
-				
-				-- we went the wrong direction
-				iv := vector; -- restore iv
-
-				-- try opposite direction:
-				move_by (iv, line_direction - 90.0, result.distance);
-			end if;
-
-			--put_line ("iv" & to_string (iv));
-			
-			-- Assign the direction (from point to intersection) to the result:
-			result.direction := get_angle (get_distance (vector, iv));
-			--put_line ("direction" & to_string (result.direction));
-
-			-- Assign the virtual point of intersection to the result:
-			result.intersection := iv;
-		end compute_intersection;
 		
+		--procedure compute_intersection is 
+			--distance : type_float_internal;
+		--begin
+			---- Compute the point of intersection: The intersection of a line that runs
+			---- from the given location vector perpendicular to the given line.
+			---- For the moment we do not know which direction to go. So we just try
+			---- to go in 90 degree direction. If the distance from iv to the line
+			---- is not zero, then we try in -90 degree direction.
+
+			--iv := vector;
+			--move_by (iv, line_direction + 90.0, result.distance);
+
+			--distance := get_distance (edge, iv);
+			----log (text => "delta  :" & type_float_internal'image (distance));
+			
+			----if distance > accuracy then
+			--if distance /= 0.0 then
+				----put_line ("wrong direction");
+				
+				---- we went the wrong direction
+				--iv := vector; -- restore iv
+
+				---- try opposite direction:
+				--move_by (iv, line_direction - 90.0, result.distance);
+			--end if;
+
+			----put_line ("iv" & to_string (iv));
+			
+			---- Assign the direction (from point to intersection) to the result:
+			--result.direction := get_angle (get_distance (vector, iv));
+			----put_line ("direction" & to_string (result.direction));
+
+			---- Assign the virtual point of intersection to the result:
+			--result.intersection := iv;
+		--end compute_intersection;
+
+
+		-- Computes the point of intersection: The intersection of a line that runs
+		-- from the given location vector perpendicular to the given line:
+		procedure compute_intersection is
+			SE : constant type_vector := get_displacement (edge.start_point, edge.end_point);
+			SV : constant type_vector := get_displacement (edge.start_point, vector);
+			SI : type_vector;
+			dp : type_float_internal;
+			sum : type_float_internal_positive;
+		begin
+			dp := dot_product (SE, SV);
+			sum := get_sum_of_squared_components (SE);
+			result.intersection := add (edge.start_point, scale (SE, dp / sum));
+			--iv := result.intersection;
+
+			--CS no need ?
+			result.direction := get_angle (get_distance (vector, result.intersection));
+			
+		end compute_intersection;
+
+			
 		lambda_forward, lambda_backward : type_float_internal;
 	begin
 		--put_line ("line direction vector: " & to_string (line_direction_vector));

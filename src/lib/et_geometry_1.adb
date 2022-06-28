@@ -652,6 +652,19 @@ package body et_geometry_1 is
 	end get_absolute;
 
 
+	function get_sum_of_squared_components (
+		vector	: in type_vector)
+		return type_float_internal
+	is begin
+		return (
+			vector.x * vector.x + 
+			vector.y * vector.y +
+			vector.z * vector.z);
+
+	end get_sum_of_squared_components;
+
+	
+
 	function "<" (
 		left, right : in type_vector) 
 		return boolean
