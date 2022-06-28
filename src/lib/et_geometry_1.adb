@@ -67,10 +67,11 @@ package body et_geometry_1 is
 
 	
 	
-	function "=" (left, right : in type_float_internal) return boolean is begin
-		--put_line ("=" & to_string (abs (left - right)));
-
+	function "=" (left, right : in type_float_internal) return boolean is 
+		--d : type_float_internal := abs (left - right);
+	begin
 		if abs (left - right) <= accuracy then
+		--if less_than (d, accuracy) then
 			return true;
 		else
 			return false;
@@ -78,6 +79,28 @@ package body et_geometry_1 is
 	end "=";
 
 
+	--function "<" (left, right : in type_float_internal) return boolean is 
+		--lower_limit : type_float_internal := right - accuracy;
+	--begin
+		--if less_than (left, lower_limit) then
+			--return true;
+		--else
+			--return false;
+		--end if;
+	--end "<";
+
+
+	--function ">" (left, right : in type_float_internal) return boolean is
+		--upper_limit : type_float_internal := right + accuracy;
+	--begin
+		--if greater_than (left, upper_limit) then
+			--return true;
+		--else
+			--return false;
+		--end if;
+	--end ">";
+
+	
 	function get_average (
 		f1, f2 : in type_float_internal)
 		return type_float_internal

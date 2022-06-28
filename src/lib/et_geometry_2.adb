@@ -4232,7 +4232,8 @@ package body et_geometry_2 is
 
 		result.greatest_x := result.greatest_x + half_width;
 		result.greatest_y := result.greatest_y + half_width;
-		
+
+		--put_line (to_string (result));
 		return result;
 	end get_boundaries;
 

@@ -149,11 +149,13 @@ procedure crop is
 			-- CS set winding ?
 			A := to_polygon (C, fab_tolerance);
 			--put_line ("A: " & to_string (A));
+			--put_line ("A shortest edge: " & to_string (get_shortest_edge (A)));
 
 			C := type_contour (to_contour (to_string (set(i).B)));
 			-- CS set winding ?
 			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
+			--put_line ("B shortest edge: " & to_string (get_shortest_edge (B)));
 
 			set (i).result_actual := crop (A, B);
 

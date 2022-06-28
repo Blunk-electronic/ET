@@ -3445,8 +3445,100 @@ package body et_geometry_2.polygons is
 		vertices := result;
 	end replace_entering_leaving_by_regular;
 
-	
 
+
+	-- Replaces two successive vertices which meet these criterions:
+	-- - having same position
+	-- - the first is leaving
+	-- - the second is entering
+	procedure replace_leaving_entering_by_regular (
+		vertices : in out pac_vertices.list)
+	is
+		c : pac_vertices.cursor := vertices.first;
+		replace, skip : boolean := false;
+		result : pac_vertices.list;
+
+		function is_to_be_replaced (v1, v2 : in pac_vertices.cursor) return boolean is begin
+			if element (v1).position = element (v2).position
+			and is_leaving (v1) and is_entering (v2) then
+				return true;
+			else
+				return false;
+			end if;
+		end is_to_be_replaced;
+			
+	begin
+		while c /= pac_vertices.no_element loop
+			replace := false;
+			skip := false;
+			
+			if c = vertices.last then
+				if is_to_be_replaced (c, vertices.first) then
+					replace := true;
+				end if;
+				
+			else
+				if is_to_be_replaced (c, next (c)) then
+					replace := true;
+					skip := true;
+				end if;			
+			end if;
+
+			
+			if replace then
+				result.append ((
+					category	=> REGULAR,
+					position	=> element (c).position,
+					location	=> ON_VERTEX));
+			else
+				result.append (element (c));
+			end if;
+
+			
+			if skip then
+				next (c);
+			end if;
+			
+			next (c);
+		end loop;
+
+		vertices := result;
+	end replace_leaving_entering_by_regular;
+	
+	-- CS combine replace_entering_leaving_by_regular and replace_leaving_entering_by_regular
+	-- add argument that controls the order
+
+
+	procedure compare_number_entering_leaving (
+		vertices : in pac_vertices.list)
+	is
+		ct_leaving, ct_entering : count_type := 0;
+
+		
+		procedure query_vertex (v : in pac_vertices.cursor) is begin
+			if element (v).category = INTERSECTION then
+				case element (v).direction is
+					when ENTERING =>
+						ct_entering := ct_entering + 1;
+
+					when LEAVING =>
+						ct_leaving := ct_leaving + 1;
+				end case;
+			end if;
+		end query_vertex;
+
+		
+	begin
+		vertices.iterate (query_vertex'access);
+
+		if ct_entering /= ct_leaving then
+			put_line ("WARNING: Mismatch. Found" & count_type'image (ct_entering) 
+				& " entering and" & count_type'image (ct_leaving)
+				& " leaving vertices ! ");
+		end if;
+	end compare_number_entering_leaving;
+	
+		
 	function get_vertices (
 		polygon_primary		: in type_polygon;
 		polygon_secondary	: in type_polygon;
@@ -3533,9 +3625,11 @@ package body et_geometry_2.polygons is
 		delete_regular_before_intersection (vertices);
 
 		replace_entering_leaving_by_regular (vertices);
-
+		replace_leaving_entering_by_regular (vertices);
+		
 		-- CS count entering and leaving intersections
 		-- numbers must match. abort if mismatch.
+		compare_number_entering_leaving (vertices);
 		
 		return vertices;
 	end get_vertices;
