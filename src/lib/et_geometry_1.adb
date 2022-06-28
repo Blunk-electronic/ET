@@ -1624,6 +1624,46 @@ package body et_geometry_1 is
 		return result;
 	end to_arc;
 
+
+
+-- DISTANCE POINT TO LINE
+
+	function out_of_range (d : in type_distance_point_line) return boolean is begin
+		return d.out_of_range;
+	end out_of_range;
+
+	
+	function get_distance (d : in type_distance_point_line) 
+		return type_float_internal
+	is begin
+		return d.distance;
+	end get_distance;
+
+	
+	function get_intersection (d : in type_distance_point_line) 
+		return type_vector 
+	is begin
+		return d.intersection;
+	end get_intersection;
+
+	
+	function get_direction (
+		d : in type_distance_point_line) 
+		return type_angle 
+	is begin
+		return d.direction;
+	end get_direction;
+
+	
+	function on_start_point (d : in type_distance_point_line) return boolean is begin
+		return d.sits_on_start;
+	end on_start_point;
+
+	
+	function on_end_point (d : in type_distance_point_line) return boolean is begin
+		return d.sits_on_end;
+	end on_end_point;
+
 	
 end et_geometry_1;
 

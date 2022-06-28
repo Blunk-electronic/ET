@@ -808,7 +808,46 @@ package et_geometry_1 is
 	
 
 
+-- DISTANCE POINT TO LINE
 
+	
+	type type_distance_point_line is record -- CS make private ?
+		sits_on_start	: boolean := false;
+		sits_on_end		: boolean := false;
+		out_of_range	: boolean := true;
+
+		-- A virtual line runs from the given point perpendicular
+		-- to the given line. This is where the virtual line intersects
+		-- the given line:
+		intersection	: type_vector := null_vector;
+		distance		: type_float_internal := 0.0; -- CS type_float_internal_positive ?
+		direction		: type_angle := 0.0; -- CS no need ?
+	end record;
+
+
+	
+	-- These functions return the components of the given type_distance_point_line:
+	function out_of_range (d : in type_distance_point_line) return boolean;
+
+	
+	function get_distance (d : in type_distance_point_line) 
+		return type_float_internal;
+
+	
+	function get_intersection (d : in type_distance_point_line) 
+		return type_vector;
+
+	
+	function get_direction (
+		d : in type_distance_point_line) 
+		return type_angle;
+
+	
+	function on_start_point (d : in type_distance_point_line) return boolean;
+	function on_end_point (d : in type_distance_point_line) return boolean;
+	
+
+	
 	
 private
 	
@@ -816,6 +855,9 @@ private
 		absolute: type_float_internal_positive := 0.0;
 		angle	: type_angle := 0.0;
 	end record;
+
+
+
 	
 end et_geometry_1;
 

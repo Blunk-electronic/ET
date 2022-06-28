@@ -152,7 +152,7 @@ package et_geometry is
 
 
 	
-	-- LINE BENDING -------
+-- LINE BENDING -------
 
 	type type_bend_style is (
 		STRAIGTH_THEN_ANGLED,
@@ -164,6 +164,15 @@ package et_geometry is
 
 	type type_bended is (NO, YES);
 	
+
+
+-- DISTANCE POINT TO LINE
+	
+	type type_line_range is (
+		BETWEEN_END_POINTS,	-- start and end point excluded
+		WITH_END_POINTS,	-- start and end point included
+		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
+		);
 	
 end et_geometry;
 

@@ -2995,9 +2995,10 @@ package body et_kicad_to_native is
 					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
 
 					use et_coordinates;
+					use pac_geometry_sch;
 					use pac_geometry_2;
 					
-					dist : pac_geometry_2.type_distance_point_line;
+					dist : pac_geometry_sch.type_distance_point_line;
 
 					terminal : et_devices.type_terminal;
 				begin
@@ -3031,14 +3032,13 @@ package body et_kicad_to_native is
 
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
-								type type_line_scratch is new pac_geometry_2.type_line with null record;
-								line : type_line_scratch := (
+								line : pac_geometry_2.type_line := (
 									start_point	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
 									end_point	=> et_kicad_coordinates.get_point (segment.coordinates_end));
 							begin
 								dist := pac_geometry_2.get_distance (
 									point 		=> et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates),
-									line 		=> type_line (line),
+									line 		=> line,
 									line_range	=> WITH_END_POINTS);
 							end;
 							

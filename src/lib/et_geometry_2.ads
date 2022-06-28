@@ -893,38 +893,6 @@ package et_geometry_2 is
 
 
 
--- DISTANCE POINT TO LINE
-	
-	type type_distance_point_line is private;
-
-	
-	-- These functions return the components of the given type_distance_point_line:
-	function out_of_range (d : in type_distance_point_line) return boolean;
-
-	
-	function get_distance (d : in type_distance_point_line) 
-		return type_float_internal;
-
-	
-	function get_intersection (d : in type_distance_point_line) 
-		return type_vector;
-
-	
-	function get_direction (
-		d : in type_distance_point_line) 
-		return type_angle;
-
-	
-	function on_start_point (d : in type_distance_point_line) return boolean;
-	function on_end_point (d : in type_distance_point_line) return boolean;
-	
-	type type_line_range is (
-		BETWEEN_END_POINTS,	-- start and end point excluded
-		WITH_END_POINTS,	-- start and end point included
-		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
-		);
-
-	
 	
 	-- Computes the shortest distance (perpendicular) of a 
 	-- location vector to a line. 
@@ -1660,22 +1628,6 @@ private
 	far_lower_right : constant type_point :=
 		(x => type_position_axis'last,
 			y => type_position_axis'first);
-	
-
-	type type_distance_point_line is record -- CS move to et_geometry_1
-		sits_on_start	: boolean := false;
-		sits_on_end		: boolean := false;
-		out_of_range	: boolean := true;
-
-		-- A virtual line runs from the given point perpendicular
-		-- to the given line. This is where the virtual line intersects
-		-- the given line:
-		--intersection	: type_point := origin; -- CS type_vector ?
-		intersection	: type_vector := null_vector;
-		distance		: type_float_internal := 0.0; -- CS type_float_internal_positive ?
-		direction		: type_angle := 0.0; -- CS no need ?
-	end record;
-
 	
 	
 	origin_zero_rotation : constant type_position := (others => <>);
