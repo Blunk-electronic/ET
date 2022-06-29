@@ -793,7 +793,8 @@ package et_geometry_1 is
 		line : in type_line)
 		return type_boundaries;
 
-	
+
+	-- Moves a line into given direction by given distance:
 	procedure move_by (
 		line		: in out type_line;
 		direction	: in type_angle;

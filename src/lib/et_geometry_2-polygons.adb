@@ -63,28 +63,7 @@ package body et_geometry_2.polygons is
 	end to_string;
 	
 
-	function to_edge (
-		line : in type_line)
-		return type_edge
-	is
-		result : type_edge;
-	begin
-		result.start_point := to_vector (line.start_point);
-		result.end_point := to_vector (line.end_point);
-		return result;
-	end to_edge;
-	
 
-	function to_line (
-		edge : in type_edge)
-		return type_line
-	is
-		result : type_line;
-	begin
-		result.start_point := to_point (edge.start_point);
-		result.end_point := to_point (edge.end_point);
-		return result;
-	end to_line;
 	
 
 	

@@ -62,15 +62,6 @@ package et_geometry_2.polygons is
 		return string;
 
 	
-	function to_edge (
-		line : in type_line)
-		return type_edge;
-
-	
-	function to_line (
-		edge : in type_edge)
-		return type_line;
-	
 
 
 

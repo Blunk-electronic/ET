@@ -52,6 +52,16 @@ package et_contour_to_polygon is
 	use pac_edges;
 
 
+	function to_edge (
+		line : in type_line)
+		return type_edge;
+
+	
+	function to_line (
+		edge : in type_edge)
+		return type_line;
+
+	
 	-- Converts an arc to a list of edges.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
