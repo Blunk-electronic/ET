@@ -75,6 +75,8 @@ package body et_geometry_2.polygons.offsetting is
 		offset		: in type_distance;
 		debug		: in boolean := false) 
 	is
+		offset_float : constant type_float_internal_positive := type_float_internal (abs (offset));
+		
 		-- Mode tells whether we are shrinking, expanding
 		-- or whether there is nothing to do:
 		mode : constant type_mode := to_mode (offset);	
@@ -97,11 +99,11 @@ package body et_geometry_2.polygons.offsetting is
 			-- These two procedures move the edge_new to the right or
 			-- to the left (seen relative to the edge direction):
 			procedure move_right is begin
-				move_by (edge_new, add (edge_direction, -90.0), abs (offset));
+				move_by (edge_new, add (edge_direction, -90.0), offset_float);
 			end move_right;
 
 			procedure move_left is begin
-				move_by (edge_new, add (edge_direction, +90.0), abs (offset));
+				move_by (edge_new, add (edge_direction, +90.0), offset_float);
 			end move_left;
 			
 		begin

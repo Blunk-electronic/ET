@@ -61,27 +61,6 @@ package body et_geometry_2.polygons is
 			& to_string (edge.end_point);
 			--& to_string (edge.end_point.y);
 	end to_string;
-	
-
-
-	
-
-	
-	procedure move_by (
-		edge		: in out type_edge;
-		direction	: in type_angle;
-		distance	: in type_distance_positive)
-	is begin
-		move_by (
-			v 			=> edge.start_point, 
-			direction	=> direction, 
-			distance	=> type_float_internal_positive (distance));
-
-		move_by (
-			v 			=> edge.end_point, 
-			direction	=> direction, 
-			distance	=> type_float_internal_positive (distance));
-	end move_by;
 
 
 

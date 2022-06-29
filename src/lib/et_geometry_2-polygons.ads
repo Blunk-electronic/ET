@@ -64,15 +64,6 @@ package et_geometry_2.polygons is
 	
 
 
-
-	-- Moves an edge in the given direction by the given distance:
-	procedure move_by (
-		edge		: in out type_edge;
-		direction	: in type_angle;
-		distance	: in type_distance_positive); -- CS type_float_internal_positive ?
-
-
-
 	type type_nearest is (BEFORE, AFTER);
 	
 	-- Returns the nearest point after/before
