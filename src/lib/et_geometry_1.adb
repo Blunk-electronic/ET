@@ -2020,7 +2020,7 @@ package body et_geometry_1 is
 
 		--put_line ("on line distance: " & to_string (distance.distance));
 		
-		if not distance.out_of_range and distance.distance < accuracy then
+		if not distance.out_of_range and distance.distance = 0.0 then
 			return true;
 		else
 			return false;
@@ -2042,8 +2042,7 @@ package body et_geometry_1 is
 		-- The intersection may be betweeen the start and end point of the given line.
 		-- The intersection may be virtual, before start or after end point 
 		-- of the given line.
-		
-		--line_direction : constant type_angle := get_direction (line);
+	
 		line_direction_vector : constant type_vector := to_line_vector (line).v_direction;
 		line_start_vector, line_end_vector : type_vector;
 
@@ -2062,8 +2061,6 @@ package body et_geometry_1 is
 			dp := dot_product (SE, SV);
 			sum := get_sum_of_squared_components (SE);
 			result.intersection := add (line.start_point, scale (SE, dp / sum));
-			--iv := result.intersection;
-			
 		end compute_intersection;
 
 			
