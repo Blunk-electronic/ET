@@ -1306,6 +1306,96 @@ package body et_geometry_1 is
 
 
 
+	
+-- BOUNDARIES
+
+	function to_string (boundaries : in type_boundaries) return string is begin
+		return "boundaries: SX:" & to_string (boundaries.smallest_x) 
+			& " / GX:" & to_string (boundaries.greatest_x)
+			& " / SY:" & to_string (boundaries.smallest_y)
+			& " / GY:" & to_string (boundaries.greatest_y);
+	end;
+	
+
+	function get_height (boundaries : in type_boundaries)
+		return type_float_internal_positive
+	is begin
+		return boundaries.greatest_y - boundaries.smallest_y;
+	end get_height;
+
+	
+	function get_width (boundaries : in type_boundaries)
+		return type_float_internal_positive
+	is begin
+		return boundaries.greatest_x - boundaries.smallest_x;
+	end get_width;
+
+
+	function intersect (
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
+		return boolean
+	is begin
+		if	b2.greatest_x > b1.smallest_x
+		and b2.smallest_x < b1.greatest_x
+		then -- boundaries intersect in x-direction
+
+			if	b2.greatest_y > b1.smallest_y
+			and b2.smallest_y < b1.greatest_y
+			then -- boundaries intersect in y-direction
+				return true;
+			else
+				return false;
+			end if;
+			
+		else
+			return false;
+		end if;
+		
+	end intersect;
+	
+
+	function get_intersection (
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
+		return type_boundaries_intersection
+	is
+		i : type_boundaries;
+	begin
+		if intersect (b1, b2) then
+
+			--log (text => "b1" & to_string (b1));
+			--log (text => "b2" & to_string (b2));
+			
+			i.smallest_x := get_greatest (b1.smallest_x, b2.smallest_x);
+			i.greatest_x := get_smallest (b1.greatest_x, b2.greatest_x);
+
+			i.smallest_y := get_greatest (b1.smallest_y, b2.smallest_y);
+			i.greatest_y := get_smallest (b1.greatest_y, b2.greatest_y);
+
+			--log (text => "b " & to_string (i));
+			
+			return (exists => true, intersection => i);
+		else
+			return (exists => false);
+		end if;
+	end get_intersection;
+
+
+	
+	-- Adds two boundaries.
+	procedure add (
+		b1 : in out type_boundaries;
+		b2 : in type_boundaries) 
+	is begin
+-- 			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
+-- 			greatest_x, greatest_y : type_distance := type_distance'first;
+		null; -- CS
+	end; 
+
+	
+
+	
 	function to_line_vector (
 		line : in type_line)
 		return type_line_vector
@@ -1430,44 +1520,44 @@ package body et_geometry_1 is
 	end get_direction;
 
 
-	--function get_boundaries (
-		--line	: in type_line)
-		--return type_boundaries
-	--is 
-		--result : type_boundaries;
-	--begin
-		---- X axis
-		--if line.start_point.x = line.end_point.x then -- both ends on a vertical line
+	function get_boundaries (
+		line : in type_line)
+		return type_boundaries
+	is 
+		result : type_boundaries;
+	begin
+		-- X axis
+		if line.start_point.x = line.end_point.x then -- both ends on a vertical line
 
-			--result.smallest_x := line.start_point.x;
-			--result.greatest_x := line.start_point.x;
+			result.smallest_x := line.start_point.x;
+			result.greatest_x := line.start_point.x;
 			
-		--elsif line.start_point.x < line.end_point.x then
+		elsif line.start_point.x < line.end_point.x then
 			
-			--result.smallest_x := line.start_point.x;
-			--result.greatest_x := line.end_point.x;
-		--else
-			--result.smallest_x := line.end_point.x;
-			--result.greatest_x := line.start_point.x;
-		--end if;
+			result.smallest_x := line.start_point.x;
+			result.greatest_x := line.end_point.x;
+		else
+			result.smallest_x := line.end_point.x;
+			result.greatest_x := line.start_point.x;
+		end if;
 
-		---- Y axis
-		--if line.start_point.y = line.end_point.y then -- both ends on a horizontal line
+		-- Y axis
+		if line.start_point.y = line.end_point.y then -- both ends on a horizontal line
 
-			--result.smallest_y := line.start_point.y;
-			--result.greatest_y := line.start_point.y;
+			result.smallest_y := line.start_point.y;
+			result.greatest_y := line.start_point.y;
 			
-		--elsif line.start_point.y < line.end_point.y then
+		elsif line.start_point.y < line.end_point.y then
 			
-			--result.smallest_y := line.start_point.y;
-			--result.greatest_y := line.end_point.y;
-		--else
-			--result.smallest_y := line.end_point.y;
-			--result.greatest_y := line.start_point.y;
-		--end if;
+			result.smallest_y := line.start_point.y;
+			result.greatest_y := line.end_point.y;
+		else
+			result.smallest_y := line.end_point.y;
+			result.greatest_y := line.start_point.y;
+		end if;
 		
-		--return result;
-	--end get_boundaries;
+		return result;
+	end get_boundaries;
 
 
 	

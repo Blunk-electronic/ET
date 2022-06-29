@@ -827,7 +827,7 @@ package body et_text is
 		
 		function get_boundaries (
 			text	: in type_vector_text)
-			return pac_geometry_2.type_boundaries
+			return pac_geometry_1.type_boundaries
 		is begin
 			return text.boundaries;
 		end get_boundaries;

@@ -50,6 +50,7 @@ procedure fill_fill_zones (
 	log_threshold	: in type_log_level;
 	nets 			: in pac_net_names.list := no_net_names)
 is 
+	use pac_geometry_brd;
 	use pac_polygons;
 	use pac_polygon_clipping;
 	use pac_polygon_cropping;
@@ -763,7 +764,7 @@ is
 				boundaries : type_boundaries;
 
 				-- The total height of the polygon:
-				height : pac_geometry_brd.type_float_internal_positive;
+				height : type_float_internal_positive;
 				
 			begin
 				while zone_cursor /= pac_route_hatched.no_element loop

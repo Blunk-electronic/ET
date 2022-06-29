@@ -171,48 +171,6 @@ package body et_geometry_2.polygons is
 
 	
 	
-	function get_boundaries (
-		edge	: in type_edge)
-		return type_boundaries
-	is 
-		result : type_boundaries;
-	begin
-		-- X axis
-		if edge.start_point.x = edge.end_point.x then -- both ends on a vertical line
-
-			result.smallest_x := edge.start_point.x;
-			result.greatest_x := edge.start_point.x;
-			
-		elsif edge.start_point.x < edge.end_point.x then
-			
-			result.smallest_x := edge.start_point.x;
-			result.greatest_x := edge.end_point.x;
-		else
-			result.smallest_x := edge.end_point.x;
-			result.greatest_x := edge.start_point.x;
-		end if;
-
-		-- Y axis
-		if edge.start_point.y = edge.end_point.y then -- both ends on a horizontal line
-
-			result.smallest_y := edge.start_point.y;
-			result.greatest_y := edge.start_point.y;
-			
-		elsif edge.start_point.y < edge.end_point.y then
-			
-			result.smallest_y := edge.start_point.y;
-			result.greatest_y := edge.end_point.y;
-		else
-			result.smallest_y := edge.end_point.y;
-			result.greatest_y := edge.start_point.y;
-		end if;
-
-		
-		return result;
-	end get_boundaries;
-
-	
-	
 	procedure iterate (
 		edges	: in pac_edges.list;
 		process	: not null access procedure (position : in pac_edges.cursor);

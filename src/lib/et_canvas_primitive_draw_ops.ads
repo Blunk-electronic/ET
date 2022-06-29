@@ -103,7 +103,7 @@ package pac_draw is
 	
 	function make_bounding_box (
 		height		: in pac_geometry_1.type_float_internal;
-		boundaries	: in pac_geometry_2.type_boundaries)
+		boundaries	: in pac_geometry_1.type_boundaries)
 		return type_bounding_box;
 
 	

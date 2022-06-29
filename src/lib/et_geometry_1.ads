@@ -647,6 +647,69 @@ package et_geometry_1 is
 
 
 
+-- BOUNDARIES:
+	
+	-- The area (a rectangular box around an object)
+	-- occupied by the object.
+	-- The boundaries are always relative to a certain origin that
+	-- sits somewhere inside the rectangular box. 
+	type type_boundaries is record
+		smallest_x, smallest_y : type_float_internal := type_float_internal'last;
+		greatest_x, greatest_y : type_float_internal := type_float_internal'first;
+		distance_of_topleft_to_default : type_float_internal := 0.0;
+	end record;
+
+	function to_string (boundaries : in type_boundaries) return string;
+	
+	--boundaries_default : constant type_boundaries := (others => <>);
+
+
+	-- Returns the height of the given boundaries by
+	-- calculating boundaries.greatest_y - boundaries.smallest_y:
+	function get_height (boundaries : in type_boundaries)
+		return type_float_internal_positive;
+
+	
+	-- Returns the width of the given boundaries by
+	-- calculating boundaries.greatest_x - boundaries.smallest_x:
+	function get_width (boundaries : in type_boundaries)
+		return type_float_internal_positive;
+
+	
+	-- Returns true if the given boundaries intersect each other.
+	-- Returns false if boundaries do not intersect and if they
+	-- touch each other:
+	function intersect (
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
+		return boolean;
+
+
+	type type_boundaries_intersection (exists : boolean := true) is record
+		case exists is
+			when TRUE => intersection : type_boundaries;
+			when FALSE => null;
+		end case;
+	end record;
+
+	
+	-- Returns the intersection area (german: Schnittmenge) of two
+	-- boundaries. If the boundaries do not overlap each other
+	-- then a constraint error is raised:
+	function get_intersection (
+		b1 : in type_boundaries;
+		b2 : in type_boundaries)
+		return type_boundaries_intersection;
+
+	
+	-- Adds two boundaries.
+	procedure add (
+		b1 : in out type_boundaries;
+		b2 : in type_boundaries);
+
+
+
+	
 
 -- LINE
 	
@@ -725,10 +788,10 @@ package et_geometry_1 is
 		return type_angle;
 	
 
-	---- Returns the boundaries of a line:
-	--function get_boundaries (
-		--line : in type_line)
-		--return type_boundaries;
+	-- Returns the boundaries of a line:
+	function get_boundaries (
+		line : in type_line)
+		return type_boundaries;
 
 	
 	procedure move_by (

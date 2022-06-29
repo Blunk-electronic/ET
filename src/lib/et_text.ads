@@ -916,7 +916,7 @@ package et_text is
 		-- Returns the boundaries of the given vector text:		
 		function get_boundaries (
 			text	: in type_vector_text)
-			return pac_geometry_2.type_boundaries;
+			return pac_geometry_1.type_boundaries;
 
 
 		
@@ -924,7 +924,7 @@ package et_text is
 		type type_vector_text is record
 			lines		: pac_vector_text_lines.list;
 			width		: pac_geometry_2.type_distance_positive := 0.0; -- CS use lower limit ?
-			boundaries	: pac_geometry_2.type_boundaries;
+			boundaries	: pac_geometry_1.type_boundaries;
 		end record;
 		
 	end generic_pac_text;

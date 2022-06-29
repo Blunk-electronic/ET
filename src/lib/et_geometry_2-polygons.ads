@@ -105,10 +105,6 @@ package et_geometry_2.polygons is
 		y_th : in type_float_internal)
 		return boolean;
 	
-	
-	function get_boundaries (
-		edge	: in type_edge)
-		return type_boundaries;
 
 
 	
