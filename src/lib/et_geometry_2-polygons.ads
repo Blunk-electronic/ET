@@ -72,19 +72,6 @@ package et_geometry_2.polygons is
 		return type_line;
 	
 
-	-- Returns the point on the given edge
-	-- that is right between its start and end point:
-	function get_center (
-		edge : in type_edge)
-		return type_vector;
-
-	
-	-- Returns the direction in degrees of a line.
-	-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
-	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
-	function get_direction (
-		edge : in type_edge)
-		return type_angle;
 
 
 	-- Moves an edge in the given direction by the given distance:
@@ -93,39 +80,6 @@ package et_geometry_2.polygons is
 		direction	: in type_angle;
 		distance	: in type_distance_positive); -- CS type_float_internal_positive ?
 
-
-
-	-- Computes the distance between a location vector and a line.
-	-- This computation does not care about end or start point of the line.
-	-- It assumes an indefinite long line without start or end point.
-	function get_distance (
-		edge	: in type_edge;
-		vector	: in type_vector)
-		return type_float_internal;
-
-	
-	-- Computes the shortest distance (perpendicular) of a
-	-- point to a line. 		
-	function get_distance (
-		vector		: in type_vector; 
-		edge		: in type_edge;
-		line_range	: in type_line_range)
-		return type_distance_point_line;
-
-	
-
-	function get_shortest_distance (
-		vector	: in type_vector;
-		edge	: in type_edge)
-		return type_float_internal;
-
-
-
-	function on_edge (
-		vector	: in type_vector;
-		edge	: in type_edge)
-		return boolean;
-	
 
 
 	type type_nearest is (BEFORE, AFTER);
@@ -141,35 +95,6 @@ package et_geometry_2.polygons is
 		return type_vector;
 	
 
-	-- Returns true if the given two edges overlap each other.
-	-- Independend of start and end points, both edges are regarded as infinitely
-	-- long beyond their start and end points:
-	function lines_overlap (
-		edge_1, edge_2 : in type_edge)
-		return boolean;
-	
-
-	-- Tests whether the given line intersects the given candidate edge.
-	-- If there is an intersection between start and end point
-	-- of the candidate edge (start and end point included),
-	-- then returns the location vector of the intersection.
-	-- If the intersection is before start point or
-	-- beyond end point of the given line, return NOT_EXISTENT.
-	-- NOTE: The angle of intersection is measured between the 
-	-- start points of the two lines. It is always positive.
-	function get_intersection (
-		line : in type_line_vector;
-		edge : in type_edge)
-		return type_intersection_of_two_lines;
-	
-
-	-- Tests whether the given two edges intersect or overlap each other. 
-	-- Independend of start and end points, both edges are regarded as 
-	-- infinitely long beyond their start and end points:
-	function get_intersection (
-		edge_1 : in type_edge;
-		edge_2 : in type_edge)
-		return type_intersection_of_two_lines;
 	
 
 	-- If the start/end point of the candidate edge is ABOVE-OR-ON the 

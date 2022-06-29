@@ -229,8 +229,8 @@ package body et_geometry_2.polygons.offsetting is
 				
 				declare
 					I : constant type_intersection_of_two_lines := get_intersection (
-						edge_1 => element (start).edge,
-						edge_2 => element (c).edge);
+						line_1 => element (start).edge,
+						line_2 => element (c).edge);
 				begin
 					if I.status = EXISTS then
 						--put_line ("EXISTS");
@@ -266,8 +266,8 @@ package body et_geometry_2.polygons.offsetting is
 					
 					declare
 						I : constant type_intersection_of_two_lines := get_intersection (
-							edge_1 => element (start).edge,
-							edge_2 => element (c).edge);
+							line_1 => element (start).edge,
+							line_2 => element (c).edge);
 					begin
 						if I.status = EXISTS then
 							--put_line ("EXISTS");

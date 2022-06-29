@@ -710,12 +710,64 @@ package et_geometry_1 is
 		return type_line;
 	
 
+	-- Returns the point on the given line
+	-- that is right between its start and end point:
+	function get_center (
+		line : in type_line)
+		return type_vector;
+
+	
+	-- Returns the direction in degrees of a line.
+	-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
+	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
+	function get_direction (
+		line : in type_line)
+		return type_angle;
+	
+
+	---- Returns the boundaries of a line:
+	--function get_boundaries (
+		--line : in type_line)
+		--return type_boundaries;
+
+	
 	procedure move_by (
 		line		: in out type_line;
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive);
 
 
+	-- Tests whether the given line intersects the given candidate line.
+	-- If there is an intersection between start and end point
+	-- of the candidate line (start and end point included),
+	-- then returns the location vector of the intersection.
+	-- If the intersection is before start point or
+	-- beyond end point of the given line, return NOT_EXISTENT.
+	-- NOTE: The angle of intersection is measured between the 
+	-- start points of the two lines. It is always positive.
+	function get_intersection (
+		line_vector : in type_line_vector;
+		line : in type_line)
+		return type_intersection_of_two_lines;
+
+	
+	-- Tests whether the given two lines intersect or overlap each other. 
+	-- Independend of start and end points, both lines are regarded as 
+	-- infinitely long beyond their start and end points:
+	function get_intersection (
+		line_1 : in type_line;
+		line_2 : in type_line)
+		return type_intersection_of_two_lines;
+	
+	
+	-- Returns true if the given two lines overlap each other.
+	-- Independend of start and end points, both lines are regarded as infinitely
+	-- long beyond their start and end points:
+	function lines_overlap (
+		line_1, line_2 : in type_line)
+		return boolean;
+	
+	
 	-- CS Find more subprograms on type_line see et_geometry_2.polygons.
 	-- Move them there so that they can be used by other callers.
 	
@@ -808,8 +860,33 @@ package et_geometry_1 is
 	
 
 
--- DISTANCE POINT TO LINE
+-- DISTANCE LOCATION VECTOR TO LINE
 
+	-- Computes the distance between a location vector and a line.
+	-- This computation does not care about end or start point of the line.
+	-- It assumes an indefinite long line without start or end point.
+	function get_distance (
+		line	: in type_line;
+		vector	: in type_vector)
+		return type_float_internal;
+	
+
+	-- Returns the shortest distance from a given location vector
+	-- to a line. This is about ANY direction from the location vector
+	-- to the line:
+	function get_shortest_distance (
+		vector	: in type_vector;
+		line	: in type_line)
+		return type_float_internal;
+
+
+	-- Returns true if the given location vector is on
+	-- the given line:
+	function on_line (
+		vector	: in type_vector;
+		line	: in type_line)
+		return boolean;
+	
 	
 	type type_distance_point_line is record -- CS make private ?
 		sits_on_start	: boolean := false;
@@ -820,11 +897,19 @@ package et_geometry_1 is
 		-- to the given line. This is where the virtual line intersects
 		-- the given line:
 		intersection	: type_vector := null_vector;
-		distance		: type_float_internal := 0.0; -- CS type_float_internal_positive ?
-		direction		: type_angle := 0.0; -- CS no need ?
+		distance		: type_float_internal_positive := 0.0;
 	end record;
 
 
+	-- Computes the shortest distance (perpendicular) of a
+	-- point to a line. 		
+	function get_distance (
+		vector		: in type_vector; 
+		line		: in type_line;
+		line_range	: in type_line_range)
+		return type_distance_point_line;
+
+	
 	
 	-- These functions return the components of the given type_distance_point_line:
 	function out_of_range (d : in type_distance_point_line) return boolean;
@@ -836,11 +921,6 @@ package et_geometry_1 is
 	
 	function get_intersection (d : in type_distance_point_line) 
 		return type_vector;
-
-	
-	function get_direction (
-		d : in type_distance_point_line) 
-		return type_angle;
 
 	
 	function on_start_point (d : in type_distance_point_line) return boolean;

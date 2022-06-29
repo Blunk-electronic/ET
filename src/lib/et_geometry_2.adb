@@ -2121,7 +2121,7 @@ package body et_geometry_2 is
 			--put_line ("iv" & to_string (iv));
 			
 			-- Assign the direction (from point to intersection) to the result:
-			result.direction := get_angle (get_distance (vector, iv));
+			--result.direction := get_angle (get_distance (vector, iv));
 			--put_line ("direction" & to_string (result.direction));
 
 			-- Assign the virtual point of intersection to the result:
@@ -2334,7 +2334,7 @@ package body et_geometry_2 is
 				-- An imaginary line can be drawn perpendicular from
 				-- point to line. Both intersect each other.
 				set_absolute (result, get_distance (d));
-				set_angle (result, get_direction (d));
+				-- CS set_angle (result, get_direction (d));
 			else
 				
 				-- No imaginary line can be drawn perpendicular from
