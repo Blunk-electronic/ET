@@ -100,6 +100,7 @@ package et_geometry_2 is
 
 	-- Converts a float number to type_distance by rounding
 	-- according to the bankers rule:
+	-- Use it !!!!!
 	function to_distance (f : in type_float_internal)
 		return type_distance;
 	
@@ -216,10 +217,6 @@ package et_geometry_2 is
 
 	
 	
-	-- Unites the boundaries "right" with boundaries "left". "left" is updated.
-	procedure union (
-		left	: in out type_boundaries;
-		right	: in type_boundaries);
 
 	
 	
@@ -238,7 +235,9 @@ package et_geometry_2 is
 	function to_string (rotation : in type_rotation) return string;
 
 
-	
+	-- Converts a float number to type_rotation by rounding
+	-- according to the bankers rule:
+	-- Use it !!!!!
 	function to_rotation (
 		f : in type_float_internal)
 		return type_rotation;

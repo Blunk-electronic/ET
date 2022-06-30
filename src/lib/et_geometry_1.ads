@@ -663,6 +663,11 @@ package et_geometry_1 is
 	
 	--boundaries_default : constant type_boundaries := (others => <>);
 
+	-- Unites the boundaries "right" with boundaries "left". "left" is updated.
+	procedure union (
+		left	: in out type_boundaries;
+		right	: in type_boundaries);
+	
 
 	-- Returns the height of the given boundaries by
 	-- calculating boundaries.greatest_y - boundaries.smallest_y:

@@ -153,6 +153,7 @@ package body et_geometry_2 is
 		d2 : type_float_internal;
 
 		f1 : constant type_float_internal := 5.0 * type_float_internal (type_distance'small);
+		-- CS should be a package wide constant ?
 	begin
 		d1 := type_distance (f);
 		
@@ -405,36 +406,6 @@ package body et_geometry_2 is
 	end toggle_status;
 
 	
-	
-	procedure union (
-		left	: in out type_boundaries;
-		right	: in type_boundaries) 
-	is begin
-		-- X axis
-		-- smallest
-		if right.smallest_x < left.smallest_x then
-			left.smallest_x := right.smallest_x;
-		end if;
-
-		-- Y axis
-		-- smallest
-		if right.smallest_y < left.smallest_y then
-			left.smallest_y := right.smallest_y;
-		end if;
-
-		-- X axis
-		-- greatest
-		if right.greatest_x > left.greatest_x then
-			left.greatest_x := right.greatest_x;
-		end if;
-
-		-- Y axis
-		-- greatest
-		if right.greatest_y > left.greatest_y then
-			left.greatest_y := right.greatest_y;
-		end if;
-	end union;
-
 
 
 	
@@ -604,24 +575,6 @@ package body et_geometry_2 is
 	end to_distance_relative;
 
 	
----- POLAR
-
-	--function get_angle (
-		--distance : in type_distance_polar) 
-		--return type_rotation 
-	--is begin
-		--return to_rotation (get_angle (distance));
-		----return type_rotation (get_angle (distance)); CS ?
-	--end get_angle;
-
-	
-	--function get_absolute (
-		--distance : in type_distance_polar) 
-		--return type_distance_positive
-	--is begin
-		--return type_distance_positive (pac_geometry_1.get_absolute (distance));
-		---- CS return to_distance (get_absolute (distance));
-	--end get_absolute;
 
 	
 	

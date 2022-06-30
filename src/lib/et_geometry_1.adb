@@ -1317,6 +1317,38 @@ package body et_geometry_1 is
 	end;
 	
 
+	
+	procedure union (
+		left	: in out type_boundaries;
+		right	: in type_boundaries) 
+	is begin
+		-- X axis
+		-- smallest
+		if right.smallest_x < left.smallest_x then
+			left.smallest_x := right.smallest_x;
+		end if;
+
+		-- Y axis
+		-- smallest
+		if right.smallest_y < left.smallest_y then
+			left.smallest_y := right.smallest_y;
+		end if;
+
+		-- X axis
+		-- greatest
+		if right.greatest_x > left.greatest_x then
+			left.greatest_x := right.greatest_x;
+		end if;
+
+		-- Y axis
+		-- greatest
+		if right.greatest_y > left.greatest_y then
+			left.greatest_y := right.greatest_y;
+		end if;
+	end union;
+
+
+	
 	function get_height (boundaries : in type_boundaries)
 		return type_float_internal_positive
 	is begin
