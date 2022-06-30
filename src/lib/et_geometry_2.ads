@@ -50,7 +50,7 @@ generic
 	with package pac_geometry_1 is new et_geometry_1 (<>);
 
 	type type_distance is delta <> digits <>;
-	type type_distance_coarse is delta <> digits <>;
+	--type type_distance_coarse is delta <> digits <>;
 	axis_min, axis_max : type_distance;
 
 	type type_rotation is delta <> digits <>;
@@ -97,7 +97,9 @@ package et_geometry_2 is
 	function to_distance (dd : in string) 
 		return type_distance;		
 
-	
+
+	-- Converts a float number to type_distance by rounding
+	-- according to the bankers rule:
 	function to_distance (f : in type_float_internal)
 		return type_distance;
 	
@@ -105,8 +107,8 @@ package et_geometry_2 is
 	function to_string (distance : in type_distance)
 		return string;
 
-	function to_string (d_coarse : in type_distance_coarse)
-		return string;
+	--function to_string (d_coarse : in type_distance_coarse)
+		--return string;
 
 
 
@@ -146,10 +148,10 @@ package et_geometry_2 is
 
 	-- Rounds the given distance to the nearest multiple of 
 	-- type_distance_coarse'small.
-	function round (
-		d_fine	: in type_distance;
-		mode	: in type_rounding_mode := rounding_mode_default) 
-		return type_distance_coarse;
+	--function round (
+		--d_fine	: in type_distance;
+		--mode	: in type_rounding_mode := rounding_mode_default) 
+		--return type_distance_coarse;
 
 
 
@@ -547,13 +549,13 @@ package et_geometry_2 is
 		return type_point;
 	
 	
-	function round (
-		point : in type_point)
-		return type_point;
+	--function round (
+		--point : in type_point)
+		--return type_point;
 
 	
-	procedure round (
-		point : in out type_point);
+	--procedure round (
+		--point : in out type_point);
 
 
 
@@ -776,10 +778,10 @@ package et_geometry_2 is
 
 	
 	
-	function round (line : in type_line)
-		return type_line'class;
+	--function round (line : in type_line)
+		--return type_line'class;
 
-	procedure round (line : in out type_line);
+	--procedure round (line : in out type_line);
 	
 	
 	-- Returns the length of a line:

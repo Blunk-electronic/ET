@@ -88,12 +88,12 @@ package et_pcb_coordinates is
 			  + 0.1 * (10 ** distance_digits_left);
 
 		
-	distance_coarse_digits_right : constant := distance_digits_right -3; --> 0.1nm   -- 6 -> 0.1um
-	distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
+	--distance_coarse_digits_right : constant := distance_digits_right -3; --> 0.1nm   -- 6 -> 0.1um
+	--distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
 	
-	type type_distance_coarse is delta distance_coarse_smallest
-		digits distance_digits_left + distance_coarse_digits_right
-		range type_distance'first .. type_distance'last;
+	--type type_distance_coarse is delta distance_coarse_smallest
+		--digits distance_digits_left + distance_coarse_digits_right
+		--range type_distance'first .. type_distance'last;
 
 
 	type type_float_internal is digits 18;
@@ -116,12 +116,7 @@ package et_pcb_coordinates is
 		
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry_1 (
-		--type_distance			=> type_distance,
-		--type_distance_coarse	=> type_distance_coarse,
 		type_float_internal		=> type_float_internal
-		--axis_max				=> +1_000.0,
-		--axis_min				=> -1_000.0,
-		--type_rotation 			=> type_rotation
 		);
 
 	use pac_geometry_brd;
@@ -130,8 +125,7 @@ package et_pcb_coordinates is
 	package pac_geometry_2 is new et_geometry_2 (
 		pac_geometry_1			=> pac_geometry_brd,
 		type_distance			=> type_distance,
-		type_distance_coarse	=> type_distance_coarse,
-		--type_float_internal		=> type_float_internal
+		--type_distance_coarse	=> type_distance_coarse,
 		axis_max				=> +1_000.0,
 		axis_min				=> -1_000.0,
 		type_rotation 			=> type_rotation

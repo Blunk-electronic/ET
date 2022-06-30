@@ -69,12 +69,12 @@ package et_coordinates is
 			  + 0.1 * (10 ** distance_digits_left);
 
 		
-	distance_coarse_digits_right : constant := distance_digits_right - 1; -- 0.1mm
-	distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
+	--distance_coarse_digits_right : constant := distance_digits_right - 1; -- 0.1mm
+	--distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
 
-	type type_distance_coarse is delta distance_coarse_smallest 
-		digits distance_digits_left + distance_coarse_digits_right
-		range type_distance'first .. type_distance'last;
+	--type type_distance_coarse is delta distance_coarse_smallest 
+		--digits distance_digits_left + distance_coarse_digits_right
+		--range type_distance'first .. type_distance'last;
 
 
 	type type_float_internal is digits 12; -- CS reduce digits
@@ -97,12 +97,7 @@ package et_coordinates is
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry_1 (
-		--type_distance			=> type_distance,
-		--type_distance_coarse	=> type_distance_coarse,
 		type_float_internal		=> type_float_internal
-		--axis_max				=> 1_000.0,
-		--axis_min				=>  -100.0,
-		--type_rotation			=> type_rotation
 		);
 	
 	use pac_geometry_sch;
@@ -111,7 +106,7 @@ package et_coordinates is
 	package pac_geometry_2 is new et_geometry_2 (
 		pac_geometry_1			=> pac_geometry_sch,
 		type_distance			=> type_distance,
-		type_distance_coarse	=> type_distance_coarse,
+		--type_distance_coarse	=> type_distance_coarse,
 		axis_max				=> 1_000.0,
 		axis_min				=>  -100.0,
 		type_rotation			=> type_rotation);

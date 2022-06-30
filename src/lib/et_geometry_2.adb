@@ -55,8 +55,8 @@ package body et_geometry_2 is
 		distance_digits_total : constant positive := type_distance'digits;
 		distance_digits_right : constant positive := type_distance'scale;
 
-		distance_coarse_digits_total : constant positive := type_distance_coarse'digits;
-		distance_coarse_digits_right : constant positive := type_distance_coarse'scale;
+		--distance_coarse_digits_total : constant positive := type_distance_coarse'digits;
+		--distance_coarse_digits_right : constant positive := type_distance_coarse'scale;
 
 		rotation_digits_total : constant positive := type_rotation'digits;
 		rotation_digits_right : constant positive := type_rotation'scale;
@@ -76,15 +76,15 @@ package body et_geometry_2 is
 		& lf & "right:      " & positive'image (distance_digits_right)
 		& lf & "total:      " & positive'image (type_distance'digits)
 		& lf
-		& lf & "distance coarse [mm]"
-		& lf & "min:        " & type_distance_coarse'image (type_distance_coarse'first)
-		& lf & "max:        " & type_distance_coarse'image (type_distance_coarse'last)
-		& lf & "resolution: " & type_distance_coarse'image (type_distance_coarse'small)
-		& lf & "digits"
-		& lf & "left:       " & positive'image (distance_coarse_digits_total - distance_coarse_digits_right)
-		& lf & "right:      " & positive'image (distance_coarse_digits_right)
-		& lf & "total:      " & positive'image (type_distance_coarse'digits)
-		& lf
+		--& lf & "distance coarse [mm]"
+		--& lf & "min:        " & type_distance_coarse'image (type_distance_coarse'first)
+		--& lf & "max:        " & type_distance_coarse'image (type_distance_coarse'last)
+		--& lf & "resolution: " & type_distance_coarse'image (type_distance_coarse'small)
+		--& lf & "digits"
+		--& lf & "left:       " & positive'image (distance_coarse_digits_total - distance_coarse_digits_right)
+		--& lf & "right:      " & positive'image (distance_coarse_digits_right)
+		--& lf & "total:      " & positive'image (type_distance_coarse'digits)
+		--& lf
 		& lf & "rotation/angle [degrees (1/360)], mathematical sense, ccw"
 		& lf & "min:        " & type_rotation'image (type_rotation'first)
 		& lf & "max:        " & type_rotation'image (type_rotation'last)
@@ -209,16 +209,16 @@ package body et_geometry_2 is
 	end to_string;
 
 
-	function to_string (d_coarse : in type_distance_coarse) 
-		return string
-	is begin
-		if d_coarse < 0.0 then
-			return space & type_distance_coarse'image (d_coarse);
-		else
-			return type_distance_coarse'image (d_coarse);
-		end if;
-		-- CS suppress trailing zeros
-	end to_string;
+	--function to_string (d_coarse : in type_distance_coarse) 
+		--return string
+	--is begin
+		--if d_coarse < 0.0 then
+			--return space & type_distance_coarse'image (d_coarse);
+		--else
+			--return type_distance_coarse'image (d_coarse);
+		--end if;
+		---- CS suppress trailing zeros
+	--end to_string;
 
 
 
@@ -255,43 +255,43 @@ package body et_geometry_2 is
 
 	
 	
-	function round (
-		d_fine	: in type_distance;
-		mode	: in type_rounding_mode := rounding_mode_default) 
-		return type_distance_coarse
-	is
-		d_coarse : type_distance_coarse := type_distance_coarse (d_fine);
-		d_delta : type_distance_positive;
+	--function round (
+		--d_fine	: in type_distance;
+		--mode	: in type_rounding_mode := rounding_mode_default) 
+		--return type_distance_coarse
+	--is
+		--d_coarse : type_distance_coarse := type_distance_coarse (d_fine);
+		--d_delta : type_distance_positive;
 
-		procedure do_it is begin
-			if d_fine > 0.0 then
-				d_coarse := d_coarse + type_distance_coarse'small;
-			else
-				d_coarse := d_coarse - type_distance_coarse'small;
-			end if;
-		end do_it;
+		--procedure do_it is begin
+			--if d_fine > 0.0 then
+				--d_coarse := d_coarse + type_distance_coarse'small;
+			--else
+				--d_coarse := d_coarse - type_distance_coarse'small;
+			--end if;
+		--end do_it;
 		
-	begin
-		d_delta := abs (d_fine) - abs (type_distance (d_coarse));
+	--begin
+		--d_delta := abs (d_fine) - abs (type_distance (d_coarse));
 
-		case mode is
-			when UP =>
-				if d_delta > zero then
-					do_it;
-				end if;
+		--case mode is
+			--when UP =>
+				--if d_delta > zero then
+					--do_it;
+				--end if;
 					
-			when DOWN =>
-				null;
+			--when DOWN =>
+				--null;
 				
-			when BANKERS_RULE =>
-				--if d_delta >= 500_000.0 * type_distance'small then
-				if d_delta >= 0.5 * type_distance (type_distance_coarse'small) then
-					do_it;
-				end if;
-		end case;
+			--when BANKERS_RULE =>
+				----if d_delta >= 500_000.0 * type_distance'small then
+				--if d_delta >= 0.5 * type_distance (type_distance_coarse'small) then
+					--do_it;
+				--end if;
+		--end case;
 		
-		return d_coarse;
-	end round;
+		--return d_coarse;
+	--end round;
 
 
 	
@@ -1059,24 +1059,24 @@ package body et_geometry_2 is
 
 	
 	
-	function round (
-		point : in type_point)
-		return type_point
-	is
-		r : type_point := (
-			x => type_distance (round (point.x)),
-			y => type_distance (round (point.y)));
-	begin
-		return r;
-	end round;
+	--function round (
+		--point : in type_point)
+		--return type_point
+	--is
+		--r : type_point := (
+			--x => type_distance (round (point.x)),
+			--y => type_distance (round (point.y)));
+	--begin
+		--return r;
+	--end round;
 
 
-	procedure round (
-		point : in out type_point)
-	is begin
-		point.x := type_distance (round (point.x));
-		point.y := type_distance (round (point.y));
-	end round;
+	--procedure round (
+		--point : in out type_point)
+	--is begin
+		--point.x := type_distance (round (point.x));
+		--point.y := type_distance (round (point.y));
+	--end round;
 
 
 
@@ -1811,28 +1811,28 @@ package body et_geometry_2 is
 	
 	
 
-	function round (line : in type_line)
-		return type_line'class
-	is 
-		r : type_line;
-	begin
-		r := (
-			start_point	=> round (line.start_point),
-			end_point	=> round (line.end_point));
+	--function round (line : in type_line)
+		--return type_line'class
+	--is 
+		--r : type_line;
+	--begin
+		--r := (
+			--start_point	=> round (line.start_point),
+			--end_point	=> round (line.end_point));
 
-		return r;
+		--return r;
 
-		-- CS length check as in function make_line ?
-	end round;
+		---- CS length check as in function make_line ?
+	--end round;
 
 	
-	procedure round (line : in out type_line) 
-	is begin
-		line.start_point := round (line.start_point);
-		line.end_point := round (line.end_point);
+	--procedure round (line : in out type_line) 
+	--is begin
+		--line.start_point := round (line.start_point);
+		--line.end_point := round (line.end_point);
 
-		-- CS length check as in function make_line ?
-	end round;
+		---- CS length check as in function make_line ?
+	--end round;
 
 
 	
