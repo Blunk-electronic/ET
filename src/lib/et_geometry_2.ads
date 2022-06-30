@@ -446,7 +446,7 @@ package et_geometry_2 is
 		axis	: in type_axis_2d);	
 	
 
-	function get_distance_total (
+	function get_distance_total ( -- CS rename to get_distance_absolute
 		point	: in type_point;
 		vector	: in type_vector)
 		return type_float_internal_positive;
@@ -566,7 +566,7 @@ package et_geometry_2 is
 	-- Returns the rotation of the given point about the origin.
 	-- If for example point is (1/1) then the return is 45 degree.
 	-- if point is (-1/-1) then the return is -135 degree.
-	function get_rotation (
+	function get_rotation ( -- CS rename to get_rotation_about_origin
 		point : in type_point)
 		return type_rotation;
 
@@ -839,7 +839,7 @@ package et_geometry_2 is
 	function get_distance (
 		line	: in type_line;
 		vector	: in type_vector)
-		return type_float_internal;
+		return type_float_internal_positive;
 
 
 
@@ -848,8 +848,8 @@ package et_geometry_2 is
 	-- location vector to a line. 
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
-		line		: in type_line;
 		vector		: in type_vector; 
+		line		: in type_line;
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
@@ -857,23 +857,23 @@ package et_geometry_2 is
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 		
 	function get_distance (
-		line		: in type_line;
 		point		: in type_point; 
+		line		: in type_line;
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
 
 	-- Returns true if the given location vector lies on the given line.
 	function on_line (
-		line	: in type_line;
-		vector	: in type_vector)
+		vector	: in type_vector;
+		line	: in type_line)
 		return boolean; 
 
 	
 	-- Returns true if the given point lies on the given line.
 	function on_line (
-		line	: in type_line;
-		point	: in type_point)
+		point	: in type_point;
+		line	: in type_line)
 		return boolean;
 
 	

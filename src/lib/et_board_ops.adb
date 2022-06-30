@@ -2036,7 +2036,7 @@ package body et_board_ops is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_route_restrict_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 					delete (module.board.route_restrict.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -2238,7 +2238,7 @@ package body et_board_ops is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_via_restrict_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 				-- CS use get_shortest_distance (point, element (line_cursor)
 				-- and compare distance with accuracy	
 					delete (module.board.via_restrict.lines, line_cursor);
@@ -2389,7 +2389,7 @@ package body et_board_ops is
 
 					case element (c).shape is
 						when LINE =>
-							if element (c).segment_line.on_line (point) then
+							if on_line (point, element (c).segment_line) then
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
@@ -2732,7 +2732,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_silk_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 				-- CS use get_shortest_distance (point, element)
 				-- and compare distance with accuracy	
 
@@ -2984,7 +2984,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_doc_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 					-- CS use get_shortest_distance (point, element)
 					-- and compare distance with accuracy	
 
@@ -3234,7 +3234,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_keepout_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 					-- CS use get_shortest_distance (point, element)
 					-- and compare distance with accuracy	
 					if face = TOP then
@@ -3485,7 +3485,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stop_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 					if face = TOP then
@@ -3736,7 +3736,7 @@ package body et_board_ops is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stencil_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if on_line (point, element (line_cursor)) then
 					-- CS use get_shortest_distance (point, element)
 					-- and compare distance with accuracy	
 					if face = TOP then

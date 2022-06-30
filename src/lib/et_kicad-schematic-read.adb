@@ -352,7 +352,7 @@ is
 				end_point	=> get_point (segment.coordinates_end));
 			
 		begin
-			return line.on_line (label.coordinates);
+			return on_line (label.coordinates, line);
 		end label_sits_on_segment;
 
 		

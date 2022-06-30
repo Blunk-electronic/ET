@@ -609,7 +609,9 @@ package body et_geometry_2 is
 			x => to_distance (get_x (v)),
 			y => to_distance (get_y (v)));
 
-			-- CS use type_distance (get_x (v)) ?
+			-- Do not use type_distance (get_x (v)) !
+			-- function to_distance conducts rounding
+			-- by bankers rule.
 		
 		exception
 			when constraint_error =>
@@ -648,32 +650,8 @@ package body et_geometry_2 is
 	function get_distance (
 		point_one, point_two : in type_point) 
 		return type_distance_polar 
-	is
-		result : type_distance_polar;
-
-		delta_x, delta_y : type_float_internal := 0.0;
-	begin
-		set_absolute (result, get_distance_total (point_one, point_two));
-
-		-- NOTE: If the total distance between the points is zero then
-		-- the arctan operation is not possible. In this case we assume
-		-- the resulting angle is zero.
-		-- So we do the angle computation only if there is a distance between the points:
-		if pac_geometry_1.get_absolute (result) /= 0.0 then
-			
-			delta_x := type_float_internal (get_x (point_two) - get_x (point_one));
-			delta_y := type_float_internal (get_y (point_two) - get_y (point_one));
-
-			set_angle (result, arctan (
-					x 		=> delta_x,
-					y		=> delta_y,
-					cycle	=> units_per_cycle));
-		else
-			-- distance is zero
-			set_angle (result, 0.0);
-		end if;
-		
-		return result;
+	is begin
+		return get_distance (to_vector (point_one), to_vector (point_two));
 	end get_distance;
 
 
@@ -791,20 +769,18 @@ package body et_geometry_2 is
 		clip		: in boolean := false)
 		return type_point 
 	is 			
-		delta_x, delta_y : type_float_internal := 0.0;
-
+		v_tmp : type_vector;
 		rx, ry : type_distance;			
 		result : type_point;			
 	begin
-		-- sin (direction) * distance = delta y
-		-- cos (direction) * distance = delty x
-
-		delta_y := sin (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
-		delta_x := cos (type_float_internal (direction), units_per_cycle) * type_float_internal (distance);
-
-		rx := point.x + to_distance (delta_x);
-		ry := point.y + to_distance (delta_y);
-
+		v_tmp := move_by (
+			v			=> to_vector (point),
+			direction	=> type_angle (direction),
+			distance	=> type_float_internal_positive (distance));
+		
+		rx := to_distance (v_tmp.x);
+		ry := to_distance (v_tmp.y);
+		
 		if clip then
 			clip_distance (rx);
 			clip_distance (ry);
@@ -832,13 +808,8 @@ package body et_geometry_2 is
 		point	: in type_point;
 		vector	: in type_vector)
 		return type_float_internal_positive
-	is 
-		pv : constant type_vector := to_vector (point);
-		
-		dx : constant type_float_internal := abs (get_x (vector) - get_x (pv));
-		dy : constant type_float_internal := abs (get_y (vector) - get_y (pv));
-	begin
-		return sqrt (dx ** 2.0 + dy ** 2.0);
+	is begin
+		return get_distance_total (to_vector (point), vector);
 	end get_distance_total;
 
 	
@@ -917,27 +888,8 @@ package body et_geometry_2 is
 	function get_distance_total (
 		point_one, point_two : in type_point) 
 		return type_float_internal_positive 
-	is
-		distance : type_float_internal_positive; -- to be returned
-		delta_x, delta_y : type_float_internal := 0.0;
-	begin
-		if point_one = point_two then
-			distance := 0.0;
-			
-		elsif get_x (point_one) = get_x (point_two) then -- points are in a vertical line
-			distance := type_float_internal_positive (abs (get_y (point_two) - get_y (point_one)));
-			
-		elsif get_y (point_one) = get_y (point_two) then -- points are in a horizontal line
-			distance := type_float_internal_positive (abs (get_x (point_two) - get_x (point_one)));
-			
-		else
-			delta_x := type_float_internal (get_x (point_one) - get_x (point_two));
-			delta_y := type_float_internal (get_y (point_one) - get_y (point_two));
-
-			distance := sqrt ((delta_x ** 2) + (delta_y ** 2));
-		end if;
-			
-		return distance;
+	is begin
+		return get_distance_total (to_vector (point_one), to_vector (point_two));
 	end get_distance_total;
 
 	
@@ -1038,17 +990,8 @@ package body et_geometry_2 is
 	function get_rotation (
 		point : in type_point) 
 		return type_rotation 
-	is
-		x : constant type_float_internal := type_float_internal (point.x);
-		y : constant type_float_internal := type_float_internal (point.y);
-	begin
-		-- NOTE: If x and y are zero then the arctan operation is not possible. 
-		-- In this case we assume the resulting angle is zero.
-		if x = 0.0 and y = 0.0 then
-			return zero_rotation;
-		else
-			return to_rotation (arctan (y, x, units_per_cycle));
-		end if;
+	is begin
+		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
 	end get_rotation;
 
 
@@ -1057,87 +1000,14 @@ package body et_geometry_2 is
 		point		: in out type_point;
 		rotation	: in type_rotation) 
 	is			
-		angle_out			: type_rotation; -- degrees
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
+		v_tmp : type_vector := to_vector (point);
 	begin
-		-- Do nothing if the given rotation is zero.
-		if rotation /= 0.0 then
+		rotate_by (
+			vector		=> v_tmp,
+			rotation	=> type_angle (rotation),
+			debug		=> false);
 
-			-- compute distance of given point to origin
-			if get_x (point) = zero and get_y (point) = zero then
-				distance_to_origin := 0.0;
-				
-			elsif get_x (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_y (point)));
-				
-			elsif get_y (point) = zero then
-				distance_to_origin := type_float_internal (abs (get_x (point)));
-				
-			else
-				distance_to_origin := sqrt (
-					type_float_internal (abs (get_x (point))) ** 2.0
-					+
-					type_float_internal (abs (get_y (point))) ** 2.0
-					);
-			end if;
-			
-			-- compute the current angle of the given point (in degrees)
-
-			if get_x (point) = zero then
-				if get_y (point) > zero then
-					angle_out := 90.0;
-					
-				elsif get_y (point) < zero then
-					angle_out := -90.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			elsif get_y (point) = zero then
-				if get_x (point) > zero then
-					angle_out := 0.0;
-					
-				elsif get_x (point) < zero then
-					angle_out := 180.0;
-					
-				else
-					angle_out := 0.0;
-				end if;
-
-			else
-				-- neither x nor y of point is zero
-				--angle_out := arctan (
-				angle_out := to_rotation (arctan (
-					x		=> type_float_internal (get_x (point)),
-					y		=> type_float_internal (get_y (point)),
-					cycle	=> units_per_cycle));
-				
-			end if;
-
-			-- Compute new angle by adding current angle and given angle.
-			angle_out := add (angle_out, rotation);
-
-			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> X, 
-				point	=> point, 
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-
-			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (type_float_internal (angle_out), units_per_cycle);
-			
-			set (
-				axis	=> Y,
-				point	=> point,
-				value	=> to_distance (scratch * distance_to_origin)
-				);
-	
-		end if; -- if angle not zero			
+		point := to_point (v_tmp);
 	end rotate_by;
 
 
@@ -1922,253 +1792,53 @@ package body et_geometry_2 is
 	function get_distance (
 		line	: in type_line;
 		vector	: in type_vector)
-		return type_float_internal
-	is
-		dv : constant type_vector := get_direction_vector (line);
-		sv : constant type_vector := get_start_vector (line);
-		
-		d1 : constant type_vector := subtract (vector, sv);
-		m, n : type_float_internal;
-	begin
-		m := get_absolute (cross_product (dv, d1));
-		n := get_absolute (dv);
-		
-		return (m / n);
+		return type_float_internal_positive
+	is begin
+		return get_distance (to_line_fine (line), vector);
 	end get_distance;
 	
 
 
 	
 	function get_distance (
-		line		: in type_line;
 		vector		: in type_vector;
+		line		: in type_line;
 		line_range	: in type_line_range)
 		return type_distance_point_line 
-	is
-		result : type_distance_point_line;
-	
-		-- Imagine a line that starts on the given location vector,
-		-- travels perpendicular towards
-		-- the given line and finally intersects the given line somewhere.
-		-- The intersection may be betweeen the start and end point of the given line.
-		-- The intersection may be virtual, before start or after end point 
-		-- of the given line.
-		
-		line_direction : constant type_angle := get_direction (line);
-		line_direction_vector : constant type_vector := get_direction_vector (line);
-		line_start_vector, line_end_vector : type_vector;
-
-		iv : type_vector;
-
-		procedure compute_intersection is 
-			distance : type_float_internal;
-		begin
-			-- Compute the point of intersection: The intersection of a line that runs
-			-- from the given location vector perpendicular to the given line.
-			-- For the moment we do not know which direction to go. So we just try
-			-- to go in 90 degree direction. If the distance from iv to the line
-			-- is not zero, then we try in -90 degree direction.
-
-			iv := vector;
-			move_by (iv, line_direction + 90.0, result.distance);
-
-			distance := get_distance (line, iv);
-			--log (text => "delta  :" & type_float_internal'image (distance));
-			
-			if distance > accuracy then
-				--put_line ("wrong direction");
-				
-				-- we went the wrong direction
-				iv := vector; -- restore iv
-
-				-- try opposite direction:
-				move_by (iv, line_direction - 90.0, result.distance);
-			end if;
-
-			--put_line ("iv" & to_string (iv));
-			
-			-- Assign the direction (from point to intersection) to the result:
-			--result.direction := get_angle (get_distance (vector, iv));
-			--put_line ("direction" & to_string (result.direction));
-
-			-- Assign the virtual point of intersection to the result:
-			result.intersection := iv;
-		end compute_intersection;
-		
-		lambda_forward, lambda_backward : type_float_internal;
-	begin
-		--put_line ("line direction vector: " & to_string (line_direction_vector));
-		--put_line ("line direction angle : " & to_string (line_direction));
-		
-		-- The first and simplest test is to figure out whether
-		-- the given point sits exactly on the start or end point of the line.
-		-- Mind: result.distance has default zero.
-		-- This test includes the start and end points of the line. 
-		-- On match we exit this function prematurely and return the result
-		-- with the appropiate flags set.
-		case line_range is
-			when WITH_END_POINTS | BEYOND_END_POINTS =>
-				
-				if vector = to_vector (line.start_point) then
-					
-					result.sits_on_start := true;
-					result.out_of_range := false;
-					return result;
-
-				elsif vector = to_vector (line.end_point) then
-					
-					result.sits_on_end := true;
-					result.out_of_range := false;
-					return result;
-
-				end if;
-				
-			when others => null;
-		end case;
-
-		---- If the ends of the line are included,
-		---- test whether the point is in the vicinity of the line start or end point.
-		---- Exit this function prematurely in that case.
-		--if line_range = WITH_END_POINTS then
-
-			---- compute distance of point to start of line:
-			--result.distance := get_distance_total (point, line.start_point);
-			
-			--if result.distance <= accuracy then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-
-			--if point = line.start_point then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-				
-
-			---- compute distance of point to end of line:
-			--result.distance := get_distance_total (point, line.end_point);
-			
-			--if result.distance <= accuracy then
-				--result.out_of_range := false;
-				--return result;
-			--end if;
-
-		--end if;
-		
-		-- Compute the distance from the given point to the given line.
-		-- This computation does not care about end or start point of the line.
-		-- It assumes an indefinite long line without start or end point.
-		result.distance := get_distance (line, vector);
-
-		--put_line ("distance " & to_string (result.distance));
-
-		-- Set iv so that it points to the intersection. The
-		-- intersection can be anywhere on that indefinite long line.
-		compute_intersection;
-
-		
-		-- Any point on a line can be computed by this formula (see textbook on vector algebra):
-		-- iv = line.start_point + lambda_forward  * line_direction_vector
-		-- iv = line.end_point   + lambda_backward * line_direction_vector
-
-		-- Using these formula we can calculate whether iv points between 
-		-- (or to) the start and/or end points of the line:
-		
-		line_start_vector := get_start_vector (line);
-		lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
-
-		--put_line ("lambda forward:" & to_string (lambda_forward));
-		
-		if lambda_forward < 0.0 then -- iv points BEFORE start of line
-			--put_line ("before start point");
-			case line_range is
-				when BEYOND_END_POINTS => result.out_of_range := false;
-				when others => result.out_of_range := true;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-		
-		if lambda_forward = 0.0 then -- iv points TO start point of line
-			--put_line ("on start point");
-			case line_range is
-				when BETWEEN_END_POINTS => result.out_of_range := true;
-				when others => result.out_of_range := false;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-
-		--put_line ("after start point");
-
-		
-		line_end_vector := get_end_vector (line);
-		lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
-
-		--put_line ("lambda backward:" & to_string (lambda_backward));
-		
-		if lambda_backward > 0.0 then -- iv points AFTER end of line
-			--put_line ("after end point");
-			case line_range is
-				when BEYOND_END_POINTS => result.out_of_range := false;
-				when others => result.out_of_range := true;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-
-		if lambda_backward = 0.0 then -- iv points TO end point of line
-			--put_line ("on end point");
-			case line_range is
-				when BETWEEN_END_POINTS => result.out_of_range := true;
-				when others => result.out_of_range := false;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-
-		--put_line ("before end point");
-
-		result.out_of_range := false;
-
-		return result;
+	is begin
+		return get_distance (
+			vector		=> vector,
+			line		=> to_line_fine (line),
+			line_range	=> line_range);
 	end get_distance;
 
 
 	function get_distance (
-		line		: in type_line;
 		point		: in type_point; 
+		line		: in type_line;
 		line_range	: in type_line_range)
 		return type_distance_point_line
 	is begin
-		return get_distance (line, to_vector (point), line_range);
+		return get_distance (to_vector (point), to_line_fine (line), line_range);
 	end get_distance;
 
 
 
 	function on_line (
-		line	: in type_line;
-		vector	: in type_vector)
+		vector	: in type_vector;
+		line	: in type_line)
 		return boolean
-	is
-		distance : type_distance_point_line;
-	begin
-		distance := get_distance (line, vector, WITH_END_POINTS);
-		
-		if not distance.out_of_range and distance.distance < accuracy then
-			return true;
-		else
-			return false;
-		end if;
+	is begin
+		return on_line (vector, to_line_fine (line));
 	end on_line;
 
 	
 	function on_line (
-		line	: in type_line;
-		point	: in type_point)
+		point	: in type_point;
+		line	: in type_line)
 		return boolean
 	is begin
-		return on_line (line, to_vector (point));
+		return on_line (to_vector (point), to_line_fine (line));
 	end on_line;
 
 
@@ -2304,7 +1974,7 @@ package body et_geometry_2 is
 				-- of candidate line, then return the intersection as it is.
 				-- If the intersection is before start point or
 				-- beyond end point, then return NOT_EXISTENT.
-				if on_line (candidate_line, i.intersection.vector) then
+				if on_line (i.intersection.vector, candidate_line) then
 					return i;
 				else
 					return (status => NOT_EXISTENT);
@@ -4109,16 +3779,16 @@ package body et_geometry_2 is
 			when NONE_EXIST => null;
 			
 			when ONE_EXISTS => 
-				if on_line (line, i.intersection.vector) then
+				if on_line (i.intersection.vector, line) then
 					result := true;
 				end if;		
 
 			when TWO_EXIST =>
-				if on_line (line, i.intersection_1.vector) then
+				if on_line (i.intersection_1.vector, line) then
 					result := true;
 				end if;
 				
-				if on_line (line, i.intersection_2.vector) then
+				if on_line (i.intersection_2.vector, line) then
 					result := true;
 				end if;
 				
@@ -4155,7 +3825,7 @@ package body et_geometry_2 is
 		--new_line;			
 		--put_line ("circle: " & to_string (circle));
 		
-		dp := get_distance (line, to_vector (circle.center), WITH_END_POINTS);
+		dp := get_distance (to_vector (circle.center), line, WITH_END_POINTS);
 		
 		--if debug then
 			----put_line ("circle: " & to_string (circle));

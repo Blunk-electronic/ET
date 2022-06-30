@@ -937,7 +937,7 @@ package et_geometry_1 is
 	function get_distance (
 		line	: in type_line;
 		vector	: in type_vector)
-		return type_float_internal;
+		return type_float_internal; -- CS type_float_internal_positive
 	
 
 	-- Returns the shortest distance from a given location vector
@@ -971,7 +971,8 @@ package et_geometry_1 is
 
 
 	-- Computes the shortest distance (perpendicular) of a
-	-- point to a line. 		
+	-- point to a line. 
+	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
 		vector		: in type_vector; 
 		line		: in type_line;
