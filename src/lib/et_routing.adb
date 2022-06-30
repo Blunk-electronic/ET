@@ -86,17 +86,18 @@ package body et_routing is
 		point			: in type_point;
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
-		return type_distance_polar
+		return type_float_internal_positive
 	is
-		result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
+		result : type_float_internal_positive := type_float_internal'last;
 
-		procedure update (d : in type_distance_polar) is begin
+		procedure update (d : in type_float_internal_positive) is begin
 			--log (text => " dh" & to_string (get_absolute (d)), level => lth + 1);
-			if get_absolute (d) < get_absolute (result) then
+			if d < result then
 				result := d;
 			end if;
 		end update;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
@@ -117,7 +118,7 @@ package body et_routing is
 			result := get_shortest_distance (module.board.contours.outline, point);
 
 			if log_category >= HIGH then
-				log (text => " distance to outline" & to_string (get_absolute (result)),
+				log (text => " distance to outline" & to_string (result),
 					 level => lth + 1);
 			end if;
 			
@@ -131,12 +132,13 @@ package body et_routing is
 				iterate (module.board.contours.holes, query_hole'access);
 
 				if log_category >= HIGH then
-					log (text => " distance to hole" & to_string (get_absolute (result)),
+					log (text => " distance to hole" & to_string (result),
 						 level => lth + 1);
 				end if;
 			end if;
 		end query_module;
 
+		
 	begin
 		if log_category >= HIGH then
 			log (text => "computing distance of point" & to_string (point) 

@@ -153,7 +153,7 @@ package et_geometry_2.contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_point)
-		return type_distance_polar;
+		return type_float_internal_positive;
 
 
 

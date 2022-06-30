@@ -946,7 +946,7 @@ package et_geometry_1 is
 	function get_shortest_distance (
 		vector	: in type_vector;
 		line	: in type_line)
-		return type_float_internal;
+		return type_float_internal; -- CS type_float_internal_positive
 
 
 	-- Returns true if the given location vector is on

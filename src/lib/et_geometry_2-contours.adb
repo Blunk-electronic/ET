@@ -229,13 +229,21 @@ package body et_geometry_2.contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_point)
-		return type_distance_polar
+		return type_float_internal_positive
 	is
-		result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
+		--result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
+		result : type_float_internal_positive := type_float_internal'last;
 		
-		procedure update (d : in type_distance_polar) is begin
+		--procedure update (d : in type_distance_polar) is begin
+			----put_line (to_string (d));
+			--if get_absolute (d) < get_absolute (result) then
+				--result := d;
+			--end if;
+		--end update;
+
+		procedure update (d : in type_float_internal_positive) is begin
 			--put_line (to_string (d));
-			if get_absolute (d) < get_absolute (result) then
+			if d < result then
 				result := d;
 			end if;
 		end update;
@@ -253,7 +261,7 @@ package body et_geometry_2.contours is
 				when ARC =>
 					--put_line (to_string (s.segment_arc));
 					--update (get_shortest_distance (point, s.segment_arc));
-					update (s.segment_arc.get_shortest_distance (point));
+					update (get_absolute (s.segment_arc.get_shortest_distance (point)));
 					
 			end case;
 		end query_segment;
@@ -262,7 +270,7 @@ package body et_geometry_2.contours is
 	begin -- get_shortest_distance
 		if contour.contour.circular then
 			--result := get_shortest_distance (point, contour.contour.circle);
-			result := contour.contour.circle.get_shortest_distance (point);
+			result := get_absolute (contour.contour.circle.get_shortest_distance (point));
 		else
 			contour.contour.segments.iterate (query_segment'access);				
 		end if;			

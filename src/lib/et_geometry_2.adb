@@ -1846,107 +1846,18 @@ package body et_geometry_2 is
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_point)
-		return type_distance_polar
-	is
-		result : type_distance_polar;
-
-		d : constant type_distance_point_line := get_distance (
-			vector		=> to_vector (point),
-			line		=> line,
-			line_range	=> WITH_END_POINTS);
-
-		d_to_start, d_to_end : type_distance_polar;
-	begin
-		--put_line ("point" & to_string (point) & " " & to_string (line));
-		
-		if on_start_point (d) or on_end_point (d) then
-			-- Point is on top of start or end point of line.
-			--log (text => "on start or end");
-			null; -- result keeps its default (zero distance, zero angle)
-		else
-
-			--if on_line (get_intersection (d), line) then 
-			if not out_of_range (d) then
-				
-				-- An imaginary line can be drawn perpendicular from
-				-- point to line. Both intersect each other.
-				set_absolute (result, get_distance (d));
-				-- CS set_angle (result, get_direction (d));
-			else
-				
-				-- No imaginary line can be drawn perpendicular from
-				-- point to line.
-
-				-- Compare the distances to the end points of the line:
-				d_to_start := get_distance (point, line.start_point);
-				d_to_end   := get_distance (point, line.end_point);
-
-				if get_absolute (d_to_start) < get_absolute (d_to_end) then
-					result := d_to_start;
-				else
-					result := d_to_end;
-				end if;
-				
-			end if;
-
-		end if;
-
-		--put_line (to_string (result));
-		
-		return result;
+		return type_float_internal_positive
+	is begin
+		return get_shortest_distance (to_vector (point), to_line_fine (line));
 	end get_shortest_distance;
 
 
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_vector)
-		return type_float_internal
-	is
-		result : type_float_internal;
-
-		d : constant type_distance_point_line := get_distance (
-			vector		=> point,
-			line		=> line,
-			line_range	=> WITH_END_POINTS);
-
-		d_to_start, d_to_end : type_float_internal;
-	begin
-		--put_line ("point" & to_string (point) & " " & to_string (line));
-		
-		if on_start_point (d) or on_end_point (d) then
-			-- Point is on top of start or end point of line.
-			--log (text => "on start or end");
-			null; -- result keeps its default (zero distance, zero angle)
-		else
-
-			--if on_line (get_intersection (d), line) then 
-			if not out_of_range (d) then
-				
-				-- An imaginary line can be drawn perpendicular from
-				-- point to line. Both intersect each other.
-				result := get_distance (d);
-			else
-				
-				-- No imaginary line can be drawn perpendicular from
-				-- point to line.
-
-				-- Compare the distances to the end points of the line:
-				d_to_start := get_distance_total (line.start_point, point);
-				d_to_end   := get_distance_total (line.end_point, point);
-
-				if d_to_start < d_to_end then
-					result := d_to_start;
-				else
-					result := d_to_end;
-				end if;
-				
-			end if;
-
-		end if;
-
-		--put_line (to_string (result));
-		
-		return result;
+		return type_float_internal_positive
+	is begin
+		return get_shortest_distance (point, to_line_fine (line));
 	end get_shortest_distance;
 
 	

@@ -882,13 +882,13 @@ package et_geometry_2 is
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_point)
-		return type_distance_polar;
+		return type_float_internal_positive;
 
 	
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_vector)
-		return type_float_internal;
+		return type_float_internal_positive;
 	
 	
 	-- Tests whether the given probe_line intersects the given 
