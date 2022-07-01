@@ -1801,8 +1801,8 @@ package body et_geometry_2 is
 
 	
 	function get_distance (
-		vector		: in type_vector;
 		line		: in type_line;
+		vector		: in type_vector;
 		line_range	: in type_line_range)
 		return type_distance_point_line 
 	is begin
@@ -1814,8 +1814,8 @@ package body et_geometry_2 is
 
 
 	function get_distance (
-		point		: in type_point; 
 		line		: in type_line;
+		point		: in type_point; 
 		line_range	: in type_line_range)
 		return type_distance_point_line
 	is begin
@@ -1825,8 +1825,8 @@ package body et_geometry_2 is
 
 
 	function on_line (
-		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		vector	: in type_vector)
 		return boolean
 	is begin
 		return on_line (vector, to_line_fine (line));
@@ -1834,8 +1834,8 @@ package body et_geometry_2 is
 
 	
 	function on_line (
-		point	: in type_point;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_point)
 		return boolean
 	is begin
 		return on_line (to_vector (point), to_line_fine (line));
@@ -1885,7 +1885,7 @@ package body et_geometry_2 is
 				-- of candidate line, then return the intersection as it is.
 				-- If the intersection is before start point or
 				-- beyond end point, then return NOT_EXISTENT.
-				if on_line (i.intersection.vector, candidate_line) then
+				if candidate_line.on_line (i.intersection.vector) then
 					return i;
 				else
 					return (status => NOT_EXISTENT);
@@ -3690,16 +3690,16 @@ package body et_geometry_2 is
 			when NONE_EXIST => null;
 			
 			when ONE_EXISTS => 
-				if on_line (i.intersection.vector, line) then
+				if line.on_line (i.intersection.vector) then
 					result := true;
 				end if;		
 
 			when TWO_EXIST =>
-				if on_line (i.intersection_1.vector, line) then
+				if line.on_line (i.intersection_1.vector) then
 					result := true;
 				end if;
 				
-				if on_line (i.intersection_2.vector, line) then
+				if line.on_line (i.intersection_2.vector) then
 					result := true;
 				end if;
 				
@@ -3736,7 +3736,7 @@ package body et_geometry_2 is
 		--new_line;			
 		--put_line ("circle: " & to_string (circle));
 		
-		dp := get_distance (to_vector (circle.center), line, WITH_END_POINTS);
+		dp := get_distance (line, to_vector (circle.center), WITH_END_POINTS);
 		
 		--if debug then
 			----put_line ("circle: " & to_string (circle));

@@ -289,7 +289,7 @@ package body et_nets is
 	is 
 		use pac_net_segments;
 	begin
-		return on_line (point, element (segment_cursor));
+		return element (segment_cursor).on_line (point);
 	end on_segment;
 	
 	

@@ -848,8 +848,8 @@ package et_geometry_2 is
 	-- location vector to a line. 
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
-		vector		: in type_vector; 
 		line		: in type_line;
+		vector		: in type_vector; 
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
@@ -857,23 +857,23 @@ package et_geometry_2 is
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 		
 	function get_distance (
-		point		: in type_point; 
 		line		: in type_line;
+		point		: in type_point; 
 		line_range	: in type_line_range)
 		return type_distance_point_line;
 
 
 	-- Returns true if the given location vector lies on the given line.
 	function on_line (
-		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		vector	: in type_vector)
 		return boolean; 
 
 	
 	-- Returns true if the given point lies on the given line.
 	function on_line (
-		point	: in type_point;
-		line	: in type_line)
+		line	: in type_line;
+		point	: in type_point)
 		return boolean;
 
 	

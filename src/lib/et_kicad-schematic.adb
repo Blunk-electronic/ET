@@ -1360,7 +1360,7 @@ package body et_kicad.schematic is
 				end_point	=> get_point (segment.coordinates_end));
 			
 		begin -- on_segment
-			return on_line (port.coordinates, line);
+			return line.on_line (port.coordinates);
 		end on_segment;
 
 		
@@ -5579,7 +5579,7 @@ package body et_kicad.schematic is
 										start_point	=> get_point (element (segment_cursor).coordinates_start), 
 										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
-									if on_line (get_point (element (junction_cursor).coordinates), line) then
+									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_found := true;
 										exit;
 									end if;
@@ -5696,7 +5696,7 @@ package body et_kicad.schematic is
 										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
 									-- count segments
-									if on_line (get_point (element (junction_cursor).coordinates), line) then
+									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_counter := segment_counter + 1;
 									end if;
 								end;
@@ -5877,7 +5877,7 @@ package body et_kicad.schematic is
 										start_point	=> get_point (element (segment_cursor).coordinates_start), 
 										end_point	=> get_point (element (segment_cursor).coordinates_end));
 								begin
-									if on_line (get_point (element (no_connection_flag_cursor).coordinates), line) then
+									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 
 											& to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 									end if;

@@ -140,7 +140,7 @@ package body et_geometry_2.contours is
 		procedure query_segment (c : in pac_contour_segments.cursor) is begin
 			case element (c).shape is
 				when LINE => 
-					if on_line (point, element (c).segment_line) then
+					if element (c).segment_line.on_line (point) then
 						result := c;
 						proceed := false; -- abort iteration
 					end if;
