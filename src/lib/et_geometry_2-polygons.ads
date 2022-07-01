@@ -676,8 +676,7 @@ package et_geometry_2.polygons is
 
 
 	
-	-- Searches for intersections of the given two polygons
-	-- and stores them in container "intersection".
+	-- Searches for intersections of the given two polygons.
 	-- An intersection is where the edge of polygon A intersects
 	-- an edge of polygon B. The intersection has direction "entering"
 	-- if the start point of the edge (of polygon A) is outside of polygon B.
@@ -727,7 +726,7 @@ package et_geometry_2.polygons is
 		vertices : in out pac_vertices.list);
 	
 
-	-- Returns a list of regular vertices of the given primary
+	-- Returns a list of vertices of the given primary
 	-- polygon merged with the intersections (leaving or entering) with the secondary
 	-- polygon. The returned vertices are ordered counter-clockwise.
 	-- If the given primary polygon is A then the argument AB must be B.
