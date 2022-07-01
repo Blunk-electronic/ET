@@ -67,7 +67,7 @@ begin
 
 	d := get_distance (
 		vector	=> v,
-		edge	=> e,
+		line	=> e,
 		line_range	=> WITH_END_POINTS);
 
 	put_line ("distance" & to_string (get_distance (d)));
