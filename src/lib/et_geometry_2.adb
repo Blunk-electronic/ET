@@ -1863,38 +1863,13 @@ package body et_geometry_2 is
 	
 	
 	function get_intersection (
-		probe_line		: in type_line_vector;
-		candidate_line	: in type_line)
+		line		: in type_line;
+		line_vector	: in type_line_vector)
 		return type_intersection_of_two_lines
-	is
-		i : constant type_intersection_of_two_lines := get_intersection (
-				line_1	=> probe_line,
-				line_2	=> to_line_vector (candidate_line));
-		
-	begin
-		case i.status is
-			when EXISTS =>
-				--put_line ("exists");
-				--put_line (to_string (probe_line));
-				--put_line (to_string (candidate_line));
-				--put_line (to_string (i.intersection.point));
-				
-				-- The intersection must be between start and end point of
-				-- the candidate line (start and end point itself included).
-				-- If the intersection is between start and end point
-				-- of candidate line, then return the intersection as it is.
-				-- If the intersection is before start point or
-				-- beyond end point, then return NOT_EXISTENT.
-				if candidate_line.on_line (i.intersection.vector) then
-					return i;
-				else
-					return (status => NOT_EXISTENT);
-				end if;
-
-			when others =>		
-				return i;
-		end case;
-
+	is begin
+		return get_intersection (
+			line_vector	=> line_vector,
+			line		=> to_line_fine (line));		
 	end get_intersection;
 
 
@@ -1902,54 +1877,8 @@ package body et_geometry_2 is
 	function get_intersection (
 		line_1, line_2 : in type_line)
 		return type_intersection_of_two_lines
-	is
-		lv_1 : constant type_line_vector := to_line_vector (line_1);
-		lv_2 : constant type_line_vector := to_line_vector (line_2);
-
-		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
-		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
-
-		status : type_intersection_status_of_two_lines;
-		intersection : type_intersection;
-		
-	begin
-		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
-			--status := NOT_EXISTENT;
-
-		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
-			status := OVERLAP;
-			
-		elsif int_A.status = EXISTS and int_B.status = EXISTS then
-
-			-- double check: location vectors must match !
-			if get_absolute (get_distance (int_A.intersection.vector, int_B.intersection.vector)) = 0.0 then
-				status := EXISTS;
-				intersection.vector := int_A.intersection.vector;
-				intersection.angle := int_A.intersection.angle;
-			else
-				raise constraint_error with 
-					"Intersection point mismatch: " & to_string (int_A.intersection.vector)
-					& to_string (int_B.intersection.vector);
-			end if;
-
-		else
-			status := NOT_EXISTENT;
-		end if;
-
-
-		case status is
-			when NOT_EXISTENT =>
-				return (status => NOT_EXISTENT);
-
-			when OVERLAP =>
-				return (status => OVERLAP);
-
-			when EXISTS =>
-				return (
-					status			=> EXISTS,
-					intersection	=> intersection);	   
-		end case;
-
+	is begin
+		return get_intersection (to_line_fine (line_1), to_line_fine (line_2));
 	end get_intersection;
 	
 
@@ -1959,10 +1888,19 @@ package body et_geometry_2 is
 		line		: in out type_line;
 		direction	: in type_rotation;
 		distance	: in type_distance_positive) 
-	is begin
+	is 
+		l_tmp : pac_geometry_1.type_line := to_line_fine (line);
+	begin
 		-- Move start and and point of line into direction by distance.
-		line.start_point	:= move (line.start_point, direction, distance);
-		line.end_point		:= move (line.end_point,   direction, distance);
+		--line.start_point	:= move (line.start_point, direction, distance);
+		--line.end_point		:= move (line.end_point,   direction, distance);
+
+		move_by (
+			line		=> l_tmp,
+			direction	=> to_angle (direction),
+			distance	=> type_float_internal_positive (distance));
+
+		line := type_line (to_line_coarse (l_tmp));
 	end move_by;
 
 	
@@ -2008,8 +1946,8 @@ package body et_geometry_2 is
 -- ZONES OF A LINE
 	
 	function which_zone (
-		point	: in type_point;
-		line	: in type_line'class) 
+		line	: in type_line'class;
+		point	: in type_point)
 		return type_line_zone 
 	is
 		zone : type_line_zone; -- to be returned

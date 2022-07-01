@@ -891,19 +891,18 @@ package et_geometry_2 is
 		return type_float_internal_positive;
 	
 	
-	-- Tests whether the given probe_line intersects the given 
+	-- Tests whether the given line_vector intersects the given 
 	-- candidate line.
 	-- If there is an intersection between start and end point
 	-- of the candidate line (start and end point included),
-	-- then returns the location vector of
-	-- the intersection.
+	-- then returns the location vector of the intersection.
 	-- If the intersection is before start point or
 	-- beyond end point of the given line, return NOT_EXISTENT.
 	-- NOTE: The angle of intersection is measured between the 
 	-- start points of the two lines. It is always positive.
 	function get_intersection (
-		probe_line		: in type_line_vector;
-		candidate_line	: in type_line)
+		line		: in type_line;
+		line_vector	: in type_line_vector)
 		return type_intersection_of_two_lines;
 
 
@@ -961,12 +960,13 @@ package et_geometry_2 is
 	-- The center length is twice the length of start/end point.
 	type type_line_zone is (START_POINT, END_POINT, CENTER);
 	line_zone_division_factor : constant positive := 4;
+
 	
 	-- Calculates the zone of the line where point is nearest.
 	-- Point is not required to sit exactly on the line.
 	function which_zone (
-		point	: in type_point;
-		line	: in type_line'class) 
+		line	: in type_line'class;
+		point	: in type_point)
 		return type_line_zone;
 
 

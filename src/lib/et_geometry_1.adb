@@ -1605,7 +1605,7 @@ package body et_geometry_1 is
 
 	function get_intersection (
 		line_vector : in type_line_vector;
-		line : in type_line)
+		line		: in type_line)
 		return type_intersection_of_two_lines
 	is
 		i : constant type_intersection_of_two_lines := get_intersection (
