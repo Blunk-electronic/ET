@@ -68,15 +68,6 @@ package et_coordinates is
 		range - 0.1 * (10 ** distance_digits_left) .. 
 			  + 0.1 * (10 ** distance_digits_left);
 
-		
-	--distance_coarse_digits_right : constant := distance_digits_right - 1; -- 0.1mm
-	--distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
-
-	--type type_distance_coarse is delta distance_coarse_smallest 
-		--digits distance_digits_left + distance_coarse_digits_right
-		--range type_distance'first .. type_distance'last;
-
-
 
 	
 	-- Angle or rotation is in mathematical sense, means:
@@ -105,6 +96,7 @@ package et_coordinates is
 		-- we have 3 digits left and 9 digits right of comma.
 		-- This leads to an accuracy of:											  
 		accuracy				=> 1.0E-9
+		-- CS: For numbers greater 999.9 this accuracy is useless.
 		);
 	
 	use pac_geometry_sch;
@@ -113,13 +105,13 @@ package et_coordinates is
 	package pac_geometry_2 is new et_geometry_2 (
 		pac_geometry_1			=> pac_geometry_sch,
 		type_distance			=> type_distance,
-		--type_distance_coarse	=> type_distance_coarse,
 		axis_max				=> 1_000.0,
 		axis_min				=>  -100.0,
 		type_rotation			=> type_rotation);
 		
 	use pac_geometry_2;
 
+	
 	package pac_contours is new pac_geometry_2.contours;
 	-- This package is never used in schematic. But it is mandatory
 	-- for the instantiation of the primitive draw operations package.

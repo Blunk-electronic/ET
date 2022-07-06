@@ -87,16 +87,6 @@ package et_pcb_coordinates is
 		range - 0.1 * (10 ** distance_digits_left) .. 
 			  + 0.1 * (10 ** distance_digits_left);
 
-		
-	--distance_coarse_digits_right : constant := distance_digits_right -3; --> 0.1nm   -- 6 -> 0.1um
-	--distance_coarse_smallest : constant := 1.0 / (10 ** distance_coarse_digits_right);
-	
-	--type type_distance_coarse is delta distance_coarse_smallest
-		--digits distance_digits_left + distance_coarse_digits_right
-		--range type_distance'first .. type_distance'last;
-
-
-
 	
 		
 	-- Angle or rotation is in mathematical sense, means:
@@ -126,7 +116,7 @@ package et_pcb_coordinates is
 		-- This leads to an accuracy of:
 		--accuracy				=> 1.0E-16
 		accuracy				=> 1.0E-14
-		-- For numbers greater 9999.9 this accuracy is useless.
+		-- CS: For numbers greater 9999.9 this accuracy is useless.
 		);
 
 	use pac_geometry_brd;
@@ -135,7 +125,6 @@ package et_pcb_coordinates is
 	package pac_geometry_2 is new et_geometry_2 (
 		pac_geometry_1			=> pac_geometry_brd,
 		type_distance			=> type_distance,
-		--type_distance_coarse	=> type_distance_coarse,
 		axis_max				=> +1_000.0,
 		axis_min				=> -1_000.0,
 		type_rotation 			=> type_rotation
