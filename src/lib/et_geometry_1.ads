@@ -49,10 +49,11 @@ with et_logging;				use et_logging;
 
 generic
 	type type_float_internal is digits <>; -- CS rename to type_float ?
-
+	accuracy : type_float_internal;
+	
 package et_geometry_1 is
 
-	accuracy : constant type_float_internal := 1.0E-16;
+	--accuracy : constant type_float_internal := 1.0E-16;
 	-- CS must be a package parameter
 
 	--function equal (left, right : in type_float_internal) return boolean renames "=";
