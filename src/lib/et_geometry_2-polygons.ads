@@ -127,11 +127,15 @@ package et_geometry_2.polygons is
 	-- The last vertex becomes the start point of the first edge.
 	-- The vertices must be given in a form like:
 	-- "0.0 0.0   1.0 0.0   1.0 1.0   0.0 1.0" (This example describes a square);
+	-- Successive redundant vertices will be ignored. 
+	-- So "0.0 0.0   7.0 0.0  7.0 0.0   1.0 1.0   0.0 1.0" will be handled like
+	-- "0.0 0.0   7.0 0.0   1.0 1.0   0.0 1.0"
 	function to_polygon (vertices : in string)
 		return type_polygon;
 
 	
-	-- Converts a list of location vectors to a polygon:
+	-- Converts a list of location vectors to a polygon.
+	-- Successive redundant vertices will be ignored:
 	function to_polygon (vectors : in pac_vectors.list)
 		return type_polygon;
 	
@@ -196,20 +200,6 @@ package et_geometry_2.polygons is
 		polygon	: in type_polygon);
 	
 		
-	-- Returns the cursor to the edge
-	-- where the given point lies on.
-	-- If the given point is a vertex then an
-	-- exception is raised.
-	-- If the polygon consists of just a circle then an
-	-- exception is raised. -- CS remove
-	-- If the given point does not lie on an edge then
-	-- the return is no_element:
-	--function get_segment_edge ( -- CS rename to get_edge
-		--polygon	: in type_polygon;
-		--point	: in type_point)
-		--return pac_edges.cursor;
-
-
 	
 
 	type type_neigboring_edges is record
@@ -222,18 +212,6 @@ package et_geometry_2.polygons is
 		edge_2 : pac_edges.cursor;
 	end record;
 
-	-- Returns the cursors to the two neigboring
-	-- edges of the given vertex.
-	-- The given point must be a vertex. Otherwise an exception is raised.
-	-- If the polygon consists of just a circle then an
-	-- exception is raised.
-	--function get_neigboring_edges (
-		--polygon	: in type_polygon;
-		--vertex	: in type_point)
-		--return type_neigboring_edges;
-
-
-
 
 	
 	
@@ -242,41 +220,12 @@ package et_geometry_2.polygons is
 		polygon	: in type_polygon)
 		return string;
 
-	
-	-- Returns the corner point nearest to the given
-	-- reference point.
-	-- If the given polygon consists of just a single
-	-- circle then a exception is raised: -- CS remove
-	--function get_nearest_corner_point (
-		--polygon		: in type_polygon;
-		--reference	: in type_point)
-		--return type_point;
-	
 
 		
 	function get_edges_total (
 		polygon : in type_polygon)
 		return count_type;
 
-
-
-	
-	---- Transposes a polygon in Y direction.
-	---- Each point of each segment gets shifted by
-	---- the formula new_y = offset - old_y:
-	--procedure transpose_polygon (
-		--polygon	: in out type_polygon'class;
-		--offset	: in type_distance);
-
-	
-	
-
-	-- Returns true if the given point is a vertex
-	-- of the given polygon:
-	--function is_vertex (
-		--polygon	: in type_polygon;
-		--point	: in type_point)
-		--return boolean;
 
 	
 	
@@ -660,12 +609,7 @@ package et_geometry_2.polygons is
 	function is_inside (v : pac_vertices.cursor) return boolean;
 	function is_outside (v : pac_vertices.cursor) return boolean;
 	
-	
-	-- Returns true if the given two vertices have the same x/y position
-	-- and if the first is an intersection and the second is regular:
-	--function same_position (
-		--vertex_1, vertex_2 : in pac_vertices.cursor)
-		--return boolean;
+
 	
 
 	-- Removes successive vertices which have the same x/y position.
@@ -716,22 +660,6 @@ package et_geometry_2.polygons is
 		debug					: in boolean := false)
 		return type_overlap_status;
 
-
-	-- When the start point of an edge lies on an edge of the other polygon
-	-- then we got a regular vertex right AFTER an intersection. Both have 
-	-- the same x/y-position. The regular vertex must be deleted 
-	-- so that just the intersection is left:
-	procedure delete_regular_after_intersection (
-		vertices : in out pac_vertices.list);
-
-	
-	-- When the start point of an edge lies on an edge of the other polygon
-	-- then we got a regular vertex right BEFORE an intersection. Both have 
-	-- the same x/y-position. The regular vertex must be deleted 
-	-- so that just the intersection is left:
-	procedure delete_regular_before_intersection (
-		vertices : in out pac_vertices.list);
-	
 
 	-- Returns a list of vertices of the given primary
 	-- polygon merged with the intersections (leaving or entering) with the secondary
