@@ -55,19 +55,12 @@ package et_geometry_1 is
 	accuracy : constant type_float_internal := 1.0E-16;
 	-- CS must be a package parameter
 
-	function equal (left, right : in type_float_internal) return boolean renames "=";
-	--function less_than (left, right : in type_float_internal) return boolean renames "<";
-	--function greater_than (left, right : in type_float_internal) return boolean renames ">";	
-	
-	--function is_zero (f : in type_float_internal) return boolean;
-	--function is_not_zero (f : in type_float_internal) return boolean;
+	--function equal (left, right : in type_float_internal) return boolean renames "=";
 	
 	-- Returns true if the given arguments are equal.
 	-- Considers them as equal if their difference is less or equal 
 	-- the constant "accuracy":
 	function "=" (left, right : in type_float_internal) return boolean;
-	--function "<" (left, right : in type_float_internal) return boolean;
-	--function ">" (left, right : in type_float_internal) return boolean;
 
 	
 	function get_average (

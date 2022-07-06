@@ -48,24 +48,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry_1 is
 
-	--function is_zero (f : in type_float_internal) return boolean is begin
-		--if equal (f, 0.0) then
-			--return true;
-		--else 
-			--return false;
-		--end if;
-	--end is_zero;
-
-
-	--function is_not_zero (f : in type_float_internal) return boolean is begin
-		--if not equal (f, 0.0) then
-			--return true;
-		--else 
-			--return false;
-		--end if;
-	--end is_not_zero;
-
-	
 	
 	function "=" (left, right : in type_float_internal) return boolean is 
 		--d : type_float_internal := abs (left - right);
@@ -77,28 +59,6 @@ package body et_geometry_1 is
 			return false;
 		end if;
 	end "=";
-
-
-	--function "<" (left, right : in type_float_internal) return boolean is 
-		--lower_limit : type_float_internal := right - accuracy;
-	--begin
-		--if less_than (left, lower_limit) then
-			--return true;
-		--else
-			--return false;
-		--end if;
-	--end "<";
-
-
-	--function ">" (left, right : in type_float_internal) return boolean is
-		--upper_limit : type_float_internal := right + accuracy;
-	--begin
-		--if greater_than (left, upper_limit) then
-			--return true;
-		--else
-			--return false;
-		--end if;
-	--end ">";
 
 	
 	function get_average (
