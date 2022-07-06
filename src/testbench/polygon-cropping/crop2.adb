@@ -76,7 +76,8 @@ procedure crop2 is
 	crop_result : type_crop;
 	polygon_C : type_polygon;
 
-	fab_tol : type_distance := 0.001;
+	--fab_tol : type_distance := 0.001;
+	fab_tol : type_distance := 0.0001;
 begin
 
 	contour_A := type_contour (to_contour (contour_A_string));

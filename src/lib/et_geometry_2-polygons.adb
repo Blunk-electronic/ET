@@ -2225,27 +2225,62 @@ package body et_geometry_2.polygons is
 	end is_outside;
 
 	
-	function same_position (
-		vertex_1, vertex_2 : in pac_vertices.cursor)
-		return boolean
-	is 
-		result : boolean := false;
-	begin
-		if not is_regular (vertex_1) and is_regular (vertex_2) then
+	--function same_position (
+		--vertex_1, vertex_2 : in pac_vertices.cursor)
+		--return boolean
+	--is 
+		--result : boolean := false;
+	--begin
+		--if not is_regular (vertex_1) and is_regular (vertex_2) then
 			
-			if element (vertex_1).position = element (vertex_2).position then
-				result := true;
-			end if;
-		end if;
+			--if element (vertex_1).position = element (vertex_2).position then
+				--result := true;
+			--end if;
+		--end if;
 			
-		return result;
-	end same_position;
+		--return result;
+	--end same_position;
+
 	
+	procedure remove_redundant_positions (vertices : in out pac_vertices.list) is
+		-- Since we start with the first vertex (of given list)
+		-- we must compare with the position of the last vertex (of given list):
+		last_position : type_vector := vertices.last_element.position;
+
+		-- This is the new list that will finally overwrite the given list:
+		v_list_new : pac_vertices.list;
+
+		procedure query_vertex (v : in pac_vertices.cursor) is 
+			-- This is the x/x position of the candidate vertex:
+			candidate_position : constant type_vector := element (v).position;
+		begin
+			-- If the candidate does not sit on the previous vertex
+			-- then append it to the new list:
+			if candidate_position /= last_position then
+				v_list_new.append (element (v));
+
+				-- Update last position so that the next vertex will be
+				-- compared with that position:
+				last_position := candidate_position;
+			end if;
+
+			-- If the candidate has the same position as the previous vertex
+			-- then it will be ignored.
+		end query_vertex;
+		
+	begin
+		-- Probe the given vertices one by one:
+		vertices.iterate (query_vertex'access);
+
+		-- Overwrite the given vertices by our new list:
+		vertices := v_list_new;
+	end remove_redundant_positions;
 
 
 	function to_polygon (vertices : in pac_vertices.list)
 		return type_polygon
 	is
+		vertices_cleaned_up : pac_vertices.list := vertices;
 		result : type_polygon;
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is 
@@ -2257,8 +2292,8 @@ package body et_geometry_2.polygons is
 
 			-- The vertex before the candidate vertex 
 			-- will be the start of the edge:
-			if v = vertices.first then
-				edge.start_point := element (vertices.last).position;
+			if v = vertices_cleaned_up.first then
+				edge.start_point := element (vertices_cleaned_up.last).position;
 			else
 				edge.start_point := element (previous (v)).position;
 			end if;
@@ -2267,8 +2302,11 @@ package body et_geometry_2.polygons is
 		end query_vertex;
 		
 	begin
+		-- Clean up the given vertices:
+		remove_redundant_positions (vertices_cleaned_up);
+		
 		-- Convert the list of vertices to a list of lines (or edges):
-		vertices.iterate (query_vertex'access);
+		vertices_cleaned_up.iterate (query_vertex'access);
 
 		return result;
 	end to_polygon;
@@ -2776,16 +2814,35 @@ package body et_geometry_2.polygons is
 
 		-- In the following this list will be filled with vertices by
 		-- copying vertices from the given list "vertices" one by one.
-		-- If a regular vertex is detected right after an intersection
+		-- If a regular vertex is detected right AFTER an intersection
 		-- then this particular vertex will be ignored:
 		v_list_new : pac_vertices.list;
+
+		-- Returns true if the given two vertices have the same x/y position
+		-- and if the first is an intersection and the second is regular:
+		function to_be_ignored (
+			vertex_1, vertex_2 : in pac_vertices.cursor)
+			return boolean
+		is 
+			result : boolean := false;
+		begin
+			if not is_regular (vertex_1) and is_regular (vertex_2) then
+				
+				if element (vertex_1).position = element (vertex_2).position then
+					result := true;
+				end if;
+			end if;
+				
+			return result;
+		end to_be_ignored;
+		
 	begin
 		while c /= pac_vertices.no_element loop
 			--put_line ("c: " & to_string (element (c).position));
 			
 			if c = vertices.first then
 				-- Look at the vertex at the end of the list:
-				if same_position (vertices.last, c) then
+				if to_be_ignored (vertices.last, c) then
 					null; -- ignore vertex
 				else
 					-- copy vertex
@@ -2794,7 +2851,7 @@ package body et_geometry_2.polygons is
 				
 			else
 				
-				if same_position (previous (c), c) then
+				if to_be_ignored (previous (c), c) then
 					null; -- ignore vertex
 				else
 					-- copy vertex
@@ -2813,26 +2870,68 @@ package body et_geometry_2.polygons is
 	procedure delete_regular_before_intersection (
 		vertices : in out pac_vertices.list)
 	is
+		-- This cursor points to the candidate vertex in the given list:
 		c : pac_vertices.cursor := vertices.first;
-		c2 : pac_vertices.cursor;
 
-		-- CS: Probably rework required as in delete_regular_after_intersection ?
+		-- In the following this list will be filled with vertices by
+		-- copying vertices from the given list "vertices" one by one.
+		-- If a regular vertex is detected right BEFORE an intersection
+		-- then this particular vertex will be ignored:
+		v_list_new : pac_vertices.list;
+
+		-- Returns true if the given two vertices have the same x/y position
+		-- and if the first is regular and the second is an intersection:
+		function to_be_ignored (
+			vertex_1, vertex_2 : in pac_vertices.cursor)
+			return boolean
+		is 
+			result : boolean := false;
+		begin
+			if is_regular (vertex_1) and not is_regular (vertex_2) then
+				--put_line ("regular - intersection");
+				
+				if element (vertex_1).position = element (vertex_2).position then
+					result := true;
+				end if;
+			end if;
+				
+			return result;
+		end to_be_ignored;
+		
 	begin
 		while c /= pac_vertices.no_element loop
+			--put_line ("c: " & to_string (element (c).position));
+			
+			if c = vertices.last then
+				--put_line ("c last : " & to_string (element (c)));
+				--put_line ("c first: " & to_string (element (vertices.first)));
+				
+				-- Look at the vertex at the begin of the list:
+				if to_be_ignored (c, vertices.first) then -- regular-intersection
+					null; -- ignore vertex
 
-			if c = vertices.first then
-				if same_position (c, vertices.last) then
-					vertices.delete_last;
+					--put_line ("ignored");
+				else
+					-- copy vertex
+					v_list_new.append (element (c));
 				end if;
+				
 			else
-				if same_position (c, previous (c)) then
-					c2 := previous (c);
-					vertices.delete (c2);
+				
+				if to_be_ignored (c, next (c)) then -- regular-intersection
+					null; -- ignore vertex
+				else
+					-- copy vertex
+					v_list_new.append (element (c));
 				end if;
 			end if;
 			
 			next (c);
 		end loop;
+
+		-- overwrite the given list by the new list:
+		vertices := v_list_new;
+
 	end delete_regular_before_intersection;
 
 
@@ -3075,15 +3174,15 @@ package body et_geometry_2.polygons is
 		polygon_primary.edges.iterate (query_edge'access);
 
 		--put_line ("vertices pre: " & to_string (vertices));
-		delete_regular_after_intersection (vertices);
-		delete_regular_before_intersection (vertices);
+		--delete_regular_after_intersection (vertices);
+		--delete_regular_before_intersection (vertices);
 
-		replace_entering_leaving_by_regular (vertices);
-		replace_leaving_entering_by_regular (vertices);
+		--replace_entering_leaving_by_regular (vertices);
+		--replace_leaving_entering_by_regular (vertices);
 		
 		-- CS count entering and leaving intersections
 		-- numbers must match. abort if mismatch.
-		compare_number_entering_leaving (vertices);
+		--compare_number_entering_leaving (vertices);
 		
 		return vertices;
 	end get_vertices;
@@ -3188,48 +3287,76 @@ package body et_geometry_2.polygons is
 		delete_visited				: in boolean := true)
 		return pac_vertices.list
 	is
-
-		v : pac_vertices.cursor;
+		-- The list of vertices to be returned;
 		result : pac_vertices.list;
 
+		
+		-- This function returns true if the given vertex
+		-- does not sit on the given start_vertex:
+		function not_on_start (c : in pac_vertices.cursor)
+			return boolean is
+		begin
+			if element (c).position /= element (start_vertex).position then
+				return true;
+			else
+				return false;
+			end if;
+		end not_on_start;
+		
+		-- This cursor points at the vertex being processed:
+		v : pac_vertices.cursor;
+
+
+		-- Traverses through the vertices starting where cursor
+		-- v is pointing at. Appends each of them to the result.
+		-- Aborts iteration on a suitable vertex. 
+		-- A suitable vertex is qualified if it:
+		-- - does not sit on the given start_vertex. Means is must
+		--   come after the start_vertex.
+		-- - is leaving/entering according to the given direction_of_intersection.
 		procedure do_collect is begin
 			case direction_of_search is
-				when CCW =>
+				when CCW => -- traverse forward
+					
 					while v /= pac_vertices.no_element loop
 						result.append (element (v));
 
-						case direction_of_intersection is
-							when LEAVING =>
-								if is_leaving (v) then
-									exit;
-								end if;
+						if not_on_start (v) then
+							case direction_of_intersection is
+								when LEAVING =>
+									if is_leaving (v) then
+										exit;
+									end if;
 
-							when ENTERING =>
-								if is_entering (v) then
-									exit;
-								end if;
+								when ENTERING =>
+									if is_entering (v) then
+										exit;
+									end if;
 
-						end case;
+							end case;
+						end if;
 						
 						next (v);
 					end loop;
 
-				when CW =>
+				when CW => -- traverse backward
 					while v /= pac_vertices.no_element loop
 						result.append (element (v));
 
-						case direction_of_intersection is
-							when LEAVING =>
-								if is_leaving (v) then
-									exit;
-								end if;
+						if not_on_start (v) then						
+							case direction_of_intersection is
+								when LEAVING =>
+									if is_leaving (v) then
+										exit;
+									end if;
 
-							when ENTERING =>
-								if is_entering (v) then
-									exit;
-								end if;
+								when ENTERING =>
+									if is_entering (v) then
+										exit;
+									end if;
 
-						end case;
+							end case;
+						end if;
 						
 						previous (v);
 					end loop;
@@ -3275,8 +3402,6 @@ package body et_geometry_2.polygons is
 		collected_vertices : count_type := 0;
 		deleted_vertices : count_type := 0;
 		restart_required : boolean := false;
-
-
 
 
 		procedure delete_ccw is 

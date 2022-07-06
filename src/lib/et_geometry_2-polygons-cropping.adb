@@ -183,7 +183,8 @@ package body et_geometry_2.polygons.cropping is
 			-- Traverse vertices_B until no more leaving vertex
 			-- can be found:
 			while vertice_B_cursor /= pac_vertices.no_element loop
-
+				--put_line ("A");
+				
 				-- A sub-polygon starts at v_start. When walking along the
 				-- edges of polygon A or B we will eventually get back to 
 				-- the start point v_start. The current sub-polygon is then complete.
@@ -201,6 +202,8 @@ package body et_geometry_2.polygons.cropping is
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
 
+				--put_line ("B");
+				
 				-- Find the very entering intersection E in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
 				-- a leaving intersection:
@@ -209,6 +212,8 @@ package body et_geometry_2.polygons.cropping is
 					start_vertex				=> vertices_B.find (vertices_tmp_1.last_element),
 					direction_of_intersection	=> LEAVING,
 					direction_of_search			=> CCW);
+
+				--put_line ("C");
 				
 				loop
 					-- safety measure to prevent forever-looping:
@@ -248,6 +253,8 @@ package body et_geometry_2.polygons.cropping is
 							before	=> pac_vertices.no_element, 
 							source 	=> vertices_tmp_2); -- will be emtied
 
+						--put_line ("D");
+						
 						-- Switch to polygon B and get intersections
 						-- until (and including) a leaving intersection
 						-- into the secondary collection. The secondary collection
@@ -259,6 +266,7 @@ package body et_geometry_2.polygons.cropping is
 							direction_of_intersection	=> LEAVING,
 							direction_of_search			=> CCW);
 
+						--put_line ("E");
 					end if;
 				end loop;
 					

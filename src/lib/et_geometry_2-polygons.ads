@@ -661,13 +661,20 @@ package et_geometry_2.polygons is
 	function is_outside (v : pac_vertices.cursor) return boolean;
 	
 	
-	-- Returns true if x/y of the given two vertices are 
-	-- both regular and have the same position:
-	function same_position (
-		vertex_1, vertex_2 : in pac_vertices.cursor)
-		return boolean;
+	-- Returns true if the given two vertices have the same x/y position
+	-- and if the first is an intersection and the second is regular:
+	--function same_position (
+		--vertex_1, vertex_2 : in pac_vertices.cursor)
+		--return boolean;
 	
 
+	-- Removes successive vertices which have the same x/y position.
+	-- Example: 
+	-- given vertices: 0/0 0/0 3/4 -4/9 -4/9
+	-- result        : 0/0 4/4 -4/9
+	procedure remove_redundant_positions (vertices : in out pac_vertices.list);
+
+	
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
@@ -735,7 +742,7 @@ package et_geometry_2.polygons is
 	-- get_intersections (see above).
 	-- NOTE: The solely purpose of the argument "polygon_secondary" is to help
 	-- figuring out whether a certain vertex of the primary polygon is inside, 
-	-- outside, on an edge or on an vertex of the secondary polygon.
+	-- outside, on an edge or on a vertex of the secondary polygon.
 	function get_vertices (
 		polygon_primary 	: in type_polygon;
 		polygon_secondary	: in type_polygon;

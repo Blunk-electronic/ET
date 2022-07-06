@@ -526,7 +526,7 @@ begin
 	-- B remains unchanged. B will not be cropped.
 	
 	make_set (
-		A => B_default,
+		A => B_default, -- cropping
 		B =>  "line 0 0 line 0 100 line 100 100 line 100 0 line 110 0 line 110 110 line -10 110 line -10 0",
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
