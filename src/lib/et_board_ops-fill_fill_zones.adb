@@ -500,7 +500,7 @@ is
 				procedure clear_fill (
 					zone	: in out type_route_solid)
 				is begin
-					zone.fill := no_fill;
+					zone.islands := no_islands;
 				end clear_fill;
 
 
@@ -566,7 +566,7 @@ is
 						
 					begin
 						islands.iterate (query_clipped'access);
-						zone.fill := result;
+						zone.islands := result;
 					end crop_by_holes_at_border;
 
 
@@ -574,10 +574,11 @@ is
 					procedure crop_by_splitting_holes (
 						zone : in out type_route_solid)
 					is
-						island_cursor : pac_islands.cursor := zone.fill.first;
+						island_cursor : pac_islands.cursor := zone.islands.first;
 						proceed : aliased boolean := true;
 
 						fragments : pac_islands.list;
+
 						
 						procedure query_hole (h : in pac_holes_as_polygons.cursor) is
 							
@@ -594,7 +595,7 @@ is
 							case ol_sts is
 								when A_OVERLAPS_B =>
 									--put_line ("hole");
-									check_length (element (h));
+									--check_length (element (h));
 									
 									declare										
 										cr : constant type_crop := crop (
@@ -621,7 +622,8 @@ is
 					begin
 						while island_cursor /= pac_islands.no_element loop
 
-							check_length (type_polygon (element (island_cursor).border));
+							-- Check the length of the edges of the island:
+							--check_length (type_polygon (element (island_cursor).border));
 							
 							iterate (holes, query_hole'access, proceed'access);
 
@@ -675,7 +677,7 @@ is
 					-- In the end the cropped islands will form the fill of the zone:
 					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_holes_at_border'access);
 
-					-- Crop the islands by the holes that split the islands into fragments.
+					-- Crop the islands by the holes that DO split the islands into fragments.
 					-- The result is a list of even more islands. 
 					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_splitting_holes'access);
 

@@ -104,8 +104,7 @@ package et_fill_zones is
 		
 	package pac_islands is new doubly_linked_lists (type_island);
 
-	no_fill : constant pac_islands.list := pac_islands.empty_list;
-	-- CS rename to no_islands
+	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
 
 	
@@ -123,7 +122,7 @@ package et_fill_zones is
 	
 		easing : type_easing;
 
-		fill : pac_islands.list := no_fill; -- CS rename to islands
+		islands : pac_islands.list := no_islands;
 		
 		case fill_style is
 			when SOLID		=> null;

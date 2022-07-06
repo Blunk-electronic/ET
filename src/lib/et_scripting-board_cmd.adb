@@ -2000,7 +2000,7 @@ is
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
 
-						fill		=> no_fill,						
+						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
 					place_fill_zone (module_cursor, ps, log_threshold + 1);
@@ -2018,7 +2018,7 @@ is
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
 
-						fill		=> no_fill,
+						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
 					place_fill_zone (module_cursor, ph, log_threshold + 1);
@@ -2111,7 +2111,7 @@ is
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,					
-					fill		=> no_fill,
+					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2140,7 +2140,7 @@ is
 					fill_style	=> SOLID,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,
-					fill		=> no_fill,
+					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2169,7 +2169,7 @@ is
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,
-					fill		=> no_fill,					
+					islands		=> no_islands,			
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
@@ -2199,7 +2199,7 @@ is
 					hatching	=> settings.polygons_conductor.hatching,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,
-					fill		=> no_fill,
+					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with

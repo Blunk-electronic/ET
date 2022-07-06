@@ -1982,6 +1982,8 @@ package body et_geometry_2.polygons is
 	begin
 		-- Clean up the given vertices:
 		remove_redundant_positions (vertices_cleaned_up);
+
+		-- CS merge successive edges running into the same direction
 		
 		-- Convert the list of vertices to a list of lines (or edges):
 		vertices_cleaned_up.iterate (query_vertex'access);

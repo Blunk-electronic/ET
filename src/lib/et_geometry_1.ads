@@ -53,8 +53,6 @@ generic
 	
 package et_geometry_1 is
 
-	--accuracy : constant type_float_internal := 1.0E-16;
-	-- CS must be a package parameter
 
 	--function equal (left, right : in type_float_internal) return boolean renames "=";
 	

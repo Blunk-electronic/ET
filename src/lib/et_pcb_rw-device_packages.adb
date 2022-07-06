@@ -1433,7 +1433,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
-										fill		=> no_fill,
+										islands		=> no_islands,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -1443,7 +1443,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										fill		=> no_fill,
+										islands		=> no_islands,
 										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
@@ -1462,7 +1462,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (contour with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
-										fill		=> no_fill,
+										islands		=> no_islands,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -1472,7 +1472,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (contour with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										fill		=> no_fill,
+										islands		=> no_islands,
 										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));

@@ -270,7 +270,7 @@ is
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).fill, query_island'access);
+				iterate (element (c).islands, query_island'access);
 			end if;
 		end if;
 	end query_fill_zone;
@@ -296,7 +296,7 @@ is
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).fill, query_island'access);
+				iterate (element (c).islands, query_island'access);
 			end if;
 
 		end if;
@@ -323,7 +323,7 @@ is
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).fill, query_island'access);
+				iterate (element (c).islands, query_island'access);
 			end if;
 
 		end if;
@@ -350,7 +350,7 @@ is
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).width_min;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).fill, query_island'access);
+				iterate (element (c).islands, query_island'access);
 			end if;
 
 		end if;

@@ -4140,7 +4140,7 @@ is
 								new_item	=> (contour with
 									fill_style 	=> SOLID,
 									easing		=> board_easing,
-									fill		=> no_fill,
+									islands		=> no_islands,
 									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
 									width_min	=> polygon_width_min));
@@ -4151,7 +4151,7 @@ is
 								new_item	=> (contour with
 									fill_style 	=> HATCHED,
 									easing		=> board_easing,
-									fill		=> no_fill,
+									islands		=> no_islands,
 									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
 									width_min	=> polygon_width_min,
