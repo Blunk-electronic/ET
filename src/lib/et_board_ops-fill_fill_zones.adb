@@ -594,7 +594,9 @@ is
 						begin
 							case ol_sts is
 								when A_OVERLAPS_B =>
-									--put_line ("hole");
+									log (text => "Hole  : " & to_string (element (h)), level => log_threshold + 5);
+									log (text => "island: " & to_string (element (island_cursor).border), level => log_threshold + 5);
+									
 									--check_length (element (h));
 									
 									declare										
@@ -604,12 +606,15 @@ is
 											debug => true
 											);
 									begin
-										null;
+										log (text => "crop done", level => log_threshold + 4);
 										
-										--if cr.count > 1 then
-											--proceed := false;
-											--fragments := to_islands (cr);
-										--end if;
+										if cr.count > 1 then
+											log (text => "got" & count_type'image (cr.count) & " new islands",
+												 level => log_threshold + 5);
+											
+											proceed := false;
+											fragments := to_islands (cr);
+										end if;
 									end;
 
 								when others => null;
@@ -627,17 +632,17 @@ is
 							
 							iterate (holes, query_hole'access, proceed'access);
 
-							--if not proceed then
-								----exit;
+							if not proceed then
+								--exit;
 								--if not proceed then
-									--zone.fill.splice (before => island_cursor, source => fragments);
-									--zone.fill.delete (island_cursor);
-									--island_cursor := zone.fill.first;
-									--proceed := true;
+									zone.islands.splice (before => island_cursor, source => fragments);
+									zone.islands.delete (island_cursor);
+									island_cursor := zone.islands.first;
+									proceed := true;
 								--end if;
-							--else
+							else
 								next (island_cursor);								
-							--end if;
+							end if;
 							
 						end loop;
 
@@ -680,7 +685,8 @@ is
 					-- Crop the islands by the holes that DO split the islands into fragments.
 					-- The result is a list of even more islands. 
 					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_splitting_holes'access);
-
+					--log (text => "done", level => log_threshold + 4);
+					
 					log_indentation_down;
 				end process_board_contours;
 			

@@ -36,6 +36,9 @@
 --
 
 
+with ada.strings.unbounded;
+with ada.characters.latin_1;
+
 with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
@@ -119,6 +122,29 @@ package body et_geometry_2.polygons.cropping is
 	end "=";
 
 
+
+	function to_string (cr : in type_crop) return string is
+		use ada.strings.unbounded;
+		use ada.characters.latin_1;
+		
+		result : unbounded_string;
+
+		procedure query_fragment (f : in pac_cropped.cursor) is begin
+			result := result & LF & to_string (element (f));
+		end query_fragment;
+		
+	begin
+		result := result & type_overlap_status'image (cr.status);
+
+		if cr.exists then
+			result := result & LF & "fragment count:" & count_type'image (cr.count);
+			cr.fragments.iterate (query_fragment'access);
+		end if;
+
+		return to_string (result);
+	end to_string;
+
+	
 	
 	function crop (
 		polygon_A	: in type_polygon;
@@ -183,7 +209,7 @@ package body et_geometry_2.polygons.cropping is
 			-- Traverse vertices_B until no more leaving vertex
 			-- can be found:
 			while vertice_B_cursor /= pac_vertices.no_element loop
-				--put_line ("A");
+				put_line ("A");
 				
 				-- A sub-polygon starts at v_start. When walking along the
 				-- edges of polygon A or B we will eventually get back to 
@@ -202,7 +228,7 @@ package body et_geometry_2.polygons.cropping is
 				-- Now we have the intersections and vertices from after the start point 
 				-- to (and including) the entering intersection E.
 
-				--put_line ("B");
+				put_line ("B");
 				
 				-- Find the very entering intersection E in polygon B and walk
 				-- along the vertices (and intersections) of polygon B until
@@ -213,12 +239,16 @@ package body et_geometry_2.polygons.cropping is
 					direction_of_intersection	=> LEAVING,
 					direction_of_search			=> CCW);
 
-				--put_line ("C");
+				put_line ("C");
 				
 				loop
+					put_line ("C1");
+					
 					-- safety measure to prevent forever-looping:
 					increment_safety_counter (safety_counter, safety_counter_limit);					
 
+					put_line ("C2");
+					
 					-- Splice the intersections and vertices of A and B.
 					-- Collect everything in the primary collection:
 					splice (
@@ -226,17 +256,21 @@ package body et_geometry_2.polygons.cropping is
 						before	=> pac_vertices.no_element, 
 						source 	=> vertices_tmp_2); -- will be emptied
 
+					put_line ("C3");
+					
 					-- If we have reached the start point then the sub-polygon
 					-- is complete.
 					if last_element (vertices_tmp_1) = v_start then
 						exit;
 					else
+						put_line ("C4");
+						
 						-- If sub-polygon is not complete, then again go to the first
 						-- leaving intersection of polygon B:
 						--vertice_B_cursor := get_first (LEAVING, vertices_B);
 
 						-- Get the intersections and vertices until
-						-- the an entering intersection in polygon A:
+						-- an entering intersection in polygon A:
 						vertices_tmp_2 := get_until (
 							vertices					=> vertices_A,
 							--start_vertex				=> vertices_A.find (element (vertice_B_cursor)),
@@ -245,6 +279,8 @@ package body et_geometry_2.polygons.cropping is
 							direction_of_search			=> CW,
 							delete_visited				=> false);
 
+						put_line ("C5");
+						
 						
 						-- Append the intersection (and vertices) to the primary
 						-- collection:
@@ -253,7 +289,7 @@ package body et_geometry_2.polygons.cropping is
 							before	=> pac_vertices.no_element, 
 							source 	=> vertices_tmp_2); -- will be emtied
 
-						--put_line ("D");
+						put_line ("D");
 						
 						-- Switch to polygon B and get intersections
 						-- until (and including) a leaving intersection
@@ -266,20 +302,25 @@ package body et_geometry_2.polygons.cropping is
 							direction_of_intersection	=> LEAVING,
 							direction_of_search			=> CCW);
 
-						--put_line ("E");
+						put_line ("E");
 					end if;
 				end loop;
-					
+
+				put_line ("F");
+				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
 				-- Append the sub-polygon to the result:
 				result_crop.append (type_polygon (to_polygon (vertices_tmp_1)));
-				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
+				put_line ("G");
+				
 				-- Get the next leaving vertex from vertices_B.
 				-- In case there is no leaving vertex any more, then this
 				-- pass will be the last (see head of this loop):
 				vertice_B_cursor := get_first (LEAVING, vertices_B);
 
+				put_line ("H");
+				
 				-- We also abort the loop if there are no more entering
 				-- vertices in vertices_B (happens in rare cases):
 				if get_first (ENTERING, vertices_B) = pac_vertices.no_element then

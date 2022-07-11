@@ -50,7 +50,8 @@ package et_geometry_2.polygons.cropping is
 	-- The result of a polygon cropping operation is a list
 	-- of sub-polygons:
 	package pac_cropped is new doubly_linked_lists (type_polygon);
-
+	use pac_cropped;
+	
 
 	type type_crop (exists : boolean := true) is record
 		-- The status of polygon A in relation to polygon B:
@@ -72,6 +73,10 @@ package et_geometry_2.polygons.cropping is
 	function "=" (
 		left, right : in type_crop)
 		return boolean;
+	
+
+	
+	function to_string (cr : in type_crop) return string;
 	
 	
 	-- Crops polygon B by polygon A.

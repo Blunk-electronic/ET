@@ -496,8 +496,9 @@ package et_geometry_2.polygons is
 
 
 	type type_intersection is new type_intersection_base with record
-		-- This is supportive information. It helps
-		-- to find the edges that intersect:
+		-- In addition to x/y position and direction,
+		-- this is supportive information that tells which
+		-- edges are actually intersectin each other:
 		edge_A		: type_edge;
 		edge_B		: type_edge;
 	end record;

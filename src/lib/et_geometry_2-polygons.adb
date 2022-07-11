@@ -2002,7 +2002,9 @@ package body et_geometry_2.polygons is
 		return pac_intersections.list
 	is
 		intersections : pac_intersections.list;
-		
+
+
+		-- Investigates the status of the given A edge relative to polygon B.
 		procedure query_A_edge (a : in pac_edges.cursor) is
 
 			-- The status of the A-edge relative to polygon B:
@@ -2132,15 +2134,19 @@ package body et_geometry_2.polygons is
 			
 		begin -- query_A_edge
 
+			-- There are some special cases that require special threatment:
+			-- The A-edge starts or ends on a B-edge or on a B-vertex. So there 
+			-- may exist several situations which must be handled first:
+			
 			case LPS.start_point.location is
 				when OUTSIDE =>
 					case LPS.end_point.location is
 						when OUTSIDE =>
 							if LPS.intersections.is_empty then
-								-- edge passes the polygon
+								-- A-edge passes the B-polygon. No intersections at all.
 								null;
 							else
-								-- edge runs through the polygon
+								-- A-edge runs through B-polygon from outside to outside.
 								collect_intersections;
 							end if;
 							
@@ -2149,12 +2155,14 @@ package body et_geometry_2.polygons is
 								-- CS: should never happen
 								raise constraint_error;
 							else
-								-- edge runs from outside to inside
+								-- A-edge runs through B-polygon from outside to inside.
 								collect_intersections;
 							end if;
 
 							
 						when ON_EDGE =>
+							-- A-edge starts outside and ends on an edge or on a vertex
+							-- of the B-polygon:
 							use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
@@ -2459,6 +2467,58 @@ package body et_geometry_2.polygons is
 	end get_overlap_status;
 
 
+	-- Replaces three successive vertices which meet these criterions:
+	-- - having same position,
+	-- - the first is entering,
+	-- - the second is regular,
+	-- - the third is leaving
+	-- by a regular vertice:
+	procedure replace_entering_leaving_by_regular (
+		vertices : in out pac_vertices.list)
+	is
+		c : pac_vertices.cursor := vertices.first;
+
+		result : pac_vertices.list;
+
+		function is_to_be_replaced (v1, v2, v3 : in pac_vertices.cursor) return boolean is begin
+			if element (v1).position = element (v2).position
+			and element (v1).position = element (v3).position
+				
+			and is_entering (v1) and is_regular (v2) and is_leaving (v3) then
+				return true;
+			else
+				return false;
+			end if;
+		end is_to_be_replaced;
+
+		look_ahead : boolean := true;
+		
+	begin
+		while c /= pac_vertices.no_element loop
+
+			if next (next (c)) = pac_vertices.no_element then
+				look_ahead := false;
+			end if;
+
+			if look_ahead then
+				if is_to_be_replaced (c, next (c), next (next (c))) then
+
+					result.append (element (next (c)));
+					next (c);
+					next (c);
+				else
+					result.append (element (c));
+				end if;
+			else
+				result.append (element (c));
+			end if;
+			
+			next (c);
+		end loop;
+
+		vertices := result;
+	end replace_entering_leaving_by_regular;
+	
 		
 	function get_vertices (
 		polygon_primary		: in type_polygon;
@@ -2540,6 +2600,8 @@ package body et_geometry_2.polygons is
 		
 	begin
 		polygon_primary.edges.iterate (query_edge'access);
+
+		--replace_entering_leaving_by_regular (vertices);
 		return vertices;
 	end get_vertices;
 
@@ -2790,10 +2852,47 @@ package body et_geometry_2.polygons is
 			--end if;
 		end delete_cw;
 
+
+		--function is_triplet (p0 : in pac_vertices.cursor) return boolean is 
+			--p1, p2 : pac_vertices.cursor;
+		--begin
+			--if previous (previous (p0)) /= pac_vertices.no_element then
+				--put_line ("triplet");
+				
+				--p1 := previous (p0);
+				--p2 := previous (p1);
+
+				--put_line (to_string (element (p2)));
+				--put_line (to_string (element (p1)));
+				--put_line (to_string (element (p0)));
+				
+				--if element (p0).position = element (p1).position
+			    --and element (p0).position = element (p2).position
+				--and is_entering (p2) and is_regular (p1) and is_leaving (p0) then
+					--return true;
+				--else
+					--return false;
+				--end if;
+			--else
+				--return false;
+			--end if;
+		--end is_triplet;
+
 		
 	begin
+		--if delete_visited then
+			--if is_triplet (start_vertex) then
+				----put_line ("triplet");
+						
+				--v := previous (start_vertex);
+				--vertices.delete (v);
+				--v := previous (start_vertex);
+				--vertices.delete (v);
+			--end if;
+		--end if;
+		
 		-- Preset cursor v to the given entering/leaving vertex.
-		-- The serach starts here:
+		-- The search starts here:
 		v := start_vertex;
 
 		-- Collect vertices from given vertex to the next leaving/entering vertex:
