@@ -752,24 +752,8 @@ package body et_geometry_2.polygons is
 	end to_string;
 
 
-	
-	
-	
-	function "<" (left, right : in type_probe_line_intersection_polygon)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if left.x_position < right.x_position then
-			result := true;
-		else
-			result := false;
-		end if;
 
-		-- CS compare angles ?
-		
-		return result;
-	end "<";
+
 
 	
 	
@@ -778,13 +762,13 @@ package body et_geometry_2.polygons is
 		return string
 	is
 		use ada.strings.unbounded;
-		use pac_probe_line_intersections_polygon;
+		use pac_probe_line_intersections;
 
 		result : unbounded_string;
 		
-		procedure query_intersection (c : pac_probe_line_intersections_polygon.cursor) is begin
-			result := result & type_float_internal'image (element (c).x_position) 
-						& "/" & trim (to_string (element (c).angle), left);
+		procedure query_intersection (c : pac_probe_line_intersections.cursor) is begin
+			result := result & type_float_internal'image (element (c)); 
+						--& "/" & trim (to_string (element (c).angle), left);
 		end query_intersection;
 
 	begin
@@ -829,13 +813,13 @@ package body et_geometry_2.polygons is
 	is
 		result : pac_vectors.list;
 
-		use pac_probe_line_intersections_polygon;
+		use pac_probe_line_intersections;
 
-		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is
-			x : type_float_internal renames element (i).x_position;
+		procedure query_intersection (i : in pac_probe_line_intersections.cursor) is
+			x : type_float_internal renames element (i);
 		begin
 			if x >= from and x <= to then
-				result.append ((element (i).x_position, status.start.y, 0.0));
+				result.append ((element (i), status.start.y, 0.0));
 			end if;
 		end query_intersection;
 		
@@ -879,7 +863,7 @@ package body et_geometry_2.polygons is
 		-- In the end of this function they will be assembled 
 		-- to the actual return:
 		result_status : type_location;
-		result_intersections : pac_probe_line_intersections_polygon.list;
+		result_intersections : pac_probe_line_intersections.list;
 		result_distance : type_float_internal := 0.0;
 		result_edge : pac_edges.cursor;
 		result_neigboring_edges : type_neigboring_edges;
@@ -900,27 +884,20 @@ package body et_geometry_2.polygons is
 		-- means whether it is inside or outside the polygon:
 		it : count_type := 0;
 
-		use pac_probe_line_intersections_polygon;
+		use pac_probe_line_intersections;
 
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in pac_geometry_1.type_intersection; -- incl. point and angle
-			edge		: in type_edge)
+			intersection: in pac_geometry_1.type_intersection)
 		is 
 			xi : constant type_float_internal := get_x (intersection.vector);
 		begin
 			-- The intersection will be collected if it is ON or
 			-- AFTER the given start point. If it is before the start
 			-- point then we ignore it:
-			--if xi >= type_float_internal (get_x (point)) then
-			if xi >= get_x (point) then
-				
-				append (result_intersections, (
-					x_position	=> xi,
-					angle		=> intersection.angle,
-					edge		=> edge));
-
+			if xi >= get_x (point) then				
+				append (result_intersections, xi);
 			end if;
 		end collect_intersection;
 
@@ -947,8 +924,7 @@ package body et_geometry_2.polygons is
 					--put_line ("crosses threshold");
 					
 					-- Add the intersection to the result:
-					--collect_intersection (i.intersection, (LINE, element (c)));
-					collect_intersection (i.intersection, element (c));
+					collect_intersection (i.intersection);
 				end if;
 			end if;				
 		end query_edge;
@@ -958,20 +934,20 @@ package body et_geometry_2.polygons is
 		
 		procedure sort_x_values is
 			package pac_probe_line_intersections_sorting is new 
-				pac_probe_line_intersections_polygon.generic_sorting;
+				pac_probe_line_intersections.generic_sorting;
 			
 			use pac_probe_line_intersections_sorting;
-			c : pac_probe_line_intersections_polygon.cursor;
+			--c : pac_probe_line_intersections.cursor;
 		begin
 			sort (result_intersections);
 
 			-- Remove redundant x-positions.
 			-- Don't ! Does not work !
 			--c := result_intersections.first;
-			--while c /= pac_probe_line_intersections_polygon.no_element loop
+			--while c /= pac_probe_line_intersections.no_element loop
 
 				--if c /= result_intersections.first then
-					--if element (c).x_position = element (previous (c)).x_position then
+					--if element (c) = element (previous (c)) then
 						--delete (result_intersections, c);
 					--end if;
 				--end if;
@@ -986,14 +962,13 @@ package body et_geometry_2.polygons is
 		--put_line ("Y-threshold:" & to_string (y_threshold));
 		
 		polygon.edges.iterate (query_edge'access);
-
 		
 		-- The x-values are not sorted yet. We need them sorted with the
 		-- smallest x first
 		sort_x_values;
 
 		-- get the total number of intersections
-		it := pac_probe_line_intersections_polygon.length (result_intersections);
+		it := pac_probe_line_intersections.length (result_intersections);
 		--put_line ("intersections total:" & count_type'image (it));
 		
 		-- If the total number of intersections is an odd number, then the given point
@@ -1007,7 +982,8 @@ package body et_geometry_2.polygons is
 			--put_line ("outside");
 		end if;
 
-
+		
+		
 		-- Figure out whether the given point is a vertex, whether
 		-- it lies on an edge or whether it lies somewhere else:
 		if is_vertex (polygon, point) then

@@ -73,7 +73,9 @@ procedure get_status is
 	end;
 	
 	
-	P_square : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	c_square : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	c_m_shaped : constant string := "line 0 0 line 50 50 line 100 0 line 100 100 line 0 100";
+	c_rhombus : constant string := "line 50 0  line 100 50  line 50 100  line 0 50";
 	--P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
 	--P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
 
@@ -83,12 +85,8 @@ procedure get_status is
 		use pac_probe_line_intersections_polygon;
 		use pac_edges;
 		
-		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is 
-		begin
-			put_line ("x-pos : " & type_float_internal'image (element (i).x_position));
-			--put_line ("edge  : " & to_string (element (EC).segment_line));
-			--put_line ("drctn : " & type_intersection_direction'image (element (i).direction));
-			--new_line;
+		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is begin
+			put_line ("x-pos : " & type_float_internal'image (element (i)));
 		end;
 	
 	begin
@@ -134,7 +132,21 @@ procedure get_status is
 begin
 
 	--make_polygon (P_u_shaped);
-	make_polygon (P_square);
+	
+	--make_polygon (c_square);
+	--V := set (0.0, 20.0000000000); -- go
+	--V := set (0.0, 0.0); -- go
+	
+	--make_polygon (c_rhombus);
+	--V := set (0.0, 50.0); -- go
+	--V := set (25.0, 25.0); -- go
+
+	make_polygon (c_m_shaped);
+	--V := set (50.0, 50.0); -- go
+	V := set (10.0, 50.0); -- go
+
+
+	
 	-- T := type_point (set (-10.0, 99.0)); -- go
 	--T := type_point (set (0.0, 99.0)); -- go
 	--T := type_point (set (0.0, 100.0)); -- go
@@ -144,10 +156,9 @@ begin
 	
 	--V := set (-10.0, 10.0000000000); -- go
 	--V := set (0.0, 0.0); -- go
-	--V := set (0.0, 20.0000000000); -- go
 	--V := set (0.00000000001, 20.0000000000); -- go
 	--V := set (1.0E-12, 20.0000000000); -- go
-	V := set (1.0E-16, 20.0000000000); -- go
+	--V := set (1.0E-16, 20.0000000000); -- go
 
 	
 	do_test;

@@ -279,21 +279,7 @@ package et_geometry_2.polygons is
 	function to_string (status : in type_location) return string;
 
 
-	
 
-
-	-- The intersection of a probe line with the polygon edge can
-	-- be described as:
-	type type_probe_line_intersection_polygon is record -- CS rename to type_probe_line_intersection
-		x_position	: type_float_internal;
-		angle		: type_angle := 0.0;
-		edge		: type_edge;
-		-- NOTE: Information on entering/leaving can not be 
-		-- provided by get_point_to_polygon_status if the probe line
-		-- starts on an edge or on a vertex.
-	end record;
-
-	
 	-- Subtracts 180 degree from the given angle if it is
 	-- greater 90 degrees and returns the absolute value of the difference.
 	-- Otherwise returns the given angle unchanged.		
@@ -301,15 +287,10 @@ package et_geometry_2.polygons is
 		--angle : in type_angle)
 		--return type_angle;
 
-	
-
-	function "<" (left, right : in type_probe_line_intersection_polygon)
-		return boolean;
-
 		
 
-	package pac_probe_line_intersections_polygon is new -- CS rename to pac_probe_line_intersections
-		doubly_linked_lists (type_probe_line_intersection_polygon);
+	package pac_probe_line_intersections is new
+		doubly_linked_lists (type_float_internal);
 		
 	
 
@@ -321,7 +302,7 @@ package et_geometry_2.polygons is
 		-- The intersections of the probe line with the polygon edges.
 		-- If the probe line starts on an edge or on a vertex, then the
 		-- first intersection in this list is the start point of the probe line.
-		intersections	: pac_probe_line_intersections_polygon.list;
+		intersections	: pac_probe_line_intersections.list; -- CS rename to x_intersections
 
 		case location is
 			when OUTSIDE | INSIDE =>
