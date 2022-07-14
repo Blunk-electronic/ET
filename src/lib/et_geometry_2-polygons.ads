@@ -114,6 +114,7 @@ package et_geometry_2.polygons is
 		direction	: in type_direction_of_rotation := CCW);
 
 	
+	
 	package pac_polygons is new doubly_linked_lists (type_polygon);
 	
 
@@ -138,7 +139,20 @@ package et_geometry_2.polygons is
 	-- Successive redundant vertices will be ignored:
 	function to_polygon (vectors : in pac_vectors.list)
 		return type_polygon;
-	
+
+
+	-- Returns the vertices of a polygon in a list of location vectors:
+	function get_vertices (polygon : in type_polygon)
+		return pac_vectors.list;
+
+
+	-- Rotates a polygon about the center by the given angle:
+	function rotate (
+		polygon	: in type_polygon;
+		center	: in type_vector;
+		angle	: in type_angle)
+		return type_polygon;
+
 	
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
@@ -243,7 +257,7 @@ package et_geometry_2.polygons is
 		point	: in type_vector)
 		return boolean;
 
-	function get_segment_edge (
+	function get_segment_edge ( -- CS rename to get_edge
 		polygon	: in type_polygon;
 		point	: in type_vector)
 		return pac_edges.cursor;
@@ -270,10 +284,13 @@ package et_geometry_2.polygons is
 
 	-- The intersection of a probe line with the polygon edge can
 	-- be described as:
-	type type_probe_line_intersection_polygon is record
+	type type_probe_line_intersection_polygon is record -- CS rename to type_probe_line_intersection
 		x_position	: type_float_internal;
 		angle		: type_angle := 0.0;
 		edge		: type_edge;
+		-- NOTE: Information on entering/leaving can not be 
+		-- provided by get_point_to_polygon_status if the probe line
+		-- starts on an edge or on a vertex.
 	end record;
 
 	
@@ -291,16 +308,19 @@ package et_geometry_2.polygons is
 
 		
 
-	package pac_probe_line_intersections_polygon is new
+	package pac_probe_line_intersections_polygon is new -- CS rename to pac_probe_line_intersections
 		doubly_linked_lists (type_probe_line_intersection_polygon);
 		
 	
 
 	type type_point_to_polygon_status (location : type_location) is record
-		-- The point where the probe line has started:
+		-- The point where the probe line has started.
+		-- It is the point that was passed to function get_point_to_polygon_status.
 		start			: type_vector; 
 
-		-- The intersections of the probe line with the polygon edges:
+		-- The intersections of the probe line with the polygon edges.
+		-- If the probe line starts on an edge or on a vertex, then the
+		-- first intersection in this list is the start point of the probe line.
 		intersections	: pac_probe_line_intersections_polygon.list;
 
 		case location is
@@ -319,16 +339,28 @@ package et_geometry_2.polygons is
 	end record;
 
 	
-
-
-	
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
 		i : in type_point_to_polygon_status)
 		return string;
 
-		
+
+	-- Returns the intersections of the probe line with the 
+	-- polygon edges. Since the probe line is a horizontal line, that runs
+	-- toward the right infinitely, all y-values are equal. The y-value
+	-- assumes the y-value of the start point.
+	-- Since this is a 2D world, all z-values are zero.
+	-- The argument "from" specifies the x-value on the on the
+	-- horizontal probe line where the extraction starts. x-values greater
+	-- or equal "from" are extracted.
+	-- Likewise the argument "to". x-Values less or equal "to" are extracted.
+	function get_intersections (
+		status	: in type_point_to_polygon_status;
+		from	: in type_float_internal := type_float_internal'first;
+		to		: in type_float_internal := type_float_internal'last)
+		return pac_vectors.list;
+
 	
 
 	-- Detects whether the given point is inside or outside
@@ -407,7 +439,9 @@ package et_geometry_2.polygons is
 
 	
 	type type_intersection_line_edge is new type_intersection_base with record
-		edge : pac_edges.cursor;
+		-- The intersected edge of the polygon.
+		-- If intersection is on a vertex, then this is the edge after the vertex.
+		edge : pac_edges.cursor; --  CS really required ?		
 	end record;
 
 	package pac_line_edge_intersections is new doubly_linked_lists (type_intersection_line_edge);
@@ -443,20 +477,13 @@ package et_geometry_2.polygons is
 			
 			when ON_EDGE =>
 				-- The edge where the line starts or ends:
-				edge				: pac_edges.cursor;
-
-				-- The direction of the line: Whether it is
-				-- entering or leaving the polygon on the start or end point:
-				direction_on_edge	: type_intersection_direction;
+				edge				: pac_edges.cursor; -- CS really required ?
 
 			when ON_VERTEX =>
 				-- The two neigboring edges that are 
 				-- connected by the start or end point:
-				edges				: type_neigboring_edges;
+				edges				: type_neigboring_edges;  -- CS really required ?
 
-				-- The direction of the line: Whether it is
-				-- entering or leaving the polygon at the start or end point:
-				direction_on_vertex	: type_intersection_direction;
 		end case;
 	end record;
 
@@ -466,20 +493,16 @@ package et_geometry_2.polygons is
 		start_point	: type_line_end;
 		end_point	: type_line_end;
 
-		-- The intersections with the polygon BETWEEN start and 
-		-- end point of the line:
-		intersections : pac_line_edge_intersections.list;
-
-		-- The location of the center of the line:
-		center_point : type_line_center := OUTSIDE;		
-		-- NOTE: Valid only if there are NO intersections !
+		-- The intersections (incl position, intersected edge and direction)
+		-- with the polygon BETWEEN start and end point of the line: 
+		intersections : pac_line_edge_intersections.list; 
 	end record;
 	
 
 	-- Returns true if the given two statuses are equal.
 	-- The x,y,z components of intersections are regarded as equal if
 	-- their difference is less or equal the rounding_threshold:
-	function equals (left, right : in type_line_to_polygon_status)
+	function equals (left, right : in type_line_to_polygon_status) -- CS rename to "="
 		return boolean;
 
 	

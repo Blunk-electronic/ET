@@ -760,6 +760,46 @@ package body et_geometry_1 is
 	end get_displacement;
 
 
+	procedure move_by (
+		vectors	: in out pac_vectors.list;
+		offset	: in type_offset)
+	is 
+		use pac_vectors;
+		
+		procedure move (vector : in out type_vector) is begin
+			move_by (vector, offset);
+		end move;
+		
+		v : pac_vectors.cursor := vectors.first;
+	begin
+		while v /= pac_vectors.no_element loop
+			vectors.update_element (v, move'access);
+			next (v);
+		end loop;
+	end move_by;
+
+
+
+	procedure rotate_by (
+		vectors	: in out pac_vectors.list;
+		angle	: in type_angle)
+	is
+		use pac_vectors;
+		c : pac_vectors.cursor := vectors.first;
+
+		procedure rotate (v : in out type_vector) is begin
+			rotate_by (v, angle);
+		end rotate;
+		
+	begin
+		while c /= pac_vectors.no_element loop
+			vectors.update_element (c, rotate'access);
+			next (c);
+		end loop;
+	end rotate_by;
+	
+	
+	
 	procedure splice_vectors (
 		v_target : in out pac_vectors.list;
 		v_source : in pac_vectors.list)

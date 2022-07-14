@@ -170,6 +170,7 @@ package body et_geometry_2.polygons is
 
 
 	
+	
 	function to_polygon (vertices : in string)
 		return type_polygon
 	is
@@ -230,6 +231,41 @@ package body et_geometry_2.polygons is
 			put_line (error_message_too_few_vertices);
 			raise;
 	end to_polygon;
+
+
+
+	function get_vertices (polygon : in type_polygon)
+		return pac_vectors.list
+	is
+		result : pac_vectors.list;
+		
+		procedure query_edge (e : in pac_edges.cursor) is begin
+			result.append (element (e).start_point);
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+		return result;
+	end get_vertices;
+
+
+	
+	function rotate (
+		polygon	: in type_polygon;
+		center	: in type_vector;
+		angle	: in type_angle)
+		return type_polygon
+	is 
+		vertices : pac_vectors.list;
+	begin
+		vertices := get_vertices (polygon);
+		
+		move_by (vertices, invert (to_offset (center)));
+		rotate_by (vertices, angle);
+		move_by (vertices, to_offset (center));
+
+		return to_polygon (vertices);
+	end rotate;
 
 	
 	
@@ -785,7 +821,30 @@ package body et_geometry_2.polygons is
 
 
 
+	function get_intersections (
+		status	: in type_point_to_polygon_status;
+		from	: in type_float_internal := type_float_internal'first;
+		to		: in type_float_internal := type_float_internal'last)		
+		return pac_vectors.list
+	is
+		result : pac_vectors.list;
 
+		use pac_probe_line_intersections_polygon;
+
+		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is
+			x : type_float_internal renames element (i).x_position;
+		begin
+			if x >= from and x <= to then
+				result.append ((element (i).x_position, status.start.y, 0.0));
+			end if;
+		end query_intersection;
+		
+	begin
+		status.intersections.iterate (query_intersection'access);
+		return result;
+	end get_intersections;
+
+	
 
 	function get_point_to_polygon_status (
 		polygon		: in type_polygon;	
@@ -825,13 +884,7 @@ package body et_geometry_2.polygons is
 		result_edge : pac_edges.cursor;
 		result_neigboring_edges : type_neigboring_edges;
 
-		--vertex : constant type_point := to_point (point);
 		
-		--line_pre : constant type_line := (
-				--start_point	=> point,
-				--end_point	=> type_point (set (get_x (point) + 1.0, get_y (point))));
-		
-		--probe_line : constant type_line_vector := to_line_vector (line_pre);
 		probe_line : constant type_line_vector := (
 			v_start => point,
 			v_direction => (1.0, 0.0, 0.0));
@@ -908,41 +961,21 @@ package body et_geometry_2.polygons is
 				pac_probe_line_intersections_polygon.generic_sorting;
 			
 			use pac_probe_line_intersections_sorting;
-			--c : pac_probe_line_intersections.cursor;
+			c : pac_probe_line_intersections_polygon.cursor;
 		begin
 			sort (result_intersections);
 
-			-- for testing/verifying only:
-			--put_line ("with redundant intersections:");
-			--c := result.intersections.first;				
-			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (type_float_internal'image (element (c).x_position));
-				--next (c);
-			--end loop;
+			-- Remove redundant x-positions.
+			-- Don't ! Does not work !
+			--c := result_intersections.first;
+			--while c /= pac_probe_line_intersections_polygon.no_element loop
 
-			
-			-- If x-positions differ by type_distance'small then we
-			-- treat them as redundant.
-			-- Remove redundant x-positions:
-			--c := result.intersections.first;
-			--while c /= pac_probe_line_intersections.no_element loop
-
-				--if c /= result.intersections.first then
-					--if abs (element (c).x_position - element (previous (c)).x_position)
-						--<= type_distance'small 
-					--then
-						--delete (result.intersections, c);
+				--if c /= result_intersections.first then
+					--if element (c).x_position = element (previous (c)).x_position then
+						--delete (result_intersections, c);
 					--end if;
 				--end if;
 					
-				--next (c);
-			--end loop;
-
-			-- for testing/verifying only:
-			--put_line ("without redundant intersections:");
-			--c := result.intersections.first;		
-			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (type_float_internal'image (element (c).x_position));
 				--next (c);
 			--end loop;
 
@@ -950,16 +983,13 @@ package body et_geometry_2.polygons is
 
 		
 	begin -- get_point_to_polygon_status
-		
 		--put_line ("Y-threshold:" & to_string (y_threshold));
 		
 		polygon.edges.iterate (query_edge'access);
 
-
 		
 		-- The x-values are not sorted yet. We need them sorted with the
 		-- smallest x first
-		-- CS: and redundant x-positions removed: -- no longer required
 		sort_x_values;
 
 		-- get the total number of intersections
@@ -1311,9 +1341,12 @@ package body et_geometry_2.polygons is
 	begin
 		if 	left.start_point 	= right.start_point
 		and left.end_point		= right.end_point
-		and left.center_point	= right.center_point
 		then
-			left.intersections.iterate (query_left'access);
+			if left.intersections.length = right.intersections.length then
+				left.intersections.iterate (query_left'access);
+			else
+				result := false;
+			end if;
 		else
 			result := false;
 		end if;
@@ -1329,7 +1362,15 @@ package body et_geometry_2.polygons is
 	is
 		result : type_line_to_polygon_status;
 
-		line_center : type_vector;
+		edge_direction : constant type_angle := get_direction (edge);
+		edge_length : constant type_float_internal_positive := get_length (edge);
+		P_rotated : type_polygon;
+		intersections : pac_vectors.list;
+		
+		
+		intersection_count : count_type := 0;
+		count_is_even : boolean := false;
+		
 		
 		procedure set_line_start is 
 			PPS : constant type_point_to_polygon_status := 
@@ -1345,14 +1386,12 @@ package body et_geometry_2.polygons is
 				when ON_EDGE => 
 					result.start_point := (
 						location	=> ON_EDGE, 
-						edge		=> PPS.edge,
-						others 		=> <>); -- direction will be set later
+						edge		=> PPS.edge);
 
 				when ON_VERTEX => 
 					result.start_point := (
 						location	=> ON_VERTEX, 
-						edges		=> PPS.edges,
-						others 		=> <>); -- direction will be set later
+						edges		=> PPS.edges);
 					
 			end case;
 		end set_line_start;
@@ -1372,14 +1411,12 @@ package body et_geometry_2.polygons is
 				when ON_EDGE => 
 					result.end_point := (
 						location	=> ON_EDGE, 
-						edge		=> PPS.edge,
-						others 		=> <>); -- direction will be set later
+						edge		=> PPS.edge);
 
 				when ON_VERTEX => 
 					result.end_point := (
 						location	=> ON_VERTEX, 
-						edges		=> PPS.edges,
-						others 		=> <>); -- direction will be set later
+						edges		=> PPS.edges);
 		
 			end case;
 		end set_line_end;
@@ -1388,191 +1425,141 @@ package body et_geometry_2.polygons is
 		-- Traverses the edges of the given polygon and tests for
 		-- intersections with the given candidate edge.
 		-- If there is an intersection then it will be collected in
-		-- result.intersections:
-		procedure find_intersections is
+		-- result.intersections.
+		-- Loads intersection_count with the number of intersections found.
+		-- Sets the count_is_even flag if the number of intersections is even.
+		--procedure find_intersections is
 			
-			procedure query_edge (c : in pac_edges.cursor) is 
-				I2L : constant type_intersection_of_two_lines := 
-					get_intersection (element (c), edge);
+			--procedure query_edge (c : in pac_edges.cursor) is 
+				--I2L : constant type_intersection_of_two_lines := 
+					--get_intersection (element (c), edge);
 
-				--I_rounded : type_vector;
-				IP : type_vector;
+				--IP : type_vector;	
+			--begin
+				---- We are interested in an edge that DOES intersect in some way
+				---- the given edge. Otherwise the candidate edge is to be skipped:
+				--if I2L.status = EXISTS then
+					--IP := I2L.intersection.vector;
 	
-			begin
-				-- We are interested in an edge that DOES intersect in some way
-				-- the given edge. Otherwise the candidate edge is to be skipped:
-				if I2L.status = EXISTS then
-					IP := I2L.intersection.vector;
-
-					--put_line ("XI: " & to_string (IP));
-					
-					-- If the intersection is right on the start or the end
-					-- of the given edge the the candidate edge is to be skipped:
-					if IP = edge.start_point 
-					or IP = edge.end_point
-					then
-						null; -- skip this intersection point entirely
-					else
-						-- Collect this intersection point if it has
-						-- not already been collected yet:
-
-						
-						
-						--I_rounded := round (
-							--vector		=> I2L.intersection.vector, 
-							--accuracy	=> type_float_internal'digits -1);
-						-- CS no need anymore ?
-
-						--if not contains (result.intersections, I_rounded) then
+					---- If the intersection is on the start or the end
+					---- of the given edge the the candidate edge is to be skipped:
+					--if IP = edge.start_point 
+					--or IP = edge.end_point
+					--then
+						--null; -- skip this intersection point entirely
+					--else
+						---- Collect this intersection point if it has
+						---- not already been collected yet:
+						--if not contains (result.intersections, IP) then
+							
 							--result.intersections.append ((
-								--position => I_rounded, edge => c, others => <>));
+								--position => IP, edge => c, others => <>));
 							---- The direction will be set later.
 						--end if;
-						if not contains (result.intersections, IP) then
+					--end if;
+				--end if;
+			--end query_edge;
 
-							
-							
-							result.intersections.append ((
-								position => IP, edge => c, others => <>));
-							-- The direction will be set later.
-						end if;
-					end if;
-				end if;
-			end query_edge;
+		--begin
+			--polygon.edges.iterate (query_edge'access);
 
-		begin
-			polygon.edges.iterate (query_edge'access);
-		end find_intersections;
+			--intersection_count := result.intersections.length;
+
+			--if (intersection_count rem 2) = 0 then
+				--count_is_even := true;
+			--end if;
+		--end find_intersections;
 
 
 		procedure set_entering_leaving is
 			use pac_line_edge_intersections;
-			ic : pac_line_edge_intersections.cursor := result.intersections.first;
-			ic_bak : pac_line_edge_intersections.cursor;
-			delete_first : boolean := false;
-			
-			-- This flag is set in case an intersection is erroneously mistaken
-			-- as such:
-			delete_intersection : boolean := false;
+			i : pac_line_edge_intersections.cursor := result.intersections.first;
 
-			-- This procedure:
-			-- - assigns a definite direction to an intersection.
-			-- - detects whether the candidate intersection is erroneous
-			--   by setting the flag "delete_intersection".
-			--   This erroneous intersection will later be removed from the
-			--   list of intersections:			
-			procedure set_direction (i : in out type_intersection_line_edge) is
-				POC : constant type_point_of_contact := get_direction (polygon, edge, i.position);
-			begin
-				-- If the given supposed intersection can not be confirmed as such
-				-- then the intersection is erroneous and the flag "delete_intersection" is set,
-				-- so that it will be deleted from the list later.
-				
-				if POC.is_intersection then -- intersection confirmed
-					i.direction := POC.direction;
-					delete_intersection := false;
-				else
-					-- not confirmed -> must be removed
-					delete_intersection := true;
-				end if;	
-			end set_direction;
+			initial_direction : type_intersection_direction;
+
+			-- The edge may start/end outside, inside, on an edge
+			-- or on a vertex of the given polygon.
+			-- Depending on this constellation and the number
+			-- of intersections the direction of the first intersection
+			-- is deduced:
+			procedure set_initial_direction is begin
+				case result.start_point.location is
+					when OUTSIDE =>
+						initial_direction := ENTERING;
+
+					when INSIDE =>
+						initial_direction := LEAVING;
+
+					when ON_EDGE | ON_VERTEX =>
+						case result.end_point.location is
+							when OUTSIDE =>
+								if count_is_even then
+									initial_direction := ENTERING;
+								else
+									initial_direction := LEAVING;
+								end if;
+
+							when INSIDE | ON_EDGE | ON_VERTEX =>
+								if count_is_even then
+									initial_direction := LEAVING;
+								else
+									initial_direction := ENTERING;
+								end if;								
+						end case;
+				end case;						
+			end set_initial_direction;
+		
+						
+			-- This procedure assigns a definite direction 
+			-- to the candidate intersection:
+			procedure set_candidate_direction (
+				i : in out type_intersection_line_edge) 
+			is begin
+				i.direction := initial_direction;
+			end set_candidate_direction;
 
 			
 		begin -- set_entering_leaving
-			
-			-- In case the start point of the line lies on an edge or on a vertex
-			-- then assign the direction of this intersection:
-			case result.start_point.location is
-				when OUTSIDE | INSIDE =>
-					null; -- not an intersection -> nothing to do
-					
-				when ON_EDGE =>
-					declare
-						POC : constant type_point_of_contact := 
-							get_direction (polygon, edge, edge.start_point);
-					begin
-						result.start_point.direction_on_edge := POC.direction;
-					end;
-					
-				when ON_VERTEX =>
-					declare
-						POC : constant type_point_of_contact := 
-							get_direction (polygon, edge, edge.start_point);
-					begin
-						result.start_point.direction_on_vertex := POC.direction;
-					end;
-			end case;
-
-			-- In case the end point of the edge lies on an edge or on a vertex
-			-- then assign the direction of this intersection:
-			case result.end_point.location is
-				when OUTSIDE | INSIDE =>
-					null; -- not an intersection -> nothing to do
-					
-				when ON_EDGE =>
-					declare
-						POC : constant type_point_of_contact := 
-							get_direction (polygon, edge, edge.end_point);
-					begin
-						result.end_point.direction_on_edge := POC.direction;
-					end;
-					
-				when ON_VERTEX =>
-					declare
-						POC : constant type_point_of_contact := 
-							get_direction (polygon, edge, edge.end_point);
-					begin
-						result.end_point.direction_on_vertex := POC.direction;
-					end;
-					
-			end case;
+			set_initial_direction;
 			
 			-- Iterate through the intersections and assign each of 
-			-- them a definite direction. If no intersections exist then
-			-- nothing happens here:
-			while ic /= pac_line_edge_intersections.no_element loop
-				result.intersections.update_element (ic, set_direction'access);
-
-				-- If the candidate intersection has not been confirmed by
-				-- procedure set_direction then we delete it here:
-				if delete_intersection then
-
-					-- Detect whether we are about to delete
-					-- the first intersection:
-					if ic = result.intersections.first then
-						delete_first := true;
-					else
-						-- In case a deletion is required, then the
-						-- cursor to the element before the candidate intersection
-						-- must be saved. 
-						-- Why ? The delete command (see below) resets the 
-						-- main cursor "ic" to no_element:
-						ic_bak := previous (ic);
-					end if;
-
-					-- Delete the candidate intersection:
-					result.intersections.delete (ic);
-					-- Now the main cursor "ic" points to no_element !
-
-					if delete_first then
-						-- Since we have deleted the first intersection,
-						-- the list has now another first element.
-						-- So the main cursor must be set to that first intersection:
-						ic := result.intersections.first;
-						delete_first := false;
-					else
-						-- Restore the main cursor:
-						ic := ic_bak;
-						next (ic);
-					end if;
-
-				else
-					next (ic);
-				end if;
-				
+			-- them a direction. The first intersection gets the initial_direction.
+			while i /= pac_line_edge_intersections.no_element loop
+				result.intersections.update_element (i, set_candidate_direction'access);
+				toggle_direction (initial_direction);
+				next (i);
 			end loop;
 		end set_entering_leaving;
 
+
+
+		procedure assign_position_and_edge is 
+
+			procedure query_intersection (c : in pac_vectors.cursor) is 
+				I : type_vector renames pac_vectors.element (c);
+				N : type_neigboring_edges;
+				E : pac_edges.cursor;
+			begin
+				if is_vertex (polygon, I) then
+					N := get_neigboring_edges (polygon, I);
+					E := N.edge_2;
+				else
+					E := get_segment_edge (polygon, I);
+				end if;
+
+				result.intersections.append ((
+					position => I,
+					edge => E, 
+					others => <>)); -- The direction will be set later.
+				
+			end query_intersection;
+
+		
+		begin
+			intersections.iterate (query_intersection'access);
+		end assign_position_and_edge;
+
+		
 		
 	begin -- get_line_to_polygon_status
 
@@ -1580,33 +1567,44 @@ package body et_geometry_2.polygons is
 		set_line_start;
 		set_line_end;
 
-		-- Find the intersections that are between start and end point
-		-- of the given line with the polygon:
-		find_intersections;
+		P_rotated := rotate (polygon, edge.start_point, - edge_direction);
 
-		-- If there are no intersections between start and end point
-		-- then the location of the 
-		-- center of the given line tells whether the line runs
-		-- completely inside or outside the polygon.
-		if result.intersections.is_empty then
-			line_center := get_center (edge);
+		intersections := get_intersections (
+			status	=> get_point_to_polygon_status (P_rotated, edge.start_point),
+			from	=> edge.start_point.x,
+			to		=> edge.start_point.x + edge_length);
 
-			--put_line ("center" & to_string (line_center));
-			
-			case get_point_to_polygon_status (polygon, line_center).location is
-				when INSIDE => result.center_point := INSIDE;
-				when OUTSIDE => result.center_point := OUTSIDE;
-				when ON_EDGE | ON_VERTEX => result.center_point := ON_EDGE;
-			end case;
-			
+		case result.start_point.location is
+			when ON_EDGE | ON_VERTEX => intersections.delete_first;
+			when others => null;
+		end case;
+
+		case result.end_point.location is
+			when ON_EDGE | ON_VERTEX => intersections.delete_last;
+			when others => null;
+		end case;
+
+		
+		move_by (intersections, invert (to_offset (edge.start_point)));
+		rotate_by (intersections, edge_direction);
+		move_by (intersections, to_offset (edge.start_point));
+
+		assign_position_and_edge;
+
+		intersection_count := result.intersections.length;
+
+		if (intersection_count rem 2) = 0 then
+			count_is_even := true;
 		end if;
 
-		-- Sort intersections by their distance to the start point.
-		sort_by_distance (result.intersections, edge.start_point);
 		
-		-- Assign directions of start and end point and the intersections
-		-- betweeen start and end:
-		set_entering_leaving;
+		if intersection_count > 0 then
+
+			-- Assign directions to the intersections
+			-- betweeen start and end:
+			set_entering_leaving;
+
+		end if;
 		
 		return result;
 	end get_line_to_polygon_status;
@@ -2038,98 +2036,98 @@ package body et_geometry_2.polygons is
 
 
 			
-			procedure use_start_point_as_intersection is 
-				-- The intersection of edge A and B:
-				IAB : type_intersection;
-			begin
-				IAB.position := element (a).start_point;
-				IAB.edge_A := element (a);
+			--procedure use_start_point_as_intersection is 
+				---- The intersection of edge A and B:
+				--IAB : type_intersection;
+			--begin
+				--IAB.position := element (a).start_point;
+				--IAB.edge_A := element (a);
 				
-				case LPS.start_point.location is
-					when ON_EDGE =>
-						IAB.direction := LPS.start_point.direction_on_edge;
+				--case LPS.start_point.location is
+					--when ON_EDGE =>
+						--IAB.direction := LPS.start_point.direction_on_edge;
 
-						-- Get the touched B-edge at the start point:
-						IAB.edge_B := element (LPS.start_point.edge); 
+						---- Get the touched B-edge at the start point:
+						--IAB.edge_B := element (LPS.start_point.edge); 
 
-						-- Ignore intersection if edge A runs "parallel" to edge B:
-						if not lines_overlap (element (a), IAB.edge_B) then
-							-- collect intersection:
-							intersections.append (IAB);
+						---- Ignore intersection if edge A runs "parallel" to edge B:
+						--if not lines_overlap (element (a), IAB.edge_B) then
+							---- collect intersection:
+							--intersections.append (IAB);
 
-							if debug then
-								put_line ("intersection (start on edge): " & to_string (intersections.last_element));
-							end if;
-						end if;
+							--if debug then
+								--put_line ("intersection (start on edge): " & to_string (intersections.last_element));
+							--end if;
+						--end if;
 						
-					when ON_VERTEX =>
-						IAB.direction := LPS.start_point.direction_on_vertex;
+					--when ON_VERTEX =>
+						--IAB.direction := LPS.start_point.direction_on_vertex;
 
-						-- Get the touched B-edge that starts at the start point:
-						IAB.edge_B := element (LPS.start_point.edges.edge_2);
+						---- Get the touched B-edge that starts at the start point:
+						--IAB.edge_B := element (LPS.start_point.edges.edge_2);
 
-						-- Ignore intersection if edge A runs "parallel" to edge B:
-						if not lines_overlap (element (a), IAB.edge_B) then
-							-- collect intersection:
-							intersections.append (IAB);
+						---- Ignore intersection if edge A runs "parallel" to edge B:
+						--if not lines_overlap (element (a), IAB.edge_B) then
+							---- collect intersection:
+							--intersections.append (IAB);
 
-							if debug then
-								put_line ("intersection (start on vertex): " & to_string (intersections.last_element));
-							end if;
-						end if;
+							--if debug then
+								--put_line ("intersection (start on vertex): " & to_string (intersections.last_element));
+							--end if;
+						--end if;
 
 						
-					when others => raise constraint_error; -- CS should never happen
-				end case;
-			end use_start_point_as_intersection;
+					--when others => raise constraint_error; -- CS should never happen
+				--end case;
+			--end use_start_point_as_intersection;
 			
 
-			procedure use_end_point_as_intersection is 
-				-- The intersection of edge A and B:
-				IAB : type_intersection;
-			begin
-				IAB.position := element (a).end_point;
-				IAB.edge_A := element (a);
+			--procedure use_end_point_as_intersection is 
+				---- The intersection of edge A and B:
+				--IAB : type_intersection;
+			--begin
+				--IAB.position := element (a).end_point;
+				--IAB.edge_A := element (a);
 				
-				case LPS.end_point.location is
-					when ON_EDGE =>
-						IAB.direction := LPS.end_point.direction_on_edge;
+				--case LPS.end_point.location is
+					--when ON_EDGE =>
+						--IAB.direction := LPS.end_point.direction_on_edge;
 
-						-- Get the touched B-edge at the end point:
-						IAB.edge_B := element (LPS.end_point.edge); 
+						---- Get the touched B-edge at the end point:
+						--IAB.edge_B := element (LPS.end_point.edge); 
 
-						-- Ignore intersection if edge A runs "parallel" to edge B:
-						if not lines_overlap (element (a), IAB.edge_B) then
-							-- collect intersection:
-							intersections.append (IAB);
+						---- Ignore intersection if edge A runs "parallel" to edge B:
+						--if not lines_overlap (element (a), IAB.edge_B) then
+							---- collect intersection:
+							--intersections.append (IAB);
 
-							if debug then
-								put_line ("intersection (end on edge)  : " & to_string (intersections.last_element));
-							end if;
-						end if;
+							--if debug then
+								--put_line ("intersection (end on edge)  : " & to_string (intersections.last_element));
+							--end if;
+						--end if;
 						
-					when ON_VERTEX =>
-						IAB.direction := LPS.end_point.direction_on_vertex;
+					--when ON_VERTEX =>
+						--IAB.direction := LPS.end_point.direction_on_vertex;
 
-						-- Get the touched B-edge that starts at the end point:
-						--IAB.edge_B := element (LPS.end_point.edges.edge_2).segment_line;
+						---- Get the touched B-edge that starts at the end point:
+						----IAB.edge_B := element (LPS.end_point.edges.edge_2).segment_line;
 
-						-- Get the touched B-edge that ends at the end point:
-						IAB.edge_B := element (LPS.end_point.edges.edge_1);
+						---- Get the touched B-edge that ends at the end point:
+						--IAB.edge_B := element (LPS.end_point.edges.edge_1);
 
-						-- Ignore intersection if edge A runs "parallel" to edge B:
-						if not lines_overlap (element (a), IAB.edge_B) then
-							-- collect intersection:
-							intersections.append (IAB);
+						---- Ignore intersection if edge A runs "parallel" to edge B:
+						--if not lines_overlap (element (a), IAB.edge_B) then
+							---- collect intersection:
+							--intersections.append (IAB);
 
-							if debug then
-								put_line ("intersection (end on vertex)  : " & to_string (intersections.last_element));
-							end if;
-						end if;
+							--if debug then
+								--put_line ("intersection (end on vertex)  : " & to_string (intersections.last_element));
+							--end if;
+						--end if;
 
-					when others => raise constraint_error; -- CS should never happen
-				end case;
-			end use_end_point_as_intersection;
+					--when others => raise constraint_error; -- CS should never happen
+				--end case;
+			--end use_end_point_as_intersection;
 		
 			
 		begin -- query_A_edge
@@ -2163,7 +2161,7 @@ package body et_geometry_2.polygons is
 						when ON_EDGE =>
 							-- A-edge starts outside and ends on an edge or on a vertex
 							-- of the B-polygon:
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge comes from outside, does not
@@ -2179,7 +2177,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_VERTEX =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge comes from outside, does not
@@ -2219,7 +2217,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_EDGE =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts inside and ends on an edge of the polygon
@@ -2232,7 +2230,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_VERTEX =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts inside and ends on a vertex of the polygon
@@ -2247,7 +2245,7 @@ package body et_geometry_2.polygons is
 
 					
 				when ON_EDGE =>
-					use_start_point_as_intersection;
+					--use_start_point_as_intersection;
 					
 					case LPS.end_point.location is
 						when OUTSIDE =>
@@ -2274,7 +2272,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_EDGE =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts on edge and ends on edge
@@ -2288,7 +2286,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_VERTEX =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts on edge and ends on vertex
@@ -2303,7 +2301,7 @@ package body et_geometry_2.polygons is
 
 					
 				when ON_VERTEX =>
-					use_start_point_as_intersection;
+					--use_start_point_as_intersection;
 					
 					case LPS.end_point.location is
 						when OUTSIDE =>
@@ -2330,7 +2328,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_EDGE =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts on vertex and ends on edge
@@ -2344,7 +2342,7 @@ package body et_geometry_2.polygons is
 
 							
 						when ON_VERTEX =>
-							use_end_point_as_intersection;
+							--use_end_point_as_intersection;
 							
 							if LPS.intersections.is_empty then
 								-- edge starts on vertex and ends on vertex

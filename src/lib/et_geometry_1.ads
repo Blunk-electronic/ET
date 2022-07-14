@@ -503,6 +503,18 @@ package et_geometry_1 is
 	package pac_vectors is new doubly_linked_lists (type_vector);
 
 
+	-- Moves a list of location vectors by the given offset:
+	procedure move_by (
+		vectors	: in out pac_vectors.list;
+		offset	: in type_offset);				  
+
+
+	-- Rotates a list of location vectors by the given angle about the origin:
+	procedure rotate_by (
+		vectors	: in out pac_vectors.list;
+		angle	: in type_angle);				  
+
+	
 	-- Appends all location vectors of source to the target:
 	procedure splice_vectors (
 		v_target : in out pac_vectors.list;
