@@ -38,7 +38,7 @@
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.unbounded;
+with ada.strings.unbounded;		use ada.strings.unbounded;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
@@ -159,6 +159,27 @@ package body et_geometry_1 is
 
 	
 
+	function to_string (
+		numbers : in pac_float_numbers.list)
+		return string
+	is 
+		use pac_float_numbers;
+		
+		scratch : unbounded_string;
+
+		procedure query_number (c : in pac_float_numbers.cursor) is 
+			use ada.characters.latin_1;
+		begin
+			scratch := scratch & to_string (element (c)) & LF;
+		end query_number;
+					
+	begin
+		numbers.iterate (query_number'access);
+		return to_string (scratch);
+	end to_string;
+	
+
+	
 	procedure clean_up (
 		numbers	: in out pac_float_numbers.list;
 		mode	: in type_clean_up_mode)
@@ -169,13 +190,13 @@ package body et_geometry_1 is
 		
 		c : pac_float_numbers.cursor := numbers.first;
 
-		n_candidate : type_float_internal renames element (c);
-		n_previous : type_float_internal renames element (previous (c));
-
 		
 		procedure do_reduce is
 
-			procedure query_number (c : in pac_float_numbers.cursor) is begin
+			procedure query_number (c : in pac_float_numbers.cursor) is 
+				n_candidate : type_float_internal renames element (c);
+				--n_previous : type_float_internal renames element (previous (c));
+			begin
 				if c = numbers.first then
 					result.append (n_candidate);
 				else

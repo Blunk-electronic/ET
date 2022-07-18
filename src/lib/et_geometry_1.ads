@@ -149,7 +149,11 @@ package et_geometry_1 is
 	package pac_float_numbers is new 
 		doubly_linked_lists (type_float_internal);
 
-		
+
+	function to_string (
+		numbers : in pac_float_numbers.list)
+		return string;
+	
 		
 	package pac_float_numbers_sorting is new 
 		pac_float_numbers.generic_sorting;
