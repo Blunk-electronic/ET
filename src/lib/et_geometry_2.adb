@@ -147,7 +147,7 @@ package body et_geometry_2 is
 	function to_distance (f : in type_float_internal)
 		return type_distance 
 	is
-		use pac_distance_io;
+		use pac_float_numbers_io;
 		
 		d1 : type_distance;
 		d2 : type_float_internal;
@@ -450,7 +450,7 @@ package body et_geometry_2 is
 	function to_rotation (f : in type_float_internal)
 		return type_rotation 
 	is
-		use pac_distance_io;
+		use pac_float_numbers_io;
 
 		d1 : type_rotation := type_rotation (f);
 		d2 : type_float_internal;

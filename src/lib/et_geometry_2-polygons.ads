@@ -280,19 +280,6 @@ package et_geometry_2.polygons is
 
 
 
-	-- Subtracts 180 degree from the given angle if it is
-	-- greater 90 degrees and returns the absolute value of the difference.
-	-- Otherwise returns the given angle unchanged.		
-	--function subtract_180_if_greater_90 (
-		--angle : in type_angle)
-		--return type_angle;
-
-		
-
-	package pac_probe_line_intersections is new
-		doubly_linked_lists (type_float_internal);
-		
-	
 
 	type type_point_to_polygon_status (location : type_location) is record
 		-- The point where the probe line has started.
@@ -302,7 +289,7 @@ package et_geometry_2.polygons is
 		-- The intersections of the probe line with the polygon edges.
 		-- If the probe line starts on an edge or on a vertex, then the
 		-- first intersection in this list is the start point of the probe line.
-		intersections	: pac_probe_line_intersections.list; -- CS rename to x_intersections
+		intersections	: pac_float_numbers.list; -- CS rename to x_intersections
 
 		case location is
 			when OUTSIDE | INSIDE =>

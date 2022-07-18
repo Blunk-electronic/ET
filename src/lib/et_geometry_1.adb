@@ -159,6 +159,64 @@ package body et_geometry_1 is
 
 	
 
+	procedure clean_up (
+		numbers	: in out pac_float_numbers.list;
+		mode	: in type_clean_up_mode)
+	is
+		use pac_float_numbers;
+		
+		result : pac_float_numbers.list;
+		
+		c : pac_float_numbers.cursor := numbers.first;
+
+		n_candidate : type_float_internal renames element (c);
+		n_previous : type_float_internal renames element (previous (c));
+
+		
+		procedure do_reduce is
+
+			procedure query_number (c : in pac_float_numbers.cursor) is begin
+				if c = numbers.first then
+					result.append (n_candidate);
+				else
+					if n_candidate /= result.last_element then
+						result.append (n_candidate);
+					end if;
+				end if;
+			end query_number;
+				
+		begin
+			numbers.iterate (query_number'access);
+		end do_reduce;
+
+
+		
+		procedure do_remove is 
+
+			procedure query_number (c : in pac_float_numbers.cursor) is
+			begin
+				null;
+				-- CS
+			end query_number;
+
+		begin
+			numbers.iterate (query_number'access);
+		end do_remove;
+		
+		
+	begin
+		case mode is 
+			when REDUCE_TO_ONE =>
+				do_reduce;
+				
+			when REMOVE_REDUNDANT =>
+				do_remove;
+		end case;
+
+		numbers := result;
+	end clean_up;
+
+	
 
 
 	function sgn (x : type_float_internal) return type_float_internal is begin

@@ -762,11 +762,11 @@ package body et_geometry_2.polygons is
 		return string
 	is
 		use ada.strings.unbounded;
-		use pac_probe_line_intersections;
+		use pac_float_numbers;
 
 		result : unbounded_string;
 		
-		procedure query_intersection (c : pac_probe_line_intersections.cursor) is begin
+		procedure query_intersection (c : pac_float_numbers.cursor) is begin
 			result := result & type_float_internal'image (element (c)); 
 						--& "/" & trim (to_string (element (c).angle), left);
 		end query_intersection;
@@ -813,9 +813,9 @@ package body et_geometry_2.polygons is
 	is
 		result : pac_vectors.list;
 
-		use pac_probe_line_intersections;
+		use pac_float_numbers;
 
-		procedure query_intersection (i : in pac_probe_line_intersections.cursor) is
+		procedure query_intersection (i : in pac_float_numbers.cursor) is
 			x : type_float_internal renames element (i);
 		begin
 			if x >= from and x <= to then
@@ -863,7 +863,7 @@ package body et_geometry_2.polygons is
 		-- In the end of this function they will be assembled 
 		-- to the actual return:
 		result_status : type_location;
-		result_intersections : pac_probe_line_intersections.list;
+		result_intersections : pac_float_numbers.list;
 		result_distance : type_float_internal := 0.0;
 		result_edge : pac_edges.cursor;
 		result_neigboring_edges : type_neigboring_edges;
@@ -884,7 +884,7 @@ package body et_geometry_2.polygons is
 		-- means whether it is inside or outside the polygon:
 		it : count_type := 0;
 
-		use pac_probe_line_intersections;
+		use pac_float_numbers;
 
 		
 		-- This procedure collects the intersection in the return value.
@@ -932,19 +932,16 @@ package body et_geometry_2.polygons is
 
 		
 		
-		procedure sort_x_values is
-			package pac_probe_line_intersections_sorting is new 
-				pac_probe_line_intersections.generic_sorting;
+		--procedure sort_x_values is
 			
-			use pac_probe_line_intersections_sorting;
-			--c : pac_probe_line_intersections.cursor;
-		begin
-			sort (result_intersections);
+			--c : pac_float_numbers.cursor;
+		--begin
+			--sort (result_intersections);
 
 			-- Remove redundant x-positions.
 			-- Don't ! Does not work !
 			--c := result_intersections.first;
-			--while c /= pac_probe_line_intersections.no_element loop
+			--while c /= pac_float_numbers.no_element loop
 
 				--if c /= result_intersections.first then
 					--if element (c) = element (previous (c)) then
@@ -955,8 +952,10 @@ package body et_geometry_2.polygons is
 				--next (c);
 			--end loop;
 
-		end sort_x_values;
+		--end sort_x_values;
 
+		use pac_float_numbers_sorting;
+		
 		
 	begin -- get_point_to_polygon_status
 		--put_line ("Y-threshold:" & to_string (y_threshold));
@@ -965,10 +964,11 @@ package body et_geometry_2.polygons is
 		
 		-- The x-values are not sorted yet. We need them sorted with the
 		-- smallest x first
-		sort_x_values;
+		--sort_x_values;
+		sort (result_intersections);
 
 		-- get the total number of intersections
-		it := pac_probe_line_intersections.length (result_intersections);
+		it := pac_float_numbers.length (result_intersections);
 		--put_line ("intersections total:" & count_type'image (it));
 		
 		-- If the total number of intersections is an odd number, then the given point
@@ -1550,13 +1550,35 @@ package body et_geometry_2.polygons is
 			from	=> edge.start_point.x,
 			to		=> edge.start_point.x + edge_length);
 
+		
 		case result.start_point.location is
-			when ON_EDGE | ON_VERTEX => intersections.delete_first;
+			when ON_EDGE =>
+				intersections.delete_first;
+				
+			when ON_VERTEX => 
+				intersections.delete_first;
+				if not intersections.is_empty then
+					if intersections.first_element = edge.start_point then
+						intersections.delete_first;
+					end if;
+				end if;
+				
 			when others => null;
 		end case;
 
+		
 		case result.end_point.location is
-			when ON_EDGE | ON_VERTEX => intersections.delete_last;
+			when ON_EDGE => 
+				intersections.delete_last;
+				
+			when ON_VERTEX =>
+				intersections.delete_last;
+				--if not intersections.is_empty then
+					--if intersections.last_element = edge.end_point then
+						--intersections.delete_last;
+					--end if;
+				--end if;
+
 			when others => null;
 		end case;
 

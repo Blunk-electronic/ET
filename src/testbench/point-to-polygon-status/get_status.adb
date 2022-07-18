@@ -75,6 +75,8 @@ procedure get_status is
 	
 	c_square : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
 	c_m_shaped : constant string := "line 0 0 line 50 50 line 100 0 line 100 100 line 0 100";
+	c_m_shaped_1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 50 line 0 70";
+	c_m_shaped_2 : constant string := "line 0 0 line 25 10 line 50 0 line 75 10 line 100 0 line 100 100 line 0 100";
 	c_rhombus : constant string := "line 50 0  line 100 50  line 50 100  line 0 50";
 	--P1 : constant string := "line 0 0 line 100 0 line 100 100 line 50 10 line 0 100";
 	--P_u_shaped : constant string := "line 0 0 line 100 0 line 100 100 line 90 100 line 90 10 line 10 10 line 10 100 line 0 100";
@@ -82,11 +84,11 @@ procedure get_status is
 
 	
 	procedure print_status (PPS : in type_point_to_polygon_status) is
-		use pac_probe_line_intersections_polygon;
+		use pac_float_numbers;
 		use pac_edges;
 		
-		procedure query_intersection (i : in pac_probe_line_intersections_polygon.cursor) is begin
-			put_line ("x-pos : " & type_float_internal'image (element (i)));
+		procedure query_intersection (i : in pac_float_numbers.cursor) is begin
+			put_line ("x-pos : " & to_string (element (i)));
 		end;
 	
 	begin
@@ -141,10 +143,15 @@ begin
 	--V := set (0.0, 50.0); -- go
 	--V := set (25.0, 25.0); -- go
 
-	make_polygon (c_m_shaped);
+	--make_polygon (c_m_shaped);
 	--V := set (50.0, 50.0); -- go
-	V := set (10.0, 50.0); -- go
+	--V := set (10.0, 50.0); -- go
 
+	make_polygon (c_m_shaped_1);
+	V := set (0.0, 70.0);
+
+	--make_polygon (c_m_shaped_2);
+	--V := set (25.0, 10.0);
 
 	
 	-- T := type_point (set (-10.0, 99.0)); -- go

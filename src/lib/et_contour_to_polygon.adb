@@ -72,7 +72,7 @@ package body et_contour_to_polygon is
 		return pac_edges.list
 	is
 		use pac_geometry_brd;
-		use pac_functions_distance;
+		use pac_float_numbers_functions;
 		
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;

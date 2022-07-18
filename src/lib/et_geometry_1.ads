@@ -133,16 +133,47 @@ package et_geometry_1 is
 	
 
 
-	package pac_functions_distance is new 
+	package pac_float_numbers_functions is new 
 		ada.numerics.generic_elementary_functions (type_float_internal);
-	use pac_functions_distance;
+	
+	use pac_float_numbers_functions;
 
-	package pac_distance_io is new ada.text_io.float_io (type_float_internal);
 
 	
+	package pac_float_numbers_io is new 
+		ada.text_io.float_io (type_float_internal);
+
+
 	
 
+	package pac_float_numbers is new 
+		doubly_linked_lists (type_float_internal);
 
+		
+		
+	package pac_float_numbers_sorting is new 
+		pac_float_numbers.generic_sorting;
+
+
+
+	
+	type type_clean_up_mode is (
+		-- This mode converts a list like "4.0 4.0 4.0 6.3 12.0 12.0"
+		-- to "4.0 6.3 12.0":
+		REDUCE_TO_ONE,
+								   
+		-- This mode converts a list like "4.0 4.0 4.0 6.3 12.0 12.0 -3.3"
+		-- to "6.3 -3.3":
+		REMOVE_REDUNDANT);
+	
+
+	-- Cleans up a list of float numbers according to the given mode:
+	procedure clean_up (
+		numbers	: in out pac_float_numbers.list;
+		mode	: in type_clean_up_mode);				  
+
+
+	
 
 	-- Returns 1.0 if given x is greater or equal zero.
 	-- Returns -1.0 if x less than zero.

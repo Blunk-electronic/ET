@@ -63,31 +63,42 @@ procedure crop2 is
 
 
 	
-	contour_B_string : constant string := "circle 0 0 5";
-	contour_B : type_contour;
-	polygon_B : type_polygon;
-	
-	contour_A_string : constant string := "line 0 -5  line 0 -10 line 10 -10 line 10 0"
-		& " arc 0 0   5 0  cw";				  
-	
+	contour_A_string : constant string := "circle 0 0 5";
 	contour_A : type_contour;
 	polygon_A : type_polygon;
+	
+	--contour_A_string : constant string := "line 0 -5  line 0 -10 line 10 -10 line 10 0"
+		--& " arc 0 0   5 0  cw";				  
+
+	contour_B_string : constant string := "line -10 -4  line 10 -4  line 10 4  line -10 4";				  
+	contour_B : type_contour;
+	polygon_B : type_polygon;
 
 	crop_result : type_crop;
 	polygon_C : type_polygon;
 
+	fab_tol : type_distance := 0.4;
 	--fab_tol : type_distance := 0.001;
-	fab_tol : type_distance := 0.0001;
+	--fab_tol : type_distance := 0.0001;
 begin
 
 	contour_A := type_contour (to_contour (contour_A_string));
 	polygon_A := to_polygon (contour_A, fab_tol);
-
+	put_line ("polygon_A " & to_string (polygon_A));
+	new_line;
+	
 	contour_B := type_contour (to_contour (contour_B_string));
 	polygon_B := to_polygon (contour_B, fab_tol);
-
-	crop_result := crop (polygon_A, polygon_B, true); -- debug messages on
+	put_line ("polygon_B " & to_string (polygon_B));
+	new_line;
 	
+	crop_result := crop (polygon_A, polygon_B, true); -- debug messages on
+
+	put_line ("crop result 1 :" & to_string (crop_result));
+	new_line;
+
+	crop_result := crop (polygon_A, crop_result.fragments.last_element, true);
+	put_line ("crop result 2 :" & to_string (crop_result));
 end crop2;
 
 -- Soli Deo Gloria

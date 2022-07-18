@@ -59,7 +59,7 @@ package et_geometry_2 is
 	
 
 	use pac_geometry_1;
-	use pac_functions_distance;
+	use pac_float_numbers_functions;
 
 
 	zero 		: constant type_distance := 0.0;
