@@ -195,7 +195,6 @@ package body et_geometry_1 is
 
 			procedure query_number (c : in pac_float_numbers.cursor) is 
 				n_candidate : type_float_internal renames element (c);
-				--n_previous : type_float_internal renames element (previous (c));
 			begin
 				if c = numbers.first then
 					result.append (n_candidate);
@@ -215,9 +214,33 @@ package body et_geometry_1 is
 		procedure do_remove is 
 
 			procedure query_number (c : in pac_float_numbers.cursor) is
+				n_candidate : type_float_internal renames element (c);
 			begin
-				null;
-				-- CS
+				if c = numbers.first then
+					-- If next number equals candidate then skip candidate,
+					-- else append candidate to the return:
+					if element (next (c)) /= n_candidate then
+						result.append (n_candidate);
+					end if;
+					
+				elsif c = numbers.last then
+					-- If previous number equals candidate then skip candidate,
+					-- else append candidate to the return:
+					if element (previous (c)) /= n_candidate then
+						result.append (n_candidate);
+					end if;
+
+				else
+					-- If previous OR next number equals candidate then skip candidate,
+					-- else append candidate to the return:
+					if element (previous (c)) = n_candidate
+					or element (next (c)) = n_candidate
+					then
+						null;
+					else
+						result.append (n_candidate);
+					end if;
+				end if;
 			end query_number;
 
 		begin
@@ -226,15 +249,20 @@ package body et_geometry_1 is
 		
 		
 	begin
-		case mode is 
-			when REDUCE_TO_ONE =>
-				do_reduce;
-				
-			when REMOVE_REDUNDANT =>
-				do_remove;
-		end case;
+		case numbers.length is
+			when 0 | 1 => null; -- leave given list as it is
 
-		numbers := result;
+			when others =>
+				case mode is 
+					when REDUCE_TO_ONE =>
+						do_reduce;
+						
+					when REMOVE_REDUNDANT =>
+						do_remove;
+				end case;
+
+				numbers := result; -- overwrite given list
+		end case;
 	end clean_up;
 
 	

@@ -150,16 +150,22 @@ package et_geometry_1 is
 		doubly_linked_lists (type_float_internal);
 
 
+
+	
+
 	function to_string (
 		numbers : in pac_float_numbers.list)
 		return string;
 	
-		
+
+	
 	package pac_float_numbers_sorting is new 
 		pac_float_numbers.generic_sorting;
 
 
+		
 
+	
 	
 	type type_clean_up_mode is (
 		-- This mode converts a list like "4.0 4.0 4.0 6.3 12.0 12.0"
@@ -171,7 +177,9 @@ package et_geometry_1 is
 		REMOVE_REDUNDANT);
 	
 
-	-- Cleans up a list of float numbers according to the given mode:
+	-- Cleans up a list of float numbers according to the given mode.
+	-- Leaves the list unchanged if it is empty or if it contains only
+	-- one number:
 	procedure clean_up (
 		numbers	: in out pac_float_numbers.list;
 		mode	: in type_clean_up_mode);				  

@@ -48,11 +48,28 @@ procedure clean_up is
 
 	use pac_geometry_brd;
 
-	f_list : pac_float_numbers.list;
-	
+	f_list, f_list_bak : pac_float_numbers.list;
+
+
+
+	procedure do_it (mode : in type_clean_up_mode) is begin
+		put_line ("mode: " & type_clean_up_mode'image (mode));
+		
+		put_line ("in:");
+		put_line (to_string (f_list));
+		
+		clean_up (
+			numbers	=> f_list,
+			mode	=> mode);
+
+		put_line ("out:");
+		put_line (to_string (f_list));
+	end do_it;
+
+		
 begin
 
-	f_list.append (-0.19);
+	--f_list.append (-0.19);
 	
 	for i in 1 .. 3 loop
 		f_list.append (1.0);
@@ -67,20 +84,23 @@ begin
 
 	--f_list.append (-0.7);
 	
+	f_list_bak := f_list;
+	do_it (REDUCE_TO_ONE);
 
-	put_line ("in:");
-	put_line (to_string (f_list));
+
+	f_list := f_list_bak;
+	do_it (REMOVE_REDUNDANT);
+
+
+	f_list.clear;
+	do_it (REDUCE_TO_ONE);
+	do_it (REMOVE_REDUNDANT);
 
 	
-	clean_up (
-		numbers	=> f_list,
-		mode	=> REDUCE_TO_ONE
-		--mode	=> REMOVE_REDUNDANT
-		);
+	f_list.append (1.0);
+	do_it (REDUCE_TO_ONE);
+	do_it (REMOVE_REDUNDANT);
 
-
-	put_line ("out:");
-	put_line (to_string (f_list));
 	
 end clean_up;
 

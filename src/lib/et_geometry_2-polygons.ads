@@ -79,15 +79,6 @@ package et_geometry_2.polygons is
 
 	
 
-	-- If the start/end point of the candidate edge is ABOVE-OR-ON the 
-	-- threshold AND if the end/start point of the candidate line is BELOW the
-	-- threshold then we consider the edge to be threshold-crossing.
-	function crosses_threshold (
-		edge : in type_edge;
-		y_th : in type_float_internal)
-		return boolean;
-	
-
 
 	
 	package pac_edges is new doubly_linked_lists (type_edge);

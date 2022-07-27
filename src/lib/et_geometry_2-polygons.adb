@@ -104,29 +104,6 @@ package body et_geometry_2.polygons is
 		return result;
 	end get_nearest;
 
-
-
-	
-	function crosses_threshold (
-		edge : in type_edge;
-		y_th : in type_float_internal)
-		return boolean
-	is begin
-		if	
-			edge.start_point.y >= y_th and 
-			edge.end_point.y   <  y_th then
-			return true;
-			
-		elsif
-			edge.end_point.y   >= y_th and 
-			edge.start_point.y <  y_th then
-			return true;
-			
-		else
-			return false;
-		end if;
-	end crosses_threshold;
-
 	
 	
 	procedure iterate (
@@ -855,7 +832,7 @@ package body et_geometry_2.polygons is
 		--    to the right. The probe line divides the area in two: an upper half and a
 		--    lower half. Special situations arise if objects start or end exactly at
 		--    the probe line.
-		-- 2. The number of intersections after the start point then tells us:
+		-- 2. The parity of intersections after the start point then tells us:
 		--    - odd -> point is inside the polygon area
 		--    - zero or even -> point is outside the polygon area
 
@@ -863,6 +840,8 @@ package body et_geometry_2.polygons is
 		-- In the end of this function they will be assembled 
 		-- to the actual return:
 		result_status : type_location;
+
+		use pac_float_numbers;
 		result_intersections : pac_float_numbers.list;
 		result_distance : type_float_internal := 0.0;
 		result_edge : pac_edges.cursor;
@@ -884,7 +863,7 @@ package body et_geometry_2.polygons is
 		-- means whether it is inside or outside the polygon:
 		it : count_type := 0;
 
-		use pac_float_numbers;
+
 
 		
 		-- This procedure collects the intersection in the return value.
@@ -901,6 +880,30 @@ package body et_geometry_2.polygons is
 			end if;
 		end collect_intersection;
 
+
+		-- If the start/end point of the candidate edge is ABOVE-OR-ON the 
+		-- threshold AND if the end/start point of the candidate line is BELOW the
+		-- threshold then we consider the edge to be threshold-crossing.
+		function crosses_threshold (
+			edge : in type_edge;
+			y_th : in type_float_internal)
+			return boolean
+		is begin
+			if	
+				edge.start_point.y >= y_th and 
+				edge.end_point.y   <  y_th then
+				return true;
+				
+			elsif
+				edge.end_point.y   >= y_th and 
+				edge.start_point.y <  y_th then
+				return true;
+				
+			else
+				return false;
+			end if;
+		end crosses_threshold;
+	
 		
 		procedure query_edge (c : in pac_edges.cursor) is 
 			-- Find out whether there is an intersection of the probe line
@@ -928,31 +931,7 @@ package body et_geometry_2.polygons is
 				end if;
 			end if;				
 		end query_edge;
-		
 
-		
-		
-		--procedure sort_x_values is
-			
-			--c : pac_float_numbers.cursor;
-		--begin
-			--sort (result_intersections);
-
-			-- Remove redundant x-positions.
-			-- Don't ! Does not work !
-			--c := result_intersections.first;
-			--while c /= pac_float_numbers.no_element loop
-
-				--if c /= result_intersections.first then
-					--if element (c) = element (previous (c)) then
-						--delete (result_intersections, c);
-					--end if;
-				--end if;
-					
-				--next (c);
-			--end loop;
-
-		--end sort_x_values;
 
 		use pac_float_numbers_sorting;
 		
@@ -962,11 +941,6 @@ package body et_geometry_2.polygons is
 		
 		polygon.edges.iterate (query_edge'access);
 		
-		-- The x-values are not sorted yet. We need them sorted with the
-		-- smallest x first
-		--sort_x_values;
-		sort (result_intersections);
-
 		-- get the total number of intersections
 		it := pac_float_numbers.length (result_intersections);
 		--put_line ("intersections total:" & count_type'image (it));
@@ -981,6 +955,16 @@ package body et_geometry_2.polygons is
 			result_status := OUTSIDE;
 			--put_line ("outside");
 		end if;
+
+
+		-- The x-values are not sorted yet. We need them sorted with the
+		-- smallest x first:
+		sort (result_intersections);
+
+		-- Further on they must be cleaned up so that
+		-- redundant values are removed. 
+		-- Example: "4.0 4.0 6.3 12.0 12.0 -3.3" becomes "6.3 -3.3":
+		clean_up (result_intersections, REMOVE_REDUNDANT);
 
 		
 		

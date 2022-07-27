@@ -136,7 +136,8 @@ begin
 	--make_polygon (P_u_shaped);
 	
 	--make_polygon (c_square);
-	--V := set (0.0, 20.0000000000); -- go
+	--V := set (0.0, 100.0); -- go
+	--V := set (0.0, 20.0); -- go
 	--V := set (0.0, 0.0); -- go
 	
 	--make_polygon (c_rhombus);
@@ -146,20 +147,19 @@ begin
 	--make_polygon (c_m_shaped);
 	--V := set (50.0, 50.0); -- go
 	--V := set (10.0, 50.0); -- go
+	--V := set (0.0, 0.0); -- go
 
-	make_polygon (c_m_shaped_1);
-	V := set (0.0, 70.0);
 
-	--make_polygon (c_m_shaped_2);
+	--make_polygon (c_m_shaped_1);
+	--V := set (0.0, 70.0);
+	--V := set (50.0, 50.0); -- go
+	
+	make_polygon (c_m_shaped_2);
 	--V := set (25.0, 10.0);
+	--V := set (20.0, 10.0);
+	V := set (-20.0, 10.0);
 
 	
-	-- T := type_point (set (-10.0, 99.0)); -- go
-	--T := type_point (set (0.0, 99.0)); -- go
-	--T := type_point (set (0.0, 100.0)); -- go
-	--T := type_point (set (0.0, 0.0)); -- go
-	--T := type_point (set (1.0, 1.0)); -- go
-	--T := type_point (set (9.9999999999, 10.0000000000)); -- go
 	
 	--V := set (-10.0, 10.0000000000); -- go
 	--V := set (0.0, 0.0); -- go
