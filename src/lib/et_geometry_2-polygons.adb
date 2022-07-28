@@ -784,8 +784,8 @@ package body et_geometry_2.polygons is
 
 	function get_intersections (
 		status	: in type_point_to_polygon_status;
-		from	: in type_float_internal := type_float_internal'first;
-		to		: in type_float_internal := type_float_internal'last)		
+		after	: in type_float_internal := type_float_internal'first;
+		before	: in type_float_internal := type_float_internal'last)		
 		return pac_vectors.list
 	is
 		result : pac_vectors.list;
@@ -795,7 +795,7 @@ package body et_geometry_2.polygons is
 		procedure query_intersection (i : in pac_float_numbers.cursor) is
 			x : type_float_internal renames element (i);
 		begin
-			if x >= from and x <= to then
+			if x > after and x < before then
 				result.append ((element (i), status.start.y, 0.0));
 			end if;
 		end query_intersection;
@@ -1382,55 +1382,6 @@ package body et_geometry_2.polygons is
 		end set_line_end;
 
 
-		-- Traverses the edges of the given polygon and tests for
-		-- intersections with the given candidate edge.
-		-- If there is an intersection then it will be collected in
-		-- result.intersections.
-		-- Loads intersection_count with the number of intersections found.
-		-- Sets the count_is_even flag if the number of intersections is even.
-		--procedure find_intersections is
-			
-			--procedure query_edge (c : in pac_edges.cursor) is 
-				--I2L : constant type_intersection_of_two_lines := 
-					--get_intersection (element (c), edge);
-
-				--IP : type_vector;	
-			--begin
-				---- We are interested in an edge that DOES intersect in some way
-				---- the given edge. Otherwise the candidate edge is to be skipped:
-				--if I2L.status = EXISTS then
-					--IP := I2L.intersection.vector;
-	
-					---- If the intersection is on the start or the end
-					---- of the given edge the the candidate edge is to be skipped:
-					--if IP = edge.start_point 
-					--or IP = edge.end_point
-					--then
-						--null; -- skip this intersection point entirely
-					--else
-						---- Collect this intersection point if it has
-						---- not already been collected yet:
-						--if not contains (result.intersections, IP) then
-							
-							--result.intersections.append ((
-								--position => IP, edge => c, others => <>));
-							---- The direction will be set later.
-						--end if;
-					--end if;
-				--end if;
-			--end query_edge;
-
-		--begin
-			--polygon.edges.iterate (query_edge'access);
-
-			--intersection_count := result.intersections.length;
-
-			--if (intersection_count rem 2) = 0 then
-				--count_is_even := true;
-			--end if;
-		--end find_intersections;
-
-
 		procedure set_entering_leaving is
 			use pac_line_edge_intersections;
 			i : pac_line_edge_intersections.cursor := result.intersections.first;
@@ -1439,9 +1390,8 @@ package body et_geometry_2.polygons is
 
 			-- The edge may start/end outside, inside, on an edge
 			-- or on a vertex of the given polygon.
-			-- Depending on this constellation and the number
-			-- of intersections the direction of the first intersection
-			-- is deduced:
+			-- Depending on this constellation and the parity of intersections
+			-- the direction of the first intersection is deduced:
 			procedure set_initial_direction is begin
 				case result.start_point.location is
 					when OUTSIDE =>
@@ -1492,7 +1442,8 @@ package body et_geometry_2.polygons is
 		end set_entering_leaving;
 
 
-
+		-- Assigns to the resulting intersections the 
+		-- x/y-position and the affected edges:
 		procedure assign_position_and_edge is 
 
 			procedure query_intersection (c : in pac_vectors.cursor) is 
@@ -1531,40 +1482,9 @@ package body et_geometry_2.polygons is
 
 		intersections := get_intersections (
 			status	=> get_point_to_polygon_status (P_rotated, edge.start_point),
-			from	=> edge.start_point.x,
-			to		=> edge.start_point.x + edge_length);
+			after	=> edge.start_point.x,
+			before	=> edge.start_point.x + edge_length);
 
-		
-		case result.start_point.location is
-			when ON_EDGE =>
-				intersections.delete_first;
-				
-			when ON_VERTEX => 
-				intersections.delete_first;
-				if not intersections.is_empty then
-					if intersections.first_element = edge.start_point then
-						intersections.delete_first;
-					end if;
-				end if;
-				
-			when others => null;
-		end case;
-
-		
-		case result.end_point.location is
-			when ON_EDGE => 
-				intersections.delete_last;
-				
-			when ON_VERTEX =>
-				intersections.delete_last;
-				--if not intersections.is_empty then
-					--if intersections.last_element = edge.end_point then
-						--intersections.delete_last;
-					--end if;
-				--end if;
-
-			when others => null;
-		end case;
 
 		
 		move_by (intersections, invert (to_offset (edge.start_point)));

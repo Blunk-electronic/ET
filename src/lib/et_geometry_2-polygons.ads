@@ -272,7 +272,7 @@ package et_geometry_2.polygons is
 
 
 
-	type type_point_to_polygon_status (location : type_location) is record
+	type type_point_to_polygon_status (location : type_location) is record -- CS rename to type_point_status
 		-- The point where the probe line has started.
 		-- It is the point that was passed to function get_point_to_polygon_status.
 		start			: type_vector; 
@@ -310,21 +310,21 @@ package et_geometry_2.polygons is
 	-- toward the right infinitely, all y-values are equal. The y-value
 	-- assumes the y-value of the start point.
 	-- Since this is a 2D world, all z-values are zero.
-	-- The argument "from" specifies the x-value on the on the
-	-- horizontal probe line where the extraction starts. x-values greater
-	-- or equal "from" are extracted.
-	-- Likewise the argument "to". x-Values less or equal "to" are extracted.
+	-- The argument "after" specifies the x-value on the
+	-- probe line where the extraction starts. x-values greater
+	-- than "after" are extracted.
+	-- Likewise the argument "before". x-Values less than "before" are extracted.
 	function get_intersections (
 		status	: in type_point_to_polygon_status;
-		from	: in type_float_internal := type_float_internal'first;
-		to		: in type_float_internal := type_float_internal'last)
+		after	: in type_float_internal := type_float_internal'first;
+		before	: in type_float_internal := type_float_internal'last)
 		return pac_vectors.list;
 
 	
 
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge:
-	function get_point_to_polygon_status (
+	function get_point_to_polygon_status ( -- CS rename to get_point_status
 		polygon		: in type_polygon;	
 		point		: in type_vector)
 		return type_point_to_polygon_status;
@@ -447,7 +447,7 @@ package et_geometry_2.polygons is
 	end record;
 
 
-	type type_line_to_polygon_status is record -- CS rename to type_edge_to_polygon_status
+	type type_line_to_polygon_status is record -- CS rename to type_edge_status
 		-- The properties of the start and end point of the line:
 		start_point	: type_line_end;
 		end_point	: type_line_end;
@@ -465,7 +465,7 @@ package et_geometry_2.polygons is
 		return boolean;
 
 	
-	function get_line_to_polygon_status (
+	function get_line_to_polygon_status ( -- CS rename to get_edge_status 
 		polygon	: in type_polygon;
 		edge	: in type_edge)
 		return type_line_to_polygon_status;
