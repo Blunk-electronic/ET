@@ -814,8 +814,6 @@ package body et_geometry_2.polygons is
 	is
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
-		-- The algorithm has further been extended to detect intersections
-		-- with arcs and even circles.
 
 		-- A probe line will be formed which starts at the given point
 		-- and runs to the right (direction zero degree).
