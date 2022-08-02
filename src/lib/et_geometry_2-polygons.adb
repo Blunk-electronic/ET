@@ -819,10 +819,12 @@ package body et_geometry_2.polygons is
 		-- and runs to the right (direction zero degree).
 		-- The places, after the given start point, where the probe line 
 		-- intersects the polygon edges are returned in a list.
-		-- If a segment of the polygon crosses the imaginary probe line,
-		-- then it is regarded as intersection.
-		-- NOTE: A line segment that runs exactly along the probe line
-		-- is NOT regarded as "crossing" the probe line.
+		-- If an edge of the polygon crosses the imaginary probe line somewhere,
+		-- then this place is regarded as intersection.
+		
+		-- NOTE: An edge that overlaps the probe line is NOT regarded as 
+		-- "crossing" the probe line. It causes no intersection and
+		-- will thus be ignored.
 		
 		-- The approach to detect whether the given point lies inside or outside 
 		-- the polygon area is as follows:
@@ -1268,6 +1270,166 @@ package body et_geometry_2.polygons is
 		items.iterate (query_item'access);
 	end sort_by_distance;
 
+
+
+	function get_previous_status (
+		status_list	: in pac_edge_status_list.list;
+		candidate	: in pac_edge_status_list.cursor)
+		return pac_edge_status_list.cursor
+	is
+		use pac_edge_status_list;
+		result : pac_edge_status_list.cursor;
+	begin
+		if candidate = status_list.first then
+			result := status_list.last;
+		else
+			result := previous (candidate);
+		end if;
+		
+		return result;
+	end get_previous_status;
+
+
+	
+	--function get_first_outside (
+		--polygon	: in type_polygon;
+		--edges	: in pac_edge_status_list.list)		
+		--return pac_edge_status_list.cursor
+	--is
+		--result : pac_edge_status_list.cursor;
+		
+		--use pac_edge_status_list;
+		--c : pac_edge_status_list.cursor := edges.first;
+
+		--center : type_vector;
+	--begin
+		---- look for a start point that is outside:
+		--while c /= pac_edge_status_list.no_element loop			
+			--if element (c).start_point.location = OUTSIDE then
+				--result := c;
+				--exit;
+			--end if;			
+			--next (c);
+		--end loop;
+
+		---- If no suitable start point found, then look for an edge that
+		---- has at least one intersection:
+		--if result = pac_edge_status_list.no_element then
+			--c := edges.first;
+
+			--while c /= pac_edge_status_list.no_element loop
+				--if element (c).intersections.length > 1 then
+					--result := c;
+					--exit;
+				--end if;
+				--next (c);
+			--end loop;
+		--end if;
+		
+
+		---- If no suitable edge found, then look for an edge that
+		---- - has no intersection and
+		---- - has its center outside
+		--if result = pac_edge_status_list.no_element then
+			--c := edges.first;
+
+			--while c /= pac_edge_status_list.no_element loop
+				--if element (c).intersections.length = 0 then
+
+					--if element (c).start_point.location = ON_EDGE then
+						--center := get_center (element (element (c).start_point.edge));
+						--if get_location (polygon, center) = OUTSIDE then
+							--result := c;
+							--exit;
+						--end if;
+					--end if;
+
+					--if element (c).start_point.location = ON_VERTEX then
+						--center := get_center (element (element (c).start_point.edges.edge_2));
+						--if get_location (polygon, center) = OUTSIDE then
+							--result := c;
+							--exit;
+						--end if;
+					--end if;
+					
+				--end if;
+				--next (c);
+			--end loop;
+		--end if;
+
+		
+		--if result = pac_edge_status_list.no_element then
+			--raise constraint_error with "No suitable edge found !";
+		--end if;		
+		
+		--return result;
+	--end get_first_outside;
+
+
+	function get_section_location (
+		polygon			: in type_polygon;
+		status_cursor	: in pac_edge_status_list.cursor;
+		section			: in type_section)		
+		return type_section_location
+	is
+		result : type_section_location := OUTSIDE;
+
+		use pac_edge_status_list;
+		use pac_line_edge_intersections;
+
+		sts : type_line_to_polygon_status renames element (status_cursor);
+		
+		-- The number of intersections on the given edge:
+		int_count : constant count_type := sts.intersections.length;
+
+	begin
+		if int_count = 0 then
+			-- Edge is not intersected at all.
+
+			-- CS Depending on "section" look at start or end point
+			-- of edge. Makes sense if start or end point is inside or outside.
+			-- Otherwise do this:
+			
+			-- look at the center of the edge
+			case get_location (polygon, get_center (sts.edge)) is
+				when OUTSIDE =>
+					result := OUTSIDE;
+
+				when INSIDE =>
+					result := INSIDE;
+
+				when others =>
+					raise constraint_error;
+					-- CS should never happen
+			end case;
+			
+		else
+			-- Edge is intersected at least once:
+			case section is
+				when FIRST =>
+					case sts.intersections.first_element.direction is
+						when LEAVING =>
+							result := INSIDE;
+
+						when ENTERING =>
+							result := OUTSIDE;
+					end case;
+
+				when LAST =>
+					case sts.intersections.last_element.direction is
+						when LEAVING =>
+							result := OUTSIDE;
+
+						when ENTERING =>
+							result := INSIDE;
+					end case;
+
+			end case;
+		end if;
+		
+		return result;
+	end get_section_location;
+	
 	
 
 	function equals (left, right : in type_line_to_polygon_status)
@@ -1318,7 +1480,8 @@ package body et_geometry_2.polygons is
 		edge	: in type_edge)
 		return type_line_to_polygon_status
 	is
-		result : type_line_to_polygon_status;
+		-- Pass the affected edge right away to the result:
+		result : type_line_to_polygon_status := (edge => edge, others => <>);
 
 		edge_direction : constant type_angle := get_direction (edge);
 		edge_length : constant type_float_internal_positive := get_length (edge);
@@ -1900,417 +2063,294 @@ package body et_geometry_2.polygons is
 		return pac_intersections.list
 	is
 		intersections : pac_intersections.list;
-
-
-		-- Investigates the status of the given A edge relative to polygon B.
-		procedure query_A_edge (a : in pac_edges.cursor) is
-
-			-- The status of the A-edge relative to polygon B:
-			LPS : constant type_line_to_polygon_status := 
-				get_line_to_polygon_status (polygon_B, element (a));
-
-			
-			procedure collect_intersections is 
-
-				procedure query_intersection (i : in pac_line_edge_intersections.cursor) is
-					use pac_line_edge_intersections;
-					b_edge : pac_edges.cursor := element (i).edge;
-				begin
-					-- Ignore intersection if edge A runs "parallel" to edge B:
-					--if not lines_overlap (element (a).segment_line, element (b_edge).segment_line) then
-					if not lines_overlap (element (a), element (b_edge)) then
-						intersections.append ((
-							type_intersection_base (element (i)) with
-							edge_A => element (a),
-							edge_B => element (b_edge)));
-
-						if debug then
-							put_line ("intersection: " & to_string (intersections.last_element));
-						end if;
-					end if;
-				end query_intersection;
-
-			begin
-				LPS.intersections.iterate (query_intersection'access);
-			end collect_intersections;
-
-
-			
-			--procedure use_start_point_as_intersection is 
-				---- The intersection of edge A and B:
-				--IAB : type_intersection;
-			--begin
-				--IAB.position := element (a).start_point;
-				--IAB.edge_A := element (a);
-				
-				--case LPS.start_point.location is
-					--when ON_EDGE =>
-						--IAB.direction := LPS.start_point.direction_on_edge;
-
-						---- Get the touched B-edge at the start point:
-						--IAB.edge_B := element (LPS.start_point.edge); 
-
-						---- Ignore intersection if edge A runs "parallel" to edge B:
-						--if not lines_overlap (element (a), IAB.edge_B) then
-							---- collect intersection:
-							--intersections.append (IAB);
-
-							--if debug then
-								--put_line ("intersection (start on edge): " & to_string (intersections.last_element));
-							--end if;
-						--end if;
-						
-					--when ON_VERTEX =>
-						--IAB.direction := LPS.start_point.direction_on_vertex;
-
-						---- Get the touched B-edge that starts at the start point:
-						--IAB.edge_B := element (LPS.start_point.edges.edge_2);
-
-						---- Ignore intersection if edge A runs "parallel" to edge B:
-						--if not lines_overlap (element (a), IAB.edge_B) then
-							---- collect intersection:
-							--intersections.append (IAB);
-
-							--if debug then
-								--put_line ("intersection (start on vertex): " & to_string (intersections.last_element));
-							--end if;
-						--end if;
-
-						
-					--when others => raise constraint_error; -- CS should never happen
-				--end case;
-			--end use_start_point_as_intersection;
-			
-
-			--procedure use_end_point_as_intersection is 
-				---- The intersection of edge A and B:
-				--IAB : type_intersection;
-			--begin
-				--IAB.position := element (a).end_point;
-				--IAB.edge_A := element (a);
-				
-				--case LPS.end_point.location is
-					--when ON_EDGE =>
-						--IAB.direction := LPS.end_point.direction_on_edge;
-
-						---- Get the touched B-edge at the end point:
-						--IAB.edge_B := element (LPS.end_point.edge); 
-
-						---- Ignore intersection if edge A runs "parallel" to edge B:
-						--if not lines_overlap (element (a), IAB.edge_B) then
-							---- collect intersection:
-							--intersections.append (IAB);
-
-							--if debug then
-								--put_line ("intersection (end on edge)  : " & to_string (intersections.last_element));
-							--end if;
-						--end if;
-						
-					--when ON_VERTEX =>
-						--IAB.direction := LPS.end_point.direction_on_vertex;
-
-						---- Get the touched B-edge that starts at the end point:
-						----IAB.edge_B := element (LPS.end_point.edges.edge_2).segment_line;
-
-						---- Get the touched B-edge that ends at the end point:
-						--IAB.edge_B := element (LPS.end_point.edges.edge_1);
-
-						---- Ignore intersection if edge A runs "parallel" to edge B:
-						--if not lines_overlap (element (a), IAB.edge_B) then
-							---- collect intersection:
-							--intersections.append (IAB);
-
-							--if debug then
-								--put_line ("intersection (end on vertex)  : " & to_string (intersections.last_element));
-							--end if;
-						--end if;
-
-					--when others => raise constraint_error; -- CS should never happen
-				--end case;
-			--end use_end_point_as_intersection;
+		use pac_line_edge_intersections;
 		
+		
+		---- Investigates the status of the given A edge relative to polygon B.
+		--procedure query_A_edge (a : in pac_edges.cursor) is
+
+			---- The status of the A-edge relative to polygon B:
+			----LPS : constant type_line_to_polygon_status := 
+			----get_line_to_polygon_status (polygon_B, element (a));
+
+			--status_candidate, status_previous : type_line_to_polygon_status;
 			
-		begin -- query_A_edge
+			--procedure collect_intersections is 
 
-			-- There are some special cases that require special threatment:
-			-- The A-edge starts or ends on a B-edge or on a B-vertex. So there 
-			-- may exist several situations which must be handled first:
+				--procedure query_intersection (i : in pac_line_edge_intersections.cursor) is
+					--b_edge : pac_edges.cursor := element (i).edge;
+				--begin
+					---- Ignore intersection if edge A overlaps edge B.
+					---- Both edges are regarded as infinitely long (start and end point ignored):
+					----if not lines_overlap (element (a), element (b_edge)) then
+					---- CS no need (already cared for by function get_point_to_polygon_status)
+						--intersections.append ((
+							--type_intersection_base (element (i)) with
+							--edge_A => element (a),
+							--edge_B => element (b_edge)));
+
+						--if debug then
+							--put_line ("intersection: " & to_string (intersections.last_element));
+						--end if;
+					----end if;
+				--end query_intersection;
+
+			--begin
+				--status_candidate.intersections.iterate (query_intersection'access);
+			--end collect_intersections;
+
 			
-			case LPS.start_point.location is
-				when OUTSIDE =>
-					case LPS.end_point.location is
-						when OUTSIDE =>
-							if LPS.intersections.is_empty then
-								-- A-edge passes the B-polygon. No intersections at all.
-								null;
-							else
-								-- A-edge runs through B-polygon from outside to outside.
-								collect_intersections;
-							end if;
-							
-						when INSIDE =>
-							if LPS.intersections.is_empty then
-								-- CS: should never happen
-								raise constraint_error;
-							else
-								-- A-edge runs through B-polygon from outside to inside.
-								collect_intersections;
-							end if;
+		--begin -- query_A_edge
 
-							
-						when ON_EDGE =>
-							-- A-edge starts outside and ends on an edge or on a vertex
-							-- of the B-polygon:
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge comes from outside, does not
-								-- cross any edge of the polygon and ends 
-								-- on edge of polygon:
-								null;
-							else
-								-- edge comes from outside, 
-								-- crosses one or more edges of the polygon and ends 
-								-- on edge of polygon:
-								collect_intersections;
-							end if;
+			---- Get the status of the candidate A-edge:
+			--status_candidate := get_line_to_polygon_status (polygon_B, element (a));
 
-							
-						when ON_VERTEX =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge comes from outside, does not
-								-- cross any edge of the polygon and ends 
-								-- on a vertex of polygon:
-								null;
-							else
-								-- edge comes from outside, 
-								-- crosses one or more edges of the polygon and ends 
-								-- on a vertex of polygon:
-								collect_intersections;
-							end if;
+			---- Get the status of the previous A-edge:
+			--if a = polygon_A.edges.first then
+				--status_previous := get_line_to_polygon_status (polygon_B, polygon_A.edges.last_element);
+			--else
+				--status_previous := get_line_to_polygon_status (polygon_B, element (previous (a)));
+			--end if;
+			
+			---- There are some special cases that require special threatment:
+			---- The A-edge starts or ends on a B-edge or on a B-vertex. So there 
+			---- may exist several situations which must be handled first:
+			
+			--case status_candidate.start_point.location is
+				--when ON_EDGE | ON_VERTEX =>
+
+					--if is_empty (status_previous.intersections) then
+						--null;
+						----case status_previous.start_point.location is
+							----when INSIDE =>
+								------ start point is a leaving intersection
+								
+							----when OUTSIDE =>
+
+						----end case;
 						
-					end case;
+					--else
+						--case status_previous.intersections.last_element.direction is
+							--when ENTERING =>
+								---- start point is a leaving intersection
+								--null;
 
+							--when LEAVING =>
+								---- start point is an entering intersection
+								--null;
+						--end case;
+					--end if;
 					
-				when INSIDE =>
-					case LPS.end_point.location is
-						when OUTSIDE =>
-							if LPS.intersections.is_empty then
-								-- CS: should never happen
-								raise constraint_error;
-							else
-								-- edge runs from inside to outside of the polygon:
-								collect_intersections;
-							end if;
+					----case LPS.end_point.location is
+						----when OUTSIDE =>
+							----if LPS.intersections.is_empty then
+								------ edge starts on edge and ends outside
+								------ without crossing any edges or vertices
+								----null;
+							----else
+								------ edge starts on edge, crosses one or more edges of the polygon
+								------ and ends outside
+								----collect_intersections;
+							----end if;
+							
+						----when INSIDE =>
+							----if LPS.intersections.is_empty then
+								------ edge starts on edge and ends inside
+								------ without crossing any edges or verices
+								----null;
+							----else
+								------ edge starts on edge, crosses one or more edges of the polygon
+								------ and ends inside
+								----collect_intersections;
+							----end if;
 
+							
+						----when ON_EDGE =>
+							------use_end_point_as_intersection;
+							
+							----if LPS.intersections.is_empty then
+								------ edge starts on edge and ends on edge
+								------ without crossing any edges or verices
+								----null;
+							----else
+								------ edge starts on edge, crosses one or more edges of the polygon
+								------ and ends on edge
+								----collect_intersections;
+							----end if;
+
+							
+						----when ON_VERTEX =>
+							------use_end_point_as_intersection;
+							
+							----if LPS.intersections.is_empty then
+								------ edge starts on edge and ends on vertex
+								------ without crossing any edges or verices
+								----null;
+							----else
+								------ edge starts on edge, crosses one or more edges of the polygon
+								------ and ends on vertex
+								----collect_intersections;
+							----end if;
+					----end case;
+
+				--when others =>
+					--collect_intersections;
+			--end case;
+			
+		--end query_A_edge;
+
+
+
+		----------------------------------------
+		use pac_edge_status_list;
+		status_list : pac_edge_status_list.list;
+
+		-- This procedure computes the status of a single A-edge to polygon B.
+		-- The status will then be appended to the status_list:
+		procedure query_edge (a : in pac_edges.cursor) is begin
+			status_list.append (get_line_to_polygon_status (polygon_B, element (a)));
+		end query_edge;
+	
+		
+		procedure query_status (sts_candidate : in pac_edge_status_list.cursor) is
+			-- This is just a shortcut to the candidate status:
+			sts : type_line_to_polygon_status renames element (sts_candidate);
+
+			-- Special case 1:
+			-- If the start point of the edge is on a vertex or on an edge,
+			-- then this point could be an entering or leaving intersection.
+			-- To make sure it is definitely entering or leaving, the status of the
+			-- previous edge must be checked:
+			sts_previous : pac_edge_status_list.cursor;
+
+			-- Regarding special case 1:
+			-- It must be figured out whether the the last section of the previous edge
+			-- is inside or outside polygon B.
+			last_section : type_section_location;
+			
+			-- Likewise the first section of the candidate edge:
+			first_section : type_section_location;
+
+			
+			-- This procedure builds an intersection as given in the edge-to-polygon status
+			-- to an intersection required for the result:
+			procedure build_intersection (i : pac_line_edge_intersections.cursor) is begin
+				intersections.append ((
+					type_intersection_base (element (i)) with -- position and direction
+					edge_A => sts.edge, -- the candidate edge of polygon A
+					edge_B => element (element (i).edge))); -- the intersected edge of polygon B
+
+					if debug then
+						put_line ("intersection: " & to_string (intersections.last_element));
+					end if;
+				
+			end build_intersection;
+
+
+			
+		begin -- query_status
+
+			-- Test the location of the start point of the candidate edge:
+			case sts.start_point.location is
+				when OUTSIDE | INSIDE =>
+					null; -- no special case. nothing special to do.
+
+				when ON_EDGE | ON_VERTEX =>
+					-- Candidate edge starts on an edge or on a vertex of polygon B.
+					-- So it is not definitely clear whether this intersection is leaving or entering.
+					-- Look at last section of predecessing edge:
+					sts_previous := get_previous_status (status_list, sts_candidate);
+					last_section  := get_section_location (polygon_B, sts_previous, LAST);
+
+					-- Look at first section of the candidate edge:
+					first_section := get_section_location (polygon_B, sts_candidate, FIRST);
+
+					-- Now with the two flags last_section and first_section we get
+					-- 4 possible scenarios:
+					case last_section is
 						when INSIDE =>
-							if LPS.intersections.is_empty then
-								-- edge is completely inside the polygon
-								-- without touching the polygon edges or vertices:
-								null;
-							else
-								-- edge starts and ends inside 
-								collect_intersections;
-							end if;
+							case first_section is
+								when INSIDE =>
+									-- A change from inside to inside -> no intersection.
+									null;
+									
+								when OUTSIDE =>
+									-- A change from inside to outside -> leaving intersection.
+
+									-- If start point is on edge of polygon B then build a leaving
+									-- intersection here. The affected edge of polygon B is the
+									-- edge that comes after the the intersection:
+									if sts.start_point.location = ON_EDGE then
+										intersections.append ((
+											position	=> sts.edge.start_point,
+											direction	=> LEAVING,
+											edge_A		=> sts.edge,
+											edge_B		=> element (sts.start_point.edge)));
+
+									else
+									-- If start point is on a vertex of polygon B then build a leaving
+									-- intersection here. The affected edge of polygon B is the
+									-- edge that comes after the the intersection:
+										intersections.append ((
+											position	=> sts.edge.start_point,
+											direction	=> LEAVING,
+											edge_A		=> sts.edge,
+											edge_B		=> element (sts.start_point.edges.edge_2)));
+
+									end if;
+							end case;
 
 							
-						when ON_EDGE =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts inside and ends on an edge of the polygon
-								null;
-							else
-								-- edge starts inside, crosses one or more edges of the polygon
-								-- and ends on edge
-								collect_intersections;
-							end if;
-
-							
-						when ON_VERTEX =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts inside and ends on a vertex of the polygon
-								null; 
-							else
-								-- edge starts inside, crosses one or more edges of the polygon
-								-- and ends on a vertex
-								collect_intersections;
-							end if;
-
-					end case;
-
-					
-				when ON_EDGE =>
-					--use_start_point_as_intersection;
-					
-					case LPS.end_point.location is
 						when OUTSIDE =>
-							if LPS.intersections.is_empty then
-								-- edge starts on edge and ends outside
-								-- without crossing any edges or vertices
-								null;
-							else
-								-- edge starts on edge, crosses one or more edges of the polygon
-								-- and ends outside
-								collect_intersections;
-							end if;
-							
-						when INSIDE =>
-							if LPS.intersections.is_empty then
-								-- edge starts on edge and ends inside
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on edge, crosses one or more edges of the polygon
-								-- and ends inside
-								collect_intersections;
-							end if;
+							case first_section is
+								when INSIDE =>
+									-- A change from outside to inside -> entering intersection.
 
-							
-						when ON_EDGE =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts on edge and ends on edge
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on edge, crosses one or more edges of the polygon
-								-- and ends on edge
-								collect_intersections;
-							end if;
+									-- If start point is on edge of polygon B then build an entering
+									-- intersection here. The affected edge of polygon B is the
+									-- edge that comes after the the intersection:
+									if sts.start_point.location = ON_EDGE then
+										intersections.append ((
+											position	=> sts.edge.start_point,
+											direction	=> ENTERING,
+											edge_A		=> sts.edge,
+											edge_B		=> element (sts.start_point.edge)));
 
-							
-						when ON_VERTEX =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts on edge and ends on vertex
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on edge, crosses one or more edges of the polygon
-								-- and ends on vertex
-								collect_intersections;
-							end if;
-					end case;
+									else
+									-- If start point is on a vertex of polygon B then build an entering
+									-- intersection here. The affected edge of polygon B is the
+									-- edge that comes after the the intersection:
+										intersections.append ((
+											position	=> sts.edge.start_point,
+											direction	=> ENTERING,
+											edge_A		=> sts.edge,
+											edge_B		=> element (sts.start_point.edges.edge_2)));
 
-					
-				when ON_VERTEX =>
-					--use_start_point_as_intersection;
-					
-					case LPS.end_point.location is
-						when OUTSIDE =>
-							if LPS.intersections.is_empty then
-								-- edge starts on vertex and ends outside
-								-- without crossing any edges or vertices
-								null;
-							else
-								-- edge starts on vertex, crosses one or more edges of the polygon
-								-- and ends outside
-								collect_intersections;
-							end if;
-							
-						when INSIDE =>
-							if LPS.intersections.is_empty then
-								-- edge starts on vertex and ends inside
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on vertex, crosses one or more edges of the polygon
-								-- and ends inside
-								collect_intersections;
-							end if;
+									end if;
 
-							
-						when ON_EDGE =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts on vertex and ends on edge
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on vertex, crosses one or more edges of the polygon
-								-- and ends on edge
-								collect_intersections;
-							end if;
-
-							
-						when ON_VERTEX =>
-							--use_end_point_as_intersection;
-							
-							if LPS.intersections.is_empty then
-								-- edge starts on vertex and ends on vertex
-								-- without crossing any edges or verices
-								null;
-							else
-								-- edge starts on vertex, crosses one or more edges of the polygon
-								-- and ends on vertex
-								collect_intersections;
-							end if;
+									
+								when OUTSIDE =>
+									-- A change from outside to outside -> no intersection.
+									null;
+							end case;
 							
 					end case;
-
+					
 			end case;
-			
-		end query_A_edge;
 
-
-
-		-- Removes redundant intersections from 
-		-- list "intersections" so that only one of them is left:
-		procedure remove_redundant_intersections is
-			c : pac_intersections.cursor := intersections.first;
-			i_list_new : pac_intersections.list;
-			
-			function redundant return boolean is
-				proceed : aliased boolean := true;
-				
-				procedure query_intersection (i : pac_intersections.cursor) is begin
-					if are_redundant (i, c) then
-						proceed := false; -- first match. abort iteration
-					end if;
-				end query_intersection;
-			
-			begin
-				-- Search in i_list_new for an intersection that is
-				-- redundant with the candidate indicated by cursor c.
-				-- Abort the search on first match:
-				iterate (i_list_new, query_intersection'access, proceed'access);
-				return not proceed;
-			end redundant;
-
-			
-		begin
-			-- Copy one intersection by the other to i_list_new,
-			-- Redundant intersections (those which are already in i_list_new)
-			-- are skipped:
-			
-			--put_line ("removing redundant intersections ...");
-			while c /= pac_intersections.no_element loop
-				--put_line (to_string (element (c)));
-				
-				if not redundant then
-					i_list_new.append (element (c));
-				end if;
-				
-				next (c);
-			end loop;			
-
-			intersections := i_list_new;
-		end remove_redundant_intersections;
+			-- Build all remaining intersections that are AFTER the start point of the 
+			-- candidate edge:
+			sts.intersections.iterate (build_intersection'access);
+		end query_status;
 
 		
-	begin
-		-- Traverse the edges of polygon A:
-		polygon_A.edges.iterate (query_A_edge'access);
+	begin		
+		-- Traverse the edges of polygon A and fill the status_list:
+		polygon_A.edges.iterate (query_edge'access);
 
-		remove_redundant_intersections;
+		-- Now by examining the status of individual edges we build the resulting
+		-- list of intersections:
+		status_list.iterate (query_status'access);
 		
 		return intersections;
 	end get_intersections;

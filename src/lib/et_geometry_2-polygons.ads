@@ -323,7 +323,8 @@ package et_geometry_2.polygons is
 	
 
 	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge:
+	-- the polygon of whether the point lies on an edge.
+	-- See details in body of this function:
 	function get_point_to_polygon_status ( -- CS rename to get_point_status
 		polygon		: in type_polygon;	
 		point		: in type_vector)
@@ -448,21 +449,58 @@ package et_geometry_2.polygons is
 
 
 	type type_line_to_polygon_status is record -- CS rename to type_edge_status
+		-- The affected edge edge itself:
+		edge		: type_edge;
+		
 		-- The properties of the start and end point of the line:
 		start_point	: type_line_end;
 		end_point	: type_line_end;
 
 		-- The intersections (incl position, intersected edge and direction)
-		-- with the polygon BETWEEN start and end point of the line: 
+		-- with the polygon BETWEEN start and end point of the line.
+		-- Edges that overlap the line are ignored.
 		intersections : pac_line_edge_intersections.list; 
 	end record;
+
+	package pac_edge_status_list is new doubly_linked_lists (type_line_to_polygon_status);
+
+
+	-- Returns the edge-to-polygon status before the given candidate status.
+	-- If the candidate is the first in status_list then the last status of the
+	-- status_list will be returned:
+	function get_previous_status (
+		status_list	: in pac_edge_status_list.list;
+		candidate	: in pac_edge_status_list.cursor)
+		return pac_edge_status_list.cursor;
+	
+		
+	---- Returns the first edge that
+	---- - starts outside or 
+	---- - enters the outside:
+	--function get_first_outside ( -- CS no need ?
+		--polygon	: in type_polygon;
+		--edges	: in pac_edge_status_list.list)		
+		--return pac_edge_status_list.cursor;
 	
 
+	type type_section_location is (INSIDE, OUTSIDE); 
+	-- NOTE: This has a different meaning than type_location !
+	-- Do not define a subtype of type_location !
+	
+	type type_section is (FIRST, LAST);
+	
+	function get_section_location (
+		polygon			: in type_polygon;
+		status_cursor	: in pac_edge_status_list.cursor;
+		section			: in type_section)		
+		return type_section_location;
+
+	
 	-- Returns true if the given two statuses are equal.
 	-- The x,y,z components of intersections are regarded as equal if
 	-- their difference is less or equal the rounding_threshold:
 	function equals (left, right : in type_line_to_polygon_status) -- CS rename to "="
-		return boolean;
+		return boolean;	
 
 	
 	function get_line_to_polygon_status ( -- CS rename to get_edge_status 
@@ -480,7 +518,7 @@ package et_geometry_2.polygons is
 	type type_intersection is new type_intersection_base with record
 		-- In addition to x/y position and direction,
 		-- this is supportive information that tells which
-		-- edges are actually intersectin each other:
+		-- edges are actually intersecting each other:
 		edge_A		: type_edge;
 		edge_B		: type_edge;
 	end record;
