@@ -69,6 +69,13 @@ package et_geometry_2.polygons.union is
 			when FALSE => null;
 		end case;
 	end record;
+
+
+	-- CS
+	--function "=" (
+		--left, right : in type_union)
+		--return boolean;
+	
 	
 	
 	-- Unions polygon A with polygon B.

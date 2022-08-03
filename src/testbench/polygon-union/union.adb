@@ -74,7 +74,7 @@ procedure union is
 
 
 	
-	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
+	B_default : constant string := "0 0  100 0  100 100  0 100";
 	
 
 	--procedure init_test is begin
@@ -87,7 +87,6 @@ procedure union is
 	procedure do_test (
 		A, B, E	: in string)
 	is 
-		F : type_fields_of_line;
 		PA, PB: type_polygon;
 
 		PE : type_polygon;
@@ -135,12 +134,12 @@ procedure union is
 		next_index;
 
 		
-		F := read_line (line => A, comment_mark => "#");
-		PA := type_polygon (to_polygon (F));
+		--F := read_line (line => A, comment_mark => "#");
+		PA := to_polygon (A);
 		--put_line ("A: " & to_string (A));
 
-		F := read_line (line => B, comment_mark => "#");
-		PB := type_polygon (to_polygon (F));
+		--F := read_line (line => B, comment_mark => "#");
+		PB := to_polygon (B);
 		--put_line ("B: " & to_string (B));
 
 		ACT := union (PA, PB); -- debug messages off
@@ -149,8 +148,8 @@ procedure union is
 		
 		if E'length > 0 then
 
-			F := read_line (line => E, comment_mark => "#");
-			PE := type_polygon (to_polygon (F));
+			--F := read_line (line => E, comment_mark => "#");
+			PE := to_polygon (E);
 			--put_line ("EXP: " & to_string (PE));
 			union_exists := true;			
 			
@@ -162,7 +161,7 @@ procedure union is
 		case union_exists is
 			when TRUE =>
 				if ACT.exists = union_exists then				
-					if ACT.union = PE then
+					if are_congruent (ACT.union, PE) then
 						null; -- actual same as expected -> ok
 					else
 						show_error;					
@@ -179,7 +178,7 @@ procedure union is
 				end if;
 		end case;
 			
-	end;
+	end do_test;
 		
 
 
@@ -191,186 +190,186 @@ begin
 	
 	-- TEST 1:
 	do_test (
-		A => "line 50 0 line 100 0 line 100 50 line 50 50",
+		A => " 50 0  100 0  100 50  50 50",
 		B => B_default,
 		--E => B_default);
-		E => "line 50 0 line 100 0 line 100 50 line 100 100 line 0 100 line 0 0");
+		E => " 50 0  100 0  100 50  100 100  0 100  0 0");
 	-- go
 
 	--goto end_test;
 	
 	-- TEST 2:
 	do_test (
-		A => "line 50 0 line 101 0 line 101 50 line 50 50",
+		A => " 50 0  101 0  101 50  50 50",
 		B => B_default,
-		E => "line 101 0 line 101 50 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0 line 100 0");
+		E => " 101 0  101 50  100 50  100 100  0 100  0 0  50 0");
 	-- go
 
 	
 	-- TEST 3:
 	do_test (
-		A => "line 80 10 line 150 10 line 150 20 line 80 20",
+		A => " 80 10  150 10  150 20  80 20",
 		B => B_default,
-		E => "line 150 10 line 150 20 line 100 20 line 100 100 line 0 100 line 0 0 line 100 0 line 100 10 ");
+		E => " 150 10  150 20  100 20  100 100  0 100  0 0  100 0  100 10 ");
 	-- go
 
 
 	-- TEST 4:
 	do_test (
-		A => "line 0 0 line 1 0 line 1 1 line 0 1",
-		B => "line 0.5 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5",
-		E => "line 0 0 line 1 0 line 1 0.5 line 1.5 0.5 line 1.5 1.5 line 0.5 1.5 line 0.5 1.0 line 0 1");
+		A => " 0 0  1 0  1 1  0 1",
+		B => " 0.5 0.5  1.5 0.5  1.5 1.5  0.5 1.5",
+		E => " 0 0  1 0  1 0.5  1.5 0.5  1.5 1.5  0.5 1.5  0.5 1.0  0 1");
 	-- go
 
 	
 
 	-- TEST 5:
 	do_test (
-		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
+		A => " 40 -10  120 -10  120 50  80 50  80 -5  60 -5  60 50  40 50",
 		B => B_default,
-		E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+		E => " 40 -10  120 -10  120 50  100 50  100 100  0 100  0 0  40 0");
 	-- go
 
 
 	-- TEST 6:
 	do_test (
-		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
+		A => " 20 -10  30 -10  110 50  30 110  20 110  25 50",
 		B => B_default,
-		E =>  "line 20 -10 line 30 -10 line 43.3333333333 0 line 100 0 "
-			& "line 100 42.5 line 110 50 line 100 57.5 "
-			& "line 100 100 line 43.3333333333 100 line 30 110 line 20 110 line 20.8333333333 100 line 0 100 line 0 0 "
-			& "line 20.8333333333 0 ");
+		E =>  " 20 -10  30 -10  4.33333333333333333E+01 0  100 0 "
+			& " 100 42.5  110 50  100 57.5 "
+			& " 100 100  4.33333333333333333E+01 100  30 110  20 110  2.08333333333333333E+01 100  0 100  0 0 "
+			& " 2.08333333333333333E+01 0 ");
 	--go
 	
 
 	-- TEST 7:
 	do_test (
-		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
+		A => " 40 -10  50 -10  50 110  40 110",
 		B => B_default,
-		E => "line 40 -10 line 50 -10 line 50 0 line 100 0 line 100 100 "
-		   & "line 50 100 line 50 110 line 40 110 line 40 100 line 0 100 line 0 0 line 40 0");
+		E => " 40 -10  50 -10  50 0  100 0  100 100 "
+		   & " 50 100  50 110  40 110  40 100  0 100  0 0  40 0");
 	-- go
 
 
 	
 	-- TEST 8:
 	do_test (
-		A => "line 0 0 line 50 0 line 50 50 line 0 50",
+		A => " 0 0  50 0  50 50  0 50",
 		B => B_default,
 		--E => B_default);
-		E => "line 0 50 line 0 0 line 50 0 line 100 0 line 100 100 line 0 100");
+		E => " 0 50  0 0  50 0  100 0  100 100  0 100");
 	-- go
 
 
 	-- TEST 9:
 	do_test (
-		A => "line 30 0 line 50 0 line 50 50 line 30 50",
+		A => " 30 0  50 0  50 50  30 50",
 		B => B_default,
 		--E => B_default);
-		E => "line 30 0 line 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
+		E => " 30 0  50 0  100 0  100 100  0 100  0 0");
 	-- go
 
 
 	-- TEST 10:
 	do_test (
-		A => "line 50 0 line 100 0 line 101 50 line 50 50",
+		A => " 50 0  100 0  101 50  50 50",
 		B => B_default,
-		E => "line 101 50 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0 line 100 0");
+		E => " 101 50  100 50  100 100  0 100  0 0  50 0  100 0");
 	-- go
 
 
 	-- TEST 11:
 	do_test (
-		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
+		A => " 50 0  100 0  80 20  80 40  110 40  110 60  50 60",
 		B => B_default,
-		E => "line 110 40 line 110 60 line 100 60 line 100 100 line 0 100 "
-		   & "line 0 0 line 50 0 line 100 0 line 100 40");
+		E => " 110 40  110 60  100 60  100 100  0 100 "
+		   & " 0 0  50 0  100 0  100 40");
 	-- go
 
 
 	-- TEST 12:
 	do_test (
-		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
+		A => " 50 -10  60 -10  60 20  120 20  120 60  60 60  105 105  -5 105  50 50",
 		B => B_default,
-		E => "line 50 -10 line 60 -10 line 60 0 line 100 0 line 100 20 line 120 20 "
-		   & "line 120 60 line 100 60 line 100 100 line 105 105 line -5 105 "
-		   & "line 0 100 line 0 0 line 50 0");	
+		E => " 50 -10  60 -10  60 0  100 0  100 20  120 20 "
+		   & " 120 60  100 60  100 100  105 105  -5 105 "
+		   & " 0 100  0 0  50 0");	
 	-- go
 
 
 	-- TEST 13:
 	do_test (
-		A => "line -5 -5 line 105 -5 line 105 105",
+		A => " -5 -5  105 -5  105 105",
 		B => B_default,
-		E => "line -5 -5 line 105 -5 line 105 105 line 100 100 line 0 100 line 0 0");
+		E => " -5 -5  105 -5  105 105  100 100  0 100  0 0");
 	
 
 	-- TEST 14:
 	do_test (
-		A => "line 50 0 line 80 50 line 70 60 line 40 10",
+		A => " 50 0  80 50  70 60  40 10",
 		B => B_default,
 		E => B_default);
 
 
 	-- TEST 15:
 	do_test (
-		A => "line 50 0 line 80 -50 line 70 -60 line 40 -10",
+		A => " 50 0  80 -50  70 -60  40 -10",
 		B => B_default,
 		E => ""); -- we expect nothing because the polygons do not overlap
 
 
 	-- TEST 16:
 	do_test (
-		A => "line 200 10 line 250 10 line 250 50",
+		A => " 200 10  250 10  250 50",
 		B => B_default,
 		E => ""); -- we expect nothing because the polygons do not overlap
 
 
 	-- TEST 17:
 	do_test (
-		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
+		A => " 50 0  110 -20  120 0  110 60",
 		B => B_default,
-		E => "line 110 -20 line 120 0 line 110 60 line 100 50 line 100 100 line 0 100 line 0 0 line 50 0");
+		E => " 110 -20  120 0  110 60  100 50  100 100  0 100  0 0  50 0");
 
 	
 	-- TEST 18:
 	do_test (
-		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
+		A => " 0 0  25 -50  50 -50  50 50  25 50",
 		B => B_default,
-		E => "line 25 -50 line 50 -50 lie 50 0 line 100 0 line 100 100 line 0 100 line 0 0");
+		E => " 25 -50  50 -50  50 0  100 0  100 100  0 100  0 0");
 
 	
 	-- TEST 19:
 	do_test (
-		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
+		A => " 10 0  10 -10  90 -10  90 0  80 10  20 10",
 		B => B_default,
-		E => "line 10 -10 line 90 -10 line 90 0 line 100 0 line 100 100 line 0 100 line 0 0 line 10 0");
+		E => " 10 -10  90 -10  90 0  100 0  100 100  0 100  0 0  10 0");
 
 
 	-- TEST 20:
 	do_test (
-		A => "line 10 10 line 90 10 line 90 90 line 10 90",
-		B => "line 0 0 line 100 0 line 100 20 line 50 20 line 50 80 line 100 80 "
-			& "line 100 100 line 0 100",
-		E => "line 90 20 line 90 80 line 100 80 "
-			& "line 100 100 line 0 100 line 0 0 line 100 0 line 100 20");
+		A => " 10 10  90 10  90 90  10 90",
+		B => " 0 0  100 0  100 20  50 20  50 80  100 80 "
+			& " 100 100  0 100",
+		E => " 90 20  90 80  100 80 "
+			& " 100 100  0 100  0 0  100 0  100 20");
 
 
 <<test>>
 	
 	-- TEST 21, wie test 5. A hat anderen Startpunkt:
 	do_test (
-		A => "line 60 -5 line 60 50 line 40 50 line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5",
+		A => " 60 -5  60 50  40 50  40 -10  120 -10  120 50  80 50  80 -5",
 		B => B_default,
-		E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+		E => " 40 -10  120 -10  120 50  100 50  100 100  0 100  0 0  40 0");
 	-- go
 
 	
 	-- TEST 22, wie test 5. A hat anderen Startpunkt:
 	do_test (
-		A => "line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50 line 40 -10 line 120 -10 line 120 50",
+		A => " 80 50  80 -5  60 -5  60 50  40 50  40 -10  120 -10  120 50",
 		B => B_default,
-		E => "line 40 -10 line 120 -10 line 120 50 line 100 50 line 100 100 line 0 100 line 0 0 line 40 0");
+		E => " 40 -10  120 -10  120 50  100 50  100 100  0 100  0 0  40 0");
 	-- go
 	
 	
