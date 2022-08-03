@@ -1290,6 +1290,23 @@ package body et_geometry_2.polygons is
 	end get_previous_status;
 
 
+	function get_next_status (
+		status_list	: in pac_edge_status_list.list;
+		candidate	: in pac_edge_status_list.cursor)
+		return pac_edge_status_list.cursor
+	is
+		use pac_edge_status_list;
+		result : pac_edge_status_list.cursor;
+	begin
+		if candidate = status_list.last then
+			result := status_list.first;
+		else
+			result := next (candidate);
+		end if;
+		
+		return result;
+	end get_next_status;
+
 	
 	--function get_first_outside (
 		--polygon	: in type_polygon;
@@ -1370,9 +1387,9 @@ package body et_geometry_2.polygons is
 		polygon			: in type_polygon;
 		status_cursor	: in pac_edge_status_list.cursor;
 		section			: in type_section)		
-		return type_section_location
+		return type_location
 	is
-		result : type_section_location := OUTSIDE;
+		result : type_location := OUTSIDE;
 
 		use pac_edge_status_list;
 		use pac_line_edge_intersections;
@@ -1391,17 +1408,20 @@ package body et_geometry_2.polygons is
 			-- Otherwise do this:
 			
 			-- look at the center of the edge
-			case get_location (polygon, get_center (sts.edge)) is
-				when OUTSIDE =>
-					result := OUTSIDE;
+			--case get_location (polygon, get_center (sts.edge)) is
+				--when OUTSIDE =>
+					--result := OUTSIDE;
 
-				when INSIDE =>
-					result := INSIDE;
+				--when INSIDE =>
+					--result := INSIDE;
 
-				when others =>
-					raise constraint_error;
-					-- CS should never happen
-			end case;
+				--when others => -- ON_EDGE or ON_VERTEX
+					----raise constraint_error;
+					---- CS should never happen
+					--result := UNCLEAR;
+			--end case;
+
+			return get_location (polygon, get_center (sts.edge));
 			
 		else
 			-- Edge is intersected at least once:
@@ -2221,15 +2241,15 @@ package body et_geometry_2.polygons is
 			-- then this point could be an entering or leaving intersection.
 			-- To make sure it is definitely entering or leaving, the status of the
 			-- previous edge must be checked:
-			sts_previous : pac_edge_status_list.cursor;
+			sts_tmp : pac_edge_status_list.cursor;
 
 			-- Regarding special case 1:
 			-- It must be figured out whether the the last section of the previous edge
 			-- is inside or outside polygon B.
-			last_section : type_section_location;
+			last_section : type_location;
 			
 			-- Likewise the first section of the candidate edge:
-			first_section : type_section_location;
+			first_section : type_location;
 
 			
 			-- This procedure builds an intersection as given in the edge-to-polygon status
@@ -2247,9 +2267,70 @@ package body et_geometry_2.polygons is
 			end build_intersection;
 
 
+			procedure build_leaving is begin
+				-- If start point is on edge of polygon B then build a leaving
+				-- intersection here. The affected edge of polygon B is the
+				-- edge that comes right after the the intersection:
+				if sts.start_point.location = ON_EDGE then
+					intersections.append ((
+						position	=> sts.edge.start_point,
+						direction	=> LEAVING,
+						edge_A		=> sts.edge,
+						edge_B		=> element (sts.start_point.edge)));
+
+				else
+				-- If start point is on a vertex of polygon B then build a leaving
+				-- intersection here. The affected edge of polygon B is the
+				-- edge that comes right after the the intersection:
+					intersections.append ((
+						position	=> sts.edge.start_point,
+						direction	=> LEAVING,
+						edge_A		=> sts.edge,
+						edge_B		=> element (sts.start_point.edges.edge_2)));
+
+				end if;
+
+				if debug then
+					put_line ("intersection: " & to_string (intersections.last_element));
+				end if;
+			end build_leaving;
+	
+
+			procedure build_entering is begin
+				-- If start point is on edge of polygon B then build an entering
+				-- intersection here. The affected edge of polygon B is the
+				-- edge that comes right after the the intersection:
+				if sts.start_point.location = ON_EDGE then
+					intersections.append ((
+						position	=> sts.edge.start_point,
+						direction	=> ENTERING,
+						edge_A		=> sts.edge,
+						edge_B		=> element (sts.start_point.edge)));
+
+				else
+				-- If start point is on a vertex of polygon B then build an entering
+				-- intersection here. The affected edge of polygon B is the
+				-- edge that comes right after the the intersection:
+					intersections.append ((
+						position	=> sts.edge.start_point,
+						direction	=> ENTERING,
+						edge_A		=> sts.edge,
+						edge_B		=> element (sts.start_point.edges.edge_2)));
+
+				end if;
+
+				if debug then
+					put_line ("intersection: " & to_string (intersections.last_element));
+				end if;
+			end build_entering;
+
 			
 		begin -- query_status
+			--if debug then
+				--put_line ("status: ");
+			--end if;
 
+			
 			-- Test the location of the start point of the candidate edge:
 			case sts.start_point.location is
 				when OUTSIDE | INSIDE =>
@@ -2259,12 +2340,27 @@ package body et_geometry_2.polygons is
 					-- Candidate edge starts on an edge or on a vertex of polygon B.
 					-- So it is not definitely clear whether this intersection is leaving or entering.
 					-- Look at last section of predecessing edge:
-					sts_previous := get_previous_status (status_list, sts_candidate);
-					last_section  := get_section_location (polygon_B, sts_previous, LAST);
+					sts_tmp := get_previous_status (status_list, sts_candidate);
+					last_section := get_section_location (polygon_B, sts_tmp, LAST);
 
+					--while last_section = UNCLEAR loop
+						--sts_tmp := get_previous_status (status_list, sts_tmp);
+						--last_section := get_section_location (polygon_B, sts_tmp, LAST);
+						---- CS counter ?
+					--end loop;
+
+					
 					-- Look at first section of the candidate edge:
 					first_section := get_section_location (polygon_B, sts_candidate, FIRST);
+					--sts_tmp := sts_candidate;
+					
+					--while first_section = UNCLEAR loop
+						--sts_tmp := get_next_status (status_list, sts_tmp);
+						--first_section := get_section_location (polygon_B, sts_tmp, FIRST);
+						---- CS counter ?
+					--end loop;
 
+					
 					-- Now with the two flags last_section and first_section we get
 					-- 4 possible scenarios:
 					case last_section is
@@ -2276,28 +2372,11 @@ package body et_geometry_2.polygons is
 									
 								when OUTSIDE =>
 									-- A change from inside to outside -> leaving intersection.
+									build_leaving;
 
-									-- If start point is on edge of polygon B then build a leaving
-									-- intersection here. The affected edge of polygon B is the
-									-- edge that comes after the the intersection:
-									if sts.start_point.location = ON_EDGE then
-										intersections.append ((
-											position	=> sts.edge.start_point,
-											direction	=> LEAVING,
-											edge_A		=> sts.edge,
-											edge_B		=> element (sts.start_point.edge)));
-
-									else
-									-- If start point is on a vertex of polygon B then build a leaving
-									-- intersection here. The affected edge of polygon B is the
-									-- edge that comes after the the intersection:
-										intersections.append ((
-											position	=> sts.edge.start_point,
-											direction	=> LEAVING,
-											edge_A		=> sts.edge,
-											edge_B		=> element (sts.start_point.edges.edge_2)));
-
-									end if;
+								when others =>  -- on edge or on vertex
+									--raise constraint_error;
+									build_leaving;
 							end case;
 
 							
@@ -2305,35 +2384,32 @@ package body et_geometry_2.polygons is
 							case first_section is
 								when INSIDE =>
 									-- A change from outside to inside -> entering intersection.
-
-									-- If start point is on edge of polygon B then build an entering
-									-- intersection here. The affected edge of polygon B is the
-									-- edge that comes after the the intersection:
-									if sts.start_point.location = ON_EDGE then
-										intersections.append ((
-											position	=> sts.edge.start_point,
-											direction	=> ENTERING,
-											edge_A		=> sts.edge,
-											edge_B		=> element (sts.start_point.edge)));
-
-									else
-									-- If start point is on a vertex of polygon B then build an entering
-									-- intersection here. The affected edge of polygon B is the
-									-- edge that comes after the the intersection:
-										intersections.append ((
-											position	=> sts.edge.start_point,
-											direction	=> ENTERING,
-											edge_A		=> sts.edge,
-											edge_B		=> element (sts.start_point.edges.edge_2)));
-
-									end if;
-
+									build_entering;
 									
 								when OUTSIDE =>
 									-- A change from outside to outside -> no intersection.
 									null;
+
+								when others =>  -- on edge or on vertex
+									--raise constraint_error;
+									build_entering;
 							end case;
-							
+
+
+						when others => -- on edge or on vertex
+							case first_section is
+								when INSIDE =>
+									-- A change from outside to inside -> entering intersection.
+									build_entering;
+									
+								when OUTSIDE =>
+									build_leaving;
+
+								when others =>  -- on edge or on vertex
+									--raise constraint_error;
+									null;
+							end case;
+
 					end case;
 					
 			end case;

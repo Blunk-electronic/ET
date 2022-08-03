@@ -48,6 +48,7 @@ with et_string_processing;		use et_string_processing;
 
 procedure crop is
 
+	--test_count : constant positive := 26;
 	test_count : constant positive := 26;
 
 	use pac_geometry_brd;
@@ -157,10 +158,12 @@ procedure crop is
 			--put_line ("B: " & to_string (B));
 			--put_line ("B shortest edge: " & to_string (get_shortest_edge (B)));
 
+			
 			set (i).result_actual := crop (A, B);
 
 			-- Use this statement if more debug messages required:
 			--set (i).result_actual := crop (A, B, true);
+
 			
 			-- On error show details:
 			if set (i).result_actual /= set (i).result_expected then
@@ -227,7 +230,8 @@ begin
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
-
+--goto skip;
+	
 	
 	-- TEST 2:
 	init_test;
@@ -239,6 +243,8 @@ begin
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 	-- go
 
+--goto skip;
+	
 	
 	-- TEST 3:
 	init_test;
@@ -301,7 +307,7 @@ begin
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 2));
 	-- go
 
-
+--goto skip;
 	
 	-- TEST 8:
 	init_test;
@@ -382,6 +388,7 @@ begin
 		B => B_default,
 		expect => (exists => false, status => A_INSIDE_B));
 
+--goto skip;
 	
 
 	-- TEST 15:
@@ -461,6 +468,7 @@ begin
 		expect => (exists => true, status => CONGRUENT, fragments => EXP_list, count => 0));
 	-- go
 
+--goto skip;
 	
 
 	-- TEST 22:
@@ -541,6 +549,7 @@ begin
 		--expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list));
 	-- nogo
 	
+<<skip>>
 	
 	---------------------	
 	make_test;

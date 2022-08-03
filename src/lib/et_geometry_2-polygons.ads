@@ -473,7 +473,13 @@ package et_geometry_2.polygons is
 		candidate	: in pac_edge_status_list.cursor)
 		return pac_edge_status_list.cursor;
 	
-		
+
+	function get_next_status (
+		status_list	: in pac_edge_status_list.list;
+		candidate	: in pac_edge_status_list.cursor)
+		return pac_edge_status_list.cursor;
+
+	
 	---- Returns the first edge that
 	---- - starts outside or 
 	---- - enters the outside:
@@ -483,7 +489,7 @@ package et_geometry_2.polygons is
 		--return pac_edge_status_list.cursor;
 	
 
-	type type_section_location is (INSIDE, OUTSIDE); 
+	--type type_section_location is (INSIDE, OUTSIDE, UNCLEAR); 
 	-- NOTE: This has a different meaning than type_location !
 	-- Do not define a subtype of type_location !
 	
@@ -493,7 +499,7 @@ package et_geometry_2.polygons is
 		polygon			: in type_polygon;
 		status_cursor	: in pac_edge_status_list.cursor;
 		section			: in type_section)		
-		return type_section_location;
+		return type_location;
 
 	
 	-- Returns true if the given two statuses are equal.
