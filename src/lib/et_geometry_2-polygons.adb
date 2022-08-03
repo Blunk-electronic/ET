@@ -179,6 +179,12 @@ package body et_geometry_2.polygons is
 		end loop;
 
 		return to_polygon (v_list);
+
+		exception 
+			when others =>
+				put_line (vertices);
+				raise;
+		
 	end to_polygon;
 
 

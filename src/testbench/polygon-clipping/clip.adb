@@ -104,7 +104,7 @@ procedure clip is
 	is
 		p : type_polygon;
 	begin
-		p := to_polygon (to_contour (s), tolerance);
+		p := to_polygon (s);
 		clipped.append (p);
 	end add_to_expect;
 	
@@ -186,7 +186,7 @@ begin
 
 	-- TEST 1:
 	--init_test;
-	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 100 50 line 50 50",
@@ -198,7 +198,7 @@ begin
 	
 	-- TEST 2:
 	init_test;
-	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
 
 	make_set (
 		A => "line 50 0 line 101 0 line 101 50 line 50 50",
@@ -209,7 +209,7 @@ begin
 	
 	-- TEST 3:
 	init_test;
-	add_to_expect (EXP, "line 100 20 line 80 20 line 80 10 line 100 10");
+	add_to_expect (EXP, "100 20  80 20  80 10  100 10");
 	
 	make_set (
 		A => "line 80 10 line 150 10 line 150 20 line 80 20",
@@ -220,7 +220,7 @@ begin
 
 	-- TEST 4:
 	init_test;
-	add_to_expect (EXP, "line 1 0.5 line 1 1 line 0.5 1 line 0.5 0.5");
+	add_to_expect (EXP, "1 0.5  1 1  0.5 1  0.5 0.5");
 	
 	make_set (
 		A => "line 0 0 line 1 0 line 1 1 line 0 1",
@@ -232,8 +232,8 @@ begin
 
 	-- TEST 5:
 	init_test;
-	add_to_expect (EXP, "line 100 50 line 80 50 line 80 0 line 100 0");
-	add_to_expect (EXP, "line 60 0 line 60 50 line 40 50 line 40 0");
+	add_to_expect (EXP, "100 50  80 50  80 0  100 0");
+	add_to_expect (EXP, "60 0  60 50  40 50  40 0");
 	
 	make_set (
 		A => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
@@ -244,8 +244,8 @@ begin
 
 	-- TEST 6:
 	init_test;
-	add_to_expect (EXP, "line 43.3333333333 0 line 100 42.5 line 100 57.5 " 
-				   & "line 43.3333333333 100 line 20.8333333333 100 line 25 50 line 20.8333333333 0");
+	add_to_expect (EXP, "4.33333333333333333E+01 0  100 42.5  100 57.5 " 
+				   & "4.33333333333333333E+01 100  2.08333333333333333E+01 100  25 50  2.08333333333333333E+01 0");
 	
 	make_set (
 		A => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
@@ -257,7 +257,7 @@ begin
 
 	-- TEST 7:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 50 100 line 40 100 line 40 0");
+	add_to_expect (EXP, "50 0  50 100  40 100  40 0");
 	
 	make_set (
 		A => "line 40 -10 line 50 -10 line 50 110 line 40 110",
@@ -269,7 +269,7 @@ begin
 	
 	-- TEST 8:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 50 50 line 0 50 line 0 0");
+	add_to_expect (EXP, "50 0  50 50  0 50  0 0");
 	
 	make_set (
 		A => "line 0 0 line 50 0 line 50 50 line 0 50",
@@ -280,7 +280,7 @@ begin
 
 	-- TEST 9:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 50 50 line 30 50 line 30 0");
+	add_to_expect (EXP, "50 0  50 50  30 50  30 0");
 	
 	make_set (
 		A => "line 30 0 line 50 0 line 50 50 line 30 50",
@@ -292,7 +292,7 @@ begin
 
 	-- TEST 10:
 	init_test;
-	add_to_expect (EXP, "line 100 50 line 50 50 line 50 0 line 100 0");
+	add_to_expect (EXP, "100 50  50 50  50 0  100 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 101 50 line 50 50",
@@ -303,7 +303,7 @@ begin
 
 	---- TEST 11:
 	init_test;
-	add_to_expect (EXP, "line 100 0 line 80 20 line 80 40 line 100 40 line 100 60 line 50 60 line 50 0");
+	add_to_expect (EXP, "100 0  80 20  80 40  100 40  100 60  50 60  50 0");
 	
 	make_set (
 		A => "line 50 0 line 100 0 line 80 20 line 80 40 line 110 40 line 110 60 line 50 60",
@@ -314,7 +314,7 @@ begin
 
 	-- TEST 12:
 	init_test;
-	add_to_expect (EXP, "line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50 line 50 0");
+	add_to_expect (EXP, "60 0  60 20  100 20  100 60  60 60  100 100  0 100  50 50  50 0");
 	
 	make_set (
 		A => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
@@ -325,7 +325,7 @@ begin
 
 	-- TEST 13:
 	init_test;
-	add_to_expect (EXP, "line 100 100 line 0 0 line 100 0");
+	add_to_expect (EXP, "100 100  0 0  100 0");
 	
 	make_set (
 		A => "line -5 -5 line 105 -5 line 105 105",
@@ -335,7 +335,7 @@ begin
 
 	-- TEST 14:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 80 50 line 70 60 line 40 10");
+	add_to_expect (EXP, "50 0  80 50  70 60  40 10");
 	
 	make_set (
 		A => "line 50 0 line 80 50 line 70 60 line 40 10",
@@ -366,7 +366,7 @@ begin
 
 	-- TEST 17:
 	init_test;
-	add_to_expect (EXP, "line 100 50 line 50 0 line 100 0");
+	add_to_expect (EXP, "100 50  50 0  100 0");
 	
 	make_set (
 		A => "line 50 0 line 110 -20 line 120 0 line 110 60",
@@ -377,7 +377,7 @@ begin
 	
 	-- TEST 18:
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 50 50 line 25 50 line 0 0");
+	add_to_expect (EXP, "50 0  50 50  25 50  0 0");
 	
 	make_set (
 		A => "line 0 0 line 25 -50 line 50 -50 line 50 50 line 25 50",
@@ -388,7 +388,7 @@ begin
 	
 	-- TEST 19:
 	init_test;
-	add_to_expect (EXP, "line 90 0 line 80 10 line 20 10 line 10 0");
+	add_to_expect (EXP, "90 0  80 10  20 10  10 0");
 	
 	make_set (
 		A => "line 10 0 line 10 -10 line 90 -10 line 90 0 line 80 10 line 20 10",
@@ -398,7 +398,7 @@ begin
 
 	-- TEST 20:
 	init_test;
-	add_to_expect (EXP, "line 10 10 line 90 10 line 90 90 line 10 90");
+	add_to_expect (EXP, "10 10  90 10  90 90  10 90");
 	
 	make_set (
 		A => "line 0 0 line 100 0 line 100 100 line 0 100",
@@ -409,7 +409,7 @@ begin
 
 	-- TEST 21 (as test 4, but polygon A and B swapped):
 	init_test;
-	add_to_expect (EXP, "line 0.5 1 line 0.5 0.5 line 1 0.5 line 1 1");
+	add_to_expect (EXP, "0.5 1  0.5 0.5  1 0.5  1 1");
 	
 	make_set (
 		B => "line 0 0 line 1 0 line 1 1 line 0 1",
@@ -420,7 +420,7 @@ begin
 
 	-- TEST 22 (as test 12, but polygon A and B swapped):
 	init_test;
-	add_to_expect (EXP, "line 50 0 line 60 0 line 60 20 line 100 20 line 100 60 line 60 60 line 100 100 line 0 100 line 50 50");
+	add_to_expect (EXP, "50 0  60 0  60 20  100 20  100 60  60 60  100 100  0 100  50 50");
 	
 	make_set (
 		B => "line 50 -10 line 60 -10 line 60 20 line 120 20 line 120 60 line 60 60 line 105 105 line -5 105 line 50 50",
@@ -431,7 +431,7 @@ begin
 
 	-- TEST 23 (as test 3, but polygon A and B swapped):
 	init_test;
-	add_to_expect (EXP, "line 100 10 line 100 20 line 80 20 line 80 10");
+	add_to_expect (EXP, "100 10  100 20  80 20  80 10");
 	
 	make_set (
 		B => "line 80 10 line 150 10 line 150 20 line 80 20",
@@ -442,8 +442,8 @@ begin
 
 	-- TEST 24 (as test 5, but polygon A and B swapped):
 	init_test;
-	add_to_expect (EXP, "line 40 0 line 60 0 line 60 50 line 40 50 ");
-	add_to_expect (EXP, "line 80 0 line 100 0 line 100 50 line 80 50");
+	add_to_expect (EXP, "40 0  60 0  60 50  40 50 ");
+	add_to_expect (EXP, "80 0  100 0  100 50  80 50");
 	
 	make_set (
 		B => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
@@ -456,8 +456,8 @@ begin
 	tolerance := 5.0;
 	
 	init_test;
-	add_to_expect (EXP, "line 50 30 line 0 30 line 0 0 line 10 0 "
-				  & "line 15 8.6602540378 line 25 8.6602540378 line 30 0 line 50 0");
+	add_to_expect (EXP, "50 30  0 30  0 0  10 0 "
+				  & " 15 8.66025403784438647E+00  25 8.66025403784438647E+00  30 0  50 0");
 	
 	make_set (
 		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped
@@ -471,8 +471,8 @@ begin
 	tolerance := 5.0;
 	
 	init_test;
-	add_to_expect (EXP, "line 50 30 line 0 30 line 0 1 line 10 1 "
-				  & "line 15 9.6602540378 line 25 9.6602540378 line 30 1 line 50 1");
+	add_to_expect (EXP, "50 30  0 30  0 1  10 1 "
+				  & " 15 9.66025403784438647E+00  25 9.66025403784438647E+00  30 1  50 1");
 	
 	make_set (
 		A => "line -1 -1 line 51 -1 line 51 30 line -1 30", -- zone to be clipped

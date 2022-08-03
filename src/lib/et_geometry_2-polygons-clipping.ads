@@ -61,7 +61,13 @@ package et_geometry_2.polygons.clipping is
 	-- The result of a polygon clipping operation is a list
 	-- of sub-polygons:
 	package pac_clipped is new doubly_linked_lists (type_polygon);
+	use pac_clipped;
 
+
+	function "=" (
+		left, right : in pac_clipped.list)
+		return boolean;
+	
 	
 	-- Clips polygon A by polygon B.
 	-- If the two polygons do not overlap, then the return is an empty list.
