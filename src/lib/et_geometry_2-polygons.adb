@@ -1278,6 +1278,38 @@ package body et_geometry_2.polygons is
 
 
 
+	function to_string (
+		line_end : in type_line_end)
+		return string
+	is
+		use ada.strings.unbounded;
+		use ada.characters.latin_1;
+		result : unbounded_string := to_unbounded_string (type_location'image (line_end.location) & LF);
+	begin
+		-- CS edges
+		return to_string (result);
+	end to_string;
+	
+
+	function to_string (
+		status	: in type_line_to_polygon_status)
+		return string
+	is 
+		use ada.strings.unbounded;
+		use ada.characters.latin_1;
+		result : unbounded_string := to_unbounded_string ("edge to polygon status:" & LF);
+	begin
+		result := result & to_string (status.edge) & LF;
+		result := result & "start: " & to_string (status.start_point);
+		result := result & "end  : " & to_string (status.end_point);
+
+		-- CS intersections
+		return to_string (result);
+	end to_string;
+
+
+	
+
 	function get_previous_status (
 		status_list	: in pac_edge_status_list.list;
 		candidate	: in pac_edge_status_list.cursor)
@@ -2332,9 +2364,9 @@ package body et_geometry_2.polygons is
 
 			
 		begin -- query_status
-			--if debug then
-				--put_line ("status: ");
-			--end if;
+			if debug then
+				put_line (to_string (sts));
+			end if;
 
 			
 			-- Test the location of the start point of the candidate edge:
@@ -2348,27 +2380,13 @@ package body et_geometry_2.polygons is
 					-- Look at last section of predecessing edge:
 					sts_tmp := get_previous_status (status_list, sts_candidate);
 					last_section := get_section_location (polygon_B, sts_tmp, LAST);
-
-					--while last_section = UNCLEAR loop
-						--sts_tmp := get_previous_status (status_list, sts_tmp);
-						--last_section := get_section_location (polygon_B, sts_tmp, LAST);
-						---- CS counter ?
-					--end loop;
-
 					
 					-- Look at first section of the candidate edge:
 					first_section := get_section_location (polygon_B, sts_candidate, FIRST);
-					--sts_tmp := sts_candidate;
 					
-					--while first_section = UNCLEAR loop
-						--sts_tmp := get_next_status (status_list, sts_tmp);
-						--first_section := get_section_location (polygon_B, sts_tmp, FIRST);
-						---- CS counter ?
-					--end loop;
-
 					
 					-- Now with the two flags last_section and first_section we get
-					-- 4 possible scenarios:
+					-- some possible scenarios:
 					case last_section is
 						when INSIDE =>
 							case first_section is
@@ -2427,6 +2445,10 @@ package body et_geometry_2.polygons is
 
 		
 	begin		
+		if debug then
+			put_line ("getting intersection ...");
+		end if;
+			
 		-- Traverse the edges of polygon A and fill the status_list:
 		polygon_A.edges.iterate (query_edge'access);
 

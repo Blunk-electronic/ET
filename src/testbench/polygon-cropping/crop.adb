@@ -49,7 +49,7 @@ with et_string_processing;		use et_string_processing;
 procedure crop is
 
 	--test_count : constant positive := 26;
-	test_count : constant positive := 26;
+	test_count : constant positive := 29;
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
@@ -490,7 +490,7 @@ begin
 	-- TEST 23:
 	init_test;
 	add_to_expect (B_default_vertices);
-	-- The right edge of A overlaps the left edge of B. Both edges have the same length.
+	-- The left edge of A overlaps the right edge of B. Both edges have the same length.
 	-- A overlaps B here. But B remains unchanged. B will not be cropped.
 	
 	make_set (
@@ -503,7 +503,7 @@ begin
 	-- TEST 24:
 	init_test;
 	add_to_expect ("0 0  100 0  100 10  100 90  100 100  0 100");
-	-- The right edge of A overlaps the left edge of B partly.
+	-- The left edge of A overlaps the right edge of B partly.
 	-- A overlaps B here. But B remains unchanged. B will not be cropped.
 	
 	make_set (
@@ -516,7 +516,7 @@ begin
 	-- TEST 25:
 	init_test;
 	add_to_expect ("0 0  100 0  100 10  100 100  0 100");
-	-- The right edge of A overlaps the left edge of B partly.
+	-- The left edge of A overlaps the right edge of B partly.
 	-- A overlaps B here. But B remains unchanged. B will not be cropped.
 	
 	make_set (
@@ -538,6 +538,45 @@ begin
 		B =>  "line 0 0 line 0 100 line 100 100 line 100 0 line 110 0 line 110 110 line -10 110 line -10 0",
 		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
 
+
+	
+	-- TEST 27:
+	init_test;
+	add_to_expect (B_default_vertices);
+	-- The right edge of A overlaps the left edge of B. Both edges have the same length.
+	-- A overlaps B here. But B remains unchanged. B will not be cropped.
+	
+	make_set (
+		A => "line -100 0 line 0 0 line 0 100 line -100 100",
+		B => B_default,		
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
+
+
+	
+	-- TEST 28:
+	init_test;
+	add_to_expect (B_default_vertices);
+	-- The right edge of A overlaps the left edge of B. Both edges have the same length.
+	-- A overlaps B here. But B remains unchanged. B will not be cropped.
+	
+	make_set (
+		A => "line 100 -110 line 200 -110 line 200 10 line 100 10",
+		B => B_default,		
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
+
+
+
+	-- TEST 29:
+	init_test;
+	add_to_expect (B_default_vertices);
+	-- The right edge of A overlaps the left edge of B. Both edges have the same length.
+	-- A overlaps B here. But B remains unchanged. B will not be cropped.
+	
+	make_set (
+		A => "line -100 -110 line 0 -110 line 0 10 line -100 10",
+		B => B_default,		
+		expect => (exists => true, status => A_OVERLAPS_B, fragments => EXP_list, count => 1));
+	
 	
 	-- TEST 23 (wie Test 3 aber mit polygon B in CW orientiert):
 	--init_test;

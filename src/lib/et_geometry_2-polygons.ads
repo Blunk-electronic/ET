@@ -448,6 +448,11 @@ package et_geometry_2.polygons is
 	end record;
 
 
+	function to_string (
+		line_end : in type_line_end)
+		return string;
+	
+		
 	type type_line_to_polygon_status is record -- CS rename to type_edge_status
 		-- The affected edge edge itself:
 		edge		: type_edge;
@@ -462,6 +467,12 @@ package et_geometry_2.polygons is
 		intersections : pac_line_edge_intersections.list; 
 	end record;
 
+
+	function to_string (
+		status	: in type_line_to_polygon_status)
+		return string;
+
+	
 	package pac_edge_status_list is new doubly_linked_lists (type_line_to_polygon_status);
 
 
