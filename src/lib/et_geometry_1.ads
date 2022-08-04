@@ -375,9 +375,14 @@ package et_geometry_1 is
 		v : in type_vector)
 		return type_offset;
 
-	
+
+	vector_preamble_2d : constant string := "(x" & axis_separator & "y) ";
+	vector_preamble_3d : constant string := "(x" & axis_separator & "y" & axis_separator & "z) ";
+
+
 	function to_string (
-		v	: in type_vector)
+		v		: in type_vector;
+		show_z	: in boolean := false)
 		return string;
 
 	

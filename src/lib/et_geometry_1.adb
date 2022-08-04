@@ -640,13 +640,20 @@ package body et_geometry_1 is
 
 	
 	function to_string (
-		v	: in type_vector)
+		v		: in type_vector;
+		show_z	: in boolean := false)
 		return string
 	is begin
-		return 
-			  " x: " & to_string (v.x) 
-			& " y: " & to_string (v.y)
-			& " z: " & to_string (v.z);
+		if show_z then
+			return vector_preamble_3d 
+				& to_string (v.x) & axis_separator
+				& to_string (v.y) & axis_separator
+				& to_string (v.z);
+		else
+			return vector_preamble_2d 
+				& to_string (v.x) & axis_separator
+				& to_string (v.y);
+		end if;
 	end to_string;
 	
 	

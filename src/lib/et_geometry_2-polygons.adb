@@ -550,7 +550,7 @@ package body et_geometry_2.polygons is
 		use ada.strings.unbounded;
 		use ada.characters.latin_1;
 		
-		result : unbounded_string := to_unbounded_string ("polygon vertices (x/y):");
+		result : unbounded_string := to_unbounded_string ("polygon vertices:");
 
 		ct : natural := 0;
 		
@@ -559,13 +559,9 @@ package body et_geometry_2.polygons is
 			-- We output the start points only.
 			-- Because: The end point of an edge is always the start point of the
 			-- next edge.
-			
-			--result := result & space
+
 			result := result & LF
-				--& to_unbounded_string ("edge start:" & to_string (element (c).start_point));
-				& to_unbounded_string (
-					"vertex: " & to_string (element (c).start_point.x)
-					& "/" & to_string (element (c).start_point.y));
+				& to_unbounded_string (to_string (element (c).start_point));
 
 			ct := ct + 1;
 		end query_edge;
@@ -1284,7 +1280,7 @@ package body et_geometry_2.polygons is
 	is
 		use ada.strings.unbounded;
 		use ada.characters.latin_1;
-		result : unbounded_string := to_unbounded_string (type_location'image (line_end.location) & LF);
+		result : unbounded_string := to_unbounded_string (type_location'image (line_end.location));
 	begin
 		-- CS edges
 		return to_string (result);
@@ -1300,7 +1296,7 @@ package body et_geometry_2.polygons is
 		result : unbounded_string := to_unbounded_string ("edge to polygon status:" & LF);
 	begin
 		result := result & to_string (status.edge) & LF;
-		result := result & "start: " & to_string (status.start_point);
+		result := result & "start: " & to_string (status.start_point) & LF;
 		result := result & "end  : " & to_string (status.end_point);
 
 		-- CS intersections
@@ -1885,21 +1881,22 @@ package body et_geometry_2.polygons is
 		return string 
 	is
 		use ada.strings.unbounded;
+		use ada.characters.latin_1;
 		
 		result : unbounded_string;
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is begin
-			result := result & ada.characters.latin_1.LF & " " 
-				& trim (to_string (get_x (element (v).position)), left)
-				& "/"
-				& trim (to_string (get_y (element (v).position)), left)
-				& " " & type_category'image (element (v).category);
+			--result := result & ada.characters.latin_1.LF & " " 
+				--& trim (to_string (get_x (element (v).position)), left)
+				--& "/"
+				--& trim (to_string (get_y (element (v).position)), left)
+				--& " " & type_category'image (element (v).category);
 
-			if element (v).category = INTERSECTION then
-				result := result & " " & type_intersection_direction'image (element (v).direction);
-			end if;
+			--if element (v).category = INTERSECTION then
+				--result := result & " " & type_intersection_direction'image (element (v).direction);
+			--end if;
 
-			--result := result & ".";
+			result := result & LF & to_string (element (v));
 		end query_vertex;
 			
 	begin
@@ -2441,12 +2438,17 @@ package body et_geometry_2.polygons is
 			-- Build all remaining intersections that are AFTER the start point of the 
 			-- candidate edge:
 			sts.intersections.iterate (build_intersection'access);
+
+
+			if debug then
+				new_line;
+			end if;
 		end query_status;
 
 		
 	begin		
 		if debug then
-			put_line ("getting intersection ...");
+			put_line ("getting intersections ...");
 		end if;
 			
 		-- Traverse the edges of polygon A and fill the status_list:
