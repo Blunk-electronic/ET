@@ -111,6 +111,11 @@ package et_geometry_2.polygons is
 		polygon : in out type_polygon;
 		debug	: in boolean := false);
 
+	function optimize_edges (
+		polygon : in type_polygon;
+		debug	: in boolean := false)
+		return type_polygon;
+
 	
 	
 	package pac_polygons is new doubly_linked_lists (type_polygon);

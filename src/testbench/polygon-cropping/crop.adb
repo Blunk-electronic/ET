@@ -502,7 +502,8 @@ begin
 
 	-- TEST 24:
 	init_test;
-	add_to_expect ("0 0  100 0  100 10  100 90  100 100  0 100");
+	--add_to_expect ("0 0  100 0  100 10  100 90  100 100  0 100");
+	add_to_expect ("0 0  100 0  100 100  0 100");
 	-- The left edge of A overlaps the right edge of B partly.
 	-- A overlaps B here. But B remains unchanged. B will not be cropped.
 	
@@ -515,7 +516,8 @@ begin
 
 	-- TEST 25:
 	init_test;
-	add_to_expect ("0 0  100 0  100 10  100 100  0 100");
+	--add_to_expect ("0 0  100 0  100 10  100 100  0 100");
+	add_to_expect ("0 0  100 0  100 100  0 100");
 	-- The left edge of A overlaps the right edge of B partly.
 	-- A overlaps B here. But B remains unchanged. B will not be cropped.
 	

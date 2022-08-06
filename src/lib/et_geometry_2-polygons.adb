@@ -240,7 +240,19 @@ package body et_geometry_2.polygons is
 		end if;
 		
 	end optimize_edges;
-	
+
+
+	function optimize_edges (
+		polygon : in type_polygon;
+		debug	: in boolean := false)
+		return type_polygon
+	is
+		result : type_polygon := polygon;
+	begin
+		optimize_edges (result, debug);
+		return result;
+	end optimize_edges;
+		
 	
 	function to_polygon (vertices : in string)
 		return type_polygon

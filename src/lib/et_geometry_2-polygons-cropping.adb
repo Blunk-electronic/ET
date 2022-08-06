@@ -309,8 +309,9 @@ package body et_geometry_2.polygons.cropping is
 				--put_line ("F");
 				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
-				-- Append the sub-polygon to the result:
-				result_crop.append (type_polygon (to_polygon (vertices_tmp_1)));
+				-- Iron out useless vertices and append the 
+				-- sub-polygon to the result:
+				result_crop.append (optimize_edges (to_polygon (vertices_tmp_1), debug));
 
 				--put_line ("G");
 				
