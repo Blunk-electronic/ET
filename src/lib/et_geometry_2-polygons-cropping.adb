@@ -373,7 +373,7 @@ package body et_geometry_2.polygons.cropping is
 				-- Nothing to do. Polygon B is unchanged so it is the one and only polygon
 				-- to be returned:
 				result_exists := true;
-				result_crop.append (type_polygon (polygon_B));
+				result_crop.append (polygon_B);
 
 			when A_INSIDE_B => 
 				-- Polygon A is completely inside B. A crop operation is
