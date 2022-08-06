@@ -234,9 +234,15 @@ package body et_geometry_2.polygons.clipping is
 					
 
 				-- Append the sub-polygon to the result:
-				result.append (type_polygon (to_polygon (vertices_tmp_1)));
+				result.append (to_polygon (vertices_tmp_1));
 				--put_line (to_string (to_polygon (vertices_tmp_1)));
 
+				-- CS: useful ?
+				-- Iron out useless vertices and append the 
+				-- sub-polygon to the result:
+				--result.append (optimize_edges (to_polygon (vertices_tmp_1)));
+
+				
 				-- Get the next entering vertex from vertices_A.
 				-- In case there is no entering vertex any more, then this
 				-- loop will be the last:
@@ -272,7 +278,7 @@ package body et_geometry_2.polygons.clipping is
 			when CONGRUENT =>
 				-- Both polygons have the same outline. So the result
 				-- is polygon A:
-				result.append (type_polygon (polygon_A));
+				result.append (polygon_A);
 				
 			when A_DOES_NOT_OVERLAP_B => 
 				-- Nothing to do. Return an empty list:
@@ -281,12 +287,12 @@ package body et_geometry_2.polygons.clipping is
 			when A_INSIDE_B => 
 				-- Polygon A is completely inside B. So the result
 				-- is just polygon A:
-				result.append (type_polygon (polygon_A));
+				result.append (polygon_A);
 
 			when B_INSIDE_A => 
 				-- Polygon B is completely inside A. So the result
 				-- is just polygon B:
-				result.append (type_polygon (polygon_B));
+				result.append (polygon_B);
 				
 			when A_OVERLAPS_B => 
 				-- Do the actual clipping work:
