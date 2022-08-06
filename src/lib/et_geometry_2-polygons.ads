@@ -104,6 +104,13 @@ package et_geometry_2.polygons is
 		polygon 	: in out type_polygon;
 		direction	: in type_direction_of_rotation := CCW);
 
+
+	-- Merges successive edges that have the same direction
+	-- to a single edge:
+	procedure optimize_edges (
+		polygon : in out type_polygon;
+		debug	: in boolean := false);
+
 	
 	
 	package pac_polygons is new doubly_linked_lists (type_polygon);
