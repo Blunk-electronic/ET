@@ -32,8 +32,19 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+--
+--  description:
+-- 	This package and its child packages base on the Weiler-Atherton algorithm. 
+--  Find basics here:
+-- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
+--
 --   history of changes:
 --
+
 --   to do:
 --   - Some functions and procedures here can be applied to et_geometry_1.type_line.
 --     If required, move them to et_geometry_1 so that other callers can make use of them.
