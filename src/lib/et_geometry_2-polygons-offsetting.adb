@@ -122,8 +122,8 @@ package body et_geometry_2.polygons.offsetting is
 			-- Depending on the location of the test point, means inside or outside
 			-- the polygon and the mode we move the edge to the right or to the left:
 			declare
-				tp_status : constant type_point_to_polygon_status :=
-					get_point_to_polygon_status (polygon, test_point);
+				tp_status : constant type_point_status :=
+					get_point_status (polygon, test_point);
 			begin
 				case mode is
 					when EXPAND =>

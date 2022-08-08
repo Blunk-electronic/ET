@@ -260,7 +260,9 @@ package et_geometry_2.polygons is
 		point	: in type_vector)
 		return boolean;
 
-	function get_segment_edge ( -- CS rename to get_edge
+
+	-- Returns the edge that runs across the given point:
+	function get_edge (
 		polygon	: in type_polygon;
 		point	: in type_vector)
 		return pac_edges.cursor;
@@ -284,15 +286,15 @@ package et_geometry_2.polygons is
 
 
 
-	type type_point_to_polygon_status (location : type_location) is record -- CS rename to type_point_status
+	type type_point_status (location : type_location) is record
 		-- The point where the probe line has started.
-		-- It is the point that was passed to function get_point_to_polygon_status.
+		-- It is the point that was passed to function get_point_status.
 		start			: type_vector; 
 
 		-- The intersections of the probe line with the polygon edges.
 		-- If the probe line starts on an edge or on a vertex, then the
 		-- first intersection in this list is the start point of the probe line.
-		intersections	: pac_float_numbers.list; -- CS rename to x_intersections
+		x_intersections	: pac_float_numbers.list;
 
 		case location is
 			when OUTSIDE | INSIDE =>
@@ -313,7 +315,7 @@ package et_geometry_2.polygons is
 	
 	-- Returns the query result as a human readable string:
 	function to_string (
-		i : in type_point_to_polygon_status)
+		i : in type_point_status)
 		return string;
 
 
@@ -327,7 +329,7 @@ package et_geometry_2.polygons is
 	-- than "after" are extracted.
 	-- Likewise the argument "before". x-Values less than "before" are extracted.
 	function get_intersections (
-		status	: in type_point_to_polygon_status;
+		status	: in type_point_status;
 		after	: in type_float_internal := type_float_internal'first;
 		before	: in type_float_internal := type_float_internal'last)
 		return pac_vectors.list;
@@ -337,10 +339,10 @@ package et_geometry_2.polygons is
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge.
 	-- See details in body of this function:
-	function get_point_to_polygon_status ( -- CS rename to get_point_status
+	function get_point_status (
 		polygon		: in type_polygon;	
 		point		: in type_vector)
-		return type_point_to_polygon_status;
+		return type_point_status;
 
 		
 
@@ -465,7 +467,7 @@ package et_geometry_2.polygons is
 		return string;
 	
 		
-	type type_line_to_polygon_status is record -- CS rename to type_edge_status
+	type type_edge_status is record
 		-- The affected edge edge itself:
 		edge		: type_edge;
 		
@@ -481,11 +483,11 @@ package et_geometry_2.polygons is
 
 
 	function to_string (
-		status	: in type_line_to_polygon_status)
+		status	: in type_edge_status)
 		return string;
 
 	
-	package pac_edge_status_list is new doubly_linked_lists (type_line_to_polygon_status);
+	package pac_edge_status_list is new doubly_linked_lists (type_edge_status);
 
 
 	-- Returns the edge-to-polygon status before the given candidate status.
@@ -528,14 +530,14 @@ package et_geometry_2.polygons is
 	-- Returns true if the given two statuses are equal.
 	-- The x,y,z components of intersections are regarded as equal if
 	-- their difference is less or equal the rounding_threshold:
-	function equals (left, right : in type_line_to_polygon_status) -- CS rename to "="
+	function equals (left, right : in type_edge_status) -- CS rename to "="
 		return boolean;	
 
 	
-	function get_line_to_polygon_status ( -- CS rename to get_edge_status 
+	function get_edge_status (
 		polygon	: in type_polygon;
 		edge	: in type_edge)
-		return type_line_to_polygon_status;
+		return type_edge_status;
 
 
 	-- An indicator that tells whether it is about the

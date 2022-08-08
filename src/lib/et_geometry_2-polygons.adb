@@ -753,7 +753,7 @@ package body et_geometry_2.polygons is
 
 
 
-	function get_segment_edge (
+	function get_edge (
 		polygon	: in type_polygon;
 		point	: in type_vector)
 		return pac_edges.cursor
@@ -778,7 +778,7 @@ package body et_geometry_2.polygons is
 		end if;
 
 		return result;
-	end get_segment_edge;
+	end get_edge;
 
 	
 	function get_neigboring_edges (
@@ -843,7 +843,7 @@ package body et_geometry_2.polygons is
 	
 	
 	function to_string (
-		i : in type_point_to_polygon_status)
+		i : in type_point_status)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -877,13 +877,13 @@ package body et_geometry_2.polygons is
 
 		result := result & "Distance to polygon: " & to_string (i.distance) & ".";
 				
-		if is_empty (i.intersections) then
+		if is_empty (i.x_intersections) then
 			result := result & "No intersections with probe line.";
 		else
 			result := result & "Intersection(s) with probe line (x/angle):";
 		end if;
 		
-		iterate (i.intersections, query_intersection'access);
+		iterate (i.x_intersections, query_intersection'access);
 		
 		return to_string (result);
 	end to_string;
@@ -891,7 +891,7 @@ package body et_geometry_2.polygons is
 
 
 	function get_intersections (
-		status	: in type_point_to_polygon_status;
+		status	: in type_point_status;
 		after	: in type_float_internal := type_float_internal'first;
 		before	: in type_float_internal := type_float_internal'last)		
 		return pac_vectors.list
@@ -909,16 +909,16 @@ package body et_geometry_2.polygons is
 		end query_intersection;
 		
 	begin
-		status.intersections.iterate (query_intersection'access);
+		status.x_intersections.iterate (query_intersection'access);
 		return result;
 	end get_intersections;
 
 	
 
-	function get_point_to_polygon_status (
+	function get_point_status (
 		polygon		: in type_polygon;	
 		point		: in type_vector) -- CS rename to vector ?
-		return type_point_to_polygon_status 
+		return type_point_status 
 	is
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
@@ -1044,7 +1044,7 @@ package body et_geometry_2.polygons is
 		use pac_float_numbers_sorting;
 		
 		
-	begin -- get_point_to_polygon_status
+	begin -- get_point_status
 		--put_line ("Y-threshold:" & to_string (y_threshold));
 		
 		polygon.edges.iterate (query_edge'access);
@@ -1085,7 +1085,7 @@ package body et_geometry_2.polygons is
 			-- Get the edges that meet at the given point:
 			result_neigboring_edges := get_neigboring_edges (polygon, point);
 		else
-			result_edge := get_segment_edge (polygon, point);
+			result_edge := get_edge (polygon, point);
 
 			if result_edge /= pac_edges.no_element then
 				result_status := ON_EDGE;
@@ -1118,7 +1118,7 @@ package body et_geometry_2.polygons is
 				
 		end case;
 		
-	end get_point_to_polygon_status;
+	end get_point_status;
 
 
 	
@@ -1130,7 +1130,7 @@ package body et_geometry_2.polygons is
 		point		: in type_vector)
 		return type_location
 	is begin
-		return get_point_to_polygon_status (polygon, point).location;
+		return get_point_status (polygon, point).location;
 	end get_location;
 
 	
@@ -1197,10 +1197,10 @@ package body et_geometry_2.polygons is
 
 		declare
 			PPS_before : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_before).location;
+				get_point_status (polygon, SP_before).location;
 
 			PPS_after : constant type_location := 
-				get_point_to_polygon_status (polygon, SP_after).location;
+				get_point_status (polygon, SP_after).location;
 		begin
 			--put_line ("before " & to_string (SP_before));
 			--put_line ("after  " & to_string (SP_after));
@@ -1394,7 +1394,7 @@ package body et_geometry_2.polygons is
 	
 
 	function to_string (
-		status	: in type_line_to_polygon_status)
+		status	: in type_edge_status)
 		return string
 	is 
 		use ada.strings.unbounded;
@@ -1534,7 +1534,7 @@ package body et_geometry_2.polygons is
 		use pac_edge_status_list;
 		use pac_line_edge_intersections;
 
-		sts : type_line_to_polygon_status renames element (status_cursor);
+		sts : type_edge_status renames element (status_cursor);
 		
 		-- The number of intersections on the given edge:
 		int_count : constant count_type := sts.intersections.length;
@@ -1592,7 +1592,7 @@ package body et_geometry_2.polygons is
 	
 	
 
-	function equals (left, right : in type_line_to_polygon_status)
+	function equals (left, right : in type_edge_status)
 		return boolean
 	is
 		result : boolean := true;
@@ -1635,13 +1635,13 @@ package body et_geometry_2.polygons is
 	end equals;
 	
 	
-	function get_line_to_polygon_status (
+	function get_edge_status (
 		polygon	: in type_polygon;
 		edge	: in type_edge)
-		return type_line_to_polygon_status
+		return type_edge_status
 	is
 		-- Pass the affected edge right away to the result:
-		result : type_line_to_polygon_status := (edge => edge, others => <>);
+		result : type_edge_status := (edge => edge, others => <>);
 
 		edge_direction : constant type_angle := get_direction (edge);
 		edge_length : constant type_float_internal_positive := get_length (edge);
@@ -1654,8 +1654,8 @@ package body et_geometry_2.polygons is
 		
 		
 		procedure set_line_start is 
-			PPS : constant type_point_to_polygon_status := 
-				get_point_to_polygon_status (polygon, edge.start_point);
+			PPS : constant type_point_status := 
+				get_point_status (polygon, edge.start_point);
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -1679,8 +1679,8 @@ package body et_geometry_2.polygons is
 
 		
 		procedure set_line_end is 
-			PPS : constant type_point_to_polygon_status := 
-				get_point_to_polygon_status (polygon, edge.end_point);
+			PPS : constant type_point_status := 
+				get_point_status (polygon, edge.end_point);
 		begin
 			case PPS.location is
 				when INSIDE => 
@@ -1776,7 +1776,7 @@ package body et_geometry_2.polygons is
 					N := get_neigboring_edges (polygon, I);
 					E := N.edge_2;
 				else
-					E := get_segment_edge (polygon, I);
+					E := get_edge (polygon, I);
 				end if;
 
 				result.intersections.append ((
@@ -1793,7 +1793,7 @@ package body et_geometry_2.polygons is
 
 		
 		
-	begin -- get_line_to_polygon_status
+	begin -- get_edge_status
 
 		-- Set the properties of the start/end point of the given line:
 		set_line_start;
@@ -1802,7 +1802,7 @@ package body et_geometry_2.polygons is
 		P_rotated := rotate (polygon, edge.start_point, - edge_direction);
 
 		intersections := get_intersections (
-			status	=> get_point_to_polygon_status (P_rotated, edge.start_point),
+			status	=> get_point_status (P_rotated, edge.start_point),
 			after	=> edge.start_point.x,
 			before	=> edge.start_point.x + edge_length);
 
@@ -1830,7 +1830,7 @@ package body et_geometry_2.polygons is
 		end if;
 		
 		return result;
-	end get_line_to_polygon_status;
+	end get_edge_status;
 
 
 	
@@ -1949,8 +1949,8 @@ package body et_geometry_2.polygons is
 		-- Aborts the iteration on the first vertex that is
 		-- outside polygon B.
 		procedure query_edge (c : in pac_edges.cursor) is 
-			IPQ : constant type_point_to_polygon_status :=
-				get_point_to_polygon_status (polygon_B, element (c).start_point);
+			IPQ : constant type_point_status :=
+				get_point_status (polygon_B, element (c).start_point);
 		begin
 			if IPQ.location = OUTSIDE then
 				proceed := false; -- abort iteration
@@ -2231,10 +2231,10 @@ package body et_geometry_2.polygons is
 		--procedure query_A_edge (a : in pac_edges.cursor) is
 
 			---- The status of the A-edge relative to polygon B:
-			----LPS : constant type_line_to_polygon_status := 
-			----get_line_to_polygon_status (polygon_B, element (a));
+			----LPS : constant type_edge_status := 
+			----get_edge_status (polygon_B, element (a));
 
-			--status_candidate, status_previous : type_line_to_polygon_status;
+			--status_candidate, status_previous : type_edge_status;
 			
 			--procedure collect_intersections is 
 
@@ -2244,7 +2244,7 @@ package body et_geometry_2.polygons is
 					---- Ignore intersection if edge A overlaps edge B.
 					---- Both edges are regarded as infinitely long (start and end point ignored):
 					----if not lines_overlap (element (a), element (b_edge)) then
-					---- CS no need (already cared for by function get_point_to_polygon_status)
+					---- CS no need (already cared for by function get_point_status)
 						--intersections.append ((
 							--type_intersection_base (element (i)) with
 							--edge_A => element (a),
@@ -2264,13 +2264,13 @@ package body et_geometry_2.polygons is
 		--begin -- query_A_edge
 
 			---- Get the status of the candidate A-edge:
-			--status_candidate := get_line_to_polygon_status (polygon_B, element (a));
+			--status_candidate := get_edge_status (polygon_B, element (a));
 
 			---- Get the status of the previous A-edge:
 			--if a = polygon_A.edges.first then
-				--status_previous := get_line_to_polygon_status (polygon_B, polygon_A.edges.last_element);
+				--status_previous := get_edge_status (polygon_B, polygon_A.edges.last_element);
 			--else
-				--status_previous := get_line_to_polygon_status (polygon_B, element (previous (a)));
+				--status_previous := get_edge_status (polygon_B, element (previous (a)));
 			--end if;
 			
 			---- There are some special cases that require special threatment:
@@ -2369,13 +2369,13 @@ package body et_geometry_2.polygons is
 		-- This procedure computes the status of a single A-edge to polygon B.
 		-- The status will then be appended to the status_list:
 		procedure query_edge (a : in pac_edges.cursor) is begin
-			status_list.append (get_line_to_polygon_status (polygon_B, element (a)));
+			status_list.append (get_edge_status (polygon_B, element (a)));
 		end query_edge;
 	
 		
 		procedure query_status (sts_candidate : in pac_edge_status_list.cursor) is
 			-- This is just a shortcut to the candidate status:
-			sts : type_line_to_polygon_status renames element (sts_candidate);
+			sts : type_edge_status renames element (sts_candidate);
 
 			-- Special case 1:
 			-- If the start point of the edge is on a vertex or on an edge,
