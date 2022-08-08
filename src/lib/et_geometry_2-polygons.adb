@@ -874,8 +874,8 @@ package body et_geometry_2.polygons is
 	
 
 	function get_point_status (
-		polygon		: in type_polygon;	
-		point		: in type_vector) -- CS rename to vector ?
+		polygon	: in type_polygon;	
+		point	: in type_vector)
 		return type_point_status 
 	is
 		-- This function bases on the algorithm published at
@@ -1084,8 +1084,8 @@ package body et_geometry_2.polygons is
 
 	
 	function get_location (
-		polygon		: in type_polygon;	
-		point		: in type_vector)
+		polygon	: in type_polygon;	
+		point	: in type_vector)
 		return type_location
 	is begin
 		return get_point_status (polygon, point).location;
@@ -1212,7 +1212,8 @@ package body et_geometry_2.polygons is
 		return to_string (result);
 	end to_string;
 	
-
+	
+	
 	function to_string (
 		status	: in type_edge_status)
 		return string
@@ -1395,46 +1396,6 @@ package body et_geometry_2.polygons is
 	
 	
 
-	function equals (left, right : in type_edge_status)
-		return boolean
-	is
-		result : boolean := true;
-
-		use pac_line_edge_intersections;
-		cr : pac_line_edge_intersections.cursor := right.intersections.first;
-		
-		procedure query_left (cl : in pac_line_edge_intersections.cursor) is
-			i_left  : type_intersection_line_edge := element (cl);
-			i_right : type_intersection_line_edge := element (cr);
-		begin
-			if i_left.edge = i_right.edge				
-			and	i_left.direction = i_right.direction
-			and i_left.position = i_right.position
-			then			
-				null;
-			else
-				result := false;
-				-- CS use special iterator procedure to abort on first mismatch
-			end if;
-			
-			next (cr);
-		end query_left;
-		
-	begin
-		if 	left.start_point 	= right.start_point
-		and left.end_point		= right.end_point
-		then
-			if left.intersections.length = right.intersections.length then
-				left.intersections.iterate (query_left'access);
-			else
-				result := false;
-			end if;
-		else
-			result := false;
-		end if;
-
-		return result;
-	end equals;
 	
 	
 	function get_edge_status (

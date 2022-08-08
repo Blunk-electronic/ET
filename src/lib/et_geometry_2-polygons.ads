@@ -132,7 +132,7 @@ package et_geometry_2.polygons is
 		return pac_vectors.list;
 
 
-	-- Rotates a polygon about the center by the given angle:
+	-- Rotates a polygon about the given center by the given angle:
 	function rotate (
 		polygon	: in type_polygon;
 		center	: in type_vector;
@@ -227,10 +227,7 @@ package et_geometry_2.polygons is
 		return count_type;
 
 
-	
-	
---private
-					   
+			   
 		
 	function get_shortest_distance (
 		polygon	: in type_polygon;
@@ -323,8 +320,8 @@ package et_geometry_2.polygons is
 	-- the polygon of whether the point lies on an edge.
 	-- See details in body of this function:
 	function get_point_status (
-		polygon		: in type_polygon;	
-		point		: in type_vector)
+		polygon	: in type_polygon;	
+		point	: in type_vector)
 		return type_point_status;
 
 		
@@ -336,8 +333,8 @@ package et_geometry_2.polygons is
 	-- Similar to get_point_status but the result is reduced
 	-- to INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
 	function get_location (
-		polygon		: in type_polygon;	
-		point		: in type_vector)
+		polygon	: in type_polygon;	
+		point	: in type_vector)
 		return type_location;
 
 	
@@ -434,7 +431,7 @@ package et_geometry_2.polygons is
 		intersections : pac_line_edge_intersections.list; 
 	end record;
 
-
+	
 	function to_string (
 		status	: in type_edge_status)
 		return string;
@@ -481,12 +478,6 @@ package et_geometry_2.polygons is
 		section			: in type_section)		
 		return type_location;
 
-	
-	-- Returns true if the given two statuses are equal.
-	-- The x,y,z components of intersections are regarded as equal if
-	-- their difference is less or equal the rounding_threshold:
-	function equals (left, right : in type_edge_status) -- CS rename to "="
-		return boolean;	
 
 	
 	function get_edge_status (
