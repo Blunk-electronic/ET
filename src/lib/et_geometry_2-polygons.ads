@@ -61,23 +61,6 @@ package et_geometry_2.polygons is
 		edge : in type_edge)
 		return string;
 
-	
-
-
-	type type_nearest is (BEFORE, AFTER);
-	
-	-- Returns the nearest point after/before
-	-- a given point on the given line.
-	-- The argument "place" determines whether to return
-	-- a point before or after the given point:
-	function get_nearest (
-		edge	: in type_edge;
-		vector	: in type_vector; -- the given point
-		place	: in type_nearest := AFTER)
-		return type_vector;
-	
-
-	
 
 
 	
@@ -350,7 +333,7 @@ package et_geometry_2.polygons is
 		
 	-- Detects whether the given point is inside or outside
 	-- the polygon of whether the point lies on an edge.
-	-- Similar to get_point_to_polygon_status but the result is reduced
+	-- Similar to get_point_status but the result is reduced
 	-- to INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
 	function get_location (
 		polygon		: in type_polygon;	
@@ -358,8 +341,7 @@ package et_geometry_2.polygons is
 		return type_location;
 
 	
-	
-	subtype type_line_center is type_location range ON_EDGE .. OUTSIDE;
+
 	
 	type type_intersection_direction is (
 		-- The edge of the clipped polygon (A) 
@@ -374,36 +356,7 @@ package et_geometry_2.polygons is
 	procedure toggle_direction (
 		d : in out type_intersection_direction);
 
-
 	
-	-- When a line intersects an edge of a polygon,
-	-- or when a line runs through a vertex of a polygon
-	-- then this type tells whether it is a real intersection
-	-- or just a touch point:
-	type type_point_of_contact (is_intersection : boolean) is record
-		case is_intersection is
-			when TRUE =>
-				direction : type_intersection_direction;
-
-			when FALSE =>
-				null;
-		end case;
-	end record;
-
-	
-	-- Returns the direction of a supposed intersection of
-	-- the given line on the given point.
-	-- The given point:
-	-- - must lie on the given line,
-	-- - must lie on an edge or a vertex of the given polygon
-	-- If the given point is an intersection, then its direction is
-	-- returned.
-	function get_direction (
-		polygon	: in type_polygon;
-		line	: in type_edge;
-		point	: in type_vector)
-		return type_point_of_contact;
-
 
 	
 	type type_intersection_base is tagged record
@@ -505,21 +458,23 @@ package et_geometry_2.polygons is
 		return pac_edge_status_list.cursor;
 
 	
-	---- Returns the first edge that
-	---- - starts outside or 
-	---- - enters the outside:
-	--function get_first_outside ( -- CS no need ?
+	-- Returns the first edge that
+	-- - starts outside or 
+	-- - enters the outside:
+	-- CS: incomplete, probably no need ?
+	--function get_first_outside (
 		--polygon	: in type_polygon;
 		--edges	: in pac_edge_status_list.list)		
 		--return pac_edge_status_list.cursor;
 	
 
-	--type type_section_location is (INSIDE, OUTSIDE, UNCLEAR); 
-	-- NOTE: This has a different meaning than type_location !
-	-- Do not define a subtype of type_location !
 	
 	type type_section is (FIRST, LAST);
-	
+
+	-- Returns the location of the first or last
+	-- section of the given edge-status. If the status does not
+	-- contain any intersections then just the section between 
+	-- start and end point is investigated:
 	function get_section_location (
 		polygon			: in type_polygon;
 		status_cursor	: in pac_edge_status_list.cursor;

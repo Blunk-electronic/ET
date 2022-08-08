@@ -62,48 +62,6 @@ package body et_geometry_2.polygons is
 			--& to_string (edge.end_point.y);
 	end to_string;
 
-
-
-	function get_nearest (
-		edge	: in type_edge;
-		vector	: in type_vector;
-		place	: in type_nearest := AFTER)
-		return type_vector
-	is
-		result : type_vector := vector;
-		d : constant type_distance_polar := get_distance (edge.start_point, edge.end_point);
-	begin
-		case place is
-			when AFTER => -- move forward in direction of line
-				--result := type_point (move (
-					--point		=> point,
-					--direction	=> get_angle (d),
-					--distance	=> m * type_distance'small));
-
-				move_by (
-					v			=> result,
-					direction	=> get_angle (d),
-					distance	=> type_float_internal (type_distance'small));
-					--distance	=> type_float_internal (type_float_internal'small)); -- CS
-					--distance	=> 10.0 * accuracy); -- CS
-
-			when BEFORE => -- move backward in opposite direction
-				--result := type_point (move (
-					--point		=> point,
-					--direction	=> add (get_angle (d), 180.0),
-					--distance	=> m * type_distance'small));
-
-				move_by (
-					v			=> result,
-					direction	=> add (get_angle (d), 180.0),
-					distance	=> type_float_internal (type_distance'small));
-					--distance	=> type_float_internal (type_float_internal'small)); -- CS
-					--distance	=> 10.0 * accuracy); -- CS
-				
-		end case;
-		return result;
-	end get_nearest;
-
 	
 	
 	procedure iterate (
@@ -1148,143 +1106,6 @@ package body et_geometry_2.polygons is
 		end case;
 	end toggle_direction;
 
-
-
-	function get_direction (
-		polygon	: in type_polygon;
-		line	: in type_edge;
-		point	: in type_vector)
-		return type_point_of_contact
-	is
-		result_is_intersection : boolean := false;
-		result_direction : type_intersection_direction;
-
-		-- This is a supportive point right after a given point
-		-- on the given line towards or beyond the end of the given line:
-		SP_after : type_vector;
-
-		-- This is a supportive point right before a given point
-		-- on the given line towards or beyond the start of the given line:
-		SP_before : type_vector;
-
-		-- These flags indicate that the given point lies
-		-- directly on the start or end point of the given line:
-		point_on_start, point_on_end : boolean := false;
-		
-	begin
-		if point = line.start_point then
-			point_on_start := true;
-		end if;
-
-		if point = line.end_point then
-			point_on_end := true;
-		end if;
-
-		-- Safety check:
-		if point_on_start and point_on_end then
-			raise constraint_error; -- CS should never happen
-		end if;
-
-		
-		SP_before := get_nearest (line, point, BEFORE);
-		SP_after := get_nearest (line, point, AFTER);
-
-		
-		-- NOTE:
-		-- CS: The supportive points are by type_distance'small away from
-		-- the given point. In some cases this distance could be too much.
-		-- A more accurate approach (basing on float types) should be implemented.
-
-		declare
-			PPS_before : constant type_location := 
-				get_point_status (polygon, SP_before).location;
-
-			PPS_after : constant type_location := 
-				get_point_status (polygon, SP_after).location;
-		begin
-			--put_line ("before " & to_string (SP_before));
-			--put_line ("after  " & to_string (SP_after));
-
-			case PPS_before is
-				when OUTSIDE =>
-					
-					case PPS_after is
-						when OUTSIDE => 
-							if point_on_start then
-								result_is_intersection := true;
-								result_direction := LEAVING;
-								
-							elsif point_on_end then
-								result_is_intersection := true;
-								result_direction := ENTERING;
-							else
-								-- not an intersection but just a touch point
-								null;
-							end if;
-							
-						when INSIDE | ON_EDGE | ON_VERTEX =>
-							result_is_intersection := true;
-							result_direction := ENTERING;
-					end case;
-
-
-				when INSIDE =>
-					case PPS_after is
-						when INSIDE => 
-							if point_on_start then
-								result_is_intersection := true;
-								result_direction := ENTERING;
-								
-							elsif point_on_end then
-								result_is_intersection := true;
-								result_direction := LEAVING;
-							else
-								-- not an intersection but just a touch point
-								null;
-							end if;
-							
-						when OUTSIDE | ON_EDGE | ON_VERTEX =>
-							result_is_intersection := true;
-							result_direction := LEAVING;
-					end case;
-
-
-				when ON_EDGE | ON_VERTEX =>
-					case PPS_after is
-						when OUTSIDE => 
-							result_is_intersection := true;
-							result_direction := LEAVING;
-							
-						when INSIDE =>
-							result_is_intersection := true;
-							result_direction := ENTERING;
-
-						when ON_EDGE | ON_VERTEX =>
-							-- line runs parallel to an edge
-							if point_on_start then
-								result_is_intersection := true;
-								result_direction := ENTERING;
-								
-							elsif point_on_end then
-								result_is_intersection := true;
-								result_direction := LEAVING;
-							else
-								raise constraint_error; -- CS
-							end if;
-					end case;
-
-			end case;
-		end;
-
-		
-		case result_is_intersection is
-			when TRUE =>
-				return (is_intersection => TRUE, direction => result_direction);
-
-			when FALSE =>
-				return (is_intersection => FALSE);
-		end case;
-	end get_direction;
 	
 
 	
@@ -1317,7 +1138,6 @@ package body et_geometry_2.polygons is
 	is
 		type type_item is record
 			intersection: type_intersection_line_edge;
-			--distance	: type_distance_positive;
 			distance	: type_float_internal_positive;
 		end record;
 
@@ -1541,26 +1361,9 @@ package body et_geometry_2.polygons is
 
 	begin
 		if int_count = 0 then
-			-- Edge is not intersected at all.
-
-			-- CS Depending on "section" look at start or end point
-			-- of edge. Makes sense if start or end point is inside or outside.
-			-- Otherwise do this:
-			
-			-- look at the center of the edge
-			--case get_location (polygon, get_center (sts.edge)) is
-				--when OUTSIDE =>
-					--result := OUTSIDE;
-
-				--when INSIDE =>
-					--result := INSIDE;
-
-				--when others => -- ON_EDGE or ON_VERTEX
-					----raise constraint_error;
-					---- CS should never happen
-					--result := UNCLEAR;
-			--end case;
-
+			-- Edge is not intersected at all. There is only
+			-- the start and end point of the edge.
+			-- Se we look at the center of the edge:
 			return get_location (polygon, get_center (sts.edge));
 			
 		else
@@ -1604,7 +1407,6 @@ package body et_geometry_2.polygons is
 			i_left  : type_intersection_line_edge := element (cl);
 			i_right : type_intersection_line_edge := element (cr);
 		begin
-			--if element (i_left.edge) = element (i_right.edge) 
 			if i_left.edge = i_right.edge				
 			and	i_left.direction = i_right.direction
 			and i_left.position = i_right.position
@@ -1992,16 +1794,6 @@ package body et_geometry_2.polygons is
 		result : unbounded_string;
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is begin
-			--result := result & ada.characters.latin_1.LF & " " 
-				--& trim (to_string (get_x (element (v).position)), left)
-				--& "/"
-				--& trim (to_string (get_y (element (v).position)), left)
-				--& " " & type_category'image (element (v).category);
-
-			--if element (v).category = INTERSECTION then
-				--result := result & " " & type_intersection_direction'image (element (v).direction);
-			--end if;
-
 			result := result & LF & to_string (element (v));
 		end query_vertex;
 			
@@ -2225,144 +2017,7 @@ package body et_geometry_2.polygons is
 	is
 		intersections : pac_intersections.list;
 		use pac_line_edge_intersections;
-		
-		
-		---- Investigates the status of the given A edge relative to polygon B.
-		--procedure query_A_edge (a : in pac_edges.cursor) is
 
-			---- The status of the A-edge relative to polygon B:
-			----LPS : constant type_edge_status := 
-			----get_edge_status (polygon_B, element (a));
-
-			--status_candidate, status_previous : type_edge_status;
-			
-			--procedure collect_intersections is 
-
-				--procedure query_intersection (i : in pac_line_edge_intersections.cursor) is
-					--b_edge : pac_edges.cursor := element (i).edge;
-				--begin
-					---- Ignore intersection if edge A overlaps edge B.
-					---- Both edges are regarded as infinitely long (start and end point ignored):
-					----if not lines_overlap (element (a), element (b_edge)) then
-					---- CS no need (already cared for by function get_point_status)
-						--intersections.append ((
-							--type_intersection_base (element (i)) with
-							--edge_A => element (a),
-							--edge_B => element (b_edge)));
-
-						--if debug then
-							--put_line ("intersection: " & to_string (intersections.last_element));
-						--end if;
-					----end if;
-				--end query_intersection;
-
-			--begin
-				--status_candidate.intersections.iterate (query_intersection'access);
-			--end collect_intersections;
-
-			
-		--begin -- query_A_edge
-
-			---- Get the status of the candidate A-edge:
-			--status_candidate := get_edge_status (polygon_B, element (a));
-
-			---- Get the status of the previous A-edge:
-			--if a = polygon_A.edges.first then
-				--status_previous := get_edge_status (polygon_B, polygon_A.edges.last_element);
-			--else
-				--status_previous := get_edge_status (polygon_B, element (previous (a)));
-			--end if;
-			
-			---- There are some special cases that require special threatment:
-			---- The A-edge starts or ends on a B-edge or on a B-vertex. So there 
-			---- may exist several situations which must be handled first:
-			
-			--case status_candidate.start_point.location is
-				--when ON_EDGE | ON_VERTEX =>
-
-					--if is_empty (status_previous.intersections) then
-						--null;
-						----case status_previous.start_point.location is
-							----when INSIDE =>
-								------ start point is a leaving intersection
-								
-							----when OUTSIDE =>
-
-						----end case;
-						
-					--else
-						--case status_previous.intersections.last_element.direction is
-							--when ENTERING =>
-								---- start point is a leaving intersection
-								--null;
-
-							--when LEAVING =>
-								---- start point is an entering intersection
-								--null;
-						--end case;
-					--end if;
-					
-					----case LPS.end_point.location is
-						----when OUTSIDE =>
-							----if LPS.intersections.is_empty then
-								------ edge starts on edge and ends outside
-								------ without crossing any edges or vertices
-								----null;
-							----else
-								------ edge starts on edge, crosses one or more edges of the polygon
-								------ and ends outside
-								----collect_intersections;
-							----end if;
-							
-						----when INSIDE =>
-							----if LPS.intersections.is_empty then
-								------ edge starts on edge and ends inside
-								------ without crossing any edges or verices
-								----null;
-							----else
-								------ edge starts on edge, crosses one or more edges of the polygon
-								------ and ends inside
-								----collect_intersections;
-							----end if;
-
-							
-						----when ON_EDGE =>
-							------use_end_point_as_intersection;
-							
-							----if LPS.intersections.is_empty then
-								------ edge starts on edge and ends on edge
-								------ without crossing any edges or verices
-								----null;
-							----else
-								------ edge starts on edge, crosses one or more edges of the polygon
-								------ and ends on edge
-								----collect_intersections;
-							----end if;
-
-							
-						----when ON_VERTEX =>
-							------use_end_point_as_intersection;
-							
-							----if LPS.intersections.is_empty then
-								------ edge starts on edge and ends on vertex
-								------ without crossing any edges or verices
-								----null;
-							----else
-								------ edge starts on edge, crosses one or more edges of the polygon
-								------ and ends on vertex
-								----collect_intersections;
-							----end if;
-					----end case;
-
-				--when others =>
-					--collect_intersections;
-			--end case;
-			
-		--end query_A_edge;
-
-
-
-		----------------------------------------
 		use pac_edge_status_list;
 		status_list : pac_edge_status_list.list;
 
@@ -3001,32 +2656,6 @@ package body et_geometry_2.polygons is
 				--vertices.delete (position => c, count => collected_vertices - ct_ccw);
 			--end if;
 		end delete_cw;
-
-
-		--function is_triplet (p0 : in pac_vertices.cursor) return boolean is 
-			--p1, p2 : pac_vertices.cursor;
-		--begin
-			--if previous (previous (p0)) /= pac_vertices.no_element then
-				--put_line ("triplet");
-				
-				--p1 := previous (p0);
-				--p2 := previous (p1);
-
-				--put_line (to_string (element (p2)));
-				--put_line (to_string (element (p1)));
-				--put_line (to_string (element (p0)));
-				
-				--if element (p0).position = element (p1).position
-			    --and element (p0).position = element (p2).position
-				--and is_entering (p2) and is_regular (p1) and is_leaving (p0) then
-					--return true;
-				--else
-					--return false;
-				--end if;
-			--else
-				--return false;
-			--end if;
-		--end is_triplet;
 
 		
 	begin
