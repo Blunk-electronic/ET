@@ -492,7 +492,7 @@ is
 				lower_left_corner : type_point;
 
 
-				-- The width of a fill line:
+				-- The width of border and fill lines:
 				line_width : type_track_width;
 
 				
@@ -677,14 +677,17 @@ is
 					-- Expand the holes by half the line width of the fill lines:
 					offset_holes (holes, line_width * 0.5);
 
-					-- Crop the islands by the holes that overlap the borders of the islands.
+					-- Crop the islands by the holes of type 1 (that overlap the borders of the islands).
 					-- This is about holes that DO NOT split the islands into fragments.
 					-- In the end the cropped islands will form the fill of the zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_holes_at_border'access);
+					net.route.fill_zones.solid.update_element (
+						zone_cursor, crop_by_holes_at_border'access);
 
-					-- Crop the islands by the holes that DO split the islands into fragments.
+					-- Crop the islands by the holes of type 2 (that are inside of the islands)
+					-- that DO split the islands into fragments.
 					-- The result is a list of even more islands. 
-					net.route.fill_zones.solid.update_element (zone_cursor, crop_by_splitting_holes'access);
+					net.route.fill_zones.solid.update_element (
+						zone_cursor, crop_by_splitting_holes'access);
 					--log (text => "done", level => log_threshold + 4);
 					
 					log_indentation_down;
@@ -705,7 +708,8 @@ is
 					-- clear the complete fill:
 					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
 
-					-- Get the width of the fill lines:
+					-- Get the width of the border and the fill lines.
+					-- Each fill zone may have a special width:
 					line_width := element (zone_cursor).width_min;
 
 					
@@ -879,7 +883,7 @@ begin -- fill_fill_zones
 
 	offset_scratch := - design_rules.clearances.conductor_to_board_edge;
 	
-	log (text => "offsetting by DRU parameter " 
+	log (text => "offsetting by DRU parameter " -- CS use predefined string
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (offset_scratch),
 		level => log_threshold + 1);
@@ -902,7 +906,7 @@ begin -- fill_fill_zones
 
 	offset_scratch := - offset_scratch;
 	
-	log (text => "offsetting by DRU parameter " 
+	log (text => "offsetting by DRU parameter " -- CS use predefined string 
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (offset_scratch),
 		level => log_threshold + 1);
@@ -915,7 +919,7 @@ begin -- fill_fill_zones
 	
 	if is_empty (nets) then
 		
-		-- Fill floating zones if no explicit net names given:
+		-- Fill all zones if no explicit net names given:
 		
 		log (text => "filling all zones ...", level => log_threshold + 1);
 

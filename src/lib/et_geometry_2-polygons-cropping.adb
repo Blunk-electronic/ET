@@ -425,6 +425,22 @@ package body et_geometry_2.polygons.cropping is
 		
 	end crop;
 
+
+	
+
+	function multi_crop (
+		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
+		polygon_A_list	: in pac_polygons.list; -- the cropping polygons
+		debug			: in boolean := false)
+		return pac_cropped.list
+	is
+		result : pac_cropped.list;
+	begin
+		-- CS
+
+		return result;
+	end multi_crop;
+
 	
 
 	

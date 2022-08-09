@@ -97,8 +97,15 @@ package et_geometry_2.polygons.cropping is
 	-- CS improve function crop:
 	-- parameter for already existing overlap status
 	-- parameter for already existing intersections
-	
-	
+
+
+	-- Crops a single polygon by a number of polygons:
+	function multi_crop (
+		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
+		polygon_A_list	: in pac_polygons.list; -- the cropping polygons
+		debug			: in boolean := false)
+		return pac_cropped.list;
+							
 	
 end et_geometry_2.polygons.cropping;
 
