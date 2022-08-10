@@ -138,13 +138,13 @@ package et_geometry_1.polygons.offsetting is
 
 	-- Offsets a list of polygons:
 	function offset_polygons (
-		polygons	: in pac_polygons.list;
+		polygons	: in pac_polygon_list.list;
 		offset		: in type_float_internal)
-		return pac_polygons.list;
+		return pac_polygon_list.list;
 
 	
 	procedure offset_polygons (
-		polygons	: in out pac_polygons.list;
+		polygons	: in out pac_polygon_list.list;
 		offset		: in type_float_internal);
 
 private

@@ -518,17 +518,17 @@ package body et_geometry_1.polygons.offsetting is
 
 
 	function offset_polygons (
-		polygons	: in pac_polygons.list;
+		polygons	: in pac_polygon_list.list;
 		offset		: in type_float_internal)
-		return pac_polygons.list
+		return pac_polygon_list.list
 	is
-		use pac_polygons;
-		result : pac_polygons.list;
+		use pac_polygon_list;
+		result : pac_polygon_list.list;
 
 		-- Iterate the given list of polygons. 
 		-- Offset each of them and append it to the result:
 		
-		procedure query_polygon (c : in pac_polygons.cursor) is
+		procedure query_polygon (c : in pac_polygon_list.cursor) is
 			p : type_polygon := element (c);
 		begin
 			offset_polygon (p, offset);
@@ -542,7 +542,7 @@ package body et_geometry_1.polygons.offsetting is
 
 
 	procedure offset_polygons (
-		polygons	: in out pac_polygons.list;
+		polygons	: in out pac_polygon_list.list;
 		offset		: in type_float_internal)
 	is begin
 		polygons := offset_polygons (polygons, offset);

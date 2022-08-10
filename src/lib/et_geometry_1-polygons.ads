@@ -112,7 +112,7 @@ package et_geometry_1.polygons is
 
 	
 	
-	package pac_polygons is new doubly_linked_lists (type_polygon);
+	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 	
 
 	-- A polygon requires at least 3 vertices. 
