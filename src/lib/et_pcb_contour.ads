@@ -58,14 +58,20 @@ package et_pcb_contour is
 	-- As a safety measure we derive dedicated types for
 	-- the outer and inner edge of the PCB from the general contour type.
 	
-	-- There is only one outer edge of a PCB:
-	type type_outer_edge is new type_contour with null record;
+	-- There is only one outer contour of a PCB:
+	type type_outer_contour is new type_contour with null record;
 
-	-- There can be many inner edges due to holes:
-	type type_inner_edge is new type_contour with null record;
-	package pac_holes is new doubly_linked_lists (type_inner_edge);
-	use pac_holes; -- CS rename to pac_inner_edges
+
 	
+	-- There can be many holes inside the PCB area:
+	-- This is a single hole:
+	type type_hole is new type_contour with null record;
+
+	-- These are all holes inside the PCB area:
+	package pac_holes is new doubly_linked_lists (type_hole);
+	use pac_holes;
+
+
 	
 	-- In order to handle fill zones, the holes must be converted to
 	-- a list of polygons:

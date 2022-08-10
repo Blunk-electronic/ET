@@ -204,7 +204,7 @@ package et_pcb is
 
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
-		outline	: type_outer_edge;
+		outline	: type_outer_contour;
 		holes	: pac_holes.list;
 		--texts	: pac_text_fab.pac_texts_fab_with_content.list;
 		texts	: pac_contour_texts.list;

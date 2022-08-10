@@ -2310,7 +2310,7 @@ package body et_board_ops is
 
 	procedure set_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_outer_edge;
+		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2340,7 +2340,7 @@ package body et_board_ops is
 
 	function get_outline (
 		module_cursor	: in pac_generic_modules.cursor)
-		return type_outer_edge
+		return type_outer_contour
 	is begin
 		return element (module_cursor).board.contours.outline;
 	end get_outline;
@@ -2350,7 +2350,7 @@ package body et_board_ops is
 	function get_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
-		return type_outer_edge
+		return type_outer_contour
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being queried
 	begin
@@ -2463,7 +2463,7 @@ package body et_board_ops is
 
 	procedure add_hole (
 		module_cursor	: in pac_generic_modules.cursor;
-		hole			: in type_inner_edge;
+		hole			: in type_hole;
 		log_threshold	: in type_log_level)
 	is
 
@@ -2492,7 +2492,7 @@ package body et_board_ops is
 	
 	procedure add_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_inner_edge;
+		hole			: in type_hole;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
