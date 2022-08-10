@@ -50,7 +50,7 @@ generic
 	with package pac_geometry_1 is new et_geometry_1 (<>);
 
 	type type_distance is delta <> digits <>;
-	--type type_distance_coarse is delta <> digits <>;
+
 	axis_min, axis_max : type_distance;
 
 	type type_rotation is delta <> digits <>;
@@ -108,8 +108,6 @@ package et_geometry_2 is
 	function to_string (distance : in type_distance)
 		return string;
 
-	--function to_string (d_coarse : in type_distance_coarse)
-		--return string;
 
 
 
@@ -147,12 +145,6 @@ package et_geometry_2 is
 
 	rounding_mode_default : constant type_rounding_mode := BANKERS_RULE;
 
-	-- Rounds the given distance to the nearest multiple of 
-	-- type_distance_coarse'small.
-	--function round (
-		--d_fine	: in type_distance;
-		--mode	: in type_rounding_mode := rounding_mode_default) 
-		--return type_distance_coarse;
 
 
 

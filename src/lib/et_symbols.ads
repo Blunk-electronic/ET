@@ -52,10 +52,6 @@ with ada.containers.ordered_sets;
 with cairo;
 
 with et_coordinates;			use et_coordinates;
---with et_geometry;
---with et_geometry_2;
---with et_geometry_2.contours;
---with et_geometry_1.polygons;
 with et_string_processing;
 with et_general;
 with et_text;
@@ -68,20 +64,6 @@ package et_symbols is
 	use pac_geometry_2;
 
 
-
-	---- Instantiation of the generic et_geometry_2 package:
-	--package pac_geometry_2 is new et_geometry_2 (pac_geometry_sch);
-	--use pac_geometry_2;
-
-	--package pac_contours is new pac_geometry_2.contours;
-	---- This package is never used in schematic. But it is mandatory
-	---- for the instantiation of the primitive draw operations package.
-
-	--package pac_polygons is new pac_geometry_2.polygons;
-	---- This package is never used in schematic. But it is mandatory
-	---- for the instantiation of the primitive draw operations package.
-
-	
 	
 -- TEXT
 
@@ -93,6 +75,7 @@ package et_symbols is
 	text_line_width_min : constant type_distance_positive := 0.1;
 	text_line_width_max : constant type_distance_positive := 5.0;
 	text_line_width_default : constant type_distance_positive := 0.3; 
+
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
