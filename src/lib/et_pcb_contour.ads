@@ -51,7 +51,6 @@ package et_pcb_contour is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;
-	use pac_polygon_offsetting;
 	use pac_text_fab;
 
 
@@ -72,32 +71,20 @@ package et_pcb_contour is
 	use pac_holes;
 
 
-	
-	-- In order to handle fill zones, the holes must be converted to
-	-- a list of polygons:
-	package pac_holes_as_polygons is new doubly_linked_lists (type_polygon);
-	use pac_holes_as_polygons; -- CS rename to pac_holes
 
-	
-	-- Iterates the holes. Aborts the process when the proceed-flag goes false:
-	--procedure iterate (
-		--holes	: in pac_holes_as_polygons.list;
-		--process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
-		--proceed	: not null access boolean);
-	
 	
 	-- Converts a list of holes to a list of polygons:
 	function to_polygons (
 		holes		: in pac_holes.list;
 		tolerance	: in type_distance_positive)
-		return pac_holes_as_polygons.list;
+		return pac_polygon_list.list;
 
 
-	-- Offsets a list of holes (in the form of polygons).
+	-- Offsets a list of holes.
 	-- The parameter "offset" is always positive because
 	-- holes can only become greater:
 	procedure offset_holes (
-		holes		: in out pac_holes_as_polygons.list;
+		holes		: in out pac_polygon_list.list;
 		offset		: in type_distance_positive;
 		debug		: in boolean := false);
 

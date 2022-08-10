@@ -76,6 +76,8 @@ package body et_geometry_1.polygons is
 			next (c);
 		end loop;
 	end iterate;
+
+
 	
 
 	procedure rotate (
@@ -210,7 +212,22 @@ package body et_geometry_1.polygons is
 		optimize_edges (result, debug);
 		return result;
 	end optimize_edges;
-		
+
+
+	procedure iterate (
+		holes	: in pac_polygon_list.list;
+		process	: not null access procedure (position : in pac_polygon_list.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_polygon_list;
+		c : pac_polygon_list.cursor := holes.first;
+	begin
+		while c /= pac_polygon_list.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
 	
 	function to_polygon (vertices : in string)
 		return type_polygon

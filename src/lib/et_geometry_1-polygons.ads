@@ -113,6 +113,15 @@ package et_geometry_1.polygons is
 	
 	
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
+
+
+	
+	-- Iterates the polygons. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		holes	: in pac_polygon_list.list;
+		process	: not null access procedure (position : in pac_polygon_list.cursor);
+		proceed	: not null access boolean);
+	
 	
 
 	-- A polygon requires at least 3 vertices. 

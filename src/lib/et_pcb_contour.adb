@@ -41,29 +41,15 @@ with ada.text_io;				use ada.text_io;
 
 package body et_pcb_contour is
 
-	--procedure iterate (
-		--holes	: in pac_holes_as_polygons.list;
-		--process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
-		--proceed	: not null access boolean)
-	--is
-		--c : pac_holes_as_polygons.cursor := holes.first;
-	--begin
-		--while c /= pac_holes_as_polygons.no_element and proceed.all = TRUE loop
-			--process (c);
-			--next (c);
-		--end loop;
-	--end iterate;
-
-
 	
 	function to_polygons (
 		holes		: in pac_holes.list;
 		tolerance	: in type_distance_positive)
-		return pac_holes_as_polygons.list
+		return pac_polygon_list.list
 	is
 		use et_contour_to_polygon;
 		
-		result : pac_holes_as_polygons.list;
+		result : pac_polygon_list.list;
 
 		-- Iterate the given list of holes and convert each hole
 		-- to a polygon. The polygon in turn will be appended to the result
@@ -85,36 +71,41 @@ package body et_pcb_contour is
 	
 
 	procedure offset_holes (
-		holes		: in out pac_holes_as_polygons.list;
+		holes		: in out pac_polygon_list.list;
 		offset		: in type_distance_positive;
 		debug		: in boolean := false)
 	is
-		result : pac_holes_as_polygons.list;
+		use pac_polygon_offsetting;
+		
+		--use pac_polygon_list;
+		--result : pac_polygon_list.list;
 	
-		procedure query_hole (c : in pac_holes_as_polygons.cursor) is
-			p : type_polygon := element (c);
-		begin
-			if debug then
-				put_line (" hole in : " & to_string (element (c)));
-			end if;
+		--procedure query_hole (c : in pac_polygon_list.cursor) is
+			--p : type_polygon := element (c);
+		--begin
+			--if debug then
+				--put_line (" hole in : " & to_string (element (c)));
+			--end if;
 			
-			offset_polygon (p, type_float_internal_positive (offset));
+			--offset_polygon (p, type_float_internal_positive (offset));
 
-			if debug then
-				put_line (" hole out: " & to_string (p));
-			end if;
+			--if debug then
+				--put_line (" hole out: " & to_string (p));
+			--end if;
 
-			result.append (p);
-		end query_hole;
+			--result.append (p);
+		--end query_hole;
 			
 	begin
 		if debug then
 			put_line ("offsetting holes by " & to_string (offset) & "mm");
 		end if;
-		
-		holes.iterate (query_hole'access);
 
-		holes := result;
+		offset_polygons (holes, type_float_internal_positive (offset));
+		
+		--holes.iterate (query_hole'access);
+
+		--holes := result;
 		
 		--if debug then
 			--put_line (count_type'image (holes.length));

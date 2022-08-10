@@ -101,8 +101,8 @@ is
 	-- the with of the fill lines.
 	board_outer_edge_master : type_polygon;
 
-	use pac_holes_as_polygons;
-	board_holes_master : pac_holes_as_polygons.list;
+	use pac_polygon_list;
+	board_holes_master : pac_polygon_list.list;
 
 
 	offset_scratch : type_distance;
@@ -510,7 +510,7 @@ is
 				procedure process_board_contours is
 				
 					outer_edge : type_polygon := board_outer_edge_master;
-					holes : pac_holes_as_polygons.list := board_holes_master;
+					holes : pac_polygon_list.list := board_holes_master;
 
 					islands : pac_clipped.list;
 					
@@ -525,7 +525,7 @@ is
 							p_tmp : type_polygon := element (c);
 							
 							
-							procedure query_hole (h : in pac_holes_as_polygons.cursor) is 
+							procedure query_hole (h : in pac_polygon_list.cursor) is 
 								
 								-- Get the status of the hole relative to the candidate island.
 								intersections : pac_intersections.list := get_intersections (element (h), p_tmp);
@@ -580,7 +580,7 @@ is
 						fragments : pac_islands.list;
 
 						
-						procedure query_hole (h : in pac_holes_as_polygons.cursor) is
+						procedure query_hole (h : in pac_polygon_list.cursor) is
 							
 							-- Get the status of the hole relative to the candidate island:
 							intersections : pac_intersections.list := 
