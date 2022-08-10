@@ -45,7 +45,7 @@
 
 generic
 	
-package et_geometry_2.polygons.cropping is
+package et_geometry_1.polygons.cropping is
 
 	-- The result of a polygon cropping operation is a list
 	-- of sub-polygons:
@@ -107,7 +107,7 @@ package et_geometry_2.polygons.cropping is
 		return pac_cropped.list;
 							
 	
-end et_geometry_2.polygons.cropping;
+end et_geometry_1.polygons.cropping;
 
 -- Soli Deo Gloria
 

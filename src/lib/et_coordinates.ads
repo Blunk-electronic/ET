@@ -49,7 +49,7 @@ with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2;
 with et_geometry_2.contours;
-with et_geometry_2.polygons;
+with et_geometry_1.polygons;
 with et_logging;				use et_logging;
 
 
@@ -116,7 +116,7 @@ package et_coordinates is
 	-- This package is never used in schematic. But it is mandatory
 	-- for the instantiation of the primitive draw operations package.
 
-	package pac_polygons is new pac_geometry_2.polygons;
+	package pac_polygons is new pac_geometry_1.polygons;
 	-- This package is never used in schematic. But it is mandatory
 	-- for the instantiation of the primitive draw operations package.
 

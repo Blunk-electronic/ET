@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      GEOMETRY 2 / POLYGONS / UNION                       --
+--                      GEOMETRY 2 / POLYGONS / CLIPPING                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,54 +35,57 @@
 --
 --  Description:
 --
+-- 	This package bases on the Weiler-Atherton algorithm. Find basics here:
+-- 	- <https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/HWs/p214-weiler.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.6.pdf>
+--  - <https://www.cs.drexel.edu/~david/Classes/CS430/Lectures/L-05_Polygons.pdf>
+--
+--  Other approaches of interest could be:
+--  - Two-Ears Theorem by Gary H. Meisters
+--  - Sutherland–Hodgman Algorithm
+--  - <https://www.tutorialandexample.com/polygon-clipping>
+--
 --
 --   history of changes:
 --
-
+--	- "to clip" german: kappen, begrenzen.
+--    Im Zusammenhang mit zwei Polygonen A und B: 
+--			- "ueberlappende/gemeinsame Bereiche beider Polygone ermitteln"
+--			- "Schnittmenge zweier Polygone ermitteln"
 
 generic
 	
-package et_geometry_2.polygons.union is
+package et_geometry_1.polygons.clipping is
 
-	package pac_polygons is new doubly_linked_lists (type_polygon);
-	use pac_polygons;
-
-	-- Returns from the given list of polygons the one that encloses
-	-- all others in the list
-	function get_greatest (
-		polygons	: in pac_polygons.list)
-		return pac_polygons.cursor;
-	
-	
-	-- The result of a polygon union operation is a list
-	-- of polygons:
-	type type_union (exists : boolean := true) is record
-		case exists is
-			when TRUE => union : type_polygon;
-
-			when FALSE => null;
-		end case;
-	end record;
+	-- The result of a polygon clipping operation is a list
+	-- of sub-polygons:
+	package pac_clipped is new doubly_linked_lists (type_polygon);
+	use pac_clipped;
 
 
-	-- CS
-	--function "=" (
-		--left, right : in type_union)
-		--return boolean;
+	function "=" (
+		left, right : in pac_clipped.list)
+		return boolean;
 	
 	
-	
-	-- Unions polygon A with polygon B.
+	-- Clips polygon A by polygon B.
+	-- If the two polygons do not overlap, then the return is an empty list.
 	-- If debug is true then a lot of debug messages is output.
-	function union (
-		polygon_A	: in type_polygon; -- the first polygon
-		polygon_B	: in type_polygon; -- the second polygon
+	-- To describe the operation in another way: The result is the
+	-- area shared by polygon A and polygon B.
+	-- In general it does not matter which polygon is clipping and which
+	-- is being clipped. The resulting area will be the same but the order
+	-- of sub-polygons and their vertices will differ.
+	function clip (
+		polygon_A	: in type_polygon; -- the clipped polygon
+		polygon_B	: in type_polygon; -- the clipping polygon
 		debug		: in boolean := false)
-		return type_union;
+		return pac_clipped.list;
 
 
 	
-end et_geometry_2.polygons.union;
+end et_geometry_1.polygons.clipping;
 
 -- Soli Deo Gloria
 

@@ -52,10 +52,10 @@ with ada.containers.ordered_sets;
 with cairo;
 
 with et_coordinates;			use et_coordinates;
-with et_geometry;
-with et_geometry_2;
-with et_geometry_2.contours;
-with et_geometry_2.polygons;
+--with et_geometry;
+--with et_geometry_2;
+--with et_geometry_2.contours;
+--with et_geometry_1.polygons;
 with et_string_processing;
 with et_general;
 with et_text;
@@ -64,7 +64,7 @@ with et_logging;				use et_logging;
 
 package et_symbols is
 
-	use pac_geometry_sch;
+	--use pac_geometry_sch;
 	use pac_geometry_2;
 
 

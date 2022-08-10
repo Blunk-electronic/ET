@@ -41,18 +41,18 @@ with ada.text_io;				use ada.text_io;
 
 package body et_pcb_contour is
 
-	procedure iterate (
-		holes	: in pac_holes_as_polygons.list;
-		process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_holes_as_polygons.cursor := holes.first;
-	begin
-		while c /= pac_holes_as_polygons.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
+	--procedure iterate (
+		--holes	: in pac_holes_as_polygons.list;
+		--process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
+		--proceed	: not null access boolean)
+	--is
+		--c : pac_holes_as_polygons.cursor := holes.first;
+	--begin
+		--while c /= pac_holes_as_polygons.no_element and proceed.all = TRUE loop
+			--process (c);
+			--next (c);
+		--end loop;
+	--end iterate;
 
 	
 	
@@ -98,7 +98,7 @@ package body et_pcb_contour is
 				put_line (" hole in : " & to_string (element (c)));
 			end if;
 			
-			offset_polygon (p, offset);
+			offset_polygon (p, type_float_internal_positive (offset));
 
 			if debug then
 				put_line (" hole out: " & to_string (p));

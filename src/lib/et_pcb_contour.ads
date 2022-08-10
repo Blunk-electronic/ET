@@ -74,10 +74,10 @@ package et_pcb_contour is
 
 	
 	-- Iterates the holes. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		holes	: in pac_holes_as_polygons.list;
-		process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
-		proceed	: not null access boolean);
+	--procedure iterate (
+		--holes	: in pac_holes_as_polygons.list;
+		--process	: not null access procedure (position : in pac_holes_as_polygons.cursor);
+		--proceed	: not null access boolean);
 	
 	
 	-- Converts a list of holes to a list of polygons:

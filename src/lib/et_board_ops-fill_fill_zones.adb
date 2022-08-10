@@ -630,7 +630,7 @@ is
 							-- Check the length of the edges of the island:
 							--check_length (type_polygon (element (island_cursor).border));
 							
-							iterate (holes, query_hole'access, proceed'access);
+							--iterate (holes, query_hole'access, proceed'access);
 
 							if not proceed then
 								--exit;
@@ -661,7 +661,7 @@ is
 					-- Shrink the outer edge (of the board) by half the line 
 					-- width of the fill lines:
 					log (text => "outer edge ...", level => log_threshold + 4);
-					offset_polygon (outer_edge, - line_width * 0.5);
+					offset_polygon (outer_edge, - type_float_internal_positive (line_width) * 0.5);
 
 					-- Clip the contour of the fill zone by the outer edge of the board.
 					-- The result is a list of islands:
@@ -720,7 +720,7 @@ is
 
 					-- CS log lowest left vertex
 					
-					offset_polygon (zone, - line_width * 0.5);
+					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
 
 					process_board_contours;
 
@@ -730,7 +730,7 @@ is
 
 					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (zone, zero);
+					boundaries := get_boundaries (zone, type_float_internal_positive (zero));
 					--log (text => to_string (boundaries), level => log_threshold + 2);
 					
 					-- obtain the lower left corner of the zone from the boundaries:
@@ -888,7 +888,7 @@ begin -- fill_fill_zones
 		& to_string (offset_scratch),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_edge_master, offset_scratch);
+	offset_polygon (board_outer_edge_master, type_float_internal (offset_scratch));
 	-- for debuggin use:
 	--offset_polygon (board_outer_edge_master, offset_scratch, true);
 	-- CS consider half the line width !

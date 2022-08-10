@@ -58,9 +58,12 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
-with et_geometry_2;
+--with et_geometry_2;
 with et_geometry_2.contours;	
-with et_geometry_2.polygons;
+
+--with et_geometry_1;
+with et_geometry_1.polygons;
+
 with et_text;
 with et_canvas_general;
 
@@ -73,7 +76,7 @@ generic
 	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
 
 	-- The instantiated polygon package:
-	with package pac_polygons is new pac_canvas.pac_geometry_2.polygons;
+	with package pac_polygons is new pac_canvas.pac_geometry_2.pac_geometry_1.polygons;
 
 	-- The instantiated contour package:
 	with package pac_contours is new pac_canvas.pac_geometry_2.contours;
@@ -89,9 +92,9 @@ generic
 package pac_draw is
 	
 	use pac_canvas;
-	use pac_geometry_2;
+	use pac_geometry_2;  -- inside pac_canvas
 	
-	use pac_geometry_1;
+	use pac_geometry_1;  -- inside pac_geometry_2
 	-- NOTE: This use clause does not work properly. 
 	-- For some reason the package name must be explicitely provided
 	-- for stuff that stems from pac_geometry_1.

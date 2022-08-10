@@ -3020,7 +3020,7 @@ is
 										-- offset the temporary polygon
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> get_stop_mask_expansion); -- from DRU
+											offset		=> type_float_internal (get_stop_mask_expansion)); -- from DRU
 
 										-- convert the temporary polygon back to a contour
 										stop_mask_contours := (to_contour (polygon_tmp) with null record);
@@ -3067,7 +3067,7 @@ is
 										-- offset the temporary polygon
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> stencil_in.shrink_factor);
+											offset		=> type_float_internal (stencil_in.shrink_factor));
 
 										-- convert the temporary polygon back to a contour
 										stencil_contours := (to_contour (polygon_tmp) with null record);
@@ -3173,7 +3173,7 @@ is
 										-- offset the temporary polygon										
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> get_stop_mask_expansion);  -- from DRU
+											offset		=> type_float_internal (get_stop_mask_expansion));  -- from DRU
 
 										-- convert the temporary polygon back to a contour
 										stop_mask_contours := (to_contour (polygon_tmp) with null record);
@@ -3237,7 +3237,7 @@ is
 						-- offset the temporary polygon
 						offset_polygon (
 							polygon		=> polygon_tmp, 
-							offset		=> restring_width);
+							offset		=> type_float_internal (restring_width));
 
 						-- move the conductor frame to its final position:
 						pad_pos := pad_pos_in;  -- get initial pad position

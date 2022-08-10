@@ -79,7 +79,7 @@ with system.storage_elements;	use system.storage_elements;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
-with et_geometry_1;
+--with et_geometry_1;
 with et_geometry_2;
 with et_frames;
 with et_string_processing;		use et_string_processing;
@@ -172,7 +172,7 @@ generic
 package pac_canvas is
 	
 	use pac_geometry_2;
-	use pac_geometry_1;
+	use pac_geometry_1; -- inside pac_geometry_2
 
 
 	

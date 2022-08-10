@@ -46,7 +46,7 @@ with ada.exceptions;			use ada.exceptions;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_geometry_2.polygons is
+package body et_geometry_1.polygons is
 
 	
 	function to_string (
@@ -318,12 +318,12 @@ package body et_geometry_2.polygons is
 	
 	function get_boundaries (
 		polygon		: in type_polygon;
-		line_width	: in type_distance_positive)
+		line_width	: in type_float_internal_positive)
 		return type_boundaries
 	is
 		result : type_boundaries; -- to be returned
 
-		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
+		half_width : constant type_float_internal_positive := line_width * 0.5;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
 			union (result, get_boundaries (element (c)));
@@ -934,7 +934,7 @@ package body et_geometry_2.polygons is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in pac_geometry_1.type_intersection)
+			intersection: in et_geometry_1.type_intersection)
 		is 
 			xi : constant type_float_internal := get_x (intersection.vector);
 		begin
@@ -2697,7 +2697,7 @@ package body et_geometry_2.polygons is
 
 	
 	
-end et_geometry_2.polygons;
+end et_geometry_1.polygons;
 
 -- Soli Deo Gloria
 

@@ -38,7 +38,7 @@
 
 generic
 	
-package et_geometry_2.polygons.offsetting is
+package et_geometry_1.polygons.offsetting is
 	
 	-- See:
 	-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
@@ -132,20 +132,20 @@ package et_geometry_2.polygons.offsetting is
 	-- then shrinks.
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_distance;
+		offset		: in type_float_internal;
 		debug		: in boolean := false);
 
 
 	-- Offsets a list of polygons:
 	function offset_polygons (
 		polygons	: in pac_polygons.list;
-		offset		: in type_distance)
+		offset		: in type_float_internal)
 		return pac_polygons.list;
 
 	
 	procedure offset_polygons (
 		polygons	: in out pac_polygons.list;
-		offset		: in type_distance);
+		offset		: in type_float_internal);
 
 private
 	
@@ -159,11 +159,11 @@ private
 	-- If offset is less than zero, then returns SHRINK.
 	-- If offset is zero, then returns NOTHING:
 	function to_mode (
-		offset : in type_distance)
+		offset : in type_float_internal)
 		return type_mode;
 
 	
-end et_geometry_2.polygons.offsetting;
+end et_geometry_1.polygons.offsetting;
 
 -- Soli Deo Gloria
 

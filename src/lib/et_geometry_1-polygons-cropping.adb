@@ -45,7 +45,7 @@ with gnat.source_info;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_geometry_2.polygons.cropping is
+package body et_geometry_1.polygons.cropping is
 
 
 	function "=" (
@@ -444,7 +444,7 @@ package body et_geometry_2.polygons.cropping is
 	
 
 	
-end et_geometry_2.polygons.cropping;
+end et_geometry_1.polygons.cropping;
 
 -- Soli Deo Gloria
 

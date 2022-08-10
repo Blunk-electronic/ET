@@ -42,7 +42,7 @@ with gnat.source_info;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_geometry_2.polygons.union is
+package body et_geometry_1.polygons.union is
 
 
 	function get_greatest (
@@ -458,7 +458,7 @@ package body et_geometry_2.polygons.union is
 	end union;
 
 	
-end et_geometry_2.polygons.union;
+end et_geometry_1.polygons.union;
 
 -- Soli Deo Gloria
 

@@ -57,13 +57,13 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 generic
 	
-package et_geometry_2.polygons is
+package et_geometry_1.polygons is
 
 
 	-- As system wide default for all polygons:
 	winding_default : constant type_direction_of_rotation := CCW;
 
-	type type_edge is new pac_geometry_1.type_line;
+	type type_edge is new type_line;
 
 	edge_length_min : constant type_float_internal_positive := 0.1;
 	
@@ -154,7 +154,7 @@ package et_geometry_2.polygons is
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
 		polygon		: in type_polygon;
-		line_width	: in type_distance_positive)
+		line_width	: in type_float_internal_positive)
 		return type_boundaries;
 
 	
@@ -739,7 +739,7 @@ package et_geometry_2.polygons is
 		count	: in out natural;
 		limit	: in natural);
 	
-end et_geometry_2.polygons;
+end et_geometry_1.polygons;
 
 -- Soli Deo Gloria
 

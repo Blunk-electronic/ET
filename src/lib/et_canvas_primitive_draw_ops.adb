@@ -577,10 +577,12 @@ package body pac_draw is
 		drawn	: in out boolean)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
-		boundaries : constant type_boundaries := get_boundaries (polygon, width);
+		boundaries : constant type_boundaries := 
+			get_boundaries (polygon, type_float_internal_positive (width));
 
 		-- compute the bounding box of the given contour
-		bounding_box : constant type_bounding_box := make_bounding_box (height, boundaries);
+		bounding_box : constant type_bounding_box := 
+			make_bounding_box (height, boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);

@@ -40,7 +40,7 @@ with et_exceptions;				use et_exceptions;
 with ada.exceptions;			use ada.exceptions;
 
 
-package body et_geometry_2.polygons.offsetting is
+package body et_geometry_1.polygons.offsetting is
 
 
 	function to_string (oe : in type_offset_edge) return string is begin
@@ -72,10 +72,10 @@ package body et_geometry_2.polygons.offsetting is
 
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_distance;
+		offset		: in type_float_internal;
 		debug		: in boolean := false) 
 	is
-		offset_float : constant type_float_internal_positive := type_float_internal (abs (offset));
+		offset_float : constant type_float_internal_positive := abs (offset);
 		
 		-- Mode tells whether we are shrinking, expanding
 		-- or whether there is nothing to do:
@@ -114,7 +114,8 @@ package body et_geometry_2.polygons.offsetting is
 			dir_scratch := add (edge_direction, +90.0);
 
 			-- CS:
-			test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
+			--test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
+			test_point := move_by (center, dir_scratch, 1000.0 * accuracy);
 			--test_point := move_by (center, dir_scratch, 100.0 * type_float_internal'small);
 
 			--put_line ("tp " & to_string (test_point));
@@ -518,7 +519,7 @@ package body et_geometry_2.polygons.offsetting is
 
 	function offset_polygons (
 		polygons	: in pac_polygons.list;
-		offset		: in type_distance)
+		offset		: in type_float_internal)
 		return pac_polygons.list
 	is
 		use pac_polygons;
@@ -542,7 +543,7 @@ package body et_geometry_2.polygons.offsetting is
 
 	procedure offset_polygons (
 		polygons	: in out pac_polygons.list;
-		offset		: in type_distance)
+		offset		: in type_float_internal)
 	is begin
 		polygons := offset_polygons (polygons, offset);
 	end offset_polygons;
@@ -551,7 +552,7 @@ package body et_geometry_2.polygons.offsetting is
 	
 
 	function to_mode (
-		offset : in type_distance)
+		offset : in type_float_internal)
 	return type_mode is 
 		result : type_mode := NOTHING;
 	begin
@@ -567,7 +568,7 @@ package body et_geometry_2.polygons.offsetting is
 	end to_mode;
 
 	
-end et_geometry_2.polygons.offsetting;
+end et_geometry_1.polygons.offsetting;
 
 -- Soli Deo Gloria
 

@@ -42,11 +42,11 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_geometry_2;
 with et_geometry_2.contours;
-with et_geometry_2.polygons;
-with et_geometry_2.polygons.clipping;
-with et_geometry_2.polygons.cropping;
-with et_geometry_2.polygons.union;
-with et_geometry_2.polygons.offsetting;
+with et_geometry_1.polygons;
+with et_geometry_1.polygons.clipping;
+with et_geometry_1.polygons.cropping;
+with et_geometry_1.polygons.union;
+with et_geometry_1.polygons.offsetting;
 
 with et_design_rules;			use et_design_rules;
 with et_logging;				use et_logging;
@@ -62,7 +62,7 @@ package et_board_shapes_and_text is
 	use pac_contours;
 
 	
-	package pac_polygons is new pac_geometry_2.polygons;
+	package pac_polygons is new pac_geometry_1.polygons;
 	use pac_polygons;
 	
 	package pac_polygon_clipping is new pac_polygons.clipping;
