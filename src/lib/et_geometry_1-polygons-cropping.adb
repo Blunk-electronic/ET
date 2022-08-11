@@ -434,7 +434,10 @@ package body et_geometry_1.polygons.cropping is
 		debug			: in boolean := false)
 		return pac_polygon_list.list
 	is
+		use pac_polygon_list;
 		result : pac_polygon_list.list;
+
+		A_count : constant count_type := polygon_A_list.length;
 	begin
 		-- CS
 
@@ -448,9 +451,25 @@ package body et_geometry_1.polygons.cropping is
 		debug			: in boolean := false)
 		return pac_polygon_list.list
 	is
+		use pac_polygon_list;
 		result : pac_polygon_list.list;
+
+		procedure query_polygon_B (polygon_B : in pac_polygon_list.cursor) is
+			-- Crop the candidate B-polygon by the list of A-polygons:
+			scratch : pac_polygon_list.list := multi_crop (element (polygon_B), polygon_A_list);
+		begin
+			-- Append the resulting islands to the return value:
+			splice (
+				target	=> result,
+				source	=> scratch,
+				before	=> pac_polygon_list.no_element);
+			
+		end query_polygon_B;
+					
 	begin
-		-- CS
+		-- Iterate the B-polygons and crop each of them by all A-polygons.
+		-- Append the resulting islands to the return value:
+		polygon_B_list.iterate (query_polygon_B'access);
 
 		return result;
 	end multi_crop;
