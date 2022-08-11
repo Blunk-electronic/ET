@@ -60,13 +60,10 @@ package et_geometry_1.polygons.clipping is
 
 	-- The result of a polygon clipping operation is a list
 	-- of sub-polygons:
-	package pac_clipped is new doubly_linked_lists (type_polygon);
-	use pac_clipped;
+	--package pac_clipped is new doubly_linked_lists (type_polygon);
+	--use pac_clipped;
 
 
-	function "=" (
-		left, right : in pac_clipped.list)
-		return boolean;
 	
 	
 	-- Clips polygon A by polygon B.
@@ -81,7 +78,7 @@ package et_geometry_1.polygons.clipping is
 		polygon_A	: in type_polygon; -- the clipped polygon
 		polygon_B	: in type_polygon; -- the clipping polygon
 		debug		: in boolean := false)
-		return pac_clipped.list;
+		return pac_polygon_list.list;
 
 
 	

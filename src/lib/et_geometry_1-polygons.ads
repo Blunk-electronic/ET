@@ -115,6 +115,16 @@ package et_geometry_1.polygons is
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 
 
+	-- Returns true if:
+	-- - number of polygons in left equals those in right AND
+	-- - the polygons in left are in the same order as those in right AND
+	-- - the polygons in left are congruent to those in right:
+	function "=" (
+		left, right : in pac_polygon_list.list)
+		return boolean;
+
+
+	
 	
 	-- Iterates the polygons. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

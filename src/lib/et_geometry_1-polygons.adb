@@ -214,6 +214,49 @@ package body et_geometry_1.polygons is
 	end optimize_edges;
 
 
+
+
+	function "=" (
+		left, right : in pac_polygon_list.list)
+		return boolean
+	is
+		use pac_polygon_list;
+		
+		result : boolean := false;
+
+		length_left  : count_type := left.length;
+		length_right : count_type := right.length;
+		
+		c_left  : pac_polygon_list.cursor;
+		c_right : pac_polygon_list.cursor;
+	begin
+		if length_left + length_right = 0 then
+			return true;
+		end if;
+		
+		if left.length /= right.length then
+			return false;
+		else
+			c_left  := left.first;
+			c_right := right.first;
+
+			for i in 1 .. length_left loop
+				if not are_congruent (element (c_left), element (c_right)) then
+					return false;
+				end if;
+
+				next (c_left);
+				next (c_right);
+			end loop;
+
+			return true;
+		end if;
+		
+	end "=";
+
+
+	
+	
 	procedure iterate (
 		holes	: in pac_polygon_list.list;
 		process	: not null access procedure (position : in pac_polygon_list.cursor);
@@ -228,6 +271,7 @@ package body et_geometry_1.polygons is
 		end loop;
 	end iterate;
 	
+
 	
 	function to_polygon (vertices : in string)
 		return type_polygon

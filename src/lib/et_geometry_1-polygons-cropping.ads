@@ -104,8 +104,15 @@ package et_geometry_1.polygons.cropping is
 		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)
-		return pac_cropped.list;
-							
+		return pac_polygon_list.list;
+
+	
+	function multi_crop (
+		polygon_B_list	: in pac_polygon_list.list; -- the cropped polygons / zu bescheidende Polygone
+		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
+		debug			: in boolean := false)
+		return pac_polygon_list.list;
+	
 	
 end et_geometry_1.polygons.cropping;
 

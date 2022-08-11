@@ -44,43 +44,7 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_1.polygons.clipping is
 
 
-	function "=" (
-		left, right : in pac_clipped.list)
-		return boolean
-	is
-		result : boolean := false;
 
-		length_left  : count_type := left.length;
-		length_right : count_type := right.length;
-		
-		c_left  : pac_clipped.cursor;
-		c_right : pac_clipped.cursor;
-	begin
-		--put_line ("clip test");
-		
-		if length_left + length_right = 0 then
-			return true;
-		end if;
-		
-		if left.length /= right.length then
-			return false;
-		else
-			c_left  := left.first;
-			c_right := right.first;
-
-			for i in 1 .. length_left loop
-				if not are_congruent (element (c_left), element (c_right)) then
-					return false;
-				end if;
-
-				next (c_left);
-				next (c_right);
-			end loop;
-
-			return true;
-		end if;
-		
-	end "=";
 
 	
 	
@@ -88,9 +52,9 @@ package body et_geometry_1.polygons.clipping is
 		polygon_A	: in type_polygon;
 		polygon_B	: in type_polygon;
 		debug		: in boolean := false)
-		return pac_clipped.list
+		return pac_polygon_list.list
 	is
-		result : pac_clipped.list;
+		result : pac_polygon_list.list;
 
 		-- The list of intersecting A and B edges:		
 		intersections : pac_intersections.list;
