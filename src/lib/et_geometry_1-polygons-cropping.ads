@@ -49,8 +49,8 @@ package et_geometry_1.polygons.cropping is
 
 	-- The result of a polygon cropping operation is a list
 	-- of sub-polygons:
-	package pac_cropped is new doubly_linked_lists (type_polygon);
-	use pac_cropped;
+	--package pac_cropped is new doubly_linked_lists (type_polygon);
+	use pac_polygon_list;
 	
 
 	type type_crop (exists : boolean := true) is record
@@ -60,7 +60,7 @@ package et_geometry_1.polygons.cropping is
 		case exists is
 			when TRUE =>
 				-- The list of sub-polygons:
-				fragments : pac_cropped.list; 
+				fragments : pac_polygon_list.list; 
 
 				-- The number of fragments:
 				count : count_type;
@@ -100,14 +100,14 @@ package et_geometry_1.polygons.cropping is
 
 
 	-- Crops a single polygon by a number of polygons:
-	function multi_crop (
+	function multi_crop_1 (
 		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)
 		return pac_polygon_list.list;
 
 	
-	function multi_crop (
+	function multi_crop_2 (
 		polygon_B_list	: in pac_polygon_list.list; -- the cropped polygons / zu bescheidende Polygone
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)

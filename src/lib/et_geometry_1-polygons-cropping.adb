@@ -52,15 +52,13 @@ package body et_geometry_1.polygons.cropping is
 		left, right : in type_crop)
 		return boolean
 	is
-		use pac_cropped;
-		
 		result : boolean := true;
 
-		procedure search_left_in_right (c_left : pac_cropped.cursor) is
-			c_right : pac_cropped.cursor := right.fragments.first;
+		procedure search_left_in_right (c_left : pac_polygon_list.cursor) is
+			c_right : pac_polygon_list.cursor := right.fragments.first;
 			found : boolean := false;
 		begin
-			while c_right /= pac_cropped.no_element loop
+			while c_right /= pac_polygon_list.no_element loop
 				
 				if are_congruent (element (c_left), element (c_right)) then
 					found := true;
@@ -129,7 +127,7 @@ package body et_geometry_1.polygons.cropping is
 		
 		result : unbounded_string;
 
-		procedure query_fragment (f : in pac_cropped.cursor) is begin
+		procedure query_fragment (f : in pac_polygon_list.cursor) is begin
 			result := result & LF & to_string (element (f));
 		end query_fragment;
 		
@@ -153,7 +151,7 @@ package body et_geometry_1.polygons.cropping is
 		return type_crop
 	is
 		result_exists : boolean := false;
-		result_crop : pac_cropped.list;
+		result_crop : pac_polygon_list.list;
 
 		-- The list of intersecting A and B edges:		
 		intersections : pac_intersections.list;
@@ -428,51 +426,110 @@ package body et_geometry_1.polygons.cropping is
 
 	
 
-	function multi_crop (
+	function multi_crop_1 (
 		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)
 		return pac_polygon_list.list
 	is
-		use pac_polygon_list;
 		result : pac_polygon_list.list;
 
-		A_count : constant count_type := polygon_A_list.length;
-	begin
-		-- CS
+		polygon_B_scratch : type_polygon := polygon_B;
 
+		
+		procedure query_polygon_A (a : pac_polygon_list.cursor) is
+			intersections : constant pac_intersections.list := get_intersections (
+				polygon_A		=> element (a), 
+				polygon_B		=> polygon_B_scratch,
+				debug			=> false);
+								
+			ol_sts : constant type_overlap_status := get_overlap_status (
+				polygon_A		=> element (a), -- polygon A is cropping !
+				polygon_B		=> polygon_B_scratch,
+				intersections	=> intersections);
+
+		begin
+			case ol_sts is
+				when A_OVERLAPS_B =>
+					declare
+						cr : constant type_crop := crop (
+							polygon_A => element (a), -- polygon A is cropping !
+							polygon_B => polygon_B_scratch);
+					begin
+						if cr.count = 1 then
+							polygon_B_scratch := cr.fragments.first_element;
+						end if;
+					end;
+
+				when others => null;					
+			end case;
+		end query_polygon_A;
+
+		
+	begin
+		polygon_A_list.iterate (query_polygon_A'access);
+
+		result.append (polygon_B_scratch);
 		return result;
-	end multi_crop;
+	end multi_crop_1;
 
 	
-	function multi_crop (
+	function multi_crop_2 (
 		polygon_B_list	: in pac_polygon_list.list; -- the cropped polygons / zu bescheidende Polygone
 		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
 		debug			: in boolean := false)
 		return pac_polygon_list.list
 	is
-		use pac_polygon_list;
 		result : pac_polygon_list.list;
 
 		procedure query_polygon_B (polygon_B : in pac_polygon_list.cursor) is
 			-- Crop the candidate B-polygon by the list of A-polygons:
-			scratch : pac_polygon_list.list := multi_crop (element (polygon_B), polygon_A_list);
+			scratch : pac_polygon_list.list;
 		begin
+			if debug then
+				put_line ("query B");
+			end if;
+			
+			scratch := multi_crop_1 (
+				polygon_B		=> element (polygon_B), 
+				polygon_A_list	=> polygon_A_list,
+				debug			=> debug);
+
+			if debug then
+				put_line ("scratch length" & count_type'image (scratch.length));
+			end if;
+			
 			-- Append the resulting islands to the return value:
 			splice (
 				target	=> result,
 				source	=> scratch,
 				before	=> pac_polygon_list.no_element);
-			
-		end query_polygon_B;
-					
-	begin
-		-- Iterate the B-polygons and crop each of them by all A-polygons.
-		-- Append the resulting islands to the return value:
-		polygon_B_list.iterate (query_polygon_B'access);
 
+			if debug then
+				put_line ("result length" & count_type'image (result.length));
+			end if;
+		end query_polygon_B;
+
+		
+	begin
+		if debug then
+			put_line ("multi_crop_2");
+			put_line ("B ct:" & count_type'image (polygon_B_list.length));
+			put_line ("A ct:" & count_type'image (polygon_A_list.length));
+		end if;
+
+		
+		if not is_empty (polygon_A_list) then
+		
+			-- Iterate the B-polygons and crop each of them by all A-polygons.
+			-- Append the resulting islands to the return value:
+			polygon_B_list.iterate (query_polygon_B'access);
+		else
+			result := polygon_B_list;
+		end if;
+		
 		return result;
-	end multi_crop;
+	end multi_crop_2;
 	
 
 	

@@ -69,7 +69,7 @@ is
 
 
 	use pac_islands;
-	use pac_cropped;
+	--use pac_cropped;
 	--use pac_clipped;
 	
 
@@ -77,22 +77,22 @@ is
 	-- of islands.
 	-- NOTE: The given crop MUST contain something. If it 
 	-- is empty then a constraint error is raised here !
-	function to_islands (crop : in type_crop) 
-		return pac_islands.list 
-	is
-		islands : pac_islands.list;
+	--function to_islands (crop : in type_crop) 
+		--return pac_islands.list 
+	--is
+		--islands : pac_islands.list;
 
-		procedure query_fragment (f : in pac_cropped.cursor) is begin
-			islands.append ((
-				border	=> type_outer_border (element (f)),
-				others	=> <>)); -- cutout, stripes
+		--procedure query_fragment (f : in pac_cropped.cursor) is begin
+			--islands.append ((
+				--border	=> type_outer_border (element (f)),
+				--others	=> <>)); -- cutout, stripes
 			
-		end query_fragment;
+		--end query_fragment;
 		
-	begin
-		crop.fragments.iterate (query_fragment'access);
-		return islands;
-	end to_islands;
+	--begin
+		--crop.fragments.iterate (query_fragment'access);
+		--return islands;
+	--end to_islands;
 
 	
 	-- The outer contour of the board. After shrinking by the
@@ -659,6 +659,22 @@ is
 							
 					--end crop_by_splitting_holes;
 
+
+					procedure set_islands (
+						zone : in out type_route_solid)
+					is
+						procedure query_island (i : in pac_polygon_list.cursor) is
+						begin
+							zone.islands.append ((
+								border	=> type_outer_border (element (i)),
+								others	=> <>));					 
+						end query_island;
+						
+					begin
+
+
+						islands.iterate (query_island'access);
+					end set_islands;
 					
 					
 				begin
@@ -679,16 +695,17 @@ is
 
 					
 
-					log (text => "holes ...", level => log_threshold + 4);
+					log (text => "holes (" & count_type'image (holes.length) & ") ...", level => log_threshold + 4);
 					
 					-- Expand the holes by half the line width of the fill lines:
 					offset_holes (holes, line_width * 0.5);
 
 					-- Now we crop the islands by the holes:
-					islands := multi_crop (
+					islands := multi_crop_2 (
 						polygon_B_list	=> islands,
 						polygon_A_list	=> holes,
 						debug			=> false);
+						--debug			=> true);
 
 					-- CS: crop islands by vias, tracks, restrict areas, ...
 
@@ -707,6 +724,9 @@ is
 					--net.route.fill_zones.solid.update_element (
 						--zone_cursor, crop_by_splitting_holes'access);
 					--log (text => "done", level => log_threshold + 4);
+
+					net.route.fill_zones.solid.update_element (
+						zone_cursor, set_islands'access);
 					
 					log_indentation_down;
 				end process_board_contours;
