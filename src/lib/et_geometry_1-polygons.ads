@@ -556,9 +556,9 @@ package et_geometry_1.polygons is
 	-- Removes from the given list of intersections those where
 	-- polygon A touches polygon B. The result are those nodes where
 	-- the polygon edges truly intersect each other:
-	function get_real_intersections (
-		intersections	: in pac_intersections.list)
-		return pac_intersections.list;
+	--function get_real_intersections (
+		--intersections	: in pac_intersections.list)
+		--return pac_intersections.list;
 	
 
 	-- Returns true if the given intersection have equal

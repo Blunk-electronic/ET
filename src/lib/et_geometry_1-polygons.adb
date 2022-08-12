@@ -1697,50 +1697,50 @@ package body et_geometry_1.polygons is
 	end same_position;
 
 
-	function get_real_intersections (
-		intersections	: in pac_intersections.list)
-		return pac_intersections.list
-	is
-		result : pac_intersections.list;
+	--function get_real_intersections (
+		--intersections	: in pac_intersections.list)
+		--return pac_intersections.list
+	--is
+		--result : pac_intersections.list;
 
-		procedure compare_position_and_direction (
-			i1, i2 : in pac_intersections.cursor)
-		is begin
-			-- The two intersections in question must have
-			-- same x/y position and differing direction, means
-			-- one is an entering and the other is a leaving one.
-			-- On this x/y position we have no real intersection
-			-- but just a touch point:
-			if same_position (i1, i2)
-			and element (i1).direction /= element (i2).direction
-			then 
-				null; -- A touches B -> skip this intersection
-			else
-				-- is real -> collect this intersection
-				result.append (element (i1)); 
-				--put_line ("real intersection:" & to_string (element (i1)));
-			end if;
-		end compare_position_and_direction;
+		--procedure compare_position_and_direction (
+			--i1, i2 : in pac_intersections.cursor)
+		--is begin
+			---- The two intersections in question must have
+			---- same x/y position and differing direction, means
+			---- one is an entering and the other is a leaving one.
+			---- On this x/y position we have no real intersection
+			---- but just a touch point:
+			--if same_position (i1, i2)
+			--and element (i1).direction /= element (i2).direction
+			--then 
+				--null; -- A touches B -> skip this intersection
+			--else
+				---- is real -> collect this intersection
+				--result.append (element (i1)); 
+				----put_line ("real intersection:" & to_string (element (i1)));
+			--end if;
+		--end compare_position_and_direction;
 				
-		procedure query_intersection (
-			c : in pac_intersections.cursor) 
-		is begin
-			-- CS: We assume that on a touch point a leaving and an
-			-- entering node follow each other (in the given 
-			-- list of intersections). So we always look at the 
-			-- predecessor of the candidate intersection (indicated by 
-			-- cursor c):
-			if c = intersections.first then
-				compare_position_and_direction (c, intersections.last);
-			else
-				compare_position_and_direction (c, previous (c));
-			end if;
-		end query_intersection;
+		--procedure query_intersection (
+			--c : in pac_intersections.cursor) 
+		--is begin
+			---- CS: We assume that on a touch point a leaving and an
+			---- entering node follow each other (in the given 
+			---- list of intersections). So we always look at the 
+			---- predecessor of the candidate intersection (indicated by 
+			---- cursor c):
+			--if c = intersections.first then
+				--compare_position_and_direction (c, intersections.last);
+			--else
+				--compare_position_and_direction (c, previous (c));
+			--end if;
+		--end query_intersection;
 		
-	begin
-		intersections.iterate (query_intersection'access);
-		return result;
-	end get_real_intersections;
+	--begin
+		--intersections.iterate (query_intersection'access);
+		--return result;
+	--end get_real_intersections;
 
 
 	function are_redundant (
@@ -2253,7 +2253,7 @@ package body et_geometry_1.polygons is
 		return type_overlap_status
 	is
 		result : type_overlap_status;
-		real_intersections : pac_intersections.list;
+		--real_intersections : pac_intersections.list;
 	begin
 		if are_congruent (polygon_A, polygon_B) then
 			result := CONGRUENT;
@@ -2262,9 +2262,14 @@ package body et_geometry_1.polygons is
 			-- the two polygons just touch but do not really intersect.
 			-- Extract the nodes (from given list of intersection) where
 			-- the edges of the two polygons truly intersect.
-			real_intersections := get_real_intersections (intersections);
+			--real_intersections := get_real_intersections (intersections);
 			
-			case real_intersections.length is
+			-- CS: intuitively get_real_intersections is no longer required
+			-- and causes more harm than good. Instead we just look at the
+			-- number of given intersections:
+			
+			--case real_intersections.length is
+			case intersections.length is
 				when 0 => -- no intersections of edges or vertices
 					
 					if all_vertices_of_A_inside_B (polygon_A, polygon_B) then
@@ -2278,7 +2283,7 @@ package body et_geometry_1.polygons is
 						result := A_DOES_NOT_OVERLAP_B;
 					end if;
 					
-				when 1 => raise constraint_error; -- CS should never happen
+				--when 1 => raise constraint_error; -- CS should never happen
 
 				when others =>
 					result := A_OVERLAPS_B;
