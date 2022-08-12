@@ -434,18 +434,18 @@ package body et_geometry_1.polygons.cropping is
 	is
 		result : pac_polygon_list.list;
 
-		polygon_B_scratch : type_polygon := polygon_B;
-
+		P_init : type_polygon := polygon_B;
+		
 		
 		procedure query_polygon_A (a : pac_polygon_list.cursor) is
 			intersections : constant pac_intersections.list := get_intersections (
 				polygon_A		=> element (a), 
-				polygon_B		=> polygon_B_scratch,
+				polygon_B		=> P_init,
 				debug			=> false);
 								
 			ol_sts : constant type_overlap_status := get_overlap_status (
 				polygon_A		=> element (a), -- polygon A is cropping !
-				polygon_B		=> polygon_B_scratch,
+				polygon_B		=> P_init,
 				intersections	=> intersections);
 
 		begin
@@ -454,10 +454,10 @@ package body et_geometry_1.polygons.cropping is
 					declare
 						cr : constant type_crop := crop (
 							polygon_A => element (a), -- polygon A is cropping !
-							polygon_B => polygon_B_scratch);
+							polygon_B => P_init);
 					begin
 						if cr.count = 1 then
-							polygon_B_scratch := cr.fragments.first_element;
+							P_init := cr.fragments.first_element;
 						end if;
 					end;
 
@@ -465,12 +465,66 @@ package body et_geometry_1.polygons.cropping is
 			end case;
 		end query_polygon_A;
 
+
+		P_list : pac_polygon_list.list;
+		P_cursor : pac_polygon_list.cursor;
+
+		L_list : pac_polygon_list.list renames polygon_A_list;
+		L_cursor : pac_polygon_list.cursor;
+
+		restart : boolean := false;
 		
-	begin
+	begin -- multi_crop_1
+		
+		-- Process those A-polygons that DO NOT cause fragmentation
+		-- of polygon B. The B-polygon simply looses area:
 		polygon_A_list.iterate (query_polygon_A'access);
 
-		result.append (polygon_B_scratch);
-		return result;
+		-- Insert the B-polygon in the P_list:
+		P_list.append (P_init);
+
+		-- Process those A-polygons that DO cause fragmentation
+		-- of polygon B:
+		P_cursor := P_list.first;
+		while P_cursor /= pac_polygon_list.no_element loop
+
+			L_cursor := L_list.first;
+			while L_cursor /= pac_polygon_list.no_element loop
+				declare
+					cr : type_crop := crop (element (L_cursor), element (P_cursor));
+				begin
+					if cr.status = A_OVERLAPS_B then
+						if cr.count > 1 then -- fragments have developed
+
+							splice (
+								target	=> P_list,
+								before	=> P_cursor,
+								source	=> cr.fragments);
+
+							P_list.delete (P_cursor);
+
+							restart := true;
+							exit;
+						else
+							-- no fragments
+							restart := false;
+						end if;
+					end if;
+				end;
+				
+				next (L_cursor);
+			end loop;
+
+			if restart then
+				P_cursor := P_list.first;
+			else
+				next (P_cursor);
+			end if;
+			
+		end loop;
+		
+
+		return P_list;
 	end multi_crop_1;
 
 	
