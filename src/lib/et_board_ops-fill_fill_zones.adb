@@ -100,16 +100,39 @@ is
 
 
 
-	function to_polygons (
-		net_cursor	: in pac_nets.cursor;
-		layer 		: in type_signal_layer)
+	function conductors_to_polygons (
+		zone_clearance	: in type_track_clearance;
+		layer 			: in type_signal_layer)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
-	begin
 
+		
+		procedure query_net (n : in pac_nets.cursor) is
+			
+			net_class : constant type_net_class := get_net_class (module_cursor, n);			
+			clearance : constant type_track_clearance := get_greatest (zone_clearance, net_class.clearance);
+			
+			route : et_pcb.type_route renames element (n).route;
+
+			procedure query_line (l : in pac_conductor_lines.cursor) is
+				use pac_conductor_lines;
+				line : type_conductor_line renames element (l);
+			begin
+				if line.layer = layer then
+					null;
+				end if;
+			end query_line;
+			
+		begin
+			route.lines.iterate (query_line'access);
+			-- CS arcs, vias, ... see et_pcb.type_route
+		end query_net;
+		
+	begin
+		element (module_cursor).nets.iterate (query_net'access);
 		return result;
-	end to_polygons;
+	end conductors_to_polygons;
 	
 	
 	
@@ -466,7 +489,52 @@ is
 			module		: in out type_module) 
 		is
 			net_cursor : pac_nets.cursor;
-			net_class : type_net_class;
+			net_class : type_net_class;		
+
+
+			-- Crops the given zone by the outer board edges and the holes:
+			function process_board_contours (
+				zone		: in type_polygon;
+				line_width	: in type_track_width)
+				return pac_polygon_list.list
+			is		
+				outer_contour : type_polygon := board_outer_contour_master;
+				holes : pac_polygon_list.list := board_holes_master;
+
+				-- After clipping the outer board contour by
+				-- the holes we get a list of islands:
+				islands : pac_polygon_list.list;
+				
+			begin
+				log (text => "processing board contours ...", level => log_threshold + 4);
+				log_indentation_up;
+				
+				-- Shrink the outer contour (of the board) by half the line 
+				-- width of the fill lines:
+				log (text => "outer contour ...", level => log_threshold + 4);
+				offset_polygon (outer_contour, - type_float_internal_positive (line_width) * 0.5);
+
+				-- Clip the fill zone by the outer contour of the board.
+				-- The result is a list of islands:
+				islands := clip (zone, outer_contour);
+
+		
+				log (text => "holes (" & count_type'image (holes.length) & ") ...", level => log_threshold + 4);
+				
+				-- Expand the holes by half the line width of the fill lines:
+				offset_holes (holes, line_width * 0.5);
+
+				-- Now we crop the islands by the holes:
+				islands := multi_crop_2 (
+					polygon_B_list	=> islands,
+					polygon_A_list	=> holes,
+					debug			=> false);
+					--debug			=> true);
+
+				log_indentation_down;
+
+				return islands;
+			end process_board_contours;
 		
 			
 			procedure route_solid (
@@ -499,78 +567,26 @@ is
 				end clear_fill;
 
 
+			
+				islands : pac_polygon_list.list;
 
-				-- Crops the fill zone by the outer board edges and the
-				-- inner holes.
-				procedure process_board_contours is
+				conductors : pac_polygon_list.list;
 				
-					outer_contour : type_polygon := board_outer_contour_master;
-					holes : pac_polygon_list.list := board_holes_master;
 
-					conductors : pac_polygon_list.list;
-					
-					-- After clipping the outer board contour by
-					-- the holes we get a list of islands with board area:
-					islands : pac_polygon_list.list;
-
-
-					procedure set_islands (
-						zone : in out type_route_solid)
-					is
-						procedure query_island (i : in pac_polygon_list.cursor) is begin
-							zone.islands.append ((
-								border	=> type_outer_border (element (i)),
-								others	=> <>));					 
-						end query_island;
-						
-					begin
-						islands.iterate (query_island'access);
-					end set_islands;
-					
+				procedure set_islands (
+					zone : in out type_route_solid)
+				is
+					procedure query_island (i : in pac_polygon_list.cursor) is begin
+						zone.islands.append ((
+							border	=> type_outer_border (element (i)),
+							others	=> <>));					 
+					end query_island;
 					
 				begin
-					log (text => "processing board contours ...", level => log_threshold + 4);
-					log_indentation_up;
-					
-					-- Shrink the outer contour (of the board) by half the line 
-					-- width of the fill lines:
-					log (text => "outer contour ...", level => log_threshold + 4);
-					offset_polygon (outer_contour, - type_float_internal_positive (line_width) * 0.5);
+					islands.iterate (query_island'access);
+				end set_islands;
+				
 
-					-- Clip the fill zone by the outer contour of the board.
-					-- The result is a list of islands:
-					islands := clip (zone, outer_contour);
-
-			
-					log (text => "holes (" & count_type'image (holes.length) & ") ...", level => log_threshold + 4);
-					
-					-- Expand the holes by half the line width of the fill lines:
-					offset_holes (holes, line_width * 0.5);
-
-					-- Now we crop the islands by the holes:
-					islands := multi_crop_2 (
-						polygon_B_list	=> islands,
-						polygon_A_list	=> holes,
-						debug			=> false);
-						--debug			=> true);
-
-					-- CS: crop islands by vias, tracks, restrict areas, ... 
-					-- CS fill zone cutouts ?
-
-					conductors := to_polygons (
-							net_cursor	=> net_cursor,
-							layer		=> element (zone_cursor).properties.layer);
-					
-					-- CS: make cutout areas inside islands 
-					-- (caused by holes, vias, tracks, restrict areas ...)
-
-					-- Assign the islands to the candidate fill zone:
-					net.route.fill_zones.solid.update_element (
-						zone_cursor, set_islands'access);
-					
-					log_indentation_down;
-				end process_board_contours;
-			
 				
 			begin -- route_solid
 				
@@ -600,9 +616,36 @@ is
 					
 					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
 
-					process_board_contours;
+					
+					-- Crop the zone by the outer board edges and the holes.
+					-- The zone gets fragmented into islands:
+					islands := process_board_contours (
+						zone		=> zone,
+						line_width	=> line_width
+					);
 
 
+					---- CS: crop islands by vias, tracks, restrict areas, ... 
+					---- CS fill zone cutouts ?
+
+					-- Get a list of polygons from all conductor elements in the 
+					-- affected layer:
+					conductors := conductors_to_polygons (
+						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
+						layer			=> element (zone_cursor).properties.layer);
+					
+					---- CS: make cutout areas inside islands 
+					---- (caused by holes, vias, tracks, restrict areas ...)
+
+					islands := multi_crop_2 (
+						polygon_B_list	=> islands,
+						polygon_A_list	=> conductors,
+						debug			=> false);
+					
+
+					-- Assign the islands to the candidate fill zone:
+					net.route.fill_zones.solid.update_element (
+						zone_cursor, set_islands'access);
 
 					
 

@@ -246,7 +246,7 @@ package et_pcb is
 	
 
 	
-	-- A fully route net may consist of these conductor objects:
+	-- A fully routed net may consist of these conductor objects:
 	
 	type type_route is record
 		airwires	: et_ratsnest.type_airwires;
