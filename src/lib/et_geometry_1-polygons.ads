@@ -85,6 +85,17 @@ package et_geometry_1.polygons is
 		process	: not null access procedure (position : in pac_edges.cursor);
 		proceed	: not null access boolean);
 
+
+	-- Converts an arc to a list of edges.
+	-- The accuracy is determined by the given tolerance.
+	-- The tolerance is the maximum allowed deviation from
+	-- the ideal arc:
+	function to_edges (
+		arc			: in type_arc;
+		tolerance	: in type_float_internal_positive;
+		debug		: in boolean := false)				  
+		return pac_edges.list;
+
 	
 	type type_polygon is record
 		edges : pac_edges.list;

@@ -958,6 +958,11 @@ package et_geometry_1 is
 	end record;
 
 
+	function to_string (
+		arc : in type_arc_angles)
+		return string;
+
+	
 	-- Returns the total span in degree between start and end of an arc:
 	function get_span (
 		arc	: type_arc_angles)

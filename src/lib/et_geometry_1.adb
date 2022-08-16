@@ -1963,6 +1963,19 @@ package body et_geometry_1 is
 	end get_span;
 	
 
+	function to_string (
+		arc : in type_arc_angles)
+		return string
+	is begin
+		return "C:" & to_string (arc.center)
+			& " R:" & to_string (arc.radius)
+			& " S:" & to_string (arc.angle_start)
+			& " E:" & to_string (arc.angle_end)
+			& " D: " & to_string (arc.direction);
+	end to_string;
+
+
+	
 	function get_span (
 		arc	: type_arc_angles)
 		return type_angle
