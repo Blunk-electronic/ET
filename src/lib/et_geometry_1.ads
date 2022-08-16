@@ -829,7 +829,10 @@ package et_geometry_1 is
 		line	: in type_line)
 		return type_line;
 	
+	procedure reverse_line (
+		line	: in out type_line);
 
+	
 	-- Returns the point on the given line
 	-- that is right between its start and end point:
 	function get_center (
@@ -857,7 +860,13 @@ package et_geometry_1 is
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive);
 
-
+	function move_by (
+		line		: in type_line;
+		direction	: in type_angle;
+		distance	: in type_float_internal_positive)
+		return type_line;
+	
+	
 	-- Tests whether the given line intersects the given candidate line.
 	-- If there is an intersection between start and end point
 	-- of the candidate line (start and end point included),

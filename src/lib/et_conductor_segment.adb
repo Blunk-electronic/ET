@@ -59,21 +59,22 @@ package body et_conductor_segment is
 	--end to_string;
 
 
-	function to_edge_line (
-		cl : in type_conductor_line)
-		return type_edge_line
-	is 
-		r : type_edge_line;
-	begin
-		r.start_point := to_vector (cl.start_point);
-		r.end_point   := to_vector (cl.end_point);
-		return r;
-	end to_edge_line;
+	--function to_edge_line (
+		--cl : in type_conductor_line)
+		--return type_edge_line
+	--is 
+		--r : type_edge_line;
+	--begin
+		--r.start_point := to_vector (cl.start_point);
+		--r.end_point   := to_vector (cl.end_point);
+		--return r;
+	--end to_edge_line;
 
 
 	
 	function to_polygon (
-		line : in type_conductor_line)
+		line 		: in type_conductor_line;
+		tolerance	: in type_distance_positive)
 		return type_polygon
 	is
 		use pac_geometry_brd;
@@ -82,29 +83,45 @@ package body et_conductor_segment is
 		direction : constant type_angle := get_direction (line);
 		distance : constant type_float_internal_positive := type_float_internal_positive (line.width * 0.5);
 
-	begin
-		--log (text => "cond line" & to_string (line) & " width" & to_string (line.width));
-		--result.left_edge := to_edge_line (line);
-		--move_by (result.left_edge, add (direction, +90.0), distance);
-		----round (result.left_edge);
+		center : constant type_edge := type_edge (to_line_fine (line));
+		edge_right, edge_left : type_edge := center;
+		
+		arc : pac_geometry_brd.type_arc;
+		edges : pac_edges.list;
 
-		--result.right_edge := to_edge_line (line);
-		--move_by (result.right_edge, add (direction, -90.0), distance);
-		----round (result.right_edge);
-		
-		---- cap on the start of segment
-		--result.cap_start.center := to_vector (line.start_point);
-		--result.cap_start.start_point := result.left_edge.start_point;
-		--result.cap_start.end_point := result.right_edge.start_point;
-		--result.cap_start.direction := CCW;
-		----round (result.cap_start);
-		
-		---- cap on the end of the segment
-		--result.cap_end.center := to_vector (line.end_point);
-		--result.cap_end.start_point := result.left_edge.end_point;
-		--result.cap_end.end_point := result.right_edge.end_point;
-		--result.cap_end.direction := CW;
-		--round (result.cap_end);
+		fab_tol : constant type_float_internal_positive := type_float_internal_positive (tolerance);
+	begin
+		-- Build the right edge and append it to the polygon as it is:
+		edge_right := move_by (edge_right, add (direction, -90.0), distance);
+		result.edges.append (edge_right);
+
+		-- Build the left edge but do NOT yet append it to the polygon:
+		edge_left  := move_by (edge_left,  add (direction, +90.0), distance);
+		reverse_line (edge_left);
+
+		-- Build the cap on the end of the line. The cap is an arc:
+		arc.center := center.end_point;
+		arc.start_point := edge_right.end_point;
+		arc.end_point := edge_left.start_point;
+		arc.direction := CCW;
+
+		-- Convert the arc to a list of edges and append them to the polygon:
+		edges := to_edges (arc, type_float_internal_positive (fab_tol));
+		result.edges.splice (before => pac_edges.no_element, source => edges);
+		-- Container edges is now empty.
+
+		-- Now append the left edge to the polygon:
+		result.edges.append (edge_left);
+
+		-- Build the cap on the start of the line. The cap is an arc:
+		arc.center := center.start_point;
+		arc.start_point := edge_left.end_point;
+		arc.end_point := edge_right.start_point;
+		arc.direction := CCW;
+
+		-- Convert the arc to a list of edges and append them to the polygon:
+		edges := to_edges (arc, type_float_internal_positive (fab_tol));
+		result.edges.splice (before => pac_edges.no_element, source => edges);
 		
 		return result;
 	end to_polygon;
@@ -233,65 +250,69 @@ package body et_conductor_segment is
 	
 -- ARCS
 
-	function to_string (segment : in type_conductor_arc_segment)
-		return string
-	is begin
-		return ("arc segment:" 
-			& " outer edge:" & to_string (segment.outer_edge)
-			& " cap end" & to_string (segment.cap_end)
-			& " inner edge:" & to_string (segment.inner_edge)
-			& " cap start:" & to_string (segment.cap_start));
-	end to_string;
+	--function to_string (segment : in type_conductor_arc_segment)
+		--return string
+	--is begin
+		--return ("arc segment:" 
+			--& " outer edge:" & to_string (segment.outer_edge)
+			--& " cap end" & to_string (segment.cap_end)
+			--& " inner edge:" & to_string (segment.inner_edge)
+			--& " cap start:" & to_string (segment.cap_start));
+	--end to_string;
 
 
 	
-	function to_arc_segment (
-		arc : in type_conductor_arc)
-		return type_conductor_arc_segment
+	function to_polygon (
+		arc 		: in type_conductor_arc;
+		tolerance	: in type_distance_positive)							
+		return type_polygon
 	is
-		arc_n : type_conductor_arc := arc;
-		arc_i, arc_o : type_arc_angles;
+		--arc_n : type_conductor_arc := arc;
+		--arc_i, arc_o : type_arc_angles;
 		
-		center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
-		half_width : constant type_float_internal_positive := type_float_internal (arc_n.width * 0.5);
-		inner_radius, outer_radius : type_float_internal_positive;
-		result : type_conductor_arc_segment;		
+		--center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
+		--half_width : constant type_float_internal_positive := type_float_internal (arc_n.width * 0.5);
+		--inner_radius, outer_radius : type_float_internal_positive;
+
+		result : type_polygon;		
 	begin
-		-- normalize given arc so that it runs CW:
-		if arc_n.direction = CCW then
-			reverse_arc (arc_n);
-		end if;
-
-		-- set radii
-		inner_radius := center_radius - half_width;
-		outer_radius := center_radius + half_width;
-
-
-		-- set outer edge:
-		arc_o := to_arc_angles (arc_n);
-		arc_o.radius := outer_radius;
-		result.outer_edge := to_arc (arc_o);
-
-		-- set inner edge:
-		arc_i := to_arc_angles (reverse_arc (arc_n));
-		arc_i.radius := type_float_internal (inner_radius);
-		result.inner_edge := to_arc (arc_i);
-
-		-- set start and end points of caps:
-		-- cap at start point:
-		result.cap_start.start_point := result.inner_edge.end_point;
-		result.cap_start.end_point   := result.outer_edge.start_point;
-		result.cap_start.direction := CW;
-		result.cap_start.center := to_vector (arc_n.start_point);
+		-- CS
 		
-		-- cap at end point:
-		result.cap_end.start_point := result.outer_edge.end_point;
-		result.cap_end.end_point   := result.inner_edge.start_point;
-		result.cap_end.direction := CW;
-		result.cap_end.center := to_vector (arc_n.end_point);
+		-- normalize given arc so that it runs CW:
+		--if arc_n.direction = CCW then
+			--reverse_arc (arc_n);
+		--end if;
+
+		---- set radii
+		--inner_radius := center_radius - half_width;
+		--outer_radius := center_radius + half_width;
+
+
+		---- set outer edge:
+		--arc_o := to_arc_angles (arc_n);
+		--arc_o.radius := outer_radius;
+		--result.outer_edge := to_arc (arc_o);
+
+		---- set inner edge:
+		--arc_i := to_arc_angles (reverse_arc (arc_n));
+		--arc_i.radius := type_float_internal (inner_radius);
+		--result.inner_edge := to_arc (arc_i);
+
+		---- set start and end points of caps:
+		---- cap at start point:
+		--result.cap_start.start_point := result.inner_edge.end_point;
+		--result.cap_start.end_point   := result.outer_edge.start_point;
+		--result.cap_start.direction := CW;
+		--result.cap_start.center := to_vector (arc_n.start_point);
+		
+		---- cap at end point:
+		--result.cap_end.start_point := result.outer_edge.end_point;
+		--result.cap_end.end_point   := result.inner_edge.start_point;
+		--result.cap_end.direction := CW;
+		--result.cap_end.center := to_vector (arc_n.end_point);
 
 		return result;
-	end to_arc_segment;
+	end to_polygon;
 
 	
 	--function get_inner_edge (segment : in type_conductor_arc_segment)

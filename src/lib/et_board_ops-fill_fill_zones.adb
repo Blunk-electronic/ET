@@ -100,6 +100,10 @@ is
 
 
 
+	-- Returns a list of polygons caused by conductor
+	-- objects or restrict objects in the given signal layer.
+	-- The polygons are expanded by the zone_clearance or by
+	-- the clearance of a particlar net (the greater value of them is applied):
 	function conductors_to_polygons (
 		zone_clearance	: in type_track_clearance;
 		layer 			: in type_signal_layer)
@@ -112,6 +116,9 @@ is
 			
 			net_class : constant type_net_class := get_net_class (module_cursor, n);			
 			clearance : constant type_track_clearance := get_greatest (zone_clearance, net_class.clearance);
+
+			-- The polygons of the candidate net are collected here:
+			polygons : pac_polygon_list.list;
 			
 			route : et_pcb.type_route renames element (n).route;
 
@@ -120,17 +127,28 @@ is
 				line : type_conductor_line renames element (l);
 			begin
 				if line.layer = layer then
-					null;
+					polygons.append (to_polygon (line, fab_tolerance));
 				end if;
 			end query_line;
 			
 		begin
 			route.lines.iterate (query_line'access);
-			-- CS arcs, vias, ... see et_pcb.type_route
+			-- CS arcs, vias, fill zones, ... see et_pcb.type_route
+			-- CS pads
+
+			offset_polygons (polygons, type_float_internal_positive (clearance));
+
+			-- CS union polygons ?
+			
+			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;
 		
 	begin
 		element (module_cursor).nets.iterate (query_net'access);
+
+		-- CS non electrical conductor stuff (floating fill zones, text, fiducials, ...)
+		-- CS restrict areas
+		
 		return result;
 	end conductors_to_polygons;
 	
@@ -625,27 +643,29 @@ is
 					);
 
 
-					---- CS: crop islands by vias, tracks, restrict areas, ... 
-					---- CS fill zone cutouts ?
 
-					-- Get a list of polygons from all conductor elements in the 
-					-- affected layer:
+					-- Crop the islands by all conductor elements in the affected layer.
+					-- The clearance of these objects to the zone is determined by
+					-- the zone isolation or the net clearance. The greater value is applied:
 					conductors := conductors_to_polygons (
 						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
 						layer			=> element (zone_cursor).properties.layer);
-					
-					---- CS: make cutout areas inside islands 
-					---- (caused by holes, vias, tracks, restrict areas ...)
 
 					islands := multi_crop_2 (
 						polygon_B_list	=> islands,
 						polygon_A_list	=> conductors,
 						debug			=> false);
+
 					
 
 					-- Assign the islands to the candidate fill zone:
 					net.route.fill_zones.solid.update_element (
 						zone_cursor, set_islands'access);
+
+
+
+					---- CS: make cutout areas inside islands 
+					---- (caused by holes, vias, tracks, restrict areas ...)
 
 					
 

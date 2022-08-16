@@ -1627,6 +1627,13 @@ package body et_geometry_1 is
 	end reverse_line;
 
 
+	procedure reverse_line (
+		line	: in out type_line)
+	is begin
+		line := reverse_line (line);
+	end reverse_line;
+		
+
 	function get_center (
 		line : in type_line)
 		return type_vector
@@ -1717,6 +1724,21 @@ package body et_geometry_1 is
 	end move_by;
 
 
+	function move_by (
+		line		: in type_line;
+		direction	: in type_angle;
+		distance	: in type_float_internal_positive)
+		return type_line
+	is
+		result : type_line;
+	begin
+		result.start_point := move_by (line.start_point, direction, distance);
+		result.end_point := move_by (line.end_point, direction, distance);		
+		return result;
+	end move_by;
+
+	
+	
 	function get_intersection (
 		line_vector : in type_line_vector;
 		line		: in type_line)
