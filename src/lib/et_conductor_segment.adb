@@ -46,17 +46,17 @@ package body et_conductor_segment is
 -- LINES
 	
 	
-	function to_string (segment : in type_conductor_line_segment)
-		return string
-	is 
-		use pac_geometry_brd;
-	begin
-		return ("line segment:" 
-			& " edge left: " & to_string (segment.left_edge)
-			& " / cap end: " & to_string (segment.cap_end)
-			& " / edge right: " & to_string (segment.right_edge)
-			& " / cap start: " & to_string (segment.cap_start));
-	end to_string;
+	--function to_string (segment : in type_conductor_line_segment)
+		--return string
+	--is 
+		--use pac_geometry_brd;
+	--begin
+		--return ("line segment:" 
+			--& " edge left: " & to_string (segment.left_edge)
+			--& " / cap end: " & to_string (segment.cap_end)
+			--& " / edge right: " & to_string (segment.right_edge)
+			--& " / cap start: " & to_string (segment.cap_start));
+	--end to_string;
 
 
 	function to_edge_line (
@@ -72,72 +72,72 @@ package body et_conductor_segment is
 
 
 	
-	function to_line_segment (
+	function to_polygon (
 		line : in type_conductor_line)
-		return type_conductor_line_segment
+		return type_polygon
 	is
 		use pac_geometry_brd;
 		
-		result : type_conductor_line_segment;
+		result : type_polygon;
 		direction : constant type_angle := get_direction (line);
 		distance : constant type_float_internal_positive := type_float_internal_positive (line.width * 0.5);
 
 	begin
 		--log (text => "cond line" & to_string (line) & " width" & to_string (line.width));
-		result.left_edge := to_edge_line (line);
-		move_by (result.left_edge, add (direction, +90.0), distance);
-		--round (result.left_edge);
+		--result.left_edge := to_edge_line (line);
+		--move_by (result.left_edge, add (direction, +90.0), distance);
+		----round (result.left_edge);
 
-		result.right_edge := to_edge_line (line);
-		move_by (result.right_edge, add (direction, -90.0), distance);
-		--round (result.right_edge);
+		--result.right_edge := to_edge_line (line);
+		--move_by (result.right_edge, add (direction, -90.0), distance);
+		----round (result.right_edge);
 		
-		-- cap on the start of segment
-		result.cap_start.center := to_vector (line.start_point);
-		result.cap_start.start_point := result.left_edge.start_point;
-		result.cap_start.end_point := result.right_edge.start_point;
-		result.cap_start.direction := CCW;
-		--round (result.cap_start);
+		---- cap on the start of segment
+		--result.cap_start.center := to_vector (line.start_point);
+		--result.cap_start.start_point := result.left_edge.start_point;
+		--result.cap_start.end_point := result.right_edge.start_point;
+		--result.cap_start.direction := CCW;
+		----round (result.cap_start);
 		
-		-- cap on the end of the segment
-		result.cap_end.center := to_vector (line.end_point);
-		result.cap_end.start_point := result.left_edge.end_point;
-		result.cap_end.end_point := result.right_edge.end_point;
-		result.cap_end.direction := CW;
+		---- cap on the end of the segment
+		--result.cap_end.center := to_vector (line.end_point);
+		--result.cap_end.start_point := result.left_edge.end_point;
+		--result.cap_end.end_point := result.right_edge.end_point;
+		--result.cap_end.direction := CW;
 		--round (result.cap_end);
 		
 		return result;
-	end to_line_segment;
+	end to_polygon;
 
 
 
 	
-	function get_left_edge (segment : in type_conductor_line_segment)
-		return type_edge_line
-	is begin
-		return segment.left_edge;
-	end get_left_edge;
+	--function get_left_edge (segment : in type_conductor_line_segment)
+		--return type_edge_line
+	--is begin
+		--return segment.left_edge;
+	--end get_left_edge;
 
 	
-	function get_right_edge (segment : in type_conductor_line_segment)
-		return type_edge_line
-	is begin
-		return segment.right_edge;
-	end get_right_edge;
+	--function get_right_edge (segment : in type_conductor_line_segment)
+		--return type_edge_line
+	--is begin
+		--return segment.right_edge;
+	--end get_right_edge;
 
 	
-	function get_start_cap (segment : in type_conductor_line_segment)
-		return type_edge_arc
-	is begin
-		return segment.cap_start;
-	end get_start_cap;
+	--function get_start_cap (segment : in type_conductor_line_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.cap_start;
+	--end get_start_cap;
 
 	
-	function get_end_cap (segment : in type_conductor_line_segment)
-		return type_edge_arc
-	is begin
-		return segment.cap_end;
-	end get_end_cap;	
+	--function get_end_cap (segment : in type_conductor_line_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.cap_end;
+	--end get_end_cap;	
 	
 
 	--function get_shortest_distance (
@@ -294,32 +294,32 @@ package body et_conductor_segment is
 	end to_arc_segment;
 
 	
-	function get_inner_edge (segment : in type_conductor_arc_segment)
-		return type_edge_arc
-	is begin
-		return segment.inner_edge;
-	end get_inner_edge;
+	--function get_inner_edge (segment : in type_conductor_arc_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.inner_edge;
+	--end get_inner_edge;
 
 	
-	function get_outer_edge (segment : in type_conductor_arc_segment)
-		return type_edge_arc
-	is begin
-		return segment.outer_edge;
-	end get_outer_edge;
+	--function get_outer_edge (segment : in type_conductor_arc_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.outer_edge;
+	--end get_outer_edge;
 
 	
-	function get_start_cap (segment : in type_conductor_arc_segment)
-		return type_edge_arc
-	is begin
-		return segment.cap_start;
-	end get_start_cap;
+	--function get_start_cap (segment : in type_conductor_arc_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.cap_start;
+	--end get_start_cap;
 
 	
-	function get_end_cap (segment : in type_conductor_arc_segment)
-		return type_edge_arc
-	is begin
-		return segment.cap_end;
-	end get_end_cap;
+	--function get_end_cap (segment : in type_conductor_arc_segment)
+		--return type_edge_arc
+	--is begin
+		--return segment.cap_end;
+	--end get_end_cap;
 
 	
 	--function get_shortest_distance (

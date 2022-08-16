@@ -52,8 +52,9 @@ with et_logging;				use et_logging;
 package et_conductor_segment is
 
 	use pac_geometry_brd;
-	use pac_geometry_2;
 	use pac_polygons;
+	
+	use pac_geometry_2;
 	use pac_text_fab;
 
 	
@@ -74,35 +75,35 @@ package et_conductor_segment is
 	
 
 	-- The outline of a conductor line segment:
-	type type_conductor_line_segment is private;
+	--type type_conductor_line_segment is private;
 
 	
-	function to_string (
-		segment : in type_conductor_line_segment)
-		return string;
+	--function to_string (
+		--segment : in type_conductor_line_segment)
+		--return string;
 
 	
-	function to_line_segment (
+	function to_polygon (
 		line : in type_conductor_line)
-		return type_conductor_line_segment;
+		return type_polygon;
 
 
 	
 	
-	function get_left_edge (segment : in type_conductor_line_segment)
-		return type_edge_line;
+	--function get_left_edge (segment : in type_conductor_line_segment)
+		--return type_edge_line;
 
 	
-	function get_right_edge (segment : in type_conductor_line_segment)
-		return type_edge_line;
+	--function get_right_edge (segment : in type_conductor_line_segment)
+		--return type_edge_line;
 
 	
-	function get_start_cap (segment : in type_conductor_line_segment)
-		return type_edge_arc;
+	--function get_start_cap (segment : in type_conductor_line_segment)
+		--return type_edge_arc;
 
 	
-	function get_end_cap (segment : in type_conductor_line_segment)
-		return type_edge_arc;
+	--function get_end_cap (segment : in type_conductor_line_segment)
+		--return type_edge_arc;
 
 	
 	-- Computes the shortest distance from a point to
@@ -150,20 +151,20 @@ package et_conductor_segment is
 		return type_conductor_arc_segment;
 
 	
-	function get_inner_edge (segment : in type_conductor_arc_segment)
-		return type_edge_arc;
+	--function get_inner_edge (segment : in type_conductor_arc_segment)
+		--return type_edge_arc;
 
 	
-	function get_outer_edge (segment : in type_conductor_arc_segment)
-		return type_edge_arc;
+	--function get_outer_edge (segment : in type_conductor_arc_segment)
+		--return type_edge_arc;
 
 	
-	function get_start_cap (segment : in type_conductor_arc_segment)
-		return type_edge_arc;
+	--function get_start_cap (segment : in type_conductor_arc_segment)
+		--return type_edge_arc;
 
 	
-	function get_end_cap (segment : in type_conductor_arc_segment)
-		return type_edge_arc;
+	--function get_end_cap (segment : in type_conductor_arc_segment)
+		--return type_edge_arc;
 
 
 	-- Computes the shortest distance from a point to
