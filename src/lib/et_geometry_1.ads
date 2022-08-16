@@ -968,6 +968,12 @@ package et_geometry_1 is
 	procedure move_to (
 		arc			: in out type_arc;
 		position	: in type_vector);
+
+	
+	function move_to (
+		arc			: in type_arc;
+		position	: in type_vector)
+		return type_arc;
 	
 	
 	function to_arc_angles (

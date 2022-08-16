@@ -1996,6 +1996,18 @@ package body et_geometry_1 is
 		move_by (arc.end_point,   offset);
 	end move_to;
 
+
+	function move_to (
+		arc			: in type_arc;
+		position	: in type_vector)
+		return type_arc
+	is
+		result : type_arc := arc;
+	begin
+		move_to (result, position);
+		return result;
+	end move_to;
+		
 	
 	function to_arc_angles (
 		arc : in type_arc) 
