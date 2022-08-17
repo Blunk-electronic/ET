@@ -116,13 +116,6 @@ package et_geometry_1.polygons.offsetting is
 	-- final vertices. These vertices in turn are converted to the final polygon.
 	-- See body of procedure offset_polygon for details.
 
-
-
-	
-	
-	--function get_relevant (
-		--intersection : in pac_edge_intersections.cursor) 
-		--return type_vector;
 	
 	
 	-- Offsets (the edges of) a polygon. 

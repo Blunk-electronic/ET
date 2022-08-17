@@ -54,20 +54,6 @@ package body et_geometry_1.polygons.offsetting is
 	end to_string;
 
 
-
-	--function get_relevant (
-		--intersection : in pac_edge_intersections.cursor) 
-		--return type_vector
-	--is 
-		--use pac_edge_intersections;
-	--begin
-		--if element (intersection).direct_available then
-			--return element (intersection).place_direct;
-		--else
-			--return element (intersection).place_indirect;
-		--end if;
-	--end get_relevant;
-
 	
 
 	procedure offset_polygon (
