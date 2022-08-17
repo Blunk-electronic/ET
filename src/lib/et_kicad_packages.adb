@@ -311,13 +311,13 @@ package body et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
-		return pac_contour_segments.list 
+		return pac_segments.list 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		use pac_contour_segments;
-		lines : pac_contour_segments.list; -- to be returned
+		use pac_segments;
+		lines : pac_segments.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := get_rotation (center);
@@ -1944,7 +1944,7 @@ package body et_kicad_packages is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_contour_segments.list := to_pad_milling_contour (
+								lines : pac_segments.list := to_pad_milling_contour (
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,

@@ -1802,7 +1802,7 @@ package body et_kicad_to_native is
 				--use et_board_shapes_and_text;
 				use pac_geometry_2;
 				use pac_contours;
-				use pac_contour_segments;
+				use pac_segments;
 				
 				contour : constant string := "board contour ";
 				
@@ -1837,7 +1837,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_segment (c : in pac_contour_segments.cursor) is begin
+				procedure move_segment (c : in pac_segments.cursor) is begin
 					case element (c).shape is
 						
 						when LINE => 

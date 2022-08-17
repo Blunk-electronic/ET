@@ -534,7 +534,7 @@ package body et_pcb_rw.device_packages is
 		procedure write_holes is
 			use et_pcb_contour;
 			use pac_holes;
-			use pac_contour_segments;
+			use pac_segments;
 
 			procedure query_hole (c : in pac_holes.cursor) is begin
 				section_mark (section_hole, HEADER);		

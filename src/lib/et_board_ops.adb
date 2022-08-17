@@ -2380,12 +2380,12 @@ package body et_board_ops is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 
 			procedure delete_segment is 
-				use pac_contour_segments;
-				c : pac_contour_segments.cursor;
+				use pac_segments;
+				c : pac_segments.cursor;
 			begin
 				c := module.board.contours.outline.contour.segments.first;
 				
-				while c /= pac_contour_segments.no_element loop
+				while c /= pac_segments.no_element loop
 
 					case element (c).shape is
 						when LINE =>

@@ -49,10 +49,10 @@ package et_geometry_2.contours is
 	-- segments are allowed.
 	-- On the other hand, a contour may consist of lines and arcs. In that
 	-- case no circle is allowed:
-	type type_contour_segment_shape is (LINE, ARC);
+	type type_segment_shape is (LINE, ARC);
 
 	
-	type type_segment (shape : type_contour_segment_shape) is record
+	type type_segment (shape : type_segment_shape) is record
 		case shape is
 			when LINE	=> segment_line : type_line;
 			when ARC	=> segment_arc  : type_arc;
@@ -68,21 +68,21 @@ package et_geometry_2.contours is
 
 	-- There is NO regulation on the winding of a contour path.
 	-- It can be CW or CCW.
-	package pac_contour_segments is new indefinite_doubly_linked_lists (type_segment);
-	use pac_contour_segments;
+	package pac_segments is new indefinite_doubly_linked_lists (type_segment);
+	use pac_segments;
 	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		segments	: in pac_contour_segments.list;
-		process		: not null access procedure (position : in pac_contour_segments.cursor);
+		segments	: in pac_segments.list;
+		process		: not null access procedure (position : in pac_segments.cursor);
 		proceed		: not null access boolean);
 
 
 	type type_contour_segments (circular : boolean := false) is record
 		case circular is
 			when TRUE	=> circle   : type_circle;
-			when FALSE	=> segments : pac_contour_segments.list;
+			when FALSE	=> segments : pac_segments.list;
 		end case;
 	end record;
 	
@@ -124,18 +124,18 @@ package et_geometry_2.contours is
 	function get_segment (
 		contour	: in type_contour;
 		point	: in type_point)
-		return pac_contour_segments.cursor;
+		return pac_segments.cursor;
 
 
 	
 	type type_neigboring_segments is record
 		-- The segment before a vertex.
 		-- This segment ENDS on the vertex:
-		segment_1 : pac_contour_segments.cursor;
+		segment_1 : pac_segments.cursor;
 
 		-- The segment after a vertex:
 		-- This segment STARTS on the vertex:
-		segment_2 : pac_contour_segments.cursor;
+		segment_2 : pac_segments.cursor;
 	end record;
 
 	function get_neigboring_segments (
@@ -396,7 +396,7 @@ private
 				distance : type_float_internal;
 				
 			when ON_EDGE =>
-				edge : pac_contour_segments.cursor;
+				edge : pac_segments.cursor;
 
 			when ON_VERTEX =>
 				edges : type_neigboring_segments;

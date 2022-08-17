@@ -49,14 +49,14 @@ is
 	use et_board_shapes_and_text;
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_contour_segments;
+	use pac_segments;
 
 	--use pac_text_fab;
 	--use pac_texts_fab_with_content;
 
 	use pac_contour_texts;
 	
-	procedure query_segment (c : in pac_contour_segments.cursor) is 
+	procedure query_segment (c : in pac_segments.cursor) is 
 		use pac_draw_fab;
 	begin
 		case element (c).shape is

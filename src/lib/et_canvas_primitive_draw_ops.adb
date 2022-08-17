@@ -681,7 +681,7 @@ package body pac_draw is
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
 
-		use pac_contour_segments;
+		use pac_segments;
 		
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
@@ -695,7 +695,7 @@ package body pac_draw is
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 
 			-- CS query area vs bounding box ?
 			

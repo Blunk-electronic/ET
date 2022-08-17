@@ -185,10 +185,10 @@ package body et_pcb is
 
 
 	procedure pcb_contour_segment_properties (
-		cursor			: in pac_contour_segments.cursor;
+		cursor			: in pac_segments.cursor;
 		log_threshold 	: in type_log_level)
 	is 
-		use pac_contour_segments;
+		use pac_segments;
 	begin
 		case element (cursor).shape is
 			when LINE =>

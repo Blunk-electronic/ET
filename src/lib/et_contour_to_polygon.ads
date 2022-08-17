@@ -46,7 +46,7 @@ package et_contour_to_polygon is
 	use pac_geometry_2;
 	
 	use pac_contours;
-	use pac_contour_segments;
+	use pac_segments;
 	
 	use pac_polygons;
 	use pac_edges;

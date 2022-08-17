@@ -381,7 +381,7 @@ package et_pcb is
 
 	-- Logs the properties of the given contour segment:
 	procedure pcb_contour_segment_properties (
-		cursor			: in pac_contour_segments.cursor;
+		cursor			: in pac_segments.cursor;
 		log_threshold 	: in type_log_level);
 
 	

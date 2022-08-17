@@ -4354,7 +4354,7 @@ is
 				use et_pcb_coordinates;
 				use pac_geometry_2;
 				use pac_contours;
-				use pac_contour_segments;
+				use pac_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4381,7 +4381,7 @@ is
 				use et_pcb_coordinates;
 				use pac_geometry_2;
 				use pac_contours;
-				use pac_contour_segments;
+				use pac_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;

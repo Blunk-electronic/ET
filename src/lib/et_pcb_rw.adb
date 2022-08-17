@@ -328,9 +328,9 @@ package body et_pcb_rw is
 	procedure write_polygon_segments (
 		polygon : in type_contour'class)
 	is
-		use pac_contour_segments;
+		use pac_segments;
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				
 				when LINE =>

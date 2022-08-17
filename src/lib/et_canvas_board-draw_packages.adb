@@ -2325,7 +2325,7 @@ is
 
 			use et_pcb_contour;
 			use pac_holes;
-			use pac_contour_segments;
+			use pac_segments;
 
 			procedure draw_circle (c : in type_circle) is
 				circle : type_circle := c;
@@ -2342,7 +2342,7 @@ is
 			end draw_circle;
 
 			
-			procedure draw_segment (c : in pac_contour_segments.cursor) is
+			procedure draw_segment (c : in pac_segments.cursor) is
 				l : pac_geometry_2.type_line;
 				a : pac_geometry_2.type_arc;
 			begin

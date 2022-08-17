@@ -3319,7 +3319,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_arc is 
-				use pac_contour_segments;
+				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3400,7 +3400,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_circle is 
-				use pac_contour_segments;
+				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3488,7 +3488,7 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_board_line is 
-				use pac_contour_segments;
+				use pac_segments;
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
@@ -3938,7 +3938,7 @@ package body et_kicad.pcb is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_contour_segments.list := to_pad_milling_contour (
+								lines : pac_segments.list := to_pad_milling_contour (
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
@@ -4636,15 +4636,15 @@ package body et_kicad.pcb is
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
 	function corners_to_lines (corners : type_polygon_points.list)
-		return pac_contours.pac_contour_segments.list 
+		return pac_contours.pac_segments.list 
 	is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
 
 		use pac_geometry_2;
-		use pac_contour_segments;
+		use pac_segments;
 
-		lines : pac_contour_segments.list; -- to be returned
+		lines : pac_segments.list; -- to be returned
 		l : pac_geometry_2.type_line;
 
 	begin

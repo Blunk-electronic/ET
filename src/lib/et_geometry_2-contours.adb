@@ -62,13 +62,13 @@ package body et_geometry_2.contours is
 
 
 	procedure iterate (
-		segments	: in pac_contour_segments.list;
-		process		: not null access procedure (position : in pac_contour_segments.cursor);
+		segments	: in pac_segments.list;
+		process		: not null access procedure (position : in pac_segments.cursor);
 		proceed		: not null access boolean)
 	is
-		c : pac_contour_segments.cursor := segments.first;
+		c : pac_segments.cursor := segments.first;
 	begin
-		while c /= pac_contour_segments.no_element and proceed.all = TRUE loop
+		while c /= pac_segments.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -96,7 +96,7 @@ package body et_geometry_2.contours is
 		
 		result : unbounded_string := to_unbounded_string ("contour:");
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 
 			-- We output the start points only (for arcs in addition the center).
 			-- Because: The end point of a segment is always the start point of the
@@ -132,12 +132,12 @@ package body et_geometry_2.contours is
 	function get_segment (
 		contour	: in type_contour;
 		point	: in type_point)
-		return pac_contour_segments.cursor
+		return pac_segments.cursor
 	is
-		result : pac_contour_segments.cursor;
+		result : pac_segments.cursor;
 		proceed : aliased boolean := true;
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE => 
 					if element (c).segment_line.on_line (point) then
@@ -176,7 +176,7 @@ package body et_geometry_2.contours is
 		end_found, start_found : boolean := false;
 
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			--put_line ("test: " & to_string (element (c)));
 			
 			case element (c).shape is
@@ -214,8 +214,8 @@ package body et_geometry_2.contours is
 
 		-- Safety check:
 		-- Two edges must have been found. Otherwise raise exception:
-		if result.segment_1 = pac_contour_segments.no_element 
-		or result.segment_2 = pac_contour_segments.no_element
+		if result.segment_1 = pac_segments.no_element 
+		or result.segment_2 = pac_segments.no_element
 		then
 			raise constraint_error with "Search for neigboring edges incomplete !";
 		end if;
@@ -249,7 +249,7 @@ package body et_geometry_2.contours is
 		end update;
 
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is
+		procedure query_segment (c : in pac_segments.cursor) is
 			s : constant type_segment := element (c);
 		begin
 			case s.shape is
@@ -361,7 +361,7 @@ package body et_geometry_2.contours is
 		end move;
 
 		
-		procedure move_segment (c : in pac_contour_segments.cursor) is
+		procedure move_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
 				move (s.segment_line.start_point);
@@ -630,7 +630,7 @@ package body et_geometry_2.contours is
 		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
 		
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
 					union (result, get_boundaries (element (c).segment_line, zero));
@@ -733,7 +733,7 @@ package body et_geometry_2.contours is
 
 		end set_start_point;
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
 					set_start_point (element (c).segment_line.start_point);
@@ -777,7 +777,7 @@ package body et_geometry_2.contours is
 		offset	: in type_distance_relative) 
 	is
 
-		procedure move_segment (c : in pac_contour_segments.cursor) is
+		procedure move_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
 				move_by (s.segment_line, offset);
@@ -823,7 +823,7 @@ package body et_geometry_2.contours is
 		axis	: in type_axis_2d) 
 	is
 
-		procedure mirror_segment (c : in pac_contour_segments.cursor) is
+		procedure mirror_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
 				mirror (s.segment_line, axis);
@@ -868,7 +868,7 @@ package body et_geometry_2.contours is
 		rotation	: in type_rotation) 
 	is
 
-		procedure rotate_segment (c : in pac_contour_segments.cursor) is
+		procedure rotate_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
 				rotate_by (s.segment_line, rotation);
@@ -943,9 +943,9 @@ package body et_geometry_2.contours is
 		use pac_points;
 		corners : pac_points.list;
 		
-		use pac_contour_segments;
+		use pac_segments;
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is
+		procedure query_segment (c : in pac_segments.cursor) is
 			s : type_segment renames element (c);
 		begin
 			case element (c).shape is
@@ -977,7 +977,7 @@ package body et_geometry_2.contours is
 	is
 		proceed : aliased boolean := true;
 
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
 					if element (c).segment_line.start_point = point then
@@ -1022,7 +1022,7 @@ package body et_geometry_2.contours is
 		end update;
 
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is
+		procedure query_segment (c : in pac_segments.cursor) is
 			s : constant type_segment := element (c);
 		begin
 			case s.shape is
@@ -1160,7 +1160,7 @@ package body et_geometry_2.contours is
 		result_status : type_location;
 		result_intersections : pac_probe_line_intersections_contour.list;
 		result_distance : type_float_internal := 0.0;
-		result_segment : pac_contour_segments.cursor;
+		result_segment : pac_segments.cursor;
 		result_neigboring_segments : type_neigboring_segments;
 
 		--vertex : constant type_point := to_point (point);
@@ -1361,7 +1361,7 @@ package body et_geometry_2.contours is
 
 		
 		
-		procedure query_segment (c : in pac_contour_segments.cursor) is begin
+		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is					
 				when LINE	=> query_line (element (c).segment_line);
 				when ARC	=> query_arc (element (c).segment_arc);
@@ -1496,7 +1496,7 @@ package body et_geometry_2.contours is
 		else
 			result_segment := get_segment (contour, point);
 
-			if result_segment /= pac_contour_segments.no_element then
+			if result_segment /= pac_segments.no_element then
 				result_status := ON_EDGE;
 				-- NOTE: result.distance is zero by default
 			else

@@ -247,7 +247,7 @@ package et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_distance_relative) -- the offset of the pad from the center
-		return pac_contour_segments.list;
+		return pac_segments.list;
 
 	
 	-- For packages, temporarily this type is required to handle texts in 
