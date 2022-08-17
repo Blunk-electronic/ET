@@ -52,7 +52,7 @@ package et_geometry_2.contours is
 	type type_contour_segment_shape is (LINE, ARC);
 
 	
-	type type_contour_segment (shape : type_contour_segment_shape) is record
+	type type_segment (shape : type_contour_segment_shape) is record
 		case shape is
 			when LINE	=> segment_line : type_line;
 			when ARC	=> segment_arc  : type_arc;
@@ -61,14 +61,14 @@ package et_geometry_2.contours is
 
 
 	function to_string (
-		segment	: in type_contour_segment)
+		segment	: in type_segment)
 		return string;
 
 
 
 	-- There is NO regulation on the winding of a contour path.
 	-- It can be CW or CCW.
-	package pac_contour_segments is new indefinite_doubly_linked_lists (type_contour_segment);
+	package pac_contour_segments is new indefinite_doubly_linked_lists (type_segment);
 	use pac_contour_segments;
 	
 	
@@ -168,7 +168,7 @@ package et_geometry_2.contours is
 	
 	procedure append_segment (
 		contour	: in out type_contour;
-		segment	: in type_contour_segment);
+		segment	: in type_segment);
 	
 
 	procedure set_circle (

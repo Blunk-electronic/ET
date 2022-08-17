@@ -789,15 +789,12 @@ package body et_kicad_to_native is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
 		is
-			use et_board_shapes_and_text.pac_text_fab;
-			use et_silkscreen.boards;
-			
 			log_threshold_add : type_log_level := 2;
-
-			--use et_packages;
 			
 			procedure move_silk_screen is
+				use et_silkscreen.boards;
 				use pac_silk_lines;
+				
 				lines_cursor : pac_silk_lines.cursor;
 
 				use pac_silk_arcs;
@@ -1802,14 +1799,14 @@ package body et_kicad_to_native is
 			procedure move_contour is
 				use et_pcb_coordinates;
 				use pac_geometry_brd;
-				use et_board_shapes_and_text;
+				--use et_board_shapes_and_text;
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_contour_segments;
 				
 				contour : constant string := "board contour ";
 				
-				procedure move_line (s : in out type_contour_segment) is begin
+				procedure move_line (s : in out type_segment) is begin
 					log (text => contour & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1824,7 +1821,7 @@ package body et_kicad_to_native is
 				end move_line;
 
 				
-				procedure move_arc (s : in out type_contour_segment) is begin
+				procedure move_arc (s : in out type_segment) is begin
 					log (text => contour & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 

@@ -124,7 +124,7 @@ package body et_contour_to_polygon is
 		result : type_polygon;
 
 		procedure query_segment (c : in pac_contour_segments.cursor) is
-			s : type_contour_segment := element (c);
+			s : type_segment := element (c);
 			e_list : pac_edges.list;
 		begin
 			case s.shape is

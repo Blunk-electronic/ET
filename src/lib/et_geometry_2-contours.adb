@@ -48,7 +48,7 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_2.contours is
 	
 	function to_string (
-		segment	: in type_contour_segment)
+		segment	: in type_segment)
 		return string
 	is begin
 		case segment.shape is
@@ -250,7 +250,7 @@ package body et_geometry_2.contours is
 
 		
 		procedure query_segment (c : in pac_contour_segments.cursor) is
-			s : constant type_contour_segment := element (c);
+			s : constant type_segment := element (c);
 		begin
 			case s.shape is
 				when LINE =>
@@ -300,7 +300,7 @@ package body et_geometry_2.contours is
 	
 	procedure append_segment (
 		contour	: in out type_contour;
-		segment	: in type_contour_segment)
+		segment	: in type_segment)
 	is begin
 		-- CS check discriminant and issue helpful error message ?
 
@@ -363,12 +363,12 @@ package body et_geometry_2.contours is
 		
 		procedure move_segment (c : in pac_contour_segments.cursor) is
 
-			procedure do_line (s : in out type_contour_segment) is begin 
+			procedure do_line (s : in out type_segment) is begin 
 				move (s.segment_line.start_point);
 				move (s.segment_arc.end_point);
 			end;
 			
-			procedure do_arc (s : in out type_contour_segment) is begin
+			procedure do_arc (s : in out type_segment) is begin
 				move (s.segment_arc.start_point);
 				move (s.segment_arc.end_point); 
 				move (s.segment_arc.center); 
@@ -441,7 +441,7 @@ package body et_geometry_2.contours is
 		end_point_previous : type_point;
 
 		
-		procedure update_end_point (s : in out type_contour_segment) is begin
+		procedure update_end_point (s : in out type_segment) is begin
 			case s.shape is
 				when LINE =>						
 					s.segment_line.end_point := end_point_previous;
@@ -779,11 +779,11 @@ package body et_geometry_2.contours is
 
 		procedure move_segment (c : in pac_contour_segments.cursor) is
 
-			procedure do_line (s : in out type_contour_segment) is begin 
+			procedure do_line (s : in out type_segment) is begin 
 				move_by (s.segment_line, offset);
 			end;
 			
-			procedure do_arc (s : in out type_contour_segment) is begin
+			procedure do_arc (s : in out type_segment) is begin
 				move_by (s.segment_arc, offset);
 			end;
 
@@ -825,11 +825,11 @@ package body et_geometry_2.contours is
 
 		procedure mirror_segment (c : in pac_contour_segments.cursor) is
 
-			procedure do_line (s : in out type_contour_segment) is begin 
+			procedure do_line (s : in out type_segment) is begin 
 				mirror (s.segment_line, axis);
 			end;
 			
-			procedure do_arc (s : in out type_contour_segment) is begin
+			procedure do_arc (s : in out type_segment) is begin
 				mirror (s.segment_arc, axis);
 			end;
 
@@ -870,11 +870,11 @@ package body et_geometry_2.contours is
 
 		procedure rotate_segment (c : in pac_contour_segments.cursor) is
 
-			procedure do_line (s : in out type_contour_segment) is begin 
+			procedure do_line (s : in out type_segment) is begin 
 				rotate_by (s.segment_line, rotation);
 			end;
 			
-			procedure do_arc (s : in out type_contour_segment) is begin
+			procedure do_arc (s : in out type_segment) is begin
 				rotate_by (s.segment_arc, rotation);
 			end;
 
@@ -946,7 +946,7 @@ package body et_geometry_2.contours is
 		use pac_contour_segments;
 		
 		procedure query_segment (c : in pac_contour_segments.cursor) is
-			s : type_contour_segment renames element (c);
+			s : type_segment renames element (c);
 		begin
 			case element (c).shape is
 				when LINE => 
@@ -1023,7 +1023,7 @@ package body et_geometry_2.contours is
 
 		
 		procedure query_segment (c : in pac_contour_segments.cursor) is
-			s : constant type_contour_segment := element (c);
+			s : constant type_segment := element (c);
 		begin
 			case s.shape is
 				when LINE =>
