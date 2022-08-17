@@ -52,9 +52,9 @@ with et_contour_to_polygon;		use et_contour_to_polygon;
 procedure to_polygon is
 
 	use pac_geometry_brd;
-	use pac_functions_distance;
-	use pac_geometry_2;
 	use pac_polygons;
+
+	use pac_geometry_2;
 	use pac_contours;
 
 
@@ -81,7 +81,7 @@ procedure to_polygon is
 	is 
 		C_in : type_contour := type_contour (to_contour (contour_segments));
 		
-		P_exp : type_polygon := type_polygon (to_polygon (polygon_expect));
+		P_exp : type_polygon := to_polygon (polygon_expect);
 		P_actual : type_polygon;
 	begin
 		next_index;
@@ -92,9 +92,7 @@ procedure to_polygon is
 		--put_line (to_string (P_exp));
 		
 		P_actual := to_polygon (C_in, tolerance, true); -- debug messages on
-
 		
-		--if P_actual /= P_exp then
 		if not are_congruent (P_actual, P_exp) then
 			count_error;
 			new_line;
@@ -108,13 +106,27 @@ procedure to_polygon is
 
 begin
 
-	goto skip1;
 	
 	do_test (
-		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100",
+		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
+		tolerance => 20.0, --fab_tolerance,
+		polygon_expect => "0 0  100 0  100 100  0 100"); -- CCW
+
+
+	do_test (
+		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
+		tolerance => 20.0, --fab_tolerance,
+		polygon_expect => "0 0  0 100  100 100  100 0"); -- CW
+
+	
+	do_test (
+		contour_segments => "line 0 0  line 0 100  line 100 100  line 100 0", -- CW
 		tolerance => 20.0, --fab_tolerance,
 		polygon_expect => "0 0  100 0  100 100  0 100");
 
+	
+--goto skip1;
+	
 
 	do_test (
 		contour_segments => "arc 50 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
@@ -132,7 +144,7 @@ begin
 			& "0 100");
 
 
-<<skip1>>
+--<<skip1>>
 	
 	do_test (
 		--contour_segments => "circle 7.5 25 2.5",
@@ -157,6 +169,8 @@ begin
 			& "7.81831482468029809E+00  6.23489801858733530E+00 "
 			& "4.33883739117558121E+00  9.00968867902419126E+00 "); 
 
+<<skip1>>
+	
 	---------------------	
 
 	new_line;

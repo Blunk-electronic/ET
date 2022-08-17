@@ -63,6 +63,8 @@ package et_contour_to_polygon is
 
 	
 	-- Converts an arc to a list of edges.
+	-- The edges start on the start point of the arc
+	-- and end on the end point of the arc.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
 	-- the ideal arc:
@@ -73,7 +75,7 @@ package et_contour_to_polygon is
 		return pac_edges.list;
 	
 
-	-- Converts a circle to a list of edges.
+	-- Converts a circle to a list of edges in CCW order.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
 	-- the ideal circle:
@@ -87,10 +89,11 @@ package et_contour_to_polygon is
 	-- Converts a contour to a polygon.
 	-- A contour consists of line and arc segments. Since polygons 
 	-- consist of edges (lines) only, special treatment is required 
-	-- in order to model a arcs.
-	-- Each arc segment is replaced by many short line segments.
+	-- in order to model a arcs:
+	--  Each arc segment is replaced by many short line segments.
 	-- For arc conversion the accuracy is determined by the given tolerance.
-	-- The tolerance is the maximum allowed deviation from the ideal arc:
+	-- The tolerance is the maximum allowed deviation from the ideal arc.
+	-- The edges of the returned polygon are ordered counter-clockwise:
 	function to_polygon (
 		contour		: in type_contour'class;
 		tolerance	: in type_distance_positive;
@@ -100,7 +103,8 @@ package et_contour_to_polygon is
 
 	-- Converts a polygon to a contour.
 	-- Since a polygon consists of edges (lines) only,
-	-- the resulting contour will also contain only line segments:
+	-- the resulting contour will also contain only line segments.
+	-- The winding of the returned contour is CCW:
 	function to_contour (
 		polygon	: in type_polygon;
 		debug	: in boolean := false)					

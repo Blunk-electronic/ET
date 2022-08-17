@@ -65,14 +65,9 @@ package et_geometry_2.contours is
 		return string;
 
 
-	-- As system wide default for all contours:
-	winding_default : constant type_direction_of_rotation := CCW;
 
-	-- CS subprograms to get and set the winding.
-	-- See et_geometry_2.polygons
-	
-	-- IMPORTANT: The segments of the contour are assumend to be
-	-- ordered as defined in constant winding_default !	
+	-- There is NO regulation on the winding of a contour path.
+	-- It can be CW or CCW.
 	package pac_contour_segments is new indefinite_doubly_linked_lists (type_contour_segment);
 	use pac_contour_segments;
 	
@@ -118,7 +113,9 @@ package et_geometry_2.contours is
 
 	
 	
-	-- Returns the segments of a contour in human readable form:
+	-- Returns the segments of a contour in human readable form.
+	-- The segments are output in the same order as the contour
+	-- has been defined by the operator:
 	function to_string (
 		contour	: in type_contour)
 		return string;

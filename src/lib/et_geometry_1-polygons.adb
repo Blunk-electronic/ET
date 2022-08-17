@@ -2164,6 +2164,10 @@ package body et_geometry_1.polygons is
 		-- Convert the list of vertices to a list of lines (or edges):
 		vertices_cleaned_up.iterate (query_vertex'access);
 
+		-- Whatever the order of the given vertices was,
+		-- return a polygon with default winding:
+		set_winding (result);
+		
 		return result;
 	end to_polygon;
 

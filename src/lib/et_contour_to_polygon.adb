@@ -103,13 +103,14 @@ package body et_contour_to_polygon is
 		end if;
 
 		-- The left arc (1) runs from the top to the bottom.
-		-- The right arc (2) runs from bottom to top.		
+		-- The right arc (2) runs from bottom to top.
 		edges_left  := to_edges (arcs (1), tolerance, debug);
 		edges_right := to_edges (arcs (2), tolerance, debug);
 
 		-- Join the two arcs to a single one:
 		edges_left.splice (before => pac_edges.no_element, source => edges_right);
 
+		-- The edges are ordered counter-clockwise.
 		return edges_left;
 	end to_edges;
 	
@@ -162,6 +163,10 @@ package body et_contour_to_polygon is
 		end if;
 
 
+		-- Whatever the winding of the given contour was,
+		-- we set the winding to the system wide default:
+		set_winding (result);
+		
 		-- check edge lengths, remove edges too short ?
 		
 		return result;

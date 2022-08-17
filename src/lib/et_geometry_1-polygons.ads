@@ -63,6 +63,9 @@ package et_geometry_1.polygons is
 	-- As system wide default for all polygons:
 	winding_default : constant type_direction_of_rotation := CCW;
 
+	-- Use subprograms set_winding and get_winding.
+
+	
 	type type_edge is new type_line;
 
 	edge_length_min : constant type_float_internal_positive := 0.1;
@@ -89,7 +92,9 @@ package et_geometry_1.polygons is
 	-- Converts an arc to a list of edges.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
-	-- the ideal arc:
+	-- the ideal arc.
+	-- The edges start on the start point of the given arc and
+	-- end on the end point of the given arc:
 	function to_edges (
 		arc			: in type_arc;
 		tolerance	: in type_float_internal_positive;
