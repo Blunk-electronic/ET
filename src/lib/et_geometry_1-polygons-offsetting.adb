@@ -84,70 +84,30 @@ package body et_geometry_1.polygons.offsetting is
 		
 		-- This procedure computes an "offset edge" from an original edge.
 		-- An "offset edge" is a composite of an edge and an infinite long line.
-		-- See specification of type_offset_edge:
+		-- See specification of type_offset_edge.
+		-- This approach assumes the given polygon has winding CCW !
 		function offset_edge (
 			edge : in type_edge)
 			return type_offset_edge
 		is
 			edge_new : type_edge := edge;
-			center : type_vector := get_center (edge);
-			
-			edge_direction : type_angle := get_direction (edge);
-			dir_scratch : type_angle;			
-			test_point : type_vector;
-
-			-- These two procedures move the edge_new to the right or
-			-- to the left (seen relative to the edge direction):
-			procedure move_right is begin
-				move_by (edge_new, add (edge_direction, -90.0), offset_float);
-			end move_right;
-
-			procedure move_left is begin
-				move_by (edge_new, add (edge_direction, +90.0), offset_float);
-			end move_left;
-			
+			edge_direction : constant type_angle := get_direction (edge);
 		begin
 			--put_line ("edge direction:" & to_string (edge_direction));
 			
-			-- Set a test point that is very close to the center of the edge.
-			-- The point is located in direction dir_scratch away from the center:
-			dir_scratch := add (edge_direction, +90.0);
-
-			-- CS:
-			--test_point := move_by (center, dir_scratch, type_float_internal (type_distance'small));
-			test_point := move_by (center, dir_scratch, 1000.0 * accuracy);
-			--test_point := move_by (center, dir_scratch, 100.0 * type_float_internal'small);
-
-			--put_line ("tp " & to_string (test_point));
-
-			-- Depending on the location of the test point, means inside or outside
-			-- the polygon and the mode we move the edge to the right or to the left:
-			declare
-				tp_status : constant type_point_status :=
-					get_point_status (polygon, test_point);
-			begin
-				case mode is
-					when EXPAND =>
-					-- move edge toward outside. Polygon area becomes greater:
-						if tp_status.location = INSIDE then
-							move_right;
-						else
-							move_left;
-						end if;
-
-					when SHRINK =>
-					-- move the edge toward inside. Polygon area becomes smaller:
-						if tp_status.location = INSIDE then
-							move_left;
-						else
-							move_right;							
-						end if;
-
-					when NOTHING =>
-						raise constraint_error; -- should never happen
-				end case;
+			case mode is
+				when EXPAND =>
+					-- Move edge to the right (outside):
+					move_by (edge_new, add (edge_direction, -90.0), offset_float);
 					
-			end;
+				when SHRINK =>
+					-- Move the edge to the left (inside):
+					move_by (edge_new, add (edge_direction, +90.0), offset_float);
+					
+				when NOTHING =>
+					raise constraint_error; -- should never happen
+			end case;
+
 
 			return (
 				edge => edge_new,
