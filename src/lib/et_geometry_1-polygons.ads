@@ -60,10 +60,12 @@ generic
 package et_geometry_1.polygons is
 
 
-	-- As system wide default for all polygons:
+	-- As system wide default for all polygons.
 	winding_default : constant type_direction_of_rotation := CCW;
 
-	-- Use subprograms set_winding and get_winding.
+	-- Use subprograms set_winding and get_winding to inquire or modify the winding.
+	-- IMPORTANT: For all other subprograms here the winding
+	-- of a given polygon MUST BE CCW !
 
 	
 	type type_edge is new type_line;

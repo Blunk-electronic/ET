@@ -2159,7 +2159,6 @@ package body et_geometry_1.polygons is
 		-- Clean up the given vertices:
 		remove_redundant_positions (vertices_cleaned_up);
 
-		-- CS merge successive edges running into the same direction
 		
 		-- Convert the list of vertices to a list of lines (or edges):
 		vertices_cleaned_up.iterate (query_vertex'access);
@@ -2167,6 +2166,9 @@ package body et_geometry_1.polygons is
 		-- Whatever the order of the given vertices was,
 		-- return a polygon with default winding:
 		set_winding (result);
+		
+		-- merge successive edges running into the same direction
+		optimize_edges (result);
 		
 		return result;
 	end to_polygon;
