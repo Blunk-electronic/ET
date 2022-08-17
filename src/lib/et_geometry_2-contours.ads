@@ -79,7 +79,7 @@ package et_geometry_2.contours is
 		proceed		: not null access boolean);
 
 
-	type type_contour_segments (circular : boolean := false) is record
+	type type_segments (circular : boolean := false) is record
 		case circular is
 			when TRUE	=> circle   : type_circle;
 			when FALSE	=> segments : pac_segments.list;
@@ -88,7 +88,7 @@ package et_geometry_2.contours is
 	
 
 	type type_contour is tagged record
-		contour : type_contour_segments;
+		contour : type_segments;
 	end record;
 
 
@@ -158,7 +158,7 @@ package et_geometry_2.contours is
 	-- NOTE: Overwrites already existing segments in the contour.
 	procedure load_segments (
 		contour		: in out type_contour;
-		segments	: in type_contour_segments);
+		segments	: in type_segments);
 	
 	
 	procedure delete_segments (
@@ -178,7 +178,7 @@ package et_geometry_2.contours is
 		
 	function get_segments (
 		contour	: in type_contour)
-		return type_contour_segments;
+		return type_segments;
 	
 
 	-- Returns 1 if the contour consist of just a single circle.

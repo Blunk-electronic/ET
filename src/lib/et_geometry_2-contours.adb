@@ -285,7 +285,7 @@ package body et_geometry_2.contours is
 
 	procedure load_segments (
 		contour		: in out type_contour;
-		segments	: in type_contour_segments)
+		segments	: in type_segments)
 	is begin
 		contour.contour := segments;
 	end load_segments;
@@ -329,7 +329,7 @@ package body et_geometry_2.contours is
 	
 	function get_segments (
 		contour	: in type_contour)
-		return type_contour_segments
+		return type_segments
 	is begin
 		return contour.contour;
 	end get_segments;
