@@ -200,7 +200,8 @@ package et_fill_zones.boards is
 
 	
 
--- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled):
+-- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled).
+-- These zones apply to all fill zones. 	
 	
 	type type_cutout
 		is new type_contour with

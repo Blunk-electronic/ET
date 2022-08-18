@@ -101,7 +101,7 @@ is
 
 
 	-- Returns a list of polygons caused by conductor
-	-- objects or restrict objects in the given signal layer.
+	-- objects in the given signal layer.
 	-- The polygons are expanded by the zone_clearance or by
 	-- the clearance of a particlar net (the greater value of them is applied):
 	function conductors_to_polygons (
@@ -152,6 +152,35 @@ is
 		return result;
 	end conductors_to_polygons;
 	
+
+
+	-- Returns a list of polygons caused by route restrict
+	-- objects in the given signal layer.
+	function restrict_to_polygons (
+		layer : in type_signal_layer)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+	begin
+		-- CS iterate global restrict areas
+		-- CS iterate net specific cutouts ?
+		return result;
+	end restrict_to_polygons;
+
+
+	-- Returns a list of polygons caused by cutout areas
+	-- in the given signal layer.
+	function cutouts_to_polygons (
+		layer : in type_signal_layer)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+	begin
+		-- CS iterate global cutout areas
+		
+		return result;
+	end cutouts_to_polygons;
+
 	
 	
 	-- Computes the horizontal fill lines required after given start point.
@@ -588,9 +617,9 @@ is
 			
 				islands : pac_polygon_list.list;
 
-				conductors : pac_polygon_list.list;
-				
+				conductors, restrict, cutouts : pac_polygon_list.list;
 
+				
 				procedure set_islands (
 					zone : in out type_route_solid)
 				is
@@ -644,7 +673,7 @@ is
 
 
 
-					-- Crop the islands by all conductor elements in the affected layer.
+					-- Crop the islands by all conductor objects in the affected layer.
 					-- The clearance of these objects to the zone is determined by
 					-- the zone isolation or the net clearance. The greater value is applied:
 					conductors := conductors_to_polygons (
@@ -656,8 +685,29 @@ is
 						polygon_A_list	=> conductors,
 						debug			=> false);
 
-					
 
+					
+					-- Crop the islands by all cutout areas in the affected layer.
+					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
+
+					islands := multi_crop_2 (
+						polygon_B_list	=> islands,
+						polygon_A_list	=> cutouts,
+						debug			=> false);
+
+
+					
+					-- Crop the islands by all route restrict objects in the affected layer.
+					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
+
+					islands := multi_crop_2 (
+						polygon_B_list	=> islands,
+						polygon_A_list	=> restrict,
+						debug			=> false);
+
+
+					
+					
 					-- Assign the islands to the candidate fill zone:
 					net.route.fill_zones.solid.update_element (
 						zone_cursor, set_islands'access);

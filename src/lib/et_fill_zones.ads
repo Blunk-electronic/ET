@@ -89,10 +89,10 @@ package et_fill_zones is
 
 	-- An island may have multiple inner areas which are not filled.
 	-- They are usually a result of holes in the PCB, tracks, pads, vias, ...
-	-- Such a cutout area is an inner border (which is basically a polygon):
+	-- We call the border of such void area an inner border (which is basically a polygon):
 	type type_inner_border is new type_polygon;
 
-	-- Since we have lots of those inner cutout areas we store them in a list:
+	-- Since we have lots of those inner borders we store them in a list:
 	package pac_inner_borders is new doubly_linked_lists (type_inner_border);
 
 

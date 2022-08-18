@@ -47,12 +47,9 @@ generic
 	
 package et_geometry_1.polygons.cropping is
 
-	-- The result of a polygon cropping operation is a list
-	-- of sub-polygons:
-	--package pac_cropped is new doubly_linked_lists (type_polygon);
 	use pac_polygon_list;
 	
-
+	-- The result of a polygon cropping operation:
 	type type_crop (exists : boolean := true) is record
 		-- The status of polygon A in relation to polygon B:
 		status : type_overlap_status;

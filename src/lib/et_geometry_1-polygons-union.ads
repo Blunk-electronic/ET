@@ -44,18 +44,17 @@ generic
 	
 package et_geometry_1.polygons.union is
 
-	package pac_polygons is new doubly_linked_lists (type_polygon);
-	use pac_polygons;
+	use pac_polygon_list;
+	
 
 	-- Returns from the given list of polygons the one that encloses
 	-- all others in the list
 	function get_greatest (
-		polygons	: in pac_polygons.list)
-		return pac_polygons.cursor;
+		polygons	: in pac_polygon_list.list)
+		return pac_polygon_list.cursor;
 	
 	
-	-- The result of a polygon union operation is a list
-	-- of polygons:
+	-- The result of a polygon union operation:
 	type type_union (exists : boolean := true) is record
 		case exists is
 			when TRUE => union : type_polygon;
@@ -81,6 +80,11 @@ package et_geometry_1.polygons.union is
 		return type_union;
 
 
+	-- Unions as many as possible polygons with each other:
+	procedure multi_union (
+		polygons	: in out pac_polygon_list.list;
+		debug		: in boolean := false);
+							 
 	
 end et_geometry_1.polygons.union;
 

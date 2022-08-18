@@ -46,15 +46,15 @@ package body et_geometry_1.polygons.union is
 
 
 	function get_greatest (
-		polygons	: in pac_polygons.list)
-		return pac_polygons.cursor
+		polygons	: in pac_polygon_list.list)
+		return pac_polygon_list.cursor
 	is 
-		primary : pac_polygons.cursor := polygons.first;
+		primary : pac_polygon_list.cursor := polygons.first;
 
 		select_next_primary : boolean := false;
 
 
-		procedure query_secondary (secondary : pac_polygons.cursor) is 
+		procedure query_secondary (secondary : pac_polygon_list.cursor) is 
 			intersections : pac_intersections.list;
 			overlap_status : type_overlap_status;			
 		begin
@@ -91,7 +91,7 @@ package body et_geometry_1.polygons.union is
 
 		
 	begin
-		while primary /= pac_polygons.no_element loop
+		while primary /= pac_polygon_list.no_element loop
 
 			--new_line;
 			--put_line ("primary: " & to_string (element (primary)));
@@ -180,7 +180,7 @@ package body et_geometry_1.polygons.union is
 			-- all the other candidates:
 			procedure walk_1 is 
 
-				candidate_polygons : pac_polygons.list;
+				candidate_polygons : pac_polygon_list.list;
 				
 				procedure query_outside_vertex (ov : pac_vertices.cursor) is begin
 					-- Set the start point.
@@ -457,6 +457,18 @@ package body et_geometry_1.polygons.union is
 		
 	end union;
 
+
+	procedure multi_union (
+		polygons	: in out pac_polygon_list.list;
+		debug		: in boolean := false)
+	is
+		polygons_out : pac_polygon_list.list;
+	begin
+		null;
+	end multi_union;
+	
+
+	
 	
 end et_geometry_1.polygons.union;
 
