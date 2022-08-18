@@ -625,8 +625,8 @@ is
 				is
 					procedure query_island (i : in pac_polygon_list.cursor) is begin
 						zone.islands.append ((
-							border	=> type_outer_border (element (i)),
-							others	=> <>));					 
+							outer_border => type_outer_border (element (i)),
+							others		 => <>));					 
 					end query_island;
 					
 				begin

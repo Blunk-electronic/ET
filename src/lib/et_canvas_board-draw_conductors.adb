@@ -210,7 +210,7 @@ is
 		island : type_island renames element (i);
 		drawn : boolean := false;
 
-		procedure query_cutout (c : pac_inner_borders.cursor) is begin 
+		procedure query_inner_border (c : pac_inner_borders.cursor) is begin 
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,
@@ -219,7 +219,7 @@ is
 				width	=> fill_line_width,
 				height	=> self.frame_height,
 				drawn	=> drawn);
-		end query_cutout;
+		end query_inner_border;
 
 		procedure query_stripe (s : pac_stripes.cursor) is begin 
 			draw_line (
@@ -231,20 +231,21 @@ is
 		end query_stripe;
 		
 	begin
+		-- draw the outer border:
 		draw_polygon (
 			area	=> in_area,
 			context	=> context,
-			polygon	=> type_polygon (island.border),
+			polygon	=> type_polygon (island.outer_border),
 			filled	=> NO, -- this is the outer border !
 			width	=> fill_line_width,
 			height	=> self.frame_height,
 			drawn	=> drawn);
 						
-		-- Draw the stripes if the polygon has been drawn.
+		-- Draw the inner borders and stripes if the polygon has been drawn.
 		-- If the polygon border has not been drawn (because it is outside area)
-		-- then it would be useless to draw cutouts and fill lines.
+		-- then it would be useless to draw inner borders and fill lines.
 		if drawn then
-			iterate (island.cutouts, query_cutout'access);
+			iterate (island.inner_borders, query_inner_border'access);
 			iterate (island.stripes, query_stripe'access);
 		end if;
 	end query_island;

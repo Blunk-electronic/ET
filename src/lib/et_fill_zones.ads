@@ -97,9 +97,9 @@ package et_fill_zones is
 
 
 	type type_island is record
-		border	: type_outer_border;
-		cutouts	: pac_inner_borders.list;
-		stripes	: pac_stripes.list;
+		outer_border	: type_outer_border; -- only one encircling the island
+		inner_borders	: pac_inner_borders.list; -- several inside the island
+		stripes			: pac_stripes.list;
 	end record;
 		
 	package pac_islands is new doubly_linked_lists (type_island);
