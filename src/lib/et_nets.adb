@@ -487,10 +487,11 @@ package body et_nets is
 			source => net_2.route.fill_zones.hatched);
 
 		-- cutout areas:
-		splice (
-			target => net_1.route.cutouts, 
-			before => pac_cutouts.no_element,
-			source => net_2.route.cutouts);
+		-- CS now net specific restrict stuff
+		--splice (
+			--target => net_1.route.cutouts, 
+			--before => pac_cutouts.no_element,
+			--source => net_2.route.cutouts);
 
 		
 	end merge_nets;

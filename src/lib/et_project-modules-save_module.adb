@@ -515,13 +515,12 @@ is
 		end query_strands;
 
 		
-		procedure query_route (
 		-- This is about routed tracks/traces and zones in the board:
+		procedure query_route (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
 			use et_board_shapes_and_text;
-			--use pac_geometry_2;
 			use pac_contours;
 
 			use et_terminals;
@@ -545,7 +544,7 @@ is
 			
 			polygon_solid_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
-			cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
+			--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
 				use et_vias;
@@ -685,18 +684,19 @@ is
 			end loop;
 
 			
-			-- cutout zones
-			while cutout_zone_cursor /= pac_cutouts.no_element loop
-				cutout_zone_begin;
-				write_signal_layer (element (cutout_zone_cursor).layer);
+			-- cutout zones -> now net specific restrict areas
+			-- CS
+			--while cutout_zone_cursor /= pac_cutouts.no_element loop
+				--cutout_zone_begin;
+				--write_signal_layer (element (cutout_zone_cursor).layer);
 
-				contours_begin;
-				write_polygon_segments (type_contour (element (cutout_zone_cursor)));
-				contours_end;
+				--contours_begin;
+				--write_polygon_segments (type_contour (element (cutout_zone_cursor)));
+				--contours_end;
 				
-				cutout_zone_end;
-				next (cutout_zone_cursor);
-			end loop;
+				--cutout_zone_end;
+				--next (cutout_zone_cursor);
+			--end loop;
 			
 			section_mark (section_route, FOOTER);
 		end query_route;

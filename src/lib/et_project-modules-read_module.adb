@@ -4778,19 +4778,21 @@ is
 				board_reset_contour; -- clean up for next polygon
 			end build_route_polygon;
 
-			
-			procedure build_route_cutout is
-				use et_board_shapes_and_text;
-				use pac_contours;
-				use et_fill_zones.boards;
-			begin
-				pac_cutouts.append (
-					container	=> route.cutouts,
-					new_item	=> (contour with
-									layer	=> signal_layer));
 
-				board_reset_contour; -- clean up for next cutout zone
-			end build_route_cutout;
+			-- This is now net specific restrict stuff !
+			-- CS 			
+			--procedure build_route_cutout is
+				--use et_board_shapes_and_text;
+				--use pac_contours;
+				--use et_fill_zones.boards;
+			--begin
+				--pac_cutouts.append (
+					--container	=> route.cutouts,
+					--new_item	=> (contour with
+									--layer	=> signal_layer));
+
+				--board_reset_contour; -- clean up for next cutout zone
+			--end build_route_cutout;
 
 			
 			procedure build_non_conductor_cutout (
@@ -5400,8 +5402,8 @@ is
 
 				when SEC_CUTOUT_ZONE =>
 					case stack.parent is
-						when SEC_ROUTE =>
-							build_route_cutout;
+						--when SEC_ROUTE =>
+							--build_route_cutout;
 
 						when SEC_TOP =>
 							build_non_conductor_cutout (et_pcb_coordinates.TOP);

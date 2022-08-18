@@ -93,7 +93,7 @@ begin
 
 	--new_line;
 
-	goto skip_1;
+	--goto skip_1;
 
 	
 	--tolerance := 0.1;

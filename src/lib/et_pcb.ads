@@ -259,8 +259,8 @@ package et_pcb is
 		-- fill zones:
 		fill_zones	: boards.type_route;
 
-		-- user defined cutout areas:
-		cutouts		: boards.pac_cutouts.list;
+		-- user defined restrictions. currently not supported. CS
+		restrict	: et_route_restrict.boards.type_route_restrict;
 	end record;
 	
 
