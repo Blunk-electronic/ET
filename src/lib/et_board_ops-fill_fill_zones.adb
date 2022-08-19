@@ -139,7 +139,7 @@ is
 			offset_polygons (polygons, type_float_internal_positive (clearance));
 
 			-- CS union polygons ?
-			multi_union (polygons);
+			--multi_union (polygons);
 			
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;

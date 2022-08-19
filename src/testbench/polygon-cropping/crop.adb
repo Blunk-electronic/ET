@@ -157,7 +157,7 @@ procedure crop is
 			--put_line ("B shortest edge: " & to_string (get_shortest_edge (B)));
 
 			
-			--set (i).result_actual := crop (A, B);
+			set (i).result_actual := crop (A, B);
 
 			-- Use this statement if more debug messages required:
 			--set (i).result_actual := crop (A, B, true);

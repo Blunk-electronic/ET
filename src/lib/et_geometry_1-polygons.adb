@@ -1759,17 +1759,22 @@ package body et_geometry_1.polygons is
 		
 	begin -- get_edge_status
 
-		-- Set the properties of the start/end point of the given line:
+		-- Set the status of the start/end point of the given line:
 		set_line_start;
 		set_line_end;
 
+		-- Rotate the given polygon about the start point of the edge.
+		-- Rotate the polygon by the negative edge direction:
 		P_rotated := rotate (polygon, edge.start_point, - edge_direction);
 
+		-- Extract the intersections of the probe line between "after" and "before":
 		intersections := get_intersections (
 			status	=> get_point_status (P_rotated, edge.start_point),
 			after	=> edge.start_point.x,
-			before	=> edge.start_point.x + edge_length);
-
+			before	=> edge.start_point.x + edge_length - accuracy);
+			-- CS: Due to unavoidable inaccuracy, intersections very close
+			-- to the end of the range must be ignored. Not sure if this is reasonable
+			-- and whether this solution works in all cases.
 
 		
 		move_by (intersections, invert (to_offset (edge.start_point)));
