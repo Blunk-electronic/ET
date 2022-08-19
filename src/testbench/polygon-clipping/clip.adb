@@ -55,8 +55,8 @@ procedure clip is
 	use pac_polygon_clipping;
 
 
-	use pac_clipped;
-	EXP : pac_clipped.list;
+	use pac_polygon_list;
+	EXP : pac_polygon_list.list;
 	
 
 	-- A: to be clipped
@@ -64,8 +64,8 @@ procedure clip is
 
 	type type_test is record
 		A, B	: unbounded_string;
-		result_expected : pac_clipped.list;
-		result_actual : pac_clipped.list;
+		result_expected : pac_polygon_list.list;
+		result_actual : pac_polygon_list.list;
 	end record;
 
 	type type_test_array is array (1..26) of type_test;
@@ -99,7 +99,7 @@ procedure clip is
 		
 
 	procedure add_to_expect (
-		clipped : in out pac_clipped.list;
+		clipped : in out pac_polygon_list.list;
 		s		: in string)
 	is
 		p : type_polygon;
@@ -111,7 +111,7 @@ procedure clip is
 	
 	procedure make_set (
 		A, B	: in string;
-		expect	: in pac_clipped.list)
+		expect	: in pac_polygon_list.list)
 	is begin
 		next_index;
 		set (idx).A := to_unbounded_string (A);
@@ -125,7 +125,7 @@ procedure clip is
 		C	: type_contour;
 		A, B: type_polygon;
 
-		procedure query_polygon (p : in pac_clipped.cursor) is begin
+		procedure query_polygon (p : in pac_polygon_list.cursor) is begin
 			put_line (to_string (element (p)));
 		end query_polygon;
 

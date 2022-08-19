@@ -104,7 +104,7 @@ begin
 
 	do_test (
 		polygon_vertices => "0 0  100 0  100 100  0 100",
-		contour_expect => "line 0 100 line 0 0 line 100 0 line 100 100");
+		contour_expect => "line 100 100  line 0 100  line 0 0  line 100 0");
 
 
 	---------------------	

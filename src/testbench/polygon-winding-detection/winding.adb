@@ -72,8 +72,8 @@ procedure winding is
 
 
 	
-	B_default : constant string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	B_default_cw : constant string := "line 0 0 line 0 100 line 100 100 line 100 0";
+	B_default : constant string := "0 0  100 0  100 100  0 100";
+	B_default_cw : constant string := "0 0  0 100  100 100  100 0";
 	
 
 
@@ -81,14 +81,12 @@ procedure winding is
 		s 			: in string;
 		w_expect	: in type_direction_of_rotation)
 	is 
-		F : type_fields_of_line;
-		P : type_polygon;	
+		P : type_polygon;
 		w_actual : type_direction_of_rotation;
 	begin
 		next_index;
 
-		F := read_line (line => s, comment_mark => "#");
-		P := type_polygon (to_polygon (F));
+		P := to_polygon (s);
 		w_actual := get_winding (P);
 
 
@@ -130,26 +128,26 @@ begin
 	-- TEST 2:
 	do_test (
 		s => B_default_cw,
-		w_expect => CW);
+		w_expect => CCW);
 
 
 	-- TEST 3:
 	do_test (
-		s => "line 20 -10 line 30 -10 line 110 50 line 30 110 line 20 110 line 25 50",
+		s => "20 -10  30 -10  110 50  30 110  20 110  25 50",
 		w_expect => CCW);
 
 	
 	-- TEST 4:
 	do_test (
-		s => "line 40 -10 line 120 -10 line 120 50 line 80 50 line 80 -5 line 60 -5 line 60 50 line 40 50",
+		s => " 40 -10  120 -10  120 50  80 50  80 -5  60 -5  60 50  40 50",
 		w_expect => CCW);
 	
 
 	-- TEST 5:
 	do_test (
-		s => "line 10 10 line 10 -10 line 150 -10 line 150 110 line 90 110 line 90 90 "
-			& "line 60 90 line 60 110 line 40 110 line 40 80 line 90 80 line 90 10 line 110 10 "
-			& "line 110 -5 line 20 -5 line 20 10",
+		s => " 10 10  10 -10  150 -10  150 110  90 110  90 90 "
+			& " 60 90  60 110  40 110  40 80  90 80  90 10  110 10 "
+			& " 110 -5  20 -5  20 10",
 		w_expect => CCW);
 	
 	---------------------	

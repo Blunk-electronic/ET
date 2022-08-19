@@ -55,9 +55,6 @@ procedure crop2 is
 	use pac_polygons;
 	use pac_polygon_cropping;
 
-
-	use pac_cropped;
-
 	-- A: cropping
 	-- B: to be cropped
 
