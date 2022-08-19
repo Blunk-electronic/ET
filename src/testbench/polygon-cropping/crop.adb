@@ -59,8 +59,8 @@ procedure crop is
 	use pac_polygon_cropping;
 
 
-	use pac_cropped;
-	EXP_list : pac_cropped.list;
+	use pac_polygon_list;
+	EXP_list : pac_polygon_list.list;
 
 	-- A: cropping
 	-- B: to be cropped
@@ -136,7 +136,7 @@ procedure crop is
 		C : type_contour;
 		A, B: type_polygon;
 
-		procedure query_polygon (p : in pac_cropped.cursor) is begin
+		procedure query_polygon (p : in pac_polygon_list.cursor) is begin
 			put_line (to_string (element (p)));
 		end query_polygon;
 
@@ -147,19 +147,17 @@ procedure crop is
 			put_line ("-------------");
 			
 			C := type_contour (to_contour (to_string (set(i).A)));
-			-- CS set winding ?
 			A := to_polygon (C, fab_tolerance);
 			--put_line ("A: " & to_string (A));
 			--put_line ("A shortest edge: " & to_string (get_shortest_edge (A)));
 
 			C := type_contour (to_contour (to_string (set(i).B)));
-			-- CS set winding ?
 			B := to_polygon (C, fab_tolerance);
 			--put_line ("B: " & to_string (B));
 			--put_line ("B shortest edge: " & to_string (get_shortest_edge (B)));
 
 			
-			set (i).result_actual := crop (A, B);
+			--set (i).result_actual := crop (A, B);
 
 			-- Use this statement if more debug messages required:
 			--set (i).result_actual := crop (A, B, true);

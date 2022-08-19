@@ -462,9 +462,23 @@ package body et_geometry_1.polygons.union is
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false)
 	is
-		polygons_out : pac_polygon_list.list;
+		result : pac_polygon_list.list;
+		p_count : constant count_type := polygons.length;
+
+		package pac_processed is new doubly_linked_lists (pac_polygon_list.cursor);
+		use pac_processed;
+		processed : pac_processed.list;
+
+		procedure query_primary (p : in pac_polygon_list.cursor) is
+		begin
+			processed.append (p);
+			null;
+		end query_primary;
+		
 	begin
-		null;
+		if p_count > 1 then
+			polygons.iterate (query_primary'access);
+		end if;
 	end multi_union;
 	
 

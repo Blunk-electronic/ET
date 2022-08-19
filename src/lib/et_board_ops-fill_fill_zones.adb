@@ -139,6 +139,7 @@ is
 			offset_polygons (polygons, type_float_internal_positive (clearance));
 
 			-- CS union polygons ?
+			multi_union (polygons);
 			
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;
@@ -147,7 +148,7 @@ is
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- CS non electrical conductor stuff (floating fill zones, text, fiducials, ...)
-		-- CS restrict areas
+
 		
 		return result;
 	end conductors_to_polygons;
