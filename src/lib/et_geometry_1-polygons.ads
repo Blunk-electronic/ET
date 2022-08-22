@@ -132,6 +132,7 @@ package et_geometry_1.polygons is
 	
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 
+	
 
 	-- Returns true if:
 	-- - number of polygons in left equals those in right AND
@@ -706,6 +707,20 @@ package et_geometry_1.polygons is
 		debug					: in boolean := false)
 		return type_overlap_status;
 
+
+	function get_overlap_status (
+		polygon_A, polygon_B	: in type_polygon;
+		debug					: in boolean := false)
+		return type_overlap_status;
+
+	
+	-- Returns from the given list of polygons those which
+	-- are inside the given area:
+	function get_inside_polygons (
+		area		: in type_polygon;
+		polygons	: in pac_polygon_list.list)
+		return pac_polygon_list.list;
+	
 
 	-- Returns a list of vertices of the given primary
 	-- polygon merged with the intersections (leaving or entering) with the secondary

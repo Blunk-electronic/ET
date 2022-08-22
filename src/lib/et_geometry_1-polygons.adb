@@ -2450,6 +2450,50 @@ package body et_geometry_1.polygons is
 	end get_overlap_status;
 
 
+
+	function get_overlap_status (
+		polygon_A, polygon_B	: in type_polygon;
+		debug					: in boolean := false)
+		return type_overlap_status
+	is begin
+		return get_overlap_status (
+			polygon_A		=> polygon_A,
+			polygon_B		=> polygon_B, 
+			intersections	=> get_intersections (polygon_A, polygon_B),
+			debug			=> debug);
+	end get_overlap_status;
+
+		
+	
+	function get_inside_polygons (
+		area		: in type_polygon;
+		polygons	: in pac_polygon_list.list)
+		return pac_polygon_list.list
+	is
+		use pac_polygon_list;
+		result : pac_polygon_list.list;
+
+		procedure query_polygon (p : in pac_polygon_list.cursor) is
+
+			status : constant type_overlap_status :=
+				get_overlap_status (
+					polygon_A		=> area,
+					polygon_B		=> element (p), 
+					debug			=> false);
+			
+		begin
+			if status = B_INSIDE_A then
+				result.append (element (p));
+			end if;
+		end query_polygon;
+		
+	begin
+		polygons.iterate (query_polygon'access);
+		return result;
+	end get_inside_polygons;
+
+
+	
 	-- Replaces three successive vertices which meet these criterions:
 	-- - having same position,
 	-- - the first is entering,
