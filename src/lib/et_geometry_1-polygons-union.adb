@@ -458,30 +458,45 @@ package body et_geometry_1.polygons.union is
 	end union;
 
 
+	
 	procedure multi_union (
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false)
 	is
+		-- Here we collect the resulting polygons.
+		-- This list will overwrite the given list in the end of this procedure:
 		result : pac_polygon_list.list;
+
+		-- The number of given polygons:
 		p_count : constant count_type := polygons.length;
 
+		-- In the course of this procedure we mark the polygons as
+		-- "processed". Here we store the cursors of processed polygons:
 		package pac_processed is new doubly_linked_lists (pac_polygon_list.cursor);
 		use pac_processed;
 		processed : pac_processed.list;
 
+		-- This procedure queries a polygon that has NOT been processed yet.
+		-- The candidate polygon is then probed against the remaining
+		-- NON-processed polygons.
 		procedure query_primary (p : in pac_polygon_list.cursor) is
-			union_found : boolean := false;			
+			union_found : boolean := false;
+
+			-- Take a copy of the candidate polygon.
+			-- If a union with another polygon exists, then this temporarily
+			-- polygon will be replaced by the union. So this polygon
+			-- grows with each union:
 			t : type_polygon := element (p);
 			
 			procedure query_secondary (s : in pac_polygon_list.cursor) is begin
 				if not processed.contains (s) then
 					declare
-						u : type_union := union (t, element (s));
+						u : constant type_union := union (t, element (s));
 					begin
 						if u.exists then
 							t := u.union;
 							
-							processed.append (s);
+							processed.append (s); -- mark as processed
 							union_found := true;
 						end if;
 					end;
@@ -491,13 +506,20 @@ package body et_geometry_1.polygons.union is
 			
 		begin -- query_primary
 			if not processed.contains (p) then
+
+				-- Mark the candidate polygon as processed:
 				processed.append (p);
 
+				-- Iterate the remaining NON-processed polygons:
 				polygons.iterate (query_secondary'access);
 
+				-- If a union has been found then append the temporarily
+				-- polygon to the result. If no union found then append the
+				-- candidate polygon as it is to the result.
 				if union_found then
 					result.append (t);
 				else
+					-- Candidate polygon does not overlap with any other polygon:
 					result.append (element (p));
 				end if;
 			end if;
@@ -505,9 +527,10 @@ package body et_geometry_1.polygons.union is
 
 		
 	begin
+		-- There is nothing to do if less then 2 polygons are given.
+		-- Otherwise iterate the given polygons:
 		if p_count > 1 then
 			polygons.iterate (query_primary'access);
-
 			polygons := result;
 		end if;
 	end multi_union;

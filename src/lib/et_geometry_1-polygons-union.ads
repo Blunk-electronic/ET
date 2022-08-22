@@ -14,7 +14,7 @@
 --    (at your option) any later version.                                   --
 --                                                                          --
 --    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    but WITHOUT	 ANY WARRANTY; without even the implied warranty of        --
 --    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
 --    GNU General Public License for more details.                          --
 --                                                                          --
@@ -80,7 +80,9 @@ package et_geometry_1.polygons.union is
 		return type_union;
 
 
-	-- Unions as many as possible polygons with each other:
+	-- Unions as many as possible polygons with each other.
+	-- Polygons that overlap each other are unioned. Those which
+	-- do not overlap with any other polygon remain untouched.
 	procedure multi_union (
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false);
