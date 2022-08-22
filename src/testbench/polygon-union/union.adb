@@ -49,7 +49,6 @@ with et_string_processing;		use et_string_processing;
 
 procedure union is
 
-	use pac_geometry_2;
 	use pac_polygons;
 	use pac_polygon_union;
 

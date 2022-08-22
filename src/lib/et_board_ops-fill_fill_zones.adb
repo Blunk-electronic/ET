@@ -55,6 +55,7 @@ is
 	use pac_polygon_clipping;
 	use pac_polygon_cropping;
 	use pac_polygon_offsetting;
+	use pac_polygon_union;
 	
 	use pac_net_names;
 
@@ -139,7 +140,7 @@ is
 			offset_polygons (polygons, type_float_internal_positive (clearance));
 
 			-- CS union polygons ?
-			--multi_union (polygons);
+			multi_union (polygons);
 			
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;

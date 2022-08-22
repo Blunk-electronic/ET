@@ -470,14 +470,45 @@ package body et_geometry_1.polygons.union is
 		processed : pac_processed.list;
 
 		procedure query_primary (p : in pac_polygon_list.cursor) is
-		begin
-			processed.append (p);
-			null;
+			union_found : boolean := false;			
+			t : type_polygon := element (p);
+			
+			procedure query_secondary (s : in pac_polygon_list.cursor) is begin
+				if not processed.contains (s) then
+					declare
+						u : type_union := union (t, element (s));
+					begin
+						if u.exists then
+							t := u.union;
+							
+							processed.append (s);
+							union_found := true;
+						end if;
+					end;
+				end if;
+			end query_secondary;
+
+			
+		begin -- query_primary
+			if not processed.contains (p) then
+				processed.append (p);
+
+				polygons.iterate (query_secondary'access);
+
+				if union_found then
+					result.append (t);
+				else
+					result.append (element (p));
+				end if;
+			end if;
 		end query_primary;
+
 		
 	begin
 		if p_count > 1 then
 			polygons.iterate (query_primary'access);
+
+			polygons := result;
 		end if;
 	end multi_union;
 	
