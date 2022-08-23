@@ -72,6 +72,16 @@ is
 	use pac_islands;
 	--use pac_cropped;
 	--use pac_clipped;
+
+
+	--procedure log_lower_left_corner (
+		--corner	: in type_point;
+		--lth		: in type_log_level) 
+	--is begin
+		--log (text => "lower left corner:" & to_string (corner),
+			--level => lth);
+	--end log_lower_left_corner;
+
 	
 	
 	-- The outer contour of the board. After shrinking by the
@@ -80,31 +90,99 @@ is
 	-- the with of the fill lines.
 	board_outer_contour_master : type_polygon;
 
-	-- The holses inside the PCB area. After expanding by the
+	-- The holes inside the board area. After expanding by the
 	-- conductor-to-edge clearance this serves as master for
 	-- filling zones of nets. Each net may have an individual setting for 
 	-- the with of the fill lines.
 	use pac_polygon_list;
 	board_holes_master : pac_polygon_list.list;
 
+	-- The holes inside the board area after expanding 
+	-- the board_holes_master by half the
+	-- line width of a particular fill zone:
+	holes : pac_polygon_list.list;
 
-	offset_scratch : type_distance;
 	
+
+
+	---- Returns a list of polygons caused by holes in the board.
+	---- The board_holes_master are expanded by half the given line width:
+	--procedure holes_to_polygons (
+		--line_width	: in type_track_width)
+		--return pac_polygon_list.list
+	--is
+		--result : pac_polygon_list.list := board_holes_master;
+	--begin
+		--log (text => "expanding holes (" & count_type'image (result.length) & ") ...", 
+			 --level => log_threshold + 4);
+				
+		---- Expand the holes by half the line width of the fill lines:
+		--offset_holes (result, line_width * 0.5);
+		--return result;
+	--end holes_to_polygons;
+
 	
-	procedure log_lower_left_corner (
-		corner	: in type_point;
-		lth		: in type_log_level) 
+	-- Expands the board_holes_master by half the given line width
+	-- and loads variable "holes" with the result:
+	procedure expand_holes (
+		line_width	: in type_track_width)
 	is begin
-		log (text => "lower left corner:" & to_string (corner),
-			level => lth);
-	end log_lower_left_corner;
+		holes := board_holes_master;
+		
+		log (text => "expanding holes (" & count_type'image (holes.length) & ") ...", 
+			 level => log_threshold + 4);
+				
+		-- Expand the holes by half the line width of the fill lines:
+		offset_holes (holes, line_width * 0.5);
+	end expand_holes;
 
 
+	-- Crops the given zone by the outer board contours and the holes.
+	-- Assumes that variable "holes" has been updated by procedure expand_holes:
+	function zone_to_polygons (
+		zone		: in type_polygon;
+		line_width	: in type_track_width)
+		return pac_polygon_list.list
+	is		
+		outer_contour : type_polygon := board_outer_contour_master;
 
+		-- After clipping the zone by the outer board contours
+		-- we get a list of islands:
+		islands : pac_polygon_list.list;				
+	begin
+		log (text => "processing board contours ...", level => log_threshold + 4);
+		log_indentation_up;
+		
+		-- Shrink the outer contour (of the board) by half the line 
+		-- width of the zone border:
+		log (text => "outer contour ...", level => log_threshold + 4);
+		offset_polygon (outer_contour, - type_float_internal_positive (line_width) * 0.5);
+
+		-- Clip the fill zone by the outer contour of the board.
+		-- The zone may shrink or disintegrate into smaller islands:
+		islands := clip (zone, outer_contour);
+
+		-- Now we crop the islands by the holes.
+		-- This adresses holes that
+		-- - cause islands to shrink
+		-- - cause a fragmentation of islands
+		-- Holes that are completely inside islands are ignored here.
+		islands := multi_crop_2 (
+			polygon_B_list	=> islands,
+			polygon_A_list	=> holes,
+			debug			=> false);
+			--debug			=> true);
+
+		log_indentation_down;
+
+		return islands;
+	end zone_to_polygons;
+	
+	
 	-- Returns a list of polygons caused by conductor
 	-- objects in the given signal layer.
 	-- The polygons are expanded by the zone_clearance or by
-	-- the clearance of a particlar net (the greater value of them is applied):
+	-- the clearance of a particular net (the greater value of them is applied):
 	function conductors_to_polygons (
 		zone_clearance	: in type_track_clearance;
 		layer 			: in type_signal_layer)
@@ -539,51 +617,6 @@ is
 		is
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;		
-
-
-			-- Crops the given zone by the outer board edges and the holes:
-			function process_board_contours (
-				zone		: in type_polygon;
-				line_width	: in type_track_width)
-				return pac_polygon_list.list
-			is		
-				outer_contour : type_polygon := board_outer_contour_master;
-				holes : pac_polygon_list.list := board_holes_master;
-
-				-- After clipping the outer board contour by
-				-- the holes we get a list of islands:
-				islands : pac_polygon_list.list;
-				
-			begin
-				log (text => "processing board contours ...", level => log_threshold + 4);
-				log_indentation_up;
-				
-				-- Shrink the outer contour (of the board) by half the line 
-				-- width of the fill lines:
-				log (text => "outer contour ...", level => log_threshold + 4);
-				offset_polygon (outer_contour, - type_float_internal_positive (line_width) * 0.5);
-
-				-- Clip the fill zone by the outer contour of the board.
-				-- The result is a list of islands:
-				islands := clip (zone, outer_contour);
-
-		
-				log (text => "holes (" & count_type'image (holes.length) & ") ...", level => log_threshold + 4);
-				
-				-- Expand the holes by half the line width of the fill lines:
-				offset_holes (holes, line_width * 0.5);
-
-				-- Now we crop the islands by the holes:
-				islands := multi_crop_2 (
-					polygon_B_list	=> islands,
-					polygon_A_list	=> holes,
-					debug			=> false);
-					--debug			=> true);
-
-				log_indentation_down;
-
-				return islands;
-			end process_board_contours;
 		
 			
 			procedure route_solid (
@@ -603,10 +636,8 @@ is
 				-- We fill the zones with lines from left to right.
 				lower_left_corner : type_point;
 
-
 				-- The width of border and fill lines:
 				line_width : type_track_width;
-
 				
 				-- Deletes the complete fill of the zone:
 				procedure clear_fill (
@@ -614,11 +645,8 @@ is
 				is begin
 					zone.islands := no_islands;
 				end clear_fill;
-
-
 			
 				islands : pac_polygon_list.list;
-
 				conductors, restrict, cutouts : pac_polygon_list.list;
 
 				
@@ -658,20 +686,20 @@ is
 					
 					-- Convert the contour of the candidate fill zone to a polygon.
 					-- Shrink the zone by half the line width so that the border of the zone
-					-- does not extend further than the user defined contour:
+					-- does not extend beyond than the user defined contour:
 					zone := to_polygon (element (zone_cursor), fab_tolerance);
+					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
 
 					-- CS log lowest left vertex
 					
-					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
 
+					expand_holes (line_width); -- updates variable "holes"
 					
 					-- Crop the zone by the outer board edges and the holes.
 					-- The zone gets fragmented into islands:
-					islands := process_board_contours (
+					islands := zone_to_polygons (
 						zone		=> zone,
-						line_width	=> line_width
-					);
+						line_width	=> line_width);
 
 
 
@@ -758,32 +786,96 @@ is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is 
+				use pac_route_hatched;
 				zone_cursor : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 
-				-- CS: delete all existing fill lines:
-				
-				-- The width of a fill line:
-				line_width : type_track_width;
+				-- The candidate fill zone must be converted to a polygon:
+				zone : type_polygon;
 
 				-- The boundaries of the polygon (greatest/smallest x/y):
 				boundaries : type_boundaries;
 
-				-- The total height of the polygon:
-				height : type_float_internal_positive;
+				-- We fill the zones with lines from left to right.
+				lower_left_corner : type_point;
 				
-			begin
+				-- The width of a fill line:
+				line_width : type_track_width;
+
+				-- Deletes the complete fill of the zone:
+				procedure clear_fill (
+					zone	: in out type_route_hatched)
+				is begin
+					zone.islands := no_islands;
+				end clear_fill;
+
+
+				islands : pac_polygon_list.list;
+				conductors, restrict, cutouts : pac_polygon_list.list;
+				
+
+				procedure set_islands (
+					zone : in out type_route_hatched)
+				is
+					procedure query_island (i : in pac_polygon_list.cursor) is begin
+						zone.islands.append ((
+							outer_border => type_outer_border (element (i)),
+							others		 => <>));					 
+					end query_island;
+					
+				begin
+					islands.iterate (query_island'access);
+				end set_islands;
+				
+				
+				-- The total height of the polygon:
+				--height : type_float_internal_positive;
+				
+			begin -- route_hatched
+				
 				while zone_cursor /= pac_route_hatched.no_element loop
 
+					log (text => "zone with corner nearest to origin:" 
+						 & to_string (get_corner_nearest_to_origin (element (zone_cursor))),
+						level => log_threshold + 3);
+
+					log_indentation_up;
+
+					-- clear the complete fill:
+					update_element (net.route.fill_zones.hatched, zone_cursor, clear_fill'access);
+
+					-- Get the width of the border and the fill lines.
+					-- NOTE: Each fill zone may have a special line width:
+					line_width := element (zone_cursor).width_min;
+
+
+					-- Convert the contour of the candidate fill zone to a polygon.
+					-- Shrink the zone by half the line width so that the border of the zone
+					-- does not extend beyond than the user defined contour:
+					zone := to_polygon (element (zone_cursor), fab_tolerance);
+					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
+
+					-- CS log lowest left vertex
+					
+
+					expand_holes (line_width); -- updates variable "holes"
+					
+					-- Crop the zone by the outer board edges and the holes.
+					-- The zone gets fragmented into islands:
+					islands := zone_to_polygons (
+						zone		=> zone,
+						line_width	=> line_width);
+
+
+					
+					
 					-- Get the boundaries of the polygon. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (element (zone_cursor), zero);
+					--boundaries := get_boundaries (element (zone_cursor), zero);
 					--log (text => to_string (boundaries), level => log_threshold + 2);
 
 					-- Get the total height of the polygon:
-					height := get_height (boundaries);
+					--height := get_height (boundaries);
 
-					-- Get the width of the fill lines:
-					line_width := element (zone_cursor).width_min;
 
 					
 					--log_net_name;
@@ -854,6 +946,8 @@ is
 		log_indentation_down;
 	end signal_contours;
 
+
+	offset_scratch : type_distance;
 	
 begin -- fill_fill_zones
 
