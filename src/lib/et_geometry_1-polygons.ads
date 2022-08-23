@@ -700,7 +700,9 @@ package et_geometry_1.polygons is
 		A_DOES_NOT_OVERLAP_B);
 
 	
-	
+	-- Returns the overlap status of polygon A and B.
+	-- Use function get_intersections to generate the required
+	-- intersections of edges.
 	function get_overlap_status (
 		polygon_A, polygon_B	: in type_polygon;
 		intersections			: in pac_intersections.list;
@@ -708,6 +710,11 @@ package et_geometry_1.polygons is
 		return type_overlap_status;
 
 
+	-- Returns the overlap status of polygon A and B.
+	-- Computes the required intersections by its own, thus
+	-- consuming more computation power and time. If intersections
+	-- of edges are already available, use function get_overlap_status
+	-- above instead:
 	function get_overlap_status (
 		polygon_A, polygon_B	: in type_polygon;
 		debug					: in boolean := false)
