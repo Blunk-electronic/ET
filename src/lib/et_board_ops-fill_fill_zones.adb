@@ -134,6 +134,8 @@ is
 				
 		-- Expand the holes by half the line width of the fill lines:
 		offset_holes (holes, line_width * 0.5);
+
+		multi_union (holes);
 	end expand_holes;
 
 
@@ -261,6 +263,41 @@ is
 		return result;
 	end cutouts_to_polygons;
 
+
+	
+	cropping_basket : pac_polygon_list.list;
+
+	procedure empty_basket
+		--basket		: in out pac_polygon_list.list)
+	is begin
+		cropping_basket.clear;
+	end empty_basket;
+	
+	
+	procedure put_into_basket (
+		--basket		: in out pac_polygon_list.list;
+		polygons	: in out pac_polygon_list.list)
+	is begin
+		cropping_basket.splice (before => pac_polygon_list.no_element, source => polygons);
+		multi_union (cropping_basket);
+	end put_into_basket;
+
+
+	procedure make_inner_borders (
+		island : in out type_island)
+	is 
+		procedure query_polygon (p : in pac_polygon_list.cursor) is
+		begin
+			null;
+		end query_polygon;
+
+		inner_borders : pac_polygon_list.list := 
+			get_inside_polygons (type_polygon (island.outer_border), cropping_basket);
+	begin
+		--cropping_basket.iterate (query_polygon'access);
+		null;
+		--island.inn
+	end make_inner_borders;
 	
 	
 	-- Computes the horizontal fill lines required after given start point.
@@ -648,7 +685,7 @@ is
 			
 				islands : pac_polygon_list.list;
 				conductors, restrict, cutouts : pac_polygon_list.list;
-
+					
 				
 				procedure set_islands (
 					zone : in out type_route_solid)
@@ -664,6 +701,17 @@ is
 				end set_islands;
 				
 
+				procedure set_inner_borders (
+					zone : in out type_route_solid)
+				is 
+					island_cursor : pac_islands.cursor := zone.islands.first;
+				begin
+					while island_cursor /= pac_islands.no_element loop
+						zone.islands.update_element (island_cursor, make_inner_borders'access);
+						next (island_cursor);
+					end loop;					
+				end set_inner_borders;
+				
 				
 			begin -- route_solid
 				
@@ -695,14 +743,16 @@ is
 
 					expand_holes (line_width); -- updates variable "holes"
 					
-					-- Crop the zone by the outer board edges and the holes.
+					-- Crop the zone by the outer board edges and the holes (stored in
+					-- variable "holes").
 					-- The zone gets fragmented into islands:
 					islands := zone_to_polygons (
 						zone		=> zone,
 						line_width	=> line_width);
 
 
-
+					empty_basket;
+					
 					-- Crop the islands by all conductor objects in the affected layer.
 					-- The clearance of these objects to the zone is determined by
 					-- the zone isolation or the net clearance. The greater value is applied:
@@ -710,31 +760,42 @@ is
 						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
 						layer			=> element (zone_cursor).properties.layer);
 
-					islands := multi_crop_2 (
-						polygon_B_list	=> islands,
-						polygon_A_list	=> conductors,
-						debug			=> false);
+					--islands := multi_crop_2 (
+						--polygon_B_list	=> islands,
+						--polygon_A_list	=> conductors,
+						--debug			=> false);
+
+					put_into_basket (conductors);
+					
 
 
 					
 					-- Crop the islands by all cutout areas in the affected layer.
 					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
 
-					islands := multi_crop_2 (
-						polygon_B_list	=> islands,
-						polygon_A_list	=> cutouts,
-						debug			=> false);
+					--islands := multi_crop_2 (
+						--polygon_B_list	=> islands,
+						--polygon_A_list	=> cutouts,
+						--debug			=> false);
 
+					put_into_basket (cutouts);
 
+					
 					
 					-- Crop the islands by all route restrict objects in the affected layer.
 					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
 
+					--islands := multi_crop_2 (
+						--polygon_B_list	=> islands,
+						--polygon_A_list	=> restrict,
+						--debug			=> false);
+
+					put_into_basket (restrict);
+
 					islands := multi_crop_2 (
 						polygon_B_list	=> islands,
-						polygon_A_list	=> restrict,
+						polygon_A_list	=> cropping_basket,
 						debug			=> false);
-
 
 					
 					
@@ -743,10 +804,11 @@ is
 						zone_cursor, set_islands'access);
 
 
+					-- Assign inner borders to the islands of the candidate zone:
+					net.route.fill_zones.solid.update_element (
+						zone_cursor, set_inner_borders'access);
 
-					---- CS: make cutout areas inside islands 
-					---- (caused by holes, vias, tracks, restrict areas ...)
-
+	
 					
 
 					-- Get the boundaries of the zone. From the boundaries we will
