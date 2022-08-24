@@ -204,13 +204,13 @@ is
 	use pac_islands;
 	
 	procedure query_island (i : in pac_islands.cursor) is
-		use pac_inner_borders;
+		use pac_polygon_list;
 		use pac_stripes;
 
 		island : type_island renames element (i);
 		drawn : boolean := false;
 
-		procedure query_inner_border (c : pac_inner_borders.cursor) is begin 
+		procedure query_inner_border (c : pac_polygon_list.cursor) is begin 
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,

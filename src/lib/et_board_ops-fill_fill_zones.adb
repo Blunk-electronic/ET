@@ -265,40 +265,25 @@ is
 
 
 	
-	cropping_basket : pac_polygon_list.list;
 
-	procedure empty_basket
-		--basket		: in out pac_polygon_list.list)
+
+	procedure empty_basket (
+		basket : in out pac_polygon_list.list)
 	is begin
-		cropping_basket.clear;
+		basket.clear;
 	end empty_basket;
 	
 	
 	procedure put_into_basket (
-		--basket		: in out pac_polygon_list.list;
+		basket		: in out pac_polygon_list.list;
 		polygons	: in out pac_polygon_list.list)
 	is begin
-		cropping_basket.splice (before => pac_polygon_list.no_element, source => polygons);
-		multi_union (cropping_basket);
+		basket.splice (before => pac_polygon_list.no_element, source => polygons);
+		multi_union (basket);
 	end put_into_basket;
 
 
-	procedure make_inner_borders (
-		island : in out type_island)
-	is 
-		procedure query_polygon (p : in pac_polygon_list.cursor) is
-		begin
-			null;
-		end query_polygon;
 
-		inner_borders : pac_polygon_list.list := 
-			get_inside_polygons (type_polygon (island.outer_border), cropping_basket);
-	begin
-		--cropping_basket.iterate (query_polygon'access);
-		null;
-		--island.inn
-	end make_inner_borders;
-	
 	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
@@ -682,17 +667,19 @@ is
 				is begin
 					zone.islands := no_islands;
 				end clear_fill;
-			
+
+				
 				islands : pac_polygon_list.list;
 				conductors, restrict, cutouts : pac_polygon_list.list;
-					
+				cropping_basket : pac_polygon_list.list;
+				
 				
 				procedure set_islands (
 					zone : in out type_route_solid)
 				is
 					procedure query_island (i : in pac_polygon_list.cursor) is begin
 						zone.islands.append ((
-							outer_border => type_outer_border (element (i)),
+							outer_border => element (i),
 							others		 => <>));					 
 					end query_island;
 					
@@ -705,8 +692,16 @@ is
 					zone : in out type_route_solid)
 				is 
 					island_cursor : pac_islands.cursor := zone.islands.first;
+
+					procedure make_inner_borders (
+						island : in out type_island)
+					is begin
+						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
+					end make_inner_borders;					
+					
 				begin
 					while island_cursor /= pac_islands.no_element loop
+						--put_line ("i");
 						zone.islands.update_element (island_cursor, make_inner_borders'access);
 						next (island_cursor);
 					end loop;					
@@ -751,7 +746,11 @@ is
 						line_width	=> line_width);
 
 
-					empty_basket;
+					
+					empty_basket (cropping_basket);
+
+					put_into_basket (cropping_basket, holes);
+
 					
 					-- Crop the islands by all conductor objects in the affected layer.
 					-- The clearance of these objects to the zone is determined by
@@ -765,7 +764,7 @@ is
 						--polygon_A_list	=> conductors,
 						--debug			=> false);
 
-					put_into_basket (conductors);
+					put_into_basket (cropping_basket, conductors);
 					
 
 
@@ -778,7 +777,7 @@ is
 						--polygon_A_list	=> cutouts,
 						--debug			=> false);
 
-					put_into_basket (cutouts);
+					put_into_basket (cropping_basket, cutouts);
 
 					
 					
@@ -790,7 +789,7 @@ is
 						--polygon_A_list	=> restrict,
 						--debug			=> false);
 
-					put_into_basket (restrict);
+					put_into_basket (cropping_basket, restrict);
 
 					islands := multi_crop_2 (
 						polygon_B_list	=> islands,
@@ -880,7 +879,7 @@ is
 				is
 					procedure query_island (i : in pac_polygon_list.cursor) is begin
 						zone.islands.append ((
-							outer_border => type_outer_border (element (i)),
+							outer_border => element (i),
 							others		 => <>));					 
 					end query_island;
 					

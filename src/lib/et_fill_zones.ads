@@ -82,23 +82,21 @@ package et_fill_zones is
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
+
+
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
-	-- Each island has an outer border (which is basically a polygon):
-	type type_outer_border is new type_polygon;
-
-	-- An island may have multiple inner areas which are not filled.
-	-- They are usually a result of holes in the PCB, tracks, pads, vias, ...
-	-- We call the border of such void area an inner border (which is basically a polygon):
-	type type_inner_border is new type_polygon;
-
-	-- Since we have lots of those inner borders we store them in a list:
-	package pac_inner_borders is new doubly_linked_lists (type_inner_border);
-
-
 	type type_island is record
-		outer_border	: type_outer_border; -- only one encircling the island
-		inner_borders	: pac_inner_borders.list; -- several inside the island
+		-- An island has an outer border:
+		outer_border	: type_polygon;
+		
+		-- An island may have multiple inner areas which are not filled.
+		-- They are a result of holes in the PCB, tracks, pads, vias, ...
+		-- We call such a void area an inner border.
+		-- There may be several of them inside the island:
+		inner_borders	: pac_polygon_list.list; 
+
+		-- The horizontal lines that fill the conducting area of the island:		
 		stripes			: pac_stripes.list;
 	end record;
 		
