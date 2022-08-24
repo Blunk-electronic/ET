@@ -266,19 +266,23 @@ is
 
 	
 
-
+	-- Clears the given basket:
 	procedure empty_basket (
 		basket : in out pac_polygon_list.list)
 	is begin
 		basket.clear;
 	end empty_basket;
 	
-	
+
+	-- Appends a list of polygons to the given basket.
+	-- NOTE: The given list will be emptied.
 	procedure put_into_basket (
 		basket		: in out pac_polygon_list.list;
 		polygons	: in out pac_polygon_list.list)
 	is begin
 		basket.splice (before => pac_polygon_list.no_element, source => polygons);
+
+		-- Merge overlapping polygons:
 		multi_union (basket);
 	end put_into_basket;
 
@@ -697,6 +701,8 @@ is
 						island : in out type_island)
 					is begin
 						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
+						-- CS provide function get_inside_polygons a list of cursors to polygon (in cropping_basket)
+						-- that have been processed already ? Could improve performance.
 					end make_inner_borders;					
 					
 				begin
@@ -746,9 +752,14 @@ is
 						line_width	=> line_width);
 
 
-					
+					-- Now we start collecting polygons caused by conductor objects,
+					-- polygon cutouts, restrict objects etc. in the cropping basket.
+					-- Later everything in the basket will be used to crop the islands
+					-- and to create inner borders inside the islands:
 					empty_basket (cropping_basket);
 
+					
+					-- Collect holes in basket:
 					put_into_basket (cropping_basket, holes);
 
 					
@@ -759,11 +770,6 @@ is
 						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
 						layer			=> element (zone_cursor).properties.layer);
 
-					--islands := multi_crop_2 (
-						--polygon_B_list	=> islands,
-						--polygon_A_list	=> conductors,
-						--debug			=> false);
-
 					put_into_basket (cropping_basket, conductors);
 					
 
@@ -771,37 +777,26 @@ is
 					
 					-- Crop the islands by all cutout areas in the affected layer.
 					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
-
-					--islands := multi_crop_2 (
-						--polygon_B_list	=> islands,
-						--polygon_A_list	=> cutouts,
-						--debug			=> false);
-
 					put_into_basket (cropping_basket, cutouts);
 
 					
 					
 					-- Crop the islands by all route restrict objects in the affected layer.
 					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
-
-					--islands := multi_crop_2 (
-						--polygon_B_list	=> islands,
-						--polygon_A_list	=> restrict,
-						--debug			=> false);
-
 					put_into_basket (cropping_basket, restrict);
 
+					
+
+					-- Now the basket is complete to crop its content with the islands.
+					-- The result are even more islands:
 					islands := multi_crop_2 (
 						polygon_B_list	=> islands,
 						polygon_A_list	=> cropping_basket,
 						debug			=> false);
-
-					
-					
+										
 					-- Assign the islands to the candidate fill zone:
 					net.route.fill_zones.solid.update_element (
 						zone_cursor, set_islands'access);
-
 
 					-- Assign inner borders to the islands of the candidate zone:
 					net.route.fill_zones.solid.update_element (

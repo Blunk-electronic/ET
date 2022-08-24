@@ -87,12 +87,13 @@ package et_fill_zones is
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
 	type type_island is record
-		-- An island has an outer border:
+		
+		-- An island has a single outer border (like a shoreline):
 		outer_border	: type_polygon;
 		
 		-- An island may have multiple inner areas which are not filled.
 		-- They are a result of holes in the PCB, tracks, pads, vias, ...
-		-- We call such a void area an inner border.
+		-- We call such a void area an inner border (like a lake inside an island).
 		-- There may be several of them inside the island:
 		inner_borders	: pac_polygon_list.list; 
 
