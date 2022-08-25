@@ -102,24 +102,6 @@ is
 	-- line width of a particular fill zone:
 	holes : pac_polygon_list.list;
 
-	
-
-
-	---- Returns a list of polygons caused by holes in the board.
-	---- The board_holes_master are expanded by half the given line width:
-	--procedure holes_to_polygons (
-		--line_width	: in type_track_width)
-		--return pac_polygon_list.list
-	--is
-		--result : pac_polygon_list.list := board_holes_master;
-	--begin
-		--log (text => "expanding holes (" & count_type'image (result.length) & ") ...", 
-			 --level => log_threshold + 4);
-				
-		---- Expand the holes by half the line width of the fill lines:
-		--offset_holes (result, line_width * 0.5);
-		--return result;
-	--end holes_to_polygons;
 
 	
 	-- Expands the board_holes_master by half the given line width
@@ -286,8 +268,7 @@ is
 		multi_union (basket);
 	end put_into_basket;
 
-
-
+	
 	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
@@ -656,12 +637,6 @@ is
 				-- The candidate fill zone must be converted to a polygon:
 				zone : type_polygon;
 				
-				-- The boundaries of the zone (greatest/smallest x/y):
-				boundaries : type_boundaries;
-
-				-- We fill the zones with lines from left to right.
-				lower_left_corner : type_point;
-
 				-- The width of border and fill lines:
 				line_width : type_track_width;
 				
@@ -713,6 +688,27 @@ is
 					end loop;					
 				end set_inner_borders;
 				
+
+				procedure fill_islands (
+					zone : in out type_route_solid)
+				is 
+					island_cursor : pac_islands.cursor := zone.islands.first;
+			
+					-- The boundaries of the island (greatest/smallest x/y):
+					boundaries : type_boundaries;
+
+					-- We fill the island with lines from left to right.
+					lower_left_corner : type_point;
+
+				begin
+					while island_cursor /= pac_islands.no_element loop
+						--put_line ("i");
+						--zone.islands.update_element (island_cursor, ...);
+						next (island_cursor);
+					end loop;					
+				end fill_islands;
+
+
 				
 			begin -- route_solid
 				
@@ -795,44 +791,15 @@ is
 						debug			=> false);
 										
 					-- Assign the islands to the candidate fill zone:
-					net.route.fill_zones.solid.update_element (
-						zone_cursor, set_islands'access);
+					net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
 
 					-- Assign inner borders to the islands of the candidate zone:
-					net.route.fill_zones.solid.update_element (
-						zone_cursor, set_inner_borders'access);
-
+					net.route.fill_zones.solid.update_element (zone_cursor, set_inner_borders'access);
 	
+					-- Fill the islands with stripes:
+					net.route.fill_zones.solid.update_element (zone_cursor, fill_islands'access);
 					
-
-					-- Get the boundaries of the zone. From the boundaries we will
-					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (zone, type_float_internal_positive (zero));
-					--log (text => to_string (boundaries), level => log_threshold + 2);
-					
-					-- obtain the lower left corner of the zone from the boundaries:
-					--lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
-
-					
-					--log_indentation_up;
-
-					---- compute the rows:
-					--rows := make_rows (
-						--net_cursor		=> net_cursor,
-						--net_class		=> net_class,
-						--fill_zone		=> (observe => true, outline => et_fill_zones.type_zone (element (polygon_cursor))),
-						--layer			=> element (polygon_cursor).properties.layer,
-						--width			=> element (polygon_cursor).width_min,
-						--height			=> get_height (boundaries),
-						--start_point_in	=> lower_left_corner,
-						--lth				=> log_threshold + 3);
-
-					--update_element (net.route.fill_zones.solid, polygon_cursor, add_rows'access);
-					
-					--log_indentation_down;
-					log_indentation_down;
-					
+					log_indentation_down;					
 					next (zone_cursor);
 				end loop;
 			end route_solid;
@@ -847,13 +814,7 @@ is
 
 				-- The candidate fill zone must be converted to a polygon:
 				zone : type_polygon;
-
-				-- The boundaries of the polygon (greatest/smallest x/y):
-				boundaries : type_boundaries;
-
-				-- We fill the zones with lines from left to right.
-				lower_left_corner : type_point;
-				
+	
 				-- The width of a fill line:
 				line_width : type_track_width;
 
@@ -989,28 +950,15 @@ is
 						debug			=> false);
 										
 					-- Assign the islands to the candidate fill zone:
-					net.route.fill_zones.hatched.update_element (
-						zone_cursor, set_islands'access);
+					net.route.fill_zones.hatched.update_element (zone_cursor, set_islands'access);
 
 					-- Assign inner borders to the islands of the candidate zone:
-					net.route.fill_zones.hatched.update_element (
-						zone_cursor, set_inner_borders'access);
+					net.route.fill_zones.hatched.update_element (zone_cursor, set_inner_borders'access);
 
+					-- Fill the islands with stripes:
+					-- CS net.route.fill_zones.hatched.update_element (zone_cursor, fill_islands'access);
 
-
-					
-
-					-- Get the boundaries of the zone. From the boundaries we will
-					-- later derive the total height and the lower left corner:
-					boundaries := get_boundaries (zone, type_float_internal_positive (zero));
-					--log (text => to_string (boundaries), level => log_threshold + 2);
-					
-					-- obtain the lower left corner of the zone from the boundaries:
-					--lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
-
-
-					--log_indentation_down;
+					log_indentation_down;
 					next (zone_cursor);
 				end loop;
 			end route_hatched;
