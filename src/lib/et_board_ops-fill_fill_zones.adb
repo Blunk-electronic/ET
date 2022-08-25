@@ -867,6 +867,7 @@ is
 
 				islands : pac_polygon_list.list;
 				conductors, restrict, cutouts : pac_polygon_list.list;
+				cropping_basket : pac_polygon_list.list;
 				
 
 				procedure set_islands (
@@ -882,6 +883,28 @@ is
 					islands.iterate (query_island'access);
 				end set_islands;
 				
+
+				procedure set_inner_borders (
+					zone : in out type_route_hatched)
+				is 
+					island_cursor : pac_islands.cursor := zone.islands.first;
+
+					procedure make_inner_borders (
+						island : in out type_island)
+					is begin
+						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
+						-- CS provide function get_inside_polygons a list of cursors to polygon (in cropping_basket)
+						-- that have been processed already ? Could improve performance.
+					end make_inner_borders;					
+					
+				begin
+					while island_cursor /= pac_islands.no_element loop
+						--put_line ("i");
+						zone.islands.update_element (island_cursor, make_inner_borders'access);
+						next (island_cursor);
+					end loop;					
+				end set_inner_borders;
+
 				
 				-- The total height of the polygon:
 				--height : type_float_internal_positive;
@@ -915,28 +938,77 @@ is
 
 					expand_holes (line_width); -- updates variable "holes"
 					
-					-- Crop the zone by the outer board edges and the holes.
+					-- Crop the zone by the outer board edges and the holes (stored in
+					-- variable "holes").
 					-- The zone gets fragmented into islands:
 					islands := zone_to_polygons (
 						zone		=> zone,
 						line_width	=> line_width);
 
 
+					-- Now we start collecting polygons caused by conductor objects,
+					-- polygon cutouts, restrict objects etc. in the cropping basket.
+					-- Later everything in the basket will be used to crop the islands
+					-- and to create inner borders inside the islands:
+					empty_basket (cropping_basket);
+
+					
+					-- Collect holes in basket:
+					put_into_basket (cropping_basket, holes);
+
+					
+					-- Crop the islands by all conductor objects in the affected layer.
+					-- The clearance of these objects to the zone is determined by
+					-- the zone isolation or the net clearance. The greater value is applied:
+					conductors := conductors_to_polygons (
+						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
+						layer			=> element (zone_cursor).properties.layer);
+
+					put_into_basket (cropping_basket, conductors);
+					
+
+
+					
+					-- Crop the islands by all cutout areas in the affected layer.
+					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
+					put_into_basket (cropping_basket, cutouts);
+
 					
 					
-					-- Get the boundaries of the polygon. From the boundaries we will
+					-- Crop the islands by all route restrict objects in the affected layer.
+					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
+					put_into_basket (cropping_basket, restrict);
+
+					
+
+					-- Now the basket is complete to crop its content with the islands.
+					-- The result are even more islands:
+					islands := multi_crop_2 (
+						polygon_B_list	=> islands,
+						polygon_A_list	=> cropping_basket,
+						debug			=> false);
+										
+					-- Assign the islands to the candidate fill zone:
+					net.route.fill_zones.hatched.update_element (
+						zone_cursor, set_islands'access);
+
+					-- Assign inner borders to the islands of the candidate zone:
+					net.route.fill_zones.hatched.update_element (
+						zone_cursor, set_inner_borders'access);
+
+
+
+					
+
+					-- Get the boundaries of the zone. From the boundaries we will
 					-- later derive the total height and the lower left corner:
-					--boundaries := get_boundaries (element (zone_cursor), zero);
+					boundaries := get_boundaries (zone, type_float_internal_positive (zero));
 					--log (text => to_string (boundaries), level => log_threshold + 2);
-
-					-- Get the total height of the polygon:
-					--height := get_height (boundaries);
-
-
 					
-					--log_net_name;
-					--lower_left_corner := get_lower_left_corner (element (p));
-					--log_lower_left_corner (log_threshold + 3);
+					-- obtain the lower left corner of the zone from the boundaries:
+					--lower_left_corner := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
+					--log_lower_left_corner (lower_left_corner, log_threshold + 2);
+
 
 					--log_indentation_down;
 					next (zone_cursor);
