@@ -676,9 +676,9 @@ board led_driver set zone connection thermal # solid
 ```
 board led_driver set zone hatching width 0.3
 ```
-```
+<!--```
 board led_driver set zone hatching border 0.4
-```
+```-->
 ```
 board led_driver set zone hatching spacing 1.1
 ```
