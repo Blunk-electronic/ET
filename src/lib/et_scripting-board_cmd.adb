@@ -1740,7 +1740,6 @@ is
 		kw_radius		: constant string := "radius";
 		
 		kw_hatching		: constant string := "hatching";
-		kw_border		: constant string := "border";
 		kw_spacing		: constant string := "spacing";
 		
 		kw_connection	: constant string := "connection";
@@ -1825,27 +1824,11 @@ is
 		end set_connection;	
 
 		
-		procedure set_hatching_line_width (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
-		is begin
-			module.board.user_settings.polygons_conductor.hatching.line_width := to_distance (f (7));
-		end set_hatching_line_width;	
-
-		
-		procedure set_hatching_border_width (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
-		is begin
-			module.board.user_settings.polygons_conductor.hatching.border_width := to_distance (f (7));
-		end set_hatching_border_width;	
-
-		
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.hatching.spacing := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.spacing := to_distance (f (7));
 		end set_hatching_spacing;	
 
 		
@@ -1914,23 +1897,15 @@ is
 							& " after keyword " & enclose_in_quotes (kw_easing) & " !";
 					end if;
 
-				-- board demo set polygon hatching width/border/spacing 0.3
+				-- board demo set polygon hatching spacing 0.3
 				elsif f (5) = kw_hatching then
 
-					if f (6) = kw_width then
-						update_element (generic_modules, module_cursor, set_hatching_line_width'access);
-
-					elsif f (6) = kw_border then
-						update_element (generic_modules, module_cursor, set_hatching_border_width'access);
-
-					elsif f (6) = kw_spacing then
+					if f (6) = kw_spacing then
 						update_element (generic_modules, module_cursor, set_hatching_spacing'access);
 						
 					else
 						raise syntax_error_1 with
-						"ERROR: Expect keywords " 
-							& enclose_in_quotes (kw_width) & comma
-							& enclose_in_quotes (kw_border) & " or "
+						"ERROR: Expect keyword " 
 							& enclose_in_quotes (kw_spacing) 
 							& " after keyword " & enclose_in_quotes (kw_hatching) & " !";
 					end if;
@@ -2010,7 +1985,7 @@ is
 
 					ph := (p with 
 						fill_style	=> HATCHED,
-						hatching	=> settings.polygons_conductor.hatching,
+						spacing		=> settings.polygons_conductor.spacing,
 						width_min	=> settings.polygons_conductor.min_width,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
@@ -2166,7 +2141,7 @@ is
 			begin
 				p1 := (p0 with 
 					fill_style	=> HATCHED,
-					hatching	=> settings.polygons_conductor.hatching,
+					spacing		=> settings.polygons_conductor.spacing,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,			
@@ -2196,7 +2171,7 @@ is
 			begin
 				p1 := (p0 with 
 					fill_style	=> HATCHED,
-					hatching	=> settings.polygons_conductor.hatching,
+					spacing		=> settings.polygons_conductor.spacing,
 					width_min	=> settings.polygons_conductor.min_width,
 					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,

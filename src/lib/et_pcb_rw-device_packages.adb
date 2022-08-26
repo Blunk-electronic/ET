@@ -168,7 +168,7 @@ package body et_pcb_rw.device_packages is
 				write_isolation (element (cursor).isolation);
 
 				write_fill_style (element (cursor).fill_style);
-				write_hatching (element (cursor).hatching);
+				write_spacing (element (cursor).spacing);
 
 				contours_begin;
 				write_polygon_segments (element (cursor));
@@ -1444,7 +1444,7 @@ package body et_pcb_rw.device_packages is
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										islands		=> no_islands,
-										hatching	=> board_hatching_conductor,
+										spacing		=> fill_spacing,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -1473,7 +1473,7 @@ package body et_pcb_rw.device_packages is
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										islands		=> no_islands,
-										hatching	=> board_hatching_conductor,
+										spacing		=> fill_spacing,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -3048,18 +3048,10 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);													
 												board_easing.radius := to_distance (f (line, 2));
 												
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												board_hatching_conductor.line_width := to_distance (f (line, 2));
-
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_hatching_conductor.spacing := to_distance (f (line, 2));
+												fill_spacing := to_distance (f (line, 2));
 
-											elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-												expect_field_count (line, 2);													
-												board_hatching_conductor.border_width := to_distance (f (line, 2));
-												
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);
 												polygon_isolation := to_distance (f (line, 2));

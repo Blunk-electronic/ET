@@ -663,7 +663,7 @@ is
 
 				write_fill_style (HATCHED);
 				
-				write_hatching (element (polygon_hatched_cursor).hatching);
+				write_spacing (element (polygon_hatched_cursor).spacing);
 
 				case element (polygon_hatched_cursor).connection is
 					when THERMAL => 
@@ -1310,7 +1310,7 @@ is
 			write_signal_layer (element (cursor).properties.layer);
 
 			write_fill_style (element (cursor).fill_style);
-			write_hatching (element (cursor).hatching);
+			write_spacing (element (cursor).spacing);
 
 			write_polygon_segments (type_contour (element (cursor)));
 
@@ -1462,6 +1462,7 @@ is
 				section_mark (section_vias, FOOTER);
 			end vias;
 
+			
 			procedure polygons is begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
@@ -1470,7 +1471,7 @@ is
 				write_priority (us.polygons_conductor.priority_level);
 				write_isolation (us.polygons_conductor.isolation);
 				
-				write_hatching (us.polygons_conductor.hatching);
+				write_spacing (us.polygons_conductor.spacing);
 				
 				write_pad_connection (us.polygons_conductor.connection);
 				write_thermal (us.polygons_conductor.thermal);
@@ -1479,7 +1480,8 @@ is
 				
 				section_mark (section_fill_zones_conductor, FOOTER);
 			end polygons;
-		
+
+			
 		begin -- query_user_settings
 			section_mark (section_user_settings, HEADER);
 

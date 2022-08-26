@@ -2317,17 +2317,9 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.isolation := to_distance (f (line, 2));
 
-		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.5
-			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.hatching.line_width := to_distance (f (line, 2));
-
-		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.hatching.border_width := to_distance (f (line, 2));
-
 		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.5
 			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.hatching.spacing := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.spacing := to_distance (f (line, 2));
 
 		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 			expect_field_count (line, 2);
@@ -4155,7 +4147,7 @@ is
 									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
 									width_min	=> polygon_width_min,
-									hatching	=> board_hatching_conductor));
+									spacing		=> fill_spacing));
 					end case;
 				end do_it;
 

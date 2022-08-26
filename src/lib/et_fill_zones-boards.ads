@@ -74,7 +74,7 @@ package et_fill_zones.boards is
 		fill_style		: type_fill_style := fill_style_default;
 
 		-- relevant if fill style is HATCHED:
-		hatching		: type_conductor_hatching;
+		spacing			: type_track_clearance := type_track_clearance'first;
 
 		min_width		: type_track_width := type_track_width'first;
 		isolation		: type_track_clearance := type_track_clearance'first;

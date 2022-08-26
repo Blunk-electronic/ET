@@ -873,11 +873,9 @@ is
 					island_cursor : pac_islands.cursor := zone.islands.first;
 
 					style : constant type_style := (
-							style		=> HATCHED, 
-							hatching	=> (
-								border_width => line_width, -- same as linewidth of the zone
-								line_width	 => zone.hatching.line_width,
-								spacing		 => zone.hatching.spacing));
+							style		=> HATCHED,
+							linewidth	=> line_width,						   
+							spacing		=> zone.spacing);
 					
 				begin
 					while island_cursor /= pac_islands.no_element loop

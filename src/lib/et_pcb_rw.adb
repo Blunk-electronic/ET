@@ -161,6 +161,12 @@ package body et_pcb_rw is
 		write (keyword => keyword_radius, parameters => pac_geometry_brd.to_string (circle.radius));
 	end write_circle;
 
+
+	procedure write_spacing (spacing : in type_track_clearance) is
+	begin
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (spacing));
+	end;
+
 	
 	procedure write_hatching (hatching : in type_hatching) is
 	begin
@@ -950,7 +956,8 @@ package body et_pcb_rw is
 		-- reset contour:
 		contour := (others => <>);
 		-- NOTE: A contour by default consists of lines and arcs.
-		
+
+		fill_spacing		:= type_track_clearance'first;
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;
 		board_hatching		:= (others => <>);

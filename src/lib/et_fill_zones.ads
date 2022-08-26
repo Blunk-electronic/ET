@@ -106,12 +106,12 @@ package et_fill_zones is
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
 
-
-
 	type type_style (style : type_fill_style) is record
+		linewidth : type_track_width;
+		
 		case style is
-			when SOLID	 => linewidth : type_track_width;
-			when HATCHED => hatching : type_conductor_hatching;
+			when SOLID	 => null;
+			when HATCHED => spacing : type_track_clearance;
 		end case;
 	end record;
 	
@@ -149,7 +149,7 @@ package et_fill_zones is
 		
 		case fill_style is
 			when SOLID		=> null;
-			when HATCHED	=> hatching : type_conductor_hatching;
+			when HATCHED	=> spacing : type_track_clearance;
 		end case;
 	end record;
 

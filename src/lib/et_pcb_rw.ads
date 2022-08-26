@@ -132,7 +132,7 @@ package et_pcb_rw is
 	-- writes center and radius of a circle
 	procedure write_circle (circle : in type_circle'class);
 
-	
+	procedure write_spacing (spacing : in type_track_clearance);
 	procedure write_hatching (hatching : in type_hatching);
 	procedure write_hatching (hatching : in type_conductor_hatching);
 	procedure write_easing (easing: in type_easing);
@@ -245,6 +245,7 @@ package et_pcb_rw is
 	board_fill_style : type_fill_style := fill_style_default;
 	board_filled : type_filled := filled_default;
 
+	fill_spacing : type_track_clearance := type_track_clearance'first;
 	board_hatching : type_hatching;
 	board_hatching_conductor : type_conductor_hatching;
 	board_easing : type_easing;
