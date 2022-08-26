@@ -106,6 +106,20 @@ package et_fill_zones is
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
 
+	procedure make_stripes (
+		island	: in out type_island;
+		style	: in type_fill_style);
+
+	
+	procedure fill_island (
+		islands		: in out pac_islands.list;
+		position	: in pac_islands.cursor;
+		style		: in type_fill_style;
+		process		: not null access procedure (
+						island	: in out type_island;
+						style	: in type_fill_style));
+
+
 	
 -- A FILL ZONE IN GENERAL
 	

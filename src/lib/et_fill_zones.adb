@@ -44,6 +44,41 @@
 package body et_fill_zones is
 
 	procedure dummy is begin null; end;
+
+	
+	procedure make_stripes (
+		island	: in out type_island;
+		style	: in type_fill_style)
+	is
+		
+		-- The boundaries of the island (greatest/smallest x/y):
+		boundaries : type_boundaries;
+
+		-- We fill the island with lines from left to right.
+		lower_left_corner : type_point;
+
+	begin
+		null;
+	end make_stripes;
+
+	
+	
+	procedure fill_island (
+		islands		: in out pac_islands.list;
+		position	: in pac_islands.cursor;
+		style		: in type_fill_style;
+		process		: not null access procedure (
+						island	: in out type_island;
+						style	: in type_fill_style))
+	is
+		use pac_islands;
+		island : type_island := element (position);
+	begin
+		process (island, style);
+
+		islands.replace_element (position, island);
+	end fill_island;
+
 	
 	--procedure iterate (
 		--h_lines	: in pac_h_lines.list;

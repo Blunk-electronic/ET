@@ -269,6 +269,7 @@ is
 	end put_into_basket;
 
 	
+
 	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
@@ -671,7 +672,7 @@ is
 					zone : in out type_route_solid)
 				is 
 					island_cursor : pac_islands.cursor := zone.islands.first;
-
+	
 					procedure make_inner_borders (
 						island : in out type_island)
 					is begin
@@ -693,17 +694,9 @@ is
 					zone : in out type_route_solid)
 				is 
 					island_cursor : pac_islands.cursor := zone.islands.first;
-			
-					-- The boundaries of the island (greatest/smallest x/y):
-					boundaries : type_boundaries;
-
-					-- We fill the island with lines from left to right.
-					lower_left_corner : type_point;
-
 				begin
 					while island_cursor /= pac_islands.no_element loop
-						--put_line ("i");
-						--zone.islands.update_element (island_cursor, ...);
+						fill_island (zone.islands, island_cursor, SOLID, make_stripes'access);
 						next (island_cursor);
 					end loop;					
 				end fill_islands;
@@ -867,8 +860,18 @@ is
 				end set_inner_borders;
 
 				
-				-- The total height of the polygon:
-				--height : type_float_internal_positive;
+				procedure fill_islands (
+					zone : in out type_route_solid)
+				is 
+					island_cursor : pac_islands.cursor := zone.islands.first;
+				begin
+					while island_cursor /= pac_islands.no_element loop
+						--fill_island (zone.islands, island_cursor, SOLID, make_stripes'access);
+						--fill_island (zone.islands, island_cursor, zone.fill_style, make_stripes'access);
+						next (island_cursor);
+					end loop;					
+				end fill_islands;
+
 				
 			begin -- route_hatched
 				
