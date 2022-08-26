@@ -106,18 +106,28 @@ package et_fill_zones is
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
 
+
+
+	type type_style (style : type_fill_style) is record
+		case style is
+			when SOLID	 => linewidth : type_track_width;
+			when HATCHED => hatching : type_conductor_hatching;
+		end case;
+	end record;
+	
+
 	procedure make_stripes (
 		island	: in out type_island;
-		style	: in type_fill_style);
+		style	: in type_style);
 
 	
 	procedure fill_island (
 		islands		: in out pac_islands.list;
 		position	: in pac_islands.cursor;
-		style		: in type_fill_style;
+		style		: in type_style;
 		process		: not null access procedure (
 						island	: in out type_island;
-						style	: in type_fill_style));
+						style	: in type_style));
 
 
 	

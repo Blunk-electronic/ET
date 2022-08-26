@@ -694,9 +694,16 @@ is
 					zone : in out type_route_solid)
 				is 
 					island_cursor : pac_islands.cursor := zone.islands.first;
+					style : constant type_style := (style => SOLID, linewidth => line_width);
 				begin
 					while island_cursor /= pac_islands.no_element loop
-						fill_island (zone.islands, island_cursor, SOLID, make_stripes'access);
+
+						fill_island (
+							islands		=> zone.islands, 
+							position	=> island_cursor,
+							style		=> style,
+							process		=> make_stripes'access);
+						
 						next (island_cursor);
 					end loop;					
 				end fill_islands;
@@ -861,13 +868,25 @@ is
 
 				
 				procedure fill_islands (
-					zone : in out type_route_solid)
+					zone : in out type_route_hatched)
 				is 
 					island_cursor : pac_islands.cursor := zone.islands.first;
+
+					style : constant type_style := (
+							style		=> HATCHED, 
+							hatching	=> (
+								border_width => line_width, -- same as linewidth of the zone
+								line_width	 => zone.hatching.line_width,
+								spacing		 => zone.hatching.spacing));
+					
 				begin
 					while island_cursor /= pac_islands.no_element loop
-						--fill_island (zone.islands, island_cursor, SOLID, make_stripes'access);
-						--fill_island (zone.islands, island_cursor, zone.fill_style, make_stripes'access);
+						fill_island (
+							islands		=> zone.islands, 
+							position	=> island_cursor,
+							style		=> style,
+							process		=> make_stripes'access);
+
 						next (island_cursor);
 					end loop;					
 				end fill_islands;
@@ -959,7 +978,7 @@ is
 					net.route.fill_zones.hatched.update_element (zone_cursor, set_inner_borders'access);
 
 					-- Fill the islands with stripes:
-					-- CS net.route.fill_zones.hatched.update_element (zone_cursor, fill_islands'access);
+					net.route.fill_zones.hatched.update_element (zone_cursor, fill_islands'access);
 
 					log_indentation_down;
 					next (zone_cursor);
