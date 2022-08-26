@@ -1780,7 +1780,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.min_width := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.linewidth := to_distance (f (6));
 		end set_min_width;
 
 		
@@ -1968,7 +1968,7 @@ is
 			
 					ps := (p with 
 						fill_style	=> SOLID,
-						width_min	=> settings.polygons_conductor.min_width,
+						linewidth	=> settings.polygons_conductor.linewidth,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
@@ -1986,7 +1986,7 @@ is
 					ph := (p with 
 						fill_style	=> HATCHED,
 						spacing		=> settings.polygons_conductor.spacing,
-						width_min	=> settings.polygons_conductor.min_width,
+						linewidth	=> settings.polygons_conductor.linewidth,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
@@ -2084,7 +2084,7 @@ is
 			begin
 				p1 := (p0 with 
 					fill_style	=> SOLID,
-					width_min	=> settings.polygons_conductor.min_width,
+					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,					
 					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
@@ -2113,7 +2113,7 @@ is
 			begin
 				p1 := (p0 with 
 					fill_style	=> SOLID,
-					width_min	=> settings.polygons_conductor.min_width,
+					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);
@@ -2142,7 +2142,7 @@ is
 				p1 := (p0 with 
 					fill_style	=> HATCHED,
 					spacing		=> settings.polygons_conductor.spacing,
-					width_min	=> settings.polygons_conductor.min_width,
+					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,			
 					easing		=> settings.polygons_conductor.easing);
@@ -2172,7 +2172,7 @@ is
 				p1 := (p0 with 
 					fill_style	=> HATCHED,
 					spacing		=> settings.polygons_conductor.spacing,
-					width_min	=> settings.polygons_conductor.min_width,
+					linewidth	=> settings.polygons_conductor.linewidth,
 					isolation	=> settings.polygons_conductor.isolation,
 					islands		=> no_islands,
 					easing		=> settings.polygons_conductor.easing);

@@ -146,7 +146,7 @@ package body et_pcb_rw.device_packages is
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
-				write_width_min (element (cursor).width_min);
+				write_width_min (element (cursor).linewidth);
 				write_isolation (element (cursor).isolation);
 
 				write_fill_style (element (cursor).fill_style);
@@ -164,7 +164,7 @@ package body et_pcb_rw.device_packages is
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
-				write_width_min (element (cursor).width_min);
+				write_width_min (element (cursor).linewidth);
 				write_isolation (element (cursor).isolation);
 
 				write_fill_style (element (cursor).fill_style);
@@ -1434,7 +1434,7 @@ package body et_pcb_rw.device_packages is
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										islands		=> no_islands,
-										width_min 	=> polygon_width_min,
+										linewidth 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
@@ -1445,7 +1445,7 @@ package body et_pcb_rw.device_packages is
 										easing		=> board_easing,
 										islands		=> no_islands,
 										spacing		=> fill_spacing,
-										width_min 	=> polygon_width_min,
+										linewidth 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
 										
@@ -1463,7 +1463,7 @@ package body et_pcb_rw.device_packages is
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										islands		=> no_islands,
-										width_min 	=> polygon_width_min,
+										linewidth 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
@@ -1474,7 +1474,7 @@ package body et_pcb_rw.device_packages is
 										easing		=> board_easing,
 										islands		=> no_islands,
 										spacing		=> fill_spacing,
-										width_min 	=> polygon_width_min,
+										linewidth 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
 										

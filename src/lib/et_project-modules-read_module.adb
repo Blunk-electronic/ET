@@ -2305,9 +2305,9 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.fill_style := to_fill_style (f (line, 2));
 
-		elsif kw = keyword_min_width then -- min_width 0.3
+		elsif kw = keyword_line_width then -- line_width 0.3
 			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.min_width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.linewidth := to_distance (f (line, 2));
 
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
@@ -4135,7 +4135,7 @@ is
 									islands		=> no_islands,
 									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
-									width_min	=> polygon_width_min));
+									linewidth	=> polygon_width_min));
 
 						when HATCHED =>
 							pac_floating_hatched.append (
@@ -4146,7 +4146,7 @@ is
 									islands		=> no_islands,
 									properties	=> (signal_layer, contour_priority, others => <>),
 									isolation	=> polygon_isolation,
-									width_min	=> polygon_width_min,
+									linewidth	=> polygon_width_min,
 									spacing		=> fill_spacing));
 					end case;
 				end do_it;
@@ -4667,7 +4667,7 @@ is
 						
 						p.easing := board_easing;
 						
-						p.width_min	:= polygon_width_min;
+						p.linewidth	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
@@ -4687,7 +4687,7 @@ is
 						
 						p.easing := board_easing;
 						
-						p.width_min	:= polygon_width_min;
+						p.linewidth	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
@@ -4719,7 +4719,7 @@ is
 						
 						p.easing := board_easing;
 						
-						p.width_min	:= polygon_width_min;
+						p.linewidth	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;
@@ -4739,7 +4739,7 @@ is
 						
 						p.easing := board_easing;
 						
-						p.width_min	:= polygon_width_min;
+						p.linewidth	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
 						p.properties.layer			:= signal_layer;

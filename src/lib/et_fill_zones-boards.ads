@@ -76,7 +76,9 @@ package et_fill_zones.boards is
 		-- relevant if fill style is HATCHED:
 		spacing			: type_track_clearance := type_track_clearance'first;
 
-		min_width		: type_track_width := type_track_width'first;
+		-- linewidth of borders and fill stripes:
+		linewidth		: type_track_width := type_track_width'first;
+		
 		isolation		: type_track_clearance := type_track_clearance'first;
 		priority_level	: type_priority := type_priority'first;
 		easing			: type_easing;

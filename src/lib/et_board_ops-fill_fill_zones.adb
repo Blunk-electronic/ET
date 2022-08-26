@@ -726,7 +726,7 @@ is
 
 					-- Get the width of the border and the fill lines.
 					-- NOTE: Each fill zone may have a special line width:
-					line_width := element (zone_cursor).width_min;
+					line_width := element (zone_cursor).linewidth;
 
 					
 					-- Convert the contour of the candidate fill zone to a polygon.
@@ -905,7 +905,7 @@ is
 
 					-- Get the width of the border and the fill lines.
 					-- NOTE: Each fill zone may have a special line width:
-					line_width := element (zone_cursor).width_min;
+					line_width := element (zone_cursor).linewidth;
 
 
 					-- Convert the contour of the candidate fill zone to a polygon.

@@ -615,6 +615,7 @@ is
 			end loop;
 
 			write_vias;
+
 			
 			-- solid fill zones
 			while polygon_solid_cursor /= pac_route_solid.no_element loop
@@ -622,7 +623,7 @@ is
 
 				write_easing (element (polygon_solid_cursor).easing);
 				
-				write_width_min (element (polygon_solid_cursor).width_min);
+				write_width_min (element (polygon_solid_cursor).linewidth);
 				write_isolation (element (polygon_solid_cursor).isolation);
 				
 				write_priority (element (polygon_solid_cursor).properties.priority_level);
@@ -655,7 +656,7 @@ is
 
 				write_easing (element (polygon_hatched_cursor).easing);
 
-				write_width_min (element (polygon_hatched_cursor).width_min);
+				write_width_min (element (polygon_hatched_cursor).linewidth);
 				write_isolation (element (polygon_hatched_cursor).isolation);
 				
 				write_priority (element (polygon_hatched_cursor).properties.priority_level);
@@ -1275,6 +1276,7 @@ is
 			write_circle_conductor (element (cursor));
 		end;
 
+		
 		-- solid fill zones in conductor
 		use pac_floating_solid;
 		procedure write_polygon (cursor : in pac_floating_solid.cursor) is begin
@@ -1282,7 +1284,7 @@ is
 
 			write_easing (element (cursor).easing);
 
-			write_width_min (element (cursor).width_min);
+			write_width_min (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
@@ -1303,7 +1305,7 @@ is
 
 			write_easing (element (cursor).easing);
 
-			write_width_min (element (cursor).width_min);
+			write_width_min (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
@@ -1467,7 +1469,7 @@ is
 				section_mark (section_fill_zones_conductor, HEADER);
 
 				write_fill_style (us.polygons_conductor.fill_style);
-				write_width_min (us.polygons_conductor.min_width);
+				write_width_min (us.polygons_conductor.linewidth);
 				write_priority (us.polygons_conductor.priority_level);
 				write_isolation (us.polygons_conductor.isolation);
 				

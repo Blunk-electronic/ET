@@ -269,7 +269,7 @@ is
 			-- Draw the islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).width_min;			
+				fill_line_width := element (c).linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				iterate (element (c).islands, query_island'access);
 			end if;
@@ -295,7 +295,7 @@ is
 			-- Draw the islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).width_min;			
+				fill_line_width := element (c).linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				iterate (element (c).islands, query_island'access);
 			end if;
@@ -322,7 +322,7 @@ is
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).width_min;			
+				fill_line_width := element (c).linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				iterate (element (c).islands, query_island'access);
 			end if;
@@ -349,7 +349,7 @@ is
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).width_min;			
+				fill_line_width := element (c).linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
 				iterate (element (c).islands, query_island'access);
 			end if;

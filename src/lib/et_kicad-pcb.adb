@@ -4683,7 +4683,7 @@ package body et_kicad.pcb is
 		-- general stuff
 		log (text => "polygon" & 
 			 " " & text_signal_layer & to_string (element (cursor).properties.layer) &
-			 " " & text_width_min & to_string (element (cursor).width_min) &
+			 " " & text_width_min & to_string (element (cursor).linewidth) &
 			 " " & keyword_easing_style & to_string (element (cursor).easing.style) &
 			 " " & keyword_easing_radius & to_string (element (cursor).easing.radius),
 			 level => log_threshold);
@@ -5001,7 +5001,7 @@ package body et_kicad.pcb is
 										use et_fill_zones.boards;
 										p : type_route_solid (THERMAL);
 									begin
-										p.width_min	:= element (polygon_cursor).min_thickness;
+										p.linewidth	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
 										p.properties.priority_level := element (polygon_cursor).priority_level;
 										
@@ -5031,7 +5031,7 @@ package body et_kicad.pcb is
 										use et_fill_zones.boards;
 										p : type_route_solid (SOLID);
 									begin
-										p.width_min	:= element (polygon_cursor).min_thickness;
+										p.linewidth	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
 										p.properties.priority_level := element (polygon_cursor).priority_level;
 										
@@ -5365,7 +5365,7 @@ package body et_kicad.pcb is
 
 							
 							-- set the minimal line width:
-							p.width_min	:= element (polygon_cursor).min_thickness;
+							p.linewidth	:= element (polygon_cursor).min_thickness;
 
 							-- Translate the kicad layer id to the ET signal layer:
 							-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.

@@ -137,8 +137,8 @@ package et_fill_zones is
 		is new type_contour with -- outer contour as drawn by the operator
 	record
 
-		-- the minimum width of borders and fill lines:
-		width_min : type_track_width := type_track_width'first;
+		-- the width of borders and fill stripes:
+		linewidth : type_track_width := type_track_width'first;
 
 		-- the space between the fill_zone and foreign conductor objects:
 		isolation : type_track_clearance := type_track_clearance'first; 
