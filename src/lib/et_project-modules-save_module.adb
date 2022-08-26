@@ -348,6 +348,7 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
+			use et_symbol_rw;
 			use et_schematic;
 			use pac_strands;
 			use et_coordinates.pac_geometry_2;
@@ -595,7 +596,7 @@ is
 				write (keyword => keyword_start, parameters => to_string (element (line_cursor).start_point));
 				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).end_point));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-				write (keyword => et_pcb_rw.keyword_width, parameters => to_string (element (line_cursor).width));
+				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
 				section_mark (section_line, FOOTER);
 				next (line_cursor);
@@ -607,7 +608,7 @@ is
 				write (keyword => keyword_center, parameters => to_string (element (arc_cursor).center));
 				write (keyword => keyword_start , parameters => to_string (element (arc_cursor).start_point));
 				write (keyword => keyword_end   , parameters => to_string (element (arc_cursor).end_point));
-				write (keyword => et_pcb_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
+				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				
 				section_mark (section_arc, FOOTER);
@@ -623,7 +624,7 @@ is
 
 				write_easing (element (polygon_solid_cursor).easing);
 				
-				write_width_min (element (polygon_solid_cursor).linewidth);
+				write_width (element (polygon_solid_cursor).linewidth);
 				write_isolation (element (polygon_solid_cursor).isolation);
 				
 				write_priority (element (polygon_solid_cursor).properties.priority_level);
@@ -656,7 +657,7 @@ is
 
 				write_easing (element (polygon_hatched_cursor).easing);
 
-				write_width_min (element (polygon_hatched_cursor).linewidth);
+				write_width (element (polygon_hatched_cursor).linewidth);
 				write_isolation (element (polygon_hatched_cursor).isolation);
 				
 				write_priority (element (polygon_hatched_cursor).properties.priority_level);
@@ -731,6 +732,7 @@ is
 
 	
 	procedure query_devices is		
+		use et_symbol_rw;
 		use et_schematic;
 		use et_symbols;
 		use pac_devices_sch;
@@ -883,6 +885,7 @@ is
 		section_mark (section_devices, FOOTER);
 	end query_devices;
 
+	
 	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
 		use et_assembly_variants;
@@ -1093,6 +1096,7 @@ is
 
 	
 	procedure query_submodules is		
+		use et_symbol_rw;
 		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
@@ -1137,7 +1141,9 @@ is
 		section_mark (section_submodules, FOOTER);
 	end query_submodules;
 
+	
 	procedure query_texts is	
+		use et_symbol_rw;
 		use et_symbols.pac_text;
 		use et_coordinates;
 		use et_coordinates.pac_geometry_2;
@@ -1284,7 +1290,7 @@ is
 
 			write_easing (element (cursor).easing);
 
-			write_width_min (element (cursor).linewidth);
+			write_width (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
@@ -1305,7 +1311,7 @@ is
 
 			write_easing (element (cursor).easing);
 
-			write_width_min (element (cursor).linewidth);
+			write_width (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
@@ -1469,7 +1475,7 @@ is
 				section_mark (section_fill_zones_conductor, HEADER);
 
 				write_fill_style (us.polygons_conductor.fill_style);
-				write_width_min (us.polygons_conductor.linewidth);
+				write_width (us.polygons_conductor.linewidth);
 				write_priority (us.polygons_conductor.priority_level);
 				write_isolation (us.polygons_conductor.isolation);
 				

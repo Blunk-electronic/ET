@@ -453,6 +453,7 @@ is
 	
 	
 	procedure read_drawing_grid_schematic is 
+		use et_symbol_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -464,6 +465,7 @@ is
 		end if;
 	end;
 
+	
 	procedure read_drawing_grid_board is
 		kw : constant string := f (line, 1);
 	begin
@@ -623,6 +625,7 @@ is
 
 	
 	procedure read_net_segment is
+		use et_symbol_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -657,6 +660,7 @@ is
 
 	
 	procedure read_label is
+		use et_symbol_rw;
 		use et_coordinates;	
 		use pac_geometry_2;
 		use et_net_labels;
@@ -1183,6 +1187,7 @@ is
 
 	
 	procedure read_unit_placeholder is
+		use et_symbol_rw;
 		use et_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -1441,6 +1446,7 @@ is
 	procedure read_fill_zone_route is
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_2;
+		use et_fill_zones;
 		use et_fill_zones.boards;
 		use et_thermal_relief;
 		use et_pcb_stack;
@@ -1467,24 +1473,16 @@ is
 			expect_field_count (line, 2);
 			board_fill_style := to_fill_style (f (line, 2));
 
-		elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
-			expect_field_count (line, 2);
-			board_hatching_conductor.line_width := to_distance (f (line, 2));
-
 		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 			expect_field_count (line, 2);
 			board_hatching_conductor.spacing := to_distance (f (line, 2));
 
-		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-			expect_field_count (line, 2);
-			board_hatching_conductor.border_width := to_distance (f (line, 2));
-			
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 			validate_signal_layer;
 			
-		elsif kw = keyword_min_width then -- min_width 0.3
+		elsif kw = keyword_width then -- width 0.3
 			expect_field_count (line, 2);
 			polygon_width_min := to_distance (f (line, 2));
 
@@ -1583,6 +1581,7 @@ is
 	procedure read_fill_zone_conductor_non_electric is
 		use et_board_shapes_and_text;
 		use et_pcb_stack;
+		use et_fill_zones;
 		use et_fill_zones.boards;
 		use et_pcb_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
@@ -1600,19 +1599,11 @@ is
 			expect_field_count (line, 2);													
 			board_easing.radius := to_distance (f (line, 2));
 			
-		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-			expect_field_count (line, 2);													
-			board_hatching_conductor.line_width := to_distance (f (line, 2));
-
 		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 			expect_field_count (line, 2);													
 			board_hatching_conductor.spacing := to_distance (f (line, 2));
 
-		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-			expect_field_count (line, 2);													
-			board_hatching_conductor.border_width := to_distance (f (line, 2));
-			
-		elsif kw = keyword_min_width then -- min_width 0.5
+		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			polygon_width_min := to_distance (f (line, 2));
 			
@@ -1643,6 +1634,7 @@ is
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 
+	
 	-- Reads the parameters of a submodule:
 	procedure read_submodule is
 		use et_submodules;
@@ -1686,6 +1678,7 @@ is
 
 	
 	procedure read_submodule_port is
+		use et_symbol_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2296,6 +2289,7 @@ is
 	
 	procedure read_user_settings_fill_zones_conductor is
 		use et_board_shapes_and_text;
+		use et_fill_zones;
 		use et_fill_zones.boards;		
 		use et_thermal_relief;
 		use et_pcb_coordinates.pac_geometry_2;
@@ -2364,7 +2358,8 @@ is
 
 	
 	procedure process_line is 
-
+		use et_symbol_rw;
+		
 		procedure execute_section is
 		-- Once a section concludes, the temporarily variables are read, evaluated
 		-- and finally assembled to actual objects:
@@ -6170,7 +6165,7 @@ is
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										validate_signal_layer;
 
-									elsif kw = et_pcb_rw.keyword_width then -- width 0.5
+									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 										
@@ -6190,7 +6185,7 @@ is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = et_pcb_rw.keyword_width then -- width 0.5
+											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 												
@@ -6230,7 +6225,7 @@ is
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = et_pcb_rw.keyword_width then -- width 0.5
+									if kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 
@@ -6268,7 +6263,7 @@ is
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										validate_signal_layer;
 										
-									elsif kw = et_pcb_rw.keyword_width then -- width 0.5
+									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 										
@@ -6289,7 +6284,7 @@ is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = et_pcb_rw.keyword_width then -- width 0.5
+											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 												
@@ -6335,7 +6330,7 @@ is
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = et_pcb_rw.keyword_width then -- width 0.5
+									if kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_2.to_distance (f (line, 2));
 
@@ -6367,14 +6362,14 @@ is
 
 									if not read_board_circle (line) then
 									
-										declare
+										declare -- CS separate procedure
 											use et_board_shapes_and_text;
 											use et_pcb_coordinates;
 											use pac_geometry_2;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = et_pcb_rw.keyword_width then -- circumfence line width 0.5
+											if kw = et_board_shapes_and_text.keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
 												board_line_width := to_distance (f (line, 2));
 
@@ -6450,14 +6445,14 @@ is
 							
 						when SEC_CONDUCTOR =>
 							if not read_board_circle (line) then
-								declare
+								declare -- CS separate procdure
 									use et_board_shapes_and_text;
 									use et_pcb_stack;
 									use et_pcb_coordinates.pac_geometry_2;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = et_pcb_rw.keyword_width then -- width 0.5
+									if kw = et_board_shapes_and_text.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := to_distance (f (line, 2));
 

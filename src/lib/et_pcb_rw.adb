@@ -201,10 +201,6 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_width_min (width : in type_track_width) is begin
-		write (keyword => keyword_min_width, parameters => to_string (width));
-	end;
-
 	
 	procedure write_isolation (iso : in type_track_clearance) is begin
 		write (keyword => keyword_isolation, parameters => to_string (iso));

@@ -111,9 +111,9 @@ package body et_pcb_rw.device_packages is
 		end write_text;
 
 		
-		procedure write_conductor is
 		-- This is about conductor objects in either top or bottom.
 		-- These objects have no connection to any pad or signal.
+		procedure write_conductor is
 
 			use et_conductor_segment;
 			
@@ -146,7 +146,7 @@ package body et_pcb_rw.device_packages is
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
-				write_width_min (element (cursor).linewidth);
+				write_width (element (cursor).linewidth);
 				write_isolation (element (cursor).isolation);
 
 				write_fill_style (element (cursor).fill_style);
@@ -164,7 +164,7 @@ package body et_pcb_rw.device_packages is
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
-				write_width_min (element (cursor).linewidth);
+				write_width (element (cursor).linewidth);
 				write_isolation (element (cursor).isolation);
 
 				write_fill_style (element (cursor).fill_style);
@@ -3056,7 +3056,7 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);
 												polygon_isolation := to_distance (f (line, 2));
 
-											elsif kw = keyword_min_width then -- min_width 0.5
+											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												polygon_width_min := to_distance (f (line, 2));
 												

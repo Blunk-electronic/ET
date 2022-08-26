@@ -68,9 +68,6 @@ package et_fill_zones is
 	use pac_polygons;
 
 
-	procedure dummy;
-
-	
 	-- The factor that causes the fill stripes to overlap slightly.
 	-- It is required in order to avoid a possible small gap between them
 	-- that could occur during manufacturing.
@@ -132,6 +129,10 @@ package et_fill_zones is
 
 	
 -- A FILL ZONE IN GENERAL
+
+
+	keyword_isolation	: constant string := "isolation";
+
 	
 	type type_zone (fill_style : type_fill_style) 
 		is new type_contour with -- outer contour as drawn by the operator

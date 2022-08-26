@@ -117,7 +117,7 @@ package et_board_shapes_and_text is
 		width : in et_pcb_coordinates.type_distance);
 
 
-	
+	keyword_width 		: constant string := "width";
 	
 
 -- DOCUMENTATION RELEVANT (NON-FAB)
@@ -210,11 +210,6 @@ package et_board_shapes_and_text is
 
 
 	
-	-- the space between foreign pads and the polygon outline
-	keyword_isolation : constant string := "isolation";
-
-	-- the minimal width of a polygon
-	keyword_min_width : constant string := "min_width";
 
 	
 

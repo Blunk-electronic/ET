@@ -60,7 +60,7 @@ with et_symbols;
 
 with et_drills;
 
-with et_symbol_rw;				use et_symbol_rw;
+with et_symbol_rw;				--use et_symbol_rw;
 with et_device_rw;				use et_device_rw;
 with et_pcb_rw;					use et_pcb_rw;
 with et_schematic_rw;			use et_schematic_rw;

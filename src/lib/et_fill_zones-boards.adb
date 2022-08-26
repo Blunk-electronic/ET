@@ -108,7 +108,7 @@ package body et_fill_zones.boards is
 
 		end case;
 
-		append (keyword_min_width & to_string (fill_zone.linewidth));
+		append (keyword_width & to_string (fill_zone.linewidth));
 		append (keyword_isolation & to_string (fill_zone.isolation));
 		append (keyword_easing_style & space & to_string (fill_zone.easing.style));
 		append (keyword_easing_radius & to_string (fill_zone.easing.radius));

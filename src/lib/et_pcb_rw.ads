@@ -91,7 +91,7 @@ package et_pcb_rw is
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 	
 	keyword_description				: constant string := "description";	
-	keyword_width 					: constant string := "width";	
+	--keyword_width 					: constant string := "width";	
 	keyword_clearance				: constant string := "clearance";
 	keyword_track_width_min			: constant string := "track_width_min";
 	keyword_via_drill_min			: constant string := "via_drill_min";
@@ -137,7 +137,6 @@ package et_pcb_rw is
 	procedure write_hatching (hatching : in type_conductor_hatching);
 	procedure write_easing (easing: in type_easing);
 	procedure write_thermal (thermal : in type_relief_properties);
-	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in type_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
