@@ -161,34 +161,16 @@ is
 		-- Draw the circle if it is in the current layer:
 		if element (c).layer = current_layer then
 			
-			case element (c).filled is
-				when NO =>
-					-- We draw a normal non-filled circle:
-					set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+		-- We draw a normal non-filled circle:
+		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-					draw_circle (
-						area		=> in_area,
-						context		=> context,
-						circle		=> element (c),
-						filled		=> NO,
-						width		=> element (c).border_width,
-						height		=> self.frame_height);
-					
-				when YES =>
-					-- We draw a filled circle with a certain fill style:
-					case element (c).fill_style is
-						when SOLID =>
-							draw_circle (
-								area		=> in_area,
-								context		=> context,
-								circle		=> element (c),
-								filled		=> YES,
-								width		=> zero,
-								height		=> self.frame_height);
-
-						when HATCHED 	=> null; -- CS
-					end case;
-			end case;
+		draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> element (c),
+			filled		=> NO,
+			width		=> element (c).width,
+			height		=> self.frame_height);
 
 		end if;
 	end query_circle;

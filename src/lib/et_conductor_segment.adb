@@ -409,31 +409,11 @@ package body et_conductor_segment is
 		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in type_log_level) 
 	is begin
-		case element (cursor).filled is
-			when NO =>
-				log (text => "conductor circle face" & to_string (face) & space 
-					& to_string (type_circle (element (cursor)))
-					& " filled" & to_string (element (cursor).filled)
-					& " border width" & to_string (element (cursor).border_width),
-					level => log_threshold);
+		log (text => "conductor circle face" & to_string (face) & space 
+			& to_string (type_circle (element (cursor)))
+			& " width" & to_string (element (cursor).width),
+			level => log_threshold);
 
-			when YES =>
-				case element (cursor).fill_style is
-					when SOLID =>
-						log (text => "conductor circle face" & to_string (face) & space 
-							& to_string (type_circle (element (cursor)))
-							& " fill style" & to_string (element (cursor).fill_style),
-							level => log_threshold);
-
-					when HATCHED =>
-						log (text => "conductor circle face" & to_string (face) & space 
-							& to_string (type_circle (element (cursor)))
-							& " fill style" & to_string (element (cursor).fill_style),
-							-- CS show hatching details
-							level => log_threshold);
-						
-				end case;
-		end case;		
 	end circle_conductor_properties;
 
 	

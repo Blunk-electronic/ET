@@ -1766,6 +1766,7 @@ package body et_kicad_packages is
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
 						assy_doc.top.circles.append ((pac_geometry_2.type_circle (circle) with
@@ -1778,6 +1779,7 @@ package body et_kicad_packages is
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
 						keepout.top.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO));
@@ -1788,18 +1790,20 @@ package body et_kicad_packages is
 						keepout.bottom.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_COPPER => 
 						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width));
+							width => circle.width));
 						
 						circle_conductor_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						copper.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width));
+							width => circle.width));
 						
 						circle_conductor_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((pac_geometry_2.type_circle (circle) with
@@ -1812,6 +1816,7 @@ package body et_kicad_packages is
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_PASTE =>
 						stencil.top.circles.append ((pac_geometry_2.type_circle (circle) with

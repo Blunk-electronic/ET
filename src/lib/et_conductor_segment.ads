@@ -191,28 +191,15 @@ package et_conductor_segment is
 
 	
 -- CIRCLES
-	type type_conductor_circle (
-		filled		: type_filled;
-		fill_style	: type_fill_style) -- don't care if filled is NO
-		is new type_circle 
-	with record
-		case filled is
-			when NO => 
-				-- the line width of the circumfence:
-				border_width : type_track_width := type_track_width'first;
 
-			when YES =>
-				case fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						hatching : type_conductor_hatching;
-				end case;
-				
-		end case;
+	type type_conductor_circle is new type_circle with record
+		width	: type_track_width := type_track_width'first;
 	end record;
 
+	
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
+
 	
 	-- Logs the properties of the given circle:
 	procedure circle_conductor_properties (

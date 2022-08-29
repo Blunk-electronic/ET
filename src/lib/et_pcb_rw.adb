@@ -280,22 +280,7 @@ package body et_pcb_rw is
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
-		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
+		write (keyword => keyword_width, parameters => to_string (circle.width));
 		circle_end;
 	end write_circle_conductor;
 
@@ -303,26 +288,8 @@ package body et_pcb_rw is
 	procedure write_circle_conductor (circle : in et_conductor_segment.boards.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
+		write (keyword => keyword_width, parameters => to_string (circle.width));
 		write_signal_layer (circle.layer);
-
-		-- the signal layer:
-		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
-		
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
 		circle_end;
 	end write_circle_conductor;
 
@@ -920,27 +887,7 @@ package body et_pcb_rw is
 
 	
 	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle is begin
-		case board_filled is
-			when NO =>
-				return (type_circle (board_circle) with 
-					filled			=> NO,
-					fill_style		=> SOLID, -- don't care here
-					border_width	=> board_line_width);
-
-			when YES =>
-				case board_fill_style is
-					when SOLID =>
-						return (type_circle (board_circle) with 
-							filled		=> YES,
-							fill_style	=> SOLID);
-
-					when HATCHED =>
-						return (type_circle (board_circle) with
-							filled		=> YES,
-							fill_style	=> HATCHED,
-							hatching 	=> board_hatching_conductor);
-				end case;
-		end case;
+		return (type_circle (board_circle) with width => board_line_width);
 	end;
 
 	

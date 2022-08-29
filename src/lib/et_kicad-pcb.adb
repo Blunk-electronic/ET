@@ -3750,6 +3750,7 @@ package body et_kicad.pcb is
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
@@ -3762,6 +3763,7 @@ package body et_kicad.pcb is
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
 						package_keepout.top.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
@@ -3772,18 +3774,20 @@ package body et_kicad.pcb is
 						package_keepout.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_COPPER => 
 						package_copper.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
+							width => package_circle.width));
 
 						circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
+							width => package_circle.width));
 
 						circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
@@ -3796,6 +3800,7 @@ package body et_kicad.pcb is
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_PASTE =>
 						package_stencil.top.circles.append ((pac_geometry_2.type_circle (package_circle) with

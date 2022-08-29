@@ -2522,21 +2522,10 @@ is
 
 						set_color_conductor (context.cr, ly);
 
-						case circle.filled is
-							when NO =>
-								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
-									circle.border_width, self.frame_height);
+						set_line_width (context.cr, type_view_coordinate (circle.width));
 
-							when YES =>
-								case circle.fill_style is
-									when SOLID =>
-										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
-											zero, self.frame_height);
-
-									when HATCHED => null; -- CS
-								end case;
-						end case;
+						pac_draw_fab.draw_circle (in_area, context, circle, NO,
+							circle.width, self.frame_height);
 
 					end if;
 
