@@ -2514,7 +2514,7 @@ package body et_geometry_1.polygons is
 		end query_processed;
 		
 	begin
-		put_line ("polygons in :" & count_type'image (polygons.length));
+		--put_line ("polygons in :" & count_type'image (polygons.length));
 		polygons.iterate (query_polygon'access);
 
 		-- Remove the affected polygons required by caller:
@@ -2522,7 +2522,7 @@ package body et_geometry_1.polygons is
 			processed.iterate (query_processed'access);
 		end if;
 
-		put_line ("polygons out:" & count_type'image (polygons.length));
+		--put_line ("polygons out:" & count_type'image (polygons.length));
 		return result;
 	end get_inside_polygons;
 
