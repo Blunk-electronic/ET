@@ -2467,12 +2467,23 @@ package body et_geometry_1.polygons is
 	
 	function get_inside_polygons (
 		area		: in type_polygon;
-		polygons	: in pac_polygon_list.list)
+		polygons	: in out pac_polygon_list.list;
+		delete		: in boolean := true)
 		return pac_polygon_list.list
 	is
 		use pac_polygon_list;
 		result : pac_polygon_list.list;
 
+		-- If required by caller, cursors of affected polygons
+		-- are collected here for later removal:
+		package pac_processed is new doubly_linked_lists (pac_polygon_list.cursor);
+		use pac_processed;
+		processed : pac_processed.list;
+
+
+		-- This procedure tests whether the given candidate polygon
+		-- is inside the given area. If so then the affected polygon
+		-- is collected in list "result":
 		procedure query_polygon (p : in pac_polygon_list.cursor) is
 
 			status : constant type_overlap_status :=
@@ -2484,11 +2495,34 @@ package body et_geometry_1.polygons is
 		begin
 			if status = B_INSIDE_A then
 				result.append (element (p));
+
+				-- Collect the cursor of the affected polygon
+				-- in list "processed" if required by caller:
+				if delete then
+					processed.append (p);
+				end if;
 			end if;
 		end query_polygon;
+
+
+		-- This procedure queries the cursor of a processed polygon
+		-- and removes the polygon from the given list "polygons":
+		procedure query_processed (p : in pac_processed.cursor) is
+			p_tmp : pac_polygon_list.cursor := element (p);
+		begin
+			polygons.delete (p_tmp);
+		end query_processed;
 		
 	begin
+		put_line ("polygons in :" & count_type'image (polygons.length));
 		polygons.iterate (query_polygon'access);
+
+		-- Remove the affected polygons required by caller:
+		if delete then
+			processed.iterate (query_processed'access);
+		end if;
+
+		put_line ("polygons out:" & count_type'image (polygons.length));
 		return result;
 	end get_inside_polygons;
 

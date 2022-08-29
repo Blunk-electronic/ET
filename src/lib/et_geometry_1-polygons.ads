@@ -722,10 +722,13 @@ package et_geometry_1.polygons is
 
 	
 	-- Returns from the given list of polygons those which
-	-- are inside the given area:
+	-- are inside the given area.
+	-- Removes the affected polygons from the given list
+	-- if argument "delete" is true:
 	function get_inside_polygons (
 		area		: in type_polygon;
-		polygons	: in pac_polygon_list.list)
+		polygons	: in out pac_polygon_list.list;
+		delete		: in boolean := true)
 		return pac_polygon_list.list;
 	
 

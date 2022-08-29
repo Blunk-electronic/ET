@@ -677,8 +677,6 @@ is
 						island : in out type_island)
 					is begin
 						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
-						-- CS provide function get_inside_polygons a list of cursors to polygon (in cropping_basket)
-						-- that have been processed already ? Could improve performance.
 					end make_inner_borders;					
 					
 				begin
@@ -854,8 +852,6 @@ is
 						island : in out type_island)
 					is begin
 						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
-						-- CS provide function get_inside_polygons a list of cursors to polygon (in cropping_basket)
-						-- that have been processed already ? Could improve performance.
 					end make_inner_borders;					
 					
 				begin
