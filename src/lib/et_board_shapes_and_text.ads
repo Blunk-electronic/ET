@@ -181,19 +181,6 @@ package et_board_shapes_and_text is
 	end record;
 
 
-
-	-- GUI relevant only
-	type type_conductor_hatching is record
-		-- the width of the border line
-		border_width : type_track_width := type_track_width'first;
-		
-		-- the with of the lines inside the area:
-		line_width : type_track_width := type_track_width'first;
-
-		-- the space between the lines inside the area:
-		spacing	: type_track_clearance := type_track_clearance'first;
-	end record;
-
 	
 
 	-- Contours in non-conducor layers such as silkscreen, stencil, ...

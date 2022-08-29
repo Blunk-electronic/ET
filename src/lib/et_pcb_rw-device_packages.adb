@@ -2880,26 +2880,6 @@ package body et_pcb_rw.device_packages is
 												if kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
 													board_line_width := to_distance (f (line, 2));
-
-												elsif kw = keyword_filled then -- filled yes/no
-													expect_field_count (line, 2);													
-													board_filled := to_filled (f (line, 2));
-
-												elsif kw = keyword_fill_style then -- fill_style solid/hatched
-													expect_field_count (line, 2);													
-													board_fill_style := to_fill_style (f (line, 2));
-
-												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-													expect_field_count (line, 2);													
-													board_hatching_conductor.line_width := to_distance (f (line, 2));
-
-												elsif kw = keyword_hatching_border_width then -- hatching_border_width 1.0
-													board_hatching_conductor.border_width := to_distance (f (line, 2));
-
-												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-													expect_field_count (line, 2);													
-													board_hatching_conductor.spacing := to_distance (f (line, 2));
-													
 												else
 													invalid_keyword (kw);
 												end if;
