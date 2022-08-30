@@ -359,6 +359,13 @@ is
 		
 		
 	begin
+		log (text => "zone with corner nearest to origin:" 
+			 & to_string (get_corner_nearest_to_origin (zone)),
+			level => log_threshold + 3);
+
+		log_indentation_up;
+		
+		
 		-- Remove the old fill:
 		zone.islands := no_islands;
 		
@@ -429,6 +436,8 @@ is
 		-- Fill the islands with stripes:
 		fill_islands;
 
+		log_indentation_down;
+		
 	end fill_zone;
 
 
@@ -714,33 +723,31 @@ is
 
 
 	
-	procedure floating_polygons is
+	procedure floating_zones is
 		use pac_floating_solid;
-		
-		--procedure query_polygon (c : in pac_floating_solid.cursor) is begin
-			--lower_left_corner := get_lower_left_corner (element (c));
-			--log_lower_left_corner (log_threshold + 2);
-		--end query_polygon;
-	
 		use pac_floating_hatched;
 		
-		--procedure query_polygon (c : in pac_floating_hatched.cursor) is begin
-			--lower_left_corner := get_lower_left_corner (element (c));
-			--log_lower_left_corner (log_threshold + 2);
-		--end query_polygon;
 
 		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_floating_solid.cursor := module.board.conductors.fill_zones.solid.first;
-		begin
-			while c /= pac_floating_solid.no_element loop
+			zone_cursor : pac_floating_solid.cursor := module.board.conductors.fill_zones.solid.first;
 
-				--lower_left_corner := get_lower_left_corner (element (c));
-				--log_lower_left_corner (log_threshold + 2);
-				
-				next (c);
+			procedure do_it (
+				zone : in out type_floating_solid)
+			is begin
+				fill_zone (
+					zone		=> zone,
+					linewidth	=> element (zone_cursor).linewidth,
+					layer		=> zone.properties.layer,
+					clearance	=> zone.isolation);
+			end do_it;
+
+		begin
+			while zone_cursor /= pac_floating_solid.no_element loop
+				module.board.conductors.fill_zones.solid.update_element (zone_cursor, do_it'access);
+				next (zone_cursor);
 			end loop;
 		end floating_solid;
 
@@ -749,33 +756,36 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			c : pac_floating_hatched.cursor := module.board.conductors.fill_zones.hatched.first;
-		begin
-			while c /= pac_floating_hatched.no_element loop
+			zone_cursor : pac_floating_hatched.cursor := module.board.conductors.fill_zones.hatched.first;
 
-				--lower_left_corner := get_lower_left_corner (element (c));
-				--log_lower_left_corner (log_threshold + 2);
-				
-				next (c);
+			procedure do_it (
+				zone : in out type_floating_hatched)
+			is begin
+				fill_zone (
+					zone		=> zone,
+					linewidth	=> element (zone_cursor).linewidth,
+					layer		=> zone.properties.layer,
+					clearance	=> zone.isolation);
+			end do_it;
+			
+		begin
+			while zone_cursor /= pac_floating_hatched.no_element loop
+				module.board.conductors.fill_zones.hatched.update_element (zone_cursor, do_it'access);
+				next (zone_cursor);
 			end loop;
 		end floating_hatched;
 
 		
-	begin -- floating_polygons
-		log (text => "floating polygons ...", level => log_threshold + 1);
-
-		--polygon_cursor := element (
-		--iterate (element (module_cursor).board.conductors.polygons.solid, query_polygon'access);
-		--iterate (element (module_cursor).board.conductors.polygons.hatched, query_polygon'access);
-
+	begin -- floating_zones
+		log (text => "floating zones ...", level => log_threshold + 1);
 		update_element (generic_modules, module_cursor, floating_solid'access);
 		update_element (generic_modules, module_cursor, floating_hatched'access);
-	end floating_polygons;
+	end floating_zones;
 
 
 	
 	-- Fills polygons that are connected with a net:
-	procedure signal_contours is
+	procedure connected_zones is
 		use et_nets;
 		
 		use pac_nets;
@@ -806,25 +816,16 @@ is
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance)
-						);
+						clearance	=> get_greatest (zone.isolation, net_class.clearance));
 				end do_it;
 				
 				
 			begin -- route_solid
-				
 				while zone_cursor /= pac_route_solid.no_element loop
-
-					log (text => "zone with corner nearest to origin:" 
-						 & to_string (get_corner_nearest_to_origin (element (zone_cursor))),
-						level => log_threshold + 3);
-
-					log_indentation_up;
 
 					-- do the filling
 					net.route.fill_zones.solid.update_element (zone_cursor, do_it'access);
-					
-					log_indentation_down;					
+				
 					next (zone_cursor);
 				end loop;
 			end route_solid;
@@ -850,20 +851,12 @@ is
 				end do_it;
 					
 				
-			begin -- route_hatched
-				
+			begin -- route_hatched				
 				while zone_cursor /= pac_route_hatched.no_element loop
-
-					log (text => "zone with corner nearest to origin:" 
-						 & to_string (get_corner_nearest_to_origin (element (zone_cursor))),
-						level => log_threshold + 3);
-
-					log_indentation_up;
 
 					-- do the filling
 					net.route.fill_zones.hatched.update_element (zone_cursor, do_it'access);
-					
-					log_indentation_down;
+
 					next (zone_cursor);
 				end loop;
 			end route_hatched;
@@ -915,17 +908,16 @@ is
 			else
 				-- we query only the nets given by argument "nets":
 				nets.iterate (query_given_net'access);
-
 			end if;
 		end query_nets;
 
 		
 	begin 
-		log (text => "signal contours ...", level => log_threshold + 1);
+		log (text => "connected zones ...", level => log_threshold + 1);
 		log_indentation_up;
 		update_element (generic_modules, module_cursor, query_nets'access);
 		log_indentation_down;
-	end signal_contours;
+	end connected_zones;
 
 
 	offset_scratch : type_distance;
@@ -994,10 +986,9 @@ begin -- fill_fill_zones
 		all_zones := true;
 		
 		log_indentation_up;
-		signal_contours;
+		connected_zones;
 
-		-- CS floating_zones;
-		-- use class settings of class "default":
+		floating_zones;
 
 		log_indentation_down;
 					
@@ -1007,7 +998,7 @@ begin -- fill_fill_zones
 		all_zones := false;
 		
 		log_indentation_up;
-		signal_contours;
+		connected_zones;
 		log_indentation_down;
 		
 	end if;
