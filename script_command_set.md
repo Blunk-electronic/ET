@@ -702,7 +702,9 @@ Drawing the zone outline:
 ```
 board demo route net gnd 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 ```
-
+```
+board demo route freetrack 1 zone line 30 15 line 40 15 line 40 20 line 30 20
+```
 
 <!--Changing width. CS: Not implemented yet.
 ```
