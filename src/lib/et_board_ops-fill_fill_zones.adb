@@ -73,16 +73,6 @@ is
 	--use pac_cropped;
 	--use pac_clipped;
 
-
-	--procedure log_lower_left_corner (
-		--corner	: in type_point;
-		--lth		: in type_log_level) 
-	--is begin
-		--log (text => "lower left corner:" & to_string (corner),
-			--level => lth);
-	--end log_lower_left_corner;
-
-	
 	
 	-- The outer contour of the board. After shrinking by the
 	-- conductor-to-edge clearance this serves as master for

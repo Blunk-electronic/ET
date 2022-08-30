@@ -49,16 +49,41 @@ package body et_fill_zones is
 	procedure make_stripes (
 		island	: in out type_island;
 		style	: in type_style)
-	is
-		
+	is		
 		-- The boundaries of the island (greatest/smallest x/y):
-		boundaries : type_boundaries;
+		boundaries : constant type_boundaries := get_boundaries (island.outer_border, 0.0);
 
-		-- We fill the island with lines from left to right.
-		lower_left_corner : type_point;
+		height : constant type_float_internal_positive := get_height (boundaries);
+		bottom : constant type_float_internal_positive := boundaries.smallest_x;
+
+		effective_width : type_float_internal_positive;
+		stripe_count_rational : type_float_internal_positive;
+		stripe_count_natural : natural;
 
 	begin
-		null;
+		case style.style is
+			when SOLID =>
+				-- Since the stripes must overlap slightly the effective
+				-- linewidth is smaller than style.linewidth. The effective_width
+				-- is used to compute the number of stripes:
+				effective_width := type_float_internal_positive (style.linewidth) / overlap_factor;
+
+				-- Compute the number of stripes in a rational number (like 6.3).
+				stripe_count_rational := height / effective_width;
+
+				-- Round up the number of stripes to the next natural number (like 7)
+				stripe_count_natural := natural (type_float_internal_positive'ceiling (
+						type_float_internal_positive (stripe_count_rational)));
+				
+				--log (text => "height:" & to_string (height) 
+					--& " / line width:" & to_string (width)
+					--& " / rows min:" & natural'image (rows_min),
+					--level => log_threshold);
+
+				
+			when HATCHED =>
+				null;
+		end case;
 	end make_stripes;
 
 	

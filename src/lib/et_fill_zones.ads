@@ -73,7 +73,7 @@ package et_fill_zones is
 	-- It is required in order to avoid a possible small gap between them
 	-- that could occur during manufacturing.
 	-- The lower the factor the more overlap. 1.0 means no overlap.
-	overlap_factor : constant type_distance_positive := 0.99;
+	overlap_factor : constant type_float_internal_positive := 0.99;
 	
 	
 	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
@@ -98,11 +98,15 @@ package et_fill_zones is
 		-- The horizontal lines that fill the conducting area of the island:		
 		stripes			: pac_stripes.list;
 	end record;
-		
+
+
+	
 	package pac_islands is new doubly_linked_lists (type_island);
 
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
+
+	
 
 	type type_style (style : type_fill_style) is record
 		linewidth : type_track_width;
@@ -114,6 +118,8 @@ package et_fill_zones is
 	end record;
 	
 
+
+	
 	procedure make_stripes (
 		island	: in out type_island;
 		style	: in type_style);
