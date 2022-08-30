@@ -56,6 +56,7 @@ with et_general;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_stack;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
@@ -154,7 +155,8 @@ package et_fill_zones is
 		end case;
 	end record;
 
-	
+
+
 
 	
 -- SOLID FILLED ZONE:

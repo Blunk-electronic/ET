@@ -269,7 +269,170 @@ is
 	end put_into_basket;
 
 	
+	procedure fill_zone (
+		zone		: in out type_zone'class;
+		linewidth	: in type_track_width;
+		layer 		: in et_pcb_stack.type_signal_layer;
+		clearance	: in type_track_clearance)
+	is
+		zone_polygon : type_polygon;
+		
+		islands : pac_polygon_list.list;
+		conductors, restrict, cutouts : pac_polygon_list.list;
+		cropping_basket : pac_polygon_list.list;
 
+		
+		procedure set_islands is
+			
+			procedure query_island (i : in pac_polygon_list.cursor) is begin
+				zone.islands.append ((
+					outer_border => element (i),
+					others		 => <>));					 
+			end query_island;
+			
+		begin
+			islands.iterate (query_island'access);
+		end set_islands;
+
+
+		procedure set_inner_borders is 
+			island_cursor : pac_islands.cursor := zone.islands.first;
+
+			procedure make_inner_borders (
+				island : in out type_island)
+			is begin
+				island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
+			end make_inner_borders;					
+				
+		begin
+			while island_cursor /= pac_islands.no_element loop
+				--put_line ("i");
+				zone.islands.update_element (island_cursor, make_inner_borders'access);
+				next (island_cursor);
+			end loop;					
+		end set_inner_borders;
+
+			
+		procedure fill_islands is 
+			island_cursor : pac_islands.cursor := zone.islands.first;
+		begin
+			case zone.fill_style is
+				when SOLID =>
+					declare
+						style : constant type_style := (
+							style		=> SOLID,
+	   						linewidth	=> linewidth);
+					begin
+						while island_cursor /= pac_islands.no_element loop
+							fill_island (
+								islands		=> zone.islands, 
+								position	=> island_cursor,
+								style		=> style,
+								process		=> make_stripes'access);
+
+							next (island_cursor);
+						end loop;					
+
+					end;
+					
+				when HATCHED =>
+					declare
+						style : constant type_style := (
+							style		=> HATCHED,
+							linewidth	=> linewidth,						   
+							spacing		=> zone.spacing);
+					begin
+						while island_cursor /= pac_islands.no_element loop
+							fill_island (
+								islands		=> zone.islands, 
+								position	=> island_cursor,
+								style		=> style,
+								process		=> make_stripes'access);
+
+							next (island_cursor);
+						end loop;					
+
+					end;					
+			end case;
+			
+		end fill_islands;
+		
+		
+	begin
+		-- Remove the old fill:
+		zone.islands := no_islands;
+		
+		-- Convert the contour of the candidate fill zone to a polygon.
+		-- Shrink the zone by half the line width so that the border of the zone
+		-- does not extend beyond than the user defined contour:
+		zone_polygon := to_polygon (zone, fab_tolerance);
+		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
+
+		-- CS log lowest left vertex
+
+		expand_holes (linewidth); -- updates variable "holes"
+		
+		-- Crop the zone by the outer board edges and the holes (stored in
+		-- variable "holes").
+		-- The zone gets fragmented into islands:
+		islands := zone_to_polygons (
+			zone		=> zone_polygon,
+			line_width	=> linewidth);
+
+
+		-- Now we start collecting polygons caused by conductor objects,
+		-- polygon cutouts, restrict objects etc. in the cropping basket.
+		-- Later everything in the basket will be used to crop the islands
+		-- and to create inner borders inside the islands:
+		empty_basket (cropping_basket);
+
+		
+		-- Collect holes in basket:
+		put_into_basket (cropping_basket, holes);
+
+		
+		-- Crop the islands by all conductor objects in the affected layer.
+		-- The clearance of these objects to the zone is determined by
+		-- the zone isolation or the net clearance. The greater value is applied:
+		conductors := conductors_to_polygons (
+			zone_clearance	=> clearance,
+			layer			=> layer);
+
+		put_into_basket (cropping_basket, conductors);
+
+
+		-- Crop the islands by all cutout areas in the affected layer.
+		cutouts := cutouts_to_polygons (layer);
+		put_into_basket (cropping_basket, cutouts);
+
+		
+		
+		-- Crop the islands by all route restrict objects in the affected layer.
+		restrict := restrict_to_polygons (layer);
+		put_into_basket (cropping_basket, restrict);
+
+
+		-- Now the basket is complete to crop its content with the islands.
+		-- The result are even more islands:
+		islands := multi_crop_2 (
+			polygon_B_list	=> islands,
+			polygon_A_list	=> cropping_basket,
+			debug			=> false);
+
+
+		-- Assign the islands to the zone:
+		set_islands;
+
+		-- Assign inner borders to the islands of the zone:
+		set_inner_borders;
+
+		-- Fill the islands with stripes:
+		fill_islands;
+
+	end fill_zone;
+
+
+	
 	
 	-- Computes the horizontal fill lines required after given start point.
 	-- Creates fill lines from the left to the right.
@@ -635,78 +798,18 @@ is
 				use pac_route_solid;
 				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
 
-				-- The candidate fill zone must be converted to a polygon:
-				zone : type_polygon;
-				
-				-- The width of border and fill lines:
-				line_width : type_track_width;
-				
-				-- Deletes the complete fill of the zone:
-				procedure clear_fill (
-					zone	: in out type_route_solid)
+
+				procedure do_it (
+					zone : in out type_route_solid)
 				is begin
-					zone.islands := no_islands;
-				end clear_fill;
-
+					fill_zone (
+						zone		=> zone,
+						linewidth	=> element (zone_cursor).linewidth,
+						layer		=> zone.properties.layer,
+						clearance	=> get_greatest (zone.isolation, net_class.clearance)
+						);
+				end do_it;
 				
-				islands : pac_polygon_list.list;
-				conductors, restrict, cutouts : pac_polygon_list.list;
-				cropping_basket : pac_polygon_list.list;
-				
-				
-				procedure set_islands (
-					zone : in out type_route_solid)
-				is
-					procedure query_island (i : in pac_polygon_list.cursor) is begin
-						zone.islands.append ((
-							outer_border => element (i),
-							others		 => <>));					 
-					end query_island;
-					
-				begin
-					islands.iterate (query_island'access);
-				end set_islands;
-				
-
-				procedure set_inner_borders (
-					zone : in out type_route_solid)
-				is 
-					island_cursor : pac_islands.cursor := zone.islands.first;
-	
-					procedure make_inner_borders (
-						island : in out type_island)
-					is begin
-						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
-					end make_inner_borders;					
-					
-				begin
-					while island_cursor /= pac_islands.no_element loop
-						--put_line ("i");
-						zone.islands.update_element (island_cursor, make_inner_borders'access);
-						next (island_cursor);
-					end loop;					
-				end set_inner_borders;
-				
-
-				procedure fill_islands (
-					zone : in out type_route_solid)
-				is 
-					island_cursor : pac_islands.cursor := zone.islands.first;
-					style : constant type_style := (style => SOLID, linewidth => line_width);
-				begin
-					while island_cursor /= pac_islands.no_element loop
-
-						fill_island (
-							islands		=> zone.islands, 
-							position	=> island_cursor,
-							style		=> style,
-							process		=> make_stripes'access);
-						
-						next (island_cursor);
-					end loop;					
-				end fill_islands;
-
-
 				
 			begin -- route_solid
 				
@@ -718,84 +821,8 @@ is
 
 					log_indentation_up;
 
-					
-					-- clear the complete fill:
-					update_element (net.route.fill_zones.solid, zone_cursor, clear_fill'access);
-
-					-- Get the width of the border and the fill lines.
-					-- NOTE: Each fill zone may have a special line width:
-					line_width := element (zone_cursor).linewidth;
-
-					
-					-- Convert the contour of the candidate fill zone to a polygon.
-					-- Shrink the zone by half the line width so that the border of the zone
-					-- does not extend beyond than the user defined contour:
-					zone := to_polygon (element (zone_cursor), fab_tolerance);
-					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
-
-					-- CS log lowest left vertex
-					
-
-					expand_holes (line_width); -- updates variable "holes"
-					
-					-- Crop the zone by the outer board edges and the holes (stored in
-					-- variable "holes").
-					-- The zone gets fragmented into islands:
-					islands := zone_to_polygons (
-						zone		=> zone,
-						line_width	=> line_width);
-
-
-					-- Now we start collecting polygons caused by conductor objects,
-					-- polygon cutouts, restrict objects etc. in the cropping basket.
-					-- Later everything in the basket will be used to crop the islands
-					-- and to create inner borders inside the islands:
-					empty_basket (cropping_basket);
-
-					
-					-- Collect holes in basket:
-					put_into_basket (cropping_basket, holes);
-
-					
-					-- Crop the islands by all conductor objects in the affected layer.
-					-- The clearance of these objects to the zone is determined by
-					-- the zone isolation or the net clearance. The greater value is applied:
-					conductors := conductors_to_polygons (
-						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
-						layer			=> element (zone_cursor).properties.layer);
-
-					put_into_basket (cropping_basket, conductors);
-					
-
-
-					
-					-- Crop the islands by all cutout areas in the affected layer.
-					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
-					put_into_basket (cropping_basket, cutouts);
-
-					
-					
-					-- Crop the islands by all route restrict objects in the affected layer.
-					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
-					put_into_basket (cropping_basket, restrict);
-
-					
-
-					-- Now the basket is complete to crop its content with the islands.
-					-- The result are even more islands:
-					islands := multi_crop_2 (
-						polygon_B_list	=> islands,
-						polygon_A_list	=> cropping_basket,
-						debug			=> false);
-										
-					-- Assign the islands to the candidate fill zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, set_islands'access);
-
-					-- Assign inner borders to the islands of the candidate zone:
-					net.route.fill_zones.solid.update_element (zone_cursor, set_inner_borders'access);
-	
-					-- Fill the islands with stripes:
-					net.route.fill_zones.solid.update_element (zone_cursor, fill_islands'access);
+					-- do the filling
+					net.route.fill_zones.solid.update_element (zone_cursor, do_it'access);
 					
 					log_indentation_down;					
 					next (zone_cursor);
@@ -810,81 +837,18 @@ is
 				use pac_route_hatched;
 				zone_cursor : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 
-				-- The candidate fill zone must be converted to a polygon:
-				zone : type_polygon;
-	
-				-- The width of a fill line:
-				line_width : type_track_width;
 
-				-- Deletes the complete fill of the zone:
-				procedure clear_fill (
-					zone	: in out type_route_hatched)
+				procedure do_it (
+					zone : in out type_route_hatched)
 				is begin
-					zone.islands := no_islands;
-				end clear_fill;
-
-
-				islands : pac_polygon_list.list;
-				conductors, restrict, cutouts : pac_polygon_list.list;
-				cropping_basket : pac_polygon_list.list;
-				
-
-				procedure set_islands (
-					zone : in out type_route_hatched)
-				is
-					procedure query_island (i : in pac_polygon_list.cursor) is begin
-						zone.islands.append ((
-							outer_border => element (i),
-							others		 => <>));					 
-					end query_island;
+					fill_zone (
+						zone		=> zone,
+						linewidth	=> element (zone_cursor).linewidth,
+						layer		=> zone.properties.layer,
+						clearance	=> get_greatest (zone.isolation, net_class.clearance)
+						);
+				end do_it;
 					
-				begin
-					islands.iterate (query_island'access);
-				end set_islands;
-				
-
-				procedure set_inner_borders (
-					zone : in out type_route_hatched)
-				is 
-					island_cursor : pac_islands.cursor := zone.islands.first;
-
-					procedure make_inner_borders (
-						island : in out type_island)
-					is begin
-						island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
-					end make_inner_borders;					
-					
-				begin
-					while island_cursor /= pac_islands.no_element loop
-						--put_line ("i");
-						zone.islands.update_element (island_cursor, make_inner_borders'access);
-						next (island_cursor);
-					end loop;					
-				end set_inner_borders;
-
-				
-				procedure fill_islands (
-					zone : in out type_route_hatched)
-				is 
-					island_cursor : pac_islands.cursor := zone.islands.first;
-
-					style : constant type_style := (
-							style		=> HATCHED,
-							linewidth	=> line_width,						   
-							spacing		=> zone.spacing);
-					
-				begin
-					while island_cursor /= pac_islands.no_element loop
-						fill_island (
-							islands		=> zone.islands, 
-							position	=> island_cursor,
-							style		=> style,
-							process		=> make_stripes'access);
-
-						next (island_cursor);
-					end loop;					
-				end fill_islands;
-
 				
 			begin -- route_hatched
 				
@@ -896,84 +860,9 @@ is
 
 					log_indentation_up;
 
-					-- clear the complete fill:
-					update_element (net.route.fill_zones.hatched, zone_cursor, clear_fill'access);
-
-					-- Get the width of the border and the fill lines.
-					-- NOTE: Each fill zone may have a special line width:
-					line_width := element (zone_cursor).linewidth;
-
-
-					-- Convert the contour of the candidate fill zone to a polygon.
-					-- Shrink the zone by half the line width so that the border of the zone
-					-- does not extend beyond than the user defined contour:
-					zone := to_polygon (element (zone_cursor), fab_tolerance);
-					offset_polygon (zone, - type_float_internal_positive (line_width) * 0.5);
-
-					-- CS log lowest left vertex
+					-- do the filling
+					net.route.fill_zones.hatched.update_element (zone_cursor, do_it'access);
 					
-
-					expand_holes (line_width); -- updates variable "holes"
-					
-					-- Crop the zone by the outer board edges and the holes (stored in
-					-- variable "holes").
-					-- The zone gets fragmented into islands:
-					islands := zone_to_polygons (
-						zone		=> zone,
-						line_width	=> line_width);
-
-
-					-- Now we start collecting polygons caused by conductor objects,
-					-- polygon cutouts, restrict objects etc. in the cropping basket.
-					-- Later everything in the basket will be used to crop the islands
-					-- and to create inner borders inside the islands:
-					empty_basket (cropping_basket);
-
-					
-					-- Collect holes in basket:
-					put_into_basket (cropping_basket, holes);
-
-					
-					-- Crop the islands by all conductor objects in the affected layer.
-					-- The clearance of these objects to the zone is determined by
-					-- the zone isolation or the net clearance. The greater value is applied:
-					conductors := conductors_to_polygons (
-						zone_clearance	=> get_greatest (element (zone_cursor).isolation, net_class.clearance),
-						layer			=> element (zone_cursor).properties.layer);
-
-					put_into_basket (cropping_basket, conductors);
-					
-
-
-					
-					-- Crop the islands by all cutout areas in the affected layer.
-					cutouts := cutouts_to_polygons (element (zone_cursor).properties.layer);
-					put_into_basket (cropping_basket, cutouts);
-
-					
-					
-					-- Crop the islands by all route restrict objects in the affected layer.
-					restrict := restrict_to_polygons (element (zone_cursor).properties.layer);
-					put_into_basket (cropping_basket, restrict);
-
-					
-
-					-- Now the basket is complete to crop its content with the islands.
-					-- The result are even more islands:
-					islands := multi_crop_2 (
-						polygon_B_list	=> islands,
-						polygon_A_list	=> cropping_basket,
-						debug			=> false);
-										
-					-- Assign the islands to the candidate fill zone:
-					net.route.fill_zones.hatched.update_element (zone_cursor, set_islands'access);
-
-					-- Assign inner borders to the islands of the candidate zone:
-					net.route.fill_zones.hatched.update_element (zone_cursor, set_inner_borders'access);
-
-					-- Fill the islands with stripes:
-					net.route.fill_zones.hatched.update_element (zone_cursor, fill_islands'access);
-
 					log_indentation_down;
 					next (zone_cursor);
 				end loop;
