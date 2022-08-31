@@ -732,6 +732,25 @@ package et_geometry_1 is
 	function get_width (boundaries : in type_boundaries)
 		return type_float_internal_positive;
 
+
+	function get_left (boundaries : in type_boundaries)
+		return type_float_internal;
+
+	
+	function get_right (boundaries : in type_boundaries)
+		return type_float_internal;
+
+	
+	-- Returns the bottom of the given boundaries:
+	function get_bottom (boundaries : in type_boundaries)
+		return type_float_internal;
+
+	
+	-- Returns the topof the given boundaries:
+	function get_top (boundaries : in type_boundaries)
+		return type_float_internal;
+
+	
 	
 	-- Returns true if the given boundaries intersect each other.
 	-- Returns false if boundaries do not intersect and if they

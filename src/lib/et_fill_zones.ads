@@ -64,7 +64,6 @@ with et_design_rules;			use et_design_rules;
 package et_fill_zones is
 	
 	use pac_geometry_brd;
-	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;
 
@@ -73,7 +72,7 @@ package et_fill_zones is
 	-- It is required in order to avoid a possible small gap between them
 	-- that could occur during manufacturing.
 	-- The lower the factor the more overlap. 1.0 means no overlap.
-	overlap_factor : constant type_float_internal_positive := 0.99;
+	--overlap_factor : constant type_float_internal_positive := 0.99;
 	
 	
 	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);

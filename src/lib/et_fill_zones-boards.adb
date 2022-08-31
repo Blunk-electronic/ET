@@ -60,6 +60,7 @@ package body et_fill_zones.boards is
 		net_name		: in pac_net_name.bounded_string := no_name)
 		return string
 	is
+		use pac_geometry_2;
 		use ada.strings.unbounded;
 		use ada.tags;
 		--use et_nets;

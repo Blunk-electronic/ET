@@ -1477,6 +1477,35 @@ package body et_geometry_1 is
 	end get_width;
 
 
+	function get_left (boundaries : in type_boundaries)
+		return type_float_internal
+	is begin
+		return boundaries.smallest_x;
+	end get_left;
+
+	
+	function get_right (boundaries : in type_boundaries)
+		return type_float_internal
+	is begin
+		return boundaries.greatest_x;
+	end get_right;
+
+	
+	function get_bottom (boundaries : in type_boundaries)
+		return type_float_internal
+	is begin
+		return boundaries.smallest_y;
+	end get_bottom;
+
+
+	function get_top (boundaries : in type_boundaries)
+		return type_float_internal
+	is begin
+		return boundaries.greatest_y;
+	end get_top;
+
+	
+	
 	function intersect (
 		b1 : in type_boundaries;
 		b2 : in type_boundaries)

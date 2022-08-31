@@ -1034,12 +1034,12 @@ package body et_geometry_1.polygons is
 
 		--end case;
 
-		result := result & "Distance to polygon: " & to_string (i.distance) & ".";
+		result := result & "Distance to polygon: " & to_string (i.distance) & ". ";
 				
 		if is_empty (i.x_intersections) then
 			result := result & "No intersections with probe line.";
 		else
-			result := result & "Intersection(s) with probe line (x/angle):";
+			result := result & "Intersection(s) with probe line (x):";
 		end if;
 		
 		iterate (i.x_intersections, query_intersection'access);
