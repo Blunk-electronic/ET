@@ -1076,7 +1076,8 @@ package body et_geometry_1.polygons is
 
 	function get_point_status (
 		polygon	: in type_polygon;	
-		point	: in type_vector)
+		point	: in type_vector;
+		debug	: in boolean := false)
 		return type_point_status 
 	is
 		-- This function bases on the algorithm published at
@@ -1176,18 +1177,22 @@ package body et_geometry_1.polygons is
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate edge of the polygon.
 			i : constant type_intersection_of_two_lines := 
-				get_intersection (probe_line, element (c));
+				get_intersection (probe_line, element (c), debug);
 			
 		begin
-			--put_line ("##");		
-			--put_line (to_string (l));
+			if debug then
+				put_line ("##");		
+				put_line (to_string (element (c)));
+			end if;
 			
 			if i.status = EXISTS then
-				--put_line ("exists");
-				--put_line (to_string (l));
-				--put_line (to_string (y_threshold));
-				--put_line (to_string (i.intersection.vector));
-
+				if debug then
+					put_line ("exists");
+					--put_line (to_string (l));
+					--put_line (to_string (y_threshold));
+					--put_line (to_string (i.intersection.vector));
+				end if;
+				
 				-- If the candidate line segment crosses the y_threshold then 
 				-- count the intersection:
 				if crosses_threshold (element (c), y_threshold) then
@@ -1210,7 +1215,9 @@ package body et_geometry_1.polygons is
 		
 		-- get the total number of intersections
 		it := pac_float_numbers.length (result_intersections);
+
 		--put_line ("intersections total:" & count_type'image (it));
+		--put_line (to_string (result_intersections));
 		
 		-- If the total number of intersections is an odd number, then the given point
 		-- is inside the polygon.
@@ -1232,6 +1239,9 @@ package body et_geometry_1.polygons is
 		-- redundant values are removed. 
 		-- Example: "4.0 4.0 6.3 12.0 12.0 -3.3" becomes "6.3 -3.3":
 		clean_up (result_intersections, REMOVE_REDUNDANT);
+
+		-- Example: "-3.3 4.0 4.0 6.3 12.0 12.0 -3.3" becomes "-3.3 4.0 6.3 12.0":
+		-- CS ? clean_up (result_intersections, REDUCE_TO_ONE);
 
 		
 		

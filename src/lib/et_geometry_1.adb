@@ -1770,7 +1770,8 @@ package body et_geometry_1 is
 	
 	function get_intersection (
 		line_vector : in type_line_vector;
-		line		: in type_line)
+		line		: in type_line;
+		debug		: in boolean := false)
 		return type_intersection_of_two_lines
 	is
 		i : constant type_intersection_of_two_lines := get_intersection (
@@ -1791,7 +1792,7 @@ package body et_geometry_1 is
 				-- of candidate line, then return the intersection as it is.
 				-- If the intersection is before start point or
 				-- beyond end point, then return NOT_EXISTENT.
-				if on_line (i.intersection.vector, line) then
+				if on_line (i.intersection.vector, line, debug) then
 					return i;
 				else
 					return (status => NOT_EXISTENT);
@@ -2233,14 +2234,18 @@ package body et_geometry_1 is
 
 	function on_line (
 		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		debug	: in boolean := false)
 		return boolean
 	is
 		distance : type_distance_point_line;
 	begin
-		distance := get_distance (vector, line, WITH_END_POINTS);
+		distance := get_distance (vector, line, WITH_END_POINTS, debug);
 
-		--put_line ("on line distance: " & to_string (distance.distance));
+		if debug then
+			put_line ("on_line distance: " & to_string (distance.distance) 
+				& "/ out of range: " & boolean'image (distance.out_of_range));
+		end if;
 		
 		if not distance.out_of_range and distance.distance = 0.0 then
 			return true;
@@ -2253,7 +2258,8 @@ package body et_geometry_1 is
 	function get_distance (
 		vector		: in type_vector;
 		line		: in type_line;
-		line_range	: in type_line_range)
+		line_range	: in type_line_range;
+		debug		: in boolean := false)
 		return type_distance_point_line 
 	is
 		result : type_distance_point_line;

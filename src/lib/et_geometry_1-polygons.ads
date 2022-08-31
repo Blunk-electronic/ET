@@ -370,7 +370,8 @@ package et_geometry_1.polygons is
 	-- See details in body of this function:
 	function get_point_status (
 		polygon	: in type_polygon;	
-		point	: in type_vector)
+		point	: in type_vector;
+		debug	: in boolean := false)
 		return type_point_status;
 
 		

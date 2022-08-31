@@ -896,7 +896,8 @@ package et_geometry_1 is
 	-- start points of the two lines. It is always positive.
 	function get_intersection (
 		line_vector : in type_line_vector;
-		line		: in type_line)
+		line		: in type_line;
+		debug		: in boolean := false)
 		return type_intersection_of_two_lines;
 
 	
@@ -1044,7 +1045,8 @@ package et_geometry_1 is
 	-- the given line:
 	function on_line (
 		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line;
+		debug	: in boolean := false)
 		return boolean;
 	
 	
@@ -1067,7 +1069,8 @@ package et_geometry_1 is
 	function get_distance (
 		vector		: in type_vector; 
 		line		: in type_line;
-		line_range	: in type_line_range)
+		line_range	: in type_line_range;
+		debug		: in boolean := false)
 		return type_distance_point_line;
 
 	

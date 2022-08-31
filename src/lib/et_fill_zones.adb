@@ -119,7 +119,7 @@ package body et_fill_zones is
 					y := type_float_internal_positive (i) * stripe_spacing + bottom;
 
 					put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
-					--status := get_point_status (island.outer_border, set (x_start, y));
+					status := get_point_status (island.outer_border, set (x_start, y), true); -- debug on
 
 					status.x_intersections.iterate (query_intersection_outer_border'access);
 					
