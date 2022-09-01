@@ -49,17 +49,37 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_1 is
 
 	
-	function "=" (left, right : in type_float_internal) return boolean is 
-		--d : type_float_internal := abs (left - right);
-	begin
+	function "=" (left, right : in type_float_internal) return boolean is begin
 		if abs (left - right) <= accuracy then
-		--if less_than (d, accuracy) then
 			return true;
 		else
 			return false;
 		end if;
 	end "=";
 
+	
+	function ">=" (left, right : in type_float_internal) return boolean is begin
+		if left = right then
+			return true;
+		elsif left > right then
+			return true;
+		else
+			return false;
+		end if;
+	end ">=";
+
+
+	--function "<=" (left, right : in type_float_internal) return boolean is begin
+		--if left = right then
+			--return true;
+		--elsif left < right then
+			--return true;
+		--else
+			--return false;
+		--end if;
+	--end "<=";
+
+	
 	
 	function get_average (
 		f1, f2 : in type_float_internal)
@@ -2345,20 +2365,7 @@ package body et_geometry_1 is
 		lambda_forward := divide (subtract (iv, line.start_point), line_direction);
 
 		--put_line ("lambda forward:" & to_string (lambda_forward));
-		
-		if lambda_forward < 0.0 then -- iv points BEFORE start of line
-			--put_line ("before start point");
-			case line_range is
-				when BEYOND_END_POINTS => 
-					result.out_of_range := false;
-					
-				when others => 
-					result.out_of_range := true;
-			end case;
 
-			return result; -- no more computations required
-		end if;
-		
 		
 		if lambda_forward = 0.0 then -- iv points TO start point of line
 			--put_line ("on start point");
@@ -2373,16 +2380,10 @@ package body et_geometry_1 is
 
 			return result; -- no more computations required
 		end if;
-
-		--put_line ("after start point");
-
 		
-		lambda_backward := divide (subtract (iv, line.end_point), line_direction);
-
-		--put_line ("lambda backward:" & to_string (lambda_backward));
 		
-		if lambda_backward > 0.0 then -- iv points AFTER end of line
-			--put_line ("after end point");
+		if lambda_forward < 0.0 then -- iv points BEFORE start of line
+			--put_line ("before start point");
 			case line_range is
 				when BEYOND_END_POINTS => 
 					result.out_of_range := false;
@@ -2393,6 +2394,15 @@ package body et_geometry_1 is
 
 			return result; -- no more computations required
 		end if;
+				
+
+
+		--put_line ("after start point");
+
+		
+		lambda_backward := divide (subtract (iv, line.end_point), line_direction);
+
+		--put_line ("lambda backward:" & to_string (lambda_backward));
 
 		
 		if lambda_backward = 0.0 then -- iv points TO end point of line
@@ -2409,6 +2419,22 @@ package body et_geometry_1 is
 			return result; -- no more computations required
 		end if;
 
+
+		if lambda_backward > 0.0 then -- iv points AFTER end of line
+			--put_line ("after end point");
+			case line_range is
+				when BEYOND_END_POINTS => 
+					result.out_of_range := false;
+					
+				when others => 
+					result.out_of_range := true;
+			end case;
+
+			return result; -- no more computations required
+		end if;
+
+
+		
 		--put_line ("before end point");
 
 		result.out_of_range := false;

@@ -61,6 +61,9 @@ package et_geometry_1 is
 	-- the constant "accuracy":
 	function "=" (left, right : in type_float_internal) return boolean;
 
+	function ">=" (left, right : in type_float_internal) return boolean;
+	--function "<=" (left, right : in type_float_internal) return boolean;
+	
 	
 	function get_average (
 		f1, f2 : in type_float_internal)
