@@ -67,13 +67,6 @@ package et_fill_zones is
 	use pac_contours;
 	use pac_polygons;
 
-
-	-- The factor that causes the fill stripes to overlap slightly.
-	-- It is required in order to avoid a possible small gap between them
-	-- that could occur during manufacturing.
-	-- The lower the factor the more overlap. 1.0 means no overlap.
-	--overlap_factor : constant type_float_internal_positive := 0.99;
-	
 	
 	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
 
@@ -180,85 +173,6 @@ package et_fill_zones is
 		is new type_zone (fill_style => HATCHED) with null record;
 
 	package pac_zones_hatched is new doubly_linked_lists (type_zone_hatched);
-
-
-	
-	
-
-
-	
-
-
-
-	--package pac_fill_lines is new doubly_linked_lists (type_line);
-
-	--no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
-
-
--- HORIZONTAL FILL LINES
-	--package pac_h_lines is new doubly_linked_lists (type_line);
-
-
-	--type type_side is (LEFT, RIGHT);
-	
-	
-	-- Iterates the h_lines. Aborts the process when the proceed-flag goes false:
-	--procedure iterate (
-		--h_lines	: in pac_h_lines.list;
-		--side	: in type_side;				  
-		--process	: not null access procedure (position : in pac_h_lines.cursor);
-		--proceed	: not null access boolean);
-
-
-	
-	-- Returns true if the given h_lines overlap each other in x direction.
-	--function overlap (
-		--hl_1, hl_2 : in pac_h_lines.cursor)
-		--return boolean;
-
-
-	--type type_row is record
-		--lines	: pac_h_lines.list;
-	--end record;
-
-	--package pac_rows is new doubly_linked_lists (type_row);
-
-
-
-	--type type_adjacent is (ABOVE, BELOW);
-
-	
-	--function get_adjacent_h_line (
-		--row		: in pac_rows.cursor;
-		--h_line	: in pac_h_lines.cursor;							 
-		--place	: in type_adjacent;
-		--side	: in type_side)
-		--return pac_h_lines.cursor;
-
-	
-	
--- BORDERS
-	--package pac_border_lines is new doubly_linked_lists (type_line);
-
-	--type type_border is record
-		--border : pac_border_lines.list;
-	--end record;
-
-	--package pac_borders is new doubly_linked_lists (type_border);
-
-
----- FILL
-	--type type_fill is tagged record
-		--rows	: pac_rows.list;
-		--borders	: pac_borders.list;
-	--end record;
-
-
-
-	
-	
-	
-	
 
 														 
 	

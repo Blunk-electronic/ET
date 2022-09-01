@@ -35,11 +35,6 @@
 --   history of changes:
 --
 
---with ada.strings.unbounded;
---with ada.exceptions;
---with ada.tags;
-
---with et_text;					use et_text;
 
 package body et_fill_zones is
 
@@ -55,6 +50,14 @@ package body et_fill_zones is
 		bottom : constant type_float_internal := get_bottom (boundaries);
 
 		--effective_width : type_float_internal_positive;
+
+		-- The factor that causes the fill stripes to overlap slightly.
+		-- It is required in order to avoid a possible small gap between them
+		-- that could occur during manufacturing.
+		-- The lower the factor the more overlap. 1.0 means no overlap.
+		--overlap_factor : constant type_float_internal_positive := 0.99;
+
+		
 		stripe_count_rational : type_float_internal_positive;
 		stripe_count_natural : natural;
 		stripe_spacing : type_float_internal_positive;
@@ -156,9 +159,11 @@ package body et_fill_zones is
 					stripe_start := true;
 					x_main.iterate (query_x_intersection'access);					
 				end loop;
+
 				
 			when HATCHED =>
 				null;
+				-- CS
 		end case;
 	end make_stripes;
 
