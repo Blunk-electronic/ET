@@ -501,6 +501,14 @@ package et_geometry_2 is
 		c : in string)
 		return type_catch_zone;
 
+
+	-- Returns true if the given distance is less or equal the 
+	-- given catch_zone:
+	function in_catch_zone (
+		distance : in type_float_internal_positive;
+		zone	 : in type_catch_zone)
+		return boolean;
+							   
 	
 	-- Returns true if point_2 is within the 
 	-- catch zone around point_1:

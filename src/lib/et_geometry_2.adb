@@ -857,6 +857,20 @@ package body et_geometry_2 is
 		return pac_geometry_1.to_distance (c);
 	end to_catch_zone;
 
+
+	function in_catch_zone (
+		distance : in type_float_internal_positive;
+		zone	 : in type_catch_zone)
+		return boolean
+	is begin
+		if distance <= zone then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
+	
+	
 	
 	function in_catch_zone (
 		point_1		: in type_point; -- the reference point

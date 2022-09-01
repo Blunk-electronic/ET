@@ -45,7 +45,6 @@ with et_exceptions;					use et_exceptions;
 
 package body et_schematic_ops.nets is
 
-	use pac_geometry_2;
 	use pac_geometry_sch;
 	use et_symbols.pac_text;
 	use pac_net_segments;
@@ -86,7 +85,8 @@ package body et_schematic_ops.nets is
 			line		=> element (segment),
 			line_range	=> BETWEEN_END_POINTS);
 
-		if (not out_of_range (dist)) and get_distance (dist) <= catch_zone then
+		if (not out_of_range (dist)) 
+		and in_catch_zone (get_distance (dist), catch_zone) then
 			return true;
 		else
 			return false;
@@ -113,7 +113,8 @@ package body et_schematic_ops.nets is
 -- 			& " out of range " & boolean'image (out_of_range (dist))
 -- 			);
 		
-		if (not out_of_range (dist)) and get_distance (dist) <= catch_zone then
+		if (not out_of_range (dist)) 
+		and in_catch_zone (get_distance (dist), catch_zone) then
 			return true;
 		else
 			return false;

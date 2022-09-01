@@ -43,10 +43,6 @@ with et_pcb;
 
 package et_schematic_ops.nets is
 
-	use et_coordinates;
-	use pac_geometry_2;
-	use pac_generic_modules;	
-
 
 	function net_exists (
 		net_cursor : in pac_nets.cursor) 
