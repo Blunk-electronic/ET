@@ -1241,12 +1241,8 @@ package body et_geometry_1.polygons is
 
 		-- Further on they must be cleaned up so that
 		-- redundant values are removed. 
-		-- Example: "4.0 4.0 6.3 12.0 12.0 -3.3" becomes "6.3 -3.3":
+		-- Example: "4.0 4.0 6.3 12.0 12.0 13.3" becomes "6.3 13.3":
 		clean_up (result_intersections, REMOVE_REDUNDANT);
-
-		-- Example: "-3.3 4.0 4.0 6.3 12.0 12.0 -3.3" becomes "-3.3 4.0 6.3 12.0":
-		-- CS ? clean_up (result_intersections, REDUCE_TO_ONE);
-
 		
 		
 		-- Figure out whether the given point is a vertex, whether
