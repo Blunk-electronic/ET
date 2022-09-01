@@ -1158,6 +1158,11 @@ package body et_geometry_1.polygons is
 			return boolean
 		is begin
 			if	
+				-- NOTE: The operator ">=" had to be redefined
+				-- in et_geometry_1. If this was a bad idea and if
+				-- it must be undone, then some rework is required
+				-- here:
+				
 				-- edge comes from above
 				edge.start_point.y >= y_th and 
 				edge.end_point.y   <  y_th then
