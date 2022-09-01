@@ -1725,22 +1725,20 @@ is
 -- ROUTE / TRACK / POLYGON
 
 
-	-- Applies to polygons (or fill zones) in conductor layers only.
-	-- Parses a command like "board demo set polygon fill solid/hatched"
-	-- or "board demo set polygon isolaton 0.4" and sets the value
+	-- Applies to fill zones in conductor layers only.
+	-- Parses a command like "board demo set zone fill solid/hatched"
+	-- or "board demo set set zone isolaton 0.4" and sets the value
 	-- in user specific settings..
-	procedure set_polygon_properties is
+	procedure set_fill_zone_properties is
 		kw_fill			: constant string := "fill";
 		kw_width		: constant string := "width";
+		kw_spacing		: constant string := "spacing";
 		kw_isolation	: constant string := "isolation";
 		kw_priority		: constant string := "priority";
 		
 		kw_easing		: constant string := "easing";
 		kw_style		: constant string := "style";
 		kw_radius		: constant string := "radius";
-		
-		kw_hatching		: constant string := "hatching";
-		kw_spacing		: constant string := "spacing";
 		
 		kw_connection	: constant string := "connection";
 		kw_thermal		: constant string := "thermal";
@@ -1759,7 +1757,7 @@ is
 				& enclose_in_quotes (kw_width) & comma
 				& enclose_in_quotes (kw_connection) & comma
 				& enclose_in_quotes (kw_priority) & comma
-				& enclose_in_quotes (kw_hatching) & comma
+				& enclose_in_quotes (kw_spacing) & comma
 				& enclose_in_quotes (kw_thermal) & comma
 				& enclose_in_quotes (kw_easing) & comma
 				& enclose_in_quotes (kw_isolation) & " or "
@@ -1828,7 +1826,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.spacing := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.spacing := to_distance (f (6));
 		end set_hatching_spacing;	
 
 		
@@ -1848,30 +1846,34 @@ is
 		end set_thermal_gap;	
 
 		
-	begin -- set_polygon_properties
+	begin -- set_fill_zone_properties
 		case get_field_count is
 			when 6 => 
-				-- board demo set polygon fill solid/hatched
+				-- board demo set zone fill solid/hatched
 				if f (5) = kw_fill then
 					update_element (generic_modules, module_cursor, set_fill_style'access);
 
-				-- board demo set polygon width 0.25
+				-- board demo set zone width 0.25
 				elsif f (5) = kw_width then
 					update_element (generic_modules, module_cursor, set_min_width'access);
 
-				-- board demo set polygon isolaton 0.4
+				-- board demo set zone spacing 0.3
+				elsif f (5) = kw_spacing then
+					update_element (generic_modules, module_cursor, set_hatching_spacing'access);
+					
+				-- board demo set zone isolaton 0.4
 				elsif f (5) = kw_isolation then
 					update_element (generic_modules, module_cursor, set_iso'access);
 					
-				-- board demo set polygon priority 2
+				-- board demo set zone priority 2
 				elsif f (5) = kw_priority then
 					update_element (generic_modules, module_cursor, set_priority'access);
 
-				-- board demo set polygon connection thermal/solid
+				-- board demo set zone connection thermal/solid
 				elsif f (5) = kw_connection then
 					update_element (generic_modules, module_cursor, set_connection'access);
 
-				-- board demo set polygon log NORMAL/HIGH/INSANE
+				-- board demo set zone log NORMAL/HIGH/INSANE
 				elsif f (5) = kw_log then
 					polygon_log_category := to_log_category (f (6));
 				else
@@ -1880,7 +1882,7 @@ is
 
 				
 			when 7 =>
-				-- board demo set polygon easing style none/chamfer/fillet
+				-- board demo set zone easing style none/chamfer/fillet
 				if f (5) = kw_easing then
 
 					if f (6) = kw_style then
@@ -1897,20 +1899,8 @@ is
 							& " after keyword " & enclose_in_quotes (kw_easing) & " !";
 					end if;
 
-				-- board demo set polygon hatching spacing 0.3
-				elsif f (5) = kw_hatching then
 
-					if f (6) = kw_spacing then
-						update_element (generic_modules, module_cursor, set_hatching_spacing'access);
-						
-					else
-						raise syntax_error_1 with
-						"ERROR: Expect keyword " 
-							& enclose_in_quotes (kw_spacing) 
-							& " after keyword " & enclose_in_quotes (kw_hatching) & " !";
-					end if;
-
-				-- board demo set polygon thermal width/gap 0.3
+				-- board demo set zone thermal width/gap 0.3
 				elsif f (5) = kw_thermal then
 
 					if f (6) = kw_width then
@@ -1939,7 +1929,7 @@ is
 			when others => command_incomplete;
 				
 		end case;
-	end set_polygon_properties;
+	end set_fill_zone_properties;
 
 	
 	type type_track_shape is (LINE, ARC, ZONE);
@@ -3215,7 +3205,7 @@ is
 						end case;
 
 					when NOUN_ZONE =>
-						set_polygon_properties; -- conductor layers related
+						set_fill_zone_properties; -- conductor layers related
 						
 					when NOUN_VIA =>
 						set_via_properties;
