@@ -1158,11 +1158,13 @@ package body et_geometry_1.polygons is
 			return boolean
 		is begin
 			if	
+				-- edge comes from above
 				edge.start_point.y >= y_th and 
 				edge.end_point.y   <  y_th then
 				return true;
 				
 			elsif
+				-- edge comes from below
 				edge.end_point.y   >= y_th and 
 				edge.start_point.y <  y_th then
 				return true;
@@ -1187,16 +1189,18 @@ package body et_geometry_1.polygons is
 			
 			if i.status = EXISTS then
 				if debug then
-					put_line ("exists");
+					put_line ("intersection exists");
 					--put_line (to_string (l));
-					--put_line (to_string (y_threshold));
+					put_line ("y-threshold:" & to_string (y_threshold));
 					--put_line (to_string (i.intersection.vector));
 				end if;
 				
 				-- If the candidate line segment crosses the y_threshold then 
 				-- count the intersection:
 				if crosses_threshold (element (c), y_threshold) then
-					--put_line ("crosses threshold");
+					if debug then
+						put_line ("edge crosses threshold");
+					end if;
 					
 					-- Add the intersection to the result:
 					collect_intersection (i.intersection);
