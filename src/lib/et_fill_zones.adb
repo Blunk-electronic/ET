@@ -52,28 +52,41 @@ package body et_fill_zones is
 		boundaries : constant type_boundaries := get_boundaries (island.outer_border, 0.0);
 
 		height : constant type_float_internal_positive := get_height (boundaries);
-		bottom : constant type_float_internal_positive := get_bottom (boundaries);
+		bottom : constant type_float_internal := get_bottom (boundaries);
 
 		--effective_width : type_float_internal_positive;
 		stripe_count_rational : type_float_internal_positive;
 		stripe_count_natural : natural;
 		stripe_spacing : type_float_internal_positive;
 
-		x_start : constant type_float_internal := get_left (boundaries) - 1.0;
-		status : type_point_status (OUTSIDE);
-		y : type_float_internal;
+		-- The point at which a stripe starts. We will fill the island from bottom to top.
+		-- The lowest left place to start from is outside the island:
+		start_point : type_vector := set (
+			 x => get_left (boundaries) - 1.0, -- left of the island
+			 y => bottom); -- just a default. will be changed while the start_point is moving upward
 
-		stripe_start : boolean := true;
+		-- The status of the start_point relative to the island:
+		status : type_point_status (OUTSIDE); -- will/must always be outside
+
+		-- The main collection of x-values where a stripe enters or leaves an outer or inner border:
+		x_main : pac_float_numbers.list;
 		
-		procedure query_intersection_outer_border (i : in pac_float_numbers.cursor) is
-			use pac_float_numbers;
-		begin
-			if i /= status.x_intersections.last then
+		use pac_polygon_list;
+		use pac_float_numbers;
+		use pac_float_numbers_sorting;
+
+
+		-- This flag decides whether a stripe starts or ends:
+		stripe_start : boolean := true;
+
+		-- This procedure queries an x-value an builds a stripe:
+		procedure query_x_intersection (i : in pac_float_numbers.cursor) is begin
+			if i /= x_main.last then
 
 				if stripe_start then
 					island.stripes.append ((
-						start_point	=> set (element (i), y),
-						end_point	=> set (element (next (i)), y)));
+						start_point	=> set (element (i), start_point.y),
+						end_point	=> set (element (next (i)), start_point.y)));
 
 					stripe_start := false;					
 				else
@@ -81,7 +94,21 @@ package body et_fill_zones is
 				end if;
 
 			end if;
-		end query_intersection_outer_border;
+		end query_x_intersection;
+
+		
+		-- This procedure queries an inner border and appends
+		-- the x-values of the candidate border to the main collection of
+		-- x-values:
+		procedure query_inner_border (i : in pac_polygon_list.cursor) is begin
+			status := get_point_status (element (i), start_point);
+
+			splice (
+				target	=> x_main,
+				source	=> status.x_intersections, 
+				before	=> pac_float_numbers.no_element);
+			
+		end query_inner_border;
 
 		
 	begin
@@ -105,25 +132,29 @@ package body et_fill_zones is
 				stripe_count_natural := natural (type_float_internal_positive'ceiling (
 						type_float_internal_positive (stripe_count_rational)));
 				
-				--log (text => "height:" & to_string (height) 
-					--& " / line width:" & to_string (width)
-					--& " / rows min:" & natural'image (rows_min),
-					--level => log_threshold);
 
 				stripe_spacing := height / type_float_internal_positive (stripe_count_natural);
 
-				y := bottom;
+
+				-- Compute the rows of stripes from bottom to top:
+				for row in 1 .. stripe_count_natural loop
 				
-				for i in 1 .. stripe_count_natural loop
-					y := type_float_internal_positive (i) * stripe_spacing + bottom;
-
-					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
-					--status := get_point_status (island.outer_border, set (x_start, y), true); -- debug on
-					status := get_point_status (island.outer_border, set (x_start, y), false); -- debug off
-
-					stripe_start := true;
-					status.x_intersections.iterate (query_intersection_outer_border'access);
+					start_point.y := bottom + type_float_internal_positive (row) * stripe_spacing;
 					
+					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
+					--status := get_point_status (island.outer_border, start_point, true); -- debug on
+					status := get_point_status (island.outer_border, start_point, false); -- debug off
+					x_main := status.x_intersections;
+
+					-- Compute the intersections with the inner borders:
+					island.inner_borders.iterate (query_inner_border'access);
+
+					-- Sort the main collection from left to right (ascending order):
+					sort (x_main);
+
+					-- Build the stripes for the current row:
+					stripe_start := true;
+					x_main.iterate (query_x_intersection'access);					
 				end loop;
 				
 			when HATCHED =>
