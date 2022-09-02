@@ -178,58 +178,46 @@ is
 
 
 	
--- FILL ZONES
+-- CONDUCTOR FILL ZONES
 	
-	-- The width of the border and fill lines of a fill zone:
+	-- The width of the borders and stripes of a fill zone:
 	fill_line_width : type_track_width;
 	
 	use pac_islands;
 	
 	procedure query_island (i : in pac_islands.cursor) is
+		use pac_edges;
 		use pac_polygon_list;
 		use pac_stripes;
 
 		island : type_island renames element (i);
-		drawn : boolean := false;
 
-		procedure query_inner_border (c : pac_polygon_list.cursor) is begin 
-			draw_polygon (
+		procedure draw_edge (e : in pac_edges.cursor) is begin
+			draw_line (
 				area	=> in_area,
 				context	=> context,
-				polygon	=> type_polygon (element (c)),
-				filled	=> NO, -- this is a cutout
+				line	=> pac_geometry_brd.type_line (element (e)),
 				width	=> fill_line_width,
-				height	=> self.frame_height,
-				drawn	=> drawn);
+				height	=> self.frame_height);
+		end draw_edge;
+
+		procedure query_inner_border (i : in pac_polygon_list.cursor) is begin
+			element (i).edges.iterate (draw_edge'access);
 		end query_inner_border;
 
-		procedure query_stripe (s : pac_stripes.cursor) is begin 
+		procedure draw_stripe (s : in pac_stripes.cursor) is begin
 			draw_line (
 				area	=> in_area,
 				context	=> context,
 				line	=> element (s),
 				width	=> fill_line_width,
 				height	=> self.frame_height);
-		end query_stripe;
+		end draw_stripe;
 		
 	begin
-		-- draw the outer border:
-		draw_polygon (
-			area	=> in_area,
-			context	=> context,
-			polygon	=> type_polygon (island.outer_border),
-			filled	=> NO, -- this is the outer border !
-			width	=> fill_line_width,
-			height	=> self.frame_height,
-			drawn	=> drawn);
-						
-		-- Draw the inner borders and stripes if the polygon has been drawn.
-		-- If the polygon border has not been drawn (because it is outside area)
-		-- then it would be useless to draw inner borders and fill lines.
-		if drawn then
-			iterate (island.inner_borders, query_inner_border'access);
-			iterate (island.stripes, query_stripe'access);
-		end if;
+		island.outer_border.edges.iterate (draw_edge'access);
+		island.inner_borders.iterate (query_inner_border'access);
+		island.stripes.iterate (draw_stripe'access);
 	end query_island;
 
 	

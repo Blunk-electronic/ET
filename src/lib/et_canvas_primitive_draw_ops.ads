@@ -160,27 +160,6 @@ package pac_draw is
 		-- CS fill style ?
 
 
-
-	procedure draw_polygon (
-		area	: in type_bounding_box;
-		context	: in type_draw_context;
-		polygon	: in type_polygon;
-		filled	: in type_filled;
-		-- CS fill style
-
-		-- The line width is used for calculating the boundaries
-		-- of the segments. 
-		-- The width for the actual drawing must be set by the caller.
-		width	: in type_distance_positive;
-		
-		height	: in type_float_internal_positive;
-
-		-- This flag is set if the polygon has been drawn
-		-- because is inside the given area:
-		drawn	: in out boolean);
-
-	
-	
 	
 	procedure draw_contour (
 		area	: in type_bounding_box;
@@ -197,7 +176,7 @@ package pac_draw is
 		height	: in type_float_internal_positive;
 
 		-- This flag is set if the contour has been drawn
-		-- because is inside the given area:
+		-- because it is inside the given area:
 		drawn	: in out boolean);
 
 
