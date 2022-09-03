@@ -1526,7 +1526,7 @@ package body et_geometry_1 is
 
 	
 	
-	function intersect (
+	function overlap (
 		b1 : in type_boundaries;
 		b2 : in type_boundaries)
 		return boolean
@@ -1547,34 +1547,34 @@ package body et_geometry_1 is
 			return false;
 		end if;
 		
-	end intersect;
+	end overlap;
 	
 
-	function get_intersection (
-		b1 : in type_boundaries;
-		b2 : in type_boundaries)
-		return type_boundaries_intersection
-	is
-		i : type_boundaries;
-	begin
-		if intersect (b1, b2) then
+	--function get_intersection (
+		--b1 : in type_boundaries;
+		--b2 : in type_boundaries)
+		--return type_boundaries_intersection
+	--is
+		--i : type_boundaries;
+	--begin
+		--if overlap (b1, b2) then
 
-			--log (text => "b1" & to_string (b1));
-			--log (text => "b2" & to_string (b2));
+			----log (text => "b1" & to_string (b1));
+			----log (text => "b2" & to_string (b2));
 			
-			i.smallest_x := get_greatest (b1.smallest_x, b2.smallest_x);
-			i.greatest_x := get_smallest (b1.greatest_x, b2.greatest_x);
+			--i.smallest_x := get_greatest (b1.smallest_x, b2.smallest_x);
+			--i.greatest_x := get_smallest (b1.greatest_x, b2.greatest_x);
 
-			i.smallest_y := get_greatest (b1.smallest_y, b2.smallest_y);
-			i.greatest_y := get_smallest (b1.greatest_y, b2.greatest_y);
+			--i.smallest_y := get_greatest (b1.smallest_y, b2.smallest_y);
+			--i.greatest_y := get_smallest (b1.greatest_y, b2.greatest_y);
 
-			--log (text => "b " & to_string (i));
+			----log (text => "b " & to_string (i));
 			
-			return (exists => true, intersection => i);
-		else
-			return (exists => false);
-		end if;
-	end get_intersection;
+			--return (exists => true, intersection => i);
+		--else
+			--return (exists => false);
+		--end if;
+	--end get_intersection;
 
 
 	

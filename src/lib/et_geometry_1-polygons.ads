@@ -191,8 +191,7 @@ package et_geometry_1.polygons is
 	
 	-- Returns the boundaries of the given polygon.
 	function get_boundaries (
-		polygon		: in type_polygon;
-		line_width	: in type_float_internal_positive)
+		polygon : in type_polygon)
 		return type_boundaries;
 
 	

@@ -758,30 +758,30 @@ package et_geometry_1 is
 
 	
 	
-	-- Returns true if the given boundaries intersect each other.
-	-- Returns false if boundaries do not intersect and if they
+	-- Returns true if the given boundaries overlap each other.
+	-- Returns false if boundaries do not overlap and if they
 	-- touch each other:
-	function intersect (
+	function overlap (
 		b1 : in type_boundaries;
 		b2 : in type_boundaries)
 		return boolean;
 
 
-	type type_boundaries_intersection (exists : boolean := true) is record
-		case exists is
-			when TRUE => intersection : type_boundaries;
-			when FALSE => null;
-		end case;
-	end record;
+	--type type_boundaries_intersection (exists : boolean := true) is record
+		--case exists is
+			--when TRUE => intersection : type_boundaries;
+			--when FALSE => null;
+		--end case;
+	--end record;
 
 	
 	-- Returns the intersection area (german: Schnittmenge) of two
 	-- boundaries. If the boundaries do not overlap each other
 	-- then a constraint error is raised:
-	function get_intersection (
-		b1 : in type_boundaries;
-		b2 : in type_boundaries)
-		return type_boundaries_intersection;
+	--function get_intersection (
+		--b1 : in type_boundaries;
+		--b2 : in type_boundaries)
+		--return type_boundaries_intersection;
 
 	
 	-- Adds two boundaries.
