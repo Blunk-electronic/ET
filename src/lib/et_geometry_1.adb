@@ -1531,6 +1531,7 @@ package body et_geometry_1 is
 		b2 : in type_boundaries)
 		return boolean
 	is begin
+		-- CS use >= and <= operators ?
 		if	b2.greatest_x > b1.smallest_x
 		and b2.smallest_x < b1.greatest_x
 		then -- boundaries intersect in x-direction

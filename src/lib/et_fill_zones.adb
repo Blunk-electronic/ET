@@ -44,7 +44,7 @@ package body et_fill_zones is
 		style	: in type_style)
 	is		
 		-- The boundaries of the island (greatest/smallest x/y):
-		boundaries : constant type_boundaries := get_boundaries (island.outer_border, 0.0);
+		boundaries : constant type_boundaries := get_boundaries (island.outer_border);
 
 		height : constant type_float_internal_positive := get_height (boundaries);
 		bottom : constant type_float_internal := get_bottom (boundaries);
