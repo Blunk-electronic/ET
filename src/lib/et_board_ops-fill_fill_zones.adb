@@ -192,7 +192,7 @@ is
 			offset_polygons (polygons, type_float_internal_positive (clearance));
 
 			-- CS union polygons ?
-			multi_union (polygons);
+			--multi_union (polygons);
 			
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;
@@ -255,7 +255,7 @@ is
 		basket.splice (before => pac_polygon_list.no_element, source => polygons);
 
 		-- Merge overlapping polygons:
-		multi_union (basket);
+		--multi_union (basket);
 	end put_into_basket;
 
 	
@@ -348,11 +348,13 @@ is
 		end fill_islands;
 		
 		
-	begin
+	begin -- fill_zone
 		log (text => "zone with corner nearest to origin:" 
 			 & to_string (get_corner_nearest_to_origin (zone)),
 			level => log_threshold + 3);
 
+		--put_line ("fill zone");
+		
 		log_indentation_up;
 		
 		
@@ -376,7 +378,9 @@ is
 			zone		=> zone_polygon,
 			line_width	=> linewidth);
 
+		--put_line ("A");
 
+		
 		-- Now we start collecting polygons caused by conductor objects,
 		-- polygon cutouts, restrict objects etc. in the cropping basket.
 		-- Later everything in the basket will be used to crop the islands
@@ -386,7 +390,8 @@ is
 		
 		-- Collect holes in basket:
 		put_into_basket (cropping_basket, holes);
-
+		--put_line ("A2");
+		
 		
 		-- Crop the islands by all conductor objects in the affected layer.
 		-- The clearance of these objects to the zone is determined by
@@ -396,27 +401,38 @@ is
 			layer			=> layer);
 
 		put_into_basket (cropping_basket, conductors);
+		--put_line ("A3");
 
-
+		
 		-- Crop the islands by all cutout areas in the affected layer.
 		cutouts := cutouts_to_polygons (layer);
 		put_into_basket (cropping_basket, cutouts);
-
+		--put_line ("A4");
 		
 		
 		-- Crop the islands by all route restrict objects in the affected layer.
 		restrict := restrict_to_polygons (layer);
 		put_into_basket (cropping_basket, restrict);
-
+		--put_line ("A5");
+		
 
 		-- Now the basket is complete to crop its content with the islands.
 		-- The result are even more islands:
+
+		--put_line ("B");
+
+		--multi_union (cropping_basket,true); -- debug messages on
+		multi_union (cropping_basket);
+
+		--put_line ("B1");
+		
 		islands := multi_crop_2 (
 			polygon_B_list	=> islands,
 			polygon_A_list	=> cropping_basket,
 			debug			=> false);
 
-
+		--put_line ("C");
+		
 		-- Assign the islands to the zone:
 		set_islands;
 
@@ -426,6 +442,8 @@ is
 		-- Fill the islands with stripes:
 		fill_islands;
 
+		--put_line ("E");
+		
 		log_indentation_down;
 		
 	end fill_zone;
