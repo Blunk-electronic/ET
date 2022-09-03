@@ -386,50 +386,51 @@ package body et_geometry_1.polygons.union is
 		overlap_status : type_overlap_status;
 		
 		
-	begin -- clip
+	begin -- union
 
-		-- Both polygons must have vertices and edges.
-		-- Otherwise raise exception:
-		if get_edges_total (polygon_A) = 0 then
-			raise constraint_error with "Polygon A has no vertices !";
-		end if;
+		-- CS
+		-- To speed things up, we do a simple test:
+		-- If the boundaries of the given polygons overlap each other
+		-- then a union might exist. If they do not overlap then there is
+		-- no need to union the polygons:
+		--if overlap (get_boundaries (polygon_A), get_boundaries (polygon_B)) then
+			
+			-- Find intersections of the given two polygons:
+			intersections := get_intersections (polygon_A, polygon_B, debug);
 
-		if get_edges_total (polygon_B) = 0 then
-			raise constraint_error with "Polygon B has no vertices !";
-		end if;
+			
+			overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
+			
+			case overlap_status is
+				when CONGRUENT =>
+					put_line ("CONGRUENT");
+					-- The result is just polygon A:
+					result_polygon := type_polygon (polygon_A);
+					
+				when A_DOES_NOT_OVERLAP_B => 
+					-- No union possible.
+					result_exists := false;
+
+				when A_INSIDE_B => 
+					-- Polygon A is completely inside B. So the result
+					-- is just polygon B:
+					result_polygon := type_polygon (polygon_B);
+
+				when B_INSIDE_A =>
+					-- Polygon B is completely inside A. So the result
+					-- is just polygon A:
+					result_polygon := type_polygon (polygon_A);
+
+				when A_OVERLAPS_B => 
+					-- Do the actual union work:
+					do_union;
+			end case;
+
+		--else
+			--result_exists := false;
+		--end if;
 
 		
-		-- Find intersections of the given two polygons:
-		intersections := get_intersections (polygon_A, polygon_B, debug);
-
-
-		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
-		
-		case overlap_status is
-			when CONGRUENT =>
-				put_line ("CONGRUENT");
-				-- The result is just polygon A:
-				result_polygon := type_polygon (polygon_A);
-				
-			when A_DOES_NOT_OVERLAP_B => 
-				-- No union possible.
-				result_exists := false;
-
-			when A_INSIDE_B => 
-				-- Polygon A is completely inside B. So the result
-				-- is just polygon B:
-				result_polygon := type_polygon (polygon_B);
-
-			when B_INSIDE_A =>
-				-- Polygon B is completely inside A. So the result
-				-- is just polygon A:
-				result_polygon := type_polygon (polygon_A);
-
-			when A_OVERLAPS_B => 
-				-- Do the actual union work:
-				do_union;
-		end case;
-	
 
 		if result_exists then
 			return (exists => true, union => result_polygon);

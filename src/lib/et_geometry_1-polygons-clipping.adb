@@ -220,17 +220,6 @@ package body et_geometry_1.polygons.clipping is
 		overlap_status : type_overlap_status;
 		
 	begin -- clip
-
-		-- Both polygons must have vertices and edges.
-		-- Otherwise raise exception:
-		if get_edges_total (polygon_A) = 0 then
-			raise constraint_error with "Polygon A has no vertices !";
-		end if;
-
-		if get_edges_total (polygon_B) = 0 then
-			raise constraint_error with "Polygon B has no vertices !";
-		end if;
-
 		
 		-- Find intersections of the given two polygons:
 		intersections := get_intersections (polygon_A, polygon_B, debug);
