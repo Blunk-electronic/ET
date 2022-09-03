@@ -371,6 +371,20 @@ begin
 		E => " 40 -10  120 -10  120 50  100 50  100 100  0 100  0 0  40 0");
 	-- go
 	
+
+	-- TEST 23, A touches B, both share an edge
+	do_test (
+		A => "100 0  200 0  200 100  100 100",
+		B => B_default,
+		E => "0 0  200 0  200 100  0 100");
+
+
+	-- TEST 24, A touches B, both share a vertex
+	do_test (
+		A => "100 0  200 0  200 100",
+		B => B_default,
+		E => "");
+
 	
 	-----------------------	
 

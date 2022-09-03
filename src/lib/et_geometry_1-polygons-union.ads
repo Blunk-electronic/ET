@@ -72,7 +72,11 @@ package et_geometry_1.polygons.union is
 	
 	
 	-- Unions polygon A with polygon B.
-	-- If debug is true then a lot of debug messages is output.
+	-- - If the polygons share an edge without overlapping each other
+	--   then there will be a union.
+	-- - If the polygons share a vertex without overlapping each other
+	--   then there will NOT be union.	
+	-- - If debug is true then a lot of debug messages is output.
 	function union (
 		polygon_A	: in type_polygon; -- the first polygon
 		polygon_B	: in type_polygon; -- the second polygon

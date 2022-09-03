@@ -490,6 +490,11 @@ package body et_geometry_1.polygons.union is
 			
 			procedure query_secondary (s : in pac_polygon_list.cursor) is begin
 				if not processed.contains (s) then
+
+					if debug then
+						put_line ("secondary");
+					end if;
+
 					declare
 						u : constant type_union := union (t, element (s));
 					begin
@@ -507,6 +512,10 @@ package body et_geometry_1.polygons.union is
 		begin -- query_primary
 			if not processed.contains (p) then
 
+				if debug then
+					put_line ("primary");
+				end if;
+				
 				-- Mark the candidate polygon as processed:
 				processed.append (p);
 
@@ -527,6 +536,10 @@ package body et_geometry_1.polygons.union is
 
 		
 	begin
+		if debug then
+			put_line ("multi union" & count_type'image (p_count));
+		end if;
+				
 		-- There is nothing to do if less then 2 polygons are given.
 		-- Otherwise iterate the given polygons:
 		if p_count > 1 then
