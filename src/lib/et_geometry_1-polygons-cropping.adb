@@ -342,43 +342,57 @@ package body et_geometry_1.polygons.cropping is
 
 		
 	begin -- crop
-	
-		-- Find intersections of the given two polygons:
-		intersections := get_intersections (polygon_A, polygon_B, debug);
-
-
-		overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
-		show_overlap_status;
+		--put_line ("crop");
 		
-		case overlap_status is
-			when CONGRUENT =>
-				-- Both polygons have the same outline. B is completely cropped to zero area.
-				-- So the result is an empty list of polygons:
-				result_exists := true;
-				
-			when A_DOES_NOT_OVERLAP_B => 
-				-- Nothing to do. Polygon B is unchanged so it is the one and only polygon
-				-- to be returned:
-				result_exists := true;
-				result_crop.append (polygon_B);
+		-- To speed things up, we do a simple pre-test.
+		-- If the boundaries of the given polygons overlap each other
+		-- then cropping makes sense.:
+		if overlap (get_boundaries (polygon_A), get_boundaries (polygon_B)) then
 
-			when A_INSIDE_B => 
-				-- Polygon A is completely inside B. A crop operation is
-				-- not possible (The outcome would be a cutout area in polygon B.):
-				result_exists := false;
+			--put_line ("overlap");
+			
+			-- Find intersections of the given two polygons:
+			intersections := get_intersections (polygon_A, polygon_B, debug);
 
-			when B_INSIDE_A => 
-				-- Polygon B is completely inside A. B is completey cropped to zero area
-				-- So the result is an empty list of polygons:
-				result_exists := true;
-				
-			when A_OVERLAPS_B => 
-				result_exists := true;
-				-- Do the actual cropping work:
-				do_cropping;
-		end case;
-	
 
+			overlap_status := get_overlap_status (polygon_A, polygon_B, intersections);
+			show_overlap_status;
+			
+			case overlap_status is
+				when CONGRUENT =>
+					-- Both polygons have the same outline. B is completely cropped to zero area.
+					-- So the result is an empty list of polygons:
+					result_exists := true;
+					
+				when A_DOES_NOT_OVERLAP_B => 
+					-- Nothing to do. Polygon B is unchanged so it is the one and only polygon
+					-- to be returned:
+					result_exists := true;
+					result_crop.append (polygon_B);
+
+				when A_INSIDE_B => 
+					-- Polygon A is completely inside B. A crop operation is
+					-- not possible (The outcome would be a cutout area in polygon B.):
+					result_exists := false;
+
+				when B_INSIDE_A => 
+					-- Polygon B is completely inside A. B is completey cropped to zero area
+					-- So the result is an empty list of polygons:
+					result_exists := true;
+					
+				when A_OVERLAPS_B => 
+					result_exists := true;
+					-- Do the actual cropping work:
+					do_cropping;
+			end case;
+
+		else
+			result_exists := true;
+			overlap_status := A_DOES_NOT_OVERLAP_B;
+			result_crop.append (polygon_B);
+		end if;	
+
+			
 		
 		if result_exists then
 			return (
