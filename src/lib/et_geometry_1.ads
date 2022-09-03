@@ -758,9 +758,8 @@ package et_geometry_1 is
 
 	
 	
-	-- Returns true if the given boundaries overlap each other.
-	-- Returns false if boundaries do not overlap and if they
-	-- touch each other:
+	-- Returns true if the given boundaries overlap or touch each other.
+	-- Returns false if boundaries do not overlap:
 	function overlap (
 		b1 : in type_boundaries;
 		b2 : in type_boundaries)

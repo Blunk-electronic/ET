@@ -1530,24 +1530,36 @@ package body et_geometry_1 is
 		b1 : in type_boundaries;
 		b2 : in type_boundaries)
 		return boolean
-	is begin
-		-- CS use >= and <= operators ?
-		if	b2.greatest_x > b1.smallest_x
-		and b2.smallest_x < b1.greatest_x
-		then -- boundaries intersect in x-direction
+	is
+		-- The the smallest and greatest x-value occupied by the two boundaries:
+		left   : constant type_float_internal := get_smallest (b1.smallest_x, b2.smallest_x);
+		right  : constant type_float_internal := get_greatest (b1.greatest_x, b2.greatest_x);
 
-			if	b2.greatest_y > b1.smallest_y
-			and b2.smallest_y < b1.greatest_y
-			then -- boundaries intersect in y-direction
-				return true;
-			else
-				return false;
-			end if;
-			
-		else
-			return false;
-		end if;
+		-- The the smallest and greatest y-value occupied by the two boundaries:
+		bottom : constant type_float_internal := get_smallest (b1.smallest_y, b2.smallest_y);
+		top    : constant type_float_internal := get_greatest (b1.greatest_y, b2.greatest_y);
 		
+		span_h, span_v : type_float_internal_positive;
+
+		sum_h, sum_v : type_float_internal_positive;
+
+		result : boolean := false;
+	begin
+		-- The total horizontal and vertical span occupied by the boundaries:
+		span_h := right - left;
+		span_v := top - bottom;
+
+		-- The sum of their widths and heights:
+		sum_h := get_width (b1) + get_width (b2);
+		sum_v := get_height (b1) + get_height (b2);
+
+		if sum_h >= span_h  -- overlap horizontally
+		and sum_v >= span_v -- overlap vertically
+		then
+			result := true;
+		end if;
+
+		return result;
 	end overlap;
 	
 
