@@ -166,12 +166,14 @@ package et_geometry_1.polygons is
 	-- Successive redundant vertices will be ignored. 
 	-- So "0.0 0.0   7.0 0.0  7.0 0.0   1.0 1.0   0.0 1.0" will be handled like
 	-- "0.0 0.0   7.0 0.0   1.0 1.0   0.0 1.0"
+	-- Raises exception if less than 3 vertices are given.
 	function to_polygon (vertices : in string)
 		return type_polygon;
 
 	
 	-- Converts a list of location vectors to a polygon.
 	-- Successive redundant vertices will be ignored:
+	-- Raises exception if less than 3 vertices are given.
 	function to_polygon (vectors : in pac_vectors.list)
 		return type_polygon;
 

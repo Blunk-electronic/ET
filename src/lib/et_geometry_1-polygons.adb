@@ -430,7 +430,12 @@ package body et_geometry_1.polygons is
 		v_list : pac_vertices.list;
 
 	begin
-		-- CS Check number of given vertices. See function to_polygon below.
+		-- Check number of given vertices:
+		if field_count (v_fields) < 3 then
+			put_line (error_message_too_few_vertices);
+			raise semantic_error_1;
+		end if;	
+		
 		
 		-- Iterate all fields of given list of arguments:
 		while place <= field_count (v_fields) loop
