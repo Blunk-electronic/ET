@@ -76,6 +76,8 @@ package et_geometry_1.polygons.union is
 	--   then there will be a union.
 	-- - If the polygons share a vertex without overlapping each other
 	--   then there will NOT be union.	
+	-- - CS: polygons share two or more edges or vertices so that the
+	--   resulting union would have a hole ?
 	-- - If debug is true then a lot of debug messages is output.
 	function union (
 		polygon_A	: in type_polygon; -- the first polygon

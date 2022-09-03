@@ -433,27 +433,9 @@ package body et_geometry_1.polygons.union is
 
 		if result_exists then
 			return (exists => true, union => result_polygon);
-
 		else
 			return (exists => false);
 		end if;
-
-
-		--exception
-			----when event: operator_error =>
-				----put_line(exception_message(event));
-			--when event: constraint_error =>
-				----put_line ("Constraint error occured !");
-				--put_line (exception_information (event));
-				--put_line (exception_message (event));
-
-				--put_line (gnat.source_info.file & " :" & integer'image (gnat.source_info.line));
-				
-				--raise;
-				
-			--when others =>
-				--put_line ("Other error occured !");
-				--raise;
 		
 	end union;
 
