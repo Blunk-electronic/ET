@@ -78,11 +78,14 @@ package et_geometry_1.polygons.union is
 	--   then there will NOT be union.	
 	-- - CS: polygons share two or more edges or vertices so that the
 	--   resulting union would have a hole ?
+	-- - The pretest-flag decides whether to test for overlappin boundaries
+	--   of the two polygons. This may speed up things slightly.
 	-- - If debug is true then a lot of debug messages is output.
 	-- - Assumes that the given polygons have at least 3 vertices.
 	function union (
 		polygon_A	: in type_polygon; -- the first polygon
 		polygon_B	: in type_polygon; -- the second polygon
+		pretest		: in boolean := true;
 		debug		: in boolean := false)
 		return type_union;
 

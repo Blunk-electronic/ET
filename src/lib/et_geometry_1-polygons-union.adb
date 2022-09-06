@@ -115,6 +115,7 @@ package body et_geometry_1.polygons.union is
 	function union (
 		polygon_A	: in type_polygon;
 		polygon_B	: in type_polygon;
+		pretest		: in boolean := true;
 		debug		: in boolean := false)
 		return type_union
 	is
@@ -384,7 +385,7 @@ package body et_geometry_1.polygons.union is
 
 		
 		overlap_status : type_overlap_status;
-		
+		do_it : boolean := false;
 		
 	begin -- union
 		--if debug then
@@ -392,15 +393,28 @@ package body et_geometry_1.polygons.union is
 		--end if;
 		
 
-		-- To speed things up, we do a simple pre-test:
+		-- To speed things up, we can do a simple pretest (if required by caller):
 		-- If the boundaries of the given polygons overlap each other
 		-- then a union might exist. If they do not overlap then there is
 		-- no need to union the polygons:
-		if overlap (get_boundaries (polygon_A), get_boundaries (polygon_B)) then
+		if pretest then
+			if overlap (get_boundaries (polygon_A), get_boundaries (polygon_B)) then
+				do_it := true;
 
-			--if debug then
-				--put_line ("overlap");
-			--end if;
+				--if debug then
+					--put_line ("overlap");
+				--end if;
+			else
+				do_it := false;
+				result_exists := false;
+			end if;
+		else
+			do_it := true;
+		end if;
+
+
+
+		if do_it then
 				
 			-- Find intersections of the given two polygons:
 			intersections := get_intersections (polygon_A, polygon_B, debug);
@@ -433,8 +447,6 @@ package body et_geometry_1.polygons.union is
 					do_union;
 			end case;
 
-		else
-			result_exists := false;
 		end if;
 
 		
@@ -485,17 +497,28 @@ package body et_geometry_1.polygons.union is
 						put_line ("secondary");
 					end if;
 
-					declare
-						u : constant type_union := union (t, element (s));
-						--u : constant type_union := union (t, element (s), true); -- debug on
-					begin
-						if u.exists then
-							t := u.union;
-							
-							processed.append (s); -- mark as processed
-							union_found := true;
-						end if;
-					end;
+					-- Do a simple pretest whether the boundaries of the
+					-- polygons overlap.
+					if overlap (t.boundaries, element (s).boundaries) then
+						
+						declare
+							u : constant type_union := union (
+								polygon_A	=> t,
+								polygon_B	=> element (s),
+								pretest		=> false, -- pretest already done, see above
+								debug		=> false);
+
+						begin
+							if u.exists then
+								t := u.union;
+								update_boundaries (t);
+								
+								processed.append (s); -- mark as processed
+								union_found := true;
+							end if;
+						end;
+
+					end if;
 				end if;
 			end query_secondary;
 
@@ -530,7 +553,9 @@ package body et_geometry_1.polygons.union is
 		if debug then
 			put_line ("multi union" & count_type'image (p_count));
 		end if;
-				
+
+		update_boundaries (polygons);
+		
 		-- There is nothing to do if less then 2 polygons are given.
 		-- Otherwise iterate the given polygons:
 		if p_count > 1 then

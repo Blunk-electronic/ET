@@ -105,9 +105,14 @@ package et_geometry_1.polygons is
 
 	
 	type type_polygon is record
-		edges : pac_edges.list;
+		edges		: pac_edges.list;
+		boundaries	: type_boundaries;
 	end record;
 
+
+	procedure update_boundaries (
+		polygon	: in out type_polygon);
+									
 
 	-- Rotates the edges of a polygon according to the given direction.
 	-- NOTE: The polygon does not change its appearance. Only the order
@@ -132,7 +137,10 @@ package et_geometry_1.polygons is
 	
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 
-	
+
+	procedure update_boundaries (
+		polygons : in out pac_polygon_list.list);
+		
 
 	-- Returns true if:
 	-- - number of polygons in left equals those in right AND

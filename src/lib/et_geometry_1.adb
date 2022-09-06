@@ -1560,6 +1560,12 @@ package body et_geometry_1 is
 		end if;
 
 		return result;
+
+		exception when constraint_error =>
+			put_line ("b1: " & to_string (b1));
+			put_line ("b2: " & to_string (b2));
+			raise;
+		
 	end overlap;
 	
 

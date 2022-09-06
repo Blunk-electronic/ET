@@ -218,6 +218,14 @@ package body et_geometry_1.polygons is
 		return result;
 	end to_edges;
 
+
+
+	procedure update_boundaries (
+		polygon	: in out type_polygon)
+	is begin
+		polygon.boundaries := get_boundaries (polygon);
+	end update_boundaries;
+
 	
 
 	procedure rotate (
@@ -355,6 +363,23 @@ package body et_geometry_1.polygons is
 
 
 
+	procedure update_boundaries (
+		polygons : in out pac_polygon_list.list)
+	is
+		procedure do_it (p : in out type_polygon) is
+		begin
+			p.boundaries := get_boundaries (p);
+		end do_it;
+		
+		procedure query_polygon (p : in pac_polygon_list.cursor) is begin
+			polygons.update_element (p, do_it'access);
+		end query_polygon;
+	
+	begin
+		polygons.iterate (query_polygon'access);
+	end update_boundaries;
+
+	
 
 	function "=" (
 		left, right : in pac_polygon_list.list)
