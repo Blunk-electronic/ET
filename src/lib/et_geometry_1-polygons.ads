@@ -60,6 +60,9 @@ generic
 package et_geometry_1.polygons is
 
 
+	--pragma suppress (all_checks);
+	
+	
 	-- As system wide default for all polygons.
 	winding_default : constant type_direction_of_rotation := CCW;
 

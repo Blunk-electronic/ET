@@ -45,8 +45,9 @@ generic
 package et_geometry_1.polygons.union is
 
 	use pac_polygon_list;
+		
 	
-
+	
 	-- Returns from the given list of polygons the one that encloses
 	-- all others in the list
 	function get_greatest (

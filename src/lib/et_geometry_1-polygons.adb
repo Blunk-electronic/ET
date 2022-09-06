@@ -226,6 +226,8 @@ package body et_geometry_1.polygons is
 		polygon.boundaries := get_boundaries (polygon);
 	end update_boundaries;
 
+	--pragma inline (update_boundaries);
+
 	
 
 	procedure rotate (
@@ -561,6 +563,8 @@ package body et_geometry_1.polygons is
 		polygon.edges.iterate (query_edge'access);
 		return result;
 	end get_boundaries;
+
+	--pragma inline (get_boundaries);
 	
 
 	

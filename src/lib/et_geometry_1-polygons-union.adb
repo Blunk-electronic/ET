@@ -41,9 +41,12 @@ with gnat.source_info;
 
 with et_exceptions;				use et_exceptions;
 
+--pragma optimize (time);
 
 package body et_geometry_1.polygons.union is
 
+	--pragma suppress (all_checks);
+	
 
 	function get_greatest (
 		polygons	: in pac_polygon_list.list)
