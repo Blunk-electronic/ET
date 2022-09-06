@@ -58,15 +58,15 @@ package body et_geometry_1 is
 	end "=";
 
 	
-	function ">=" (left, right : in type_float_internal) return boolean is begin
-		if left = right then
-			return true;
-		elsif left > right then
-			return true;
-		else
-			return false;
-		end if;
-	end ">=";
+	--function ">=" (left, right : in type_float_internal) return boolean is begin
+		--if left = right then
+			--return true;
+		--elsif left > right then
+			--return true;
+		--else
+			--return false;
+		--end if;
+	--end ">=";
 
 
 	--function "<=" (left, right : in type_float_internal) return boolean is begin

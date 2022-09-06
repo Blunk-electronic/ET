@@ -61,7 +61,7 @@ package et_geometry_1 is
 	-- the constant "accuracy":
 	function "=" (left, right : in type_float_internal) return boolean;
 
-	function ">=" (left, right : in type_float_internal) return boolean;
+	--function ">=" (left, right : in type_float_internal) return boolean;
 
 	-- CS: for some reason this redefining causes an exception:
 	-- "raised STORAGE_ERROR : stack overflow or erroneous memory access"

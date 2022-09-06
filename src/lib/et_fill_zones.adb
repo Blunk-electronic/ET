@@ -110,15 +110,23 @@ package body et_fill_zones is
 				target	=> x_main,
 				source	=> status.x_intersections, 
 				before	=> pac_float_numbers.no_element);
-			
+
+			exception 
+				when others =>
+					--put_line ("bottom: " & to_string (bottom));
+					--put_line ("height: " & to_string (height));
+					put_line ("status : " & to_string (
+						get_point_status (element (i), start_point, true)));
+					
+					raise;
 		end query_inner_border;
 
 		
 	begin
 		--new_line;
 		--put_line ("bottom: " & to_string (bottom));
-		----put_line ("height: " & to_string (height));
-		--put_line ("left: " & to_string (x_start));
+		--put_line ("height: " & to_string (height));
+		--put_line ("left: " & to_string (start_point.x));
 		
 		case style.style is
 			when SOLID =>
@@ -165,6 +173,16 @@ package body et_fill_zones is
 				null;
 				-- CS
 		end case;
+
+		exception 
+			when others =>
+				--put_line ("bottom: " & to_string (bottom));
+				--put_line ("height: " & to_string (height));
+				put_line ("boundaries : " & to_string (boundaries));
+				put_line ("start_point: " & to_string (start_point));
+
+				raise;
+		
 	end make_stripes;
 
 	

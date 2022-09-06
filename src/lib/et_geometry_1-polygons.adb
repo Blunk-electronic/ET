@@ -1179,22 +1179,39 @@ package body et_geometry_1.polygons is
 			edge : in type_edge;
 			y_th : in type_float_internal)
 			return boolean
-		is begin
+		is 
+
+			function less_than (left, right : in type_float_internal) return boolean is begin
+				if right - left > accuracy then
+					return true;
+				else
+					return false;
+				end if;
+			end less_than;
+
+			
+			function greater_or_equal (left, right : in type_float_internal) return boolean is begin
+				if right = left then
+					return true;
+				elsif left - right > accuracy then
+					return true;
+				else
+					return false;
+				end if;
+			end greater_or_equal;
+
+			
+		begin
 			if	
-				-- NOTE: The operator ">=" had to be redefined
-				-- in et_geometry_1. If this was a bad idea and if
-				-- it must be undone, then some rework is required
-				-- here:
-				
 				-- edge comes from above
-				edge.start_point.y >= y_th and 
-				edge.end_point.y   <  y_th then
+				greater_or_equal (edge.start_point.y, y_th) and
+				less_than        (edge.end_point.y  , y_th) then
 				return true;
 				
 			elsif
 				-- edge comes from below
-				edge.end_point.y   >= y_th and 
-				edge.start_point.y <  y_th then
+				less_than        (edge.start_point.y, y_th) and
+				greater_or_equal (edge.end_point.y  , y_th) then
 				return true;
 				
 			else
