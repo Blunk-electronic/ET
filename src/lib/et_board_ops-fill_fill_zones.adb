@@ -164,6 +164,8 @@ is
 	is
 		result : pac_polygon_list.list;
 
+		layer_category : type_signal_layer_category;
+
 		
 		procedure query_net (n : in pac_nets.cursor) is
 			
@@ -183,9 +185,48 @@ is
 					polygons.append (to_polygon (line, fab_tolerance));
 				end if;
 			end query_line;
+
+
+			procedure query_via (v : in pac_vias.cursor) is
+				use pac_vias;
+				via : type_via renames element (v);
+			begin
+				case via.category is
+					when THROUGH =>
+						if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
+							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter));
+						end if;
+
+					when BLIND_DRILLED_FROM_TOP =>
+						if layer_category = OUTER_TOP then
+							polygons.append (to_polygon (via.position, via.restring_top, via.diameter));
+						elsif blind_via_uses_layer (via, layer, bottom_layer) then
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+						end if;
+
+					when BLIND_DRILLED_FROM_BOTTOM =>
+						if layer_category = OUTER_BOTTOM then
+							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter));
+						elsif blind_via_uses_layer (via, layer, bottom_layer) then
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+						end if;
+						
+					when BURIED =>
+						if layer_category = INNER and then
+						   buried_via_uses_layer (via, layer) then
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+						end if;
+				end case;
+			end query_via;
+			
 			
 		begin
+			-- Query track segments:
 			route.lines.iterate (query_line'access);
+
+			-- Query vias:
+			route.vias.iterate (query_via'access);
+			
 			-- CS arcs, vias, fill zones, ... see et_pcb.type_route
 			-- CS pads
 
@@ -196,8 +237,19 @@ is
 			
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;
+
 		
 	begin
+		-- Set the layer category:
+		if layer = 1 then
+			layer_category := OUTER_TOP;
+		elsif layer = bottom_layer then
+			layer_category := OUTER_BOTTOM;
+		else
+			layer_category := INNER;
+		end if;
+		
+		
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- CS non electrical conductor stuff (floating fill zones, text, fiducials, ...)

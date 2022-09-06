@@ -53,6 +53,8 @@ with cairo;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_contour_to_polygon;
 with et_geometry;
 with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
@@ -62,7 +64,7 @@ with et_text;					use et_text;
 
 package et_vias is
 	
-	--use pac_geometry_brd;
+	use pac_polygons;
 	use pac_geometry_2;
 
 	
@@ -102,7 +104,9 @@ package et_vias is
 		-- range type_via_layer would always produce a lower 
 		-- layer much deeper than the deepest layer of the stack.
 	end record;
+	
 
+	
 	-- Converts two strings like "2" and "6" to a type_buried_layers.
 	-- Checks the layers. The layers must be inner layers. Otherwise
 	-- exception error is raised.
@@ -111,7 +115,9 @@ package et_vias is
 		bottom			: in type_signal_layer) -- 16
 		return type_buried_layers;
 
+	
 	function to_string (layers : in type_buried_layers) return string;
+
 	
 	type type_via_category is (
 		THROUGH,
@@ -176,6 +182,7 @@ package et_vias is
 		layer	: in type_signal_layer)
 		return boolean;
 
+	
 	-- Returns true if the given blind via uses the given layer.
 	-- The given via must be of category BLIND_DRILLED_FROM_TOP or
 	-- BLIND_DRILLED_FROM_BOTTOM. Otherwise an exception will be raised.
@@ -223,6 +230,7 @@ package et_vias is
 		active	: boolean := false;
 		size	: type_drill_size := type_drill_size'first;
 	end record;
+
 	
 	type type_user_specific_restring is record
 		active	: boolean := false;
@@ -237,7 +245,16 @@ package et_vias is
 		restring_outer	: type_user_specific_restring;
 	end record;
 
+
+
+	-- Builds a polygon from the given position, restring and diameter:
+	function to_polygon (
+		position	: in type_point;
+		restring	: in type_restring_width;
+		diameter	: in type_drill_size)
+		return type_polygon;
 	
+		
 end et_vias;
 
 -- Soli Deo Gloria

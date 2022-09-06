@@ -194,12 +194,32 @@ package body et_vias is
 		return layers;
 	end to_buried_layers;
 
+	
 	function to_string (layers : in type_buried_layers) return string is
 	begin
 		return to_string (layers.upper) & space & to_string (layers.lower);
 	end to_string;
 
+	
+	function to_polygon (
+		position	: in type_point;
+		restring	: in type_restring_width;
+		diameter	: in type_drill_size)
+		return type_polygon
+	is 
+		use pac_geometry_brd;
+		use et_contour_to_polygon;
+	begin
+		return (
+			edges => (to_edges (
+				circle		=> (position, type_float_internal_positive (restring + diameter * 0.5)),
+				tolerance	=> fab_tolerance)),
 
+			others => <>); -- boundaries not computed here
+
+	end to_polygon;
+
+	
 end et_vias;
 
 -- Soli Deo Gloria

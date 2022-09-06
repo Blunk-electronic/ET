@@ -64,6 +64,10 @@ package et_pcb_stack is
 	keyword_bottom		: constant string := "bottom";	
 	keyword_layer		: constant string := "layer";	
 	keyword_layers		: constant string := "layers";
+
+	
+	type type_signal_layer_category is (OUTER_TOP, INNER, OUTER_BOTTOM);
+
 	
 	signal_layer_top : constant positive := 1; -- CS rename signal to conductor
 	signal_layer_bottom : constant positive := 100;
