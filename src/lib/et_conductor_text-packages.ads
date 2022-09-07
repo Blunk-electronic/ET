@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -38,10 +38,10 @@
 
 package et_conductor_text.packages is
 	
-	type type_conductor_text is new pac_text_fab.type_text_fab_with_content with null record;
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
+	
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;

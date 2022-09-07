@@ -42,18 +42,22 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 with et_text;					use et_text;
 with et_pcb_stack;				use et_pcb_stack;
-with et_conductor_segment;		use et_conductor_segment;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
 package et_conductor_text is
 
+	--use pac_geometry_2;
+
+	
+	use pac_geometry_brd;
+	use pac_polygons;
+
+	
 	use et_board_shapes_and_text.pac_text_fab;
 
 
@@ -61,6 +65,19 @@ package et_conductor_text is
 		f : in type_face)
 		return type_vector_text_mirrored;
 
+
+	type type_conductor_text 
+		is new type_text_fab_with_content with
+	record
+		vectors	: type_vector_text;
+	end record;
+
+	
+	function to_polygons (
+		text : in type_conductor_text)
+		return pac_polygon_list.list;
+
+	
 	
 	--package pac_conductor_line_segments is new
 		--doubly_linked_lists (type_conductor_line_segment);
@@ -94,7 +111,6 @@ package et_conductor_text is
 		--cursor			: in pac_conductor_texts_board.cursor;
 		--log_threshold 	: in type_log_level);
 
-	procedure dummy;
 	
 end et_conductor_text;
 

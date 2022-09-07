@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -40,7 +40,6 @@
 
 package body et_conductor_text is
 
-	procedure dummy is begin null; end;
 
 	function face_to_mirror (
 		f : in type_face)
@@ -51,6 +50,26 @@ package body et_conductor_text is
 			when BOTTOM	=> return YES;
 		end case;
 	end face_to_mirror;
+
+
+	function to_polygons (
+		text : in type_conductor_text)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_line (l : in pac_vector_text_lines.cursor) is
+		begin
+			null;
+		end query_line;
+
+		
+	begin
+
+		iterate (text.vectors, query_line'access);
+		return result;
+	end to_polygons;
+	
 
 	
 end et_conductor_text;

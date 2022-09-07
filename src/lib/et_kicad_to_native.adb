@@ -1978,7 +1978,7 @@ package body et_kicad_to_native is
 				end move_polygon;
 
 				
-				procedure move_text (text : in out type_conductor_text) is
+				procedure move_text (text : in out et_conductor_text.boards.type_conductor_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_2;
 				begin

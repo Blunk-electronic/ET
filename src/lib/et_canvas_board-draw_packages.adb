@@ -53,6 +53,7 @@ with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 with et_design_rules;			use et_design_rules;
 with et_text;
+
 with et_conductor_text.packages;		use et_conductor_text.packages;
 
 with et_fill_zones;				use et_fill_zones;
@@ -1962,7 +1963,7 @@ is
 
 			-- TEXTS
 			use pac_conductor_texts;
-			text : type_conductor_text;
+			text : et_conductor_text.type_conductor_text;
 
 			procedure draw_text (f : in type_face) is begin
 				if route_restrict_enabled (f, bottom_layer) then
@@ -1974,11 +1975,13 @@ is
 				end if;
 			end draw_text;
 
+			
 			procedure query_text_top (c : in pac_conductor_texts.cursor) is begin
 				text := element (c);
 				set_destination;
 				draw_text (destination);
 			end query_text_top;
+			
 
 			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is begin
 				text := element (c);
@@ -2202,7 +2205,7 @@ is
 
 			-- TEXTS
 			use pac_conductor_texts;
-			text : type_conductor_text;
+			text : et_conductor_text.type_conductor_text;
 
 			procedure draw_text (f : in type_face) is begin
 				if via_restrict_enabled (f, bottom_layer) then
@@ -2213,6 +2216,7 @@ is
 
 				end if;
 			end draw_text;
+			
 
 			procedure query_text_top (c : in pac_conductor_texts.cursor) is begin
 				text := element (c);
@@ -2709,7 +2713,7 @@ is
 			-- TEXTS
 
 			procedure draw_conductor_text_with_content (
-				t : in out type_conductor_text;
+				t : in out et_conductor_text.type_conductor_text;
 				f : in type_face)
 			is
 				use et_pcb;
@@ -2753,7 +2757,7 @@ is
 			use pac_texts_fab_with_content;
 			
 			procedure draw_text (
-				t	: in out type_conductor_text;
+				t	: in out et_conductor_text.type_conductor_text;
 				f	: in type_face)
 			is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2770,7 +2774,7 @@ is
 
 			
 			procedure query_text_top (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
+				t : et_conductor_text.type_conductor_text := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
@@ -2778,7 +2782,7 @@ is
 
 			
 			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
-				t : type_conductor_text := element (c);
+				t : et_conductor_text.type_conductor_text := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_text (t, destination);
