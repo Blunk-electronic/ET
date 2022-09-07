@@ -76,54 +76,12 @@ package body et_conductor_segment is
 		line 		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
 		return type_polygon
-	is
-		use pac_geometry_brd;
-		
-		result : type_polygon;
-		direction : constant type_angle := get_direction (line);
-		distance : constant type_float_internal_positive := type_float_internal_positive (line.width * 0.5);
+	is begin
+		return to_polygon (
+			line		=> to_line_fine (line),
+			width		=> type_float_internal_positive (line.width),
+			tolerance	=> type_float_internal_positive (tolerance));
 
-		center : constant type_edge := type_edge (to_line_fine (line));
-		edge_right, edge_left : type_edge := center;
-		
-		arc : pac_geometry_brd.type_arc;
-		edges : pac_edges.list;
-
-		fab_tol : constant type_float_internal_positive := type_float_internal_positive (tolerance);
-	begin
-		-- Build the right edge and append it to the polygon as it is:
-		edge_right := move_by (edge_right, add (direction, -90.0), distance);
-		result.edges.append (edge_right);
-
-		-- Build the left edge but do NOT yet append it to the polygon:
-		edge_left  := move_by (edge_left,  add (direction, +90.0), distance);
-		reverse_line (edge_left);
-
-		-- Build the cap on the end of the line. The cap is an arc:
-		arc.center := center.end_point;
-		arc.start_point := edge_right.end_point;
-		arc.end_point := edge_left.start_point;
-		arc.direction := CCW;
-
-		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, type_float_internal_positive (fab_tol));
-		result.edges.splice (before => pac_edges.no_element, source => edges);
-		-- Container edges is now empty.
-
-		-- Now append the left edge to the polygon:
-		result.edges.append (edge_left);
-
-		-- Build the cap on the start of the line. The cap is an arc:
-		arc.center := center.start_point;
-		arc.start_point := edge_left.end_point;
-		arc.end_point := edge_right.start_point;
-		arc.direction := CCW;
-
-		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, type_float_internal_positive (fab_tol));
-		result.edges.splice (before => pac_edges.no_element, source => edges);
-		
-		return result;
 	end to_polygon;
 
 

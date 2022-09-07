@@ -59,6 +59,7 @@ package body et_conductor_text is
 		result : pac_polygon_list.list;
 
 		procedure query_line (l : in pac_vector_text_lines.cursor) is
+			
 		begin
 			null;
 		end query_line;

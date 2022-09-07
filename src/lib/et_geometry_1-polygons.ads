@@ -813,7 +813,17 @@ package et_geometry_1.polygons is
 	procedure increment_safety_counter (
 		count	: in out natural;
 		limit	: in natural);
+
+
+	-- Converts a line with a given width to a polygon
+	-- with round caps on the line ends:
+	function to_polygon (
+		line		: in type_line;
+		width		: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive)
+		return type_polygon;
 	
+							
 end et_geometry_1.polygons;
 
 -- Soli Deo Gloria

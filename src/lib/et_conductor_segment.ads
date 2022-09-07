@@ -82,7 +82,9 @@ package et_conductor_segment is
 		--segment : in type_conductor_line_segment)
 		--return string;
 
-	
+
+	-- Converts a line with a given width to a polygon
+	-- with round caps on the line ends:
 	function to_polygon (
 		line 		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
