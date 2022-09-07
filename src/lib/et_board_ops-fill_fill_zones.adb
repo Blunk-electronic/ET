@@ -224,10 +224,12 @@ is
 			-- Query track segments:
 			route.lines.iterate (query_line'access);
 
+			-- CS route.arcs.iterate (query_arc'access);
+			
 			-- Query vias:
 			route.vias.iterate (query_via'access);
 			
-			-- CS arcs, vias, fill zones, ... see et_pcb.type_route
+			-- CS fill zones, ... see et_pcb.type_route
 			-- CS pads
 
 			offset_polygons (polygons, type_float_internal_positive (clearance));
@@ -238,6 +240,16 @@ is
 			result.splice (before => pac_polygon_list.no_element, source => polygons);
 		end query_net;
 
+
+		use et_conductor_text.boards.pac_conductor_texts;
+		procedure query_text (t : in pac_conductor_texts.cursor) is 
+			text : type_conductor_text renames element (t);
+		begin
+			if text.layer = layer then
+				null;
+			end if;
+		end query_text;
+		
 		
 	begin
 		-- Set the layer category:
@@ -252,6 +264,7 @@ is
 		
 		element (module_cursor).nets.iterate (query_net'access);
 
+		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		-- CS non electrical conductor stuff (floating fill zones, text, fiducials, ...)
 
 		
