@@ -36,6 +36,8 @@
 --
 --   to do:
 
+with ada.text_io;				use ada.text_io;
+
 
 
 package body et_conductor_text is
@@ -53,21 +55,39 @@ package body et_conductor_text is
 
 
 	function to_polygons (
-		text : in type_conductor_text)
+		text	: in type_conductor_text;
+		debug	: in boolean := false)					 
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 
-		procedure query_line (l : in pac_vector_text_lines.cursor) is
-			
-		begin
-			null;
-		end query_line;
+		linewidth : constant type_float_internal_positive := 
+			type_float_internal_positive (get_linewidth (text.vectors));
 
+		tolerance : constant type_float_internal_positive := 
+			type_float_internal_positive (fab_tolerance);
+
+
+		use pac_polygon_union;
+		
+		procedure query_line (l : in pac_vector_text_lines.cursor) is
+			use pac_vector_text_lines;
+			p : type_polygon := to_polygon (type_line (element (l)), linewidth, tolerance);
+		begin
+			--put_line (to_string (element (l)));
+			--put_line ("line");
+			result.append (p);
+			multi_union (result);
+			-- CS union
+
+		end query_line;
 		
 	begin
-
+		
 		iterate (text.vectors, query_line'access);
+
+		-- CS
+		
 		return result;
 	end to_polygons;
 	

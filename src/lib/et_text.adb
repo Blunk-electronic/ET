@@ -824,6 +824,14 @@ package body et_text is
 			return text.lines;
 		end get_lines;
 
+
+		function get_linewidth (
+			text	: in type_vector_text)
+			return type_distance_positive
+		is begin 
+			return text.width;
+		end get_linewidth;
+		
 		
 		function get_boundaries (
 			text	: in type_vector_text)

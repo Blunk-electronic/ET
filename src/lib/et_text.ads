@@ -855,9 +855,9 @@ package et_text is
 		-- The start and end points are expressed by float numbers.
 		-- In order to avoid confusion we derive from pac_geometry_1.type_line a new type
 		-- for these lines:
-		type type_character_line is new pac_geometry_1.type_line;
+		type type_character_line is new pac_geometry_1.type_line; -- CS no need
 		
-		package pac_vector_text_lines is new doubly_linked_lists (type_character_line); 
+		package pac_vector_text_lines is new doubly_linked_lists (type_character_line); -- CS use type_line
 		-- CS rename to pac_character_lines
 
 		
@@ -913,6 +913,12 @@ package et_text is
 			return pac_vector_text_lines.list;
 
 
+		-- Returns the linewidth of the given vector text:
+		function get_linewidth (
+			text	: in type_vector_text)
+			return type_distance_positive;
+		
+								   
 		-- Returns the boundaries of the given vector text:		
 		function get_boundaries (
 			text	: in type_vector_text)

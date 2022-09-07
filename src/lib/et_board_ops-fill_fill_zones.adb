@@ -244,9 +244,18 @@ is
 		use et_conductor_text.boards.pac_conductor_texts;
 		procedure query_text (t : in pac_conductor_texts.cursor) is 
 			text : type_conductor_text renames element (t);
+			p : pac_polygon_list.list;
 		begin
 			if text.layer = layer then
-				null;
+				p := to_polygons (text, true); -- debug on
+
+				offset_polygons (p, type_float_internal_positive (zone_clearance));
+				
+				result.splice (
+					before => pac_polygon_list.no_element,
+					source => p);
+
+				--put_line ("text");
 			end if;
 		end query_text;
 		
@@ -264,8 +273,10 @@ is
 		
 		element (module_cursor).nets.iterate (query_net'access);
 
+		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
-		-- CS non electrical conductor stuff (floating fill zones, text, fiducials, ...)
+		
+		-- CS non electrical conductor stuff (floating fill zones, package text, fiducials, ...)
 
 		
 		return result;

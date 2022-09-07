@@ -74,7 +74,8 @@ package et_conductor_text is
 
 	
 	function to_polygons (
-		text : in type_conductor_text)
+		text	: in type_conductor_text;
+		debug	: in boolean := false)					 
 		return pac_polygon_list.list;
 
 	
