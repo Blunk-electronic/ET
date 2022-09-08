@@ -468,6 +468,12 @@ package body et_geometry_1.polygons.union is
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false)
 	is
+		-- https://math.stackexchange.com/questions/15815/how-to-union-many-polygons-efficiently
+
+		-- It makes sense only to merge polygons that are intersecting. 
+		-- Everything else that is not intersecting could simply be added to the 
+		-- resulting multi-polygon. So you could:
+		
 		-- Here we collect the resulting polygons.
 		-- This list will overwrite the given list in the end of this procedure:
 		result : pac_polygon_list.list;

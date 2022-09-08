@@ -74,20 +74,18 @@ package body et_conductor_text is
 			use pac_vector_text_lines;
 			p : type_polygon := to_polygon (type_line (element (l)), linewidth, tolerance);
 		begin
-			--put_line (to_string (element (l)));
+			if debug then
+				put_line (to_string (element (l)));
+				put_line (to_string (p));
+			end if;
+			
 			--put_line ("line");
 			result.append (p);
-			multi_union (result);
-			-- CS union
-
+			-- don't ! multi_union (result);
 		end query_line;
 		
 	begin
-		
 		iterate (text.vectors, query_line'access);
-
-		-- CS
-		
 		return result;
 	end to_polygons;
 	

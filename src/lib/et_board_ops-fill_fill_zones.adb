@@ -247,9 +247,12 @@ is
 			p : pac_polygon_list.list;
 		begin
 			if text.layer = layer then
-				p := to_polygons (text, true); -- debug on
+				--p := to_polygons (text, true); -- debug on
+				p := to_polygons (text);
 
 				offset_polygons (p, type_float_internal_positive (zone_clearance));
+
+				multi_union (p);
 				
 				result.splice (
 					before => pac_polygon_list.no_element,
@@ -497,8 +500,8 @@ is
 
 		--put_line ("B");
 
-		--multi_union (cropping_basket,true); -- debug messages on
-		multi_union (cropping_basket);
+		multi_union (cropping_basket,true); -- debug messages on
+		--multi_union (cropping_basket);
 
 		--put_line ("B1");
 		
