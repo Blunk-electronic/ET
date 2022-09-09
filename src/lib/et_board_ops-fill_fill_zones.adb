@@ -165,7 +165,6 @@ is
 		result : pac_polygon_list.list;
 
 		layer_category : type_signal_layer_category;
-
 		
 		procedure query_net (n : in pac_nets.cursor) is
 			
@@ -182,7 +181,7 @@ is
 				line : type_conductor_line renames element (l);
 			begin
 				if line.layer = layer then
-					polygons.append (to_polygon (line, fab_tolerance));
+					polygons.append (to_polygon (line, fill_tolerance));
 				end if;
 			end query_line;
 
@@ -194,27 +193,27 @@ is
 				case via.category is
 					when THROUGH =>
 						if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
 						end if;
 
 					when BLIND_DRILLED_FROM_TOP =>
 						if layer_category = OUTER_TOP then
-							polygons.append (to_polygon (via.position, via.restring_top, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
 						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 						end if;
 
 					when BLIND_DRILLED_FROM_BOTTOM =>
 						if layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
 						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 						end if;
 						
 					when BURIED =>
 						if layer_category = INNER and then
 						   buried_via_uses_layer (via, layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 						end if;
 				end case;
 			end query_via;
@@ -248,7 +247,7 @@ is
 		begin
 			if text.layer = layer then
 				--p := to_polygons (text, true); -- debug on
-				p := to_polygons (text, fab_tolerance);
+				p := to_polygons (text, fill_tolerance);
 
 				offset_polygons (p, type_float_internal_positive (zone_clearance));
 
@@ -444,7 +443,7 @@ is
 		-- Convert the contour of the candidate fill zone to a polygon.
 		-- Shrink the zone by half the line width so that the border of the zone
 		-- does not extend beyond than the user defined contour:
-		zone_polygon := to_polygon (zone, fab_tolerance);
+		zone_polygon := to_polygon (zone, fill_tolerance);
 		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
 
 		-- CS log lowest left vertex
@@ -754,7 +753,7 @@ begin -- fill_fill_zones
 	
 	board_outer_contour_master := to_polygon (
 		contour		=> get_outline (module_cursor),
-		tolerance	=> fab_tolerance);
+		tolerance	=> fill_tolerance);
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
@@ -777,7 +776,7 @@ begin -- fill_fill_zones
 	
 	board_holes_master := to_polygons (
 		holes		=> get_holes (module_cursor),
-		tolerance	=> fab_tolerance);
+		tolerance	=> fill_tolerance);
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
