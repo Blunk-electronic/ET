@@ -55,8 +55,9 @@ package body et_conductor_text is
 
 
 	function to_polygons (
-		text	: in type_conductor_text;
-		debug	: in boolean := false)					 
+		text		: in type_conductor_text;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)					 
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -64,15 +65,16 @@ package body et_conductor_text is
 		linewidth : constant type_float_internal_positive := 
 			type_float_internal_positive (get_linewidth (text.vectors));
 
-		tolerance : constant type_float_internal_positive := 
-			type_float_internal_positive (fab_tolerance);
+		tolerance_float : constant type_float_internal_positive := 
+			type_float_internal_positive (tolerance);
 
 
 		use pac_polygon_union;
 		
 		procedure query_line (l : in pac_vector_text_lines.cursor) is
 			use pac_vector_text_lines;
-			p : type_polygon := to_polygon (type_line (element (l)), linewidth, tolerance);
+			p : type_polygon := to_polygon (
+				pac_geometry_brd.type_line (element (l)), linewidth, tolerance_float);
 		begin
 			if debug then
 				put_line (to_string (element (l)));

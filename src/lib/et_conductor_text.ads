@@ -51,7 +51,7 @@ with et_logging;				use et_logging;
 
 package et_conductor_text is
 
-	--use pac_geometry_2;
+	use pac_geometry_2;
 
 	
 	use pac_geometry_brd;
@@ -74,8 +74,9 @@ package et_conductor_text is
 
 	
 	function to_polygons (
-		text	: in type_conductor_text;
-		debug	: in boolean := false)					 
+		text		: in type_conductor_text;
+		tolerance	: in type_distance_positive;
+		debug		: in boolean := false)					 
 		return pac_polygon_list.list;
 
 	

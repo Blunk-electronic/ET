@@ -194,27 +194,27 @@ is
 				case via.category is
 					when THROUGH =>
 						if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fab_tolerance));
 						end if;
 
 					when BLIND_DRILLED_FROM_TOP =>
 						if layer_category = OUTER_TOP then
-							polygons.append (to_polygon (via.position, via.restring_top, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_top, via.diameter, fab_tolerance));
 						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
 						end if;
 
 					when BLIND_DRILLED_FROM_BOTTOM =>
 						if layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter, fab_tolerance));
 						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
 						end if;
 						
 					when BURIED =>
 						if layer_category = INNER and then
 						   buried_via_uses_layer (via, layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter));
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fab_tolerance));
 						end if;
 				end case;
 			end query_via;
@@ -248,7 +248,7 @@ is
 		begin
 			if text.layer = layer then
 				--p := to_polygons (text, true); -- debug on
-				p := to_polygons (text);
+				p := to_polygons (text, fab_tolerance);
 
 				offset_polygons (p, type_float_internal_positive (zone_clearance));
 

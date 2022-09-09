@@ -204,7 +204,8 @@ package body et_vias is
 	function to_polygon (
 		position	: in type_point;
 		restring	: in type_restring_width;
-		diameter	: in type_drill_size)
+		diameter	: in type_drill_size;
+		tolerance	: in type_distance_positive)
 		return type_polygon
 	is 
 		use pac_geometry_brd;
@@ -213,7 +214,7 @@ package body et_vias is
 		return (
 			edges => (to_edges (
 				circle		=> (position, type_float_internal_positive (restring + diameter * 0.5)),
-				tolerance	=> fab_tolerance)),
+				tolerance	=> tolerance)),
 
 			others => <>); -- boundaries not computed here
 
