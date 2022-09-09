@@ -214,6 +214,7 @@ package body et_vias is
 		return (
 			edges => (to_edges (
 				circle		=> (position, type_float_internal_positive (restring + diameter * 0.5)),
+				mode		=> EXPAND,				   
 				tolerance	=> tolerance)),
 
 			others => <>); -- boundaries not computed here

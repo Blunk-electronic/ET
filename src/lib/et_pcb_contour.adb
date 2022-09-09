@@ -59,6 +59,7 @@ package body et_pcb_contour is
 
 			result.append (to_polygon (
 				contour		=> element (c),
+				mode		=> EXPAND,						  
 				tolerance	=> tolerance));
 			
 		end query_hole;

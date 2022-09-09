@@ -71,6 +71,7 @@ package et_contour_to_polygon is
 	function to_edges (
 		arc			: in type_arc;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
 	
@@ -82,6 +83,7 @@ package et_contour_to_polygon is
 	function to_edges (
 		circle		: in type_circle;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
 
@@ -90,13 +92,15 @@ package et_contour_to_polygon is
 	-- A contour consists of line and arc segments. Since polygons 
 	-- consist of edges (lines) only, special treatment is required 
 	-- in order to model a arcs:
-	--  Each arc segment is replaced by many short line segments.
+	--  Each arc segment is approximated by many short line segments.
 	-- For arc conversion the accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from the ideal arc.
-	-- The edges of the returned polygon are ordered counter-clockwise:
+	-- The the returned polygon winding is counter-clockwise.
+	-- CS: Currently the given contour must be counter-clockwise !
 	function to_polygon (
 		contour		: in type_contour'class;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return type_polygon;
 

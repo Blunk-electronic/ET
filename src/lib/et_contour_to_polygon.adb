@@ -68,6 +68,7 @@ package body et_contour_to_polygon is
 	function to_edges (
 		arc			: in type_arc;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
@@ -76,13 +77,14 @@ package body et_contour_to_polygon is
 		-- Convert the given tolerance to a float type:
 		f_tol : constant type_float_internal_positive := type_float_internal (tolerance);
 	begin
-		return to_edges (to_arc_fine (arc), f_tol, debug);
+		return to_edges (to_arc_fine (arc), f_tol, mode, debug);
 	end to_edges;
 
 
 	function to_edges (
 		circle		: in type_circle;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
@@ -104,8 +106,8 @@ package body et_contour_to_polygon is
 
 		-- The left arc (1) runs from the top to the bottom.
 		-- The right arc (2) runs from bottom to top.
-		edges_left  := to_edges (arcs (1), tolerance, debug);
-		edges_right := to_edges (arcs (2), tolerance, debug);
+		edges_left  := to_edges (arcs (1), tolerance, mode, debug);
+		edges_right := to_edges (arcs (2), tolerance, mode, debug);
 
 		-- Join the two arcs to a single one:
 		edges_left.splice (before => pac_edges.no_element, source => edges_right);
@@ -118,6 +120,7 @@ package body et_contour_to_polygon is
 	function to_polygon (
 		contour		: in type_contour'class;
 		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return type_polygon
 	is
@@ -137,7 +140,28 @@ package body et_contour_to_polygon is
 					-- Convert the arc to a list of small lines
 					-- and append this list to the edges of the 
 					-- resulting polygon:
-					e_list := to_edges (s.segment_arc, tolerance, debug);
+
+					--e_list := to_edges (s.segment_arc, tolerance, debug);
+					
+					-- CS depending on the winding ?
+					-- currently we assume CCW
+					
+					case mode is
+						when EXPAND =>
+							if s.segment_arc.direction = CW then
+								e_list := to_edges (s.segment_arc, tolerance, SHRINK, debug);
+							else
+								e_list := to_edges (s.segment_arc, tolerance, EXPAND, debug);
+							end if;
+							
+						when SHRINK =>
+							if s.segment_arc.direction = CW then
+								e_list := to_edges (s.segment_arc, tolerance, EXPAND, debug);
+							else
+								e_list := to_edges (s.segment_arc, tolerance, SHRINK, debug);
+							end if;							
+					end case;
+					
 					
 					result.edges.splice (
 						before	=> pac_edges.no_element,					
@@ -156,7 +180,7 @@ package body et_contour_to_polygon is
 			
 			-- Convert the single circle of the given contour
 			-- to a list of edges:
-			result.edges := to_edges (contour.contour.circle, tolerance, debug);
+			result.edges := to_edges (contour.contour.circle, tolerance, mode, debug);
 		else
 			-- Iterate the contour segments:
 			contour.contour.segments.iterate (query_segment'access);
@@ -166,6 +190,8 @@ package body et_contour_to_polygon is
 		-- Whatever the winding of the given contour was,
 		-- we set the winding to the system wide default:
 		set_winding (result);
+		-- CS: As long as the given contour must be counter-clockwise this 
+		-- statement is not mandatory.
 		
 		-- check edge lengths, remove edges too short ?
 

@@ -94,6 +94,10 @@ package et_geometry_1.polygons is
 		proceed	: not null access boolean);
 
 
+	type type_approximation_mode is (
+		SHRINK,
+		EXPAND);
+	
 	-- Converts an arc to a list of edges.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
@@ -103,6 +107,7 @@ package et_geometry_1.polygons is
 	function to_edges (
 		arc			: in type_arc;
 		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
 

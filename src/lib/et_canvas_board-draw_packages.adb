@@ -3008,7 +3008,8 @@ is
 										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 
 										-- make a temporary polygon from the stop mask contour
-										polygon_tmp := to_polygon (stop_mask_contours, fill_tolerance);
+										polygon_tmp := to_polygon (stop_mask_contours, fill_tolerance, EXPAND);
+										-- CS: expand correct ?
 
 										-- offset the temporary polygon
 										offset_polygon (
@@ -3051,7 +3052,8 @@ is
 										stencil_contours := (type_contour (pad_outline_in) with null record);
 
 										-- make a temporary polygon from the stencil contour
-										polygon_tmp := to_polygon (stencil_contours, fill_tolerance);
+										polygon_tmp := to_polygon (stencil_contours, fill_tolerance, EXPAND);
+										-- CS: expand correct ?
 										
 										--scale_polygon (
 											--polygon		=> stencil_contours,
@@ -3161,8 +3163,9 @@ is
 										stop_mask_contours := (type_contour (pad_outline_in) with null record);
 
 										-- make a temporary polygon from the stop mask contour
-										polygon_tmp := to_polygon (stop_mask_contours, fill_tolerance);
-									
+										polygon_tmp := to_polygon (stop_mask_contours, fill_tolerance, EXPAND);
+										-- CS: expand correct ?
+										
 										-- offset the temporary polygon										
 										offset_polygon (
 											polygon		=> polygon_tmp,
@@ -3225,7 +3228,8 @@ is
 						pad_outline_inner_layers := type_contour (hole_outline_in);
 
 						-- make a temporary polygon from the inner outline
-						polygon_tmp := to_polygon (pad_outline_inner_layers, fill_tolerance);
+						polygon_tmp := to_polygon (pad_outline_inner_layers, fill_tolerance, EXPAND);
+						-- CS: expand correct ?
 
 						-- offset the temporary polygon
 						offset_polygon (

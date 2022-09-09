@@ -82,6 +82,7 @@ package body et_geometry_1.polygons is
 	function to_edges (
 		arc			: in type_arc;
 		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
 	is
@@ -3080,7 +3081,7 @@ package body et_geometry_1.polygons is
 		arc.direction := CCW;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, tolerance);
+		edges := to_edges (arc, tolerance, EXPAND);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 		-- Container edges is now empty.
 
@@ -3094,7 +3095,7 @@ package body et_geometry_1.polygons is
 		arc.direction := CCW;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, tolerance);
+		edges := to_edges (arc, tolerance, EXPAND);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 
 		return result;

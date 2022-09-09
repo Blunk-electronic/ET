@@ -66,8 +66,9 @@ package et_geometry_2.contours is
 
 
 
-	-- There is NO regulation on the winding of a contour path.
+	-- CS: There should not be a regulation on the winding of a contour path.
 	-- It can be CW or CCW.
+	-- Currently it MUST be CCW !
 	package pac_segments is new indefinite_doubly_linked_lists (type_segment);
 	use pac_segments;
 	

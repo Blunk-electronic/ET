@@ -443,7 +443,11 @@ is
 		-- Convert the contour of the candidate fill zone to a polygon.
 		-- Shrink the zone by half the line width so that the border of the zone
 		-- does not extend beyond than the user defined contour:
-		zone_polygon := to_polygon (zone, fill_tolerance);
+		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
+		-- NOTE: The SHRINK argument applies to the approximation mode of 
+		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
+		-- by the follwing statement.
+		
 		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
 
 		-- CS log lowest left vertex
@@ -753,6 +757,7 @@ begin -- fill_fill_zones
 	
 	board_outer_contour_master := to_polygon (
 		contour		=> get_outline (module_cursor),
+		mode		=> SHRINK,										 
 		tolerance	=> fill_tolerance);
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance

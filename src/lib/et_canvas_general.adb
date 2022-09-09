@@ -490,10 +490,19 @@ package body pac_canvas is
 		-- NOTE: The update of the mouse pointer position is done by function on_mouse_movement.
 		
 		-- update distance display:
+		-- dx:
 		gtk_entry (distances.display_x.get_child).set_text (to_string (get_x (distance_xy)));
+
+		-- dy:
 		gtk_entry (distances.display_y.get_child).set_text (to_string (get_y (distance_xy)));
-		gtk_entry (distances.display_abs.get_child).set_text (to_string (get_absolute (distance_pol)));
-		gtk_entry (distances.display_angle.get_child).set_text (to_string (get_angle (distance_pol)));
+
+		-- absolute:
+		gtk_entry (distances.display_abs.get_child).set_text (
+			to_string (type_distance_positive (get_absolute (distance_pol))));
+
+		-- angle:
+		gtk_entry (distances.display_angle.get_child).set_text (
+			to_string (type_rotation (get_angle (distance_pol))));
 
 		-- update cursor position
 		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (get_x (cursor_main.position)), left));
