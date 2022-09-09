@@ -89,9 +89,6 @@ package body et_geometry_1.polygons is
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;
 
-		-- Convert the given tolerance to a float type:
-		f_tol : constant type_float_internal := type_float_internal (tolerance);
-
 		-- The given arc is usually offset from the origin.
 		-- This offset is later required to create the actual edges 
 		-- where the given arc is:
@@ -118,13 +115,12 @@ package body et_geometry_1.polygons is
 		edge_ct_final : positive; -- real number of segments
 		-- CS subtype ?
 
-		-- The minimal and final angle between start and end 
-		-- point of a single edge:
+		-- The theoretical and practical angle between the vertices:
 		angle_min : type_float_internal;
 		angle_final : type_float_internal;
 
 
-		-- The edges will be build on these location vectors:
+		-- The edges will be built on these location vectors:
 		p_start, p_walk, p_walk_previous : type_vector;
 
 
@@ -172,15 +168,19 @@ package body et_geometry_1.polygons is
 		-- Get the span of the arc:
 		span := get_span (arc_angles);
 
-		-- Compute the minimal angle required between the segments:
-		angle_min := 90.0 - arcsin ((radius - f_tol) / radius, units_per_cycle);
+		-- Compute the theoretical angle required between the vertices:
+		angle_min := 90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle);
 
-		-- Compute the number of edges required. The result is not an integer.
-		-- So we must round up to the nearest integer:
+		
+		-- Compute the number of edges required: 
 		edge_ct_float := span / angle_min;
+
+		-- The result is not an integer. We need a natural number.
+		-- So we must round up to the nearest integer:
 		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
 
-		-- Compute the number of edges:
+		-- The span divided by the natural number of edges
+		-- gives us the real (practical) angle betweeen the vertices:
 		angle_final := span / type_float_internal (edge_ct_final);
 
 		
