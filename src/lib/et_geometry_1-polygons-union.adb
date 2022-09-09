@@ -472,7 +472,7 @@ package body et_geometry_1.polygons.union is
 
 		-- It makes sense only to merge polygons that are intersecting. 
 		-- Everything else that is not intersecting could simply be added to the 
-		-- resulting multi-polygon. So you could:
+		-- resulting multi-polygon.
 		
 		-- Here we collect the resulting polygons.
 		-- This list will overwrite the given list in the end of this procedure:
@@ -502,9 +502,9 @@ package body et_geometry_1.polygons.union is
 			procedure query_secondary (s : in pac_polygon_list.cursor) is begin
 				if not processed.contains (s) then
 
-					if debug then
-						put_line ("secondary");
-					end if;
+					--if debug then
+						--put_line ("secondary");
+					--end if;
 
 					-- Do a simple pretest whether the boundaries of the
 					-- polygons overlap.
@@ -528,6 +528,10 @@ package body et_geometry_1.polygons.union is
 						end;
 
 					end if;
+				--else
+					--if debug then
+						--put_line ("-");
+					--end if;					
 				end if;
 			end query_secondary;
 
@@ -560,7 +564,8 @@ package body et_geometry_1.polygons.union is
 		
 	begin
 		if debug then
-			put_line ("multi union" & count_type'image (p_count));
+			new_line;
+			put_line ("multi union. polygons in" & count_type'image (p_count));
 		end if;
 
 		update_boundaries (polygons);
@@ -571,9 +576,168 @@ package body et_geometry_1.polygons.union is
 			polygons.iterate (query_primary'access);
 			polygons := result;
 		end if;
-	end multi_union;
-	
 
+		if debug then
+			put_line ("polygons out" & count_type'image (polygons.length));
+		end if;
+	end multi_union;
+
+
+
+
+
+	-- CS experimental. used by merge. see below
+	type type_merge_result is record
+		polygons	: pac_polygon_list.list;
+		sucessful	: boolean := false;
+	end record;
+		
+
+
+	-- CS experimental. Called by multi_union_2
+	function merge (
+		polygons	: in pac_polygon_list.list;
+		debug		: in boolean := false)
+		return type_merge_result
+	is
+		result : type_merge_result;
+
+		type type_candidate is record
+			polygon	: type_polygon;
+			merged	: boolean := false;
+		end record;
+
+		p_count : constant count_type := polygons.length;
+		p_array : array (1 .. p_count) of type_candidate;
+		p_idx : count_type := 1;
+
+		procedure fill_array (p : in pac_polygon_list.cursor) is begin
+			p_array (p_idx).polygon := element (p);
+			update_boundaries (p_array (p_idx).polygon);
+			p_idx := p_idx + 1;
+		end fill_array;
+
+	begin
+		polygons.iterate (fill_array'access);
+
+		for primary in 1 .. p_count - 1 loop
+
+			if not p_array (primary).merged then
+				if debug then
+					put_line ("primary" & count_type'image (primary));
+				end if;
+				
+				for secondary in primary + 1 .. p_count loop
+
+					if not p_array (secondary).merged then
+						if debug then
+							put_line ("secondary" & count_type'image (secondary));
+						end if;
+
+						
+						if overlap (p_array (primary).polygon.boundaries, p_array (secondary).polygon.boundaries) then
+							--if debug then
+								--put_line ("boundaries overlap");
+							--end if;
+
+							declare
+								u : constant type_union := union (
+									polygon_A	=> p_array (primary).polygon,
+									polygon_B	=> p_array (secondary).polygon,
+									pretest		=> false, -- pretest already done, see above
+									debug		=> false);
+
+							begin
+								if u.exists then
+
+									if debug then
+										put_line ("union exists");
+									end if;
+									
+									p_array (primary).polygon := u.union;
+									update_boundaries (p_array (primary).polygon);
+									p_array (secondary).merged := true;
+
+									result.sucessful := true;
+								end if;
+							end;
+
+						end if;
+					end if;
+				end loop;
+				
+			end if;
+		end loop;
+
+
+		for i in 1 .. p_count loop
+			if not p_array (i).merged then
+				result.polygons.append (p_array (i).polygon);
+			end if;
+		end loop;
+		
+		return result;
+	end merge;
+
+	
+	procedure multi_union_2 (
+		polygons	: in out pac_polygon_list.list;
+		debug		: in boolean := false)
+	is
+		-- https://math.stackexchange.com/questions/15815/how-to-union-many-polygons-efficiently
+
+		-- First take two polygons, union them, and take another polygon,
+		-- union it with the union of the two polygons, and repeat this process
+		-- until every single piece is considered. 
+		-- Then I will run through the union polygon list and check whether there
+		-- are still some polygons that can be combined, and I will repeat this step 
+		-- until a satisfactory result is achieved.
+		
+		-- It makes sense only to merge polygons that are intersecting. 
+		-- Everything else that is not intersecting could simply be added to the 
+		-- resulting multi-polygon. So you could:
+		
+		-- Here we collect the resulting polygons.
+		-- This list will overwrite the given list in the end of this procedure:
+		result : pac_polygon_list.list;
+
+		iterations : count_type := 0;
+		merge_result : type_merge_result;
+		
+		
+	begin
+		if debug then
+			new_line;
+			put_line ("multi union. polygons in" & count_type'image (polygons.length));
+		end if;
+
+
+		loop
+			iterations := iterations + 1;
+			if iterations > 50 then exit; end if; -- CS
+			
+			if debug then
+				put_line ("iteration" & count_type'image (iterations));
+			end if;
+
+			merge_result := merge (polygons);
+
+			
+			if merge_result.sucessful then 
+				polygons := merge_result.polygons;
+			else
+				exit; 
+			end if;
+		end loop;
+
+		
+		if debug then
+			put_line ("iterations  " & count_type'image (iterations));
+			put_line ("polygons out" & count_type'image (polygons.length));
+		end if;
+
+		
+	end multi_union_2;
 	
 	
 end et_geometry_1.polygons.union;

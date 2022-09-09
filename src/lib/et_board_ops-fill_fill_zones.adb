@@ -252,7 +252,7 @@ is
 
 				offset_polygons (p, type_float_internal_positive (zone_clearance));
 
-				multi_union (p);
+				--multi_union (p);
 				
 				result.splice (
 					before => pac_polygon_list.no_element,
@@ -342,7 +342,8 @@ is
 		zone		: in out type_zone'class;
 		linewidth	: in type_track_width;
 		layer 		: in et_pcb_stack.type_signal_layer;
-		clearance	: in type_track_clearance)
+		clearance	: in type_track_clearance;
+		debug		: in boolean := false)
 	is
 		zone_polygon : type_polygon;
 		
@@ -500,17 +501,24 @@ is
 
 		--put_line ("B");
 
-		multi_union (cropping_basket,true); -- debug messages on
+		multi_union (cropping_basket, debug); -- debug messages on
+
+		-- CS: experimental
+		--multi_union_2 (cropping_basket, debug); -- debug messages on
 		--multi_union (cropping_basket);
 
-		--put_line ("B1");
+		--if debug then
+			--put_line ("B1");
+		--end if;
 		
 		islands := multi_crop_2 (
 			polygon_B_list	=> islands,
 			polygon_A_list	=> cropping_basket,
 			debug			=> false);
 
-		--put_line ("C");
+		--if debug then
+			--put_line ("C");
+		--end if;
 		
 		-- Assign the islands to the zone:
 		set_islands;
@@ -624,7 +632,9 @@ is
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance));
+						clearance	=> get_greatest (zone.isolation, net_class.clearance)
+						--debug		=> true
+						);
 				end do_it;
 				
 				

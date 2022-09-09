@@ -98,6 +98,14 @@ package et_geometry_1.polygons.union is
 		polygons	: in out pac_polygon_list.list;
 		debug		: in boolean := false);
 							 
+
+	-- CS: Experimental. Behaves like multi_union but
+	-- takes longer.
+	procedure multi_union_2 (
+		polygons	: in out pac_polygon_list.list;
+		debug		: in boolean := false);
+							 
+	
 	
 end et_geometry_1.polygons.union;
 
