@@ -123,6 +123,8 @@ package body et_geometry_1.polygons is
 		-- The edges will be built on these location vectors:
 		p_start, p_walk, p_walk_previous : type_vector;
 
+		p_start_outside : type_vector;
+		
 
 		-- Rotates the given location vector by angle_final * m.
 		-- m is a multipier according to the current edge being built:
@@ -169,8 +171,14 @@ package body et_geometry_1.polygons is
 		span := get_span (arc_angles);
 
 		-- Compute the theoretical angle required between the vertices:
-		angle_min := 90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle);
+		case mode is
+			when SHRINK =>
+				angle_min := 90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle);
 
+			when EXPAND =>
+				angle_min := 90.0 - arcsin (radius / (radius + tolerance), units_per_cycle);
+		end case;
+		
 		
 		-- Compute the number of edges required: 
 		edge_ct_float := span / angle_min;
@@ -179,6 +187,10 @@ package body et_geometry_1.polygons is
 		-- So we must round up to the nearest integer:
 		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
 
+		if mode = EXPAND then
+			edge_ct_final := edge_ct_final - 1;
+		end if;
+		
 		-- The span divided by the natural number of edges
 		-- gives us the real (practical) angle betweeen the vertices:
 		angle_final := span / type_float_internal (edge_ct_final);
@@ -186,7 +198,7 @@ package body et_geometry_1.polygons is
 		
 		if debug then
 			new_line;
-			--put_line ("arc    : " & to_string (arc));
+			put_line ("aprx. mode   : " & type_approximation_mode'image (mode));			
 			put_line ("arc          : " & to_string (arc_angles));
 			put_line ("span         : " & to_string (span));
 			put_line ("angle_min    : " & to_string (angle_min));
@@ -202,7 +214,18 @@ package body et_geometry_1.polygons is
 		-- Further start and end points will be computed by
 		-- rotating this point about the origin:
 		p_start := arc_origin.start_point;
+
 		
+		if mode = EXPAND then
+			p_start_outside := move_by (p_start, arc_angles.angle_start, tolerance);
+
+			case arc.direction is
+				when CCW => rotate_by (p_start_outside, angle_final * 0.5);
+				when  CW => rotate_by (p_start_outside, - angle_final * 0.5);
+			end case;
+		end if;
+		
+									
 		p_walk_previous := p_start;
 
 		-- We rotate p_start as many times as edges are required:

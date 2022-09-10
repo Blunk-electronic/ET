@@ -91,7 +91,12 @@ procedure to_polygon is
 		--new_line;
 		--put_line (to_string (P_exp));
 		
-		P_actual := to_polygon (C_in, tolerance, true); -- debug messages on
+		P_actual := to_polygon (
+			contour		=> C_in, 
+			tolerance	=> tolerance, 
+			mode		=> SHRINK,
+			--mode		=> EXPAND,
+			debug		=> true); -- debug messages on
 		
 		if not are_congruent (P_actual, P_exp) then
 			count_error;
@@ -113,6 +118,7 @@ begin
 		polygon_expect => "0 0  100 0  100 100  0 100"); -- CCW
 
 
+	
 	do_test (
 		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
 		tolerance => 20.0, --fab_tolerance,
@@ -125,7 +131,6 @@ begin
 		polygon_expect => "0 0  100 0  100 100  0 100");
 
 	
---goto skip1;
 	
 
 	do_test (
@@ -143,6 +148,7 @@ begin
 			& "100 100 " 
 			& "0 100");
 
+goto skip1;
 
 --<<skip1>>
 	
