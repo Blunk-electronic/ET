@@ -123,7 +123,8 @@ package body et_geometry_1.polygons is
 		-- The edges will be built on these location vectors:
 		p_start, p_walk, p_walk_previous : type_vector;
 
-		p_start_outside : type_vector;
+		p_end : type_vector;
+		p_start_outside, p_end_outside : type_vector;
 		
 
 		-- Rotates the given location vector by angle_final * m.
@@ -219,26 +220,53 @@ package body et_geometry_1.polygons is
 		if mode = EXPAND then
 			p_start_outside := move_by (p_start, arc_angles.angle_start, tolerance);
 
+			p_end := arc_origin.end_point;
+			p_end_outside   := move_by (p_end, arc_angles.angle_end, tolerance);
+
 			case arc.direction is
 				when CCW => rotate_by (p_start_outside, angle_final * 0.5);
 				when  CW => rotate_by (p_start_outside, - angle_final * 0.5);
 			end case;
-		end if;
-		
-									
-		p_walk_previous := p_start;
 
-		-- We rotate p_start as many times as edges are required:
-		for e in 1 .. edge_ct_final loop
-
-			-- For each pass the multipier increases:
-			p_walk := rotate (p_start, e);
-
+			-- make the first edge:
+			p_walk_previous := p_start;
+			p_walk := p_start_outside;
 			make_edge;
 
-			p_walk_previous := p_walk;
-		end loop;
-		
+			p_walk_previous := p_start_outside;
+			
+			-- We rotate p_start as many times as edges are required:
+			for e in 1 .. edge_ct_final loop
+
+				-- For each pass the multipier increases:
+				p_walk := rotate (p_start_outside, e);
+
+				make_edge;
+
+				p_walk_previous := p_walk;
+			end loop;
+
+			-- make the last edge:
+			p_walk := p_end_outside;
+			make_edge;
+
+			
+		else -- SHRINK
+												
+			p_walk_previous := p_start;
+
+			-- We rotate p_start as many times as edges are required:
+			for e in 1 .. edge_ct_final loop
+
+				-- For each pass the multipier increases:
+				p_walk := rotate (p_start, e);
+
+				make_edge;
+
+				p_walk_previous := p_walk;
+			end loop;
+		end if;
+			
 		return result;
 	end to_edges;
 
