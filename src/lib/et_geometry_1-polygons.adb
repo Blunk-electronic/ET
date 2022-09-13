@@ -106,153 +106,45 @@ package body et_geometry_1.polygons is
 		-- This is the total angle between start and end point of the given arc:
 		span : type_angle;
 
-
 		
-		-- In order to compute the nunber of edges and the angle between
-		-- their start and end points these variable are required:
-		
-		edge_ct_float : type_float_internal; -- number of segments
-		edge_ct_final : positive; -- real number of segments
-		-- CS subtype ?
+		edge_ct_float : type_float_internal; -- number of edges
+		edge_ct_final : positive; -- real number of edges
+		-- CS subtype to limit the number of edges ?
 
-		-- The theoretical and practical angle between the vertices:
-		angle_min : type_float_internal;
-		angle_final : type_float_internal;
+		-- The theoretical and real angle between the vertices:
+		angle_theo : type_float_internal;
+		angle_real : type_float_internal;
 
-
-		-- The edges will be built on these location vectors:
-		p_start, p_walk, p_walk_previous : type_vector;
-
-		p_end : type_vector;
+		-- In case the mode is EXPAND then this is the
+		-- start and end point of a virtual outer arc:
 		p_start_outside, p_end_outside : type_vector;
-		
-
-		-- Rotates the given location vector by angle_final * m.
-		-- m is a multipier according to the current edge being built:
-		function rotate (
-			p : in type_vector;
-			m : in positive)
-			return type_vector
-		is 
-			result : type_vector := p;
-		begin
-			case arc.direction is
-				when CW =>
-					rotate_by (result, - angle_final * type_float_internal (m)); 
-
-				when CCW =>
-					rotate_by (result, + angle_final * type_float_internal (m)); 
-			end case;
-
-			return result;
-		end rotate;
-
-
-		-- Builds a final edge from the current location vectors 
-		-- p_walk and p_walk_previous and appends it to the result:
-		procedure make_edge is
-			edge : type_edge;
-		begin
-			-- CS: Improvement required: It would be sufficient to call move_by
-			-- only once. The start point of an edge is the same as the end point
-			-- of the previous edge.
-			edge.start_point := move_by (p_walk_previous, arc_offset);
-			edge.end_point   := move_by (p_walk,          arc_offset);
-
-			result.append (edge);
-
-			if debug then
-				put_line (to_string (edge));
-			end if;
-		end make_edge;
-		
-		
-	begin
-		-- Get the span of the arc:
-		span := get_span (arc_angles);
-
-		-- Compute the theoretical angle required between the vertices:
-		case mode is
-			when SHRINK =>
-				angle_min := 90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle);
-
-			when EXPAND =>
-				angle_min := 90.0 - arcsin (radius / (radius + tolerance), units_per_cycle);
-		end case;
-		
-		
-		-- Compute the number of edges required: 
-		edge_ct_float := span / angle_min;
-
-		-- The result is not an integer. We need a natural number.
-		-- So we must round up to the nearest integer:
-		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
-
-		if mode = EXPAND then
-			edge_ct_final := edge_ct_final - 1;
-		end if;
-		
-		-- The span divided by the natural number of edges
-		-- gives us the real (practical) angle betweeen the vertices:
-		angle_final := span / type_float_internal (edge_ct_final);
 
 		
-		if debug then
-			new_line;
-			put_line ("aprx. mode   : " & type_approximation_mode'image (mode));			
-			put_line ("arc          : " & to_string (arc_angles));
-			put_line ("span         : " & to_string (span));
-			put_line ("angle_min    : " & to_string (angle_min));
-			put_line ("fab tol      : " & to_string (tolerance));
-			--put_line ("edge ct float: " & to_string (edge_ct_float));
-			put_line ("edge ct final: " & positive'image (edge_ct_final));
-			put_line ("angle final  : " & to_string (angle_final));
-			new_line;
-		end if;
+		procedure make_edges (p_start : in type_vector) is
+			-- The edges will be built on these location vectors:
+			p_walk, p_walk_previous : type_vector;
 
+			-- Rotates the given location vector by angle_real * m.
+			-- m is a multipier according to the current edge being built:
+			function rotate (
+				p : in type_vector;
+				m : in positive)
+				return type_vector
+			is 
+				result : type_vector := p;
+			begin
+				case arc.direction is
+					when CW =>
+						rotate_by (result, - angle_real * type_float_internal (m)); 
 
-		-- The start point of the first edge.
-		-- Further start and end points will be computed by
-		-- rotating this point about the origin:
-		p_start := arc_origin.start_point;
+					when CCW =>
+						rotate_by (result, + angle_real * type_float_internal (m)); 
+				end case;
 
-		
-		if mode = EXPAND then
-			p_start_outside := move_by (p_start, arc_angles.angle_start, tolerance);
-
-			p_end := arc_origin.end_point;
-			p_end_outside   := move_by (p_end, arc_angles.angle_end, tolerance);
-
-			case arc.direction is
-				when CCW => rotate_by (p_start_outside, angle_final * 0.5);
-				when  CW => rotate_by (p_start_outside, - angle_final * 0.5);
-			end case;
-
-			-- make the first edge:
-			p_walk_previous := p_start;
-			p_walk := p_start_outside;
-			make_edge;
-
-			p_walk_previous := p_start_outside;
+				return result;
+			end rotate;
 			
-			-- We rotate p_start as many times as edges are required:
-			for e in 1 .. edge_ct_final loop
-
-				-- For each pass the multipier increases:
-				p_walk := rotate (p_start_outside, e);
-
-				make_edge;
-
-				p_walk_previous := p_walk;
-			end loop;
-
-			-- make the last edge:
-			p_walk := p_end_outside;
-			make_edge;
-
-			
-		else -- SHRINK
-												
+		begin -- make_edges
 			p_walk_previous := p_start;
 
 			-- We rotate p_start as many times as edges are required:
@@ -261,12 +153,167 @@ package body et_geometry_1.polygons is
 				-- For each pass the multipier increases:
 				p_walk := rotate (p_start, e);
 
-				make_edge;
-
+				-- Build an edge and append it to the result:
+				result.append ((
+					start_point => p_walk_previous,
+					end_point	=> p_walk));
+				
 				p_walk_previous := p_walk;
 			end loop;
-		end if;
+		end make_edges;
+		
+
+		-- Moves the edges (in result) by the offset of the given arc.
+		-- The resulting edges are the final edges that 
+		-- shall approximate the given arc:
+		procedure move_edges is 
+			e : pac_edges.cursor := result.first;
+
+			procedure do_it (edge : in out type_edge) is begin
+				move_by (edge, arc_offset);
+
+				if debug then
+					put_line (" " & to_string (edge));
+				end if;
+			end do_it;
 			
+		begin
+			while e /= pac_edges.no_element loop
+				result.update_element (e, do_it'access);
+				next (e);
+			end loop;
+		end move_edges;
+		
+		
+	begin -- to_edges
+		
+		if debug then
+			new_line;
+			put_line ("approximate arc");
+		end if;
+		
+		-- Get the span of the arc:
+		span := get_span (arc_angles);
+
+		-- Compute the theoretical angle required between the vertices:
+		case mode is
+			when SHRINK =>
+				angle_theo := 2.0 * (90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle));
+
+			when EXPAND =>
+				-- This fomula applies to the virtual outer arc (see spec of type_approximation_mode):
+				angle_theo := 2.0 * (90.0 - arcsin (radius / (radius + tolerance), units_per_cycle));
+		end case;
+		
+		-- Compute the number of edges required: 
+		edge_ct_float := span / angle_theo;
+
+		-- The result is not an integer. We need a natural number.
+		-- So we must round up to the nearest integer:
+		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
+		
+		-- The span divided by the natural number of edges
+		-- gives us the real (practical) angle betweeen the vertices:
+		angle_real := span / type_float_internal (edge_ct_final);
+
+		
+		if debug then
+			new_line;
+			put_line ("mode         : " & type_approximation_mode'image (mode));			
+			put_line ("given arc    : " & to_string (arc_angles));
+			put_line ("tolerance    : " & to_string (tolerance));
+			put_line ("span         : " & to_string (span));
+			put_line ("angle theo.  : " & to_string (angle_theo));
+			--put_line ("edge ct float: " & to_string (edge_ct_float));
+			put_line ("edge ct pre. : " & positive'image (edge_ct_final));
+			put_line ("angle real   : " & to_string (angle_real));
+		end if;
+
+
+		
+		if mode = EXPAND then
+			-- The start point of the outer arc:
+			p_start_outside := move_by (arc_origin.start_point, arc_angles.angle_start, tolerance);
+
+			-- The end point of the outer arc:
+			p_end_outside   := move_by (arc_origin.end_point, arc_angles.angle_end, tolerance);
+
+			--if debug then
+				--put_line ("start outside : " & to_string (p_start_outside));
+				--put_line ("end   outside : " & to_string (p_end_outside));
+			--end if;
+
+			-- Compute the edges from p_start_outside to p_end_outside.
+			-- (The first and last edge will later be replaced by two new edges.)
+			make_edges (p_start_outside);
+
+			declare
+				I1, I2 : type_intersection_of_two_lines (EXISTS);
+				N1, N2 : type_line_vector;
+				
+				center_to_start : constant type_line_vector := 
+					(v_start => null_vector, v_direction => arc_origin.start_point);
+
+				center_to_end : constant type_line_vector := 
+					(v_start => null_vector, v_direction => arc_origin.end_point);
+
+				E1, E2 : type_edge;
+			begin
+				-- Replace the first edge by two new edges:
+				N1 := get_normal_vector (center_to_start, arc_origin.start_point);
+				E1 := result.first_element;
+				delete_first (result);
+				I1 := get_intersection (N1, to_line_vector (E1));
+
+				--if debug then
+					----new_line;
+					--put_line ("N1 : " & to_string (N1));
+					--put_line ("I1 : " & to_string (I1.intersection.vector));
+				--end if;
+
+				E1.start_point := I1.intersection.vector;
+				--put_line ("prepend B" & to_string (E1));
+				result.prepend (E1);
+
+				E1.end_point := E1.start_point;
+				E1.start_point := arc_origin.start_point;
+				--put_line ("prepend A" & to_string (E1));
+				result.prepend (E1);
+
+
+				-- Replace the last edge by two new edges:
+				N2 := get_normal_vector (center_to_end, arc_origin.end_point);
+				E2 := result.last_element;
+				delete_last (result);
+				I2 := get_intersection (N2, to_line_vector (E2));
+				
+				--if debug then
+					--put_line ("N2 : " & to_string (N2));
+					--put_line ("I2 : " & to_string (I2.intersection.vector));
+				--end if;
+
+				E2.end_point := I2.intersection.vector;
+				--put_line ("append B" & to_string (E2));
+				result.append (E2);
+
+				E2.start_point := E2.end_point;
+				E2.end_point := arc_origin.end_point;
+				--put_line ("append A" & to_string (E2));
+				result.append (E2);
+			end;
+			
+		else -- SHRINK
+			make_edges (arc_origin.start_point);
+			-- CS snap the end of the last edge to p_end
+		end if;
+
+		-- Move the edges to the final position (of the given arc):
+		move_edges;
+
+		if debug then
+			put_line ("edge ct fin. : " & count_type'image (result.length));
+		end if;		
+		
 		return result;
 	end to_edges;
 

@@ -94,11 +94,20 @@ package et_geometry_1.polygons is
 		proceed	: not null access boolean);
 
 
+	-- The mode at which an arc is approximated by many edges:
 	type type_approximation_mode is (
-		SHRINK,
-		EXPAND);
+		-- The edges are inside, between arc and arc center.
+		-- The start and end points of the edges are on the given arc:
+		SHRINK,		
+
+		-- The edges are outside.
+		-- The start and end points of the edges are on a virtual
+		-- outer arc. The outer arc radius equals to arc.radius + tolerance:
+		EXPAND);	
 	
+
 	-- Converts an arc to a list of edges.
+	-- Approximates the arc by many edges according to the given mode.
 	-- The accuracy is determined by the given tolerance.
 	-- The tolerance is the maximum allowed deviation from
 	-- the ideal arc.
