@@ -150,7 +150,19 @@ package et_geometry_1.polygons is
 		debug	: in boolean := false)
 		return type_polygon;
 
+
+	-- Merges successive edges overlaping each other
+	-- and running in opposide directions to a single edge:
+	procedure merge_overlapping_edges (
+		polygon : in out type_polygon;
+		debug	: in boolean := false);
 	
+	function merge_overlapping_edges (
+		polygon : in type_polygon;
+		debug	: in boolean := false)
+		return type_polygon;
+
+
 	
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 

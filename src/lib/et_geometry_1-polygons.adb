@@ -463,6 +463,106 @@ package body et_geometry_1.polygons is
 	end optimize_edges;
 
 
+	procedure merge_overlapping_edges (
+		polygon : in out type_polygon;
+		debug	: in boolean := false)
+	is
+		-- Here we collect the merged edges. In the end this will
+		-- overwrite the given polygon:
+		result : type_polygon;
+
+		-- A temporarily edge:
+		scratch : type_edge;
+
+		
+		procedure query_edge (c : pac_edges.cursor) is
+			candidate_edge : type_edge renames element (c);
+			candidate_direction : constant type_angle := get_direction (candidate_edge);
+
+			scratch_direction : constant type_angle := get_direction (scratch);
+		begin
+			if debug then
+				put_line (to_string (candidate_edge));
+			end if;
+
+			-- Compare direction of scratch and candidate edge:
+			if scratch_direction = candidate_direction then
+				-- No change in direction.
+
+				-- Extend scratch edge:
+				scratch.end_point := candidate_edge.end_point;
+
+				-- Special case on last candidate edge:
+				-- The current scratch edge must be appended to the result somehow.
+				-- But the whole optimization procedure uses as initial scratch the 
+				-- last edge of the given polygon. If this scratch has been appended
+				-- as first element to the result then is might running into the same
+				-- direction as the current scratch edge. The current scratch must
+				-- replace the erroneously first edge in the result:
+				if c = polygon.edges.last then
+					if scratch_direction = get_direction (result.edges.first_element) then
+						if debug then
+							put_line ("replace first");
+						end if;
+						
+						result.edges.replace_element (result.edges.first, scratch);
+					end if;
+				end if;
+
+			else
+				-- Direction changed.				
+				if debug then
+					put_line ("direction change");
+					put_line ("append " & to_string (scratch));
+				end if;
+
+				-- Append scratch edge to result:
+				result.edges.append (scratch);
+				
+				-- Start a new scratch from the candidate edge:
+				scratch := candidate_edge;	
+			end if;
+		end query_edge;
+
+		
+	begin
+		if debug then
+			put_line ("edges total:" & count_type'image (get_edges_total (polygon)));
+			new_line;
+		end if;
+
+		-- A polygon in general has at least 3 edges. But a polygon with edges
+		-- to be merged must have more than 3 edges. -- CS is this statement true ?
+		-- Otherwise there is nothing to do:
+		if get_edges_total (polygon) > 3 then
+
+			-- The initial scratch edge is the last edge of the
+			-- given polygon:
+			scratch := polygon.edges.last_element;
+
+			-- Iterate the edges of the given polygon:
+			polygon.edges.iterate (query_edge'access);
+
+			-- Overwrite the given polygon by the one that has merged edges:
+			polygon := result;
+		end if;
+
+	end merge_overlapping_edges;
+	
+	
+	function merge_overlapping_edges (
+		polygon : in type_polygon;
+		debug	: in boolean := false)
+		return type_polygon
+	is
+		result : type_polygon := polygon;
+	begin
+		merge_overlapping_edges (result, debug);
+		return result;
+	end merge_overlapping_edges;
+
+	
+
 
 	procedure update_boundaries (
 		polygons : in out pac_polygon_list.list)
@@ -2328,6 +2428,9 @@ package body et_geometry_1.polygons is
 		
 		-- merge successive edges running into the same direction
 		optimize_edges (result);
+
+		-- merge successive edges running into the opposide direction
+		merge_overlapping_edges (result);
 		
 		return result;
 	end to_polygon;
