@@ -1254,24 +1254,23 @@ package body et_geometry_1 is
 	end to_line_vector;
 
 	
-	function to_perpendicular_line_vector (
-		point	: in type_vector;
-		angle	: in type_angle)
-		return type_line_vector 
+	function get_normal_vector (
+		line	: in type_line_vector;
+		point	: in type_vector)
+		return type_line_vector
 	is
-		ap : type_angle; -- the angle of the resulting line
-		r : type_ray;
+		result : type_line_vector := (v_start => point, others => <>);
+
+		dir_A : type_vector renames line.v_direction;
+		dir_B : type_vector := (0.0, 0.0, 1.0);
+		N : type_vector;
 	begin
-		--ap := add (angle, 90.0); -- perpendicular
-		ap := angle + 90.0; -- CS ? perpendicular
-
-		-- Build a ray that starts at point and travels
-		-- in direction ap:
-		r := (point, ap);
-
-		-- Convert the ray to a line vector:
-		return to_line_vector (r);
-	end to_perpendicular_line_vector;
+		N := cross_product (dir_A, dir_B);
+		
+		result.v_direction := N;
+		
+		return result;
+	end get_normal_vector;
 
 
 	

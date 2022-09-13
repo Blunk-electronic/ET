@@ -636,13 +636,12 @@ package et_geometry_1 is
 		return type_line_vector;
 
 	
-	-- Returns a line vector perpendicular (german: normalvektor)
-	-- to a line that crosses the given point at the given angle.
-	-- The start vector of the result starts at the given point.
-	-- CS not tested yet !
-	function to_perpendicular_line_vector (
-		point	: in type_vector;
-		angle	: in type_angle)
+	-- Returns a normal vector to a given line vector.
+	-- The returned normal vector crosses the given
+	-- point on the given line vector:
+	function get_normal_vector (
+		line	: in type_line_vector;
+		point	: in type_vector)
 		return type_line_vector;
 
 
@@ -669,7 +668,7 @@ package et_geometry_1 is
 	-- and and the angle at which they intersect:
 	type type_intersection is record
 		vector	: type_vector; -- location vector
-		angle	: type_angle := 0.0;
+		angle	: type_angle := 0.0; -- CS required ?
 	end record;
 
 	
@@ -678,7 +677,7 @@ package et_geometry_1 is
 	
 
 	-- When finding intersections of two lines this type is required:
-	type type_intersection_of_two_lines (
+	type type_intersection_of_two_lines ( -- CS rename to type_line_vector_intersection ?
 		status : type_intersection_status_of_two_lines) 
 	is record
 		case status is
