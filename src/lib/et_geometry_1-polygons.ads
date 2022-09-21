@@ -139,6 +139,10 @@ package et_geometry_1.polygons is
 		direction	: in type_direction_of_rotation := CCW);
 
 
+
+	type type_clean_up is new boolean;
+	
+	
 	-- Merges successive edges that have the same direction
 	-- to a single edge:
 	procedure optimize_edges (
@@ -151,7 +155,7 @@ package et_geometry_1.polygons is
 		return type_polygon;
 
 
-	-- Succesive edges of a polygon may overlap.
+	-- Successive edges of a polygon may overlap.
 	-- This is a result of polygon operations or contours drawn carelessly by the operator.
 	-- These mishaps must be ironed out.
 	-- This procedure merges successive edges overlaping each other
@@ -209,14 +213,18 @@ package et_geometry_1.polygons is
 	-- So "0.0 0.0   7.0 0.0  7.0 0.0   1.0 1.0   0.0 1.0" will be handled like
 	-- "0.0 0.0   7.0 0.0   1.0 1.0   0.0 1.0"
 	-- Raises exception if less than 3 vertices are given.
-	function to_polygon (vertices : in string)
+	function to_polygon (
+		vertices	: in string;
+		clean_up	: in type_clean_up := true)
 		return type_polygon;
 
 	
 	-- Converts a list of location vectors to a polygon.
 	-- Successive redundant vertices will be ignored:
 	-- Raises exception if less than 3 vertices are given.
-	function to_polygon (vectors : in pac_vectors.list)
+	function to_polygon (
+		vectors		: in pac_vectors.list;
+		clean_up	: in type_clean_up := true)					
 		return type_polygon;
 
 
@@ -713,7 +721,9 @@ package et_geometry_1.polygons is
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
-	function to_polygon (vertices : in pac_vertices.list)
+	function to_polygon (
+		vertices : in pac_vertices.list;
+		clean_up : in type_clean_up := true)
 		return type_polygon;
 
 

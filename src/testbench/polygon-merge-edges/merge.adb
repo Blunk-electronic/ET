@@ -70,7 +70,7 @@ begin
 	--initial := to_polygon (B_overlap_1);
 	--initial := to_polygon (B_overlap_2);
 	--initial := to_polygon (B_overlap_3);
-	initial := to_polygon (B_overlap_4);
+	initial := to_polygon (vertices => B_overlap_4, clean_up => false);
 	
 	put_line ("initial polygon:");
 	put_line (to_string (initial));
@@ -99,9 +99,9 @@ begin
 
 		merge_overlapping_edges (polygon => optimized, debug => true);
 			
-		new_line;
-		put_line ("cleaned up:");
-		put_line (to_string (optimized));
+		--new_line;
+		--put_line ("cleaned up:");
+		--put_line (to_string (optimized));
 
 		
 		if not are_congruent (reference, optimized) then

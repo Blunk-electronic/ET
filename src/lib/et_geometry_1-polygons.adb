@@ -531,7 +531,7 @@ package body et_geometry_1.polygons is
 	begin -- merge_overlapping_edges
 		
 		if debug then
-			put_line ("Merge overlapping edges. Edges total:" & count_type'image (edge_ct));
+			put_line ("Merge overlapping edges. Edges given" & count_type'image (edge_ct));
 		end if;
 
 		-- A polygon in general has at least 3 edges. But a polygon with edges
@@ -550,14 +550,19 @@ package body et_geometry_1.polygons is
 				-- Count iterations:
 				safety_counter := safety_counter + 1;
 
-				if debug then
-					put_line ("iteration" & count_type'image (safety_counter));
-				end if;
+				--if debug then
+					--put_line ("iteration" & count_type'image (safety_counter));
+				--end if;
 				
 				remove_overlap;
 			end loop;
 
 
+			if debug then
+				put_line ("iterations" & count_type'image (safety_counter));
+			end if;
+
+			
 			-- Since remove_overlap does not test the last edge against the first edge,
 			-- we must do the test here explicitely.
 			-- If last and first edge overlap, then rotate the polygon and 
@@ -572,11 +577,17 @@ package body et_geometry_1.polygons is
 
 				remove_overlap;
 			end if;
-
+			
 			-- Final clean-up measure:
 			-- There may be successive edges that run into the same direction.
 			-- They must be merged:
 			optimize_edges (polygon);
+
+			
+			if debug then
+				put_line ("Edges final" & count_type'image (get_edges_total (polygon)));
+			end if;
+
 		end if;
 		
 		
@@ -677,7 +688,9 @@ package body et_geometry_1.polygons is
 	
 
 	
-	function to_polygon (vertices : in string)
+	function to_polygon (
+		vertices	: in string;
+		clean_up	: in type_clean_up := true)
 		return type_polygon
 	is
 		v_fields : constant type_fields_of_line := 
@@ -712,7 +725,7 @@ package body et_geometry_1.polygons is
 			place := place + 2;
 		end loop;
 
-		return to_polygon (v_list);
+		return to_polygon (v_list, clean_up);
 
 		exception 
 			when others =>
@@ -722,7 +735,9 @@ package body et_geometry_1.polygons is
 	end to_polygon;
 
 
-	function to_polygon (vectors : in pac_vectors.list)
+	function to_polygon (
+		vectors		: in pac_vectors.list;
+		clean_up	: in type_clean_up := true)					
 		return type_polygon
 	is 
 		v_list : pac_vertices.list;
@@ -742,7 +757,7 @@ package body et_geometry_1.polygons is
 		end if;
 		
 		vectors.iterate (query_vector'access);
-		return to_polygon (v_list);
+		return to_polygon (v_list, clean_up);
 
 		exception when event: others =>
 			put_line (error_message_too_few_vertices);
@@ -2428,7 +2443,9 @@ package body et_geometry_1.polygons is
 	end remove_redundant_positions;
 
 
-	function to_polygon (vertices : in pac_vertices.list)
+	function to_polygon (
+		vertices : in pac_vertices.list;
+		clean_up : in type_clean_up := true)
 		return type_polygon
 	is
 		vertices_cleaned_up : pac_vertices.list := vertices;
@@ -2463,12 +2480,15 @@ package body et_geometry_1.polygons is
 		-- Whatever the order of the given vertices was,
 		-- return a polygon with default winding:
 		set_winding (result);
-		
-		-- merge successive edges running into the same direction
-		optimize_edges (result);
 
-		-- merge successive edges running into the opposide direction
-		-- CS merge_overlapping_edges (result);
+		
+		if clean_up then
+			-- merge successive edges running into the same direction
+			optimize_edges (result);
+
+			-- merge successive edges running into the opposide direction
+			merge_overlapping_edges (result);
+		end if;
 		
 		return result;
 	end to_polygon;
