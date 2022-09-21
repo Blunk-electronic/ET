@@ -468,8 +468,19 @@ package body et_geometry_1.polygons is
 		polygon : in out type_polygon;
 		debug	: in boolean := false)
 	is
+		-- The merge process consists of iterations. 
+		-- Each of which calls procedure remove_overlap
+		-- and merges only two overlapping edges.
+		-- If a removal has taken place then this flag goes true:
 		overlap_removed : boolean := true;
 
+		edge_ct : constant count_type := get_edges_total (polygon);
+
+		-- In order to prevent infinite looping we implement a 
+		-- safety counter:
+		subtype type_safe_count is count_type range 0 .. edge_ct;
+		safety_counter : type_safe_count := 0;
+		
 		
 		procedure remove_overlap is
 			edge_cursor : pac_edges.cursor := polygon.edges.first;
@@ -482,46 +493,79 @@ package body et_geometry_1.polygons is
 			end merge;
 			
 		begin
+			-- Initially we assume there is no overlap.
+			-- At the end of this procedure this flag is set if
+			-- a removal has been taken place. Otherwise it remains
+			-- cleared:
 			overlap_removed := false;
-			
+
+			-- We probe all edges (except the last one) against the
+			-- successor edge:
 			while edge_cursor /= polygon.edges.last loop				
 				next_cursor := next (edge_cursor);
 				next_edge := element (next_cursor);
-			
+
+				-- We are interested in edges that overlap and run into
+				-- opposide direction:
 				if opposide_direction (element (edge_cursor), next_edge) then
+
+					-- "Drag" the end of the candidate edge to the end point
+					-- of the successor edge:
 					polygon.edges.update_element (edge_cursor, merge'access);
+
+					-- Remove the successor edge:
 					polygon.edges.delete (next_cursor);
+
+					-- A removal has taken place:
 					overlap_removed := true;
+
+					-- Abort edge probing here.
 					exit;
 				end if;
+				
 				next (edge_cursor);
 			end loop;
 		end remove_overlap;
 
 		
-	begin
+	begin -- merge_overlapping_edges
+		
 		if debug then
-			put_line ("edges total:" & count_type'image (get_edges_total (polygon)));
-			new_line;
+			put_line ("Merge overlapping edges. Edges total:" & count_type'image (edge_ct));
 		end if;
 
 		-- A polygon in general has at least 3 edges. But a polygon with edges
 		-- to be merged must have more than 3 edges. -- CS is this statement true ?
 		-- Otherwise there is nothing to do:
-		if get_edges_total (polygon) > 3 then
+		if edge_ct > 3 then
 
+			-- Initially the flag overlap_removed is true (see above). So this loop
+			-- starts in any case. The loop is aborted after the procedure 
+			-- remove_overlap did not detect and remove an overlap. remove_overlap
+			-- modifies overlap_removed. As long as remove_overlap finds overlaps
+			-- to remove this loop goes on. For safety reasons an exception is
+			-- raised if more iterations are done than edges are given:
 			while overlap_removed loop
-				-- CS counter ?
+
+				-- Count iterations:
+				safety_counter := safety_counter + 1;
+
+				if debug then
+					put_line ("iteration" & count_type'image (safety_counter));
+				end if;
+				
 				remove_overlap;
 			end loop;
 
-			
-			-- If last and first edge overlap, then rotate the polygon and repeat:
+
+			-- Since remove_overlap does not test the last edge against the first edge,
+			-- we must do the test here explicitely.
+			-- If last and first edge overlap, then rotate the polygon and 
+			-- call remove_overlap one last time:
 			if opposide_direction (polygon.edges.last_element, polygon.edges.first_element) then
 
 				if debug then
 					put_line ("last overlaps first");
-					--put_line (to_string (polygon));
 				end if;
 				
 				rotate (polygon);
@@ -529,15 +573,16 @@ package body et_geometry_1.polygons is
 				remove_overlap;
 			end if;
 
-
+			-- Final clean-up measure:
+			-- There may be successive edges that run into the same direction.
+			-- They must be merged:
 			optimize_edges (polygon);
-
 		end if;
 		
 		
-		--exception when others =>
-			--put_line ("Safety counter overrun !");
-			--raise;
+		exception when others =>
+			put_line ("Safety counter overrun ! (" & count_type'image (safety_counter) & ")");
+			raise;
 		
 	end merge_overlapping_edges;
 	

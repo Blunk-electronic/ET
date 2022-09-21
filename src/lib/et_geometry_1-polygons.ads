@@ -155,7 +155,9 @@ package et_geometry_1.polygons is
 	-- This is a result of polygon operations or contours drawn carelessly by the operator.
 	-- These mishaps must be ironed out.
 	-- This procedure merges successive edges overlaping each other
-	-- and running in opposide directions to a single edge:
+	-- and running in opposide directions to a single edge.
+	-- As a final clean-up measure the procedure optimize_edges is
+	-- called:
 	procedure merge_overlapping_edges (
 		polygon : in out type_polygon;
 		debug	: in boolean := false);
