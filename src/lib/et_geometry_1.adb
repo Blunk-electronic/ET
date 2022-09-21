@@ -1740,6 +1740,23 @@ package body et_geometry_1 is
 	end get_direction;
 
 
+	function opposide_direction (
+		right, left : in type_line)
+		return boolean
+	is
+		d1, d2 : type_angle;
+	begin
+		d1 := get_direction (right);
+		d2 := get_direction (left);
+
+		if abs (d1 - d2) = 180.0 then
+			return true;
+		else
+			return false;
+		end if;
+	end opposide_direction;
+
+	
 	function get_boundaries (
 		line : in type_line)
 		return type_boundaries

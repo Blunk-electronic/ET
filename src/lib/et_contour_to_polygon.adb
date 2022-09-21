@@ -197,6 +197,9 @@ package body et_contour_to_polygon is
 
 		-- merge successive edges running into the same direction
 		optimize_edges (result);
+
+		-- merge successive overlapping edges running into the opposide direction
+		merge_overlapping_edges (result);
 		
 		return result;
 	end to_polygon;

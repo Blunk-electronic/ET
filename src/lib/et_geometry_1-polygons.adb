@@ -463,66 +463,40 @@ package body et_geometry_1.polygons is
 	end optimize_edges;
 
 
+	
 	procedure merge_overlapping_edges (
 		polygon : in out type_polygon;
 		debug	: in boolean := false)
 	is
-		-- Here we collect the merged edges. In the end this will
-		-- overwrite the given polygon:
-		result : type_polygon;
-
-		-- A temporarily edge:
-		scratch : type_edge;
+		overlap_removed : boolean := true;
 
 		
-		procedure query_edge (c : pac_edges.cursor) is
-			candidate_edge : type_edge renames element (c);
-			candidate_direction : constant type_angle := get_direction (candidate_edge);
+		procedure remove_overlap is
+			edge_cursor : pac_edges.cursor := polygon.edges.first;
 
-			scratch_direction : constant type_angle := get_direction (scratch);
+			next_cursor : pac_edges.cursor;
+			next_edge : type_edge;
+			
+			procedure merge (edge : in out type_edge) is begin
+				edge.end_point := next_edge.end_point;
+			end merge;
+			
 		begin
-			if debug then
-				put_line (to_string (candidate_edge));
-			end if;
-
-			-- Compare direction of scratch and candidate edge:
-			if scratch_direction = candidate_direction then
-				-- No change in direction.
-
-				-- Extend scratch edge:
-				scratch.end_point := candidate_edge.end_point;
-
-				-- Special case on last candidate edge:
-				-- The current scratch edge must be appended to the result somehow.
-				-- But the whole optimization procedure uses as initial scratch the 
-				-- last edge of the given polygon. If this scratch has been appended
-				-- as first element to the result then is might running into the same
-				-- direction as the current scratch edge. The current scratch must
-				-- replace the erroneously first edge in the result:
-				if c = polygon.edges.last then
-					if scratch_direction = get_direction (result.edges.first_element) then
-						if debug then
-							put_line ("replace first");
-						end if;
-						
-						result.edges.replace_element (result.edges.first, scratch);
-					end if;
+			overlap_removed := false;
+			
+			while edge_cursor /= polygon.edges.last loop				
+				next_cursor := next (edge_cursor);
+				next_edge := element (next_cursor);
+			
+				if opposide_direction (element (edge_cursor), next_edge) then
+					polygon.edges.update_element (edge_cursor, merge'access);
+					polygon.edges.delete (next_cursor);
+					overlap_removed := true;
+					exit;
 				end if;
-
-			else
-				-- Direction changed.				
-				if debug then
-					put_line ("direction change");
-					put_line ("append " & to_string (scratch));
-				end if;
-
-				-- Append scratch edge to result:
-				result.edges.append (scratch);
-				
-				-- Start a new scratch from the candidate edge:
-				scratch := candidate_edge;	
-			end if;
-		end query_edge;
+				next (edge_cursor);
+			end loop;
+		end remove_overlap;
 
 		
 	begin
@@ -536,19 +510,38 @@ package body et_geometry_1.polygons is
 		-- Otherwise there is nothing to do:
 		if get_edges_total (polygon) > 3 then
 
-			-- The initial scratch edge is the last edge of the
-			-- given polygon:
-			scratch := polygon.edges.last_element;
+			while overlap_removed loop
+				-- CS counter ?
+				remove_overlap;
+			end loop;
 
-			-- Iterate the edges of the given polygon:
-			polygon.edges.iterate (query_edge'access);
+			
+			-- If last and first edge overlap, then rotate the polygon and repeat:
+			if opposide_direction (polygon.edges.last_element, polygon.edges.first_element) then
 
-			-- Overwrite the given polygon by the one that has merged edges:
-			polygon := result;
+				if debug then
+					put_line ("last overlaps first");
+					--put_line (to_string (polygon));
+				end if;
+				
+				rotate (polygon);
+
+				remove_overlap;
+			end if;
+
+
+			optimize_edges (polygon);
+
 		end if;
-
+		
+		
+		--exception when others =>
+			--put_line ("Safety counter overrun !");
+			--raise;
+		
 	end merge_overlapping_edges;
 	
+
 	
 	function merge_overlapping_edges (
 		polygon : in type_polygon;
@@ -2430,7 +2423,7 @@ package body et_geometry_1.polygons is
 		optimize_edges (result);
 
 		-- merge successive edges running into the opposide direction
-		merge_overlapping_edges (result);
+		-- CS merge_overlapping_edges (result);
 		
 		return result;
 	end to_polygon;

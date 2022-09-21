@@ -869,8 +869,18 @@ package et_geometry_1 is
 	function get_direction (
 		line : in type_line)
 		return type_angle;
-	
 
+	
+	-- Returns true if the given two lines run in
+	-- opposide directions. In other words, if the difference
+	-- of their directions is 180 degrees.
+	-- Example: The result is true if one line runs 
+	-- in 45 degrees and the other one is oncoming in 225 degrees:
+	function opposide_direction (
+		right, left : in type_line)
+		return boolean;		
+	
+	
 	-- Returns the boundaries of a line:
 	function get_boundaries (
 		line : in type_line)
@@ -906,7 +916,7 @@ package et_geometry_1 is
 
 	
 	-- Tests whether the given two lines intersect or overlap each other. 
-	-- Independend of start and end points, both lines are regarded as 
+	-- Independendly of start and end points, both lines are regarded as 
 	-- infinitely long beyond their start and end points:
 	function get_intersection (
 		line_1 : in type_line;
