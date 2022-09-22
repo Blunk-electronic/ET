@@ -76,7 +76,8 @@ procedure to_polygon is
 
 	procedure do_test (
 		contour_segments	: in string;
-		tolerance			: in type_distance_positive;				  
+		tolerance			: in type_distance_positive;
+		mode				: in type_approximation_mode;
 		polygon_expect		: in string)
 	is 
 		C_in : type_contour := type_contour (to_contour (contour_segments));
@@ -94,8 +95,7 @@ procedure to_polygon is
 		P_actual := to_polygon (
 			contour		=> C_in, 
 			tolerance	=> tolerance, 
-			mode		=> SHRINK,
-			--mode		=> EXPAND,
+			mode		=> mode,
 			debug		=> true); -- debug messages on
 		
 		if not are_congruent (P_actual, P_exp) then
@@ -115,6 +115,7 @@ begin
 	do_test (
 		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
 		tolerance => 20.0, --fab_tolerance,
+		mode => SHRINK, -- don't care here because contour consists of lines only
 		polygon_expect => "0 0  100 0  100 100  0 100"); -- CCW
 
 
@@ -122,12 +123,14 @@ begin
 	do_test (
 		contour_segments => "line 0 100 line 0 0 line 100 0 line 100 100", -- CCW
 		tolerance => 20.0, --fab_tolerance,
+		mode => SHRINK, -- don't care here because contour consists of lines only
 		polygon_expect => "0 0  0 100  100 100  100 0"); -- CW
 
 	
 	do_test (
 		contour_segments => "line 0 0  line 0 100  line 100 100  line 100 0", -- CW
 		tolerance => 20.0, --fab_tolerance,
+		mode => SHRINK, -- don't care here because contour consists of lines only
 		polygon_expect => "0 0  100 0  100 100  0 100");
 
 	
@@ -138,15 +141,29 @@ begin
 			& "line 100 0 line 100 100 line 0 100",
 
 		tolerance => 20.0, --fab_tolerance,
-			
+		mode => SHRINK,
 		polygon_expect =>
-			  "0 0 "
-			& "1.46446609406726238E+01 3.53553390593273762E+01 "
-			& "50 50 "
-			& "8.53553390593273762E+01 3.53553390593273762E+01 "
-			& "100 0 "
-			& "100 100 " 
-			& "0 100");
+			" 100.0 100.0  0.0 100.0  0.0 3.46410161513775459E+01 "
+			& "15.0 6.06217782649107053E+01  85.0 6.06217782649107053E+01 "
+			& "100.0 3.46410161513775459E+01"
+			);
+
+
+	
+	do_test (
+		contour_segments => "arc 50 0  0 0  cw " -- center 50/0 start 0/0 end 100/0
+			& "line 100 0 line 100 100 line 0 100",
+
+		tolerance => 10.0, --fab_tolerance,
+		mode => EXPAND,
+		polygon_expect =>
+			" 100.0 100.0  0.0 100.0  0.0 0.0 "
+			& "25.0 4.33012701892219323E+01 "
+			& "75.0 4.33012701892219323E+01 "
+			& "100.0 0.0"
+			);
+
+	
 
 goto skip1;
 
@@ -157,7 +174,8 @@ goto skip1;
 		contour_segments => "circle 0 0 10",
 
 		tolerance => 1.0, --fab_tolerance,
-			
+		mode => SHRINK,
+		
 		polygon_expect =>
 			  "0 10 "
 			& "-4.33883739117558121E+00  9.00968867902419126E+00 "
