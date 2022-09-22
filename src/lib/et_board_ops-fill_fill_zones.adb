@@ -263,6 +263,9 @@ is
 		
 		
 	begin
+		log (text => "processing conductor objects ...", level => log_threshold + 4);
+		log_indentation_up;
+		
 		-- Set the layer category:
 		if layer = 1 then
 			layer_category := OUTER_TOP;
@@ -276,10 +279,11 @@ is
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- board texts:
-		element (module_cursor).board.conductors.texts.iterate (query_text'access);
+		--element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
 		-- CS non electrical conductor stuff (floating fill zones, package text, fiducials, ...)
 
+		log_indentation_down;
 		
 		return result;
 	end conductors_to_polygons;
@@ -294,8 +298,13 @@ is
 	is
 		result : pac_polygon_list.list;
 	begin
+		log (text => "processing restrict area ...", level => log_threshold + 4);
+		log_indentation_up;
+
 		-- CS iterate global restrict areas
 		-- CS iterate net specific cutouts ?
+
+		log_indentation_down;
 		return result;
 	end restrict_to_polygons;
 
@@ -308,8 +317,12 @@ is
 	is
 		result : pac_polygon_list.list;
 	begin
-		-- CS iterate global cutout areas
+		log (text => "processing cutout area ...", level => log_threshold + 4);
+		log_indentation_up;
 		
+		-- CS iterate global cutout areas
+
+		log_indentation_down;
 		return result;
 	end cutouts_to_polygons;
 
@@ -447,6 +460,11 @@ is
 		-- NOTE: The SHRINK argument applies to the approximation mode of 
 		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
 		-- by the follwing statement.
+
+
+		log (text => "shrinking zone", 
+			level => log_threshold + 4);
+
 		
 		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
 
