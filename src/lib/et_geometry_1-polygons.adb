@@ -3357,6 +3357,8 @@ package body et_geometry_1.polygons is
 		edges := to_edges (arc, tolerance, EXPAND);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 
+		optimize_edges (result);
+		
 		return result;
 	end to_polygon;
 

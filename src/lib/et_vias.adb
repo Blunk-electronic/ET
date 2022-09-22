@@ -211,13 +211,13 @@ package body et_vias is
 		use pac_geometry_brd;
 		use et_contour_to_polygon;
 	begin
-		return (
+		return optimize_edges ((
 			edges => (to_edges (
 				circle		=> (position, type_float_internal_positive (restring + diameter * 0.5)),
 				mode		=> EXPAND,				   
 				tolerance	=> tolerance)),
 
-			others => <>); -- boundaries not computed here
+			others => <>)); -- boundaries not computed here
 
 	end to_polygon;
 
