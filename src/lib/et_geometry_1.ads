@@ -995,8 +995,8 @@ package et_geometry_1 is
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_vector;
 		radius		: type_float_internal_positive;
-		angle_start	: type_angle_positive;
-		angle_end	: type_angle_positive;
+		angle_start	: type_angle;
+		angle_end	: type_angle;
 		direction	: type_direction_of_rotation := CCW;
 	end record;
 
@@ -1023,9 +1023,16 @@ package et_geometry_1 is
 		position	: in type_vector)
 		return type_arc;
 	
-	
+
+	-- Converts a type_arc to a type_arc_angles.
+	-- By default an arc having same start and end point
+	-- is regarded as a full circle. So the resulting arc will
+	-- have a span of 360 degrees.
+	-- If argument allow_full_circle is false, then such an arc
+	-- will be regarded as having a span of zero degree.
 	function to_arc_angles (
-		arc : in type_arc) 
+		arc					: in type_arc;
+		allow_full_circle	: in boolean := true) 
 		return type_arc_angles;
 
 	

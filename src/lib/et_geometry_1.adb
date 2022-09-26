@@ -2130,15 +2130,28 @@ package body et_geometry_1 is
 		
 	
 	function to_arc_angles (
-		arc : in type_arc) 
+		arc					: in type_arc;
+		allow_full_circle	: in boolean := true) 
 		return type_arc_angles 
 	is
-	-- The angles may be negative. For example instead of 270 degree
-	-- the angle can be -90 degree.
+		-- The angles may be negative. For example instead of 270 degree
+		-- the angle can be -90 degree.
 		result : type_arc_angles;
 					
 		-- Take a copy of the given arc in arc_tmp.
 		arc_tmp : type_arc := arc;
+
+		procedure compute_end_point is begin
+			if get_x (arc_tmp.end_point) = 0.0 and get_y (arc_tmp.end_point) = 0.0 then
+				result.angle_end := 0.0;
+			else
+				result.angle_end := arctan (
+						y => get_y (arc_tmp.end_point),
+						x => get_x (arc_tmp.end_point),
+						cycle => units_per_cycle);
+			end if;
+		end compute_end_point;
+	
 	begin
 		-- move arc_tmp so that its center is at 0/0
 		move_to (arc_tmp, null_vector);
@@ -2154,7 +2167,8 @@ package body et_geometry_1 is
 
 		-- NOTE: If x and y are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
-		
+
+		-- compute start point:
 		if get_x (arc_tmp.start_point) = 0.0 and get_y (arc_tmp.start_point) = 0.0 then
 			result.angle_start := 0.0;
 		else
@@ -2164,19 +2178,22 @@ package body et_geometry_1 is
 					cycle => units_per_cycle);
 		end if;
 
-		if get_x (arc_tmp.end_point) = 0.0 and get_y (arc_tmp.end_point) = 0.0 then
-			result.angle_end := 0.0;
-		else
-			result.angle_end := arctan (
-					y => get_y (arc_tmp.end_point),
-					x => get_x (arc_tmp.end_point),
-					cycle => units_per_cycle);
-		end if;
 
-		-- make sure start and end angle are not equal
-		if result.angle_start = result.angle_end then
-			raise constraint_error; -- CS warning instead ?
+		-- compute end point depending on argument allow_full_circle:
+		if allow_full_circle then -- default
+			if arc_tmp.start_point = arc_tmp.end_point then
+				result.angle_end := result.angle_start + 360.0; -- span will be 360 degrees
+			else		
+				compute_end_point;
+			end if;
+		else
+			if arc_tmp.start_point = arc_tmp.end_point then
+				result.angle_end := result.angle_start; -- span will be zero
+			else		
+				compute_end_point;
+			end if;
 		end if;
+		
 		
 		-- direction is not changed:
 		result.direction := arc.direction;
