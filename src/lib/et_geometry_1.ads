@@ -89,7 +89,7 @@ package et_geometry_1 is
 
 	
 	subtype type_angle is type_float_internal range -720.0 .. 720.0;
-	subtype type_angle_positive is type_angle range 0.0 .. (360.0 - type_angle'small);
+	subtype type_angle_positive is type_angle range 0.0 .. 360.0;
 
 	function to_angle (a : in string) return type_angle;
 	
