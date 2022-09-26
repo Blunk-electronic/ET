@@ -81,6 +81,42 @@ package body et_contour_to_polygon is
 	end to_edges;
 
 
+	--function to_edges (
+		--circle		: in type_circle;
+		--tolerance	: in type_distance_positive;
+		--mode		: in type_approximation_mode;
+		--debug		: in boolean := false)				  
+		--return pac_edges.list
+	--is
+		---- This is the list of edges to be returned:
+		--result : pac_edges.list;
+
+		---- Convert the given circle to an arc (same start and end point):
+		--arcs : type_arcs (1 .. 2);
+
+		--edges_left, edges_right : pac_edges.list;
+		
+	--begin
+		--arcs := split_circle (circle);
+		
+		--if debug then
+			--put_line ("arc left : " & to_string (arcs (1)));
+			--put_line ("arc right: " & to_string (arcs (2)));
+		--end if;
+
+		---- The left arc (1) runs from the top to the bottom.
+		---- The right arc (2) runs from bottom to top.
+		--edges_left  := to_edges (arcs (1), tolerance, mode, debug);
+		--edges_right := to_edges (arcs (2), tolerance, mode, debug);
+
+		---- Join the two arcs to a single one:
+		--edges_left.splice (before => pac_edges.no_element, source => edges_right);
+
+		---- The edges are ordered counter-clockwise.
+		--return edges_left;
+	--end to_edges;
+	
+
 	function to_edges (
 		circle		: in type_circle;
 		tolerance	: in type_distance_positive;
@@ -91,31 +127,22 @@ package body et_contour_to_polygon is
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;
 
-		-- Convert the given circle to an arc (same start and end point):
-		arcs : type_arcs (1 .. 2);
-
-		edges_left, edges_right : pac_edges.list;
-		
+		use pac_geometry_brd;
+		arc : type_arc_angles;
 	begin
-		arcs := split_circle (circle);
-		
-		if debug then
-			put_line ("arc left : " & to_string (arcs (1)));
-			put_line ("arc right: " & to_string (arcs (2)));
-		end if;
+		arc.center := to_vector (circle.center);
+		arc.radius := circle.radius;
+		arc.angle_start := 0.0;
+		arc.angle_end := 360.0;
+		arc.direction := CCW;
 
-		-- The left arc (1) runs from the top to the bottom.
-		-- The right arc (2) runs from bottom to top.
-		edges_left  := to_edges (arcs (1), tolerance, mode, debug);
-		edges_right := to_edges (arcs (2), tolerance, mode, debug);
-
-		-- Join the two arcs to a single one:
-		edges_left.splice (before => pac_edges.no_element, source => edges_right);
-
-		-- The edges are ordered counter-clockwise.
-		return edges_left;
+		return to_edges (
+			arc			=> to_arc (arc), 
+			tolerance	=> type_float_internal_positive (tolerance), 
+			mode		=> mode, 
+			debug		=> debug);
 	end to_edges;
-	
+
 	
 	function to_polygon (
 		contour		: in type_contour'class;
