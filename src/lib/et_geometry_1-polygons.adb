@@ -88,7 +88,8 @@ package body et_geometry_1.polygons is
 	is
 		-- This is the list of edges to be returned:
 		result : pac_edges.list;
-
+		
+		
 		-- The given arc is usually offset from the origin.
 		-- This offset is later required to create the actual edges 
 		-- where the given arc is:
@@ -102,6 +103,20 @@ package body et_geometry_1.polygons is
 
 		-- Get the radius of the given arc:
 		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
+
+
+		-- The tolerance must be adjusted according to the given radius.
+		tolerance_dyn : type_float_internal_positive := tolerance;
+
+		-- Adjusts the tolerance. 
+		-- CS: Currently empirically. Need refinement.
+		procedure compute_tolerance_dyn is begin
+			if radius < 1.0 then
+				tolerance_dyn := tolerance * radius;
+			end if;
+		end compute_tolerance_dyn;
+
+		
 		
 		-- This is the total angle between start and end point of the given arc:
 		span : type_angle;
@@ -191,6 +206,8 @@ package body et_geometry_1.polygons is
 			new_line;
 			put_line ("approximate arc");
 		end if;
+
+		compute_tolerance_dyn;
 		
 		-- Get the span of the arc:
 		span := get_span (arc_angles);
@@ -198,11 +215,11 @@ package body et_geometry_1.polygons is
 		-- Compute the theoretical angle required between the vertices:
 		case mode is
 			when SHRINK =>
-				angle_theo := 2.0 * (90.0 - arcsin ((radius - tolerance) / radius, units_per_cycle));
+				angle_theo := 2.0 * (90.0 - arcsin ((radius - tolerance_dyn) / radius, units_per_cycle));
 
 			when EXPAND =>
 				-- This fomula applies to the virtual outer arc (see spec of type_approximation_mode):
-				angle_theo := 2.0 * (90.0 - arcsin (radius / (radius + tolerance), units_per_cycle));
+				angle_theo := 2.0 * (90.0 - arcsin (radius / (radius + tolerance_dyn), units_per_cycle));
 		end case;
 		
 		-- Compute the number of edges required: 
@@ -221,7 +238,7 @@ package body et_geometry_1.polygons is
 			new_line;
 			put_line ("mode         : " & type_approximation_mode'image (mode));			
 			put_line ("given arc    : " & to_string (arc_angles));
-			put_line ("tolerance    : " & to_string (tolerance));
+			put_line ("tolerance_dyn    : " & to_string (tolerance_dyn));
 			put_line ("span         : " & to_string (span));
 			put_line ("angle theo.  : " & to_string (angle_theo));
 			--put_line ("edge ct float: " & to_string (edge_ct_float));
@@ -233,10 +250,10 @@ package body et_geometry_1.polygons is
 		
 		if mode = EXPAND then
 			-- The start point of the outer arc:
-			p_start_outside := move_by (arc_origin.start_point, arc_angles.angle_start, tolerance);
+			p_start_outside := move_by (arc_origin.start_point, arc_angles.angle_start, tolerance_dyn);
 
 			-- The end point of the outer arc:
-			p_end_outside   := move_by (arc_origin.end_point, arc_angles.angle_end, tolerance);
+			p_end_outside   := move_by (arc_origin.end_point, arc_angles.angle_end, tolerance_dyn);
 
 			--if debug then
 				--put_line ("start outside : " & to_string (p_start_outside));
