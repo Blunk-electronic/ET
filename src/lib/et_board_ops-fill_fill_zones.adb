@@ -208,6 +208,8 @@ is
 					when THROUGH =>
 						if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
 							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
+						else
+							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 						end if;
 
 					when BLIND_DRILLED_FROM_TOP =>
