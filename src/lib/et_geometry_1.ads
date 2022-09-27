@@ -995,8 +995,8 @@ package et_geometry_1 is
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_vector;
 		radius		: type_float_internal_positive;
-		angle_start	: type_angle;
-		angle_end	: type_angle;
+		angle_start	: type_angle; -- can be negative
+		angle_end	: type_angle; -- can be negative
 		direction	: type_direction_of_rotation := CCW;
 	end record;
 
