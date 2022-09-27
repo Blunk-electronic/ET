@@ -43,6 +43,8 @@ with ada.containers.indefinite_ordered_maps;
 
 with cairo;
 with et_geometry;				use et_geometry;
+with et_geometry_1;
+with et_geometry_1.polygons;
 with et_geometry_2;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -162,6 +164,9 @@ package et_text is
 	
 	generic
 		with package pac_geometry_2 is new et_geometry_2 (<>);
+		--with package pac_geometry_1 is new pac_geometry_2.pac_geometry_1;
+		--with package pac_polygons is new pac_geometry_2.pac_geometry_1.polygons;
+		with package pac_polygons is new et_geometry_1.polygons;
 		
 		size_min		: pac_geometry_2.type_distance_positive;
 		size_max		: pac_geometry_2.type_distance_positive;
@@ -280,8 +285,17 @@ package et_text is
 			end_y	: type_character_height;
 		end record;
 
-		type type_character is array (type_segment_id range <>) of type_segment;
+		--type type_character is array (type_segment_id range <>) of type_segment;
 
+		type type_segments is array (type_segment_id range <>) of type_segment;
+		
+		type type_character (segment_ct : type_segment_id) is record
+			segments	: type_segments (1 .. segment_ct);
+			--border		: pac_polygons.type_polygon;
+		end record;
+
+
+		
 		x0 : constant type_character_width := 0.0;
 		x1 : constant type_character_width := 0.2;
 		x2 : constant type_character_width := 0.35;
@@ -300,554 +314,556 @@ package et_text is
 		y8 : constant type_character_height := -0.4; -- used for lower case letters only
 		
 		-- UPPER CASE LETTERS:
-		capital_a : constant type_character (1 .. 5) := (
-			1	=> (x0, y0, x0, y4), -- |
-			2	=> (x0, y4, x2, y6), -- /
-			3	=> (x2, y6, x4, y4), -- \
-			4	=> (x4, y4, x4, y0), -- |
-			5	=> (x0, y3, x4, y3)  -- -
-			);
+		capital_a : constant type_character := (
+			segment_ct => 5,
+			segments => (
+				1	=> (x0, y0, x0, y4), -- |
+				2	=> (x0, y4, x2, y6), -- /
+				3	=> (x2, y6, x4, y4), -- \
+				4	=> (x4, y4, x4, y0), -- |
+				5	=> (x0, y3, x4, y3)  -- -
+			));
 
-		capital_b : constant type_character (1 ..10) := (
-			 1	=> (x0, y0, x0, y6), -- |
-			 2	=> (x0, y6, x3, y6), -- -
-			 3	=> (x3, y6, x4, y5), -- \
-			 4	=> (x4, y5, x4, y4), -- |
-			 5	=> (x4, y4, x3, y3), -- /
-			 6	=> (x0, y3, x3, y3), -- -
-			 7	=> (x3, y3, x4, y2), -- \
-			 8	=> (x4, y2, x4, y1), -- |
-			 9	=> (x4, y1, x3, y0), -- /
-			10	=> (x3, y0, x0, y0)  -- _
-			);
+		--capital_b : constant type_character (1 ..10) := (
+			 --1	=> (x0, y0, x0, y6), -- |
+			 --2	=> (x0, y6, x3, y6), -- -
+			 --3	=> (x3, y6, x4, y5), -- \
+			 --4	=> (x4, y5, x4, y4), -- |
+			 --5	=> (x4, y4, x3, y3), -- /
+			 --6	=> (x0, y3, x3, y3), -- -
+			 --7	=> (x3, y3, x4, y2), -- \
+			 --8	=> (x4, y2, x4, y1), -- |
+			 --9	=> (x4, y1, x3, y0), -- /
+			--10	=> (x3, y0, x0, y0)  -- _
+			--);
 		
-		capital_c : constant type_character (1 .. 7) := (
-			 1	=> (x4, y5, x3, y6),
-			 2	=> (x3, y6, x1, y6),
-			 3	=> (x1, y6, x0, y5),
-			 4	=> (x0, y5, x0, y1),
-			 5	=> (x0, y1, x1, y0),
-			 6	=> (x1, y0, x3, y0),
-			 7	=> (x3, y0, x4, y1)
-			);
+		--capital_c : constant type_character (1 .. 7) := (
+			 --1	=> (x4, y5, x3, y6),
+			 --2	=> (x3, y6, x1, y6),
+			 --3	=> (x1, y6, x0, y5),
+			 --4	=> (x0, y5, x0, y1),
+			 --5	=> (x0, y1, x1, y0),
+			 --6	=> (x1, y0, x3, y0),
+			 --7	=> (x3, y0, x4, y1)
+			--);
 
-		capital_d : constant type_character (1 .. 6) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x3, y6),
-			 3	=> (x3, y6, x4, y5),
-			 4	=> (x4, y5, x4, y1),
-			 5	=> (x4, y1, x3, y0),
-			 6	=> (x3, y0, x0, y0)
-			);
+		--capital_d : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x3, y6),
+			 --3	=> (x3, y6, x4, y5),
+			 --4	=> (x4, y5, x4, y1),
+			 --5	=> (x4, y1, x3, y0),
+			 --6	=> (x3, y0, x0, y0)
+			--);
 
-		capital_e : constant type_character (1 .. 4) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x4, y6),
-			 3	=> (x0, y3, x3, y3),
-			 4	=> (x0, y0, x4, y0)
-			);
+		--capital_e : constant type_character (1 .. 4) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x4, y6),
+			 --3	=> (x0, y3, x3, y3),
+			 --4	=> (x0, y0, x4, y0)
+			--);
 
-		capital_f : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x4, y6),
-			 3	=> (x0, y3, x3, y3)
-			);
+		--capital_f : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x4, y6),
+			 --3	=> (x0, y3, x3, y3)
+			--);
 		
-		capital_g : constant type_character (1 .. 9) := (
-			 1	=> (x4, y5, x3, y6),
-			 2	=> (x3, y6, x1, y6),
-			 3	=> (x1, y6, x0, y5),
-			 4	=> (x0, y5, x0, y1),
-			 5	=> (x0, y1, x1, y0),
-			 6	=> (x1, y0, x3, y0),
-			 7	=> (x3, y0, x4, y1),
-			 8	=> (x4, y1, x4, y3),
-			 9	=> (x4, y3, x2, y3)
-			);
+		--capital_g : constant type_character (1 .. 9) := (
+			 --1	=> (x4, y5, x3, y6),
+			 --2	=> (x3, y6, x1, y6),
+			 --3	=> (x1, y6, x0, y5),
+			 --4	=> (x0, y5, x0, y1),
+			 --5	=> (x0, y1, x1, y0),
+			 --6	=> (x1, y0, x3, y0),
+			 --7	=> (x3, y0, x4, y1),
+			 --8	=> (x4, y1, x4, y3),
+			 --9	=> (x4, y3, x2, y3)
+			--);
 
-		capital_h : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x4, y6, x4, y0),
-			 3	=> (x0, y3, x4, y3)
-			);
+		--capital_h : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x4, y6, x4, y0),
+			 --3	=> (x0, y3, x4, y3)
+			--);
 
-		capital_i : constant type_character (1 .. 3) := (
-			 1	=> (x2, y6, x2, y0),
-			 2	=> (x1, y6, x3, y6),
-			 3	=> (x1, y0, x3, y0)
-			);
+		--capital_i : constant type_character (1 .. 3) := (
+			 --1	=> (x2, y6, x2, y0),
+			 --2	=> (x1, y6, x3, y6),
+			 --3	=> (x1, y0, x3, y0)
+			--);
 
-		capital_j : constant type_character (1 .. 5) := (
-			 1	=> (x2, y6, x4, y6),
-			 2	=> (x3, y6, x3, y1),
-			 3	=> (x3, y1, x2, y0),
-			 4	=> (x2, y0, x1, y0),
-			 5	=> (x1, y0, x0, y1)
-			 );
+		--capital_j : constant type_character (1 .. 5) := (
+			 --1	=> (x2, y6, x4, y6),
+			 --2	=> (x3, y6, x3, y1),
+			 --3	=> (x3, y1, x2, y0),
+			 --4	=> (x2, y0, x1, y0),
+			 --5	=> (x1, y0, x0, y1)
+			 --);
 		
-		capital_k : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y3, x4, y6),
-			 3	=> (x0, y3, x4, y0)
-			);
+		--capital_k : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y3, x4, y6),
+			 --3	=> (x0, y3, x4, y0)
+			--);
 
-		capital_l : constant type_character (1 .. 2) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y0, x4, y0)
-			);
+		--capital_l : constant type_character (1 .. 2) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y0, x4, y0)
+			--);
 
-		capital_m : constant type_character (1 .. 4) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x2, y3),
-			 3	=> (x2, y3, x4, y6),
-			 4	=> (x4, y6, x4, y0)
-			);
+		--capital_m : constant type_character (1 .. 4) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x2, y3),
+			 --3	=> (x2, y3, x4, y6),
+			 --4	=> (x4, y6, x4, y0)
+			--);
 
-		capital_n : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x4, y0),
-			 3	=> (x4, y6, x4, y0)
-			);
+		--capital_n : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x4, y0),
+			 --3	=> (x4, y6, x4, y0)
+			--);
 
-		capital_o : constant type_character (1 .. 8) := (
-			 1	=> (x0, y5, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x3, y0),
-			 4	=> (x3, y0, x4, y1),
-			 5	=> (x4, y1, x4, y5),
-			 6	=> (x4, y5, x3, y6),
-			 7	=> (x3, y6, x1, y6),
-			 8	=> (x1, y6, x0, y5)
-			);
+		--capital_o : constant type_character (1 .. 8) := (
+			 --1	=> (x0, y5, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x3, y0),
+			 --4	=> (x3, y0, x4, y1),
+			 --5	=> (x4, y1, x4, y5),
+			 --6	=> (x4, y5, x3, y6),
+			 --7	=> (x3, y6, x1, y6),
+			 --8	=> (x1, y6, x0, y5)
+			--);
 
-		capital_p : constant type_character (1 .. 6) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x3, y6),
-			 3	=> (x3, y6, x4, y5),
-			 4	=> (x4, y5, x4, y4),
-			 5	=> (x4, y4, x3, y3),
-			 6	=> (x3, y3, x0, y3)
-			);
+		--capital_p : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x3, y6),
+			 --3	=> (x3, y6, x4, y5),
+			 --4	=> (x4, y5, x4, y4),
+			 --5	=> (x4, y4, x3, y3),
+			 --6	=> (x3, y3, x0, y3)
+			--);
 
-		capital_q : constant type_character (1 .. 9) := (
-			 1	=> (x0, y5, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x3, y0),
-			 4	=> (x3, y0, x4, y1),
-			 5	=> (x4, y1, x4, y5),
-			 6	=> (x4, y5, x3, y6),
-			 7	=> (x3, y6, x1, y6),
-			 8	=> (x1, y6, x0, y5),
-			 9	=> (x3, y1, x4, y0)
-			);
+		--capital_q : constant type_character (1 .. 9) := (
+			 --1	=> (x0, y5, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x3, y0),
+			 --4	=> (x3, y0, x4, y1),
+			 --5	=> (x4, y1, x4, y5),
+			 --6	=> (x4, y5, x3, y6),
+			 --7	=> (x3, y6, x1, y6),
+			 --8	=> (x1, y6, x0, y5),
+			 --9	=> (x3, y1, x4, y0)
+			--);
 
-		capital_r : constant type_character (1 .. 7) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y6, x3, y6),
-			 3	=> (x3, y6, x4, y5),
-			 4	=> (x4, y5, x4, y4),
-			 5	=> (x4, y4, x3, y3),
-			 6	=> (x3, y3, x0, y3),
-			 7	=> (x3, y3, x4, y0)
-			 );
+		--capital_r : constant type_character (1 .. 7) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y6, x3, y6),
+			 --3	=> (x3, y6, x4, y5),
+			 --4	=> (x4, y5, x4, y4),
+			 --5	=> (x4, y4, x3, y3),
+			 --6	=> (x3, y3, x0, y3),
+			 --7	=> (x3, y3, x4, y0)
+			 --);
 		
-		capital_s : constant type_character (1 .. 11) := (
-			 1	=> (x4, y5, x3, y6),
-			 2	=> (x3, y6, x1, y6),
-			 3	=> (x1, y6, x0, y5),
-			 4	=> (x0, y5, x0, y4),
-			 5	=> (x0, y4, x1, y3),
-			 6	=> (x1, y3, x3, y3),
-			 7	=> (x3, y3, x4, y2),
-			 8	=> (x4, y2, x4, y1),
-			 9  => (x4, y1, x3, y0),
-			 10	=> (x3, y0, x1, y0),
-			 11	=> (x1, y0, x0, y1)
-			);
+		--capital_s : constant type_character (1 .. 11) := (
+			 --1	=> (x4, y5, x3, y6),
+			 --2	=> (x3, y6, x1, y6),
+			 --3	=> (x1, y6, x0, y5),
+			 --4	=> (x0, y5, x0, y4),
+			 --5	=> (x0, y4, x1, y3),
+			 --6	=> (x1, y3, x3, y3),
+			 --7	=> (x3, y3, x4, y2),
+			 --8	=> (x4, y2, x4, y1),
+			 --9  => (x4, y1, x3, y0),
+			 --10	=> (x3, y0, x1, y0),
+			 --11	=> (x1, y0, x0, y1)
+			--);
 
-		capital_t : constant type_character (1 .. 2) := (
-			 1	=> (x2, y6, x2, y0),
-			 2	=> (x0, y6, x4, y6)
-			);
+		--capital_t : constant type_character (1 .. 2) := (
+			 --1	=> (x2, y6, x2, y0),
+			 --2	=> (x0, y6, x4, y6)
+			--);
 
-		capital_u : constant type_character (1 .. 5) := (
-			 1	=> (x0, y6, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x3, y0),
-			 4	=> (x3, y0, x4, y1),
-			 5	=> (x4, y1, x4, y6)
-			);
+		--capital_u : constant type_character (1 .. 5) := (
+			 --1	=> (x0, y6, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x3, y0),
+			 --4	=> (x3, y0, x4, y1),
+			 --5	=> (x4, y1, x4, y6)
+			--);
 
-		capital_v : constant type_character (1 .. 2) := (
-			 1	=> (x0, y6, x2, y0),
-			 2	=> (x2, y0, x4, y6)
-			);
+		--capital_v : constant type_character (1 .. 2) := (
+			 --1	=> (x0, y6, x2, y0),
+			 --2	=> (x2, y0, x4, y6)
+			--);
 
-		capital_w : constant type_character (1 .. 4) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y0, x2, y3),
-			 3	=> (x2, y3, x4, y0),
-			 4	=> (x4, y0, x4, y6)
-			);
+		--capital_w : constant type_character (1 .. 4) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y0, x2, y3),
+			 --3	=> (x2, y3, x4, y0),
+			 --4	=> (x4, y0, x4, y6)
+			--);
 
-		capital_x : constant type_character (1 .. 2) := (
-			 1	=> (x0, y6, x4, y0),
-			 2	=> (x4, y6, x0, y0)
-			);
+		--capital_x : constant type_character (1 .. 2) := (
+			 --1	=> (x0, y6, x4, y0),
+			 --2	=> (x4, y6, x0, y0)
+			--);
 
-		capital_y : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x2, y3),
-			 2	=> (x4, y6, x2, y3),
-			 3	=> (x2, x3, x2, y0)
-			);
+		--capital_y : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x2, y3),
+			 --2	=> (x4, y6, x2, y3),
+			 --3	=> (x2, x3, x2, y0)
+			--);
 
-		capital_z : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x4, y6),
-			 2	=> (x4, y6, x0, y0),
-			 3	=> (x0, y0, x4, y0)
-			);
+		--capital_z : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x4, y6),
+			 --2	=> (x4, y6, x0, y0),
+			 --3	=> (x0, y0, x4, y0)
+			--);
 
 		
-		-- LOWER CASE LETTERS:
-		small_a : constant type_character (1 .. 7) := (
-			1	=> (x4, y2, x1, y2),
-			2	=> (x1, y2, x0, y1),
-			3	=> (x0, y1, x1, y0),
-			4	=> (x1, y0, x4, y0),
-			5	=> (x4, y0, x4, y3),
-			6	=> (x4, y3, x3, y4),
-			7	=> (x3, y4, x1, y4)
-			);
+		---- LOWER CASE LETTERS:
+		--small_a : constant type_character (1 .. 7) := (
+			--1	=> (x4, y2, x1, y2),
+			--2	=> (x1, y2, x0, y1),
+			--3	=> (x0, y1, x1, y0),
+			--4	=> (x1, y0, x4, y0),
+			--5	=> (x4, y0, x4, y3),
+			--6	=> (x4, y3, x3, y4),
+			--7	=> (x3, y4, x1, y4)
+			--);
 
-		small_b : constant type_character (1 .. 6) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y4, x3, y4),
-			 3	=> (x3, y4, x4, y3),
-			 4	=> (x4, y3, x4, y1),
-			 5	=> (x4, y1, x3, y0),
-			 6	=> (x3, y0, x0, y0)
-			);
+		--small_b : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y4, x3, y4),
+			 --3	=> (x3, y4, x4, y3),
+			 --4	=> (x4, y3, x4, y1),
+			 --5	=> (x4, y1, x3, y0),
+			 --6	=> (x3, y0, x0, y0)
+			--);
 
-		small_c : constant type_character (1 .. 5) := (
-			 1	=> (x4, y4, x1, y4),
-			 2	=> (x1, y4, x0, y3),
-			 3	=> (x0, y3, x0, y1),
-			 4	=> (x0, y1, x1, y0),
-			 5	=> (x1, y0, x4, y0)
-			 );
+		--small_c : constant type_character (1 .. 5) := (
+			 --1	=> (x4, y4, x1, y4),
+			 --2	=> (x1, y4, x0, y3),
+			 --3	=> (x0, y3, x0, y1),
+			 --4	=> (x0, y1, x1, y0),
+			 --5	=> (x1, y0, x4, y0)
+			 --);
 
-		small_d : constant type_character (1 .. 6) := (
-			 1	=> (x4, y4, x1, y4),
-			 2	=> (x1, y4, x0, y3),
-			 3	=> (x0, y3, x0, y1),
-			 4	=> (x0, y1, x1, y0),
-			 5	=> (x1, y0, x4, y0),
-			 6	=> (x4, y6, x4, y0)
-			 );
+		--small_d : constant type_character (1 .. 6) := (
+			 --1	=> (x4, y4, x1, y4),
+			 --2	=> (x1, y4, x0, y3),
+			 --3	=> (x0, y3, x0, y1),
+			 --4	=> (x0, y1, x1, y0),
+			 --5	=> (x1, y0, x4, y0),
+			 --6	=> (x4, y6, x4, y0)
+			 --);
 
-		small_e : constant type_character (1 .. 8) := (
-			 1	=> (x0, y2, x4, y2),
-			 2	=> (x4, y2, x4, y3),
-			 3	=> (x4, y3, x3, y4),
-			 4	=> (x3, y4, x1, y4),
-			 5	=> (x1, y4, x0, y3),
-			 6	=> (x0, y3, x0, y1),
-			 7	=> (x0, y1, x1, y0),
-			 8	=> (x1, y0, x3, y0)
-			 );
+		--small_e : constant type_character (1 .. 8) := (
+			 --1	=> (x0, y2, x4, y2),
+			 --2	=> (x4, y2, x4, y3),
+			 --3	=> (x4, y3, x3, y4),
+			 --4	=> (x3, y4, x1, y4),
+			 --5	=> (x1, y4, x0, y3),
+			 --6	=> (x0, y3, x0, y1),
+			 --7	=> (x0, y1, x1, y0),
+			 --8	=> (x1, y0, x3, y0)
+			 --);
 
-		small_f : constant type_character (1 .. 3) := (
-			 1	=> (x3, y6, x2, y5),
-			 2	=> (x2, y5, x2, y0),
-			 3	=> (x1, y3, x3, y3)
-			);
+		--small_f : constant type_character (1 .. 3) := (
+			 --1	=> (x3, y6, x2, y5),
+			 --2	=> (x2, y5, x2, y0),
+			 --3	=> (x1, y3, x3, y3)
+			--);
 		
-		small_g : constant type_character (1 .. 8) := (
-			 1	=> (x4, y4, x1, y4),
-			 2	=> (x1, y4, x0, y3),
-			 3	=> (x0, y3, x0, y1),
-			 4	=> (x0, y1, x1, y0),
-			 5	=> (x1, y0, x4, y0),
-			 6	=> (x4, y4, x4, y7),
-			 7	=> (x4, y7, x3, y8),
-			 8	=> (x3, y8, x2, y8)
-			);
+		--small_g : constant type_character (1 .. 8) := (
+			 --1	=> (x4, y4, x1, y4),
+			 --2	=> (x1, y4, x0, y3),
+			 --3	=> (x0, y3, x0, y1),
+			 --4	=> (x0, y1, x1, y0),
+			 --5	=> (x1, y0, x4, y0),
+			 --6	=> (x4, y4, x4, y7),
+			 --7	=> (x4, y7, x3, y8),
+			 --8	=> (x3, y8, x2, y8)
+			--);
 
-		small_h : constant type_character (1 .. 5) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y3, x1, y4),
-			 3	=> (x1, y4, x3, y4),
-			 4	=> (x3, y4, x4, y3),
-			 5	=> (x4, y3, x4, y0)
-			);
+		--small_h : constant type_character (1 .. 5) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y3, x1, y4),
+			 --3	=> (x1, y4, x3, y4),
+			 --4	=> (x3, y4, x4, y3),
+			 --5	=> (x4, y3, x4, y0)
+			--);
 
-		small_i : constant type_character (1 .. 4) := (
-			 1	=> (x2, y6, x2, y5),
-			 2	=> (x1, y3, x2, y3),
-			 3	=> (x2, y3, x2, y0),
-			 4	=> (x1, y0, x3, y0) 
-			);
+		--small_i : constant type_character (1 .. 4) := (
+			 --1	=> (x2, y6, x2, y5),
+			 --2	=> (x1, y3, x2, y3),
+			 --3	=> (x2, y3, x2, y0),
+			 --4	=> (x1, y0, x3, y0) 
+			--);
 
-		small_j : constant type_character (1 .. 4) := (
-			 1	=> (x3, y6, x3, y5),
-			 2	=> (x3, y3, x3, y7),
-			 3	=> (x3, y7, x2, y8),
-			 4	=> (x2, y8, x1, y8) 
-			);
+		--small_j : constant type_character (1 .. 4) := (
+			 --1	=> (x3, y6, x3, y5),
+			 --2	=> (x3, y3, x3, y7),
+			 --3	=> (x3, y7, x2, y8),
+			 --4	=> (x2, y8, x1, y8) 
+			--);
 		
-		small_k : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x0, y0),
-			 2	=> (x0, y2, x3, y4),
-			 3	=> (x0, y2, x3, y0)
-			);
+		--small_k : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x0, y0),
+			 --2	=> (x0, y2, x3, y4),
+			 --3	=> (x0, y2, x3, y0)
+			--);
 
-		small_l : constant type_character (1 .. 3) := (
-			 1	=> (x1, y6, x2, y6),
-			 2	=> (x2, y6, x2, y0),
-			 3	=> (x1, y0, x3, y0) 
-			);
+		--small_l : constant type_character (1 .. 3) := (
+			 --1	=> (x1, y6, x2, y6),
+			 --2	=> (x2, y6, x2, y0),
+			 --3	=> (x1, y0, x3, y0) 
+			--);
 
-		small_m : constant type_character (1 .. 7) := (
-			 1	=> (x0, y0, x0, y4),
-			 2	=> (x0, y4, x1, y4),
-			 3	=> (x1, y4, x2, y3),
-			 4	=> (x2, y3, x2, y0),
-			 5	=> (x2, y3, x3, y4),
-			 6	=> (x3, y4, x4, y3),
-			 7	=> (x4, y3, x4, y0) 
-			);
+		--small_m : constant type_character (1 .. 7) := (
+			 --1	=> (x0, y0, x0, y4),
+			 --2	=> (x0, y4, x1, y4),
+			 --3	=> (x1, y4, x2, y3),
+			 --4	=> (x2, y3, x2, y0),
+			 --5	=> (x2, y3, x3, y4),
+			 --6	=> (x3, y4, x4, y3),
+			 --7	=> (x4, y3, x4, y0) 
+			--);
 
-		small_n : constant type_character (1 .. 4) := (
-			 1	=> (x0, y0, x0, y4),
-			 2	=> (x0, y4, x3, y4),
-			 3	=> (x3, y4, x4, y3),
-			 4	=> (x4, y3, x4, y0)
-			);
+		--small_n : constant type_character (1 .. 4) := (
+			 --1	=> (x0, y0, x0, y4),
+			 --2	=> (x0, y4, x3, y4),
+			 --3	=> (x3, y4, x4, y3),
+			 --4	=> (x4, y3, x4, y0)
+			--);
 
-		small_o : constant type_character (1 .. 8) := (
-			 1	=> (x1, y0, x3, y0),
-			 2	=> (x3, y0, x4, y1),
-			 3	=> (x4, y1, x4, y3),
-			 4	=> (x4, y3, x3, y4),
-			 5	=> (x3, y4, x1, y4),
-			 6	=> (x1, y4, x0, y3),
-			 7	=> (x0, y3, x0, y1),
-			 8	=> (x0, y1, x1, y0)
-			);
+		--small_o : constant type_character (1 .. 8) := (
+			 --1	=> (x1, y0, x3, y0),
+			 --2	=> (x3, y0, x4, y1),
+			 --3	=> (x4, y1, x4, y3),
+			 --4	=> (x4, y3, x3, y4),
+			 --5	=> (x3, y4, x1, y4),
+			 --6	=> (x1, y4, x0, y3),
+			 --7	=> (x0, y3, x0, y1),
+			 --8	=> (x0, y1, x1, y0)
+			--);
 
-		small_p : constant type_character (1 .. 6) := (
-			 1	=> (x0, y4, x0, y8),
-			 2	=> (x0, y4, x3, y4),
-			 3	=> (x3, y4, x4, y3),
-			 4	=> (x4, y3, x4, y1),
-			 5	=> (x4, y1, x3, y0),
-			 6	=> (x3, y0, x0, y0)
-			);
+		--small_p : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y4, x0, y8),
+			 --2	=> (x0, y4, x3, y4),
+			 --3	=> (x3, y4, x4, y3),
+			 --4	=> (x4, y3, x4, y1),
+			 --5	=> (x4, y1, x3, y0),
+			 --6	=> (x3, y0, x0, y0)
+			--);
 
-		small_q : constant type_character (1 .. 6) := (
-			 1	=> (x4, y4, x1, y4),
-			 2	=> (x1, y4, x0, y3),
-			 3	=> (x0, y3, x0, y1),
-			 4	=> (x0, y1, x1, y0),
-			 5	=> (x1, y0, x4, y0),
-			 6	=> (x4, y4, x4, y8)
-			);
+		--small_q : constant type_character (1 .. 6) := (
+			 --1	=> (x4, y4, x1, y4),
+			 --2	=> (x1, y4, x0, y3),
+			 --3	=> (x0, y3, x0, y1),
+			 --4	=> (x0, y1, x1, y0),
+			 --5	=> (x1, y0, x4, y0),
+			 --6	=> (x4, y4, x4, y8)
+			--);
 
-		small_r : constant type_character (1 .. 3) := (
-			 1	=> (x0, y4, x0, y0),
-			 2	=> (x0, y2, x2, y4),
-			 3	=> (x2, y4, x3, y4)
-			 );
+		--small_r : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y4, x0, y0),
+			 --2	=> (x0, y2, x2, y4),
+			 --3	=> (x2, y4, x3, y4)
+			 --);
 		
-		small_s : constant type_character (1 .. 7) := (
-			 1	=> (x4, y4, x1, y4),
-			 2	=> (x1, y4, x0, y3),
-			 3	=> (x0, y3, x1, y2),
-			 4	=> (x1, y2, x3, y2),
-			 5	=> (x3, y2, x4, y1),
-			 6	=> (x4, y1, x3, y0),
-			 7	=> (x3, y0, x0, y0)
-			);
+		--small_s : constant type_character (1 .. 7) := (
+			 --1	=> (x4, y4, x1, y4),
+			 --2	=> (x1, y4, x0, y3),
+			 --3	=> (x0, y3, x1, y2),
+			 --4	=> (x1, y2, x3, y2),
+			 --5	=> (x3, y2, x4, y1),
+			 --6	=> (x4, y1, x3, y0),
+			 --7	=> (x3, y0, x0, y0)
+			--);
 
-		small_t : constant type_character (1 .. 3) := (
-			 1	=> (x2, y5, x2, y1),
-			 2	=> (x2, y1, x3, y0),
-			 3	=> (x1, y4, x3, y4)
-			);
+		--small_t : constant type_character (1 .. 3) := (
+			 --1	=> (x2, y5, x2, y1),
+			 --2	=> (x2, y1, x3, y0),
+			 --3	=> (x1, y4, x3, y4)
+			--);
 
-		small_u : constant type_character (1 .. 4) := (
-			 1	=> (x0, y4, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x4, y0),
-			 4	=> (x4, y0, x4, y4)
-			);
+		--small_u : constant type_character (1 .. 4) := (
+			 --1	=> (x0, y4, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x4, y0),
+			 --4	=> (x4, y0, x4, y4)
+			--);
 
-		small_v : constant type_character (1 .. 2) := (
-			 1	=> (x0, y4, x2, y0),
-			 2	=> (x2, y0, x4, y4)
-			);
+		--small_v : constant type_character (1 .. 2) := (
+			 --1	=> (x0, y4, x2, y0),
+			 --2	=> (x2, y0, x4, y4)
+			--);
 
-		small_w : constant type_character (1 .. 6) := (
-			 1	=> (x0, y4, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x2, y1),
-			 4	=> (x2, y1, x3, y0),
-			 5	=> (x3, y0, x4, y1),
-			 6	=> (x4, y1, x4, y4)
-			);
+		--small_w : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y4, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x2, y1),
+			 --4	=> (x2, y1, x3, y0),
+			 --5	=> (x3, y0, x4, y1),
+			 --6	=> (x4, y1, x4, y4)
+			--);
 
-		small_x : constant type_character (1 .. 2) := (
-			 1	=> (x0, y4, x4, y0),
-			 2	=> (x4, y4, x0, y0)
-			);
+		--small_x : constant type_character (1 .. 2) := (
+			 --1	=> (x0, y4, x4, y0),
+			 --2	=> (x4, y4, x0, y0)
+			--);
 
-		small_y : constant type_character (1 .. 6) := (
-			 1	=> (x0, y4, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x4, y0),
-			 4	=> (x4, y4, x4, y7),
-			 5	=> (x4, y7, x3, y8),
-			 6	=> (x3, y8, x2, y8)
-			 );
+		--small_y : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y4, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x4, y0),
+			 --4	=> (x4, y4, x4, y7),
+			 --5	=> (x4, y7, x3, y8),
+			 --6	=> (x3, y8, x2, y8)
+			 --);
 			 
-		small_z : constant type_character (1 .. 3) := (
-			 1	=> (x0, y4, x4, y4),
-			 2	=> (x4, y4, x0, y0),
-			 3	=> (x0, y0, x4, y0)
-			);
+		--small_z : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y4, x4, y4),
+			 --2	=> (x4, y4, x0, y0),
+			 --3	=> (x0, y0, x4, y0)
+			--);
 
-		-- DIGITS
-		digit_0 : constant type_character (1 .. 9) := (
-			 1	=> (x0, y5, x0, y1),
-			 2	=> (x0, y1, x1, y0),
-			 3	=> (x1, y0, x3, y0),
-			 4	=> (x3, y0, x4, y1),
-			 5	=> (x4, y1, x4, y5),
-			 6	=> (x4, y5, x3, y6),
-			 7	=> (x3, y6, x1, y6),
-			 8	=> (x1, y6, x0, y5),
-			 9	=> (x0, y1, x4, y5)
-			);
+		---- DIGITS
+		--digit_0 : constant type_character (1 .. 9) := (
+			 --1	=> (x0, y5, x0, y1),
+			 --2	=> (x0, y1, x1, y0),
+			 --3	=> (x1, y0, x3, y0),
+			 --4	=> (x3, y0, x4, y1),
+			 --5	=> (x4, y1, x4, y5),
+			 --6	=> (x4, y5, x3, y6),
+			 --7	=> (x3, y6, x1, y6),
+			 --8	=> (x1, y6, x0, y5),
+			 --9	=> (x0, y1, x4, y5)
+			--);
 		
-		digit_1 : constant type_character (1 .. 3) := (
-			 1	=> (x0, y4, x2, y6),
-			 2	=> (x2, y6, x2, y0),
-			 3	=> (x0, y0, x4, y0)
-			);
+		--digit_1 : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y4, x2, y6),
+			 --2	=> (x2, y6, x2, y0),
+			 --3	=> (x0, y0, x4, y0)
+			--);
 
-		digit_2 : constant type_character (1 .. 6) := (
-			 1	=> (x0, y5, x1, y6),
-			 2	=> (x1, y6, x3, y6),
-			 3	=> (x3, y6, x4, y5),
-			 4	=> (x4, y5, x4, y4),
-			 5	=> (x4, y4, x0, y0),
-			 6	=> (x0, y0, x4, y0)
-			);
+		--digit_2 : constant type_character (1 .. 6) := (
+			 --1	=> (x0, y5, x1, y6),
+			 --2	=> (x1, y6, x3, y6),
+			 --3	=> (x3, y6, x4, y5),
+			 --4	=> (x4, y5, x4, y4),
+			 --5	=> (x4, y4, x0, y0),
+			 --6	=> (x0, y0, x4, y0)
+			--);
 
-		digit_3 : constant type_character (1 ..11) := (
-			 1	=> (x0, y5, x1, y6),
-			 2	=> (x1, y6, x3, y6),
-			 3	=> (x3, y6, x4, y5),
-			 4	=> (x4, y5, x4, y4),
-			 5	=> (x4, y4, x3, y3),
-			 6	=> (x3, y3, x2, y3),
-			 7	=> (x3, y3, x4, y2),
-			 8	=> (x4, y2, x4, y1),
-			 9	=> (x4, y1, x3, y0),
-			 10	=> (x3, y0, x1, y0),
-			 11	=> (x1, y0, x0, y1)
-			);
+		--digit_3 : constant type_character (1 ..11) := (
+			 --1	=> (x0, y5, x1, y6),
+			 --2	=> (x1, y6, x3, y6),
+			 --3	=> (x3, y6, x4, y5),
+			 --4	=> (x4, y5, x4, y4),
+			 --5	=> (x4, y4, x3, y3),
+			 --6	=> (x3, y3, x2, y3),
+			 --7	=> (x3, y3, x4, y2),
+			 --8	=> (x4, y2, x4, y1),
+			 --9	=> (x4, y1, x3, y0),
+			 --10	=> (x3, y0, x1, y0),
+			 --11	=> (x1, y0, x0, y1)
+			--);
 
-		digit_4 : constant type_character (1 .. 3) := (
-			 1	=> (x3, y6, x3, y0),
-			 2	=> (x3, y6, x0, y3),
-			 3	=> (x0, y3, x4, y3)
-			 );
+		--digit_4 : constant type_character (1 .. 3) := (
+			 --1	=> (x3, y6, x3, y0),
+			 --2	=> (x3, y6, x0, y3),
+			 --3	=> (x0, y3, x4, y3)
+			 --);
 		
-		digit_5 : constant type_character (1 .. 9) := (
-			 1	=> (x0, y6, x0, y3),
-			 2	=> (x0, y3, x2, y4),
-			 3	=> (x2, y4, x3, y4),
-			 4	=> (x3, y4, x4, y3),
-			 5	=> (x4, y3, x4, y1),
-			 6	=> (x4, y1, x3, y0),
-			 7	=> (x3, y0, x1, y0),
-			 8	=> (x1, y0, x0, y1),
-			 9	=> (x0, y6, x4, y6)
-			);
+		--digit_5 : constant type_character (1 .. 9) := (
+			 --1	=> (x0, y6, x0, y3),
+			 --2	=> (x0, y3, x2, y4),
+			 --3	=> (x2, y4, x3, y4),
+			 --4	=> (x3, y4, x4, y3),
+			 --5	=> (x4, y3, x4, y1),
+			 --6	=> (x4, y1, x3, y0),
+			 --7	=> (x3, y0, x1, y0),
+			 --8	=> (x1, y0, x0, y1),
+			 --9	=> (x0, y6, x4, y6)
+			--);
 
-		digit_6 : constant type_character (1 ..10) := (
-			 1	=> (x4, y5, x3, y6),
-			 2	=> (x3, y6, x1, y6),
-			 3	=> (x1, y6, x0, y5),
-			 4	=> (x0, y5, x0, y1),
-			 5	=> (x0, y1, x1, y0),
-			 6	=> (x1, y0, x3, y0),
-			 7	=> (x3, y0, x4, y1),
-			 8	=> (x4, y1, x4, y2),
-			 9	=> (x4, y2, x3, y3),
-			 10	=> (x3, y3, x0, y3)
-			);
+		--digit_6 : constant type_character (1 ..10) := (
+			 --1	=> (x4, y5, x3, y6),
+			 --2	=> (x3, y6, x1, y6),
+			 --3	=> (x1, y6, x0, y5),
+			 --4	=> (x0, y5, x0, y1),
+			 --5	=> (x0, y1, x1, y0),
+			 --6	=> (x1, y0, x3, y0),
+			 --7	=> (x3, y0, x4, y1),
+			 --8	=> (x4, y1, x4, y2),
+			 --9	=> (x4, y2, x3, y3),
+			 --10	=> (x3, y3, x0, y3)
+			--);
 
-		digit_7 : constant type_character (1 .. 3) := (
-			 1	=> (x0, y6, x4, y6),
-			 2	=> (x4, y6, x1, y0),
-			 3	=> (x1, y3, x4, y3)
-			);
+		--digit_7 : constant type_character (1 .. 3) := (
+			 --1	=> (x0, y6, x4, y6),
+			 --2	=> (x4, y6, x1, y0),
+			 --3	=> (x1, y3, x4, y3)
+			--);
 
-		digit_8 : constant type_character (1 .. 15) := (
-			 1	=> (x1, y0, x3, y0),
-			 2	=> (x3, y0, x4, y1),
-			 3	=> (x4, y1, x4, y2),
-			 4	=> (x4, y2, x3, y3),
-			 5	=> (x3, y3, x1, y3),
-			 6	=> (x1, y3, x0, y2),
-			 7	=> (x0, y2, x0, y1),
-			 8	=> (x0, y1, x1, y0),
-			 9	=> (x1, y3, x0, y4),
-			 10 => (x0, y4, x0, y5),
-			 11	=> (x0, y5, x1, y6),
-			 12	=> (x1, y6, x3, y6),
-			 13	=> (x3, y6, x4, y5),
-			 14	=> (x4, y5, x4, y4),
-			 15	=> (x4, y4, x3, y3)
-			);
+		--digit_8 : constant type_character (1 .. 15) := (
+			 --1	=> (x1, y0, x3, y0),
+			 --2	=> (x3, y0, x4, y1),
+			 --3	=> (x4, y1, x4, y2),
+			 --4	=> (x4, y2, x3, y3),
+			 --5	=> (x3, y3, x1, y3),
+			 --6	=> (x1, y3, x0, y2),
+			 --7	=> (x0, y2, x0, y1),
+			 --8	=> (x0, y1, x1, y0),
+			 --9	=> (x1, y3, x0, y4),
+			 --10 => (x0, y4, x0, y5),
+			 --11	=> (x0, y5, x1, y6),
+			 --12	=> (x1, y6, x3, y6),
+			 --13	=> (x3, y6, x4, y5),
+			 --14	=> (x4, y5, x4, y4),
+			 --15	=> (x4, y4, x3, y3)
+			--);
 
-		digit_9 : constant type_character (1 ..10) := (
-			 1	=> (x4, y5, x3, y6),
-			 2	=> (x3, y6, x1, y6),
-			 3	=> (x1, y6, x0, y5),
-			 4	=> (x0, y5, x0, y4),
-			 5	=> (x0, y4, x1, y3),
-			 6	=> (x1, y3, x4, y3),
-			 7	=> (x4, y5, x4, y1),
-			 8	=> (x4, y1, x3, y0),
-			 9	=> (x3, y0, x1, y0),
-			 10	=> (x1, y0, x0, y1)
-			 );
+		--digit_9 : constant type_character (1 ..10) := (
+			 --1	=> (x4, y5, x3, y6),
+			 --2	=> (x3, y6, x1, y6),
+			 --3	=> (x1, y6, x0, y5),
+			 --4	=> (x0, y5, x0, y4),
+			 --5	=> (x0, y4, x1, y3),
+			 --6	=> (x1, y3, x4, y3),
+			 --7	=> (x4, y5, x4, y1),
+			 --8	=> (x4, y1, x3, y0),
+			 --9	=> (x3, y0, x1, y0),
+			 --10	=> (x1, y0, x0, y1)
+			 --);
 
-		-- SPECIAL CHARACTERS
-		special_plus : constant type_character (1 .. 2) := (
-			 1	=> (x1, y3, x3, y3),
-			 2	=> (x2, y4, x2, y2)
-			 );
+		---- SPECIAL CHARACTERS
+		--special_plus : constant type_character (1 .. 2) := (
+			 --1	=> (x1, y3, x3, y3),
+			 --2	=> (x2, y4, x2, y2)
+			 --);
 
-		special_dash : constant type_character (1 .. 1) := (
-			 1	=> (x1, y3, x3, y3)
-			 );
+		--special_dash : constant type_character (1 .. 1) := (
+			 --1	=> (x1, y3, x3, y3)
+			 --);
 		
-		special_underline : constant type_character (1 .. 1) := (
-			 1	=> (x0, y0, x4, y0)
-			 );
+		--special_underline : constant type_character (1 .. 1) := (
+			 --1	=> (x0, y0, x4, y0)
+			 --);
 
-		special_forward_slash : constant type_character (1 .. 1) := (
-			 1	=> (x1, y0, x3, y6)
-			 );
+		--special_forward_slash : constant type_character (1 .. 1) := (
+			 --1	=> (x1, y0, x3, y6)
+			 --);
 
-		special_colon : constant type_character (1 .. 2) := (
-			1	=> (x2, y3, x2, y3),
-			2	=> (x2, y1, x2, y1)
-			);
+		--special_colon : constant type_character (1 .. 2) := (
+			--1	=> (x2, y3, x2, y3),
+			--2	=> (x2, y1, x2, y1)
+			--);
 
 
 		-- A character is a list of lines. These lines are machine made. They are
@@ -883,7 +899,7 @@ package et_text is
 		-- constraint error will arise !
 		-- The result provides the boundaries of the text.
 		function vectorize_text (
-			content		: in pac_text_content.bounded_string;
+			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in pac_geometry_2.type_rotation;
 			position	: in pac_geometry_2.type_point;

@@ -437,7 +437,9 @@ package et_geometry_1 is
 		left, right : in type_vector) 
 		return boolean;
 
-	
+
+	-- Multiplies the components of the given
+	-- vector by the scaling factor s:
 	function scale (
 		v	: in type_vector;
 		s	: in type_float_internal)
