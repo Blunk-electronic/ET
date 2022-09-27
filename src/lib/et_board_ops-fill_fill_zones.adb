@@ -159,12 +159,26 @@ is
 	-- the clearance of a particular net (the greater value of them is applied):
 	function conductors_to_polygons (
 		zone_clearance	: in type_track_clearance;
-		layer 			: in type_signal_layer)
+		layer 			: in type_signal_layer;
+		parent_net		: in pac_nets.cursor := pac_nets.no_element)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 
 		layer_category : type_signal_layer_category;
+
+
+		-- If a parent net was given (via argument parent_net) then
+		-- this will hold the actual net name like "GND".
+		-- Otherwise it will be left empty:
+		parent_net_name : pac_net_name.bounded_string;
+
+		procedure set_parent_net_name is begin
+			if parent_net /= pac_nets.no_element then
+				parent_net_name := key (parent_net);
+			end if;
+		end set_parent_net_name;
+	
 		
 		procedure query_net (n : in pac_nets.cursor) is
 			
@@ -217,26 +231,44 @@ is
 						end if;
 				end case;
 			end query_via;
-			
-			
-		begin
-			-- Query track segments:
-			route.lines.iterate (query_line'access);
 
-			-- CS route.arcs.iterate (query_arc'access);
-			
-			-- Query vias:
-			route.vias.iterate (query_via'access);
-			
-			-- CS fill zones, ... see et_pcb.type_route
-			-- CS pads
 
-			offset_polygons (polygons, type_float_internal_positive (clearance));
+			procedure do_it is begin
+				-- Query track segments:
+				route.lines.iterate (query_line'access);
 
-			-- CS union polygons ?
-			--multi_union (polygons);
+				-- CS route.arcs.iterate (query_arc'access);
+				
+				-- Query vias:
+				route.vias.iterate (query_via'access);
+				
+				-- CS fill zones, ... see et_pcb.type_route
+				-- CS pads
+
+				offset_polygons (polygons, type_float_internal_positive (clearance));
+
+				-- CS union polygons ?
+				--multi_union (polygons);
+				
+				result.splice (before => pac_polygon_list.no_element, source => polygons);
+			end do_it;
 			
-			result.splice (before => pac_polygon_list.no_element, source => polygons);
+			
+		begin -- query_net
+			
+			-- If no parent net was given, then query all nets:
+			if parent_net = pac_nets.no_element then
+				do_it;
+			else
+				-- Otherwise skip the parent net and process all other nets:
+				if key (n) /= parent_net_name then
+					do_it;
+				--else
+					--log (text => "skipping parent net " 
+						--& enclose_in_quotes (to_string (parent_net_name)),
+						--level => log_threshold + 4);
+				end if;
+			end if;
 		end query_net;
 
 
@@ -275,7 +307,13 @@ is
 			layer_category := INNER;
 		end if;
 		
-		
+
+		-- Assigns to parent_net_name the actual name of the
+		-- parent net. Does nothing if no parent net given
+		-- by argument parent_net:
+		set_parent_net_name;
+
+		-- Query nets. Exempt the parent net (if specified by argument parent_net):
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- board texts:
@@ -337,6 +375,7 @@ is
 	end empty_basket;
 	
 
+	
 	-- Appends a list of polygons to the given basket.
 	-- NOTE: The given list will be emptied.
 	procedure put_into_basket (
@@ -349,12 +388,20 @@ is
 		--multi_union (basket);
 	end put_into_basket;
 
-	
+
+	-- Fill the given zone that is in the given layer
+	-- with the given linewidth and clearance to foreign conductor
+	-- objects. If a certain conductor object requires a greater
+	-- clearance then that clearance will prevail.
+	-- If a parent net is given then the conductor objects of this
+	-- net will be ignored so that they are embedded in the fill
+	-- zone:
 	procedure fill_zone (
 		zone		: in out type_zone'class;
 		linewidth	: in type_track_width;
 		layer 		: in et_pcb_stack.type_signal_layer;
 		clearance	: in type_track_clearance;
+		parent_net	: in pac_nets.cursor := pac_nets.no_element;
 		debug		: in boolean := false)
 	is
 		zone_polygon : type_polygon;
@@ -445,10 +492,17 @@ is
 			 & to_string (get_corner_nearest_to_origin (zone)),
 			level => log_threshold + 3);
 
+	
 		--put_line ("fill zone");
 		
 		log_indentation_up;
-		
+
+		--if parent_net /= pac_nets.no_element then
+			--log (text => "parent net " 
+				--& enclose_in_quotes (to_string (key (parent_net))),
+				 --level => log_threshold + 3);
+		--end if;
+
 		
 		-- Remove the old fill:
 		zone.islands := no_islands;
@@ -499,7 +553,8 @@ is
 		-- the zone isolation or the net clearance. The greater value is applied:
 		conductors := conductors_to_polygons (
 			zone_clearance	=> clearance,
-			layer			=> layer);
+			layer			=> layer,
+			parent_net		=> parent_net);
 
 		put_into_basket (cropping_basket, conductors);
 		--put_line ("A3");
@@ -653,7 +708,8 @@ is
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance)
+						clearance	=> get_greatest (zone.isolation, net_class.clearance),
+						parent_net	=> net_cursor
 						--debug		=> true
 						);
 				end do_it;
@@ -685,7 +741,8 @@ is
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance)
+						clearance	=> get_greatest (zone.isolation, net_class.clearance),
+						parent_net	=> net_cursor
 						);
 				end do_it;
 					
