@@ -403,10 +403,11 @@ package body et_text is
 			result : pac_vector_text_lines.list;
 			scratch : type_character_line;
 		begin
-			for l in char.segments'first .. char.segments'last loop
+			--for l in char.segments'first .. char.segments'last loop
+			for l in char'first .. char'last loop
 
-				scratch.start_point := set (char.segments (l).start_x, char.segments (l).start_y);
-				scratch.end_point   := set (char.segments (l).end_x, char.segments (l).end_y);
+				scratch.start_point := set (char (l).start_x, char (l).start_y);
+				scratch.end_point   := set (char (l).end_x,   char (l).end_y);
 					
 				--append (result, (
 					----start_point => type_point (set (char (l).start_x, char (l).start_y)),
@@ -708,76 +709,76 @@ package body et_text is
 				
 				case text (c) is
 					when 'A' => add (capital_a);
-					--when 'B' => add (capital_b);
-					--when 'C' => add (capital_c);
-					--when 'D' => add (capital_d);
-					--when 'E' => add (capital_e);
-					--when 'F' => add (capital_f);
-					--when 'G' => add (capital_g);
-					--when 'H' => add (capital_h);
-					--when 'I' => add (capital_i);
-					--when 'J' => add (capital_j);
-					--when 'K' => add (capital_k);
-					--when 'L' => add (capital_l);
-					--when 'M' => add (capital_m);
-					--when 'N' => add (capital_n);
-					--when 'O' => add (capital_o);
-					--when 'P' => add (capital_p);
-					--when 'Q' => add (capital_q);
-					--when 'R' => add (capital_r);
-					--when 'S' => add (capital_s);
-					--when 'T' => add (capital_t);
-					--when 'U' => add (capital_u);
-					--when 'V' => add (capital_v);
-					--when 'W' => add (capital_w);
-					--when 'X' => add (capital_x);
-					--when 'Y' => add (capital_y);
-					--when 'Z' => add (capital_z);
+					when 'B' => add (capital_b);
+					when 'C' => add (capital_c);
+					when 'D' => add (capital_d);
+					when 'E' => add (capital_e);
+					when 'F' => add (capital_f);
+					when 'G' => add (capital_g);
+					when 'H' => add (capital_h);
+					when 'I' => add (capital_i);
+					when 'J' => add (capital_j);
+					when 'K' => add (capital_k);
+					when 'L' => add (capital_l);
+					when 'M' => add (capital_m);
+					when 'N' => add (capital_n);
+					when 'O' => add (capital_o);
+					when 'P' => add (capital_p);
+					when 'Q' => add (capital_q);
+					when 'R' => add (capital_r);
+					when 'S' => add (capital_s);
+					when 'T' => add (capital_t);
+					when 'U' => add (capital_u);
+					when 'V' => add (capital_v);
+					when 'W' => add (capital_w);
+					when 'X' => add (capital_x);
+					when 'Y' => add (capital_y);
+					when 'Z' => add (capital_z);
 
-					--when 'a' => add (small_a);
-					--when 'b' => add (small_b);
-					--when 'c' => add (small_c);
-					--when 'd' => add (small_d);
-					--when 'e' => add (small_e);
-					--when 'f' => add (small_f);
-					--when 'g' => add (small_g);
-					--when 'h' => add (small_h);
-					--when 'i' => add (small_i);
-					--when 'j' => add (small_j);
-					--when 'k' => add (small_k);
-					--when 'l' => add (small_l);
-					--when 'm' => add (small_m);
-					--when 'n' => add (small_n);
-					--when 'o' => add (small_o);
-					--when 'p' => add (small_p);
-					--when 'q' => add (small_q);
-					--when 'r' => add (small_r);
-					--when 's' => add (small_s);
-					--when 't' => add (small_t);
-					--when 'u' => add (small_u);
-					--when 'v' => add (small_v);
-					--when 'w' => add (small_w);
-					--when 'x' => add (small_x);
-					--when 'y' => add (small_y);
-					--when 'z' => add (small_z);
+					when 'a' => add (small_a);
+					when 'b' => add (small_b);
+					when 'c' => add (small_c);
+					when 'd' => add (small_d);
+					when 'e' => add (small_e);
+					when 'f' => add (small_f);
+					when 'g' => add (small_g);
+					when 'h' => add (small_h);
+					when 'i' => add (small_i);
+					when 'j' => add (small_j);
+					when 'k' => add (small_k);
+					when 'l' => add (small_l);
+					when 'm' => add (small_m);
+					when 'n' => add (small_n);
+					when 'o' => add (small_o);
+					when 'p' => add (small_p);
+					when 'q' => add (small_q);
+					when 'r' => add (small_r);
+					when 's' => add (small_s);
+					when 't' => add (small_t);
+					when 'u' => add (small_u);
+					when 'v' => add (small_v);
+					when 'w' => add (small_w);
+					when 'x' => add (small_x);
+					when 'y' => add (small_y);
+					when 'z' => add (small_z);
 					
-					--when '0' => add (digit_0);
-					--when '1' => add (digit_1);
-					--when '2' => add (digit_2);
-					--when '3' => add (digit_3);
-					--when '4' => add (digit_4);
-					--when '5' => add (digit_5);
-					--when '6' => add (digit_6);
-					--when '7' => add (digit_7);
-					--when '8' => add (digit_8);
-					--when '9' => add (digit_9);
+					when '0' => add (digit_0);
+					when '1' => add (digit_1);
+					when '2' => add (digit_2);
+					when '3' => add (digit_3);
+					when '4' => add (digit_4);
+					when '5' => add (digit_5);
+					when '6' => add (digit_6);
+					when '7' => add (digit_7);
+					when '8' => add (digit_8);
+					when '9' => add (digit_9);
 
-					--when '+' => add (special_plus);
-					--when '-' => add (special_dash);
-					--when '_' => add (special_underline);
-					--when '/' => add (special_forward_slash);
-					--when ':' => add (special_colon);
-					--when ' ' => null;
+					when '+' => add (special_plus);
+					when '-' => add (special_dash);
+					when '_' => add (special_underline);
+					when '/' => add (special_forward_slash);
+					when ':' => add (special_colon);
+					when ' ' => null;
 					
 					when others => 
 						raise syntax_error_1 with

@@ -75,6 +75,7 @@ generic
 
 	-- The instantiated polygon package:
 	with package pac_polygons is new pac_canvas.pac_geometry_2.pac_geometry_1.polygons;
+	--with package pac_polygons is new et_geometry_1.polygons;
 
 	-- The instantiated contour package:
 	with package pac_contours is new pac_canvas.pac_geometry_2.contours;

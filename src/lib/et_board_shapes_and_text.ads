@@ -101,7 +101,7 @@ package et_board_shapes_and_text is
 
 	package pac_text_fab is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
-		pac_polygons		=> pac_polygons,											 
+		--pac_polygons		=> pac_polygons,											 
 		size_min			=> text_parameters_fab.size_min,
 		size_max			=> text_parameters_fab.size_max,
 		size_default		=> text_parameters_fab.size_default,
@@ -133,7 +133,7 @@ package et_board_shapes_and_text is
 	
 	package pac_text_doc is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
-		pac_polygons		=> pac_polygons,
+		--pac_polygons		=> pac_polygons,
 		size_min			=> text_parameters_doc.size_min,
 		size_max			=> text_parameters_doc.size_max,
 		size_default		=> text_parameters_doc.size_default,
