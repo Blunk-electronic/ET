@@ -84,7 +84,7 @@ package body et_canvas_board is
 		-- We need a list of all net names of the current module:
 		use pac_net_names_indexed;
 		net_names : constant pac_net_names_indexed.vector := 
-			get_indexed_nets (et_canvas_schematic.current_active_module);
+			get_indexed_nets (current_active_module);
 		
 	begin
 		-- Set the drill size and restring according to user specific values:
@@ -276,7 +276,7 @@ package body et_canvas_board is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
-		board_cmd (et_canvas_schematic.current_active_module, cmd, log_threshold);
+		board_cmd (current_active_module, cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -354,7 +354,7 @@ package body et_canvas_board is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
-		board_cmd (et_canvas_schematic.current_active_module, cmd, log_threshold);
+		board_cmd (current_active_module, cmd, log_threshold);
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
@@ -484,7 +484,7 @@ package body et_canvas_board is
 			end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		
-		use pac_draw_fab;
+		--use pac_draw_fab;
 	begin -- draw_text_origin
 		-- CS if text_origins_enabled then
 		
@@ -595,7 +595,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				pac_draw_fab.draw_vector_text (in_area, context, v_text,
+				draw_vector_text (in_area, context, v_text,
 					text_place.text.line_width, type_float_internal_positive (self.frame_height));
 
 			end if;
@@ -649,7 +649,7 @@ package body et_canvas_board is
 				);
 
 			-- Draw the text:
-			pac_draw_fab.draw_vector_text (in_area, context, v_text,
+			draw_vector_text (in_area, context, v_text,
 				text_place.text.line_width, type_float_internal_positive (self.frame_height));
 		end if;
 	end draw_text_being_placed_in_outline;
@@ -718,7 +718,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				pac_draw_fab.draw_vector_text (in_area, context, v_text,
+				draw_vector_text (in_area, context, v_text,
 					text_place.text.line_width, type_float_internal_positive (self.frame_height));
 			end if;
 		end if;
@@ -1031,8 +1031,6 @@ package body et_canvas_board is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is
-		use pac_draw_fab;
-		
 		lh : type_cursor_line; -- the horizontal line
 		lv : type_cursor_line; -- the vertical line
 

@@ -38,7 +38,7 @@
 with ada.text_io;				use ada.text_io;
 
 with et_text;
-with et_canvas_draw_frame;
+--with et_canvas_draw_frame;
 with et_meta;
 
 separate (et_canvas_schematic)
@@ -50,19 +50,19 @@ procedure draw_frame (
 is
 	use et_frames;
 	
-	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
-		draw_ops		=> et_canvas_schematic.pac_draw,
-		in_area			=> in_area,
-		context			=> context,
-		frame_size		=> self.get_frame.size,
-		border_width	=> self.get_frame.border_width,
-		sectors			=> self.get_frame.sectors,
-		title_block		=> type_title_block (self.get_frame.title_block_schematic), -- incl. common placeholders
-		meta			=> et_meta.type_basic (element (current_active_module).meta.schematic),
-		placeholders	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders)
-		);
+	--package pac_draw_frame is new et_canvas_draw_frame.generic_pac_draw_frame (
+		--draw_ops		=> pac_canvas,
+		--in_area			=> in_area,
+		--context			=> context,
+		--frame_size		=> self.get_frame.size,
+		--border_width	=> self.get_frame.border_width,
+		--sectors			=> self.get_frame.sectors,
+		--title_block		=> type_title_block (self.get_frame.title_block_schematic), -- incl. common placeholders
+		--meta			=> et_meta.type_basic (element (current_active_module).meta.schematic),
+		--placeholders	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders)
+		--);
 
-	use pac_draw_frame;
+	--use pac_draw_frame;
 	use pac_lines;
 
 	

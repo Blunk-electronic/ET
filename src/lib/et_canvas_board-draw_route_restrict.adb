@@ -47,7 +47,6 @@ procedure draw_route_restrict (
 	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context) 
 is
-	use pac_draw_fab;
 	use et_board_shapes_and_text.pac_text_fab;
 
 	use pac_route_restrict_lines;
@@ -208,7 +207,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+		deepest_conductor_layer (current_active_module);
 	
 	procedure draw_text_being_placed is 
 		use et_packages;
@@ -232,7 +231,7 @@ begin -- route_restrict
 -- 	put_line ("draw route restrict ...");
 	
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_items'access);
 
 	draw_text_being_placed;

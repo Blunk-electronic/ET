@@ -79,8 +79,12 @@ with system.storage_elements;	use system.storage_elements;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
+with et_geometry_1.polygons;
 with et_geometry_2;
+with et_geometry_2.contours;
+with et_text;
 with et_frames;
+with et_meta;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_colors;
@@ -167,12 +171,25 @@ generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	with package pac_geometry_2 is new et_geometry_2 (<>);
+	with package pac_polygons is new pac_geometry_2.pac_geometry_1.polygons;
+	with package pac_contours is new pac_geometry_2.contours;
+	
+	with package pac_text is new et_text.generic_pac_text (
+		-- The used text package must have been instantiated with the same shapes package:
+		pac_geometry_2	=> pac_geometry_2,
+		others			=> <>);
+
+	--use pac_text;
+	--with package pac_text is new et_text.generic_pac_text (<>);
+
+	
 	
 package pac_canvas is
 	
-	use pac_geometry_2;
-	use pac_geometry_1; -- inside pac_geometry_2
+	--use pac_geometry_2;
+	use pac_geometry_2.pac_geometry_1; -- inside pac_geometry_2
 
+	use pac_contours;
 
 	
 	window 					: gtk_window; -- the main window.	
@@ -382,7 +399,7 @@ package pac_canvas is
 
 	-- Converts from drawing point to model point:
 	function to_model_point (
-		point	: in type_point)
+		point	: in pac_geometry_2.type_point)
 		return type_model_point;
 
 
@@ -525,7 +542,7 @@ package pac_canvas is
 	-- Returns the position of the pointer in the drawing:
 	function mouse_position (
 		self	: not null access type_view'class)
-		return type_point;
+		return pac_geometry_2.type_point;
 
 	
 	function vtm (
@@ -579,13 +596,13 @@ package pac_canvas is
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_model_point)
-		return type_point is abstract;
+		return pac_geometry_2.type_point is abstract;
 
 	
 	-- Converts a drawing point to a model point. See comments on function model_to_drawing.
 	function drawing_to_model (
 		self			: not null access type_view;
-		drawing_point	: in type_point)	
+		drawing_point	: in pac_geometry_2.type_point)	
 		return type_model_point is abstract;
 
 	
@@ -667,12 +684,12 @@ package pac_canvas is
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.
-	function convert_x (x : in pac_geometry_1.type_float_internal) 
+	function convert_x (x : in type_float_internal) 
 		return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the view.	
 	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.	
-	function convert_y (y : in pac_geometry_1.type_float_internal) 
+	function convert_y (y : in type_float_internal) 
 		return type_view_coordinate renames convert_x;
 	
 
@@ -683,8 +700,8 @@ package pac_canvas is
 	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
 	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
 	function lower_grid_coordinate (
-		coordinate	: in type_distance;
-		grid		: in type_distance_grid)
+		coordinate	: in pac_geometry_2.type_distance;
+		grid		: in pac_geometry_2.type_distance_grid)
 		return type_view_coordinate;
 
 	
@@ -696,8 +713,8 @@ package pac_canvas is
 	-- Returns the given point x/y rounded to the current grid.
 	function snap_to_grid (
 		self	: not null access type_view'class;
-		point	: in type_point) 
-		return type_point;
+		point	: in pac_geometry_2.type_point) 
+		return pac_geometry_2.type_point;
 
 	
 	-- This procedure draws a grid on the given context for the given
@@ -706,7 +723,7 @@ package pac_canvas is
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_bounding_box;  -- the area of the drawing to be displayed
-		grid	: in type_grid;		
+		grid	: in pac_geometry_2.type_grid;		
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color);
@@ -716,7 +733,7 @@ package pac_canvas is
 	-- Uses the current scale and leaves it as it is.
 	procedure center_on (
 		self		: not null access type_view'class;
-		center_on	: type_point); -- in drawing
+		center_on	: pac_geometry_2.type_point); -- in drawing
 
 	
 	procedure zoom_in (
@@ -734,7 +751,7 @@ package pac_canvas is
 -- CURSOR
 	
 	type type_cursor is record
-		position	: type_point;
+		position	: pac_geometry_2.type_point;
 		-- CS blink, color, ...
 	end record;
 
@@ -742,13 +759,15 @@ package pac_canvas is
 
 	type type_cursor_direction is (RIGHT, LEFT, UP, DOWN);
 
+	
 	-- Moves the given cursor relative/absolute by/to the given position.
 	procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
-		position	: in type_point) is null;
+		position	: in pac_geometry_2.type_point) is null;
 
+	
 	-- Moves the given cursor in the given direction by the current grid.
 	procedure move_cursor (
 		self		: not null access type_view;
@@ -760,6 +779,7 @@ package pac_canvas is
 	procedure shift_area (
 		self		: not null access type_view'class;
 		cursor		: in type_cursor);
+
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
@@ -767,27 +787,32 @@ package pac_canvas is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
+	
 	-- Returns the grid of the current active module
 	-- scaled by a multiplier.
 	-- The multiplier depends on the current grid_density (COARSE,NORMAL,FINE):
 	function get_grid (
 		self : not null access type_view)
-		return type_grid is abstract;
+		return pac_geometry_2.type_grid is abstract;
+
 	
 	-- Returns the frame:
 	function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame is abstract;
+
 	
 	-- Returns the height of the drawing frame:
 	function frame_height (
 		self : not null access type_view)
 		return type_float_internal_positive is abstract;
 
+	
 	-- Returns the width of the drawing frame:
 	function frame_width (
 		self : not null access type_view)
 		return type_float_internal_positive is abstract;
+
 	
 	-- Returns the bounding box of the drawing frame:
 	function frame_bounding_box (
@@ -820,12 +845,12 @@ package pac_canvas is
 
 	procedure evaluate_mouse_position (
 		self	: not null access type_view;
-		point	: in type_point) is null;
+		point	: in pac_geometry_2.type_point) is null;
 	
 	procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
-		point	: in type_point) is null;
+		point	: in pac_geometry_2.type_point) is null;
 
 
 	
@@ -873,7 +898,7 @@ package pac_canvas is
 	-- is always on a grid position (no snap required).
 	function tool_position (
 		view : not null access type_view'class)
-		return type_point;
+		return pac_geometry_2.type_point;
 
 	
 	
@@ -935,6 +960,247 @@ package pac_canvas is
 	procedure save_drawing (
 		self : not null access type_view) is null;
 
+
+
+
+	
+--PRIMITIVE DRAW OPERATIONS------------------
+
+	function make_bounding_box (
+		height		: in type_float_internal;
+		boundaries	: in type_boundaries)
+		return type_bounding_box;
+
+	
+	-- This procedure draws the given line on the given context.
+	-- The line is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The line will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the line would be drawn in any case.
+	procedure draw_line (
+		area	: in type_bounding_box;	
+		context	: in type_draw_context;
+		line	: in pac_geometry_2.pac_geometry_1.type_line;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
+		width	: in pac_geometry_2.type_distance_positive;
+		height	: in type_float_internal_positive);
+		
+
+	-- This procedure draws the given arc on the given context.
+	-- The arc is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The arc will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the arc would be drawn in any case.
+	procedure draw_arc (
+		area	: in type_bounding_box;
+		context	: in type_draw_context;
+		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
+		width	: in pac_geometry_2.type_distance_positive;
+		height	: in type_float_internal_positive);
+
+	
+	-- This procedure draws the given circle on the given context.
+	-- The circle is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The circle will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the circle would be drawn in any case.
+	-- If the circle is filled, the line width will be set to zero
+	-- and left with this setting.
+	procedure draw_circle (
+		area	: in type_bounding_box;
+		context	: in type_draw_context;
+		circle	: in pac_geometry_2.type_circle'class;
+		filled	: in type_filled;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
+		width	: in pac_geometry_2.type_distance_positive;
+		height	: in type_float_internal_positive);
+		-- CS fill style ?
+
+
+	
+	procedure draw_contour (
+		area	: in type_bounding_box;
+		context	: in type_draw_context;
+		contour	: in type_contour'class;
+		filled	: in type_filled;
+		-- CS fill style
+
+		-- The line width is used for calculating the boundaries
+		-- of the segments. 
+		-- The width for the actual drawing must be set by the caller.
+		width	: in pac_geometry_2.type_distance_positive;
+		
+		height	: in type_float_internal_positive;
+
+		-- This flag is set if the contour has been drawn
+		-- because it is inside the given area:
+		drawn	: in out boolean);
+
+
+	procedure draw_contour_with_circular_cutout (
+		area			: in type_bounding_box;
+		context			: in type_draw_context;
+		outer_border	: in type_contour'class;
+		inner_border	: in pac_geometry_2.type_circle'class;
+		height			: in type_float_internal_positive);
+
+	
+	procedure draw_contour_with_arbitrary_cutout (
+		area			: in type_bounding_box;
+		context			: in type_draw_context;
+		outer_border	: in type_contour'class;
+		inner_border	: in type_contour'class;
+		height			: in type_float_internal_positive);
+	
+	
+	-- This procedure draws the a rectangle on the given context.
+	-- The rectangle is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The rectangle will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the rectangle would be drawn in any case.
+	procedure draw_rectangle (
+		area			: in type_bounding_box;
+		context			: in type_draw_context;
+		position		: in pac_geometry_2.type_point;	-- position of the rectangle (lower left corner)
+		width			: in type_float_internal_positive; -- widht of the rectangle
+		height			: in type_float_internal_positive; -- height of the rectangle
+		frame_height	: in type_float_internal_positive;
+		extend_boundaries	: in boolean := false;
+		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default);
+		-- CS fill style ?
+
+
+
+	
+-- TEXT
+	use et_text;
+	use pac_text;
+	
+	conversion_factor_mm_to_pt : constant gdouble := 1.53; -- CS use exact factor
+	
+	function to_points (size : in pac_text.type_text_size)
+		return gdouble;
+
+	
+	-- Draws a text right in the view.
+	-- Does not care about area and bounding box. It is assumed that the calling
+	-- unit has decided whether the text is to be drawn or not. No area check here.
+	procedure draw_text (
+		context		: in type_draw_context;
+		content		: in pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
+		x,y			: in gdouble; -- the anchor point in the view
+		origin		: in boolean; -- when true, an origin is drawn at the anchor point
+		rotation	: in pac_geometry_2.type_rotation;
+		alignment	: in type_text_alignment);
+
+	
+	-- Computes for the given text content, size and font the extents.
+	function get_text_extents (
+		context		: in type_draw_context;
+		content		: in pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font)
+		return cairo_text_extents;
+
+	
+	-- Draws a text in the drawing plane.
+	-- Draws the text in case it is inside the given area or if the
+	-- text intersects the given area.
+	-- If area is no_rectangle then the text would be drawn in any case.
+	procedure draw_text (
+		area		: in type_bounding_box; -- in model plane
+		context		: in type_draw_context;
+		content		: in pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
+		position	: in pac_geometry_2.type_point; -- the anchor point in the drawing, the origin
+		origin		: in boolean; -- when true, an origin is drawn at the anchor point
+		rotation	: in pac_geometry_2.type_rotation;
+		alignment	: in type_text_alignment;
+		height		: in type_float_internal_positive); -- the height of the drawing frame
+
+	
+	-- Draw a vectorized text:
+	procedure draw_vector_text (
+		area	: in type_bounding_box;
+		context	: in type_draw_context;
+		text	: in type_vector_text;
+
+		-- The line width is used for calculating the boundaries
+		-- of the line segments:
+		width	: in pac_geometry_2.type_distance_positive;
+		height	: in type_float_internal_positive);
+
+
+
+-------------
+	-- frame
+
+	-- Draws the lines of the title block:
+	procedure draw_title_block_lines (
+		area		: in type_bounding_box;
+		context		: in type_draw_context;	
+		lines		: in et_frames.pac_lines.list;
+		tb_pos		: in et_frames.type_position;
+		frame_size	: in et_frames.type_frame_size);
+
+	
+	-- Draws the outer an inder border of the frame:
+	procedure draw_border ( -- CS rename to draw_frame_border
+		area			: in type_bounding_box;
+		context			: in type_draw_context;	
+		frame_size		: in et_frames.type_frame_size;
+		border_width	: in et_frames.type_border_width;
+		height			: in et_frames.type_distance); -- CS no need. already in frame_size
+
+
+	-- The sector delimiters are short lines between outer an 
+	-- inner border of the frame.
+	-- Between the delimiters are the row and column indexes.
+	procedure draw_sector_delimiters (
+		area			: in type_bounding_box;
+		context			: in type_draw_context;	
+		sectors			: in et_frames.type_sectors;
+		frame_size		: in et_frames.type_frame_size;
+		border_width	: in et_frames.type_border_width);
+
+	
+		-- Draws a single text of the title block.
+	-- The line position is relative to the lower left corner of the title block.	
+	procedure draw_text ( -- CS rename to draw_text_title_block
+		area	: in type_bounding_box;
+		context	: in type_draw_context;
+		content	: in pac_text_content.bounded_string;
+		size	: in et_frames.type_text_size;
+		font	: in type_font;
+		pos		: in et_frames.type_position;
+		tb_pos	: in et_frames.type_position;
+		height	: in et_frames.type_distance);
+
+	
+
+	-- Draw common placeholders. They apply to both schematic and layout.
+	-- Common placeholders are project name, module file name and assembly variant.
+	-- Draws other texts such as "approved" or "edited". Such texts have no placeholders:
+	procedure draw_texts ( -- CS rename to draw_title_block_texts
+		area		: in type_bounding_box;
+		context		: in type_draw_context;
+		ph_common	: in et_frames.type_placeholders_common;
+		ph_basic	: in et_frames.type_placeholders_basic;
+		texts		: in et_frames.pac_texts.list;
+		meta		: in et_meta.type_basic;
+		tb_pos		: in et_frames.type_position;
+		height		: in et_frames.type_distance);
+	
 	
 private
 

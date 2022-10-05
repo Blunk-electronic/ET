@@ -90,6 +90,13 @@ package et_project.modules is
 
 	generic_modules : pac_generic_modules.map;
 
+
+	-- The current active module is stored here. Whenever objects of the schematic
+	-- or board are to be drawn, this variable must be read.
+	current_active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
+
+
+	
 	-- Returns true if the module with the given name exists in container modules.
 	function exists (module : in pac_module_name.bounded_string) return boolean;
 

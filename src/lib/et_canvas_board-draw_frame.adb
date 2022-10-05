@@ -38,7 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
 with et_text;
-with et_canvas_draw_frame;
+--with et_canvas_draw_frame;
 with et_meta;
 
 separate (et_canvas_board)
@@ -51,19 +51,24 @@ is
 	use et_frames;
 	use et_canvas_schematic;
 	
-	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
-		draw_ops		=> pac_draw_fab,
-		in_area			=> in_area,
-		context			=> context,
-		frame_size		=> self.get_frame.size,
-		border_width	=> self.get_frame.border_width,
-		sectors			=> self.get_frame.sectors,
-		title_block		=> type_title_block (self.get_frame.title_block_pcb), -- incl. common placeholders
-		meta			=> et_meta.type_basic (element (current_active_module).meta.board),
-		placeholders	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders)
-		);
+	--package pac_draw_frame is new et_canvas_draw_frame.generic_pac_draw_frame (
+		----draw_ops		=> pac_draw_fab,
+		--draw_ops		=> pac_canvas,
+		--in_area			=> in_area,
+		--context			=> context,
+		--frame_size		=> self.get_frame.size,
+		--border_width	=> self.get_frame.border_width,
+		--sectors			=> self.get_frame.sectors,
+		--title_block		=> type_title_block (self.get_frame.title_block_pcb), -- incl. common placeholders
+		--meta			=> et_meta.type_basic (element (current_active_module).meta.board),
+		--placeholders	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders)
+		--);
 
-	use pac_draw_frame;
+	--use pac_draw_frame;
+
+	frame_size   : et_frames.type_frame_size renames self.get_frame.size;
+	frame_height : et_frames.type_distance renames self.get_frame.size.y;
+	title_block_position : et_frames.type_position renames self.get_frame.title_block_pcb.position;
 
 	
 	procedure draw_cam_markers is
@@ -78,80 +83,127 @@ is
 		-- will be displayed at all.
 		top_enabled, bottom_enabled : boolean := false;
 
+		
 		procedure evaluate_face is begin
 
 			-- Draw the CAM marker "FACE:" or "SIDE:" if a top or bottom layers is enabled.
 			if top_enabled or bottom_enabled then
 				draw_text (
+					area	=> in_area,
+					context	=> context,		  
 					content	=> to_content (to_string (cms.face.content)), -- "FACE:" or "SIDE:"
 					size	=> cms.face.size,
 					font	=> font_placeholders,
-					pos		=> cms.face.position);
+					pos		=> cms.face.position,
+					tb_pos	=> title_block_position,
+					height	=> frame_height
+					);
 
 				-- Draw the face like "TOP" or "BOTTOM":
 				if top_enabled and bottom_enabled then
 					draw_text (
+						area	=> in_area,
+						context	=> context,		  
 						content	=> to_content (type_face'image (TOP) & " & " & type_face'image (BOTTOM)), -- "TOP & BOTTOM"
-						size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
+						size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size, -- CS use renames
 						font	=> font_placeholders,
-						pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position);
+						pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
+						tb_pos	=> title_block_position,
+						height	=> frame_height);
+
 					
 				elsif top_enabled then
 						draw_text (
+							area	=> in_area,
+							context	=> context,		  
 							content	=> to_content (type_face'image (TOP)), -- "TOP"
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
-							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position);
+							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
+							tb_pos	=> title_block_position,
+							height	=> frame_height);
+							
 
 				elsif bottom_enabled then
 						draw_text (
+							area	=> in_area,
+							context	=> context,		  
 							content	=> to_content (type_face'image (BOTTOM)), -- "BOTTOM"
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
-							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position);
+							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
+							tb_pos	=> title_block_position,
+							height	=> frame_height);
+							
 				end if;
 			end if;
 		end evaluate_face;
+
 		
 		procedure silkscreen is begin
 			draw_text (
+				area	=> in_area,
+				context	=> context,		  
 				content	=> to_content (to_string (cms.silk_screen.content)),
 				size	=> cms.silk_screen.size,
 				font	=> font_placeholders,
-				pos		=> cms.silk_screen.position);
+				pos		=> cms.silk_screen.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end silkscreen;
+			
 
 		procedure assy_doc is begin
 			draw_text (
+				area	=> in_area,
+				context	=> context,		  
 				content	=> to_content (to_string (cms.assy_doc.content)),
 				size	=> cms.assy_doc.size,
 				font	=> font_placeholders,
-				pos		=> cms.assy_doc.position);
+				pos		=> cms.assy_doc.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end assy_doc;
 
+		
 		procedure keepout is begin
 			draw_text (
+				area	=> in_area,
+				context	=> context,		  
 				content	=> to_content (to_string (cms.keepout.content)),
 				size	=> cms.keepout.size,
 				font	=> font_placeholders,
-				pos		=> cms.keepout.position);
+				pos		=> cms.keepout.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end keepout;
 
+		
 		procedure stop_mask is begin
 			draw_text (
+				area	=> in_area,
+				context	=> context,	
 				content	=> to_content (to_string (cms.stop_mask.content)),
 				size	=> cms.stop_mask.size,
 				font	=> font_placeholders,
-				pos		=> cms.stop_mask.position);
+				pos		=> cms.stop_mask.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end stop_mask;
 
+		
 		procedure stencil is begin
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.stencil.content)),
 				size	=> cms.stencil.size,
 				font	=> font_placeholders,
-				pos		=> cms.stencil.position);
+				pos		=> cms.stencil.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);
 		end stencil;
+
 		
 	begin -- draw_cam_markers
 
@@ -191,19 +243,27 @@ is
 		-- plated millings
 		if plated_millings_enabled then
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.plated_millings.content)),
 				size	=> cms.plated_millings.size,
 				font	=> font_placeholders,
-				pos		=> cms.plated_millings.position);
+				pos		=> cms.plated_millings.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);	
 		end if;
 
 		-- outline
 		if outline_enabled then
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.pcb_outline.content)),
 				size	=> cms.pcb_outline.size,
 				font	=> font_placeholders,
-				pos		=> cms.pcb_outline.position);
+				pos		=> cms.pcb_outline.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);
 		end if;
 
 		-- stop mask
@@ -231,39 +291,56 @@ is
 		-- route restrict
 		if route_restrict_enabled then
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.route_restrict.content)),
 				size	=> cms.route_restrict.size,
 				font	=> font_placeholders,
-				pos		=> cms.route_restrict.position);
+				pos		=> cms.route_restrict.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);	
 		end if;
 
 		-- via restrict
 		if via_restrict_enabled then
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.via_restrict.content)),
 				size	=> cms.via_restrict.size,
 				font	=> font_placeholders,
-				pos		=> cms.via_restrict.position);
+				pos		=> cms.via_restrict.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end if;
 
 		-- conductor layers
 		if conductors_enabled then
 			draw_text (
+  				area	=> in_area,
+				context	=> context,
 				content	=> to_content (to_string (cms.signal_layer.content)), -- "SGNL_LYR:"
 				size	=> cms.signal_layer.size,
 				font	=> font_placeholders,
-				pos		=> cms.signal_layer.position);
+				pos		=> cms.signal_layer.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 
 			draw_text (
+				area	=> in_area,
+				context	=> context,
 				content	=> to_content (enabled_conductor_layers), -- "1,2,5..32"
 				size	=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.size,
 				font	=> font_placeholders,
-				pos		=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.position);
+				pos		=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height);				
 		end if;
 
 		evaluate_face;
 		
 	end draw_cam_markers;
+	
 	
 begin -- draw_frame
 --		put_line ("draw frame ...");
@@ -283,17 +360,43 @@ begin -- draw_frame
 
 		
 		-- frame border
-		draw_border;
+		draw_border (
+			area			=> in_area,
+			context			=> context,
+			frame_size		=> frame_size,
+			border_width	=> self.get_frame.border_width,
+			height			=> frame_height);
 
 		-- title block lines
-		pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
+		--pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
+
+		draw_title_block_lines (
+			area		=> in_area,
+			context		=> context,
+			lines		=> self.get_frame.title_block_pcb.lines,
+			tb_pos		=> title_block_position,
+			frame_size	=> frame_size);
+								   
 		
 		-- draw the sector delimiters
-		draw_sector_delimiters;
+		draw_sector_delimiters (
+			area			=> in_area,
+			context			=> context,
+			sectors			=> self.get_frame.sectors,
+			frame_size		=> frame_size,
+			border_width	=> self.get_frame.border_width);
 
 		-- draw common placeholders and other texts
-		draw_texts;
-		
+		draw_texts (
+			area		=> in_area,
+			context		=> context,
+			ph_common	=> self.get_frame.title_block_pcb.placeholders,
+			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders),
+			texts		=> self.get_frame.title_block_pcb.texts,
+			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
+			tb_pos		=> title_block_position,
+			height		=> frame_height);
+
 		draw_cam_markers;
 		
 	end if;

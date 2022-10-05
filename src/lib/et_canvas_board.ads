@@ -72,7 +72,7 @@ with et_schematic;
 with et_frames;
 
 with et_canvas_general;				use et_canvas_general;
-with et_canvas_primitive_draw_ops;
+--with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -102,28 +102,30 @@ package et_canvas_board is
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2);
-
+		pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2,
+		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
+		pac_contours	=> et_board_shapes_and_text.pac_contours,
+		pac_text		=> et_board_shapes_and_text.pac_text_fab); -- CS
 	use pac_canvas;	
 
 	
 	-- In order to draw objects of packages and board 
 	-- that are fabrication relevant:
-	package pac_draw_fab is new et_canvas_primitive_draw_ops.pac_draw (
-		pac_canvas		=> pac_canvas,
-		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		pac_contours	=> et_board_shapes_and_text.pac_contours,
-		pac_text		=> et_board_shapes_and_text.pac_text_fab);
+	--package pac_draw_fab is new et_canvas_primitive_draw_ops.pac_draw (
+		--pac_canvas		=> pac_canvas,
+		--pac_polygons	=> et_board_shapes_and_text.pac_polygons,
+		--pac_contours	=> et_board_shapes_and_text.pac_contours,
+		--pac_text		=> et_board_shapes_and_text.pac_text_fab);
 	
 
 
 	--In order to draw objects of packages and board 
 	--that are for documentation (not fabrication relevant):
-	package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
-		pac_canvas		=> pac_canvas,
-		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		pac_contours	=> et_board_shapes_and_text.pac_contours,
-		pac_text		=> et_board_shapes_and_text.pac_text_doc);
+	--package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
+		--pac_canvas		=> pac_canvas,
+		--pac_polygons	=> et_board_shapes_and_text.pac_polygons,
+		--pac_contours	=> et_board_shapes_and_text.pac_contours,
+		--pac_text		=> et_board_shapes_and_text.pac_text_doc);
 
 
 

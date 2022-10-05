@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -101,7 +101,7 @@ package et_frames is
 	function to_distance (distance : in string) return type_distance;
 	
 	type type_frame_size is record
-		x	: type_distance := 280;
+		x	: type_distance := 280; -- CS type_distance_positive ?
 		y	: type_distance := 200;
 	end record;
 

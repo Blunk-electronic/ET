@@ -61,7 +61,7 @@ is
 	
 	procedure query_line (c : in pac_keepout_lines.cursor) is begin
 		
-		pac_draw_fab.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> to_line_fine (element (c)),
@@ -73,7 +73,7 @@ is
 	
 	procedure query_arc (c : in pac_keepout_arcs.cursor) is begin
 		
-		pac_draw_fab.draw_arc (
+		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> to_arc_fine (element (c)),
@@ -87,7 +87,7 @@ is
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal not-filled circle:
-				pac_draw_fab.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -97,7 +97,7 @@ is
 				
 			when YES =>
 				-- We draw a solid filled circle:
-				pac_draw_fab.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -113,7 +113,7 @@ is
 	procedure query_polygon (c : in pac_keepout_contours.cursor) is 
 		drawn : boolean := false;
 	begin
-		pac_draw_fab.draw_contour (
+		draw_contour (
 			area	=> in_area,
 			context	=> context,
 			contour	=> element (c),
@@ -130,7 +130,7 @@ is
 	begin
 		set_color_background (context.cr);
 		
-		pac_draw_fab.draw_contour (
+		draw_contour (
 			area	=> in_area,
 			context	=> context,
 			contour	=> element (c),
@@ -149,7 +149,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 		
 		-- Draw the text:
-		pac_draw_fab.draw_vector_text (in_area, context, element (c).vectors,
+		draw_vector_text (in_area, context, element (c).vectors,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -188,7 +188,7 @@ begin -- draw_keepout
 -- 	put_line ("draw board keepout ...");
 	
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_items'access);
 
 	draw_text_being_placed (self, in_area, context, face, LAYER_CAT_KEEPOUT);

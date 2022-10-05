@@ -57,7 +57,6 @@ is
 	use pac_contour_texts;
 	
 	procedure query_segment (c : in pac_segments.cursor) is 
-		use pac_draw_fab;
 	begin
 		case element (c).shape is
 			when LINE =>
@@ -86,7 +85,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		pac_draw_fab.draw_vector_text (in_area, context, element (c).vectors,
+		draw_vector_text (in_area, context, element (c).vectors,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -98,7 +97,7 @@ is
 	is begin
 		if module.board.contours.outline.contour.circular then
 
-			pac_draw_fab.draw_circle (
+			draw_circle (
 				area		=> in_area,
 				context		=> context,
 				circle		=> module.board.contours.outline.contour.circle,
@@ -124,7 +123,7 @@ is
 		procedure query_hole (c : in pac_holes.cursor) is begin
 			if element (c).contour.circular then
 
-				pac_draw_fab.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c).contour.circle,
@@ -157,13 +156,13 @@ begin -- draw_outline
 	-- NOT set here.
 	
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_outline_segments'access);
 
 	draw_text_being_placed_in_outline (self, in_area, context);
 	
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_holes'access);
 
 	

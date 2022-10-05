@@ -82,7 +82,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
-		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+		deepest_conductor_layer (current_active_module);
 	
 	procedure draw_package (
 		device_name		: in et_devices.type_device_name; -- IC13, C4
@@ -185,8 +185,8 @@ is
 				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
-				pac_draw_fab.draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
-				pac_draw_fab.draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
+				draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
+				draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
@@ -229,7 +229,7 @@ is
 				);
 
 			-- Draw the content of the placeholder:
-			pac_draw_fab.draw_vector_text (in_area, context, v_text,
+			draw_vector_text (in_area, context, v_text,
 				t.line_width, self.frame_height);
 			
 		end draw_text_with_content;
@@ -254,7 +254,7 @@ is
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -291,7 +291,7 @@ is
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -333,13 +333,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								pac_draw_fab.draw_circle (in_area, context, circle,
+								draw_circle (in_area, context, circle,
 										circle.filled, circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										pac_draw_fab.draw_circle (in_area, context, circle,
+										draw_circle (in_area, context, circle,
 											circle.filled, zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -390,14 +390,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+								draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
+								draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								-- CS hatching ?
 						end case;
@@ -445,7 +445,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 					end if;
 
@@ -516,7 +516,7 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						pac_draw_fab.draw_vector_text (in_area, context, v_text,
+						draw_vector_text (in_area, context, v_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
@@ -638,7 +638,7 @@ is
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -673,7 +673,7 @@ is
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -715,13 +715,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
+								draw_circle (in_area, context, circle, circle.filled, 
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
+										draw_circle (in_area, context, circle, circle.filled,
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -772,14 +772,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+								draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
+								draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -827,7 +827,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -900,7 +900,7 @@ is
 							);
 
 						-- Draw the content of the placeholder:
-						pac_draw_fab.draw_vector_text (in_area, context, v_text,
+						draw_vector_text (in_area, context, v_text,
 							ph.line_width, self.frame_height);
 						
 					end if;
@@ -1015,7 +1015,7 @@ is
 						move_by (line, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), keepout_line_width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), keepout_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -1051,7 +1051,7 @@ is
 						move_by (arc, to_distance_relative (package_position.place));
 
 						set_color_keepout (context.cr, f);
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), keepout_line_width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), keepout_line_width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1090,7 +1090,7 @@ is
 
 						set_color_keepout (context.cr, f);
 
-						pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
+						draw_circle (in_area, context, circle, circle.filled,
 							keepout_line_width, self.frame_height);
 						
 					end if;
@@ -1135,7 +1135,7 @@ is
 
 						set_color_keepout (context.cr, f);
 
-						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+						draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1178,7 +1178,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1246,7 +1246,7 @@ is
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1283,7 +1283,7 @@ is
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1325,13 +1325,13 @@ is
 						case circle.filled is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
+								draw_circle (in_area, context, circle, circle.filled,
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled,
+										draw_circle (in_area, context, circle, circle.filled,
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -1382,14 +1382,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+								draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
+								draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -1437,7 +1437,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1541,7 +1541,7 @@ is
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1578,7 +1578,7 @@ is
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -1621,13 +1621,13 @@ is
 							when NO =>
 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
 								
-								pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
+								draw_circle (in_area, context, circle, circle.filled, 
 									circle.border_width, self.frame_height);
 
 							when YES =>
 								case circle.fill_style is
 									when SOLID =>
-										pac_draw_fab.draw_circle (in_area, context, circle, circle.filled, 
+										draw_circle (in_area, context, circle, circle.filled, 
 											zero, self.frame_height);
 
 									when HATCHED => null; -- CS
@@ -1678,14 +1678,14 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+								draw_contour (in_area, context, polygon, YES,
 									zero, self.frame_height, drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 
-								pac_draw_fab.draw_contour (in_area, context, polygon, NO,
+								draw_contour (in_area, context, polygon, NO,
 									polygon.hatching.border_width, self.frame_height, drawn);
 								
 								-- CS hatching ?
@@ -1733,7 +1733,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -1795,7 +1795,7 @@ is
 						if flipped then mirror (line, Y); end if;
 						
 						move_by (line, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), route_restrict_line_width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), route_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -1827,7 +1827,7 @@ is
 						if flipped then mirror (arc, Y); end if;
 						
 						move_by (arc, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), route_restrict_line_width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), route_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -1861,7 +1861,7 @@ is
 						if flipped then mirror (circle, Y); end if;
 						
 						move_by (circle, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_circle (in_area, context, circle, NO, route_restrict_line_width, self.frame_height);
+						draw_circle (in_area, context, circle, NO, route_restrict_line_width, self.frame_height);
 						-- NO means circle is not filled
 					end if;
 
@@ -1898,7 +1898,7 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+						draw_contour (in_area, context, polygon, YES,
 							route_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
@@ -1939,7 +1939,7 @@ is
 						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
@@ -2037,7 +2037,7 @@ is
 						if flipped then mirror (line, Y); end if;
 						
 						move_by (line, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), via_restrict_line_width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), via_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -2071,7 +2071,7 @@ is
 						if flipped then mirror (arc, Y); end if;
 						
 						move_by (arc, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), via_restrict_line_width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), via_restrict_line_width, self.frame_height);
 					end if;
 
 				end if;
@@ -2105,7 +2105,7 @@ is
 						if flipped then mirror (circle, Y); end if;
 						
 						move_by (circle, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_circle (in_area, context, circle, NO, via_restrict_line_width, self.frame_height);
+						draw_circle (in_area, context, circle, NO, via_restrict_line_width, self.frame_height);
 						-- NO means circle is not filled
 					end if;
 
@@ -2142,7 +2142,7 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position.place));
-						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+						draw_contour (in_area, context, polygon, YES,
 							via_restrict_line_width, self.frame_height, drawn);
 						-- YES means polygon is filled
 					end if;
@@ -2182,7 +2182,7 @@ is
 						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						-- YES means cutout is filled, zero means line width
 					end if;
@@ -2340,7 +2340,7 @@ is
 					
 				move_by (circle, to_distance_relative (package_position.place));
 
-				pac_draw_fab.draw_circle (in_area, context, circle, NO,
+				draw_circle (in_area, context, circle, NO,
 					pcb_contour_line_width, self.frame_height);
 
 			end draw_circle;
@@ -2360,7 +2360,7 @@ is
 						
 						move_by (l, to_distance_relative (package_position.place));
 
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (l),
+						draw_line (in_area, context, to_line_fine (l),
 							pcb_contour_line_width, self.frame_height);
 
 						
@@ -2373,7 +2373,7 @@ is
 						
 						move_by (a, to_distance_relative (package_position.place));
 
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (a), 
+						draw_arc (in_area, context, to_arc_fine (a), 
 							pcb_contour_line_width, self.frame_height);
 						
 				end case;
@@ -2447,7 +2447,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (line.width));
-						pac_draw_fab.draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -2486,7 +2486,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
-						pac_draw_fab.draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 					
 				end if;
@@ -2528,7 +2528,7 @@ is
 
 						set_line_width (context.cr, type_view_coordinate (circle.width));
 
-						pac_draw_fab.draw_circle (in_area, context, circle, NO,
+						draw_circle (in_area, context, circle, NO,
 							circle.width, self.frame_height);
 
 					end if;
@@ -2576,7 +2576,7 @@ is
 
 						set_color_conductor (context.cr, ly);
 
-						pac_draw_fab.draw_contour (in_area, context, polygon, YES,
+						draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
 -- CS
 -- 		easing : type_easing;
@@ -2682,7 +2682,7 @@ is
 
 						set_color_background (context.cr);
 
-						pac_draw_fab.draw_contour (in_area, context, cutout, YES,
+						draw_contour (in_area, context, cutout, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
@@ -2747,7 +2747,7 @@ is
 					);
 
 				-- Draw the content of the placeholder:
-				pac_draw_fab.draw_vector_text (in_area, context, v_text,
+				draw_vector_text (in_area, context, v_text,
 					t.line_width, self.frame_height);
 				
 			end draw_conductor_text_with_content;
@@ -2845,7 +2845,7 @@ is
 			begin
 				set_color_tht_pad (context.cr);
 
-				pac_draw_fab.draw_contour_with_circular_cutout (
+				draw_contour_with_circular_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2861,7 +2861,7 @@ is
 			is begin
 				set_color_tht_pad (context.cr);
 
-				pac_draw_fab.draw_contour_with_arbitrary_cutout (
+				draw_contour_with_arbitrary_cutout (
 					area			=> in_area,
 					context			=> context,
 					outer_border	=> outer_border,
@@ -2884,7 +2884,7 @@ is
 				begin
 					set_color_terminal_name (context.cr);
 					
-					pac_draw_fab.draw_text (
+					draw_text (
 						area		=> in_area,
 						context		=> context,
 						content		=> to_content (name),
@@ -2929,7 +2929,7 @@ is
 							
 							set_color_terminal_name (context.cr);
 							
-							pac_draw_fab.draw_text (
+							draw_text (
 								area		=> in_area,
 								context		=> context,
 								content		=> to_content (name),
@@ -2985,7 +2985,7 @@ is
 
 								set_color_conductor (context.cr, ly);
 								
-								pac_draw_fab.draw_contour (in_area, context, pad_outline, YES,
+								draw_contour (in_area, context, pad_outline, YES,
 									zero, self.frame_height, drawn);
 
 								-- draw the terminal name
@@ -3031,7 +3031,7 @@ is
 
 								set_color_stop_mask (context.cr, f, self.scale);
 
-								pac_draw_fab.draw_contour (in_area, context, stop_mask_contours, YES,
+								draw_contour (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
 
@@ -3081,7 +3081,7 @@ is
 								
 								set_color_stencil (context.cr, f, self.scale);
 								
-								pac_draw_fab.draw_contour (in_area, context, stencil_contours, YES,
+								draw_contour (in_area, context, stencil_contours, YES,
 									zero, self.frame_height, drawn);
 							end if;
 
@@ -3187,7 +3187,7 @@ is
 								set_color_stop_mask (context.cr, f, self.scale);
 								
 								-- draw the outer contour of the stop mask opening
-								pac_draw_fab.draw_contour (
+								draw_contour (
 									area		=> in_area,
 									context		=> context,
 									contour		=> stop_mask_contours,
@@ -3291,14 +3291,14 @@ is
 										 + type_float_internal_positive (restring);
 						
 						--draw_circle (in_area, context, circle, NO, self.frame_height);
-						pac_draw_fab.draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := type_float_internal_positive (drill_size) * 0.5;
-						pac_draw_fab.draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -3411,8 +3411,8 @@ is
 
 					set_color_origin (context.cr);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
-					pac_draw_fab.draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
-					pac_draw_fab.draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
+					draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
+					draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
 
 				end if;
 			end if;
@@ -3508,12 +3508,12 @@ begin -- draw_packages
 
 	-- draw electric devices
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_devices'access);
 
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_devices_non_electric'access);
 			
 end draw_packages;

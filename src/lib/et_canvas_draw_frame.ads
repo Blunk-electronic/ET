@@ -48,16 +48,18 @@ with et_text;						use et_text;
 with et_frames;
 with et_meta;
 with et_canvas_general;
-with et_canvas_primitive_draw_ops;
+--with et_canvas_primitive_draw_ops;
 
 package et_canvas_draw_frame is
 
 generic
 
-	with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
-
-	in_area			: draw_ops.pac_canvas.type_bounding_box;
-	context			: draw_ops.pac_canvas.type_draw_context;
+	--with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
+	--with package draw_ops is new et_canvas_general.pac_canvas (<>); -- CS rename draw_ops to pac_canvas ?
+	--in_area			: draw_ops.pac_canvas.type_bounding_box;
+	--context			: draw_ops.pac_canvas.type_draw_context;
+	in_area			: draw_ops.type_bounding_box;
+	context			: draw_ops.type_draw_context;
 	frame_size		: et_frames.type_frame_size;
 	border_width	: et_frames.type_border_width;
 	sectors			: et_frames.type_sectors;
@@ -66,10 +68,11 @@ generic
 	placeholders	: et_frames.type_placeholders_basic;
 
 	
-package pac_draw_frame is
+package generic_pac_draw_frame is
 	--use draw_ops;
 	
-	use draw_ops.pac_canvas;
+	--use draw_ops.pac_canvas;
+	use draw_ops;
 	use pac_geometry_2;
 	use pac_geometry_2.pac_geometry_1;
 	
@@ -101,7 +104,7 @@ package pac_draw_frame is
 	-- Draws other texts such as "approved" or "edited". Such texts have no placeholders:
 	procedure draw_texts;
 	
-end pac_draw_frame;
+end generic_pac_draw_frame;
 	
 end et_canvas_draw_frame;
 

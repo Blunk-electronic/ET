@@ -496,7 +496,7 @@ package body et_canvas_board_texts is
 				type_signal_layer'first .. 
 
 				-- The deepest available layer depends on the stack configuration:
-				deepest_conductor_layer (et_canvas_schematic.current_active_module) 
+				deepest_conductor_layer (current_active_module) 
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,

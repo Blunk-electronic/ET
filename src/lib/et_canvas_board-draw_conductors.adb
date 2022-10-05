@@ -62,8 +62,6 @@ is
 	use et_schematic;
 	use et_schematic.pac_nets;
 
-	use pac_draw_fab;
-
 	use et_board_shapes_and_text;
 	use pac_text_fab;
 	use pac_geometry_2;
@@ -94,7 +92,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+		deepest_conductor_layer (current_active_module);
 
 	
 	function is_double_layer_board return boolean is begin
@@ -468,7 +466,7 @@ is
 				-- The net name is displayed in a special color:
 				set_color_via_net_name (context.cr);
 
-				pac_draw_doc.draw_text (
+				draw_text (
 					area		=> in_area,
 					context		=> context,
 					content		=> to_content (to_string (net_name)),
@@ -498,7 +496,7 @@ is
 			-- The layer numbers are displayed in a special color:
 			set_color_via_layers (context.cr);
 
-			pac_draw_doc.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
@@ -530,7 +528,7 @@ is
 				-- The drill size is displayed in a special color:
 				set_color_via_drill_size (context.cr); -- CS
 
-				pac_draw_doc.draw_text (
+				draw_text (
 					area		=> in_area,
 					context		=> context,
 					content		=> to_content (to_string (element (v).diameter)),
@@ -898,7 +896,7 @@ begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
 	
 	pac_generic_modules.query_element (
-		position	=> et_canvas_schematic.current_active_module,
+		position	=> current_active_module,
 		process		=> query_items'access);
 
 	draw_via_being_placed;

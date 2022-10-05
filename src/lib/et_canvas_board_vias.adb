@@ -396,7 +396,7 @@ package body et_canvas_board_vias is
 			-- We need a list of all net names of the current module:
 			use pac_net_names_indexed;
 			net_names : constant pac_net_names_indexed.vector := 
-				get_indexed_nets (et_canvas_schematic.current_active_module);
+				get_indexed_nets (current_active_module);
 
 			procedure query_net (n : in pac_net_names_indexed.cursor) is 
 				use gtk.list_store;
@@ -525,7 +525,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BLIND vias:	
-				deepest_conductor_layer (et_canvas_schematic.current_active_module) - 1
+				deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -584,7 +584,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				deepest_conductor_layer (et_canvas_schematic.current_active_module) - 1
+				deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -642,7 +642,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				deepest_conductor_layer (et_canvas_schematic.current_active_module) - 1
+				deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,

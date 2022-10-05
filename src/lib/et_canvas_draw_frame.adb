@@ -44,7 +44,7 @@ with et_canvas_schematic;
 
 package body et_canvas_draw_frame is
 
-package body pac_draw_frame is
+package body generic_pac_draw_frame is
 
 	line : pac_geometry_2.type_line;
 
@@ -482,7 +482,7 @@ package body pac_draw_frame is
 
 	end draw_texts;
 
-end pac_draw_frame;
+end generic_pac_draw_frame;
 
 end et_canvas_draw_frame;
 
