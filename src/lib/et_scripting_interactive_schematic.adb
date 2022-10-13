@@ -50,6 +50,7 @@ with ada.containers;				use ada.containers;
 
 with et_geometry;
 with et_coordinates;				use et_coordinates;
+with et_project.modules;			use et_project.modules;
 with et_packages;
 with et_schematic;					use et_schematic;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
@@ -68,12 +69,14 @@ package body et_scripting_interactive_schematic is
 	procedure status_select_unit is begin
 		set_status ("Please select unit via menu !");
 	end status_select_unit;
+
 	
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
 	end unit_selection_cancelled;
 
+	
 	-- If unit names are proposed in a menu, then a single
 	-- item on the menu is "unit C", "unit D", ...
 	-- This function extracts the 2nd field from that entry

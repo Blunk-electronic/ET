@@ -36,9 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
-
 with et_text;
---with et_canvas_draw_frame;
 with et_meta;
 
 separate (et_canvas_schematic)
@@ -50,21 +48,11 @@ procedure draw_frame (
 is
 	use et_frames;
 	
-	--package pac_draw_frame is new et_canvas_draw_frame.generic_pac_draw_frame (
-		--draw_ops		=> pac_canvas,
-		--in_area			=> in_area,
-		--context			=> context,
-		--frame_size		=> self.get_frame.size,
-		--border_width	=> self.get_frame.border_width,
-		--sectors			=> self.get_frame.sectors,
-		--title_block		=> type_title_block (self.get_frame.title_block_schematic), -- incl. common placeholders
-		--meta			=> et_meta.type_basic (element (current_active_module).meta.schematic),
-		--placeholders	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders)
-		--);
+	frame_size   : et_frames.type_frame_size renames self.get_frame.size;
+	frame_height : et_frames.type_distance renames self.get_frame.size.y;
+	title_block_position : et_frames.type_position renames self.get_frame.title_block_schematic.position;
 
-	--use pac_draw_frame;
-	use pac_lines;
-
+	
 	
 	procedure draw_additional_placeholders is
 		
@@ -74,6 +62,7 @@ is
 
 		use et_text;
 
+		
 		procedure draw_sheet_description is
 			use et_project;
 
@@ -83,32 +72,49 @@ is
 		begin
 			-- category (development, product, routing)
 			draw_text (
+				area	=> in_area,
+				context	=> context,		  
 				content	=> to_content (to_string (des.category)),
 				size	=> phs.category.size,
 				font	=> font_placeholders,
-				pos		=> phs.category.position);
+				pos		=> phs.category.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height
+				);
 
 			-- description
 			draw_text (
+				area	=> in_area,
+				context	=> context,		  
 				content	=> to_content (to_string (des.content)),
 				size	=> phs.description.size,
 				font	=> font_placeholders,
-				pos		=> phs.description.position);
-			
+				pos		=> phs.description.position,
+				tb_pos	=> title_block_position,
+				height	=> frame_height
+				);
+						
 		end draw_sheet_description;
+
 		
 	begin -- draw_additional_placeholders
 		
 		-- sheet number n of m
 		draw_text (
+			area	=> in_area,
+			context	=> context,		  
 			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,
-			pos		=> phs.sheet_number.position);
+			pos		=> phs.sheet_number.position,
+			tb_pos	=> title_block_position,
+			height	=> frame_height);
+
 
 		draw_sheet_description;
 		
 	end draw_additional_placeholders;
+
 	
 begin -- draw_frame
 -- 	put_line ("draw frame ...");
@@ -127,20 +133,48 @@ begin -- draw_frame
 		set_color_frame (context.cr);
 
 		-- FRAME BORDER
-		draw_border;
+		draw_border (
+			area			=> in_area,
+			context			=> context,
+			frame_size		=> frame_size,
+			border_width	=> self.get_frame.border_width,
+			height			=> frame_height);
+
 		
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.get_frame.title_block_schematic.lines, query_line'access);
-		cairo.stroke (context.cr);
+		--iterate (self.get_frame.title_block_schematic.lines, query_line'access);
+		--cairo.stroke (context.cr);
+
+		draw_title_block_lines (
+			area		=> in_area,
+			context		=> context,
+			lines		=> self.get_frame.title_block_schematic.lines,
+			tb_pos		=> title_block_position,
+			frame_size	=> frame_size);
+
 		
 		-- draw common placeholders and other texts
-		draw_texts;
+		draw_texts (
+			area		=> in_area,
+			context		=> context,
+			ph_common	=> self.get_frame.title_block_schematic.placeholders,
+			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
+			texts		=> self.get_frame.title_block_schematic.texts,
+			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
+			tb_pos		=> title_block_position,
+			height		=> frame_height);
+
 
 		draw_additional_placeholders;
 		
 		-- draw the sector delimiters
-		draw_sector_delimiters;
+		draw_sector_delimiters (
+			area			=> in_area,
+			context			=> context,
+			sectors			=> self.get_frame.sectors,
+			frame_size		=> frame_size,
+			border_width	=> self.get_frame.border_width);
 
 	end if;
 	

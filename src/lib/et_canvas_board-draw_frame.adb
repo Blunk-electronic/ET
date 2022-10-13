@@ -38,7 +38,6 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
 with et_text;
---with et_canvas_draw_frame;
 with et_meta;
 
 separate (et_canvas_board)
@@ -49,23 +48,7 @@ procedure draw_frame (
 	context : in type_draw_context) 
 is
 	use et_frames;
-	use et_canvas_schematic;
 	
-	--package pac_draw_frame is new et_canvas_draw_frame.generic_pac_draw_frame (
-		----draw_ops		=> pac_draw_fab,
-		--draw_ops		=> pac_canvas,
-		--in_area			=> in_area,
-		--context			=> context,
-		--frame_size		=> self.get_frame.size,
-		--border_width	=> self.get_frame.border_width,
-		--sectors			=> self.get_frame.sectors,
-		--title_block		=> type_title_block (self.get_frame.title_block_pcb), -- incl. common placeholders
-		--meta			=> et_meta.type_basic (element (current_active_module).meta.board),
-		--placeholders	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders)
-		--);
-
-	--use pac_draw_frame;
-
 	frame_size   : et_frames.type_frame_size renames self.get_frame.size;
 	frame_height : et_frames.type_distance renames self.get_frame.size.y;
 	title_block_position : et_frames.type_position renames self.get_frame.title_block_pcb.position;
@@ -376,7 +359,6 @@ begin -- draw_frame
 			lines		=> self.get_frame.title_block_pcb.lines,
 			tb_pos		=> title_block_position,
 			frame_size	=> frame_size);
-								   
 		
 		-- draw the sector delimiters
 		draw_sector_delimiters (
