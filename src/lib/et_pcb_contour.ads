@@ -51,7 +51,8 @@ package et_pcb_contour is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_polygons;
-	use pac_text_fab;
+	
+	use pac_text_board;
 
 
 	-- As a safety measure we derive dedicated types for
@@ -91,12 +92,12 @@ package et_pcb_contour is
 	
 		
 	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+	pcb_contour_line_width : constant type_general_line_width := 0.1;
 
 	
 	
 	type type_contour_text 
-		is new pac_text_fab.type_text_fab_with_content with
+		is new type_text_fab_with_content with
 	record
 		vectors	: type_vector_text;		
 	end record;

@@ -179,11 +179,7 @@ generic
 		pac_geometry_2	=> pac_geometry_2,
 		others			=> <>);
 
-	--use pac_text;
-	--with package pac_text is new et_text.generic_pac_text (<>);
 
-	
-	
 package pac_canvas is
 	
 	--use pac_geometry_2;

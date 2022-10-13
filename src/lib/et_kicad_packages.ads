@@ -46,10 +46,10 @@ with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_drills;
 with et_terminals;				use et_terminals;
+
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
---use et_board_shapes_and_text.pac_geometry_2;
 use et_board_shapes_and_text.pac_contours;
-use et_board_shapes_and_text.pac_text_fab;
+use et_board_shapes_and_text.pac_text_board;
 
 
 with et_stop_mask;				use et_stop_mask;

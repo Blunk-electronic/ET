@@ -42,31 +42,21 @@ with gtk.box;						use gtk.box;
 with gtk.text_view;					--use gtk.text_view;
 
 with et_general;					use et_general;
---with et_geometry;				use et_geometry;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_schematic;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
---with et_terminals;					use et_terminals;
-
-
 with et_text;						use et_text;
 
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
-use et_board_shapes_and_text.pac_text_fab;
+use et_board_shapes_and_text.pac_text_board;
 
 with et_pcb_stack;					use et_pcb_stack;
 with et_packages;					use et_packages;
 with et_project.modules;			use et_project.modules;
 with et_pcb;
---with et_frames;
-
---with et_board_ops;
-
---with et_canvas_general;				use et_canvas_general;
---with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_board_texts is

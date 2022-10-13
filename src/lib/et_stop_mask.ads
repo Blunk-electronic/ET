@@ -53,11 +53,9 @@ with et_logging;				use et_logging;
 
 package et_stop_mask is
 
-	--use pac_geometry_brd;
-
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_fab;
+	use pac_text_board;
 
 
 	type type_stop_line is new type_line with record

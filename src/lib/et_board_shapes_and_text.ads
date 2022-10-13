@@ -92,14 +92,25 @@ package et_board_shapes_and_text is
 	
 	
 	text_parameters_fab : constant type_text_parameters := (
-		size_min 		=> 0.5,
+		--size_min 		=> 0.5,
+		size_min 		=> 0.01,													   
+		
 		size_max 		=> 100.0,
-		size_default 	=> 1.5,
-		width_min 		=> 0.15,
+		
+		--size_default 	=> 1.5,
+		size_default 	=> 1.0,
+		
+		--width_min 		=> 0.15,
+		width_min 		=> 0.005,
+		
 		width_max 		=> 10.0,
-		width_default 	=> 0.15);
 
-	package pac_text_fab is new et_text.generic_pac_text (
+		--width_default 	=> 0.15,
+		width_default 	=> 0.005		
+		);
+
+	
+	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
 		--pac_polygons		=> pac_polygons,											 
 		size_min			=> text_parameters_fab.size_min,
@@ -120,28 +131,6 @@ package et_board_shapes_and_text is
 
 
 	keyword_width 		: constant string := "width";
-	
-
--- DOCUMENTATION RELEVANT (NON-FAB)
-	text_parameters_doc : constant type_text_parameters := (
-		size_min 		=> 0.01,
-		size_max 		=> 100.0,
-		size_default 	=> 1.0,
-		width_min 		=> 0.005,
-		width_max 		=> 10.0,
-		width_default 	=> 0.005);
-	
-	package pac_text_doc is new et_text.generic_pac_text (
-		pac_geometry_2		=> pac_geometry_2,
-		--pac_polygons		=> pac_polygons,
-		size_min			=> text_parameters_doc.size_min,
-		size_max			=> text_parameters_doc.size_max,
-		size_default		=> text_parameters_doc.size_default,
-		line_width_min		=> text_parameters_doc.width_min,
-		line_width_max		=> text_parameters_doc.width_max,
-		line_width_default	=> text_parameters_doc.width_default);
-
-
 
 
 -- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE

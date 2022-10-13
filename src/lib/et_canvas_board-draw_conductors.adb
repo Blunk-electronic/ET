@@ -49,7 +49,6 @@ use et_vias.pac_vias;
 with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
 with et_display.board;				use et_display.board;
-with et_canvas_primitive_draw_ops;
 
 
 separate (et_canvas_board)
@@ -62,8 +61,6 @@ is
 	use et_schematic;
 	use et_schematic.pac_nets;
 
-	use et_board_shapes_and_text;
-	use pac_text_fab;
 	use pac_geometry_2;
 	use pac_polygons;
 	

@@ -41,7 +41,7 @@ with et_conductor_text.boards;
 package et_route_restrict.boards is
 
 	use pac_geometry_2;
-	use pac_text_fab;
+	use pac_text_board;
 
 
 	type type_route_restrict_line is new 

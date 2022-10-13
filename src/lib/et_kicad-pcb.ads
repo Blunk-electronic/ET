@@ -99,7 +99,7 @@ package et_kicad.pcb is
 	use pac_geometry_2;
 	
 	use et_board_shapes_and_text.pac_contours;
-	use et_board_shapes_and_text.pac_text_fab;
+	use et_board_shapes_and_text.pac_text_board;
 
 	use pac_net_name;
 	
@@ -334,13 +334,13 @@ package et_kicad.pcb is
 		micro_vias_allowed	: type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: type_drill_size;		-- micro vias
-		pcb_text_width		: pac_text_fab.type_text_line_width;	-- all kinds of texts (no matter what layer)
-		pcb_text_size_x		: pac_text_fab.type_text_size;
-		pcb_text_size_y		: pac_text_fab.type_text_size;		
+		pcb_text_width		: pac_text_board.type_text_line_width;	-- all kinds of texts (no matter what layer)
+		pcb_text_size_x		: pac_text_board.type_text_size;
+		pcb_text_size_y		: pac_text_board.type_text_size;		
 		module_edge_width	: type_general_line_width;
-		module_text_size_x	: pac_text_fab.type_text_size;
-		module_text_size_y	: pac_text_fab.type_text_size;
-		module_text_width	: pac_text_fab.type_text_line_width; -- line width
+		module_text_size_x	: pac_text_board.type_text_size;
+		module_text_size_y	: pac_text_board.type_text_size;
+		module_text_width	: pac_text_board.type_text_line_width; -- line width
 		pad_size_x			: et_terminals.type_pad_size;
 		pad_size_y			: et_terminals.type_pad_size;
 		pad_drill			: type_drill_size;
@@ -471,7 +471,7 @@ package et_kicad.pcb is
 	-- For the board, temporarily this type is required to handle texts in
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.	
-	type type_text_board is new pac_text_fab.type_text_fab with record
+	type type_text_board is new pac_text_board.type_text_fab with record
 		content	: et_text.pac_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;

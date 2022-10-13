@@ -73,7 +73,7 @@ package body et_pcb_rw is
 
 	
 	procedure write_text_properties (
-		t : in pac_text_fab.type_text_fab'class) 
+		t : in type_text_fab'class) 
 	is begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
@@ -93,7 +93,7 @@ package body et_pcb_rw is
 
 	
 	procedure write_text_properties_with_face (
-		t		: in pac_text_fab.type_text_fab'class;
+		t		: in type_text_fab'class;
 		face	: in et_pcb_coordinates.type_face) 
 	is begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
@@ -115,8 +115,7 @@ package body et_pcb_rw is
 	end write_text_properties_with_face;
 
 	
-	procedure write_text (cursor : in pac_text_fab.pac_texts_fab_with_content.cursor) is
-		use pac_text_fab;
+	procedure write_text (cursor : in pac_texts_fab_with_content.cursor) is
 		use pac_texts_fab_with_content;
 	begin
 		text_begin;

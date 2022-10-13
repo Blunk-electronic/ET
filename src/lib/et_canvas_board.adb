@@ -466,6 +466,7 @@ package body et_canvas_board is
 	is		
 		--use et_board_shapes_and_text;
 		--use pac_geometry_2;
+		use pac_text_board;
 		
 		--line_horizontal : constant type_line := ( -- from left to right
 			--start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
@@ -476,24 +477,22 @@ package body et_canvas_board is
 			--end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		line_horizontal : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from left to right
-			start_point		=> to_vector (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
-			end_point		=> to_vector (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
+			start_point		=> to_vector (set (x => get_x (p) - origin_half_size, y => get_y (p))),
+			end_point		=> to_vector (set (x => get_x (p) + origin_half_size, y => get_y (p))));
 
 		line_vertical : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from bottom to top
-			start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
-			end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
+			start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - origin_half_size)),
+			end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + origin_half_size)));
 
-		
-		--use pac_draw_fab;
 	begin -- draw_text_origin
 		-- CS if text_origins_enabled then
 		
-			set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
+			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
-			draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, 
+			draw_line (in_area, context, line_horizontal, origin_line_width, 
 				type_float_internal_positive (self.frame_height));
 			
-			draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width,
+			draw_line (in_area, context, line_vertical, origin_line_width,
 				type_float_internal_positive (self.frame_height));
 
 		--end if;
@@ -558,9 +557,6 @@ package body et_canvas_board is
 		face		: in type_face;
 		category	: in type_layer_category_non_conductor)
 	is 
-		use et_board_shapes_and_text;
-		use pac_text_fab;
-		use et_board_shapes_and_text.pac_text_fab;
 		v_text : type_vector_text;
 		
 		-- The place where the text shall be placed:
@@ -614,8 +610,7 @@ package body et_canvas_board is
 		context 	: in type_draw_context)
 	is 
 		use et_text;
-		use et_board_shapes_and_text;
-		use et_board_shapes_and_text.pac_text_fab;
+		
 		v_text : type_vector_text;
 
 		-- The place where the text shall be placed:
@@ -670,8 +665,6 @@ package body et_canvas_board is
 		use et_pcb;
 		use et_pcb_stack;
 		use et_text;
-		use et_board_shapes_and_text;
-		use et_board_shapes_and_text.pac_text_fab;
 		v_text : type_vector_text;
 
 		mirror : type_vector_text_mirrored;
@@ -1175,7 +1168,6 @@ package body et_canvas_board is
 
 
 	procedure place_text (destination : in type_point) is
-		use pac_text_fab;
 	begin
 		if text_place.being_moved then
 			move_to (text_place.text.position.place, destination);

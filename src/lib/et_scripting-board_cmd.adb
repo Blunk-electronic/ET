@@ -1309,7 +1309,7 @@ is
 
 	
 	procedure place_text is
-		use et_board_shapes_and_text.pac_text_fab;
+		use pac_text_board;
 		text			: type_text_fab;
 		pos_xy			: type_point;
 		rotation		: type_rotation;

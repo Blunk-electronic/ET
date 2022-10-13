@@ -49,7 +49,6 @@ procedure draw_silk_screen (
 is
 	use et_board_shapes_and_text;
 	use pac_geometry_2;	
-	use pac_text_fab;
 
 	use pac_silk_lines;
 	use pac_silk_arcs;

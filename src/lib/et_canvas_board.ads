@@ -72,7 +72,6 @@ with et_schematic;
 with et_frames;
 
 with et_canvas_general;				use et_canvas_general;
---with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -82,6 +81,8 @@ with et_canvas_board_devices;		use et_canvas_board_devices;
 
 package et_canvas_board is
 
+	use pac_text_board;
+	
 	use pac_net_name;
 
 	-- This procedure should be called each time after the current active module 
@@ -105,29 +106,8 @@ package et_canvas_board is
 		pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_contours	=> et_board_shapes_and_text.pac_contours,
-		pac_text		=> et_board_shapes_and_text.pac_text_fab); -- CS
+		pac_text		=> et_board_shapes_and_text.pac_text_board);
 	use pac_canvas;	
-
-	
-	-- In order to draw objects of packages and board 
-	-- that are fabrication relevant:
-	--package pac_draw_fab is new et_canvas_primitive_draw_ops.pac_draw (
-		--pac_canvas		=> pac_canvas,
-		--pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		--pac_contours	=> et_board_shapes_and_text.pac_contours,
-		--pac_text		=> et_board_shapes_and_text.pac_text_fab);
-	
-
-
-	--In order to draw objects of packages and board 
-	--that are for documentation (not fabrication relevant):
-	--package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
-		--pac_canvas		=> pac_canvas,
-		--pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		--pac_contours	=> et_board_shapes_and_text.pac_contours,
-		--pac_text		=> et_board_shapes_and_text.pac_text_doc);
-
-
 
 
 	

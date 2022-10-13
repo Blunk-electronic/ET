@@ -66,7 +66,6 @@ with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;
 with et_keepout;				use et_keepout;
-with et_canvas_primitive_draw_ops;
 
 with et_contour_to_polygon;		use et_contour_to_polygon;
 
@@ -101,7 +100,6 @@ is
 		use pac_contours;
 		use pac_polygons;
 		use pac_polygon_offsetting;
-		use pac_text_fab;
 
 		use pac_packages_lib;
 
@@ -169,12 +167,12 @@ is
 		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
 			line_horizontal : constant pac_geometry_brd.type_line := ( -- from left to right
-				start_point		=> to_vector (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
-				end_point		=> to_vector (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
+				start_point		=> to_vector (set (x => get_x (p) - pac_text_board.origin_half_size, y => get_y (p))),
+				end_point		=> to_vector (set (x => get_x (p) + pac_text_board.origin_half_size, y => get_y (p))));
 
 			line_vertical : constant pac_geometry_brd.type_line := ( -- from bottom to top
-				start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
-				end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
+				start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_board.origin_half_size)),
+				end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_board.origin_half_size)));
 
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
@@ -184,9 +182,9 @@ is
 				save (context.cr);
 				
 				set_color_origin (context.cr);
-				set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
-				draw_line (in_area, context, line_horizontal, pac_text_fab.origin_line_width, self.frame_height);
-				draw_line (in_area, context, line_vertical, pac_text_fab.origin_line_width, self.frame_height);
+				set_line_width (context.cr, type_view_coordinate (pac_text_board.origin_line_width));
+				draw_line (in_area, context, line_horizontal, pac_text_board.origin_line_width, self.frame_height);
+				draw_line (in_area, context, line_vertical, pac_text_board.origin_line_width, self.frame_height);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
@@ -218,7 +216,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (t.line_width));
 
 			-- Vectorize the content of the text:
-			v_text := pac_text_fab.vectorize_text (
+			v_text := vectorize_text (
 				content		=> t.content,
 				size		=> t.size,
 				rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
@@ -505,7 +503,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder on the fly:
-						v_text := pac_text_fab.vectorize_text (
+						v_text := vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
@@ -889,7 +887,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						v_text := pac_text_fab.vectorize_text (
+						v_text := vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
@@ -2736,7 +2734,7 @@ is
 				set_line_width (context.cr, type_view_coordinate (t.line_width));
 
 				-- Vectorize the content of the text on the fly:
-				v_text := pac_text_fab.vectorize_text (
+				v_text := vectorize_text (
 					content		=> t.content,
 					size		=> t.size,
 					rotation	=> add (get_rotation (t.position), get_rotation (package_position)),

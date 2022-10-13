@@ -65,10 +65,9 @@ with et_keepout;				use et_keepout;
 
 package et_pcb_rw is
 
-	--use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
-	
+	use pac_text_board;
 	
 	section_board				: constant string	:= "[BOARD";
 	section_top					: constant string	:= "[TOP";
@@ -106,13 +105,15 @@ package et_pcb_rw is
 	
 
 	procedure write_text_properties (
-		t : in pac_text_fab.type_text_fab'class);
+		t : in 	type_text_fab'class);
+
 	
 	procedure write_text_properties_with_face (
-		t		: in pac_text_fab.type_text_fab'class;
+		t		: in type_text_fab'class;
 		face	: in et_pcb_coordinates.type_face);
 
-	procedure write_text (cursor : in pac_text_fab.pac_texts_fab_with_content.cursor);
+	
+	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);
 	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
 	
 	keyword_locked : constant string := "locked"; -- layout related

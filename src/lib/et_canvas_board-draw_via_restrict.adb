@@ -50,9 +50,6 @@ procedure draw_via_restrict (
 	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context) 
 is
-	use et_board_shapes_and_text;
-	use et_board_shapes_and_text.pac_text_fab;
-
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;
 	use pac_via_restrict_circles;

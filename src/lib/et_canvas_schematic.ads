@@ -83,7 +83,6 @@ with et_frames;
 with et_text;						use et_text;
 
 with et_canvas_general;				use et_canvas_general;
---with et_canvas_primitive_draw_ops;	
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -113,7 +112,6 @@ package et_canvas_schematic is
 		pac_polygons	=> pac_polygons,
 		pac_contours	=> pac_contours,
 		pac_text		=> et_symbols.pac_text);
-
 	
 	use pac_canvas;
 
@@ -127,23 +125,7 @@ package et_canvas_schematic is
 	procedure update_sheet_number_display;
 	procedure build_sheet_number_display;
 
-
 	
-	-- For primitve draw operations:
-	--package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
-		--pac_canvas		=> pac_canvas,
-		--pac_polygons	=> pac_polygons,
-		--pac_contours	=> pac_contours,
-		--pac_text		=> et_symbols.pac_text);
-
-	--use pac_draw;
-	
-
-
-	
-	---- The current active module is stored here. Whenever objects of the schematic
-	---- or board are to be drawn, this variable must be read.
-	--current_active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
 
 	-- The current active sheet:
 	current_active_sheet : et_coordinates.type_sheet := type_sheet'first;

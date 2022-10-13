@@ -47,14 +47,13 @@ procedure draw_route_restrict (
 	in_area	: in type_bounding_box := no_area;
 	context : in type_draw_context) 
 is
-	use et_board_shapes_and_text.pac_text_fab;
-
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
 	use pac_route_restrict_contours;
 	use pac_route_restrict_cutouts;
 	use pac_conductor_texts;
+
 	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 

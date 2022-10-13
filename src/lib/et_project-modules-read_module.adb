@@ -1231,7 +1231,7 @@ is
 	
 	
 	-- general board stuff
-	use et_board_shapes_and_text.pac_text_fab;
+	use et_board_shapes_and_text.pac_text_board;
 	board_text : type_text_fab_with_content;
 	board_text_placeholder : et_pcb.type_text_placeholder;
 

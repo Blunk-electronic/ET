@@ -54,10 +54,10 @@ with et_fill_zones.packages;		use et_fill_zones.packages;
 
 package body et_pcb_rw.device_packages is
 
-	use pac_text_fab;
 	use pac_texts_fab_with_content;
 	
 	use pac_conductor_texts;
+
 	
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac

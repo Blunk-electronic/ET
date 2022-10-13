@@ -39,10 +39,9 @@
 with et_conductor_text.boards;
 
 package et_via_restrict.boards is
-	--use pac_geometry_brd;
 
 	use pac_geometry_2;
-	use pac_text_fab;
+	use pac_text_board;
 
 
 	-- GUI relevant only: The line width of via restrict:

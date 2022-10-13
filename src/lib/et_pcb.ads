@@ -89,11 +89,9 @@ with et_ratsnest;
 
 package et_pcb is
 	
-	--use pac_geometry_brd;
-
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_fab;
+	use pac_text_board;
 	
 
 -- NET CLASSES
@@ -162,7 +160,7 @@ package et_pcb is
 
 	
 	type type_text_placeholder_conductors is new 
-		pac_text_fab.type_text_fab with 
+		type_text_fab with 
 	record
 		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
 
@@ -180,13 +178,15 @@ package et_pcb is
 -- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS
 	subtype type_text_meaning is type_text_meaning_conductor 
 		range COMPANY .. REVISION;
+
 	
 	type type_text_placeholder is new
-		pac_text_fab.type_text_fab with 
+		type_text_fab with 
 	record
 		meaning : type_text_meaning := type_text_meaning'first;
 	end record;
 
+	
 	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	

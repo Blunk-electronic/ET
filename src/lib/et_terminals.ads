@@ -64,7 +64,7 @@ package et_terminals is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_fab;
+	use pac_text_board;
 
 
 	
@@ -352,7 +352,7 @@ package et_terminals is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	terminal_name_size : constant pac_text_fab.type_text_size := 0.5;
+	terminal_name_size : constant pac_text_board.type_text_size := 0.5;
 	
 
 	

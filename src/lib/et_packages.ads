@@ -83,7 +83,7 @@ package et_packages is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_fab;
+	use pac_text_board;
 
 
 	
@@ -148,7 +148,7 @@ package et_packages is
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
-	type type_text_placeholder is new pac_text_fab.type_text_fab with record
+	type type_text_placeholder is new type_text_fab with record
 		meaning : type_text_meaning_package := NAME;
 	end record;
 

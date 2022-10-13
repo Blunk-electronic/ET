@@ -47,8 +47,6 @@ procedure draw_stencil (
 	context : in type_draw_context;
 	face	: in type_face) 
 is
-	use et_board_shapes_and_text;
-	use pac_text_fab;
 	use pac_geometry_2;	
 
 	use pac_stencil_lines;

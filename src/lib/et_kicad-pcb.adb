@@ -3610,7 +3610,7 @@ package body et_kicad.pcb is
 						-- If text is placed in other (non-signal) layers -> error
 						if board_text.layer in type_signal_layer_id then
 							board.copper.texts.append ((
-								pac_text_fab.type_text_fab (board_text) with
+								type_text_fab (board_text) with
 									content	=> board_text.content,
 									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1),
 									others	=> <> -- CS vector text, conductor segments
@@ -5121,7 +5121,7 @@ package body et_kicad.pcb is
 	
 								pac_text_placeholders.append (
 									container	=> placeholders.silk_screen.top,
-									new_item	=> (pac_text_fab.type_text_fab (element (cursor)) with meaning => NAME));
+									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 	
 								-- log placeholder properties
 								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
@@ -5138,7 +5138,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.silk_screen.bottom,
-									new_item	=> (pac_text_fab.type_text_fab (element (cursor)) with meaning => NAME));
+									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 
 								-- log placeholder properties
 								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
@@ -5147,6 +5147,7 @@ package body et_kicad.pcb is
 							next (cursor);
 						end loop;
 
+						
 						-- Collect placeholders for VALUE in TOP assembly documentation:
 						cursor := comp_package.assembly_documentation.top.placeholders.first;
 						while cursor /= pac_text_placeholders.no_element loop
@@ -5155,7 +5156,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.top,
-									new_item	=> (pac_text_fab.type_text_fab (element (cursor)) with meaning => VALUE));
+									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
@@ -5164,6 +5165,7 @@ package body et_kicad.pcb is
 							next (cursor);
 						end loop;
 
+						
 						-- Collect placeholders for VALUE in BOTTOM assembly documentation:
 						cursor := comp_package.assembly_documentation.bottom.placeholders.first;
 						while cursor /= pac_text_placeholders.no_element loop
@@ -5172,7 +5174,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.bottom,
-									new_item	=> (pac_text_fab.type_text_fab (element (cursor)) with meaning => VALUE));
+									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);
@@ -5182,6 +5184,7 @@ package body et_kicad.pcb is
 						end loop;
 						
 					end query_placeholders;
+
 					
 				begin -- to_placeholders
 					log_indentation_up;

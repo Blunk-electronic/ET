@@ -1187,13 +1187,12 @@ is
 		--use et_packages;
 		--use et_terminals;
 		use et_board_shapes_and_text;
+		use pac_text_board;
 		use pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_2;
 
-		--use et_packages.pac_texts_with_content;
-		use pac_text_fab;
 		use pac_texts_fab_with_content;
 		
 		use et_pcb.pac_text_placeholders;
