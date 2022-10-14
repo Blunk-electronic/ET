@@ -41,8 +41,6 @@ with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
-with et_canvas_primitive_draw_ops;
-
 separate (et_canvas_board)
 
 procedure draw_via_restrict (
