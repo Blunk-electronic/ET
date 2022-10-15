@@ -62,7 +62,7 @@ is
 	use et_coordinates;
 	use pac_geometry_2;
 
-	use et_symbols.pac_text;
+	use et_symbols.pac_text_schematic;
 	use et_devices;
 	use et_canvas_schematic;
 	use et_canvas_schematic.pac_canvas;

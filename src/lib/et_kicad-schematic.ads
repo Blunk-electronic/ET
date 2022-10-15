@@ -392,7 +392,7 @@ package et_kicad.schematic is
 		coordinates	: type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: pac_net_name.bounded_string;
-        size		: et_symbols.pac_text.type_text_size;
+        size		: et_symbols.pac_text_schematic.type_text_size;
         width		: et_symbols.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
@@ -772,7 +772,7 @@ package et_kicad.schematic is
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
-		text_size	: et_symbols.pac_text.type_text_size;
+		text_size	: et_symbols.pac_text_schematic.type_text_size;
 		coordinates	: type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
@@ -791,8 +791,8 @@ package et_kicad.schematic is
 	end record;
 	
 	type type_hierarchic_sheet is record
-        text_size_of_name   : et_symbols.pac_text.type_text_size;
-        text_size_of_file   : et_symbols.pac_text.type_text_size;
+        text_size_of_name   : et_symbols.pac_text_schematic.type_text_size;
+        text_size_of_file   : et_symbols.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;

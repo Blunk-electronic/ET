@@ -74,7 +74,7 @@ with et_conventions;
 package et_schematic_ops is
 
 	use pac_generic_modules;
-	use et_symbols.pac_text;
+	use et_symbols.pac_text_schematic;
 
 	use pac_net_name;
 

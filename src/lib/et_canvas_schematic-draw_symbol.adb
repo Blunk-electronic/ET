@@ -56,8 +56,8 @@ procedure draw_symbol (
 	preview			: in boolean := false)
 is
 	use et_symbols;
+	use pac_text_schematic;
 	use pac_geometry_2;
-	use pac_text;
 	
 	use pac_lines;
 	use pac_arcs;

@@ -2504,7 +2504,7 @@ package body et_kicad_to_native is
 		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
 			return et_schematic.pac_texts.list 
 		is
-			use et_symbols.pac_text;
+			use et_symbols.pac_text_schematic;
 			texts_out : et_schematic.pac_texts.list;
 
 			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
@@ -2830,7 +2830,7 @@ package body et_kicad_to_native is
 				-- cause the labels to shift to the right or up.
 					return et_net_labels.pac_net_labels.list 
 				is
-					use et_symbols.pac_text;
+					use et_symbols.pac_text_schematic;
 					
 					labels : et_net_labels.pac_net_labels.list; -- to be returned
 

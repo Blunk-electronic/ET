@@ -2673,7 +2673,7 @@ package body et_conventions is
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
-			size		: et_symbols.pac_text.type_text_size;
+			size		: et_symbols.pac_text_schematic.type_text_size;
 
 			partcode_keyword	: type_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;

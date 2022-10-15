@@ -127,11 +127,11 @@ package body et_symbol_rw is
 
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
-		use pac_text;
+		use pac_text_schematic;
 		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
-		write (keyword => keyword_rotation, parameters => pac_text.to_string (t.rotation));
+		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
 -- 		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
@@ -937,7 +937,7 @@ package body et_symbol_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 										
 -- 									elsif kw = keyword_style then -- style italic
 -- 										expect_field_count (line, 2);
@@ -978,7 +978,7 @@ package body et_symbol_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);

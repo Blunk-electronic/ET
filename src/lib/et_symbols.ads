@@ -78,7 +78,7 @@ package et_symbols is
 
 	
 	-- Instantiation of the text package:
-	package pac_text is new et_text.generic_pac_text (
+	package pac_text_schematic is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
 		--pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
 		size_min			=> text_size_min,
@@ -89,7 +89,7 @@ package et_symbols is
 		line_width_default	=> text_line_width_default
 		);
 
-	use pac_text; 
+	use pac_text_schematic; 
 	
 -- CS: if required some day, move to package et_text:
 -- 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
@@ -130,7 +130,7 @@ package et_symbols is
 	
 	
 	-- These are basic properties a text has got:
-	type type_text_basic is new pac_text.type_text with record
+	type type_text_basic is new type_text with record
 		-- CS font : type_font; ?
         rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
@@ -299,10 +299,10 @@ package et_symbols is
 		--   0.0 -- from the right
 		
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
-		port_name_size			: pac_text.type_text_size := text_size_default;
+		port_name_size			: type_text_size := text_size_default;
 		
 		terminal_name_visible	: type_terminal_name_visible := terminal_name_visible_default;
-		terminal_name_size		: pac_text.type_text_size := text_size_default;
+		terminal_name_size		: type_text_size := text_size_default;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 

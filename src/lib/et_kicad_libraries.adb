@@ -1838,16 +1838,16 @@ package body et_kicad_libraries is
 				port.rotation := to_rotation (f (line,7));
 
 				-- port and termnal name text size (set to lower limit if too small)
-				if mil_to_distance (mil => f (line,8)) < et_symbols.pac_text.type_text_size'first then
-					port.terminal_name_size := et_symbols.pac_text.type_text_size'first;
+				if mil_to_distance (mil => f (line,8)) < et_symbols.pac_text_schematic.type_text_size'first then
+					port.terminal_name_size := et_symbols.pac_text_schematic.type_text_size'first;
 				else
 					port.terminal_name_size := mil_to_distance (mil => f (line,8));
 				end if;
 				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
 
 				
-				if mil_to_distance (mil => f (line,9)) < et_symbols.pac_text.type_text_size'first then
-					port.port_name_size	:= et_symbols.pac_text.type_text_size'first;
+				if mil_to_distance (mil => f (line,9)) < et_symbols.pac_text_schematic.type_text_size'first then
+					port.port_name_size	:= et_symbols.pac_text_schematic.type_text_size'first;
 				else
 					port.port_name_size	:= mil_to_distance (mil => f (line,9));
 				end if;

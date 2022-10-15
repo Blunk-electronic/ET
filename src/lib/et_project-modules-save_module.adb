@@ -338,7 +338,7 @@ is
 
 	
 	procedure query_nets is
-		use et_symbols.pac_text;
+		use et_symbols.pac_text_schematic;
 		use et_nets;
 		use et_net_labels;
 		use et_schematic.pac_nets;
@@ -1144,7 +1144,7 @@ is
 	
 	procedure query_texts is	
 		use et_symbol_rw;
-		use et_symbols.pac_text;
+		use et_symbols.pac_text_schematic;
 		use et_coordinates;
 		use et_coordinates.pac_geometry_2;
 		use et_schematic;

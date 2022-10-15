@@ -42,7 +42,7 @@ with et_board_ops;					use et_board_ops;
 
 package body et_schematic_ops.units is
 
-	use et_symbols.pac_text;
+	use et_symbols.pac_text_schematic;
 	
 	use pac_generic_modules;
 

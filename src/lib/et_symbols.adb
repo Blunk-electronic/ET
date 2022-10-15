@@ -360,17 +360,14 @@ package body et_symbols is
 		-- After summing up the rotation must be snapped to either
 		-- HORIZONTAL or VERTICAL so that the text is readable
 		-- from the right or from the front of the drawing.
-		phs.name.rotation := pac_text.snap (
-			pac_text.to_rotation (phs.name.rotation) + rotation);
+		phs.name.rotation := snap (to_rotation (phs.name.rotation) + rotation);
 
-		phs.value.rotation := pac_text.snap (
-			pac_text.to_rotation (phs.value.rotation) + rotation);
+		phs.value.rotation := snap (to_rotation (phs.value.rotation) + rotation);
 
-		phs.purpose.rotation := pac_text.snap (
-			pac_text.to_rotation (phs.purpose.rotation) + rotation);
-
+		phs.purpose.rotation := snap (to_rotation (phs.purpose.rotation) + rotation);
 	end rotate;
 
+	
 	-- Use this function to adopt placeholder position and rotation of a symbol.
 	-- Rotates the positions of placeholders and their rotation about
 	-- their own origin according to rotation given by destination:

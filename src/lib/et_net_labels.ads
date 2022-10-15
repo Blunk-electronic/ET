@@ -56,6 +56,7 @@ with et_symbols;				use et_symbols;
 package et_net_labels is
 
 	use pac_geometry_2;
+	use et_symbols.pac_text_schematic;
 	
 	
 	type type_net_label_appearance is (
@@ -83,7 +84,7 @@ package et_net_labels is
 		-- The position of the label is absolute (relative to drawing origin):
 		position	: type_point;
 		
-        size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
+        size		: type_text_size := text_size_default;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;
 

@@ -65,7 +65,7 @@ with et_symbols;
 package et_submodules is
 
 	use pac_geometry_2;
-
+	use et_symbols.pac_text_schematic;
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
@@ -144,7 +144,7 @@ package et_submodules is
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
 	-- The font size of the port name:
-	port_name_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+	port_name_font_size : constant type_text_size := 2.0;
 
 	-- The spacing between port rectangle and port name
 	port_name_spacing : constant type_distance_positive := 0.5;
@@ -157,8 +157,8 @@ package et_submodules is
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
 	-- The font size of the port direction:
-	port_direction_font_size : constant et_symbols.pac_text.type_text_size :=
-		et_symbols.pac_text.type_text_size (port_symbol_height) 
+	port_direction_font_size : constant type_text_size :=
+		type_text_size (port_symbol_height) 
 		- 3.0 * port_symbol_line_width;
 
 	-- Required in the GUI to indicate the direction of a submodule port:
@@ -217,7 +217,7 @@ package et_submodules is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	instance_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+	instance_font_size : constant type_text_size := 2.0;
 
 
 
@@ -227,7 +227,7 @@ package et_submodules is
 		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	file_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+	file_font_size : constant type_text_size := 2.0;
 
 
 	
@@ -238,7 +238,7 @@ package et_submodules is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	position_board_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+	position_board_font_size : constant type_text_size := 2.0;
 
 
 	

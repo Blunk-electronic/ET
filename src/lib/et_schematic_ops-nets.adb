@@ -46,7 +46,7 @@ with et_exceptions;					use et_exceptions;
 package body et_schematic_ops.nets is
 
 	use pac_geometry_sch;
-	use et_symbols.pac_text;
+	use et_symbols.pac_text_schematic;
 	use pac_net_segments;
 	use pac_strands;
 	use pac_nets;
