@@ -70,18 +70,6 @@ package et_board_shapes_and_text is
 	package pac_polygon_union is new pac_polygons.union;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
-	
-
-	type type_text_parameters is record
-		size_min 		: type_distance_positive;
-		size_max 		: type_distance_positive;
-		size_default 	: type_distance_positive;		
-
-		-- These parameters are relevant for vector text:
-		width_min 		: type_distance_positive;
-		width_max 		: type_distance_positive;
-		width_default 	: type_distance_positive;
-	end record;
 
 
 -- FAB RELEVANT
@@ -89,40 +77,24 @@ package et_board_shapes_and_text is
 	--fab_tolerance : constant type_distance_positive := 0.001;
 	--fab_tolerance : constant type_distance_positive := 0.01;
 	fill_tolerance : constant type_distance_positive := 0.05;
-	
-	
-	text_parameters_fab : constant type_text_parameters := (
-		--size_min 		=> 0.5,
-		size_min 		=> 0.01,													   
-		
-		size_max 		=> 100.0,
-		
-		--size_default 	=> 1.5,
-		size_default 	=> 1.0,
-		
-		--width_min 		=> 0.15,
-		width_min 		=> 0.005,
-		
-		width_max 		=> 10.0,
 
-		--width_default 	=> 0.15,
-		width_default 	=> 0.005		
-		);
 
+	linewidth_fab_min : constant type_distance_positive := 0.005;
+	linewidth_fab_max : constant type_distance_positive := 10.0;
 	
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
 		--pac_polygons		=> pac_polygons,											 
-		size_min			=> text_parameters_fab.size_min,
-		size_max			=> text_parameters_fab.size_max,
-		size_default		=> text_parameters_fab.size_default,
-		line_width_min		=> text_parameters_fab.width_min,
-		line_width_max		=> text_parameters_fab.width_max,
-		line_width_default	=> text_parameters_fab.width_default);
+		size_min			=> 0.01,
+		size_max			=> 100.0,
+		size_default		=> 1.0,
+		line_width_min		=> linewidth_fab_min,
+		line_width_max		=> linewidth_fab_max,
+		line_width_default	=> 0.005);
 
 	
 	subtype type_general_line_width is type_distance_positive
-		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
+		range linewidth_fab_min .. linewidth_fab_max;
 	
 	-- Checks whether given line width is in range 
 	-- of type_general_line_width:

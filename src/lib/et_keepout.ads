@@ -59,7 +59,7 @@ package et_keepout is
 
 	
 	-- GUI relevant only: The line width of keepout:
-	keepout_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+	keepout_line_width : constant type_general_line_width := linewidth_fab_min;
 
 	type type_keepout_line is new type_line with null record;
 	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);

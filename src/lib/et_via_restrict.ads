@@ -58,7 +58,7 @@ package et_via_restrict is
 	
 
 	-- GUI relevant only: The line width of via restrict:
-	via_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
+	via_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
 	
 	type type_via_restrict_line is new type_line with null record;
 	

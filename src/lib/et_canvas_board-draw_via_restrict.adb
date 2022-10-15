@@ -39,6 +39,7 @@
 with et_display.board;			use et_display.board;
 with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict;			use et_route_restrict;
+with et_via_restrict;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
 separate (et_canvas_board)
@@ -65,7 +66,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				line		=> to_line_fine (element (c)),
-				width		=> via_restrict_line_width,
+				width		=> et_via_restrict.via_restrict_line_width,
 				height		=> self.frame_height);
 
 		end if;
@@ -81,7 +82,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				arc			=> to_arc_fine (element (c)),
-				width		=> via_restrict_line_width,
+				width		=> et_via_restrict.via_restrict_line_width,
 				height		=> self.frame_height);
 
 			-- CS For some reason the arc is drawn filled. Should not be filled instead.
@@ -103,7 +104,7 @@ is
 						context		=> context,
 						circle		=> element (c),
 						filled		=> NO,
-						width		=> via_restrict_line_width,
+						width		=> et_via_restrict.via_restrict_line_width,
 						height		=> self.frame_height);
 					
 				when YES =>
@@ -186,7 +187,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
-		cairo.set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+		cairo.set_line_width (context.cr, type_view_coordinate (et_via_restrict.via_restrict_line_width));
 
 		set_color_via_restrict (context.cr);
 		

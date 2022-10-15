@@ -43,9 +43,6 @@ package et_via_restrict.boards is
 	use pac_geometry_2;
 	use pac_text_board;
 
-
-	-- GUI relevant only: The line width of via restrict:
-	via_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 	
 	type type_via_restrict_line is new 
 		et_via_restrict.type_via_restrict_line with

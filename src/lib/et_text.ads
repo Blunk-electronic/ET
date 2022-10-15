@@ -159,6 +159,9 @@ package et_text is
 	vector_text_mirror_default : constant type_vector_text_mirrored := NO;
 
 
+
+
+	
 	
 -- GENERIC PART
 	
@@ -169,7 +172,8 @@ package et_text is
 		size_min		: pac_geometry_2.type_distance_positive;
 		size_max		: pac_geometry_2.type_distance_positive;
 		size_default	: pac_geometry_2.type_distance_positive;		
-		
+
+		-- These parameters are relevant for vector text:
 		line_width_min		: pac_geometry_2.type_distance_positive;
 		line_width_max		: pac_geometry_2.type_distance_positive;
 		line_width_default	: pac_geometry_2.type_distance_positive;
