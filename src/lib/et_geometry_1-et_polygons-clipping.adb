@@ -41,7 +41,7 @@ with gnat.source_info;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_geometry_1.polygons.clipping is
+package body et_geometry_1.et_polygons.clipping is
 
 
 
@@ -276,7 +276,7 @@ package body et_geometry_1.polygons.clipping is
 	end clip;
 
 	
-end et_geometry_1.polygons.clipping;
+end et_geometry_1.et_polygons.clipping;
 
 -- Soli Deo Gloria
 

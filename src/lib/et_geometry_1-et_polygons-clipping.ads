@@ -56,7 +56,7 @@
 
 generic
 	
-package et_geometry_1.polygons.clipping is
+package et_geometry_1.et_polygons.clipping is
 
 	-- The result of a polygon clipping operation is a list
 	-- of sub-polygons:
@@ -82,7 +82,7 @@ package et_geometry_1.polygons.clipping is
 
 
 	
-end et_geometry_1.polygons.clipping;
+end et_geometry_1.et_polygons.clipping;
 
 -- Soli Deo Gloria
 

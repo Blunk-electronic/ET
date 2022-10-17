@@ -38,7 +38,7 @@
 
 generic
 	
-package et_geometry_1.polygons.offsetting is
+package et_geometry_1.et_polygons.offsetting is
 	
 	-- See:
 	-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
@@ -156,7 +156,7 @@ private
 		return type_mode;
 
 	
-end et_geometry_1.polygons.offsetting;
+end et_geometry_1.et_polygons.offsetting;
 
 -- Soli Deo Gloria
 

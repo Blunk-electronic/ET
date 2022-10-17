@@ -43,7 +43,7 @@ with et_exceptions;				use et_exceptions;
 
 --pragma optimize (time);
 
-package body et_geometry_1.polygons.union is
+package body et_geometry_1.et_polygons.union is
 
 	--pragma suppress (all_checks);
 	
@@ -695,7 +695,7 @@ package body et_geometry_1.polygons.union is
 		
 		-- It makes sense only to merge polygons that are intersecting. 
 		-- Everything else that is not intersecting could simply be added to the 
-		-- resulting multi-polygon. So you could:
+		-- resulting multi-polygon.
 		
 		-- Here we collect the resulting polygons.
 		-- This list will overwrite the given list in the end of this procedure:
@@ -740,7 +740,7 @@ package body et_geometry_1.polygons.union is
 	end multi_union_2;
 	
 	
-end et_geometry_1.polygons.union;
+end et_geometry_1.et_polygons.union;
 
 -- Soli Deo Gloria
 

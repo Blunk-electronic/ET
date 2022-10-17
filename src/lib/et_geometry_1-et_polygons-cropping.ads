@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      GEOMETRY 2 / POLYGONS / UNION                       --
+--                      GEOMETRY 2 / POLYGONS / CROPPING                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -14,7 +14,7 @@
 --    (at your option) any later version.                                   --
 --                                                                          --
 --    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT	 ANY WARRANTY; without even the implied warranty of        --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
 --    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
 --    GNU General Public License for more details.                          --
 --                                                                          --
@@ -34,7 +34,10 @@
 --
 --
 --  Description:
---
+--	- "to crop" german: stutzen, abschneiden
+--    Im Zusammenhang zwei Polygonen A und B: 
+--			- "den ueberlappenden Bereich beider Polygone ermitteln
+--			  und diesen vom zu bescheidenen Polygon B abziehen"
 --
 --   history of changes:
 --
@@ -42,72 +45,73 @@
 
 generic
 	
-package et_geometry_1.polygons.union is
+package et_geometry_1.et_polygons.cropping is
 
 	use pac_polygon_list;
+	
+	-- The result of a polygon cropping operation:
+	type type_crop (exists : boolean := true) is record
+		-- The status of polygon A in relation to polygon B:
+		status : type_overlap_status;
 		
-	
-	
-	-- Returns from the given list of polygons the one that encloses
-	-- all others in the list
-	function get_greatest (
-		polygons	: in pac_polygon_list.list)
-		return pac_polygon_list.cursor;
-	
-	
-	-- The result of a polygon union operation:
-	type type_union (exists : boolean := true) is record
 		case exists is
-			when TRUE => union : type_polygon;
+			when TRUE =>
+				-- The list of sub-polygons:
+				fragments : pac_polygon_list.list; 
 
+				-- The number of fragments:
+				count : count_type;
+				
 			when FALSE => null;
 		end case;
 	end record;
+	
 
+	function "=" (
+		left, right : in type_crop)
+		return boolean;
+	
 
-	-- CS
-	--function "=" (
-		--left, right : in type_union)
-		--return boolean;
+	
+	function to_string (cr : in type_crop) return string;
 	
 	
-	
-	-- Unions polygon A with polygon B.
-	-- - If the polygons share an edge without overlapping each other
-	--   then there will be a union.
-	-- - If the polygons share a vertex without overlapping each other
-	--   then there will NOT be union.	
-	-- - CS: polygons share two or more edges or vertices so that the
-	--   resulting union would have a hole ?
-	-- - The pretest-flag decides whether to test for overlappin boundaries
-	--   of the two polygons. This may speed up things slightly.
-	-- - If debug is true then a lot of debug messages is output.
-	-- - Assumes that the given polygons have at least 3 vertices.
-	function union (
-		polygon_A	: in type_polygon; -- the first polygon
-		polygon_B	: in type_polygon; -- the second polygon
-		pretest		: in boolean := true;
+	-- Crops polygon B by polygon A.
+	-- These scenarios may exist:
+	-- 1. A and B are congruent. Result: B is cropped to zero area. List "cropped" is empty.
+	-- 2. A does not overlap B. Result: B is returned unchanged as the one and only polygon
+	--    in list "cropped".
+	-- 3. A inside B. Result: no crop. List "cropped" does not exist in the result.
+	-- 4. B inside A. Result: B is cropped to zero area. List "cropped" is empty.
+	-- 5. A overlaps B. Result: B is cropped by A. List "cropped" contains at 
+	--    least one polygon.
+	function crop (
+		polygon_A	: in type_polygon; -- the cropping polygon
+		polygon_B	: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
 		debug		: in boolean := false)
-		return type_union;
+		return type_crop;
+
+	-- CS improve function crop:
+	-- parameter for already existing overlap status
+	-- parameter for already existing intersections
 
 
-	-- Unions as many as possible polygons with each other.
-	-- Polygons that overlap each other are unioned. Those which
-	-- do not overlap with any other polygon remain untouched.
-	procedure multi_union (
-		polygons	: in out pac_polygon_list.list;
-		debug		: in boolean := false);
-							 
+	-- Crops a single polygon by a number of polygons:
+	function multi_crop_1 (
+		polygon_B		: in type_polygon; -- the cropped polygon / zu bescheidendes Polygon
+		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
+		debug			: in boolean := false)
+		return pac_polygon_list.list;
 
-	-- CS: Experimental. Behaves like multi_union but
-	-- takes longer.
-	procedure multi_union_2 (
-		polygons	: in out pac_polygon_list.list;
-		debug		: in boolean := false);
-							 
+	
+	function multi_crop_2 (
+		polygon_B_list	: in pac_polygon_list.list; -- the cropped polygons / zu bescheidende Polygone
+		polygon_A_list	: in pac_polygon_list.list; -- the cropping polygons
+		debug			: in boolean := false)
+		return pac_polygon_list.list;
 	
 	
-end et_geometry_1.polygons.union;
+end et_geometry_1.et_polygons.cropping;
 
 -- Soli Deo Gloria
 

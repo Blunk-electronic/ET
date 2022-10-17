@@ -79,7 +79,7 @@ with system.storage_elements;	use system.storage_elements;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
-with et_geometry_1.polygons;
+with et_geometry_1.et_polygons;
 with et_geometry_2;
 with et_geometry_2.contours;
 with et_text;
@@ -171,7 +171,7 @@ generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	with package pac_geometry_2 is new et_geometry_2 (<>);
-	with package pac_polygons is new pac_geometry_2.pac_geometry_1.polygons;
+	with package pac_polygons is new pac_geometry_2.pac_geometry_1.et_polygons;
 	with package pac_contours is new pac_geometry_2.contours;
 	
 	with package pac_text is new et_text.generic_pac_text (

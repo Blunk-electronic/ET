@@ -44,7 +44,7 @@ with ada.containers.indefinite_ordered_maps;
 with cairo;
 with et_geometry;				use et_geometry;
 with et_geometry_1;
-with et_geometry_1.polygons;
+--with et_geometry_1.et_polygons;
 with et_geometry_2;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

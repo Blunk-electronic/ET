@@ -40,7 +40,7 @@ with et_exceptions;				use et_exceptions;
 with ada.exceptions;			use ada.exceptions;
 
 
-package body et_geometry_1.polygons.offsetting is
+package body et_geometry_1.et_polygons.offsetting is
 
 
 	function to_string (oe : in type_offset_edge) return string is begin
@@ -514,7 +514,7 @@ package body et_geometry_1.polygons.offsetting is
 	end to_mode;
 
 	
-end et_geometry_1.polygons.offsetting;
+end et_geometry_1.et_polygons.offsetting;
 
 -- Soli Deo Gloria
 

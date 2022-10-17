@@ -57,7 +57,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 generic
 	
-package et_geometry_1.polygons is
+package et_geometry_1.et_polygons is
 
 
 	--pragma suppress (all_checks);
@@ -865,7 +865,7 @@ package et_geometry_1.polygons is
 		return type_polygon;
 	
 							
-end et_geometry_1.polygons;
+end et_geometry_1.et_polygons;
 
 -- Soli Deo Gloria
 

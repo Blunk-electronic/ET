@@ -46,7 +46,7 @@ with ada.exceptions;			use ada.exceptions;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_geometry_1.polygons is
+package body et_geometry_1.et_polygons is
 
 	
 	function to_string (
@@ -3381,7 +3381,7 @@ package body et_geometry_1.polygons is
 
 	
 	
-end et_geometry_1.polygons;
+end et_geometry_1.et_polygons;
 
 -- Soli Deo Gloria
 
