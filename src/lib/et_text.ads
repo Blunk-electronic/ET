@@ -44,7 +44,7 @@ with ada.containers.indefinite_ordered_maps;
 with cairo;
 with et_geometry;				use et_geometry;
 with et_geometry_1;
---with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons;
 with et_geometry_2;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -167,7 +167,7 @@ package et_text is
 	
 	generic
 		with package pac_geometry_2 is new et_geometry_2 (<>);
-		--with package pac_polygons is new pac_geometry_2.pac_geometry_1.polygons;
+		with package pac_polygons is new pac_geometry_2.pac_geometry_1.et_polygons;
 		
 		size_min		: pac_geometry_2.type_distance_positive;
 		size_max		: pac_geometry_2.type_distance_positive;

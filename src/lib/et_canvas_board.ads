@@ -107,6 +107,7 @@ package et_canvas_board is
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_contours	=> et_board_shapes_and_text.pac_contours,
 		pac_text		=> et_board_shapes_and_text.pac_text_board);
+	
 	use pac_canvas;	
 
 

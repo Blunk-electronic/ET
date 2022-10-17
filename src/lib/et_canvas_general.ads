@@ -175,8 +175,10 @@ generic
 	with package pac_contours is new pac_geometry_2.contours;
 	
 	with package pac_text is new et_text.generic_pac_text (
-		-- The used text package must have been instantiated with the same shapes package:
+		-- The used text package must have been instantiated with
+		-- these packages:
 		pac_geometry_2	=> pac_geometry_2,
+		pac_polygons	=> pac_polygons,
 		others			=> <>);
 
 
