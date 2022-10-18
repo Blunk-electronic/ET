@@ -894,6 +894,43 @@ package body et_geometry_1 is
 	end get_displacement;
 
 
+	function to_list (
+		vectors : in type_vector_array)
+		return pac_vectors.list
+	is
+		result : pac_vectors.list;
+	begin
+		for i in vectors'first .. vectors'last loop
+			result.append (vectors (i));			
+		end loop;
+		
+		return result;
+	end to_list;
+
+
+	procedure scale (
+		vectors	: in out pac_vectors.list;
+		factor	: in type_float_internal_positive)
+	is
+		use pac_vectors;
+		c : pac_vectors.cursor := vectors.first;
+		
+		procedure do_it (v : in out type_vector) is begin
+			v := scale (v, factor);
+		end do_it;
+		
+	begin
+		while c /= pac_vectors.no_element loop
+			vectors.update_element (c, do_it'access);
+			next (c);
+		end loop;
+	end scale;
+
+	
+
+
+	
+	
 	procedure move_by (
 		vectors	: in out pac_vectors.list;
 		offset	: in type_offset)

@@ -555,9 +555,26 @@ package et_geometry_1 is
 		return type_vector;
 
 
+
+	type type_vector_array is array (natural range <>) of type_vector;
+
+	
 	
 	package pac_vectors is new doubly_linked_lists (type_vector);
 
+
+	-- Converts an array of vectors to a list.
+	-- The first element of the given array becomes the 
+	-- first element in the returned list:
+	function to_list (
+		vectors : in type_vector_array)
+		return pac_vectors.list;
+
+
+	procedure scale (
+		vectors	: in out pac_vectors.list;
+		factor	: in type_float_internal_positive);
+	
 
 	-- Moves a list of location vectors by the given offset:
 	procedure move_by (
