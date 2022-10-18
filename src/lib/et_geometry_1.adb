@@ -1649,6 +1649,16 @@ package body et_geometry_1 is
 		return (start_point, end_point);
 	end make_line;
 
+
+	procedure scale (
+		line	: in out type_line;
+		factor	: in type_float_internal_positive)
+	is begin
+		line.start_point := scale (line.start_point, factor);
+		line.end_point   := scale (line.end_point,   factor);
+	end scale;
+
+	
 	
 	procedure move_by (
 		line	: in out type_line;

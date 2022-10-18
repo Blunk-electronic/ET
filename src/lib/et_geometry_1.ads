@@ -823,6 +823,11 @@ package et_geometry_1 is
 	function make_line (
 		start_point, end_point : in type_vector)
 		return type_line;
+
+
+	procedure scale (
+		line	: in out type_line;
+		factor	: in type_float_internal_positive);
 	
 		
 	-- Moves the start and end points of a 
