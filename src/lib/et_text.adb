@@ -734,7 +734,7 @@ package body et_text is
 				case text (c) is
 					when 'A' => add (capital_a);
 					when 'B' => add (capital_b);
-					--when 'C' => add (capital_c);
+					when 'C' => add (capital_c);
 					--when 'D' => add (capital_d);
 					--when 'E' => add (capital_e);
 					--when 'F' => add (capital_f);

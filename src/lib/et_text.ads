@@ -321,9 +321,13 @@ package et_text is
 			segment_ct			: type_segment_id;
 			border_vertex_ct	: type_border_vertex_id) 
 		is record
+			-- The line segments that model the actual character:
 			segments	: type_character_segments (1 .. segment_ct);
+
+			-- The border around the character is described by location vectors.
+			-- It is a polygon in CCW winding that models the basic outline
+			-- of the character:
 			border		: type_vector_array (1 .. border_vertex_ct);
-			--border		: pac_polygons.type_polygon;
 		end record;
 
 		
@@ -360,7 +364,7 @@ package et_text is
 				5	=> (x0, y3, x4, y3)), -- -
 
 			border_vertex_ct => 4,
-			border => (
+			border => ( -- describes a polygon in CCW winding !
 				1	=> set (x0, y0),
 				2	=> set (x4, y0),
 				3	=> set (x4, y6),
@@ -382,24 +386,40 @@ package et_text is
 				9	=> (x4, y1, x3, y0), -- /
 				10	=> (x3, y0, x0, y0)), -- _
 
-			border_vertex_ct => 4,
-			border => (
+			border_vertex_ct => 9,
+			border => ( -- describes a polygon in CCW winding !
 				1	=> set (x0, y0),
-				2	=> set (x4, y0),
-				3	=> set (x4, y6),
-				4	=> set (x0, y6))
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y2),
+				5	=> set (x3, y3),
+				6	=> set (x4, y4),
+				7	=> set (x4, y5),
+				8	=> set (x3, y6),
+				9	=> set (x0, y6))
 			);
 
 		
-		--capital_c : constant type_character (1 .. 7) := (
-			 --1	=> (x4, y5, x3, y6),
-			 --2	=> (x3, y6, x1, y6),
-			 --3	=> (x1, y6, x0, y5),
-			 --4	=> (x0, y5, x0, y1),
-			 --5	=> (x0, y1, x1, y0),
-			 --6	=> (x1, y0, x3, y0),
-			 --7	=> (x3, y0, x4, y1)
-			--);
+		capital_c : constant type_character := (
+			segment_ct => 7,
+			segments => (									
+			 1	=> (x4, y5, x3, y6),
+			 2	=> (x3, y6, x1, y6),
+			 3	=> (x1, y6, x0, y5),
+			 4	=> (x0, y5, x0, y1),
+			 5	=> (x0, y1, x1, y0),
+			 6	=> (x1, y0, x3, y0),
+			 7	=> (x3, y0, x4, y1)),
+
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x3, y6),
+				6	=> set (x0, y6))
+		  );
 
 		--capital_d : constant type_character (1 .. 6) := (
 			 --1	=> (x0, y6, x0, y0),
