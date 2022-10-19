@@ -4273,7 +4273,8 @@ is
 							rotation	=> get_rotation (board_text_conductor.position),
 							position	=> board_text_conductor.position.place,
 							mirror		=> mirror,
-							line_width	=> board_text_conductor.line_width
+							line_width	=> board_text_conductor.line_width,
+							make_border	=> true -- CS should be false for restrict layers
 							-- CS alignment
 							); 
 

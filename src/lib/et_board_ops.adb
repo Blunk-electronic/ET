@@ -3990,7 +3990,8 @@ package body et_board_ops is
 				rotation	=> get_rotation (text.position),
 				position	=> text.position.place,
 				mirror		=> mirror,
-				line_width	=> text.line_width
+				line_width	=> text.line_width,
+				make_border	=> true -- CS should be false for restrict layers
 				-- CS alignment
 				); 
 

@@ -281,10 +281,12 @@ is
 		begin
 			if text.layer = layer then
 				--p := to_polygons (text, true); -- debug on
-				p := to_polygons (text, fill_tolerance);
+				--p := to_polygons (text, fill_tolerance);
+				p := get_border (text.vectors);
 
-				offset_polygons (p, type_float_internal_positive (zone_clearance));
+				--offset_polygons (p, type_float_internal_positive (zone_clearance));
 
+				--put_line (to_string (p.first_element));
 				--multi_union (p);
 				
 				result.splice (
@@ -319,7 +321,7 @@ is
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- board texts:
-		--element (module_cursor).board.conductors.texts.iterate (query_text'access);
+		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
 		-- CS non electrical conductor stuff (floating fill zones, package text, fiducials, ...)
 

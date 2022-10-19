@@ -395,6 +395,8 @@ package body et_text is
 		
 	-- VECTORIZED TEXT
 
+
+		
 		function to_lines (
 			char : in type_character) 
 			return pac_vector_text_lines.list 
@@ -404,10 +406,10 @@ package body et_text is
 			scratch : type_character_line;
 		begin
 			--for l in char.segments'first .. char.segments'last loop
-			for l in char'first .. char'last loop
+			for l in char.segments'first .. char.segments'last loop
 
-				scratch.start_point := set (char (l).start_x, char (l).start_y);
-				scratch.end_point   := set (char (l).end_x,   char (l).end_y);
+				scratch.start_point := set (char.segments (l).start_x, char.segments (l).start_y);
+				scratch.end_point   := set (char.segments (l).end_x,   char.segments (l).end_y);
 					
 				--append (result, (
 					----start_point => type_point (set (char (l).start_x, char (l).start_y)),
@@ -446,7 +448,8 @@ package body et_text is
 			position	: in pac_geometry_2.type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_2.type_distance_positive;
-			alignment	: in type_text_alignment := vector_text_alignment_default)
+			alignment	: in type_text_alignment := vector_text_alignment_default;
+			make_border	: in boolean := false)
 			return type_vector_text
 		is
 			use et_general;
@@ -478,16 +481,20 @@ package body et_text is
 			-- It must be adjusted according to the given text size:
 			spacing : constant type_distance_positive := 
 				size * (0.25 + type_distance_positive (type_character_width'last));
+
 			
 			-- The scaling is done so that text height and width are
 			-- independed of the line width.
 			-- CS: Currently the scaling factor M applies to X and Y axis
 			-- in the same way. Scaling in X might be slightly different:
-			M : constant type_text_size := size - line_width;
+			scale_factor : constant type_text_size := size - line_width;
 
+			scale_factor_float : constant type_float_internal_positive := type_float_internal_positive (scale_factor);
+
+			
 			-- For alignment we need the total length of the text:
 			text_length : constant type_distance_positive := to_distance (half_line_width) +
-				type_distance (text'length - 1) * type_distance (spacing * M);
+				type_distance (text'length - 1) * type_distance (spacing * scale_factor);
 
 			text_length_half : constant type_distance_positive := text_length * 0.5;
 
@@ -495,20 +502,7 @@ package body et_text is
 			text_height_half : constant type_distance_positive := size * 0.5;
 
 			
-			procedure scale_line (l : in out type_character_line) is
-				--Sx : constant type_distance := get_x (l.start_point);
-				--Sy : constant type_distance := get_y (l.start_point);
-				--Ex : constant type_distance := get_x (l.end_point);
-				--Ey : constant type_distance := get_y (l.end_point);
-			begin
-				--l.start_point := type_point (set (Sx * M, Sy * M));
-				--l.end_point   := type_point (set (Ex * M, Ey * M));
-				l.start_point := scale (l.start_point, type_float_internal (M));
-				l.end_point   := scale (l.end_point,   type_float_internal (M));
-			end scale_line;
-
-			
-			procedure move_character (lines : in out pac_vector_text_lines.list) is
+			procedure scale_and_move_lines (lines : in out pac_vector_text_lines.list) is
 				
 				-- Here we collect the lines of the moved character.
 				-- scratch will overwrite the given lines at the end of this procedure:
@@ -519,7 +513,7 @@ package body et_text is
 				begin
 					-- According to the given text size, the line is now 
 					-- to be scaled:
-					scale_line (l);
+					scale (l, scale_factor_float);
 
 					-- Move the line by offset_due_to_line_width (see above):
 					move_by (
@@ -542,16 +536,45 @@ package body et_text is
 			begin
 				iterate (lines, query_line'access); -- query the lines of the character
 				lines := scratch; -- replace old lines by new lines
-			end move_character;
+			end scale_and_move_lines;
+
+
+			procedure scale_and_move_border (border : in out pac_vectors.list) is begin
+				scale (border, scale_factor_float);
+				move_by (border, offset_due_to_line_width);
+
+				move_by (border, to_offset (
+									x => type_distance (place - 1) * spacing,
+									y => zero));
+
+				rotate_by (border, type_angle (rotation));
+				
+				move_by (border, to_offset (position));
+				
+				-- CS
+				-- align horizontal / vertical ?
+			end scale_and_move_border;
 
 			
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
 			procedure add (char : in type_character) is 
-				lines : pac_vector_text_lines.list := to_lines (char);
+				text_lines : pac_vector_text_lines.list := to_lines (char);
+				border_vertices : pac_vectors.list;
+
+				use pac_polygons;
+				p_scratch : type_polygon;
 			begin
-				move_character (lines);
-				sorting.merge (target => result.lines, source => lines);
+				scale_and_move_lines (text_lines);
+				sorting.merge (target => result.lines, source => text_lines);
+
+				if make_border then
+					border_vertices := to_list (char.border);
+					scale_and_move_border (border_vertices);
+					p_scratch := to_polygon (border_vertices);
+					--offset_polygon (p_scratch, half_line_width);
+					result.border.append (p_scratch);
+				end if;
 			end add;
 
 			
@@ -666,7 +689,7 @@ package body et_text is
 							axis	=> Y);
 					end if;
 					
-					-- Move the text by the given position. 
+					-- Move the line to the given position. 
 					-- The given position is the anchor point of the text.
 					move_by (
 						line	=> l,
@@ -710,74 +733,74 @@ package body et_text is
 				case text (c) is
 					when 'A' => add (capital_a);
 					when 'B' => add (capital_b);
-					when 'C' => add (capital_c);
-					when 'D' => add (capital_d);
-					when 'E' => add (capital_e);
-					when 'F' => add (capital_f);
-					when 'G' => add (capital_g);
-					when 'H' => add (capital_h);
-					when 'I' => add (capital_i);
-					when 'J' => add (capital_j);
-					when 'K' => add (capital_k);
-					when 'L' => add (capital_l);
-					when 'M' => add (capital_m);
-					when 'N' => add (capital_n);
-					when 'O' => add (capital_o);
-					when 'P' => add (capital_p);
-					when 'Q' => add (capital_q);
-					when 'R' => add (capital_r);
-					when 'S' => add (capital_s);
-					when 'T' => add (capital_t);
-					when 'U' => add (capital_u);
-					when 'V' => add (capital_v);
-					when 'W' => add (capital_w);
-					when 'X' => add (capital_x);
-					when 'Y' => add (capital_y);
-					when 'Z' => add (capital_z);
+					--when 'C' => add (capital_c);
+					--when 'D' => add (capital_d);
+					--when 'E' => add (capital_e);
+					--when 'F' => add (capital_f);
+					--when 'G' => add (capital_g);
+					--when 'H' => add (capital_h);
+					--when 'I' => add (capital_i);
+					--when 'J' => add (capital_j);
+					--when 'K' => add (capital_k);
+					--when 'L' => add (capital_l);
+					--when 'M' => add (capital_m);
+					--when 'N' => add (capital_n);
+					--when 'O' => add (capital_o);
+					--when 'P' => add (capital_p);
+					--when 'Q' => add (capital_q);
+					--when 'R' => add (capital_r);
+					--when 'S' => add (capital_s);
+					--when 'T' => add (capital_t);
+					--when 'U' => add (capital_u);
+					--when 'V' => add (capital_v);
+					--when 'W' => add (capital_w);
+					--when 'X' => add (capital_x);
+					--when 'Y' => add (capital_y);
+					--when 'Z' => add (capital_z);
 
-					when 'a' => add (small_a);
-					when 'b' => add (small_b);
-					when 'c' => add (small_c);
-					when 'd' => add (small_d);
-					when 'e' => add (small_e);
-					when 'f' => add (small_f);
-					when 'g' => add (small_g);
-					when 'h' => add (small_h);
-					when 'i' => add (small_i);
-					when 'j' => add (small_j);
-					when 'k' => add (small_k);
-					when 'l' => add (small_l);
-					when 'm' => add (small_m);
-					when 'n' => add (small_n);
-					when 'o' => add (small_o);
-					when 'p' => add (small_p);
-					when 'q' => add (small_q);
-					when 'r' => add (small_r);
-					when 's' => add (small_s);
-					when 't' => add (small_t);
-					when 'u' => add (small_u);
-					when 'v' => add (small_v);
-					when 'w' => add (small_w);
-					when 'x' => add (small_x);
-					when 'y' => add (small_y);
-					when 'z' => add (small_z);
+					--when 'a' => add (small_a);
+					--when 'b' => add (small_b);
+					--when 'c' => add (small_c);
+					--when 'd' => add (small_d);
+					--when 'e' => add (small_e);
+					--when 'f' => add (small_f);
+					--when 'g' => add (small_g);
+					--when 'h' => add (small_h);
+					--when 'i' => add (small_i);
+					--when 'j' => add (small_j);
+					--when 'k' => add (small_k);
+					--when 'l' => add (small_l);
+					--when 'm' => add (small_m);
+					--when 'n' => add (small_n);
+					--when 'o' => add (small_o);
+					--when 'p' => add (small_p);
+					--when 'q' => add (small_q);
+					--when 'r' => add (small_r);
+					--when 's' => add (small_s);
+					--when 't' => add (small_t);
+					--when 'u' => add (small_u);
+					--when 'v' => add (small_v);
+					--when 'w' => add (small_w);
+					--when 'x' => add (small_x);
+					--when 'y' => add (small_y);
+					--when 'z' => add (small_z);
 					
-					when '0' => add (digit_0);
-					when '1' => add (digit_1);
-					when '2' => add (digit_2);
-					when '3' => add (digit_3);
-					when '4' => add (digit_4);
-					when '5' => add (digit_5);
-					when '6' => add (digit_6);
-					when '7' => add (digit_7);
-					when '8' => add (digit_8);
-					when '9' => add (digit_9);
+					--when '0' => add (digit_0);
+					--when '1' => add (digit_1);
+					--when '2' => add (digit_2);
+					--when '3' => add (digit_3);
+					--when '4' => add (digit_4);
+					--when '5' => add (digit_5);
+					--when '6' => add (digit_6);
+					--when '7' => add (digit_7);
+					--when '8' => add (digit_8);
+					--when '9' => add (digit_9);
 
-					when '+' => add (special_plus);
-					when '-' => add (special_dash);
-					when '_' => add (special_underline);
-					when '/' => add (special_forward_slash);
-					when ':' => add (special_colon);
+					--when '+' => add (special_plus);
+					--when '-' => add (special_dash);
+					--when '_' => add (special_underline);
+					--when '/' => add (special_forward_slash);
+					--when ':' => add (special_colon);
 					when ' ' => null;
 					
 					when others => 
@@ -826,6 +849,14 @@ package body et_text is
 		end get_lines;
 
 
+		function get_border (
+			text	: in type_vector_text)
+			return pac_polygons.pac_polygon_list.list
+		is begin
+			return text.border;
+		end get_border;
+		
+		
 		function get_linewidth (
 			text	: in type_vector_text)
 			return type_distance_positive

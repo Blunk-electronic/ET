@@ -69,7 +69,7 @@ package et_conductor_text is
 	type type_conductor_text 
 		is new type_text_fab_with_content with
 	record
-		vectors	: type_vector_text;
+		vectors	: type_vector_text; -- CS rename to text ?
 	end record;
 
 	
