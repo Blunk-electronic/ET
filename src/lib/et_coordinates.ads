@@ -46,10 +46,14 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
+
 with et_geometry_1;
+with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.offsetting;
+
 with et_geometry_2;
 with et_geometry_2.contours;
-with et_geometry_1.et_polygons;
+
 with et_logging;				use et_logging;
 
 
@@ -111,14 +115,13 @@ package et_coordinates is
 		
 	use pac_geometry_2;
 
-	
+
+	-- These packages are never used in schematic but are
+	-- required for instantiation of some generic packages:
 	package pac_contours is new pac_geometry_2.contours;
-	-- This package is never used in schematic.
-
 	package pac_polygons is new pac_geometry_1.et_polygons;
-	-- This package is never used in schematic.
+	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
-	
 	
 	catch_zone_default : constant type_catch_zone := 2.0; 
 	-- CS: should be a general setting for schematic and symbol editor in the future

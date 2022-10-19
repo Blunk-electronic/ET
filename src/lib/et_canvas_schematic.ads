@@ -109,6 +109,7 @@ package et_canvas_schematic is
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		pac_geometry_2	=> et_coordinates.pac_geometry_2,
+		pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
 		pac_polygons	=> et_coordinates.pac_polygons,
 		pac_contours	=> et_coordinates.pac_contours,
 		pac_text		=> et_symbols.pac_text_schematic);

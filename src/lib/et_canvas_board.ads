@@ -105,6 +105,7 @@ package et_canvas_board is
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
+		pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
 		pac_contours	=> et_board_shapes_and_text.pac_contours,
 		pac_text		=> et_board_shapes_and_text.pac_text_board);
 	

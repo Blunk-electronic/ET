@@ -563,6 +563,7 @@ package body et_text is
 				border_vertices : pac_vectors.list;
 
 				use pac_polygons;
+				use pac_offsetting;
 				p_scratch : type_polygon;
 			begin
 				scale_and_move_lines (text_lines);
@@ -572,7 +573,7 @@ package body et_text is
 					border_vertices := to_list (char.border);
 					scale_and_move_border (border_vertices);
 					p_scratch := to_polygon (border_vertices);
-					--offset_polygon (p_scratch, half_line_width);
+					offset_polygon (p_scratch, half_line_width);
 					result.border.append (p_scratch);
 				end if;
 			end add;

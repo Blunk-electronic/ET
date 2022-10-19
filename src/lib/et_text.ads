@@ -44,8 +44,12 @@ with ada.containers.indefinite_ordered_maps;
 
 with cairo;
 with et_geometry;				use et_geometry;
+
 with et_geometry_1;
 with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.offsetting;
+with et_geometry_1.et_polygons.union;
+
 with et_geometry_2;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -172,7 +176,8 @@ package et_text is
 	
 	generic
 		with package pac_geometry_2 is new et_geometry_2 (<>);
-		with package pac_polygons is new pac_geometry_2.pac_geometry_1.et_polygons;
+		with package pac_polygons   is new pac_geometry_2.pac_geometry_1.et_polygons;
+		with package pac_offsetting is new pac_polygons.offsetting;
 		
 		size_min		: pac_geometry_2.type_distance_positive;
 		size_max		: pac_geometry_2.type_distance_positive;
@@ -187,7 +192,6 @@ package et_text is
 		use pac_geometry_2;
 
 		use pac_geometry_1;
-		--use pac_polygons;
 		-- NOTE: This use clause does not work properly. 
 		-- For some reason the package name must be explicitely provided
 		-- for stuff that stems from pac_geometry_1.

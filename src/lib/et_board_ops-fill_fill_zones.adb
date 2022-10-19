@@ -159,6 +159,7 @@ is
 	-- the clearance of a particular net (the greater value of them is applied):
 	function conductors_to_polygons (
 		zone_clearance	: in type_track_clearance;
+		linewidth		: in type_track_width;								
 		layer 			: in type_signal_layer;
 		parent_net		: in pac_nets.cursor := pac_nets.no_element)
 		return pac_polygon_list.list
@@ -167,6 +168,13 @@ is
 
 		layer_category : type_signal_layer_category;
 
+		
+		half_linewidth_float : constant type_float_internal_positive := 
+			type_float_internal_positive (linewidth * 0.5);
+
+		zone_clearance_float : constant type_float_internal_positive :=
+			type_float_internal_positive (zone_clearance);
+		
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -284,7 +292,7 @@ is
 				--p := to_polygons (text, fill_tolerance);
 				p := get_border (text.vectors);
 
-				--offset_polygons (p, type_float_internal_positive (zone_clearance));
+				offset_polygons (p, half_linewidth_float + zone_clearance_float);
 
 				--put_line (to_string (p.first_element));
 				--multi_union (p);
@@ -298,7 +306,8 @@ is
 		end query_text;
 		
 		
-	begin
+	begin -- conductors_to_polygons
+		
 		log (text => "processing conductor objects ...", level => log_threshold + 4);
 		log_indentation_up;
 		
@@ -557,6 +566,7 @@ is
 		-- the zone isolation or the net clearance. The greater value is applied:
 		conductors := conductors_to_polygons (
 			zone_clearance	=> clearance,
+			linewidth		=> linewidth,									 
 			layer			=> layer,
 			parent_net		=> parent_net);
 

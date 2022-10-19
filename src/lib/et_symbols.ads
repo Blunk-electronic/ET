@@ -81,6 +81,7 @@ package et_symbols is
 	package pac_text_schematic is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
 		pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
+		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,

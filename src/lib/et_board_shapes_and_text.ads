@@ -85,6 +85,7 @@ package et_board_shapes_and_text is
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
 		pac_polygons		=> pac_polygons,											 
+		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> 0.01,
 		size_max			=> 100.0,
 		size_default		=> 1.0,
