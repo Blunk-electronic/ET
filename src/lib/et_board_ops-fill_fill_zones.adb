@@ -174,7 +174,10 @@ is
 
 		zone_clearance_float : constant type_float_internal_positive :=
 			type_float_internal_positive (zone_clearance);
+
+
 		
+		-- NETS -------------------------------------------------------------
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -281,27 +284,29 @@ is
 			end if;
 		end query_net;
 
-
+		
+		-- TEXTS ---------------------------------------------------------------
 		use et_conductor_text.boards.pac_conductor_texts;
+		
 		procedure query_text (t : in pac_conductor_texts.cursor) is 
 			text : type_conductor_text renames element (t);
-			p : pac_polygon_list.list;
+			borders : pac_polygon_list.list;
 		begin
 			if text.layer = layer then
-				--p := to_polygons (text, true); -- debug on
-				--p := to_polygons (text, fill_tolerance);
-				p := get_border (text.vectors);
 
-				offset_polygons (p, half_linewidth_float + zone_clearance_float);
+				borders := get_borders (text.vectors);
 
-				--put_line (to_string (p.first_element));
-				--multi_union (p);
+				offset_polygons (borders, half_linewidth_float + zone_clearance_float);
+
+				--put_line (to_string (borders.first_element));
+				
+				-- NOTE: The borders of the characters of the text should not overlap.
+				-- Therefore there is no need for unioning the characters.
 				
 				result.splice (
 					before => pac_polygon_list.no_element,
-					source => p);
+					source => borders);
 
-				--put_line ("text");
 			end if;
 		end query_text;
 		
@@ -332,7 +337,7 @@ is
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
-		-- CS non electrical conductor stuff (floating fill zones, package text, fiducials, ...)
+		-- CS non electrical conductor stuff (foreign floating fill zones, package text, fiducials, ...)
 
 		log_indentation_down;
 		

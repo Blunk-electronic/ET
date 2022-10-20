@@ -970,7 +970,7 @@ package body et_geometry_1 is
 	end rotate_by;
 	
 
-	procedure mirror (
+	procedure mirror_vectors (
 		vectors	: in out pac_vectors.list;
 		axis	: in type_axis_2d)
 	is
@@ -986,7 +986,7 @@ package body et_geometry_1 is
 			vectors.update_element (c, do_it'access);
 			next (c);
 		end loop;
-	end mirror;
+	end mirror_vectors;
 
 	
 	

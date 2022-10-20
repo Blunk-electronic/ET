@@ -452,7 +452,6 @@ package body et_text is
 			make_border	: in boolean := false)
 			return type_vector_text
 		is
-			use et_general;
 			use pac_vector_text_lines;
 
 			-- We return a list of lines. In the course of this function
@@ -465,7 +464,7 @@ package body et_text is
 			text : constant string := pac_text_content.to_string (content);
 
 			package sorting is new pac_vector_text_lines.generic_sorting;
-			--use sorting;
+
 
 			half_line_width : constant type_float_internal_positive := 
 				type_float_internal (line_width) * 0.5;
@@ -485,8 +484,7 @@ package body et_text is
 			
 			-- The scaling is done so that text height and width are
 			-- independed of the line width.
-			-- CS: Currently the scaling factor M applies to X and Y axis
-			-- in the same way. Scaling in X might be slightly different:
+			-- The scaling factor M applies to X and Y axis in the same way.
 			scale_factor : constant type_text_size := size - line_width;
 
 			scale_factor_float : constant type_float_internal_positive := type_float_internal_positive (scale_factor);
@@ -539,7 +537,22 @@ package body et_text is
 			end scale_and_move_lines;
 
 
-			procedure scale_and_move_border (border : in out pac_vectors.list) is begin
+			procedure scale_and_move_border (border : in out pac_vectors.list) is 
+
+				procedure align_vertical is begin
+					case alignment.vertical is
+						when BOTTOM => 
+							null; -- already computed for bottom alignment. nothing to do
+						
+						when CENTER =>
+							move_by (border, to_offset (zero, - text_height_half));
+							
+						when TOP =>
+							move_by (border, to_offset (zero, - text_height));
+					end case;
+				end align_vertical;
+
+			begin -- scale_and_move_border
 				scale (border, scale_factor_float);
 				move_by (border, offset_due_to_line_width);
 
@@ -547,17 +560,43 @@ package body et_text is
 									x => type_distance (place - 1) * spacing,
 									y => zero));
 
+
+				-- CS: Not tested !
+				-- Align with the origin:
+				case alignment.horizontal is
+					when LEFT => 
+						-- already computed for left alignment. so no need to align horizontal.
+						align_vertical;
+
+					when CENTER =>
+						move_by (border, to_offset (- text_length_half, zero));
+						
+						align_vertical;
+						
+					when RIGHT =>
+						move_by (border, to_offset (- text_length, zero));
+						
+						align_vertical;
+				end case;
+					
+				
+				-- Rotate as given by argument "rotation":
 				rotate_by (border, type_angle (rotation));
 				
-				move_by (border, to_offset (position));
+				-- Mirror if required:
+				if mirror = YES then
+					mirror_vectors (vectors => border, axis => Y);
+				end if;
 				
-				-- CS
-				-- align horizontal / vertical ?
+				-- Move to final position as given by argument "position":
+				move_by (border, to_offset (position));
 			end scale_and_move_border;
 
 			
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
+			-- If required by argument make_border, a border around the
+			-- character is formed from the list of border vertices:
 			procedure add (char : in type_character) is 
 				text_lines : pac_vector_text_lines.list := to_lines (char);
 				border_vertices : pac_vectors.list;
@@ -574,7 +613,7 @@ package body et_text is
 					scale_and_move_border (border_vertices);
 					p_scratch := to_polygon (border_vertices);
 					offset_polygon (p_scratch, half_line_width);
-					result.border.append (p_scratch);
+					result.borders.append (p_scratch);
 				end if;
 			end add;
 
@@ -678,28 +717,17 @@ package body et_text is
 					
 					-- Rotate the text (about the origin) if required:
 					if rotation /= zero_rotation then
-						rotate_by (
-							line	=> l,
-							offset	=> type_angle (rotation));
+						rotate_by (l, type_angle (rotation));
 					end if;
 
 					-- Mirror the text if required:
 					if mirror = YES then
-						mirror_line (
-							line	=> l,
-							axis	=> Y);
+						mirror_line (l, Y);
 					end if;
 					
 					-- Move the line to the given position. 
 					-- The given position is the anchor point of the text.
-					move_by (
-						line	=> l,
-						offset	=> to_offset (position));
-					
-					--round (l); 
-					-- CS: not sure whether this is reasonable
-					-- However, it irons out errors caused by previous
-					-- rotating operations.
+					move_by (l, to_offset (position));					
 					
 					append (scratch, l);
 
@@ -850,12 +878,12 @@ package body et_text is
 		end get_lines;
 
 
-		function get_border (
+		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list
 		is begin
-			return text.border;
-		end get_border;
+			return text.borders;
+		end get_borders;
 		
 		
 		function get_linewidth (

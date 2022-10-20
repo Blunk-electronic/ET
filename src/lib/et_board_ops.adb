@@ -3980,10 +3980,18 @@ package body et_board_ops is
 			-- are not mirrored.
 			if layer_category in type_layer_category_restrict then
 				mirror := NO;
+				log (text => "text is in restrict layer -> no mirroring", level => log_threshold + 1);
 			else
 				mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+
+				if mirror = YES then
+					log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
+				else
+					log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
+				end if;
 			end if;
 
+			
 			v_text := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
@@ -4021,11 +4029,22 @@ package body et_board_ops is
 		end place_text;
 
 	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing text in conductor layer at"
+			& to_string (text.position)
+			& " category " & to_string (layer_category)
+			& " signal layer " & to_string (signal_layer),
+			level => log_threshold);
+
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> place_text'access);
 
+		log_indentation_down;
 	end place_text_in_conductor_layer;
 
 

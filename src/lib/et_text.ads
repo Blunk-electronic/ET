@@ -973,6 +973,8 @@ package et_text is
 		-- constraint error will arise !
 		-- If make_border is true, then for each character a border is
 		-- computed. The border is a polygon that wraps the character.
+		-- This function is required for texts in fill zones. Therefore it is
+		-- turned off by default.
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
@@ -1006,7 +1008,7 @@ package et_text is
 
 
 		-- Returns the borders of the characters of the given vector text:
-		function get_border (
+		function get_borders (
 			text	: in type_vector_text)
 			return pac_polygons.pac_polygon_list.list;
 		
@@ -1026,9 +1028,16 @@ package et_text is
 		
 	private
 		type type_vector_text is record
+			-- The line segments the text is composed of:
 			lines		: pac_vector_text_lines.list;
-			border		: pac_polygons.pac_polygon_list.list;
+
+			-- The border around the characters (optional):
+			borders		: pac_polygons.pac_polygon_list.list;
+
+			-- The linewidth of the line segments:
 			width		: pac_geometry_2.type_distance_positive := 0.0; -- CS use lower limit ?
+
+			-- The boundaries of the whole vector text:
 			boundaries	: pac_geometry_1.type_boundaries;
 		end record;
 		

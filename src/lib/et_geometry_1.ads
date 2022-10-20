@@ -592,7 +592,7 @@ package et_geometry_1 is
 
 
 	-- Mirrors a list of location vectors along the given axis:
-	procedure mirror (
+	procedure mirror_vectors (
 		vectors	: in out pac_vectors.list;
 		axis	: in type_axis_2d);  
 

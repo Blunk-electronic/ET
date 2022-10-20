@@ -1321,6 +1321,12 @@ is
 		-- board demo place text outline 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
+
+		-- CS: argument for alignment
+
+		-- There is no need of an argument that controls mirroring !
+		-- See call of place_text_in_conductor_layer below.
+		
 		case get_field_count is
 			when 11 =>
 				layer_category := to_layer_category (f (5));
@@ -1391,6 +1397,7 @@ is
 						
 						signal_layer := to_signal_layer (f (6));  -- 5 
 						
+						-- This procedure automatically cares for mirroring:
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
