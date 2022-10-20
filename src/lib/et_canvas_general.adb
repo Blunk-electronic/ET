@@ -3274,7 +3274,6 @@ package body pac_canvas is
 		context	: in type_draw_context;
 		text	: in type_vector_text;
 		width	: in pac_geometry_2.type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
 	is
 		use pac_text;
@@ -3282,9 +3281,9 @@ package body pac_canvas is
 		bounding_box_text : constant type_bounding_box := 
 			make_bounding_box (height, get_boundaries (text));
 		
-		use pac_vector_text_lines;
+		use pac_character_lines;
 		
-		procedure query_line (c : in pac_vector_text_lines.cursor) is 
+		procedure query_line (c : in pac_character_lines.cursor) is 
 
 			-- compute the boundaries (greatest/smallest x/y) of the given line:
 			b : type_boundaries := get_boundaries (type_line (element (c)), width);

@@ -3967,7 +3967,7 @@ package body et_board_ops is
 			module		: in out type_module) 
 		is
 			use pac_conductor_texts;
-			vectors : pac_vector_text_lines.list;
+			vectors : pac_character_lines.list;
 			use et_text;
 			mirror : type_vector_text_mirrored;
 

@@ -200,10 +200,12 @@ package et_text is
 		
 		subtype type_text_size is pac_geometry_2.type_distance_positive 
 			range size_min .. size_max; -- in millimeters
+
 		
 		subtype type_text_line_width is pac_geometry_2.type_distance_positive
 			range line_width_min .. line_width_max;
 
+		
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		function to_text_size (size : in pac_geometry_2.type_distance) return type_text_size;
 	
@@ -211,13 +213,16 @@ package et_text is
 		procedure validate_text_size (size : in pac_geometry_2.type_distance);
 		-- Checks whether given text size is in range of type_text_size.
 
-		procedure validate_text_line_width (width : in pac_geometry_2.type_distance);
+		
 		-- Checks whether given line width is in range of type_text_line_width
+		procedure validate_text_line_width (width : in pac_geometry_2.type_distance);
+
 		
 		type type_text is abstract tagged record
 			size		: type_text_size := size_default;
 			alignment	: type_text_alignment;
 		end record;
+
 		
 		-- Returns the properties of the given text in a long single string.	
 		function text_properties (
@@ -230,6 +235,7 @@ package et_text is
 			line_width	: type_text_line_width := type_text_line_width'first;
 		end record;
 
+		
 		-- Returns the properties of the given text in a long single string.	
 		function text_properties (
 			text : in type_text_fab)
@@ -291,32 +297,25 @@ package et_text is
 		character_width : constant type_character_height := 0.7;
 	
 
+
 		
+
+		-- To model a vectorized default character this stuff is required.
 		-- A single line segment of a character is defined as:
-		type type_segment is record  -- CS rename to type_character_segment
+		type type_character_segment is record
 			start_x	: type_character_width;
 			start_y : type_character_height;
 			end_x	: type_character_width;
 			end_y	: type_character_height;
 		end record;
 
-		--type type_character is array (type_segment_id range <>) of type_segment;
+		type type_character_segments is array (type_segment_id range <>) 
+			of type_character_segment;
 
-		type type_character_segments is array (type_segment_id range <>) of type_segment;
+			
+			
 
-
-
-		--subtype type_border_size is type_character_height;
-
-		--type type_border_vertex is record
-			--x,y	: type_border_size;
-		--end record;
-
-		--type type_border_vertices is array (type_border_vertex_id range <>) of type_border_vertex;
-		--type type_border_vertices is array (type_border_vertex_id range <>) of type_vector;
-
-
-		
+		-- This is a vectorized default character type:
 		type type_character (
 			segment_ct			: type_segment_id;
 			border_vertex_ct	: type_border_vertex_id) 
@@ -330,14 +329,21 @@ package et_text is
 			border		: type_vector_array (1 .. border_vertex_ct);
 		end record;
 
+
 		
+
+		-- These are common columns and rows where the segments
+		-- of a default character start, end or meet each other.
+		-- The define the way such a character looks like.
+
+		-- columns:
 		x0 : constant type_character_width := 0.0;
 		x1 : constant type_character_width := 0.2;
 		x2 : constant type_character_width := 0.35;
 		x3 : constant type_character_width := 0.5;
 		x4 : constant type_character_width := 0.7;
 
-
+		-- rows:
 		y6 : constant type_character_height := 1.0;
 		y5 : constant type_character_height := 0.8 + 0.05;
 		y4 : constant type_character_height := 0.7 - 0.05;
@@ -943,18 +949,15 @@ package et_text is
 		-- A character is a list of lines. These lines are machine made. They are
 		-- a result of rotation, scaling, mirroring, ...
 		-- The start and end points are expressed by float numbers.
-		-- In order to avoid confusion we derive from pac_geometry_1.type_line a new type
-		-- for these lines:
-		type type_character_line is new pac_geometry_1.type_line; -- CS no need
+		type type_character_line is new pac_geometry_1.type_line;
 		
-		package pac_vector_text_lines is new doubly_linked_lists (type_character_line); -- CS use type_line
-		-- CS rename to pac_character_lines
+		package pac_character_lines is new doubly_linked_lists (type_character_line);
 
 		
 		-- Converts a character to a list of lines:
 		function to_lines (
 			char : in type_character) 
-			return pac_vector_text_lines.list;
+			return pac_character_lines.list;
 
 
 		type type_text_fab_with_content is new type_text_fab with record
@@ -991,20 +994,20 @@ package et_text is
 		-- given vector text:
 		function first (
 			text	: in type_vector_text)
-			return pac_vector_text_lines.cursor;
+			return pac_character_lines.cursor;
 
 		
 		-- Iterates the lines of the given vector text:
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
-				position: in pac_vector_text_lines.cursor));
+				position: in pac_character_lines.cursor));
 
 
 		-- Returns the lines of the given vector text:
 		function get_lines (
 			text	: in type_vector_text)
-			return pac_vector_text_lines.list;
+			return pac_character_lines.list;
 
 
 		-- Returns the borders of the characters of the given vector text:
@@ -1029,7 +1032,7 @@ package et_text is
 	private
 		type type_vector_text is record
 			-- The line segments the text is composed of:
-			lines		: pac_vector_text_lines.list;
+			lines		: pac_character_lines.list;
 
 			-- The border around the characters (optional):
 			borders		: pac_polygons.pac_polygon_list.list;

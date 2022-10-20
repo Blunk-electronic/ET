@@ -194,7 +194,7 @@ is
 
 	
 	procedure query_text (c : in pac_stop_mask_texts.cursor) is 
-		use pac_vector_text_lines;
+		use pac_character_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
 

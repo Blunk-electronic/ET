@@ -399,10 +399,10 @@ package body et_text is
 		
 		function to_lines (
 			char : in type_character) 
-			return pac_vector_text_lines.list 
+			return pac_character_lines.list 
 		is
-			use pac_vector_text_lines;
-			result : pac_vector_text_lines.list;
+			use pac_character_lines;
+			result : pac_character_lines.list;
 			scratch : type_character_line;
 		begin
 			--for l in char.segments'first .. char.segments'last loop
@@ -452,7 +452,7 @@ package body et_text is
 			make_border	: in boolean := false)
 			return type_vector_text
 		is
-			use pac_vector_text_lines;
+			use pac_character_lines;
 
 			-- We return a list of lines. In the course of this function
 			-- this list gets filled with the lines of vectorized characters:
@@ -463,7 +463,7 @@ package body et_text is
 			-- to a vectorized character (which is a list of lines):
 			text : constant string := pac_text_content.to_string (content);
 
-			package sorting is new pac_vector_text_lines.generic_sorting;
+			package sorting is new pac_character_lines.generic_sorting;
 
 
 			half_line_width : constant type_float_internal_positive := 
@@ -500,13 +500,13 @@ package body et_text is
 			text_height_half : constant type_distance_positive := size * 0.5;
 
 			
-			procedure scale_and_move_lines (lines : in out pac_vector_text_lines.list) is
+			procedure scale_and_move_lines (lines : in out pac_character_lines.list) is
 				
 				-- Here we collect the lines of the moved character.
 				-- scratch will overwrite the given lines at the end of this procedure:
-				scratch : pac_vector_text_lines.list;
+				scratch : pac_character_lines.list;
 
-				procedure query_line (c : in pac_vector_text_lines.cursor) is
+				procedure query_line (c : in pac_character_lines.cursor) is
 					l : type_character_line := element (c);
 				begin
 					-- According to the given text size, the line is now 
@@ -598,7 +598,7 @@ package body et_text is
 			-- If required by argument make_border, a border around the
 			-- character is formed from the list of border vertices:
 			procedure add (char : in type_character) is 
-				text_lines : pac_vector_text_lines.list := to_lines (char);
+				text_lines : pac_character_lines.list := to_lines (char);
 				border_vertices : pac_vectors.list;
 
 				use pac_polygons;
@@ -619,9 +619,9 @@ package body et_text is
 
 			
 			procedure finalize is
-				scratch : pac_vector_text_lines.list;
+				scratch : pac_character_lines.list;
 
-				procedure query_line (c : in pac_vector_text_lines.cursor) is 
+				procedure query_line (c : in pac_character_lines.cursor) is 
 					l : type_character_line := element (c);
 
 					procedure align_vertical is begin
@@ -849,7 +849,7 @@ package body et_text is
 
 		function first (
 			text	: in type_vector_text)
-			return pac_vector_text_lines.cursor
+			return pac_character_lines.cursor
 		is begin
 			return text.lines.first;
 		end first;
@@ -858,10 +858,10 @@ package body et_text is
 		procedure iterate (
 			text	: in type_vector_text;
 			process	: not null access procedure (
-				position: in pac_vector_text_lines.cursor))
+				position: in pac_character_lines.cursor))
 		is 
-			use pac_vector_text_lines;
-			c : pac_vector_text_lines.cursor := text.lines.first;
+			use pac_character_lines;
+			c : pac_character_lines.cursor := text.lines.first;
 		begin
 			while c /= no_element loop
 				process (c);				
@@ -872,7 +872,7 @@ package body et_text is
 		
 		function get_lines (
 			text	: in type_vector_text)
-			return pac_vector_text_lines.list
+			return pac_character_lines.list
 		is begin
 			return text.lines;
 		end get_lines;

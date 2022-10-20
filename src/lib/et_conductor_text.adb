@@ -71,8 +71,8 @@ package body et_conductor_text is
 
 		use pac_polygon_union;
 		
-		procedure query_line (l : in pac_vector_text_lines.cursor) is
-			use pac_vector_text_lines;
+		procedure query_line (l : in pac_character_lines.cursor) is
+			use pac_character_lines;
 			p : type_polygon := to_polygon (
 				pac_geometry_brd.type_line (element (l)), linewidth, tolerance_float);
 		begin
