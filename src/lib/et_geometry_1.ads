@@ -352,6 +352,7 @@ package et_geometry_1 is
 	
 -- VECTORS
 
+	-- A location vector:
 	type type_vector is	record
 		x, y, z : type_float_internal := 0.0;
 	end record;
@@ -556,10 +557,11 @@ package et_geometry_1 is
 
 
 
+	-- Location vectors can be stored in arrays:
 	type type_vector_array is array (natural range <>) of type_vector;
 
 	
-	
+	-- Location vectors can be stored in simple lists:	
 	package pac_vectors is new doubly_linked_lists (type_vector);
 
 
@@ -571,6 +573,7 @@ package et_geometry_1 is
 		return pac_vectors.list;
 
 
+	-- Scales a list of vectors by the given factor:
 	procedure scale (
 		vectors	: in out pac_vectors.list;
 		factor	: in type_float_internal_positive);
@@ -586,6 +589,12 @@ package et_geometry_1 is
 	procedure rotate_by (
 		vectors	: in out pac_vectors.list;
 		angle	: in type_angle);				  
+
+
+	-- Mirrors a list of location vectors along the given axis:
+	procedure mirror (
+		vectors	: in out pac_vectors.list;
+		axis	: in type_axis_2d);  
 
 	
 	-- Appends all location vectors of source to the target:
@@ -862,10 +871,6 @@ package et_geometry_1 is
 
 
 	-- Mirrors a line along the given axis:
-	procedure mirror ( -- CS remove
-		line	: in out type_line;
-		axis	: in type_axis_2d);
-
 	procedure mirror_line (
 		line	: in out type_line;
 		axis	: in type_axis_2d);

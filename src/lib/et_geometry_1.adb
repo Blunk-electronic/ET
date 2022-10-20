@@ -969,6 +969,25 @@ package body et_geometry_1 is
 		end loop;
 	end rotate_by;
 	
+
+	procedure mirror (
+		vectors	: in out pac_vectors.list;
+		axis	: in type_axis_2d)
+	is
+		use pac_vectors;
+		c : pac_vectors.cursor := vectors.first;
+
+		procedure do_it (v : in out type_vector) is begin
+			mirror (v, axis);
+		end do_it;
+		
+	begin
+		while c /= pac_vectors.no_element loop
+			vectors.update_element (c, do_it'access);
+			next (c);
+		end loop;
+	end mirror;
+
 	
 	
 	procedure splice_vectors (
@@ -1714,22 +1733,13 @@ package body et_geometry_1 is
 		rotate_by (line.end_point, offset);
 	end rotate_by;
 	
-
-	procedure mirror (
-		line	: in out type_line;
-		axis	: in type_axis_2d)
-	is begin
-		mirror (line.start_point, axis);
-		mirror (line.start_point, axis);
-	end mirror;
-
 	
 	procedure mirror_line (
 		line	: in out type_line;
 		axis	: in type_axis_2d)
 	is begin
 		mirror (line.start_point, axis);
-		mirror (line.start_point, axis);
+		mirror (line.end_point, axis);
 	end mirror_line;
 
 	
