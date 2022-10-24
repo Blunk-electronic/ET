@@ -66,14 +66,14 @@ package et_material is
 	function to_string (name : in type_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
-	type type_device is record
+	type type_device is record -- CS rename to type_bom_device
 		value		: pac_device_value.bounded_string;	-- 7400
 		packge		: et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: pac_device_partcode.bounded_string; -- IC_PAC_S_SO16_VAL7400
 		purpose		: pac_device_purpose.bounded_string; 	-- brightness_control
 	end record;
 
-	package type_devices is new ordered_maps (
+	package type_devices is new ordered_maps ( -- CS rename to pac_bom_devices
 		key_type		=> type_device_name, -- IC4
 		element_type	=> type_device);
 

@@ -127,7 +127,7 @@ package et_assembly_variants is
 
 	-- If a device is mounted, then it has a value, partcode and purpose
 	-- that overrides those specified in the default assembly variant.
-	type type_device (mounted : type_mounted) is record
+	type type_device (mounted : type_mounted) is record -- CS rename to type_device_variant ?
 		case mounted is
 			when YES =>
 				value		: pac_device_value.bounded_string; -- 470R
@@ -146,18 +146,21 @@ package et_assembly_variants is
 
 	use pac_device_variants;
 
+	
 	-- Submodules may come with their own assembly variants. 
 	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
-	-- There might be furhter extensions in the future, so we use a record:
-	type type_submodule is record -- CS rename to type_submodule_variant ?
+	-- There might be further extensions in the future, so we use a record:
+	type type_submodule_variant is record
 		variant : pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
 	end record;
 
+	
 	-- Variants of submodules are collected in a map.	
 	package pac_submodule_variants is new ordered_maps (
 		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
-		element_type	=> type_submodule);
+		element_type	=> type_submodule_variant);
 
+	
 	-- The final assembly variant is composed of a description and the affected devices:
 	type type_assembly_variant is record
 		description	: type_description;
@@ -165,6 +168,7 @@ package et_assembly_variants is
 		submodules	: pac_submodule_variants.map;
 	end record;
 
+	
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
 	package pac_assembly_variants is new ordered_maps (
