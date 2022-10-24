@@ -1968,12 +1968,12 @@ package body et_conventions is
 	end check_schematic_text_size;
 
 
--- 	function to_string (partcode : in type_partcode.bounded_string) return string is begin
--- 		return type_partcode.to_string (partcode);
+-- 	function to_string (partcode : in pac_device_partcode.bounded_string) return string is begin
+-- 		return pac_device_partcode.to_string (partcode);
 -- 	end to_string;
 -- 
--- 	function to_partcode (partcode : in string) return type_partcode.bounded_string is begin
--- 		return type_partcode.to_bounded_string (partcode);
+-- 	function to_partcode (partcode : in string) return pac_device_partcode.bounded_string is begin
+-- 		return pac_device_partcode.to_bounded_string (partcode);
 -- 	end to_partcode;
 -- 	
 -- 	procedure check_partcode_length (partcode : in string) is
@@ -1990,13 +1990,13 @@ package body et_conventions is
 -- 	end check_partcode_length;
 -- 	
 -- 	procedure check_partcode_characters (
--- 		partcode	: in type_partcode.bounded_string;
+-- 		partcode	: in pac_device_partcode.bounded_string;
 -- 		characters	: in character_set := component_partcode_characters) is
 -- 	-- Tests if the given partcode contains only valid characters as specified
 -- 	-- by given character set.
 -- 	-- Raises exception if invalid character found.
 -- 		use et_string_processing;
--- 		use type_partcode;
+-- 		use pac_device_partcode;
 -- 		invalid_character_position : natural := 0;
 -- 	begin
 -- 		invalid_character_position := index (
@@ -2119,16 +2119,16 @@ package body et_conventions is
 		prefix		: in pac_device_prefix.bounded_string;			-- R
 		packge		: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
-		return type_partcode.bounded_string 
+		return pac_device_partcode.bounded_string 
 	is
 		use et_devices;
 		use et_packages;
 		use pac_device_prefix;
 		use pac_package_name;
 		use pac_device_value;
-		use type_partcode;
+		use pac_device_partcode;
 
-		base : constant type_partcode.bounded_string :=
+		base : constant pac_device_partcode.bounded_string :=
 			to_bounded_string (
 				et_devices.to_string (prefix)				-- R
 				& partcode_keyword_separator				-- _
@@ -2150,12 +2150,12 @@ package body et_conventions is
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
 	-- Starts the validation from the given character position.
-		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
 		log_threshold	: in type_log_level) 
 	is
 		use et_material;
-		use type_partcode;
+		use pac_device_partcode;
 		use type_partcode_keywords;
 		use type_partcode_keyword_argument;
 		use et_string_processing;
@@ -2207,7 +2207,7 @@ package body et_conventions is
 				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
-					keyword_end := type_partcode.index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					keyword_end := pac_device_partcode.index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
 					log (text => "keyword " & enclose_in_quotes (to_string (keyword)), level => log_threshold + 2);
@@ -2219,7 +2219,7 @@ package body et_conventions is
 					validate_partcode_keyword (keyword);
 					
 					-- A keyword must occur only once:
-					if type_partcode.count (partcode, to_string (keyword)) > 1 then
+					if pac_device_partcode.count (partcode, to_string (keyword)) > 1 then
 						log (WARNING, "keyword " & enclose_in_quotes (to_string (keyword)) & " can be used only once !");
 					end if;
 				else
@@ -2243,13 +2243,13 @@ package body et_conventions is
 					keyword_follows := true;
 
 					-- The argument can now be sliced from argument_start to the place before the separator:
-					argument := to_partcode_keyword_argument (type_partcode.slice (partcode, argument_start, place - 1));
+					argument := to_partcode_keyword_argument (pac_device_partcode.slice (partcode, argument_start, place - 1));
 					validate_argument (keyword, argument);
 					
 				elsif place = len then -- last argument in partcode
 					
 					-- The argument can now be sliced from argument_start to the end of the partcode:
-					argument := to_partcode_keyword_argument (type_partcode.slice (partcode, argument_start, place));
+					argument := to_partcode_keyword_argument (pac_device_partcode.slice (partcode, argument_start, place));
 					validate_argument (keyword, argument);
 				end if;
 
@@ -2279,7 +2279,7 @@ package body et_conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
@@ -2287,10 +2287,10 @@ package body et_conventions is
 		is
 
 		use et_string_processing;
-		use type_partcode;
+		use pac_device_partcode;
 
 		place : natural;
-		partcode_root : type_partcode.bounded_string;
+		partcode_root : pac_device_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
 			log (WARNING, "device " & to_string (device_name)

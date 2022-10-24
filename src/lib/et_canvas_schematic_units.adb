@@ -1872,8 +1872,7 @@ package body et_canvas_schematic_units is
 		purpose	: pac_device_purpose.bounded_string;
 		variant	: pac_package_variant_name.bounded_string;
 
-		--use et_material;
-		partcode : type_partcode.bounded_string;
+		partcode : pac_device_partcode.bounded_string;
 
 		procedure clean_up is begin
 			properties_confirmed := true;

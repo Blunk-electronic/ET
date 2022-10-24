@@ -80,7 +80,7 @@ package body et_schematic.device_query_ops is
 	
 	function get_partcode (
 		device : in pac_devices_sch.cursor)
-		return type_partcode.bounded_string
+		return pac_device_partcode.bounded_string
 	is begin
 		return pac_devices_sch.element (device).partcode;
 	end get_partcode;

@@ -481,7 +481,7 @@ package et_conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name; -- R45
 		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R

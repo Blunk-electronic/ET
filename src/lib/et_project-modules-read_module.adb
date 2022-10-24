@@ -1118,7 +1118,7 @@ is
 	-- temporarily collection of units:
 	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
 	
-	device_partcode	: et_assembly_variants.type_partcode.bounded_string;
+	device_partcode	: pac_device_partcode.bounded_string;
 	device_purpose	: pac_device_purpose.bounded_string;
 	device_variant	: pac_package_variant_name.bounded_string; -- D, N
 
@@ -2905,7 +2905,7 @@ is
 				device_model	:= to_file_name ("");
 				device_value	:= pac_device_value.to_bounded_string ("");
 				device_purpose	:= pac_device_purpose.to_bounded_string ("");
-				device_partcode := type_partcode.to_bounded_string ("");
+				device_partcode := pac_device_partcode.to_bounded_string ("");
 				device_variant	:= to_variant_name ("");
 
 				log_indentation_down;

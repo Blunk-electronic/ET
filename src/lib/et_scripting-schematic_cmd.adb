@@ -1441,7 +1441,7 @@ is
 					when NOUN_DEVICE => 
 						declare
 							value : pac_device_value.bounded_string; -- 470R
-							partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							purpose : pac_device_purpose.bounded_string; -- brightness_control
 						begin
 							-- validate value
@@ -1899,7 +1899,7 @@ is
 						case fields is
 							when 6 =>
 								declare
-									partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+									partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 								begin
 									partcode := to_partcode (f (6));
 

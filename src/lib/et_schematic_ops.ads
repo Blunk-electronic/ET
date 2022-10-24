@@ -331,7 +331,7 @@ package et_schematic_ops is
 	procedure set_partcode (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		partcode			: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
 
 	-- CS procedure set_partcode that takes a module cursor and a device cursor.
@@ -760,7 +760,7 @@ package et_schematic_ops is
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level);
 
