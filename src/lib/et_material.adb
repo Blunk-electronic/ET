@@ -76,7 +76,7 @@ package body et_material is
 
 	
 	procedure write_bom (
-		bom				: in type_devices.map;
+		bom				: in pac_bom_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
@@ -116,10 +116,12 @@ package body et_material is
 							));
 			end if;
 		end;	
+
 		
 		bom_handle : ada.text_io.file_type;
-		device_cursor : type_devices.cursor := bom.first;
+		device_cursor : pac_bom_devices.cursor := bom.first;
 
+		
 		procedure eagle is
 			use et_csv;
 			
@@ -135,8 +137,8 @@ package body et_material is
 			column_partcode_ext	: constant string := "PART_CODE_EXT"; -- not used
 			column_updated		: constant string := "UPDATED";
 
-			procedure query_device (cursor : in type_devices.cursor) is
-				use type_devices;
+			
+			procedure query_device (cursor : in pac_bom_devices.cursor) is
 				use et_packages;
 			begin
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
@@ -154,6 +156,7 @@ package body et_material is
 
 				put_lf (file => bom_handle, field_count => et_csv.column);
 			end query_device;
+
 			
 		begin -- eagle
 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
@@ -173,7 +176,7 @@ package body et_material is
 			put_field (file => bom_handle, text => column_updated);
 			put_lf    (file => bom_handle, field_count => et_csv.column);
 
-			type_devices.iterate (
+			pac_bom_devices.iterate (
 				container	=> bom,
 				process		=> query_device'access);
 			
@@ -192,8 +195,7 @@ package body et_material is
 			column_partcode		: constant string := "PARTCODE";
 			column_purpose		: constant string := "PURPOSE";
 
-			procedure query_device (cursor : in type_devices.cursor) is
-				use type_devices;
+			procedure query_device (cursor : in pac_bom_devices.cursor) is
 				use et_packages;
 			begin
 				put_field (file => bom_handle); -- CS item number
@@ -219,7 +221,7 @@ package body et_material is
 			put_field (file => bom_handle, text => column_purpose);
 			put_lf    (file => bom_handle, field_count => et_csv.column);
 
-			type_devices.iterate (
+			pac_bom_devices.iterate (
 				container	=> bom,
 				process		=> query_device'access);
 			

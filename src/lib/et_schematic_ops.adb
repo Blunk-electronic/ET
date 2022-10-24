@@ -8278,7 +8278,7 @@ package body et_schematic_ops is
 		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
 
 			use et_material;
-			bill_of_material : et_material.type_devices.map;
+			bill_of_material : pac_bom_devices.map;
 
 			-- Collects devices of the given module and its variant in container bill_of_material.
 			-- Adds to the device index the given offset.
@@ -8313,7 +8313,7 @@ package body et_schematic_ops is
 					end;
 					
 					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
-						cursor_bom : et_material.type_devices.cursor;
+						cursor_bom : pac_bom_devices.cursor;
 
 						use pac_devices_sch;
 						use et_assembly_variants.pac_device_variants;
@@ -8336,7 +8336,7 @@ package body et_schematic_ops is
 
 								apply_offset (device_name, offset, log_threshold + 2);
 								
-								et_material.type_devices.insert (
+								pac_bom_devices.insert (
 									container	=> bill_of_material,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
@@ -8354,7 +8354,7 @@ package body et_schematic_ops is
 					end query_properties_default;
 
 					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
-						cursor_bom : et_material.type_devices.cursor;
+						cursor_bom : pac_bom_devices.cursor;
 
 						use pac_devices_sch;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
@@ -8381,7 +8381,7 @@ package body et_schematic_ops is
 									
 									apply_offset (device_name, offset, log_threshold + 2);
 									
-									et_material.type_devices.insert (
+									pac_bom_devices.insert (
 										container	=> bill_of_material,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
@@ -8411,7 +8411,7 @@ package body et_schematic_ops is
 											
 											-- Insert the device in bill with alternative properties as defined
 											-- in the assembly variant:
-											et_material.type_devices.insert (
+											pac_bom_devices.insert (
 												container	=> bill_of_material,
 												key			=> device_name, -- IC4, R3
 												new_item	=> (
@@ -8426,11 +8426,11 @@ package body et_schematic_ops is
 
 											-- check partcode content
 											et_conventions.validate_partcode (
-												partcode		=> et_material.type_devices.element (cursor_bom).partcode,
+												partcode		=> pac_bom_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
 												packge			=> et_packages.to_package_name (ada.directories.base_name 
-																	(et_packages.to_string (et_material.type_devices.element (cursor_bom).packge))),
-												value			=> et_material.type_devices.element (cursor_bom).value,
+																	(et_packages.to_string (pac_bom_devices.element (cursor_bom).packge))),
+												value			=> pac_bom_devices.element (cursor_bom).value,
 												log_threshold	=> log_threshold + 3);
 
 									end case;
