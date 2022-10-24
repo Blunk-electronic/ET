@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -49,49 +49,13 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
+with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_devices;				use et_devices;
 with et_packages;
 
 package et_material is
-
-
-	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
-	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
-	-- The keywords for the latter can be specified via the conventions file. See package "convention".
-	keyword_partcode : constant string := "partcode";	
-
-	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/"); 
-	partcode_length_max : constant positive := 100;
-	package type_partcode is new generic_bounded_length (partcode_length_max);
-	partcode_default : constant string := "N/A"; -- means not assigned
-	
-	function to_string (partcode : in type_partcode.bounded_string) return string;
-
-	function partcode_length_valid (partcode : in string) return boolean;
-	-- Returns true if length of given partcode is ok. Issues warning if not.
-	
-	function partcode_characters_valid (
-		partcode	: in type_partcode.bounded_string;
-		characters	: in character_set := partcode_characters) return boolean;
-	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set. Returns false if not. Issues warning.
-
-	procedure partcode_invalid (partcode : in string);
-	-- Issues error message and raises constraint error.
-
-	function is_empty (partcode : in type_partcode.bounded_string) return boolean;
-	
-	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
-		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
-		return type_partcode.bounded_string;
-
-
-
 	
 	-- Whenever we deal with BOM files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
@@ -120,14 +84,14 @@ package et_material is
 		-- CS others ?
 		);		
 	
-	procedure write_bom (
 	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container bom in the file.
 	-- - The BOM file will be named after the module name and the assembly variant.
 	-- - Exports the BOM of the given module to the export/CAM directory.
+	procedure write_bom (
 		bom				: in type_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 	

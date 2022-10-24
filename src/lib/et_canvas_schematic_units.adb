@@ -61,6 +61,7 @@ with gtk.menu_item;
 with gtk.menu_shell;
 
 with et_general;					use et_general;
+with et_assembly_variants;			use et_assembly_variants;
 with et_geometry;					use et_geometry;
 with et_devices;					use et_devices;
 with et_device_rw;
@@ -1871,7 +1872,7 @@ package body et_canvas_schematic_units is
 		purpose	: pac_device_purpose.bounded_string;
 		variant	: pac_package_variant_name.bounded_string;
 
-		use et_material;
+		--use et_material;
 		partcode : type_partcode.bounded_string;
 
 		procedure clean_up is begin
@@ -1991,7 +1992,7 @@ package body et_canvas_schematic_units is
 
 				when NOUN_PARTCODE =>
 					gtk_new (label, "Partcode of " & device_name);
-					set_property_before (et_material.to_string (get_partcode (su.device)));
+					set_property_before (to_string (get_partcode (su.device)));
 
 				when NOUN_PURPOSE =>
 					gtk_new (label, "Purpose of " & device_name);

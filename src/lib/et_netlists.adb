@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -692,12 +692,13 @@ package body et_netlists is
 		return net_cursor_parent;
 	end net_in_parent_module;
 
+	
 	procedure write_netlist (
-	-- Exports the netlist of the given module to the export/CAM directory.
 		netlist			: in pac_netlist.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
-		log_threshold	: in type_log_level) is
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level) 
+	is
 
 		file_name : pac_netlist_file_name.bounded_string;
 		
@@ -705,7 +706,7 @@ package body et_netlists is
 			use ada.directories;
 			use gnat.directory_operations;
 			use pac_module_name;
-			use et_general.pac_assembly_variant_name;
+			use pac_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then
@@ -859,17 +860,12 @@ package body et_netlists is
 				raise;
 
 	end write_netlist;
-		
+
+	
 	function make_netlist (
-	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
-	-- overwrites the previous file).
-	-- - modules contains the modules and their nets ordered in a tree structure.
-	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - The netlist file will be named after the module name and the assembly variant.
-	-- - Exports the netlist of the given module to the export/CAM directory.							  
 		modules			: in pac_modules.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_netlist.tree

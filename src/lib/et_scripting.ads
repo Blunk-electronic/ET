@@ -42,6 +42,7 @@ with ada.exceptions;			use ada.exceptions;
 
 with et_net_names;				use et_net_names;
 with et_general;				use et_general;
+with et_assembly_variants;		use et_assembly_variants;
 with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

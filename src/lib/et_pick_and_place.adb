@@ -75,7 +75,7 @@ package body et_pick_and_place is
 			use ada.directories;
 			use gnat.directory_operations;
 			use pac_module_name;
-			use et_general.pac_assembly_variant_name;
+			use pac_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

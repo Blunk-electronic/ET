@@ -50,7 +50,7 @@ with ada.containers.indefinite_ordered_sets;
 with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_submodules;				use et_submodules;
-with et_assembly_variants;
+with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_symbols;
@@ -277,17 +277,18 @@ package et_netlists is
 	-- of further secondary nets. We limit the nesting depth to a reasonable value.
 	nesting_depth_max : constant positive := 100; -- CS increase if nessecary
 	package pac_netlist is new ada.containers.multiway_trees (type_netlist_net);
+
 	
-	function make_netlist (
 	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
 	-- - The netlist file will be named after the module name and assembly variant.	
 	-- - Exports the netlist of the given module to the export/CAM directory.
+	function make_netlist (
 		modules			: in pac_modules.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_netlist.tree;

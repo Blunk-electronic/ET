@@ -66,6 +66,7 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with et_project;
 with et_project.modules;
+with et_assembly_variants;		--use et_assembly_variants;
 with et_modes;
 with et_scripting;
 
@@ -3721,6 +3722,7 @@ package body pac_canvas is
 	is
 
 		use et_general;
+		use et_assembly_variants;
 		use et_frames;
 
 		procedure draw_other_texts is

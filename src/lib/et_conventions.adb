@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2119,16 +2119,16 @@ package body et_conventions is
 		prefix		: in pac_device_prefix.bounded_string;			-- R
 		packge		: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
-		return et_material.type_partcode.bounded_string is
-
+		return type_partcode.bounded_string 
+	is
 		use et_devices;
 		use et_packages;
 		use pac_device_prefix;
 		use pac_package_name;
 		use pac_device_value;
-		use et_material.type_partcode;
+		use type_partcode;
 
-		base : constant et_material.type_partcode.bounded_string :=
+		base : constant type_partcode.bounded_string :=
 			to_bounded_string (
 				et_devices.to_string (prefix)				-- R
 				& partcode_keyword_separator				-- _
@@ -2150,12 +2150,12 @@ package body et_conventions is
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
 	-- Starts the validation from the given character position.
-		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_material;
-		use et_material.type_partcode;
+		use type_partcode;
 		use type_partcode_keywords;
 		use type_partcode_keyword_argument;
 		use et_string_processing;
@@ -2243,13 +2243,13 @@ package body et_conventions is
 					keyword_follows := true;
 
 					-- The argument can now be sliced from argument_start to the place before the separator:
-					argument := to_partcode_keyword_argument (et_material.type_partcode.slice (partcode, argument_start, place - 1));
+					argument := to_partcode_keyword_argument (type_partcode.slice (partcode, argument_start, place - 1));
 					validate_argument (keyword, argument);
 					
 				elsif place = len then -- last argument in partcode
 					
 					-- The argument can now be sliced from argument_start to the end of the partcode:
-					argument := to_partcode_keyword_argument (et_material.type_partcode.slice (partcode, argument_start, place));
+					argument := to_partcode_keyword_argument (type_partcode.slice (partcode, argument_start, place));
 					validate_argument (keyword, argument);
 				end if;
 
@@ -2263,13 +2263,14 @@ package body et_conventions is
 			when event:
 				others =>
 				log (WARNING, "Error in optional keywords of partcode " & 
-					 enclose_in_quotes (et_material.to_string (partcode)) &
+					 enclose_in_quotes (et_assembly_variants.to_string (partcode)) &
 					 " at position" & positive'image (place) & " !");
 				
 				log (text => ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
 
+	
 	procedure validate_partcode (
 	-- Tests if the given partcode of a device is correct.
 	-- The given properties are assumed to be those of a real device.
@@ -2278,7 +2279,7 @@ package body et_conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
@@ -2286,15 +2287,15 @@ package body et_conventions is
 		is
 
 		use et_string_processing;
-		use et_material.type_partcode;
+		use type_partcode;
 
 		place : natural;
-		partcode_root : et_material.type_partcode.bounded_string;
+		partcode_root : type_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
 			log (WARNING, "device " & to_string (device_name)
-				 & " partcode invalid ! Found " & enclose_in_quotes (to_string (partcode)) &
-				". Expected " & enclose_in_quotes (to_string (partcode_root)) & " !");
+				 & " partcode invalid ! Found " & enclose_in_quotes (et_assembly_variants.to_string (partcode)) &
+				". Expected " & enclose_in_quotes (et_assembly_variants.to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
 		use et_material;
@@ -2316,7 +2317,7 @@ package body et_conventions is
 			-- The root of the partcode must be the very first part of the given partcode.
 			-- In that case other keywords can be checked.
 			-- If the root partcode is somewhere else or too long, issue warning.
-			place := index (partcode, et_material.to_string (partcode_root));
+			place := index (partcode, et_assembly_variants.to_string (partcode_root));
 			
 			if place = 1 and length (partcode) = length (partcode_root) then
 

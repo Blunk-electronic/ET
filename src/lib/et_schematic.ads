@@ -185,7 +185,7 @@ package et_schematic is
 			when et_symbols.PCB =>
 				value		: pac_device_value.bounded_string; -- 470R
 				
-				partcode	: et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				partcode	: et_assembly_variants.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)
 				-- usually no partcode is required.
 

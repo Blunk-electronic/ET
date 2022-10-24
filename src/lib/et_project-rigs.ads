@@ -41,7 +41,7 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with et_devices;					use et_devices;
 with et_conventions;
-
+with et_assembly_variants;		use et_assembly_variants;
 
 package et_project.rigs is
 
@@ -55,7 +55,7 @@ package et_project.rigs is
 
 	type type_module_instance is record
 		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		assembly_variant	: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
 		-- CS other properties ?
 	end record;
 

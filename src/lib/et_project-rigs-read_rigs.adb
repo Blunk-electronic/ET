@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -82,7 +82,7 @@ is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
 		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
-		assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		assembly_variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
 		procedure clear_module_instance is begin
 			generic_name := to_module_name ("");
@@ -335,14 +335,14 @@ is
 
 									elsif kw = keyword_assembly_variant then
 										expect_field_count (line, 2);
-										assembly_variant := et_general.to_variant (f (line,2));
+										assembly_variant := to_variant (f (line,2));
 
 										-- test whether module provides the assembly variant
 										module_cursor := locate_module (generic_name);
 										if not exists (module_cursor, assembly_variant) then
 											log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not provide assembly variant " &
-													enclose_in_quotes (et_general.to_variant (assembly_variant)) & " !",
+													enclose_in_quotes (to_variant (assembly_variant)) & " !",
 												console => true);
 											raise constraint_error;
 										end if;

@@ -50,6 +50,7 @@ with et_scripting;
 with et_modes;
 with et_project;
 
+with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_display.board;
 with et_colors.board;				use et_colors.board;

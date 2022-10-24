@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,7 +56,6 @@ with gnat.directory_operations;
 with ada.exceptions;
 
 with et_general;				use et_general;
-with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
@@ -65,110 +64,24 @@ with et_devices;				use et_devices;
 with et_exceptions;				use et_exceptions;
 
 package body et_material is
-
-	function to_string (partcode : in type_partcode.bounded_string) return string is begin
-		return type_partcode.to_string (partcode);
-	end to_string;
-	
-	function partcode_length_valid (partcode : in string) return boolean is
-		-- Returns true if length of given partcode is ok. Issues warning if not.	
-		use et_string_processing;
-	begin
-		if partcode'length > partcode_length_max then
-			log (WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than" 
-				 & positive'image (partcode_length_max) & " characters !");
-			return false;
-		else
-			return true;
-		end if;
-	end;
-
-	function partcode_characters_valid (
-		partcode	: in type_partcode.bounded_string;
-		characters	: in character_set := partcode_characters) return boolean is
-	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set. Returns false if not. Issues warning.
-		use et_string_processing;
-		use type_partcode;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source	=> partcode,
-			set		=> characters,
-			test	=> outside);
-
-		if invalid_character_position > 0 then
-			log (WARNING, "partcode " & enclose_in_quotes (to_string (partcode))
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
-			return false;
-		else
-			return true;
-		end if;
-	end;
-
-	procedure partcode_invalid (partcode : in string) is 
-		use et_string_processing;
-	begin
-		--log (ERROR, "partcode " & enclose_in_quotes (partcode) &
-			 --" invalid !", console => true);
-		--raise constraint_error;
-		raise syntax_error_1 with
-			"ERROR: Partcode " & enclose_in_quotes (partcode) & " invalid !";
-	end partcode_invalid;
-
-	function is_empty (partcode : in type_partcode.bounded_string) return boolean is begin
-		if type_partcode.length (partcode) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_empty;
-	
-	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
-		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
-		return type_partcode.bounded_string is
-
-		partcode_out : type_partcode.bounded_string; -- to be returned
-	begin
-		-- Test length of given partcode
-		if partcode_length_valid (partcode) then
-			partcode_out := type_partcode.to_bounded_string (partcode);
-		else
-			partcode_invalid (partcode);
-		end if;
-
-		-- Test characters
-		if partcode_characters_valid (partcode_out) then
-			null;
-		else
-			partcode_invalid (partcode);
-		end if;
-
-		return partcode_out;
-	end to_partcode;
-
 	
 	function to_string (name : in type_file_name.bounded_string) return string is begin
 		return type_file_name.to_string (name);
 	end;
+
 	
 	function to_file_name (name : in string) return type_file_name.bounded_string is begin
 		return type_file_name.to_bounded_string (name);
 	end;
 
+	
 	procedure write_bom (
-	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
-	-- Writes the content of the given container bom in the file.
-	-- - The BOM file will be named after the module name and the assembly variant.
-	-- - Exports the BOM of the given module to the export/CAM/BOM directory.
 		bom				: in type_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
-		log_threshold	: in type_log_level) is		
+		log_threshold	: in type_log_level) 
+	is		
 
 		file_name : type_file_name.bounded_string;
 		
@@ -176,7 +89,7 @@ package body et_material is
 			use ada.directories;
 			use gnat.directory_operations;
 			use pac_module_name;
-			use et_general.pac_assembly_variant_name;
+			use pac_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

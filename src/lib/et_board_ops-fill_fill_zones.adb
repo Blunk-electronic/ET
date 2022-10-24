@@ -190,10 +190,25 @@ is
 			end if;
 		end set_parent_net_name;
 	
+
+		function get_terminals (net_cursor : in pac_nets.cursor)
+			return pac_polygon_list.list
+		is
+			terminals : pac_polygon_list.list; -- to be returned
+			ports : et_schematic.type_ports;
+		begin
+			--ports := get_ports (net_cursor,
+			-- CS
+			return terminals;
+		end get_terminals;
+
+		
 		
 		procedure query_net (n : in pac_nets.cursor) is
-			
-			net_class : constant type_net_class := get_net_class (module_cursor, n);			
+
+			-- The clearance between net and zone is either the given zone_clearance
+			-- or the clearance of the net itself. However, the greater value is applied:
+			net_class : constant type_net_class := get_net_class (module_cursor, n);
 			clearance : constant type_track_clearance := get_greatest (zone_clearance, net_class.clearance);
 
 			-- The polygons of the candidate net are collected here:

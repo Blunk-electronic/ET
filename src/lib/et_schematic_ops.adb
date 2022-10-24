@@ -724,7 +724,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in type_submodule) 
+				submodule	: in et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				port_xy : type_point;
@@ -2574,7 +2574,7 @@ package body et_schematic_ops is
 	procedure set_partcode (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2622,7 +2622,7 @@ package body et_schematic_ops is
 	begin -- set_partcode
 		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " partcode to " &
-			enclose_in_quotes (et_material.to_string (partcode)),
+			enclose_in_quotes (to_string (partcode)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3029,7 +3029,7 @@ package body et_schematic_ops is
 			-- Searches the portlist of the submodule for a port having the port_name.
 			-- Exits prematurely on match.
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in type_submodule) is
+				submodule	: in et_submodules.type_submodule) is
 				use pac_net_name;
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
@@ -4767,7 +4767,7 @@ package body et_schematic_ops is
 		is
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
-			submodule : type_submodule;
+			submodule : et_submodules.type_submodule;
 		begin -- add
 			-- THE FOLLOWING IS ABOUT THE GRAPHICAL REPRESENTATION OF A SUBMODULE.
 			-- THIS IS THE RECTANGULAR BOX AT THE SHEET WHERE IT THE SUBMODULE IS INSTANTIATED.
@@ -5009,7 +5009,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) 
+				submodule	: in out et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				cursor : et_submodules.pac_submodule_ports.cursor;
@@ -5275,7 +5275,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) 
+				submodule	: in out et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
@@ -5370,7 +5370,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) 
+				submodule	: in out et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
@@ -5770,7 +5770,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) 
+				submodule	: in out et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
@@ -6116,7 +6116,7 @@ package body et_schematic_ops is
 
 			procedure move (
 				instance	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
+				submodule	: in out et_submodules.type_submodule) is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -6277,7 +6277,7 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in type_submodule) 
+				submodule	: in et_submodules.type_submodule) 
 			is
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 
@@ -6354,7 +6354,7 @@ package body et_schematic_ops is
 			procedure move_box (
 			-- Moves the box on the sheet according to given target position.
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) 
+				submodule	: in out et_submodules.type_submodule) 
 			is begin
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
@@ -6467,7 +6467,7 @@ package body et_schematic_ops is
 		is
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
-			submodule : type_submodule;
+			submodule : et_submodules.type_submodule;
 
 			-- the submodule ports to be inserted in the nets
 			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
@@ -6585,7 +6585,7 @@ package body et_schematic_ops is
 			module		: in out type_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
-			submodule_old : type_submodule;
+			submodule_old : et_submodules.type_submodule;
 
 			-- the submodule ports to be inserted in the nets
 			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
@@ -6702,7 +6702,7 @@ package body et_schematic_ops is
 
 			procedure set_file (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
+				submodule	: in out et_submodules.type_submodule) is
 
 				-- Prior to assigning the file, we create a test submodule and test
 				-- whether it provides all the ports as required by the graphical 
@@ -6711,7 +6711,7 @@ package body et_schematic_ops is
 				-- get the given file assigned. The test submodule will then be stored in a
 				-- map and will be the only item in the map:
 				test_mods : pac_submodules.map;
-				test_mod : type_submodule := submodule;
+				test_mod : et_submodules.type_submodule := submodule;
 				test_mod_cursor : pac_submodules.cursor;
 
 				-- For iterating the ports of the submodule box, we need a cursor:
@@ -6969,7 +6969,7 @@ package body et_schematic_ops is
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level) is
 
@@ -7045,7 +7045,7 @@ package body et_schematic_ops is
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " mount device " & to_string (device) &
 			 " value " & to_string (value) &
-			 " partcode " & et_material.to_string (partcode) &
+			 " partcode " & to_string (partcode) &
 			 write_purpose,
 			level => log_threshold);
 
@@ -8304,7 +8304,7 @@ package body et_schematic_ops is
 						end if;
 					end;
 
-					procedure test_partcode (partcode : in et_material.type_partcode.bounded_string) is
+					procedure test_partcode (partcode : in type_partcode.bounded_string) is
 					begin
 						if type_partcode.length (partcode) = 0 then
 							log (WARNING, text => "device " & to_string (device_name) &

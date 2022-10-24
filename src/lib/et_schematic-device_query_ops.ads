@@ -78,7 +78,7 @@ package et_schematic.device_query_ops is
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_partcode (
 		device : in pac_devices_sch.cursor)
-		return et_material.type_partcode.bounded_string;
+		return type_partcode.bounded_string;
 
 
 	-- Returns the package variant of the given device.

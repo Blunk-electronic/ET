@@ -86,7 +86,7 @@ is
 	
 
 	
-	active_assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- "low_cost"
+	active_assembly_variant : pac_assembly_variant_name.bounded_string; -- "low_cost"
 	
 	-- Assigns to the module the active assembly variant.
 	procedure set_active_assembly_variant is
@@ -153,7 +153,7 @@ is
 			expect_field_count (line, 2);
 			meta_basic.customer := to_customer (f (line, 2));
 			
-		elsif kw = keyword_partcode then
+		elsif kw = et_meta.keyword_partcode then
 			expect_field_count (line, 2);
 			meta_basic.partcode := to_partcode (f (line, 2));
 			
@@ -943,7 +943,7 @@ is
 
 	
 	-- assembly variants
-	assembly_variant_name			: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+	assembly_variant_name			: pac_assembly_variant_name.bounded_string; -- low_cost
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
 	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
@@ -954,17 +954,17 @@ is
 		kw : constant string := f (line, 1);
 		device_name		: type_device_name; -- R1
 		device			: access et_assembly_variants.type_device;
-		device_cursor	: et_assembly_variants.pac_device_variants.cursor;
+		device_cursor	: pac_device_variants.cursor;
 		
 		submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
-		submod_cursor	: et_assembly_variants.pac_submodule_variants.cursor;
+		submod_var		: pac_assembly_variant_name.bounded_string; -- low_cost
+		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name low_cost
 			expect_field_count (line, 2);
-			assembly_variant_name := et_general.to_variant (f (line, 2));
+			assembly_variant_name := to_variant (f (line, 2));
 
 		elsif kw = keyword_description then -- description "variant without temperature sensor"
 			expect_field_count (line, 2);
@@ -1012,10 +1012,10 @@ is
 				device.value := to_value_with_check (f (line, 4));
 
 				-- read partcode
-				if f (line, 5) = et_material.keyword_partcode then
-					device.partcode := et_material.to_partcode (f (line, 6));
+				if f (line, 5) = et_assembly_variants.keyword_partcode then
+					device.partcode := et_assembly_variants.to_partcode (f (line, 6));
 				else -- keyword partcode not found
-					log (ERROR, "expect keyword " & enclose_in_quotes (et_material.keyword_partcode) &
+					log (ERROR, "expect keyword " & enclose_in_quotes (et_assembly_variants.keyword_partcode) &
 							" after value !", console => true);
 					raise constraint_error;
 				end if;
@@ -1079,7 +1079,7 @@ is
 			-- After the instance name (like OSC1) must come the keyword "variant"
 			-- followed by the variant name:
 			if f (line, 3) = keyword_variant then
-				submod_var := et_general.to_variant (f (line, 4));
+				submod_var := to_variant (f (line, 4));
 				
 				-- NOTE: A test whether the submodule does provide the variant can
 				-- not be executed at this stage because the submodules have not 
@@ -1087,7 +1087,7 @@ is
 				-- read_submodule_files has been executed. See far below.
 
 				-- Insert the submodule in the current assembly variant:
-				et_assembly_variants.pac_submodule_variants.insert (
+				pac_submodule_variants.insert (
 					container	=> assembly_variant_submodules,
 					key			=> submod_name, -- OSC1
 					new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
@@ -1118,7 +1118,7 @@ is
 	-- temporarily collection of units:
 	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
 	
-	device_partcode	: et_material.type_partcode.bounded_string;
+	device_partcode	: et_assembly_variants.type_partcode.bounded_string;
 	device_purpose	: pac_device_purpose.bounded_string;
 	device_variant	: pac_package_variant_name.bounded_string; -- D, N
 
@@ -2067,11 +2067,11 @@ is
 			check_variant_name_length (f (line, 2));
 			device_variant := to_variant_name (f (line, 2));
 
-		elsif kw = et_material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+		elsif kw = et_assembly_variants.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 			expect_field_count (line, 2);
 
 			-- validate partcode
-			device_partcode := et_material.to_partcode (f (line, 2));
+			device_partcode := to_partcode (f (line, 2));
 
 		elsif kw = keyword_purpose then -- purpose power_out
 			expect_field_count (line, 2);
@@ -2834,12 +2834,12 @@ is
 							" not conformant with conventions !");
 					end if;
 
-					log (text => "partcode " & et_material.to_string (device_partcode), level => log_threshold + 2);
-					if et_material.partcode_characters_valid (device_partcode) then
+					log (text => "partcode " & to_string (device_partcode), level => log_threshold + 2);
+					if partcode_characters_valid (device_partcode) then
 						device.partcode	:= device_partcode;
 					else
 						log_indentation_reset;
-						et_material.partcode_invalid (et_material.to_string (device_partcode));
+						partcode_invalid (to_string (device_partcode));
 					end if;
 
 					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
@@ -2905,7 +2905,7 @@ is
 				device_model	:= to_file_name ("");
 				device_value	:= pac_device_value.to_bounded_string ("");
 				device_purpose	:= pac_device_purpose.to_bounded_string ("");
-				device_partcode := et_material.type_partcode.to_bounded_string ("");
+				device_partcode := type_partcode.to_bounded_string ("");
 				device_variant	:= to_variant_name ("");
 
 				log_indentation_down;
@@ -6778,17 +6778,17 @@ is
 			use et_assembly_variants;
 			use et_assembly_variants.pac_assembly_variants;
 			
-			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor := module.variants.first;
-			variant_name : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+			variant_cursor : pac_assembly_variants.cursor := module.variants.first;
+			variant_name : pac_assembly_variant_name.bounded_string; -- low_cost
 
 			procedure query_submodules (
-				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_assembly_variant)
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant)
 			is
 				use pac_submodule_variants;
-				submod_cursor : pac_submodule_variants.cursor := variant.submodules.first;
-				submod_name : pac_module_instance_name.bounded_string; -- CLK_GENERATOR
-				submod_variant : et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
+				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
+				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
+				submod_variant	: pac_assembly_variant_name.bounded_string; -- fixed_frequency
 			begin -- query_submodules
 				if submod_cursor = pac_submodule_variants.no_element then
 					log (text => "no submodule variants specified", level => log_threshold + 1);

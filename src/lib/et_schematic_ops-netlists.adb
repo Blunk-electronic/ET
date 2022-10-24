@@ -114,7 +114,7 @@ package body et_schematic_ops.netlists is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submod		: in type_submodule) 
+				submod		: in et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;

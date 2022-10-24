@@ -143,7 +143,7 @@ is
 		procedure write_basic (basic : in type_basic'class) is begin
 			write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
 			write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
-			write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
+			write (keyword => et_meta.keyword_partcode, parameters => to_string (basic.partcode));
 			write (keyword => keyword_drawing_number, parameters => to_string (basic.drawing_number));
 			write (keyword => keyword_revision, parameters => to_string (basic.revision));
 			
@@ -889,13 +889,13 @@ is
 	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
 		use et_assembly_variants;
-		use et_assembly_variants.pac_assembly_variants;
+		use pac_assembly_variants;
 
 		procedure query_devices (
-			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
-			variant			: in et_assembly_variants.type_assembly_variant) is
-			use et_assembly_variants.pac_device_variants;
-			device_cursor : et_assembly_variants.pac_device_variants.cursor := variant.devices.first;
+			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant			: in type_assembly_variant) is
+			use pac_device_variants;
+			device_cursor : pac_device_variants.cursor := variant.devices.first;
 
 			function purpose return string is 
 				use et_devices;
@@ -914,7 +914,7 @@ is
 			use et_devices;
 			
 		begin -- query_devices
-			while device_cursor /= et_assembly_variants.pac_device_variants.no_element loop
+			while device_cursor /= pac_device_variants.no_element loop
 				case element (device_cursor).mounted is
 					when NO =>
 						write (
@@ -929,8 +929,8 @@ is
 								space &
 								keyword_value & space &
 								to_string (element (device_cursor).value) &
-								space & et_material.keyword_partcode & space &
-								et_material.to_string (element (device_cursor).partcode) &
+								space & et_assembly_variants.keyword_partcode & space &
+								to_string (element (device_cursor).partcode) &
 								purpose);
 
 				end case;
@@ -940,11 +940,11 @@ is
 		end query_devices;
 
 		procedure query_submodules (
-			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
-			variant			: in et_assembly_variants.type_assembly_variant) is
+			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant			: in type_assembly_variant) is
 			use et_assembly_variants;
-			use et_assembly_variants.pac_submodule_variants;
-			submodule_cursor : et_assembly_variants.pac_submodule_variants.cursor := variant.submodules.first;
+			use pac_submodule_variants;
+			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
 		begin
 			while submodule_cursor /= pac_submodule_variants.no_element loop
 				write (
@@ -957,7 +957,7 @@ is
 			end loop;
 		end query_submodules;
 
-		procedure write (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is begin
+		procedure write (variant_cursor : in pac_assembly_variants.cursor) is begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
@@ -989,7 +989,7 @@ is
 			-- write the active assembly variant
 			write (
 				keyword		=> keyword_active,
-				parameters	=> et_general.to_variant (element (module_cursor).active_variant));
+				parameters	=> to_variant (element (module_cursor).active_variant));
 
 		end if;
 		

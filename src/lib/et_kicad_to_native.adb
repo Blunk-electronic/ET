@@ -64,7 +64,7 @@ with et_kicad.schematic;
 with et_kicad_coordinates;
 with et_import;
 
-with et_material;
+with et_assembly_variants;		use et_assembly_variants;
 with et_netlists;
 with et_text;
 with et_pcb_rw;
@@ -2760,7 +2760,7 @@ package body et_kicad_to_native is
 												device	=> element (component_cursor_kicad).generic_name),
 
 								value		=> element (component_cursor_kicad).value,
-								partcode	=> et_material.to_partcode (et_material.partcode_default), -- not provided by kicad
+								partcode	=> to_partcode (partcode_default), -- not provided by kicad
 								purpose		=> et_devices.to_purpose (et_devices.purpose_default), -- not provided by kicad
 								variant		=> element (component_cursor_kicad).variant,
 
