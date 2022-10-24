@@ -953,7 +953,7 @@ is
 		use et_devices;
 		kw : constant string := f (line, 1);
 		device_name		: type_device_name; -- R1
-		device			: access et_assembly_variants.type_device;
+		device			: access type_device_variant;
 		device_cursor	: pac_device_variants.cursor;
 		
 		submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -993,15 +993,14 @@ is
 			if f (line, 3) = keyword_not_mounted then
 				-- line like "device R1 not_mounted"
 
-				device := new et_assembly_variants.type_device'(
-					mounted	=> et_assembly_variants.NO);
+				device := new type_device_variant'(mounted => et_assembly_variants.NO);
 				
 			elsif f (line, 3) = keyword_value then
 				-- line like "device R1 value 270R partcode 12345"
 
 				-- create a device with discriminant "mounted" where
 				-- pointer assembly_variant_device is pointing at.
-				device := new et_assembly_variants.type_device'(
+				device := new type_device_variant'(
 					mounted	=> et_assembly_variants.YES,
 					others	=> <>); -- to be assigned later
 				

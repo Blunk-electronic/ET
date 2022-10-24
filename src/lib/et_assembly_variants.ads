@@ -127,7 +127,7 @@ package et_assembly_variants is
 
 	-- If a device is mounted, then it has a value, partcode and purpose
 	-- that overrides those specified in the default assembly variant.
-	type type_device (mounted : type_mounted) is record -- CS rename to type_device_variant ?
+	type type_device_variant (mounted : type_mounted) is record
 		case mounted is
 			when YES =>
 				value		: pac_device_value.bounded_string; -- 470R
@@ -142,7 +142,7 @@ package et_assembly_variants is
 	-- Variants of devices are collected in a map.
 	package pac_device_variants is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device);
+ 		element_type	=> type_device_variant);
 
 	use pac_device_variants;
 
