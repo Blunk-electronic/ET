@@ -396,7 +396,11 @@ package et_schematic is
 		-- (means which device is mounted or not or which device can have a different
 		-- value, partcode or purpose):
 		variants		: pac_assembly_variants.map;
+
+		-- The active assembly variant:
 		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
+		-- If active_variant is an empty string, then the default variant is active.
+
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
