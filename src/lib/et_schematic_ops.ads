@@ -229,6 +229,19 @@ package et_schematic_ops is
 		return et_schematic.pac_nets.cursor;
 
 
+	-- Returns the name of the active assembly variant of the given module:
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_assembly_variant_name.bounded_string;
+
+	
+	-- Returns a cursor to the active assembly variant of the given module:	
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return et_assembly_variants.pac_assembly_variants.cursor;
+
+
+	
 	-- Returns a cursor to the net that is connected with the given device and terminal.
 	-- If there is no net connected, then the return is no_element.
 	-- Assumes the default assembly variant:
@@ -834,9 +847,9 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.
-	-- The files are named after the module name and the variant name.
+	-- The files are named after the module name and the variant name:
+	procedure make_boms (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 

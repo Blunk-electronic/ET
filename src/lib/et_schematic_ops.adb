@@ -1600,6 +1600,46 @@ package body et_schematic_ops is
 	end locate_net;
 
 
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_assembly_variant_name.bounded_string
+	is begin
+		return element (module_cursor).active_variant;
+	end get_active_assembly_variant;
+
+	
+
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return et_assembly_variants.pac_assembly_variants.cursor
+	is
+		variant : constant pac_assembly_variant_name.bounded_string := 
+			get_active_assembly_variant (module_cursor);
+			
+		use et_assembly_variants;
+		use pac_assembly_variants;
+		
+		av : pac_assembly_variants.cursor;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;					   
+			module 		: in type_module)
+		is begin
+			av := find (module.variants, variant);
+		end query_module;
+	
+	begin
+		if is_default (variant) then
+			av := pac_assembly_variants.no_element;
+		else
+			pac_generic_modules.query_element (module_cursor, query_module'access);
+		end if;
+		
+		return av;
+	end get_active_assembly_variant;
+
+	
+
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_sch.cursor;
@@ -8225,9 +8265,7 @@ package body et_schematic_ops is
 
 	
 	procedure make_boms (
-	-- Generates the BOM files of all assembly variants from the given top module.
-	-- The files are named after the module name and the variant name.
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -8236,18 +8274,20 @@ package body et_schematic_ops is
 		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;
 
+		
 		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
 
 			use et_material;
 			bill_of_material : et_material.type_devices.map;
 
-			procedure collect (
 			-- Collects devices of the given module and its variant in container bill_of_material.
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
+			procedure collect (
 				module_cursor	: in pac_generic_modules.cursor;
 				variant			: in pac_assembly_variant_name.bounded_string;
-				offset			: in type_name_index) is
+				offset			: in type_name_index) 
+			is
 				
 				procedure query_devices (
 					module_name	: in pac_module_name.bounded_string;
@@ -8457,10 +8497,11 @@ package body et_schematic_ops is
 				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
+
 			
-			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
+			procedure query_submodules is 
 				use et_numbering.pac_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
@@ -8599,12 +8640,14 @@ package body et_schematic_ops is
 			
 			log_indentation_down;
 		end make_for_variant;
+
 		
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
 			use pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
+
 		
 	begin -- make_boms
 		log (text => "generating BOM ...", level => log_threshold);
