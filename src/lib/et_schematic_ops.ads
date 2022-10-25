@@ -267,16 +267,8 @@ package et_schematic_ops is
 
 	
 	
-	-- If ports at a certain position in a schematic are inquired this type is required:
-	type type_ports is record
-		devices		: pac_device_ports.set;
-		submodules	: pac_submodule_ports.set;
-		netchangers	: et_netlists.pac_netchanger_ports.set;
-	end record;
-
-	
-	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
+	function ports_at_place (
 		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)		

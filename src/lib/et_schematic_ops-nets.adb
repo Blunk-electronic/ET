@@ -1159,7 +1159,7 @@ package body et_schematic_ops.nets is
 					-- to be connected with the segment. The place where ports are
 					-- searched depends on the zone that has been moved.
 					-- (The given segment sits already at the new position.)
-						ports : et_schematic_ops.type_ports;
+						ports : type_ports;
 
 						procedure append_portlists is 
 						-- Append the portlists obtained from function ports_at_place
