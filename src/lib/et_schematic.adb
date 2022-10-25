@@ -198,7 +198,7 @@ package body et_schematic is
 	
 	function get_ports (
 		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor)
+		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
 		return type_ports 
 	is
 		result : type_ports; -- to be returned

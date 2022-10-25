@@ -292,11 +292,11 @@ package et_schematic is
 	-- the given net. The given assembly variant determines whether certain
 	-- devices should be excluded (because they may not be present in a particular
 	-- assembly variant).
-	-- NOTE: If variant points to no element, then the default variant is assumend
+	-- NOTE: If no variant is given, then the default variant is assumend
 	-- and ALL devices are returned.
 	function get_ports (
 		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor)
+		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
 		return type_ports;
 
 

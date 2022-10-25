@@ -194,10 +194,31 @@ is
 		function get_terminals (net_cursor : in pac_nets.cursor)
 			return pac_polygon_list.list
 		is
+			use et_nets;
+			
 			terminals : pac_polygon_list.list; -- to be returned
 			ports : et_nets.type_ports;
+
+			
+			procedure query_device (d : in pac_device_ports.cursor) is
+			begin
+				null;
+			end query_device;
+			
 		begin
-			--ports := get_ports (net_cursor); -- use default assembly variant !
+			-- Get the ports of everything connected with the given net.
+			-- Therefore we do not pass an assembly variant here:
+			ports := get_ports (net_cursor); 
+
+			--type type_ports is record
+				--devices		: pac_device_ports.set;
+				--submodules	: pac_submodule_ports.set;
+				--netchangers	: et_netlists.pac_netchanger_ports.set;
+			--end record;
+
+			ports.devices.iterate (query_device'access);
+
+			
 			-- CS
 			return terminals;
 		end get_terminals;

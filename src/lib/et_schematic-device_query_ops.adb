@@ -200,7 +200,19 @@ package body et_schematic.device_query_ops is
 	
 	
 
+	function get_terminal (
+		port : in type_device_port)
+		return et_terminals.pac_terminals.cursor
+	is
+		use et_terminals;
+		use pac_terminals;
+		terminal_cursor : pac_terminals.cursor;
+	begin
+		-- CS
+		return terminal_cursor;
+	end get_terminal;
 
+	
 	
 			
 end et_schematic.device_query_ops;

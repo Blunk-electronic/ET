@@ -42,7 +42,6 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 
@@ -59,7 +58,6 @@ with et_pcb;
 
 package et_nets is
 
-	--use pac_geometry_sch;
 	use pac_geometry_2;
 
 	

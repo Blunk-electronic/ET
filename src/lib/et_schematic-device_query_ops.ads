@@ -109,7 +109,8 @@ package et_schematic.device_query_ops is
 	-- For enquiries of port and unit that is linked to a terminal
 	-- these types are required:
 
-	-- Indicates whether a terminal is linked to a port at all:
+	-- Indicates whether a terminal is linked to a port at all.
+	-- A terminal can be left unconnected (NC in datasheets):
 	type type_terminal_linked is new boolean;
 	
 	type type_get_port_result (
@@ -133,15 +134,12 @@ package et_schematic.device_query_ops is
 		return type_get_port_result;
 
 
-	-- Maps from the given device, unit and port to the linked terminal.
-	-- The given device must be real. Otherwise a constraint error
-	-- will be raised:
-	--function get_terminal (
-		----device	: in pac_devices_sch.cursor;
-		----device	: in type_device_name;					  
-		--unit	: in pac_unit_name.bounded_string;
-		--port	: in pac_port_name.bounded_string)
-		--return pac_terminal_name.bounded_string;
+	-- Maps from the given device, unit and port to a cursor of the linked terminal.
+	-- A port is always linked with a terminal.
+	-- The given device must be real. Otherwise a constraint error will be raised:
+	function get_terminal (
+		port : in type_device_port)
+		return et_terminals.pac_terminals.cursor;
 	
 			
 end et_schematic.device_query_ops;
