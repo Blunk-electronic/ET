@@ -96,9 +96,9 @@ package et_nets is
 
 	-- This is the port of a device as it appears in a net segment:
 	type type_device_port is record
-		device_name	: type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		port_name	: et_symbols.pac_port_name.bounded_string;
+		device_name	: type_device_name; -- IC4
+		unit_name	: pac_unit_name.bounded_string; -- A
+		port_name	: et_symbols.pac_port_name.bounded_string; -- IN1
 	end record;
 
 	function "<" (left, right : in type_device_port) return boolean;
