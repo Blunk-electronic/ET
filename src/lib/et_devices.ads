@@ -584,21 +584,24 @@ package et_devices is
 		end case;
 	end record;
 
+	
 	-- Searches the given unit in the given device. Returns a cursor to 
 	-- either the internal or external unit.
 	function locate_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors;
+
 	
-	function package_model (
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
+	function get_package_model (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-		
--- 	function terminal_name (
+
+	
+	-- 	function terminal_name (
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
 -- 		device_cursor	: in pac_devices_lib.cursor;
@@ -606,6 +609,7 @@ package et_devices is
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
 
+	
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
 		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16

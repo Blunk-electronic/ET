@@ -1118,30 +1118,33 @@ package body et_devices is
 		end case;
 
 	end locate_unit;
-	
-	function package_model (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string) -- D, N
-		return pac_package_model_file_name.bounded_string is -- libraries/packages/smd/SOT23.pac
-		package_model : pac_package_model_file_name.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 
+	
+	function get_package_model (
+		device_cursor	: in pac_devices_lib.cursor;
+		variant			: in pac_package_variant_name.bounded_string)
+		return pac_package_model_file_name.bounded_string 
+	is
+		package_model : pac_package_model_file_name.bounded_string; -- to be returned (packages/smd/SOT23.pac)
+		
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_lib) is
+			device		: in type_device_lib) 
+		is
 			use pac_variants;
 			variant_cursor : pac_variants.cursor;
 		begin
 			variant_cursor := pac_variants.find (device.variants, variant);
 			package_model := element (variant_cursor).package_model;
 		end;
-
+		
 	begin
 		pac_devices_lib.query_element (
 			position	=> device_cursor,
 			process		=> query_variants'access);
 
 		return package_model;
-	end package_model;
+	end get_package_model;
 
 
 	

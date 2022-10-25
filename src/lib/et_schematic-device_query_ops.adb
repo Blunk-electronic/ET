@@ -114,7 +114,7 @@ package body et_schematic.device_query_ops is
 		-- locate the generic device model in the device library
 		device_cursor_lib := locate_device (device_model);
 		
-		return package_model (device_cursor_lib, device_variant);
+		return get_package_model (device_cursor_lib, device_variant);
 	end get_package_model;
 
 	
@@ -140,7 +140,7 @@ package body et_schematic.device_query_ops is
 	is
 		result : type_get_port_result;
 
-		-- Get the cursor to the full device model:
+		-- Get the cursor to the full device model in the library:
 		device_model : constant pac_devices_lib.cursor := 
 			locate_device (pac_devices_sch.element (device).model);
 
