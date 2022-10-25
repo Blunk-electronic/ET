@@ -229,7 +229,7 @@ package body et_schematic_ops.netlists is
 					net_cursor_sch : et_schematic.pac_nets.cursor := module.nets.first;
 
 					net_name : pac_net_name.bounded_string;
-					all_ports : et_schematic.type_ports;
+					all_ports : et_nets.type_ports;
 					device_ports_extended : pac_device_ports_extended.set;
 					submodule_ports_extended : pac_submodule_ports_extended.set;
 

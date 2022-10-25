@@ -1669,7 +1669,7 @@ package body et_schematic_ops is
 				
 				-- We search for ALL ports (of devices) in the net.
 				-- We assume the default assembly variant.
-				ports : constant et_schematic.type_ports := 
+				ports : constant et_nets.type_ports := 
 					get_ports (n, pac_assembly_variants.no_element);
 
 				-- ports.devices now contains all ports and units of devices in

@@ -131,6 +131,12 @@ package et_nets is
 	package pac_submodule_ports is new ordered_sets (type_submodule_port);
 
 
+	type type_ports is record
+		devices		: pac_device_ports.set;
+		submodules	: pac_submodule_ports.set;
+		netchangers	: et_netlists.pac_netchanger_ports.set;
+	end record;
+	
 	
 	type type_net_segment is new type_line with record
 		labels				: pac_net_labels.list;

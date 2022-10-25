@@ -288,14 +288,6 @@ package et_schematic is
 
 	
 	
-	type type_ports is record
-		devices		: pac_device_ports.set;
-		submodules	: pac_submodule_ports.set;
-		netchangers	: et_netlists.pac_netchanger_ports.set;
-	end record;
-
-	
-	
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether certain
 	-- devices should be excluded (because they may not be present in a particular

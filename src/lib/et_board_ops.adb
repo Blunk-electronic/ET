@@ -1555,7 +1555,7 @@ package body et_board_ops is
 		use pac_vectors;
 		result : pac_vectors.list;
 
-		ports : et_schematic.type_ports;
+		ports : et_nets.type_ports;
 
 		port_properties : type_port_properties_access;
 

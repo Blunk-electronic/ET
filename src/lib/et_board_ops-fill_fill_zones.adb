@@ -195,9 +195,9 @@ is
 			return pac_polygon_list.list
 		is
 			terminals : pac_polygon_list.list; -- to be returned
-			ports : et_schematic.type_ports;
+			ports : et_nets.type_ports;
 		begin
-			--ports := get_ports (net_cursor,
+			--ports := get_ports (net_cursor); -- use default assembly variant !
 			-- CS
 			return terminals;
 		end get_terminals;
