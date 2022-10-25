@@ -122,6 +122,7 @@ package et_schematic.device_query_ops is
 			when FALSE => null;
 		end case;
 	end record;
+
 	
 	-- Maps from the given terminal to the linked port and unit.
 	-- The given device must be real. Otherwise a constraint error
@@ -132,8 +133,15 @@ package et_schematic.device_query_ops is
 		return type_get_port_result;
 
 
-	
-
+	-- Maps from the given device, unit and port to the linked terminal.
+	-- The given device must be real. Otherwise a constraint error
+	-- will be raised:
+	--function get_terminal (
+		----device	: in pac_devices_sch.cursor;
+		----device	: in type_device_name;					  
+		--unit	: in pac_unit_name.bounded_string;
+		--port	: in pac_port_name.bounded_string)
+		--return pac_terminal_name.bounded_string;
 	
 			
 end et_schematic.device_query_ops;

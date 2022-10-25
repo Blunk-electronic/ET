@@ -148,7 +148,7 @@ package et_schematic is
 	
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package pac_units is new indefinite_ordered_maps ( -- CS rename to pac_units
+	package pac_units is new indefinite_ordered_maps (
 		key_type		=> pac_unit_name.bounded_string,
 		element_type 	=> type_unit);
 
@@ -295,6 +295,7 @@ package et_schematic is
 	end record;
 
 	
+	
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether certain
 	-- devices should be excluded (because they may not be present in a particular
@@ -303,7 +304,7 @@ package et_schematic is
 	-- and ALL devices are returned.
 	function get_ports (
 		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor) -- CS default no_element ?
+		variant	: in pac_assembly_variants.cursor)
 		return type_ports;
 
 
@@ -389,7 +390,13 @@ package et_schematic is
 		
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
-		-- the nets of the module (incl. routing information for the board):
+		-- The nets of the module (incl. routing information for the board)
+		-- containing:
+		-- - strands
+		-- - net segments
+		-- - ports of devices, netchangers and submodules
+		-- On adding, moving or deleting units the structure in 
+		-- selector "net" must be updated:
 		nets 	    	: pac_nets.map;
 
 		-- The assembly variants of the module.
