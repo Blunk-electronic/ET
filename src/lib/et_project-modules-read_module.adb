@@ -5236,13 +5236,13 @@ is
 							-- There is no section for a single port like [PORT BEGIN].
 
 							-- insert port collection in segment
-							net_segment.ports_devices := net_device_ports;
+							net_segment.ports.devices := net_device_ports;
 
 							-- insert submodule ports in segment
-							net_segment.ports_submodules := net_submodule_ports;
+							net_segment.ports.submodules := net_submodule_ports;
 
 							-- insert netchanger ports in segment
-							net_segment.ports_netchangers := net_netchanger_ports;
+							net_segment.ports.netchangers := net_netchanger_ports;
 							
 							-- clean up for next port collections (of another net segment)
 							et_nets.pac_device_ports.clear (net_device_ports);

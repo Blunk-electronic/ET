@@ -239,12 +239,12 @@ package body et_schematic is
 			
 		begin
 			-- Collect device ports of segment according to given assembly variant.
-			iterate (element (segment_cursor).ports_devices, query_devices'access);
+			iterate (element (segment_cursor).ports.devices, query_devices'access);
 
 			-- Ports of netchangers and submodules go into the result right away
 			-- because they are not affected by any assembly variants.
-			union (result.netchangers, element (segment_cursor).ports_netchangers);
-			union (result.submodules, element (segment_cursor).ports_submodules);
+			union (result.netchangers, element (segment_cursor).ports.netchangers);
+			union (result.submodules, element (segment_cursor).ports.submodules);
 		end query_segments;
 
 		

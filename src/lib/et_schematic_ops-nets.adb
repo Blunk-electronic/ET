@@ -769,9 +769,9 @@ package body et_schematic_ops.nets is
 			use et_netlists;
 			use pac_netchanger_ports;
 
-			device : pac_device_ports.cursor := segment.ports_devices.first;
-			submodule : pac_submodule_ports.cursor := segment.ports_submodules.first;
-			netchanger : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
+			device : pac_device_ports.cursor := segment.ports.devices.first;
+			submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
+			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
 
@@ -1170,9 +1170,9 @@ package body et_schematic_ops.nets is
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
 						begin
-							pac_device_ports.union (segment.ports_devices, ports.devices);
-							pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
-							et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
+							pac_device_ports.union (segment.ports.devices, ports.devices);
+							pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
+							et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
 						end append_portlists;
 
 						
@@ -1545,9 +1545,9 @@ package body et_schematic_ops.nets is
 		
 		-- Attaches the ports to the segment being processed:
 		procedure assign_ports_to_segment is begin
-			pac_device_ports.union (segment.ports_devices, ports.devices);
-			pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
-			et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
+			pac_device_ports.union (segment.ports.devices, ports.devices);
+			pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
+			et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
 		end;
 
 		
@@ -2428,12 +2428,12 @@ package body et_schematic_ops.nets is
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
 								if port_position = old_segment.start_point then
-									insert (segment_1.ports_devices, element (cursor));
+									insert (segment_1.ports.devices, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
 								elsif port_position = old_segment.end_point then
-									insert (segment_2.ports_devices, element (cursor));
+									insert (segment_2.ports.devices, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
@@ -2448,7 +2448,7 @@ package body et_schematic_ops.nets is
 							log (text => "updating device ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports_devices, query_ports'access);
+							iterate (old_segment.ports.devices, query_ports'access);
 							log_indentation_down;
 						end update_device_ports;
 
@@ -2477,12 +2477,12 @@ package body et_schematic_ops.nets is
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
 								if port_position = old_segment.start_point then
-									insert (segment_1.ports_submodules, element (cursor));
+									insert (segment_1.ports.submodules, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
 								elsif port_position = old_segment.end_point then
-									insert (segment_2.ports_submodules, element (cursor));
+									insert (segment_2.ports.submodules, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
@@ -2497,7 +2497,7 @@ package body et_schematic_ops.nets is
 							log (text => "updating submodule ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports_submodules, query_ports'access);
+							iterate (old_segment.ports.submodules, query_ports'access);
 							log_indentation_down;
 						end update_submodule_ports;
 
@@ -2528,12 +2528,12 @@ package body et_schematic_ops.nets is
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
 								if port_position = old_segment.start_point then
-									insert (segment_1.ports_netchangers, element (cursor));
+									insert (segment_1.ports.netchangers, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
 								elsif port_position = old_segment.end_point then
-									insert (segment_2.ports_netchangers, element (cursor));
+									insert (segment_2.ports.netchangers, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
@@ -2549,7 +2549,7 @@ package body et_schematic_ops.nets is
 							log (text => "updating netchanger ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports_netchangers, query_ports'access);
+							iterate (old_segment.ports.netchangers, query_ports'access);
 							log_indentation_down;
 						end update_netchanger_ports;
 

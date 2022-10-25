@@ -139,11 +139,9 @@ package et_nets is
 	
 	
 	type type_net_segment is new type_line with record
-		labels				: pac_net_labels.list;
-		junctions			: type_junctions;
-		ports_devices		: pac_device_ports.set;
-		ports_submodules	: pac_submodule_ports.set;
-		ports_netchangers	: et_netlists.pac_netchanger_ports.set;
+		labels		: pac_net_labels.list;
+		junctions	: type_junctions;
+		ports		: type_ports;
 	end record;
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);

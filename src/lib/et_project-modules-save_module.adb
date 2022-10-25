@@ -421,7 +421,7 @@ is
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : pac_device_ports.cursor := segment.ports_devices.first;
+					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
 				begin -- query_device_ports
 					while port_cursor /= pac_device_ports.no_element loop
 						write (keyword => keyword_device, parameters => 
@@ -436,7 +436,7 @@ is
 				
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : pac_submodule_ports.cursor := segment.ports_submodules.first;
+					port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
 				begin
 					while port_cursor /= pac_submodule_ports.no_element loop
 
@@ -453,7 +453,7 @@ is
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
+					port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 				begin
 					while port_cursor /= pac_netchanger_ports.no_element loop
 
@@ -480,9 +480,9 @@ is
 					query_element (segment_cursor, query_junctions'access);
 
 					-- write ports there are any. otherwise leave out section ports.
-					if 	is_empty (element (segment_cursor).ports_devices) and
-						is_empty (element (segment_cursor).ports_submodules) and
-						is_empty (element (segment_cursor).ports_netchangers) then
+					if 	is_empty (element (segment_cursor).ports.devices) and
+						is_empty (element (segment_cursor).ports.submodules) and
+						is_empty (element (segment_cursor).ports.netchangers) then
 						null;
 					else
 						section_mark (section_ports, HEADER);

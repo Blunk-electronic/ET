@@ -321,13 +321,15 @@ package body et_schematic_ops is
 											ports_new.insert (port); -- all other ports are collected in ports_new.
 										end if;
 									end query_port;
+
 									
 								begin -- query_ports
-									iterate (segment.ports_devices, query_port'access); -- loop in portlist of given segment
+									iterate (segment.ports.devices, query_port'access); -- loop in portlist of given segment
 
 									-- overwrite old portlist by new portlist
-									segment.ports_devices := ports_new;
+									segment.ports.devices := ports_new;
 								end query_ports;
+
 								
 							begin -- query_segment
 								log_indentation_up;
@@ -344,6 +346,7 @@ package body et_schematic_ops is
 						begin -- query_segments
 							iterate (strand.segments, query_segment'access);
 						end query_segments;
+
 						
 					begin -- query_strand
 						log_indentation_up;
@@ -1034,7 +1037,7 @@ package body et_schematic_ops is
 						procedure change_segment (segment : in out type_net_segment) is
 						begin -- change_segment
 							-- If port sits on start OR end point of segment AND if it
-							-- is not already in the segment then append it to segment.ports_devices.
+							-- is not already in the segment then append it to segment.ports.devices.
 							-- append it to the portlist of the segment.
 							if 	segment.start_point = element (port_cursor).position or
 								segment.end_point = element (port_cursor).position then
@@ -1042,7 +1045,7 @@ package body et_schematic_ops is
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
 								if pac_device_ports.contains (
-									container	=> segment.ports_devices,
+									container	=> segment.ports.devices,
 									item		=> (
 											device_name	=> device,
 											unit_name	=> unit, -- A, C, PWR
@@ -1052,7 +1055,7 @@ package body et_schematic_ops is
 									log (text => " already there -> skipped", level => log_threshold + 3);
 								else
 									pac_device_ports.insert (
-										container	=> segment.ports_devices,
+										container	=> segment.ports.devices,
 										new_item	=> (
 											device_name	=> device,
 											unit_name	=> unit, -- A, C, PWR
@@ -2232,7 +2235,7 @@ package body et_schematic_ops is
 								-- Tests device ports of given segment if their device name matches the given device name.
 								-- On match replace the old device name by the new device name.
 
-									port_cursor : pac_device_ports.cursor := segment.ports_devices.first;
+									port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
 									
 								begin -- query_ports
 									while port_cursor /= pac_device_ports.no_element loop
@@ -2240,7 +2243,7 @@ package body et_schematic_ops is
 										if element (port_cursor).device_name = device_before then -- IC1
 
 											replace_element (
-												container	=> segment.ports_devices,
+												container	=> segment.ports.devices,
 												position	=> port_cursor,
 												new_item	=> (
 													device_name	=> device_after, -- IC23
@@ -2252,6 +2255,7 @@ package body et_schematic_ops is
 										next (port_cursor);
 									end loop;
 								end query_ports;
+
 								
 							begin -- query_segment
 								log_indentation_up;
@@ -2264,6 +2268,7 @@ package body et_schematic_ops is
 												   
 								log_indentation_down;
 							end query_segment;
+
 							
 						begin -- query_segments
 							iterate (strand.segments, query_segment'access);
@@ -3730,14 +3735,14 @@ package body et_schematic_ops is
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
 								if pac_netchanger_ports.contains (
-									container	=> segment.ports_netchangers,
+									container	=> segment.ports.netchangers,
 									item		=> (index, name)
 									) then
 
 									log (text => " already there -> skipped", level => log_threshold + 5);
 								else
 									pac_netchanger_ports.insert (
-										container	=> segment.ports_netchangers,
+										container	=> segment.ports.netchangers,
 										new_item	=> (index, name)); -- 1,2,3, .. / master/slave
 
 									log (text => " sits on segment -> inserted", level => log_threshold + 5);
@@ -3939,24 +3944,27 @@ package body et_schematic_ops is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+					
 					procedure query_ports (segment : in out type_net_segment) is
 						use et_netlists;
 						use pac_netchanger_ports;
 						use et_submodules;
 						port_cursor : pac_netchanger_ports.cursor;
 
+						
 						procedure delete_port is begin
 							log (text => "sheet" & to_sheet (sheet) & " net " &
 								to_string (key (net_cursor)) & space &
 								to_string (segment_cursor),
 								level => log_threshold + 1);
-							delete (segment.ports_netchangers, port_cursor);
+							delete (segment.ports.netchangers, port_cursor);
 						end;
-	
+
+						
 					begin -- query_ports
 						-- Search for the master port if it has not been deleted yet:
 						if not deleted_ports.master then
-							port_cursor := find (segment.ports_netchangers, (index, MASTER));
+							port_cursor := find (segment.ports.netchangers, (index, MASTER));
 							if port_cursor /= pac_netchanger_ports.no_element then
 								delete_port;
 								deleted_ports.master := true;
@@ -3965,13 +3973,14 @@ package body et_schematic_ops is
 
 						-- Search for the slave port if it has not been deleted yet:
 						if not deleted_ports.slave then
-							port_cursor := find (segment.ports_netchangers, (index, SLAVE));
+							port_cursor := find (segment.ports.netchangers, (index, SLAVE));
 							if port_cursor /= pac_netchanger_ports.no_element then
 								delete_port;
 								deleted_ports.slave := true;
 							end if;
 						end if;
 					end query_ports;
+
 					
 				begin -- query_segments
 					while not all_ports_deleted and segment_cursor /= pac_net_segments.no_element loop
@@ -4871,10 +4880,12 @@ package body et_schematic_ops is
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
+				
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+					
 					procedure change_segment (segment : in out type_net_segment) is begin
 						-- If port sits on start OR end point of segment AND if it
 						-- is not already in the segment then append it to the 
@@ -4886,14 +4897,14 @@ package body et_schematic_ops is
 							-- If port not already in segment, append it.
 							-- Otherwise it must not be appended again. constraint_error would arise.
 							if pac_submodule_ports.contains (
-								container	=> segment.ports_submodules,
+								container	=> segment.ports.submodules,
 								item		=> (instance, port) -- OSC1, clock_output
 								) then
 
 								log (text => " already there -> skipped", level => log_threshold + 3);
 							else
 								pac_submodule_ports.insert (
-									container	=> segment.ports_submodules,
+									container	=> segment.ports.submodules,
 									new_item	=> (instance, port)); -- OSC1, clock_output
 
 								log (text => " sits on segment -> inserted", level => log_threshold + 3);
@@ -4905,6 +4916,7 @@ package body et_schematic_ops is
 						
 					end change_segment;
 
+					
 				begin -- query_segments
 					log_indentation_up;
 
@@ -5158,26 +5170,29 @@ package body et_schematic_ops is
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
+				
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+					
 					procedure change_segment (segment : in out type_net_segment) is
 						use pac_submodule_ports;
 						port_cursor : pac_submodule_ports.cursor;
 					begin
 						-- Search for the port and delete it if existing:
 						port_cursor := find (
-							container	=> segment.ports_submodules,
+							container	=> segment.ports.submodules,
 							item		=> port); -- OSC1, clock_output
 
 						if port_cursor /= pac_submodule_ports.no_element then
-							delete (segment.ports_submodules, port_cursor);
+							delete (segment.ports.submodules, port_cursor);
 							port_processed := true;
 						end if;
 						
 					end change_segment;
 
+					
 				begin -- query_segments
 					log_indentation_up;
 
@@ -5953,11 +5968,11 @@ package body et_schematic_ops is
 					procedure change_segment (segment : in out type_net_segment) is
 						use pac_module_instance_name;
 						use pac_submodule_ports;
-						port_cursor : pac_submodule_ports.cursor := segment.ports_submodules.first;
+						port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
 					begin
 						while port_cursor /= pac_submodule_ports.no_element loop
 							if element (port_cursor).module_name = instance then -- OSC1
-								delete (segment.ports_submodules, port_cursor);
+								delete (segment.ports.submodules, port_cursor);
 							end if;
 							next (port_cursor);
 						end loop;
@@ -8926,7 +8941,7 @@ package body et_schematic_ops is
 										
 								begin -- query_ports_devices
 									log_indentation_up;
-									iterate (segment.ports_devices, query_port'access);
+									iterate (segment.ports.devices, query_port'access);
 									log_indentation_down;
 								end query_ports_devices;
 
@@ -8952,7 +8967,7 @@ package body et_schematic_ops is
 									
 								begin -- query_ports_submodules
 									log_indentation_up;
-									iterate (segment.ports_submodules, query_port'access);
+									iterate (segment.ports.submodules, query_port'access);
 									log_indentation_down;
 								end query_ports_submodules;
 
@@ -8978,7 +8993,7 @@ package body et_schematic_ops is
 
 								begin -- query_ports_netchangers
 									log_indentation_up;
-									iterate (segment.ports_netchangers, query_port'access);
+									iterate (segment.ports.netchangers, query_port'access);
 									log_indentation_down;
 								end query_ports_netchangers;
 								

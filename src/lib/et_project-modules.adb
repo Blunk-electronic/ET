@@ -204,7 +204,7 @@ package body et_project.modules is
 
 						use et_netlists;
 						use pac_netchanger_ports;
-						port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
+						port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 					begin
 						while port_cursor /= pac_netchanger_ports.no_element loop
 							if element (port_cursor) = port then
@@ -290,7 +290,7 @@ package body et_project.modules is
 
 					use et_netlists;
 					use pac_netchanger_ports;
-					port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
+					port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 				begin
 					while port_cursor /= pac_netchanger_ports.no_element loop
 
