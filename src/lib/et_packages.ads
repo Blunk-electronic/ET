@@ -336,7 +336,8 @@ package et_packages is
 
 	
 	-- Returns a cursor to the given package model.
-	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
+	function locate_package_model ( -- CS rename to get_package_model ?
+		model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_packages_lib.cursor;
 
 	
@@ -344,8 +345,9 @@ package et_packages is
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
 
 	
-	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
-	function terminal_properties (
+	-- Returns a cursor to the requested terminal (with all its properties) 
+	-- within the given package model:
+	function terminal_properties ( -- CS rename to get_terminal ?
 		cursor		: in pac_packages_lib.cursor;
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return pac_terminals.cursor;

@@ -214,7 +214,6 @@ package body et_schematic.device_query_ops is
 	is
 		use et_terminals;
 		use pac_terminals;
-		terminal_cursor : pac_terminals.cursor;
 
 		-- Get the cursor to the full device model in the library:
 		use pac_devices_lib;
@@ -225,19 +224,23 @@ package body et_schematic.device_query_ops is
 			get_variant (device); -- N, D
 
 		-- Get full information about the package variant:
+		use pac_variants;
 		variant_lib : constant pac_variants.cursor := 
 			get_package_variant (device_model_lib, variant_sch);
 
-		terminal_name : pac_terminal_name.bounded_string;
-	begin
-		terminal_name := get_terminal (variant_lib, unit, port);
+		terminal_name : constant pac_terminal_name.bounded_string := 
+			get_terminal (variant_lib, unit, port);
 
-		-- package model
-		-- element (variant_lib).package_model
+		use et_packages;
+		use pac_packages_lib;
+		package_cursor : pac_packages_lib.cursor;
+
+	begin
+		-- Get a cursor to the package model:
+		package_cursor := locate_package_model (element (variant_lib).package_model);
 		
-		-- CS map to the actual terminal
-		
-		return terminal_cursor;
+		-- Get the cursor to the actual terminal:
+		return terminal_properties (package_cursor, terminal_name);
 	end get_terminal;
 
 	

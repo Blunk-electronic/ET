@@ -217,23 +217,21 @@ is
 				terminal_cursor : constant pac_terminals.cursor := 
 					get_terminal (device_cursor, port.unit_name, port.port_name);
 
-				-- Get the terminal name (like 3 or H5):
-				terminal_name : constant pac_terminal_name.bounded_string := 
-					key (terminal_cursor);
-
 				-- Get the actual terminal as described in the package model:
 				terminal : constant et_terminals.type_terminal := 
 					element (terminal_cursor);
 
+				
+				-- Get the terminal name (like 3 or H5):
+				terminal_name : constant pac_terminal_name.bounded_string := 
+					key (terminal_cursor);
+				
 				-- Get the terminal position (incl. rotation and face):
 				terminal_position : constant type_terminal_position_fine := 
 					get_terminal_position (module_cursor, device_cursor, terminal_name);
 			begin
-				declare
-					
-				begin
-					null;				
-				end;
+				null;				
+				-- CS make a polygon
 			end query_device;
 			
 		begin
@@ -241,17 +239,10 @@ is
 			-- Therefore we do not pass a specific assembly variant here.
 			ports := get_ports (net_cursor); 
 
-			--type type_ports is record
-				--devices		: pac_device_ports.set;
-				--submodules	: pac_submodule_ports.set;
-				--netchangers	: et_netlists.pac_netchanger_ports.set;
-			--end record;
-
 			-- In variable "ports" we are interested in selector "devices" only
 			-- because submodule ports and netchangers are just virtual devices
 			-- that connect two conductor tracks:
 			ports.devices.iterate (query_device'access);
-
 			
 			-- CS
 			return terminals;
