@@ -314,7 +314,7 @@ package et_terminals is
 
 	
 	-- NOTE: This type is used in the board when inquiring for terminal positions.
-	-- It uses floating point numbers for the terminal positions because: 
+	-- It uses floating point numbers for the terminal position because: 
 	-- After rotating the package in the board the x/y coordinates are machine-made. 
 	-- Fixed point coordinates would not be useful here.
 	type type_terminal_position_fine (technology : type_assembly_technology) is record
