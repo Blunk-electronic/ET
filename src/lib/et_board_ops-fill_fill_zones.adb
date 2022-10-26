@@ -199,15 +199,46 @@ is
 			terminals : pac_polygon_list.list; -- to be returned
 			ports : et_nets.type_ports;
 
+			use pac_device_ports;
+			use pac_terminals;
+
 			
 			procedure query_device (d : in pac_device_ports.cursor) is
+
+				port : type_device_port renames element (d);
+				-- Now port the device name, unit name and port name.
+				
+				-- Get the cursor to the device in the schematic:
+				device_cursor : constant pac_devices_sch.cursor := 
+					locate_device (module_cursor, port.device_name);
+
+				-- Get the cursor to the physical terminal that is linked
+				-- with the port:
+				terminal_cursor : constant pac_terminals.cursor := 
+					get_terminal (device_cursor, port.unit_name, port.port_name);
+
+				-- Get the terminal name (like 3 or H5):
+				terminal_name : constant pac_terminal_name.bounded_string := 
+					key (terminal_cursor);
+
+				-- Get the actual terminal as described in the package model:
+				terminal : constant et_terminals.type_terminal := 
+					element (terminal_cursor);
+
+				-- Get the terminal position (incl. rotation and face):
+				terminal_position : constant type_terminal_position_fine := 
+					get_terminal_position (module_cursor, device_cursor, terminal_name);
 			begin
-				null;
+				declare
+					
+				begin
+					null;				
+				end;
 			end query_device;
 			
 		begin
-			-- Get the ports of everything connected with the given net.
-			-- Therefore we do not pass an assembly variant here:
+			-- Get the ports of all devices connected with the given net.
+			-- Therefore we do not pass a specific assembly variant here.
 			ports := get_ports (net_cursor); 
 
 			--type type_ports is record
@@ -216,6 +247,9 @@ is
 				--netchangers	: et_netlists.pac_netchanger_ports.set;
 			--end record;
 
+			-- In variable "ports" we are interested in selector "devices" only
+			-- because submodule ports and netchangers are just virtual devices
+			-- that connect two conductor tracks:
 			ports.devices.iterate (query_device'access);
 
 			
@@ -230,7 +264,9 @@ is
 			-- The clearance between net and zone is either the given zone_clearance
 			-- or the clearance of the net itself. However, the greater value is applied:
 			net_class : constant type_net_class := get_net_class (module_cursor, n);
-			clearance : constant type_track_clearance := get_greatest (zone_clearance, net_class.clearance);
+			
+			clearance : constant type_track_clearance := 
+				get_greatest (zone_clearance, net_class.clearance);
 
 			-- The polygons of the candidate net are collected here:
 			polygons : pac_polygon_list.list;
@@ -282,7 +318,9 @@ is
 			end query_via;
 
 
-			procedure do_it is begin
+			procedure do_it is 
+				terminals : pac_polygon_list.list;
+			begin
 				-- Query track segments:
 				route.lines.iterate (query_line'access);
 
@@ -292,8 +330,11 @@ is
 				route.vias.iterate (query_via'access);
 				
 				-- CS fill zones, ... see et_pcb.type_route
-				-- CS pads
-
+				
+				-- terminals of packages
+				terminals := get_terminals (n);
+				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
+				
 				offset_polygons (polygons, type_float_internal_positive (clearance));
 
 				-- CS union polygons ?

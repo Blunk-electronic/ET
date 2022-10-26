@@ -636,7 +636,47 @@ package body et_devices is
 	end check_variant_name_characters;
 
 
+	function get_terminal (
+		variant	: in pac_variants.cursor;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return pac_terminal_name.bounded_string
+	is
+		use pac_terminal_name;
+		result : pac_terminal_name.bounded_string;
 
+		use pac_variants;
+		
+		procedure query_terminal_port_map (
+			name	: in pac_package_variant_name.bounded_string;
+			variant	: in type_variant)
+		is
+			use pac_port_name;
+			use pac_terminal_port_map;
+			c : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
+		begin
+			while c /= pac_terminal_port_map.no_element loop
+				if element (c).unit = unit and then element (c).name = port then 
+					result := key (c);
+					exit;
+				end if;
+				next (c);
+			end loop;
+		end query_terminal_port_map;
+								
+	begin
+		query_element (variant, query_terminal_port_map'access);
+
+		-- Raise exception if no terminal has been found:
+		if length (result) = 0 then
+			raise semantic_error_1 with "No terminal found !";
+			-- CS output variant name, unit and port
+		end if;
+		
+		return result;
+	end get_terminal;
+
+	
 	
 	function to_string (
 		terminal	: in type_terminal;
@@ -1023,6 +1063,37 @@ package body et_devices is
 	end units_total;
 
 
+	function get_package_variant (
+		device_cursor	: in pac_devices_lib.cursor;
+		variant			: in pac_package_variant_name.bounded_string)
+		return pac_variants.cursor
+	is 
+		result : pac_variants.cursor;
+
+		procedure query_variants (
+			device_name	: in pac_device_model_file.bounded_string;
+			device		: in type_device_lib) 
+		is 
+			use pac_variants;
+			--vc : constant pac_variants.cursor := find (device.variants, variant);
+		begin
+			result := find (device.variants, variant);
+			--if vc /= pac_variants.no_element then
+				--result := vc;
+			--else
+				--raise semantic_error_1 with "Package variant " 
+					--& enclose_in_quotes (to_string (variant)) &
+					--" not defined."; 
+					---- CS output model name. Mind max. string length of error message.
+			--end if;
+		end query_variants;
+		
+	begin
+		query_element (device_cursor, query_variants'access);
+		return result;
+	end get_package_variant;
+
+	
 	
 	function variant_available (
 		device_cursor	: in pac_devices_lib.cursor;

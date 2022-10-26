@@ -54,8 +54,8 @@ package et_schematic.device_query_ops is
 		return boolean;
 
 
-	-- Maps from schematic device to library device:
-	function get_device (
+	-- Maps from schematic device to library model:
+	function get_device ( -- CS rename to get_device_model ?
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor;
 
@@ -83,7 +83,7 @@ package et_schematic.device_query_ops is
 
 	-- Returns the package variant of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
-	function get_variant (
+	function get_variant ( -- CS rename to get_package_variant
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string;
 
@@ -134,11 +134,15 @@ package et_schematic.device_query_ops is
 		return type_get_port_result;
 
 
-	-- Maps from the given device, unit and port to a cursor of the linked terminal.
+	-- Maps from the given device cursor, unit and port name 
+	-- to a cursor of the linked terminal.
 	-- A port is always linked with a terminal.
 	-- The given device must be real. Otherwise a constraint error will be raised:
 	function get_terminal (
-		port : in type_device_port)
+		--port : in type_device_port)
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor;
 	
 			

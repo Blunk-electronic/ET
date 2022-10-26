@@ -57,7 +57,7 @@ with et_logging;				use et_logging;
 with et_general;
 with et_text;
 with et_symbols;				use et_symbols;
-with et_terminals;
+with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
 
 package et_devices is
@@ -355,6 +355,7 @@ package et_devices is
 
 	
 -- PACKAGE VARIANTS
+	
 	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer
 	-- specific abbrevation for the package a device comes with.
 	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
@@ -396,15 +397,35 @@ package et_devices is
 
 
 	
-	type type_variant is record
+	type type_variant is record -- CS rename to type_package_variant
 		package_model		: pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
+	
 	package pac_variants is new ordered_maps (
 		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
 		element_type 	=> type_variant);
 
+
+	-- Returns the unit and port that is linked to the given
+	-- terminal. If no unit and port found, then an unconnected
+	-- terminal is returned:
+	--function get_unit_and_port (
+		--variant		: in pac_variants.cursor;
+		--terminal	: in pac_terminal_name.bounded_string)
+		--return type_get_port_result;
+
+	
+	-- Returns the terminal that is linked to the given
+	-- unit and port. If no terminal found, then an exception is raised:
+	function get_terminal (
+		variant	: in pac_variants.cursor;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return pac_terminal_name.bounded_string;
+	
+	
 	type type_terminal is record
 		name	: et_terminals.pac_terminal_name.bounded_string; -- H7
 		unit	: pac_unit_name.bounded_string; -- IO-BANK1
@@ -423,7 +444,7 @@ package et_devices is
 
 
 -- DEVICES
-	type type_device_lib (appearance : type_appearance) is record
+	type type_device_lib (appearance : type_appearance) is record -- CS rename to type_device_model ?
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
@@ -488,6 +509,10 @@ package et_devices is
 		"<"				=> pac_device_model_file."<",
 		element_type	=> type_device_lib);
 
+	use pac_devices_lib;
+
+
+	
 	device_model_file_extension : constant string := "dev";
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
@@ -553,14 +578,24 @@ package et_devices is
 		device_cursor	: in pac_devices_lib.cursor)
 		return type_unit_count;
 
+
+	-- Returns full information about the given package variant.
+	-- If the package variant is not defined in the model, then
+	-- then the result is no_element:
+	function get_package_variant (
+		device_cursor	: in pac_devices_lib.cursor;
+		variant			: in pac_package_variant_name.bounded_string)  -- D, N
+		return pac_variants.cursor;
+
 	
-	function variant_available (
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
+	function variant_available (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean;
 
+	
 	-- Returns a list of available variants of the given device.
 	-- If the device is virtual, then an empty list will be returned.
 	function available_variants (
