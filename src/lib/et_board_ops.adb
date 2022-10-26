@@ -1451,10 +1451,9 @@ package body et_board_ops is
 		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
 
 		-- Since the return is a controlled type we handle its components separately:
-		--terminal_position_base : type_position; -- x/y/rotation
 		use pac_geometry_brd;
 		terminal_position : type_vector; -- x/y
-		terminal_rotation : type_angle; -- rotation
+		terminal_rotation : type_angle;
 		terminal_position_face : type_face; -- top/bottom
 
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
@@ -1465,6 +1464,7 @@ package body et_board_ops is
 		terminal_cursor : pac_terminals.cursor;
 		
 		terminal_technology : type_assembly_technology;
+		
 	begin
 		-- Get the package model of the given device:
 		model := get_package_model (device_cursor);
@@ -1484,10 +1484,15 @@ package body et_board_ops is
 		-- Get the assembly technology of the terminal (SMT or THT):
 		terminal_technology := element (terminal_cursor).technology;
 
-		-- get x/y/rotation of the terminal as given by the package model:
-		--terminal_position_base := pac_terminals.element (terminal_cursor).position;
+		-- Get x/y of the terminal as given by the package model.
+		-- This position is relative to the origin of the package model:
 		terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
+		
+		-- Get the rotation of the terminal (about its center) as given by the package model:
 		terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
+
+		-- Add to the terminal rotation the rotation of the package:
+		terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));
 		
 		-- In the board: If the package has been flipped (to any side) by the operator
 		-- then the terminal must be flipped also.
@@ -1513,30 +1518,22 @@ package body et_board_ops is
 			terminal_position_face := get_face (package_position);
 		end if;
 
-		--rotate_by (point => terminal_position_base.place, rotation => get_rotation (package_position));
 		-- Rotate the terminal position (x/y) by the rotation of the package:
-		rotate_by (terminal_position, to_angle (get_rotation (package_position)));
+		rotate_by (terminal_position, terminal_rotation);
 
-		-- move
-		--move_by (point => terminal_position_base.place, offset => to_distance_relative (package_position.place));
 		-- Move the terminal position by the position of the package:
 		move_by (terminal_position, to_offset (package_position.place));
 
 		-- compose the return depending on the terminal technology:
 		case terminal_technology is
 			when SMT =>
-				--return (terminal_position_base with
-						--technology	=> SMT,
-						--face		=> terminal_position_face);
 				return (
 					place		=> terminal_position,
 					rotation	=> terminal_rotation,	   
 					technology	=> SMT,
 					face		=> terminal_position_face);
-
 				
 			when THT =>
-				--return (terminal_position_base with technology => THT);
 				return (
 					place		=> terminal_position,
 					rotation	=> terminal_rotation,	   
