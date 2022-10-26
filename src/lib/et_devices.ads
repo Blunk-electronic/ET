@@ -408,22 +408,45 @@ package et_devices is
 		element_type 	=> type_variant);
 
 
+
+	
+	-- For enquiries of port and unit that is linked to a terminal these
+	-- types are required to indicate whether a terminal is linked to a port at all.
+	-- A terminal can be left unconnected (NC in datasheets):
+	type type_terminal_linked is new boolean;
+	
+	type type_get_port_result (
+		linked : type_terminal_linked := false)
+	is record
+		case linked is
+			when TRUE =>
+				unit	: pac_unit_name.bounded_string; -- A, B, GPIO1, ...
+				port	: pac_port_name.bounded_string; -- IN1, IN2, ...
+			when FALSE => null;
+		end case;
+	end record;
+	
+
 	-- Returns the unit and port that is linked to the given
 	-- terminal. If no unit and port found, then an unconnected
 	-- terminal is returned:
-	--function get_unit_and_port (
-		--variant		: in pac_variants.cursor;
-		--terminal	: in pac_terminal_name.bounded_string)
-		--return type_get_port_result;
+	function get_unit_and_port (
+		variant		: in pac_variants.cursor;
+		terminal	: in pac_terminal_name.bounded_string)
+		return type_get_port_result;
 
-	
-	-- Returns the terminal that is linked to the given
+
+	-- This is basically the reverse of get_unit_and_port.
+	-- Returns the name of the terminal that is linked to the given
 	-- unit and port. If no terminal found, then an exception is raised:
 	function get_terminal (
 		variant	: in pac_variants.cursor;
 		unit	: in pac_unit_name.bounded_string;
 		port	: in pac_port_name.bounded_string)
 		return pac_terminal_name.bounded_string;
+
+
+	
 	
 	
 	type type_terminal is record

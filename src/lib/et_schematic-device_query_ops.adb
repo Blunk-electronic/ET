@@ -138,6 +138,10 @@ package body et_schematic.device_query_ops is
 		terminal	: in et_terminals.pac_terminal_name.bounded_string)
 		return type_get_port_result
 	is
+		-- CS: 
+		-- simplify header as in function get_terminal
+		-- use function et_devices.get_unit_and_port
+		
 		result : type_get_port_result;
 
 		-- Get the cursor to the full device model in the library:
@@ -188,6 +192,8 @@ package body et_schematic.device_query_ops is
 			
 		begin
 			query_element (variant_lib, query_terminal_port_map'access);
+
+			-- CS result := get_unit_and_port (variant_lib, terminal);
 		end query_model;
 
 		

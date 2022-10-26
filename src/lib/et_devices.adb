@@ -614,12 +614,12 @@ package body et_devices is
 				 & positive'image (variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
+
 	
 	procedure check_variant_name_characters (
 		variant		: in pac_package_variant_name.bounded_string;
-		characters	: in character_set := variant_name_characters) is
-	-- Tests if the given variant name contains only valid characters as specified
-	-- by given character set.
+		characters	: in character_set := variant_name_characters) 
+	is
 		invalid_character_position : natural := 0;
 	begin
 		-- Test given variant name and get position of possible invalid characters.
@@ -636,6 +636,43 @@ package body et_devices is
 	end check_variant_name_characters;
 
 
+	function get_unit_and_port (
+		variant		: in pac_variants.cursor;
+		terminal	: in pac_terminal_name.bounded_string)
+		return type_get_port_result
+	is
+		result : type_get_port_result;
+
+		use pac_variants;
+		
+		procedure query_terminal_port_map (
+			name	: in pac_package_variant_name.bounded_string;
+			variant	: in type_variant)
+		is
+			-- Locate in the given package variant the given terminal:
+			use pac_terminal_port_map;
+			c : pac_terminal_port_map.cursor := 
+				find (variant.terminal_port_map, terminal);
+		begin
+			if c /= pac_terminal_port_map.no_element then -- terminal exists
+				result := (
+					linked	=> TRUE,
+					unit	=> element (c).unit,
+					port	=> element (c).name);
+			else
+				-- If the terminal can not be found in the map then
+				-- it is not linked to any port:
+				result := (linked => FALSE);
+			end if;
+		end query_terminal_port_map;
+								
+	begin
+		query_element (variant, query_terminal_port_map'access);
+		return result;
+	end get_unit_and_port;
+
+	
+	
 	function get_terminal (
 		variant	: in pac_variants.cursor;
 		unit	: in pac_unit_name.bounded_string;
