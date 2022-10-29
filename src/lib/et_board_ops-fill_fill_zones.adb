@@ -229,10 +229,38 @@ is
 				-- Get the terminal position (incl. rotation and face):
 				terminal_position : constant type_terminal_position_fine := 
 					get_terminal_position (module_cursor, device_cursor, terminal_name);
+
+				polygon : type_polygon;
+				contour : type_contour;
+				offset : type_distance_relative;
+				
 			begin
-				null;				
-				-- CS make a polygon
+
+				case terminal.technology is
+					when THT => 
+						null;
+						-- CS
+
+					when SMT =>
+						contour := terminal.pad_shape_smt;
+						offset := to_distance_relative (terminal_position.place);
+
+						-- CS mirror ?
+						
+						rotate_by (contour, to_rotation (terminal_position.rotation));
+						move_by (contour, offset);
+								 
+						polygon := to_polygon (
+							contour		=> contour,
+							tolerance	=> fill_tolerance,
+							mode		=> EXPAND, -- CS ?
+							debug		=> false);
+
+				end case;
+
+				terminals.append (polygon);
 			end query_device;
+
 			
 		begin
 			-- Get the ports of all devices connected with the given net.
@@ -369,7 +397,7 @@ is
 				--put_line (to_string (borders.first_element));
 				
 				-- NOTE: The borders of the characters of the text should not overlap.
-				-- Therefore there is no need for unioning the characters.
+				-- Therefore there is no need for unioning the characters at this time.
 				
 				result.splice (
 					before => pac_polygon_list.no_element,
@@ -478,7 +506,7 @@ is
 	-- Fill the given zone that is in the given layer
 	-- with the given linewidth and clearance to foreign conductor
 	-- objects. If a certain conductor object requires a greater
-	-- clearance then that clearance will prevail.
+	-- clearance, then that clearance will prevail.
 	-- If a parent net is given then the conductor objects of this
 	-- net will be ignored so that they are embedded in the fill
 	-- zone:
