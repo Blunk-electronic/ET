@@ -613,7 +613,6 @@ package body et_text is
 					scale_and_move_border (border_vertices);
 					p_scratch := to_polygon (border_vertices);
 					offset_polygon (p_scratch, half_line_width);
-					update_boundaries (p_scratch);
 					result.borders.append (p_scratch);
 				end if;
 			end add;
