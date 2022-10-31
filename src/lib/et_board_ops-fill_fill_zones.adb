@@ -154,7 +154,7 @@ is
 	
 	
 	-- Returns a list of polygons caused by conductor
-	-- objects in the given signal layer.
+	-- objects (tracks, terminals, vias, texts, fiducials) in the given signal layer.
 	-- The polygons are expanded by the zone_clearance or by
 	-- the clearance of a particular net (the greater value of them is applied):
 	function conductors_to_polygons (
@@ -622,27 +622,28 @@ is
 		zone.islands := no_islands;
 		
 		-- Convert the contour of the candidate fill zone to a polygon.
-		-- Shrink the zone by half the line width so that the border of the zone
-		-- does not extend beyond than the user defined contour:
 		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
 		-- NOTE: The SHRINK argument applies to the approximation mode of 
 		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
 		-- by the follwing statement.
 
 
-		log (text => "shrinking zone", 
-			level => log_threshold + 4);
+		log (text => "shrinking zone", level => log_threshold + 4);
 
-		
+		-- The border of the zone is drawn with the given linewidth.
+		-- The zone must be shrinked by half the linewidth so that the 
+		-- outline of the border is congruent to the zone drawn by the operator:
 		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
 
 		-- CS log lowest left vertex
 
+		-- The holes inside the board area will crop the zone later.
+		-- Therefore they must be made greater than they acutually are:
 		expand_holes (linewidth); -- updates variable "holes"
 		
 		-- Crop the zone by the outer board edges and the holes (stored in
 		-- variable "holes").
-		-- The zone gets fragmented into islands:
+		-- As a result, the zone disintegrates. It gets fragmented into islands:
 		islands := zone_to_polygons (
 			zone		=> zone_polygon,
 			line_width	=> linewidth);
@@ -650,19 +651,20 @@ is
 		--put_line ("A");
 
 		
-		-- Now we start collecting polygons caused by conductor objects,
-		-- polygon cutouts, restrict objects etc. in the cropping basket.
-		-- Later everything in the basket will be used to crop the islands
+		-- Now we start collecting contours of objects inside the zone.
+		-- The will be put in the cropping basket.
+		-- Later everything in the basket will be used to crop the islands (of the zone)
 		-- and to create inner borders inside the islands:
 		empty_basket (cropping_basket);
-
 		
 		-- Collect holes in basket:
 		put_into_basket (cropping_basket, holes);
 		--put_line ("A2");
+
+
 		
-		
-		-- Crop the islands by all conductor objects in the affected layer.
+		-- Get the contours of all conductor objects in the affected layer.
+		-- This is about tracks, terminals, vias, texts and fiducials.
 		-- The clearance of these objects to the zone is determined by
 		-- the zone isolation or the net clearance. The greater value is applied:
 		conductors := conductors_to_polygons (
@@ -673,6 +675,7 @@ is
 
 		put_into_basket (cropping_basket, conductors);
 		--put_line ("A3");
+
 
 		
 		-- Crop the islands by all cutout areas in the affected layer.
@@ -687,12 +690,14 @@ is
 		--put_line ("A5");
 		
 
-		-- Now the basket is complete to crop its content with the islands.
+		-- Union the content of the cropping basket as much as possible:
+		multi_union (cropping_basket, debug);
+		
+		-- Now the basket is ready to crop its content with the islands.
 		-- The result are even more islands:
 
 		--put_line ("B");
 
-		multi_union (cropping_basket, debug); -- debug messages on
 
 		-- CS: experimental
 		--multi_union_2 (cropping_basket, debug); -- debug messages on
