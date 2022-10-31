@@ -798,6 +798,18 @@ package body et_geometry_1.et_polygons is
 	end get_vertices;
 
 
+	procedure mirror_polygon (
+		polygon	: in out type_polygon;
+		axis	: in type_axis_2d)
+	is
+		vertices : pac_vectors.list;
+	begin
+		vertices := get_vertices (polygon);
+		mirror_vectors (vertices, Y);
+		polygon := to_polygon (vertices);
+	end mirror_polygon;
+	
+	
 	
 	function rotate (
 		polygon	: in type_polygon;

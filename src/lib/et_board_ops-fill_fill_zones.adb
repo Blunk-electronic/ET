@@ -241,7 +241,7 @@ is
 				contour : type_contour;
 				offset : type_distance_relative;
 				
-			begin
+			begin -- query_device
 
 				case terminal.technology is
 					when THT => 
@@ -251,21 +251,38 @@ is
 					when SMT =>
 						contour := terminal.pad_shape_smt;
 						offset := to_distance_relative (terminal_position.place);
-
-						-- CS mirror ?
 						
-						rotate_by (contour, to_rotation (terminal_position.rotation));
-						move_by (contour, offset);
-								 
-						polygon := to_polygon (
-							contour		=> contour,
-							tolerance	=> fill_tolerance,
-							mode		=> EXPAND, -- CS ?
-							debug		=> false);
+						if layer_category = OUTER_TOP and terminal_position.face = TOP then
+						
+							rotate_by (contour, to_rotation (terminal_position.rotation));
+							move_by (contour, offset);
+									
+							polygon := to_polygon (
+								contour		=> contour,
+								tolerance	=> fill_tolerance,
+								mode		=> EXPAND, -- CS ?
+								debug		=> false);
 
+							terminals.append (polygon);
+
+							
+						elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
+						
+							mirror (contour, Y);
+							
+							rotate_by (contour, to_rotation (terminal_position.rotation));
+							move_by (contour, offset);
+									
+							polygon := to_polygon (
+								contour		=> contour,
+								tolerance	=> fill_tolerance,
+								mode		=> EXPAND, -- CS ?
+								debug		=> false);
+
+							terminals.append (polygon);
+						end if;
 				end case;
 
-				terminals.append (polygon);
 			end query_device;
 
 			

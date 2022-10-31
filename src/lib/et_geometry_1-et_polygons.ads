@@ -244,6 +244,12 @@ package et_geometry_1.et_polygons is
 		return pac_vectors.list;
 
 
+	-- Mirrors a polygon along the given axis:
+	procedure mirror_polygon (
+		polygon	: in out type_polygon;
+		axis	: in type_axis_2d);
+	
+
 	-- Rotates a polygon about the given center by the given angle:
 	function rotate (
 		polygon	: in type_polygon;
