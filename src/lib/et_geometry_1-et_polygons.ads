@@ -51,6 +51,7 @@
 
 
 with ada.containers; 			use ada.containers;
+with ada.containers.ordered_sets;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
@@ -763,6 +764,10 @@ package et_geometry_1.et_polygons is
 
 		A_DOES_NOT_OVERLAP_B);
 
+
+	-- For lists of overlap statuses:
+	package pac_overlap_status is new ordered_sets (type_overlap_status);
+	
 	
 	-- Returns the overlap status of polygon A and B.
 	-- Use function get_intersections to generate the required
@@ -786,12 +791,14 @@ package et_geometry_1.et_polygons is
 
 	
 	-- Returns from the given list of polygons those which
-	-- are inside the given area.
+	-- have a given overlap status relative to the area.
+	-- The overlap status here is a set of statuses.
 	-- Removes the affected polygons from the given list
 	-- if argument "delete" is true:
-	function get_inside_polygons (
-		area		: in type_polygon;
-		polygons	: in out pac_polygon_list.list;
+	function get_polygons (
+		area		: in type_polygon; -- polygon A
+		polygons	: in out pac_polygon_list.list; -- B-polygons
+		status		: in pac_overlap_status.set; -- B_INSIDE_A, A_OVERLAPS_B, ...
 		delete		: in boolean := true)
 		return pac_polygon_list.list;
 	

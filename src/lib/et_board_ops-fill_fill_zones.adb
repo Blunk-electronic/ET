@@ -158,6 +158,7 @@ is
 	-- The polygons are expanded by the zone_clearance or by
 	-- the clearance of a particular net (the greater value of them is applied):
 	function conductors_to_polygons (
+		zone			: in type_polygon;
 		zone_clearance	: in type_track_clearance;
 		linewidth		: in type_track_width;								
 		layer 			: in type_signal_layer;
@@ -176,6 +177,12 @@ is
 			type_float_internal_positive (zone_clearance);
 
 
+		-- In the course of this function we are mainly interested in polygons
+		-- that are inside the given area. Other statuses may be added to this set
+		-- later:
+		use pac_overlap_status;
+		overlap_status : pac_overlap_status.set := to_set (B_INSIDE_A);
+		
 		
 		-- NETS -------------------------------------------------------------
 
@@ -356,9 +363,6 @@ is
 				
 				offset_polygons (polygons, type_float_internal_positive (clearance));
 
-				-- CS union polygons ?
-				--multi_union (polygons);
-				
 				result.splice (before => pac_polygon_list.no_element, source => polygons);
 			end do_it;
 			
@@ -393,8 +397,6 @@ is
 				borders := get_borders (text.vectors);
 
 				offset_polygons (borders, half_linewidth_float + zone_clearance_float);
-
-				--put_line (to_string (borders.first_element));
 				
 				-- NOTE: The borders of the characters of the text should not overlap.
 				-- Therefore there is no need for unioning the characters at this time.
@@ -435,6 +437,14 @@ is
 		
 		-- CS non electrical conductor stuff (foreign floating fill zones, package text, fiducials, ...)
 
+		-- Now the polygons held in variable "result"
+		-- - inside the given zone or
+		-- - overlapping the given zone
+		-- must be extracted. 
+		-- NOTE: Variable overlap_status already contains B_INSIDE_A. See declaration above.
+		overlap_status.insert (A_OVERLAPS_B);
+		result := get_polygons (zone, result, overlap_status);
+		
 		log_indentation_down;
 		
 		return result;
@@ -543,8 +553,13 @@ is
 
 			procedure make_inner_borders (
 				island : in out type_island)
-			is begin
-				island.inner_borders := get_inside_polygons (island.outer_border, cropping_basket);
+			is 
+				use pac_overlap_status;
+			begin
+				island.inner_borders := get_polygons (
+					area		=> island.outer_border, 
+					polygons	=> cropping_basket,
+					status		=> to_set (B_INSIDE_A));
 			end make_inner_borders;					
 				
 		begin
@@ -668,6 +683,7 @@ is
 		-- The clearance of these objects to the zone is determined by
 		-- the zone isolation or the net clearance. The greater value is applied:
 		conductors := conductors_to_polygons (
+			zone			=> zone_polygon,
 			zone_clearance	=> clearance,
 			linewidth		=> linewidth,									 
 			layer			=> layer,

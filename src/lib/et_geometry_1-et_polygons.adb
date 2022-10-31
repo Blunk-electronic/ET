@@ -2797,9 +2797,10 @@ package body et_geometry_1.et_polygons is
 
 		
 	
-	function get_inside_polygons (
+	function get_polygons (
 		area		: in type_polygon;
 		polygons	: in out pac_polygon_list.list;
+		status		: in pac_overlap_status.set;
 		delete		: in boolean := true)
 		return pac_polygon_list.list
 	is
@@ -2818,14 +2819,14 @@ package body et_geometry_1.et_polygons is
 		-- is collected in list "result":
 		procedure query_polygon (p : in pac_polygon_list.cursor) is
 
-			status : constant type_overlap_status :=
+			status_candidate : constant type_overlap_status :=
 				get_overlap_status (
 					polygon_A		=> area,
 					polygon_B		=> element (p), 
 					debug			=> false);
 			
 		begin
-			if status = B_INSIDE_A then
+			if status.contains (status_candidate) then
 				result.append (element (p));
 
 				-- Collect the cursor of the affected polygon
@@ -2856,7 +2857,7 @@ package body et_geometry_1.et_polygons is
 
 		--put_line ("polygons out:" & count_type'image (polygons.length));
 		return result;
-	end get_inside_polygons;
+	end get_polygons;
 
 
 	
