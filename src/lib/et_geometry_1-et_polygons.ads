@@ -121,15 +121,24 @@ package et_geometry_1.et_polygons is
 		return pac_edges.list;
 
 	
+
+	-- A polygon in this world is a list of edges.
+	-- For fast and rough tests (overlapping, inside, outside status)
+	-- the boundaries are sometimes useful. Boundaries provide
+	-- the greatest and smallest x and y value of the polygon.
+	-- Call procedure update_boundaries if the boundaries are required:
 	type type_polygon is record
 		edges		: pac_edges.list;
 		boundaries	: type_boundaries;
 	end record;
 
 
+	-- Updates the selector "boundaries" of the given polygon:
 	procedure update_boundaries (
 		polygon	: in out type_polygon);
-									
+
+	
+	
 
 	-- Rotates the edges of a polygon according to the given direction.
 	-- NOTE: The polygon does not change its appearance. Only the order
@@ -172,10 +181,11 @@ package et_geometry_1.et_polygons is
 		return type_polygon;
 
 
-	
+	-- If polygons are to be stored, then use this package:
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
 
 
+	-- Updates the boundaries of the given list of polygons:
 	procedure update_boundaries (
 		polygons : in out pac_polygon_list.list);
 		
@@ -417,7 +427,7 @@ package et_geometry_1.et_polygons is
 	
 
 	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge.
+	-- the polygon or whether the point lies on an edge.
 	-- See details in body of this function:
 	function get_point_status (
 		polygon	: in type_polygon;	
@@ -430,9 +440,9 @@ package et_geometry_1.et_polygons is
 
 		
 	-- Detects whether the given point is inside or outside
-	-- the polygon of whether the point lies on an edge.
+	-- the polygon or whether the point lies on an edge.
 	-- Similar to get_point_status but the result is reduced
-	-- to INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
+	-- to just INSIDE, OUTSIDE, ON_EDGE or ON_VERTEX:
 	function get_location (
 		polygon	: in type_polygon;	
 		point	: in type_vector)
