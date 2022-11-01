@@ -291,7 +291,11 @@ package et_terminals is
 				
 			when SMT =>
 				pad_shape_smt			: type_contour;
+
+				-- In the package model, an SMT pad can be placed
+				-- on top or on bottom side:
 				face					: type_face;
+				
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
 				stop_mask_shape_smt 	: type_stop_mask_smt;
 				
@@ -319,16 +323,17 @@ package et_terminals is
 	-- It uses floating point numbers for the terminal position because: 
 	-- After rotating the package in the board the x/y coordinates are machine-made. 
 	-- Fixed point coordinates would not be useful here.
-	type type_terminal_position_fine (technology : type_assembly_technology) is record
+	type type_terminal_position_fine is record
+		technology	: type_assembly_technology;
 		place		: type_vector;
 		rotation	: type_angle := 0.0;
-		
-		case technology is
-			when SMT => face : type_face;
-			when THT => null;
-		end case;
+
+		-- This applies for both SMT and THT terminals.
+		-- A THT terminal has separate pad shapes for top and bottom.
+		face 		: type_face;
 	end record;
 
+	
 	
 	-- package pac_terminal_positions is new indefinite_doubly_linked_lists (type_terminal_position);
 

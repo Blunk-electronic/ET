@@ -1450,11 +1450,10 @@ package body et_board_ops is
 		-- This is the position of the package as it is in the layout:
 		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
 
-		-- Since the return is a controlled type we handle its components separately:
 		use pac_geometry_brd;
 		terminal_position : type_vector; -- x/y
 		terminal_rotation : type_angle;
-		terminal_position_face : type_face; -- top/bottom
+		terminal_position_face : type_face := TOP; -- top/bottom
 
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		package_model_cursor : pac_packages_lib.cursor;
@@ -1493,6 +1492,7 @@ package body et_board_ops is
 
 		-- Add to the terminal rotation the rotation of the package:
 		terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));
+
 		
 		-- In the board: If the package has been flipped (to any side) by the operator
 		-- then the terminal must be flipped also.
@@ -1508,9 +1508,13 @@ package body et_board_ops is
 						terminal_position_face := TOP;
 					end if;
 
-				when THT => null; -- CS currently no need. see comment in spec of type_terminal
+				when THT => 
+					-- If package flipped, then the face of the THT
+					-- terminal is bottom. If package not flipped, then default TOP applies:
+					terminal_position_face := BOTTOM;
 			end case;
 
+			
 			-- mirror terminal position alog Y axis (swap right x with left x)
 			mirror (terminal_position, Y);
 
@@ -1528,22 +1532,12 @@ package body et_board_ops is
 		-- Move the terminal position by the position of the package:
 		move_by (terminal_position, to_offset (package_position.place));
 
-		-- compose the return depending on the terminal technology:
-		case terminal_technology is
-			when SMT =>
-				return (
-					place		=> terminal_position,
-					rotation	=> terminal_rotation,	   
-					technology	=> SMT,
-					face		=> terminal_position_face);
-				
-			when THT =>
-				return (
-					place		=> terminal_position,
-					rotation	=> terminal_rotation,	   
-					technology	=> THT);
-
-		end case;
+		return (
+			technology	=> terminal_technology,
+			place		=> terminal_position,
+			rotation	=> terminal_rotation,	   
+			face		=> terminal_position_face);
+		
 	end get_terminal_position;
 
 
