@@ -1510,16 +1510,19 @@ package body et_board_ops is
 				when THT => null; -- CS currently no need. see comment in spec of type_terminal
 			end case;
 
-			-- mirror terminal position on Y axis (swap right x with left x)
-			--mirror (terminal_position_base.place, Y);
+			-- mirror terminal position alog Y axis (swap right x with left x)
 			mirror (terminal_position, Y);
+
+			-- Rotate the terminal position (x/y) by the rotation of the package:
+			rotate_by (terminal_position, - terminal_rotation);
 			
 		else -- not flipped
 			terminal_position_face := get_face (package_position);
+
+			-- Rotate the terminal position (x/y) by the rotation of the package:
+			rotate_by (terminal_position, terminal_rotation);
 		end if;
 
-		-- Rotate the terminal position (x/y) by the rotation of the package:
-		rotate_by (terminal_position, terminal_rotation);
 
 		-- Move the terminal position by the position of the package:
 		move_by (terminal_position, to_offset (package_position.place));
