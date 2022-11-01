@@ -1496,7 +1496,8 @@ package body et_board_ops is
 		
 		-- In the board: If the package has been flipped (to any side) by the operator
 		-- then the terminal must be flipped also.
-		-- If the package has not been flipped, then the terminal face assumes the face of the package.
+		-- If the package has not been flipped, then we assume the face of the terminal 
+		-- is the same as the face of the package.
 		if element (device_cursor).flipped = YES then
 
 			case terminal_technology is
