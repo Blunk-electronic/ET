@@ -84,48 +84,27 @@ package et_terminals is
 	subtype type_pad_drill_offset is type_distance_positive 
 		range pad_drill_offset_min .. pad_drill_offset_max;
 	
-	
-	
 
 
 	
+-- PLATED MILLINGS	
 
+	procedure log_plated_millings (
+		millings 		: in type_contour;
+		log_threshold	: in type_log_level);
 
--- RESTRING
+	
+	plated_millings_default : type_contour;
+	-- CS this variable should never be changed.
+	-- Find a way to make it a constant.
+
+	
 
 	
 	keyword_restring_outer : constant string := "restring_outer";
 	keyword_restring_inner : constant string := "restring_inner";
 
 
-
-	
-
-	
--- PLATED MILLINGS OF TERMINALS
-	
-	-- Plated millings as used by terminals. 
-	-- These structures have a closed circumfence with
-	-- an arbitrary outline:
-	type type_plated_millings is new type_contour with null record;
-	-- CS other properties of plated millings
-
-
-	-- Converts a plated milling contour and its width
-	-- to a polygon:
-	--function to_polygon (
-		--millings	: in type_plated_millings;
-		--restring	: in type_restring_width)
-		--return type_polygon;
-	
-	
-	procedure log_plated_millings (
-		millings 		: in type_plated_millings;
-		log_threshold	: in type_log_level);
-
-	plated_millings_default : type_plated_millings;
-	-- CS this variable should never be changed.
-	-- Find a way to make it a constant.
 
 	
 	-- The solder paste status is for compatibility with other CAE systems
@@ -135,12 +114,19 @@ package et_terminals is
 	function to_string (solder_paste : in type_solder_paste_status) return string;
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
 
+
+
+	
+
+	
 	-- The stop mask status is for compatibility with other CAE systems
 	-- to account for virtual devices like net-ties or netchangers.
 	type type_stop_mask_status is (CLOSED, OPEN);
 	stop_mask_status_default : constant type_stop_mask_status := OPEN;
 	function to_string (stop_mask : in type_stop_mask_status) return string;
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
+
+
 	
 	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
 	type type_terminal_tht_hole is (DRILLED, MILLED);
@@ -150,8 +136,6 @@ package et_terminals is
 
 	
 	-- A pad outline is a polygon:
-	--type type_pad_outline is new pac_geometry_2.type_polygon_base with null record;
-	
 	type type_pad_outline_tht is record
 		top		: type_contour; -- The shape on the top side
 		bottom	: type_contour; -- is not nessecarily the same as on the bottom side.
@@ -263,7 +247,7 @@ package et_terminals is
 	is tagged record
 
 			position : type_position; -- position (x/y) and rotation
-			-- For SMT pads this is the geometic center of the pad.
+			-- For SMT pads this is the geometical center of the pad.
 			-- The rotation has no meaning for THT pads with round shape.
 			-- The rotation is useful for exotic pad contours. The operator 
 			-- would be drawing the contour with zero rotation 
@@ -284,7 +268,7 @@ package et_terminals is
 				
 				-- This is the width of the conductor surrounding the 
 				-- hole in inner layers.
-				-- Since the hole can be of any shape we do not speak about restring.
+				-- Since the hole can be of any shape we do not speak about "restring".
 				-- Nevertheless the type_restring_width is used.
 				-- The shape of the conductor area around the hole is the same as 
 				-- the shape of the hole. No further extra contours possible.
@@ -292,11 +276,18 @@ package et_terminals is
 				
 				case tht_hole is
 					when DRILLED =>
+						-- The hole is just a circular drilling:
 						drill_size	: type_drill_size_tht;
 						
 					when MILLED =>
-						millings	: type_plated_millings;
+						-- This structure has a closed circumfence with
+						-- an arbitrary outline (so called "plated millings").
+						-- This is the inner contour of the milled hole.
+						-- The conductor strip around has a width as defined
+						-- by width_inner_layers (see above):
+						millings	: type_contour;
 				end case;
+
 				
 			when SMT =>
 				pad_shape_smt			: type_contour;

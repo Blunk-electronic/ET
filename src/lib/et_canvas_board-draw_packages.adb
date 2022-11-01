@@ -2855,7 +2855,7 @@ is
 			
 			procedure draw_tht_pad_with_arbitrary_cutout (
 				outer_border	: in type_contour;
-				inner_border	: in type_plated_millings)
+				inner_border	: in type_contour)
 			is begin
 				set_color_tht_pad (context.cr);
 
@@ -3098,14 +3098,14 @@ is
 					f				: in type_face;
 					drilled_milled	: in type_terminal_tht_hole;
 					drill_size		: in type_drill_size := type_drill_size'first;
-					hole_outline_in	: in type_plated_millings := plated_millings_default)
+					hole_outline_in	: in type_contour := plated_millings_default)
 				is
 					polygon_tmp : type_polygon;
 					
 					pad_outline_outer_layer : type_contour := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
-					hole_outline : type_plated_millings := hole_outline_in;
+					hole_outline : type_contour := hole_outline_in;
 					
 					stop_mask_contours : type_stop_mask_contours;
 					
@@ -3207,13 +3207,13 @@ is
 				-- if any inner conductor layer is enabled. If no inner conductor
 				-- layer is enabled, nothing happens.
 				procedure tht_inner_layer_milled (
-					hole_outline_in	: in type_plated_millings; -- the countours of the milled hole
+					hole_outline_in	: in type_contour; -- the countours of the milled hole
 					restring_width	: in type_track_width;
 					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
 				is
 					polygon_tmp : type_polygon;
 					
-					hole_outline : type_plated_millings := hole_outline_in;
+					hole_outline : type_contour := hole_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
 					pad_outline_inner_layers : type_contour;

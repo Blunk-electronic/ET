@@ -660,13 +660,17 @@ package body et_pcb_rw.device_packages is
 				end if;
 				
 			end write_stop_mask_smt;
+
 			
-			procedure write_plated_millings (millings : in type_plated_millings) is begin
+			procedure write_plated_millings (
+				millings : in type_contour) 
+			is begin
 				section_mark (section_pad_millings, HEADER);
 				write_polygon_segments (type_contour (millings));
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 
+			
 			procedure write_stencil is
 				
 				function user_specific_contours return boolean is begin
@@ -895,7 +899,7 @@ package body et_pcb_rw.device_packages is
 		tht_width_inner_layers	: type_track_width := type_track_width'first;
 		tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
 		tht_drill_size			: type_drill_size_tht := type_drill_size_tht'first;
-		tht_millings			: type_plated_millings;
+		tht_millings			: type_contour;
 
 		terminal_name			: pac_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology := assembly_technology_default;
@@ -2561,7 +2565,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TERMINAL =>
 								check_outline (contour, log_threshold + 1);
-								tht_millings := (contour with null record);
+								tht_millings := contour;
 								board_reset_contour;
 								
 							when others => invalid_section;

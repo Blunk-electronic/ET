@@ -1945,6 +1945,7 @@ package body et_kicad_packages is
 									drill_size			=> terminal_drill_size
 								));
 
+							
 						when OVAL => -- a milled hole
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
@@ -1955,7 +1956,7 @@ package body et_kicad_packages is
 									size_y	=> terminal_milling_size_y,
 									offset	=> to_distance_relative (terminal_pad_drill_offset));
 
-								millings : type_plated_millings;
+								millings : type_contour;
 								
 							begin
 								load_segments (millings, (circular => false, segments => lines));
@@ -1991,6 +1992,7 @@ package body et_kicad_packages is
 							end;
 					end case;
 				end insert_tht;
+
 				
 			begin -- insert_terminal
 	

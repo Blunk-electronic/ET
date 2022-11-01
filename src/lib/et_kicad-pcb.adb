@@ -3939,6 +3939,7 @@ package body et_kicad.pcb is
 									net_name			=> terminal_net_name
 								));
 
+							
 						when OVAL => -- a milled hole
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
@@ -3949,7 +3950,7 @@ package body et_kicad.pcb is
 									size_y	=> terminal_milling_size_y,
 									offset	=> to_distance_relative (terminal_pad_drill_offset));
 
-								millings : type_plated_millings;
+								millings : type_contour;
 
 							begin
 								load_segments (millings, (circular => false, segments => lines));
