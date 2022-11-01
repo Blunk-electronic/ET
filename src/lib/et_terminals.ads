@@ -64,6 +64,7 @@ package et_terminals is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
+	use pac_polygons;
 	use pac_text_board;
 
 
@@ -104,9 +105,19 @@ package et_terminals is
 -- PLATED MILLINGS OF TERMINALS
 	
 	-- Plated millings as used by terminals. 
-	-- These structures have a closed circumfence.
+	-- These structures have a closed circumfence with
+	-- an arbitrary outline:
 	type type_plated_millings is new type_contour with null record;
 	-- CS other properties of plated millings
+
+
+	-- Converts a plated milling contour and its width
+	-- to a polygon:
+	--function to_polygon (
+		--millings	: in type_plated_millings;
+		--restring	: in type_restring_width)
+		--return type_polygon;
+	
 	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;

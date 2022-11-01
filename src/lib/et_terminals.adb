@@ -52,6 +52,18 @@ package body et_terminals is
 		end if;
 	end validate_pad_size;
 
+
+	--function to_polygon (
+		--millings	: in type_plated_millings;
+		--restring	: in type_restring_width)
+		--return type_polygon
+	--is
+		--result : type_polygon;
+	--begin
+		--result := to_polygon (millings);
+		--return result;
+	--end to_polygon;
+
 	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;

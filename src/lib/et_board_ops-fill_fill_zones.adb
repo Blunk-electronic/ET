@@ -240,46 +240,46 @@ is
 				polygon : type_polygon;
 				contour : type_contour;
 				offset : type_distance_relative;
+
+
+				procedure finalize is begin
+					move_by (contour, offset);
+							
+					polygon := to_polygon (
+						contour		=> contour,
+						tolerance	=> fill_tolerance,
+						mode		=> EXPAND, -- CS ?
+						debug		=> false);
+
+					terminals.append (polygon);
+				end finalize;
+
 				
 			begin -- query_device
 
 				case terminal.technology is
 					when THT => 
-						null;
+						if layer_category = INNER then
+							null;
+						else
+							null;
+							--contour := terminal.pad_shape_tht;
+						end if;
 						-- CS
 
 					when SMT =>
-						contour := terminal.pad_shape_smt;
-						offset := to_distance_relative (terminal_position.place);
-						
 						if layer_category = OUTER_TOP and terminal_position.face = TOP then
-						
+							contour := terminal.pad_shape_smt;
+							offset := to_distance_relative (terminal_position.place);
 							rotate_by (contour, to_rotation (terminal_position.rotation));
-							move_by (contour, offset);
-									
-							polygon := to_polygon (
-								contour		=> contour,
-								tolerance	=> fill_tolerance,
-								mode		=> EXPAND, -- CS ?
-								debug		=> false);
-
-							terminals.append (polygon);
-
+							finalize;						
 							
 						elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
-						
+							contour := terminal.pad_shape_smt;
+							offset := to_distance_relative (terminal_position.place);
 							mirror (contour, Y);
-							
-							rotate_by (contour, to_rotation (terminal_position.rotation));
-							move_by (contour, offset);
-									
-							polygon := to_polygon (
-								contour		=> contour,
-								tolerance	=> fill_tolerance,
-								mode		=> EXPAND, -- CS ?
-								debug		=> false);
-
-							terminals.append (polygon);
+							rotate_by (contour, - to_rotation (terminal_position.rotation));
+							finalize;
 						end if;
 				end case;
 
