@@ -247,11 +247,11 @@ package et_terminals is
 	is tagged record
 
 			position : type_position; -- position (x/y) and rotation
-			-- For SMT pads this is the geometical center of the pad.
+			-- For SMT pads this should be the geometical center of the pad.
 			-- The rotation has no meaning for THT pads with round shape.
 			-- The rotation is useful for exotic pad contours. The operator 
 			-- would be drawing the contour with zero rotation 
-			-- first (which is easier). Then by applying an angle,
+			-- first (which is easier) in the package model. Then, by applying an angle,
 			-- the countour would be rotated to its final position.
 
 			-- CS thermal_relief on/off
@@ -276,7 +276,9 @@ package et_terminals is
 				
 				case tht_hole is
 					when DRILLED =>
-						-- The hole is just a circular drilling:
+						-- The hole is just a circular drilling
+						-- with its center at position (see above)
+						-- and this diameter:
 						drill_size	: type_drill_size_tht;
 						
 					when MILLED =>
@@ -306,6 +308,11 @@ package et_terminals is
 	end record;
 
 
+	--function get_drilling_contour (
+		--terminal	: in type_terminal)
+		--return type_contour;
+
+	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	-- NOTE: This type is used in a package model. It uses fixed point numbers for

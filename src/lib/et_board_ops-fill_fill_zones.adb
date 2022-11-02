@@ -237,6 +237,7 @@ is
 				terminal_position : constant type_terminal_position_fine := 
 					get_terminal_position (module_cursor, device_cursor, terminal_name);
 
+				drilling: type_circle;
 				polygon : type_polygon;
 				contour : type_contour;
 
@@ -246,7 +247,7 @@ is
 					to_distance_relative (terminal_position.place);
 
 
-				procedure finalize is begin
+				procedure finalize_smt is begin
 					move_by (contour, offset);
 							
 					polygon := to_polygon (
@@ -256,28 +257,88 @@ is
 						debug		=> false);
 
 					terminals.append (polygon);
-				end finalize;
+				end finalize_smt;
+
+				
+				procedure rotate is begin
+					if terminal_position.face = BOTTOM then
+						mirror (contour, Y);
+						rotate_by (contour, - to_rotation (terminal_position.rotation));
+					else
+						rotate_by (contour, to_rotation (terminal_position.rotation));
+					end if;
+				end rotate;
+
+				
+				procedure finalize_tht_1 is begin
+					move_by (contour, offset);
+
+					put_line (to_string (contour));
+					
+					polygon := to_polygon (
+						contour		=> contour,
+						tolerance	=> fill_tolerance,
+						mode		=> EXPAND, -- CS ?
+						debug		=> false);
+
+					offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
+					
+					terminals.append (polygon);					
+				end finalize_tht_1;
 
 				
 			begin -- query_device
-
+				
 				case terminal.technology is
 					when THT => 
 						case layer_category is
 							when INNER =>
+								
 								case terminal.tht_hole is
 									when DRILLED =>
-										null;
+										--put_line ("drill");
+										drilling.center := to_point (terminal_position.place);
+										drilling.radius := 0.5 * type_float_internal_positive (terminal.drill_size);
+										--put_line (to_string (drilling));
+										contour.contour := (circular => true, circle => drilling);
+										--rotate;										
+										--finalize_tht_1;
 
+										polygon := to_polygon (
+											contour		=> contour,
+											tolerance	=> fill_tolerance,
+											mode		=> EXPAND, -- CS ?
+											debug		=> false);
+
+										offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
+										
+										terminals.append (polygon);					
+
+										
 									when MILLED =>
 										contour := terminal.millings;
+										rotate;										
+										finalize_tht_1;
+										
 								end case;
 							
 							when OUTER_TOP =>
-								contour := terminal.pad_shape_tht.top;
+								if terminal_position.face = TOP then
+									contour := terminal.pad_shape_tht.top;
+								else
+									contour := terminal.pad_shape_tht.bottom;
+								end if;
+								rotate;
+								finalize_smt;
 
 							when OUTER_BOTTOM =>
-								contour := terminal.pad_shape_tht.bottom;
+								if terminal_position.face = BOTTOM then
+									contour := terminal.pad_shape_tht.top;
+								else
+									contour := terminal.pad_shape_tht.bottom;
+								end if;
+								rotate;
+								finalize_smt;
 						end case;
 						
 
@@ -285,13 +346,13 @@ is
 						if layer_category = OUTER_TOP and terminal_position.face = TOP then
 							contour := terminal.pad_shape_smt;
 							rotate_by (contour, to_rotation (terminal_position.rotation));
-							finalize;						
+							finalize_smt;						
 							
 						elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
 							contour := terminal.pad_shape_smt;
 							mirror (contour, Y);
 							rotate_by (contour, - to_rotation (terminal_position.rotation));
-							finalize;
+							finalize_smt;
 						end if;
 				end case;
 
@@ -303,7 +364,7 @@ is
 			-- Therefore we do not pass a specific assembly variant here.
 			ports := get_ports (net_cursor); 
 
-			-- In variable "ports" we are interested in selector "devices" only
+			-- In variable "ports" we are interested in selector "devices" exclusively
 			-- because submodule ports and netchangers are just virtual devices
 			-- that connect two conductor tracks:
 			ports.devices.iterate (query_device'access);

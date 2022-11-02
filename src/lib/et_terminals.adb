@@ -130,6 +130,22 @@ package body et_terminals is
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
 		return type_assembly_technology'value (technology);
 	end;
+
+
+	--function get_drilling_contour (
+		--terminal	: in type_terminal)
+		--return type_contour
+	--is
+		----result : type_contour := (
+			----contour.circular => true,
+		----others => <>);
+
+		----result : type_contour (contour.circular => true);
+	--begin
+		----result.contour.circular := true;
+		--return result;
+	--end get_drilling_contour;
+
 	
 	function to_string (terminal : in pac_terminal_name.bounded_string) return string is begin
 		return pac_terminal_name.to_string (terminal);
