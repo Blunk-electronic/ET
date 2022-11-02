@@ -87,64 +87,77 @@ package body et_terminals is
 		return to_lower (type_solder_paste_status'image (solder_paste));
 	end;
 
+	
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
 		return type_solder_paste_status'value (solder_paste);
 	end;
+
 	
 	function to_string (stop_mask : in type_stop_mask_status) return string is begin
 		return to_lower (type_stop_mask_status'image (stop_mask));
 	end;
 
+	
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status is begin
 		return type_stop_mask_status'value (stop_mask);
 	end;
 
+	
 	function to_string (shape : in type_stop_mask_shape) return string is begin
 		return to_lower (type_stop_mask_shape'image (shape));
 	end;
 
+	
 	function to_shape (shape : in string) return type_stop_mask_shape is begin
 		return type_stop_mask_shape'value (shape);
 	end;
 
+	
 	function to_string (shape : in type_stencil_shape) return string is begin
 		return to_lower (type_stencil_shape'image (shape));
 	end;
 
+	
 	function to_shape (shape : in string) return type_stencil_shape is begin
 		return type_stencil_shape'value (shape);
 	end;	
+
 	
 	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
 		return to_lower (type_terminal_tht_hole'image (tht_hole));
 	end;
 
+	
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
 		return type_terminal_tht_hole'value (tht_hole);
 	end;
 
+	
 	function to_string (technology : in type_assembly_technology) return string is begin
 		return type_assembly_technology'image (technology);
 	end;
 
+	
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
 		return type_assembly_technology'value (technology);
 	end;
 
 
-	--function get_drilling_contour (
-		--terminal	: in type_terminal)
-		--return type_contour
-	--is
-		----result : type_contour := (
-			----contour.circular => true,
-		----others => <>);
+	function get_inner_contour (
+		terminal	: in type_terminal;
+		position	: in type_vector)
+		return type_contour
+	is
+		result : type_contour := (contour => (circular => true, circle => <>));
+	begin
+		result.contour.circle.center := to_point (position);
+		result.contour.circle.radius := 
+			0.5 * type_float_internal_positive (terminal.drill_size)
+			+ type_float_internal_positive (terminal.width_inner_layers);
+		
+		return result;
+	end get_inner_contour;
 
-		----result : type_contour (contour.circular => true);
-	--begin
-		----result.contour.circular := true;
-		--return result;
-	--end get_drilling_contour;
 
 	
 	function to_string (terminal : in pac_terminal_name.bounded_string) return string is begin

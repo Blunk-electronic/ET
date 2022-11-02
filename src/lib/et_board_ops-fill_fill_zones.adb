@@ -237,7 +237,7 @@ is
 				terminal_position : constant type_terminal_position_fine := 
 					get_terminal_position (module_cursor, device_cursor, terminal_name);
 
-				drilling: type_circle;
+				--drilling: type_circle;
 				polygon : type_polygon;
 				contour : type_contour;
 
@@ -272,8 +272,6 @@ is
 				
 				procedure finalize_tht_1 is begin
 					move_by (contour, offset);
-
-					put_line (to_string (contour));
 					
 					polygon := to_polygon (
 						contour		=> contour,
@@ -296,21 +294,11 @@ is
 								
 								case terminal.tht_hole is
 									when DRILLED =>
-										--put_line ("drill");
-										drilling.center := to_point (terminal_position.place);
-										drilling.radius := 0.5 * type_float_internal_positive (terminal.drill_size);
-										--put_line (to_string (drilling));
-										contour.contour := (circular => true, circle => drilling);
-										--rotate;										
-										--finalize_tht_1;
-
 										polygon := to_polygon (
-											contour		=> contour,
+											contour		=> get_inner_contour (terminal, terminal_position.place),
 											tolerance	=> fill_tolerance,
 											mode		=> EXPAND, -- CS ?
 											debug		=> false);
-
-										offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
 										
 										terminals.append (polygon);					
 

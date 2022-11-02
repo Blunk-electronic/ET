@@ -308,10 +308,6 @@ package et_terminals is
 	end record;
 
 
-	--function get_drilling_contour (
-		--terminal	: in type_terminal)
-		--return type_contour;
-
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
@@ -341,6 +337,16 @@ package et_terminals is
 	end record;
 
 	
+
+	-- If a THT-terminal at a particular position has a drilled hole,
+	-- then this function should be used to get the outline contour
+	-- in inner layers. The outline contour is the area that encircles 
+	-- the restring. The returned contour is basically a circle:
+	function get_inner_contour (
+		terminal	: in type_terminal; -- MUST be a THT terminal with drilled hole !
+		position	: in type_vector)
+		return type_contour;
+
 	
 	-- package pac_terminal_positions is new indefinite_doubly_linked_lists (type_terminal_position);
 
