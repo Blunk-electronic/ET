@@ -2692,6 +2692,7 @@ package body et_schematic_ops is
 		return result;
 	end locate_device;
 
+	
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
@@ -2703,7 +2704,7 @@ package body et_schematic_ops is
 		cursor_sch := locate_device (module, device);
 
 		-- find the device in the library
-		return get_device (cursor_sch);
+		return get_device_model (cursor_sch);
 	end locate_device;
 
 	

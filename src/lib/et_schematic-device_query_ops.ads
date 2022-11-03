@@ -55,7 +55,7 @@ package et_schematic.device_query_ops is
 
 
 	-- Maps from schematic device to library model:
-	function get_device ( -- CS rename to get_device_model ?
+	function get_device_model (
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor;
 
@@ -83,7 +83,7 @@ package et_schematic.device_query_ops is
 
 	-- Returns the package variant of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
-	function get_variant ( -- CS rename to get_package_variant
+	function get_package_variant (
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string;
 

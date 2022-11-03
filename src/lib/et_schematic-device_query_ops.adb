@@ -49,7 +49,7 @@ package body et_schematic.device_query_ops is
 	end is_real;
 
 
-	function get_device (
+	function get_device_model (
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor
 	is
@@ -59,7 +59,7 @@ package body et_schematic.device_query_ops is
 		-- from device in schematic to device in library:
 		model_file := pac_devices_sch.element (device).model;
 		return locate_device (model_file);
-	end get_device;
+	end get_device_model;
 
 
 	function get_value (
@@ -86,12 +86,12 @@ package body et_schematic.device_query_ops is
 	end get_partcode;
 
 	
-	function get_variant (
+	function get_package_variant (
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string
 	is begin
 		return pac_devices_sch.element (device).variant;
-	end get_variant;
+	end get_package_variant;
 
 	
 	function get_package_model (
@@ -217,11 +217,11 @@ package body et_schematic.device_query_ops is
 
 		-- Get the cursor to the full device model in the library:
 		use pac_devices_lib;
-		device_model_lib : constant pac_devices_lib.cursor := get_device (device);
+		device_model_lib : constant pac_devices_lib.cursor := get_device_model (device);
 
 		-- This is the name of the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=
-			get_variant (device); -- N, D
+			get_package_variant (device); -- N, D
 
 		-- Get full information about the package variant:
 		use pac_variants;

@@ -2003,7 +2003,7 @@ package body et_canvas_schematic_units is
 
 				when NOUN_VARIANT =>
 					gtk_new (label, "Package variant of " & device_name);
-					set_property_before (et_devices.to_string (get_variant (su.device)));
+					set_property_before (et_devices.to_string (get_package_variant (su.device)));
 					
 				when others => raise constraint_error;
 			end case;				
