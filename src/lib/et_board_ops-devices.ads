@@ -36,58 +36,8 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
-with et_nets;
-with et_net_names;				use et_net_names;
-with et_general;				use et_general;
-with et_geometry;				use et_geometry;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_project.modules;		use et_project.modules;
-with et_schematic;				use et_schematic;
-with et_vias;					use et_vias;
-with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
-with et_pcb;					use et_pcb;
-with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
-
-with et_board_shapes_and_text;
-
--- with submodules;
-with et_assembly_variants;
-with et_pick_and_place;
-with et_devices;				use et_devices;
-with et_conventions;
-with et_design_rules;			use et_design_rules;
-with et_conductor_text.boards;		use et_conductor_text.boards;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_fill_zones;				use et_fill_zones;
-with et_route_restrict.boards;	use et_route_restrict.boards;
-with et_via_restrict.boards;	use et_via_restrict.boards;
-with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.boards;		use et_stop_mask.boards;
-with et_stencil;				use et_stencil;
-with et_stencil.boards;			use et_stencil.boards;
-with et_silkscreen;				use et_silkscreen;
-with et_silkscreen.boards;		use et_silkscreen.boards;
-with et_assy_doc;				use et_assy_doc;
-with et_assy_doc.boards;		use et_assy_doc.boards;
-with et_keepout;				use et_keepout;
-with et_keepout.boards;			use et_keepout.boards;
-with et_pcb_contour;			use et_pcb_contour;
-with et_text;
 
 package et_board_ops.devices is
 

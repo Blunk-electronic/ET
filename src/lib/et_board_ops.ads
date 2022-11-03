@@ -38,6 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;
+with ada.strings;				use ada.strings;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
@@ -46,6 +47,8 @@ with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
+with ada.exceptions;
+with ada.tags;
 
 with et_nets;
 with et_net_names;				use et_net_names;
@@ -57,7 +60,6 @@ with et_project.modules;		use et_project.modules;
 with et_schematic;				use et_schematic;
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
-with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -65,7 +67,6 @@ use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;
 
--- with submodules;
 with et_assembly_variants;
 with et_pick_and_place;
 with et_devices;				use et_devices;

@@ -35,9 +35,7 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.exceptions;
-with ada.tags;
+
 
 with et_netlists;
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
@@ -47,11 +45,8 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_submodules;
 with et_numbering;
 with et_symbols;
-with et_packages;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
-with et_pcb_rw.device_packages;
-with et_conventions;
 with et_exceptions;					use et_exceptions;
 
 with et_routing;
