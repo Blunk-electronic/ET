@@ -158,13 +158,7 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Returns a cursor to the requested device in the given module.
-	function locate_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name)
-		return et_schematic.pac_devices_sch.cursor;
 
-	
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
 	function get_terminal_position (

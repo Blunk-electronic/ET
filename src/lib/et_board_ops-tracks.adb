@@ -323,7 +323,9 @@ package body et_board_ops.tracks is
 		-- locate module and device
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
-
+		-- CS call procedure device_not_found if
+		-- device_cursor is no_element ?
+		
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
@@ -391,7 +393,9 @@ package body et_board_ops.tracks is
 		-- locate module and device
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
-
+		-- CS call procedure device_not_found if
+		-- device_cursor is no_element ?
+		
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
@@ -452,7 +456,9 @@ package body et_board_ops.tracks is
 		-- locate module and device
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
-
+		-- CS call procedure device_not_found if
+		-- device_cursor is no_element ?
+		
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
@@ -516,7 +522,9 @@ package body et_board_ops.tracks is
 		-- locate module and device
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
-
+		-- CS call procedure device_not_found if
+		-- device_cursor is no_element ?
+		
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		

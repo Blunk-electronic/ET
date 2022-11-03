@@ -221,7 +221,7 @@ is
 				
 				-- Get the cursor to the device in the schematic:
 				device_cursor : constant pac_devices_sch.cursor := 
-					et_board_ops.devices.locate_device (module_cursor, port.device_name);
+					locate_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal that is linked
 				-- with the port:

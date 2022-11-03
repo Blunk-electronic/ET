@@ -2669,6 +2669,7 @@ package body et_schematic_ops is
 		return device_found;
 	end exists;
 
+	
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2

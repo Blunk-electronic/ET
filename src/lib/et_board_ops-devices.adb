@@ -70,8 +70,7 @@ package body et_board_ops.devices is
 		raise constraint_error;
 	end terminal_not_found;
 
-	
-	
+
 
 	function get_placeholders (
 		package_cursor : in et_packages.pac_packages_lib.cursor)
@@ -701,34 +700,6 @@ package body et_board_ops.devices is
 
 		return position;
 	end get_position;
-
-	
-	
-	function locate_device (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		device_name		: in type_device_name)
-		return pac_devices_sch.cursor 
-	is
-		device_cursor : pac_devices_sch.cursor;
-		
-		procedure query_devices (
-			module_name		: in pac_module_name.bounded_string;
-			module			: in type_module) 
-		is begin
-			device_cursor := find (module.devices, device_name);
-		end query_devices;
-		
-	begin -- locate_device
-		et_project.modules.pac_generic_modules.query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-		if device_cursor = pac_devices_sch.no_element then
-			device_not_found (device_name);
-		end if;
-		
-		return device_cursor;
-	end;
 
 	
 	function get_terminal_position (
