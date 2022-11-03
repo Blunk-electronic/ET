@@ -198,19 +198,22 @@ is
 		end set_parent_net_name;
 	
 
-		function get_terminals (net_cursor : in pac_nets.cursor)
+		-- Converts the terminals of the given net to a list of polygons:
+		function get_terminal_polygons (net_cursor : in pac_nets.cursor)
 			return pac_polygon_list.list
 		is
 			use et_nets;
 			
-			terminals : pac_polygon_list.list; -- to be returned
+			result : pac_polygon_list.list; -- a list of polygons to be returned
 			ports : et_nets.type_ports;
 
 			use pac_device_ports;
 			use pac_terminals;
 
-			
-			procedure query_device (d : in pac_device_ports.cursor) is
+
+			-- Converts the terminal, that is linked to the given device port,
+			-- to a polygon and appends it to the result:
+			procedure query_device_port (d : in pac_device_ports.cursor) is
 
 				port : type_device_port renames element (d);
 				-- Now port the device name, unit name and port name.
@@ -237,76 +240,72 @@ is
 				terminal_position : constant type_terminal_position_fine := 
 					get_terminal_position (module_cursor, device_cursor, terminal_name);
 
-				--drilling: type_circle;
+
+				-- intermediate places to store a single polygon and a single contour:
 				polygon : type_polygon;
 				contour : type_contour;
 
 				-- The displacement required to move the contour to 
 				-- its final position:
-				offset : constant type_distance_relative := 
+				terminal_displacement : constant type_distance_relative := 
 					to_distance_relative (terminal_position.place);
 
 
-				procedure finalize_smt is begin
-					move_by (contour, offset);
-							
+				-- Converts the contour to a polygon:
+				procedure make_polygon is begin
 					polygon := to_polygon (
 						contour		=> contour,
 						tolerance	=> fill_tolerance,
 						mode		=> EXPAND, -- CS ?
 						debug		=> false);
+				end make_polygon;
+			
 
-					terminals.append (polygon);
-				end finalize_smt;
+				-- Moves the contour to the final position, converts it to a polygon
+				-- and appends the polygon to the result.
+				-- Optionally, if required by the caller, offsets the polygon edges
+				-- by the width of the inner signal layer:
+				procedure finalize (do_offset : in boolean := false) is begin
+					move_by (contour, terminal_displacement);
+					make_polygon;
+					if do_offset then
+						offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
+					end if;
+					result.append (polygon);
+				end finalize;
 
-				
-				procedure rotate is begin
+
+				-- Mirrors the contour (if terminal is flipped to bottom side) and
+				-- rotates the contour:
+				procedure mirror_and_rotate is begin
 					if terminal_position.face = BOTTOM then
 						mirror (contour, Y);
+
+						-- if on bottom side: rotate CW
 						rotate_by (contour, - to_rotation (terminal_position.rotation));
 					else
-						rotate_by (contour, to_rotation (terminal_position.rotation));
+						-- if on top side: rotate CCW
+						rotate_by (contour, + to_rotation (terminal_position.rotation));
 					end if;
-				end rotate;
+				end mirror_and_rotate;
 
 				
-				procedure finalize_tht_1 is begin
-					move_by (contour, offset);
-					
-					polygon := to_polygon (
-						contour		=> contour,
-						tolerance	=> fill_tolerance,
-						mode		=> EXPAND, -- CS ?
-						debug		=> false);
-
-					offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
-					
-					terminals.append (polygon);					
-				end finalize_tht_1;
-
-				
-			begin -- query_device
+			begin -- query_device_port
 				
 				case terminal.technology is
 					when THT => 
 						case layer_category is
-							when INNER =>
-								
+							when INNER =>								
 								case terminal.tht_hole is
 									when DRILLED =>
-										polygon := to_polygon (
-											contour		=> get_inner_contour (terminal, terminal_position.place),
-											tolerance	=> fill_tolerance,
-											mode		=> EXPAND, -- CS ?
-											debug		=> false);
-										
-										terminals.append (polygon);					
-
+										contour := get_inner_contour (terminal, terminal_position.place);
+										make_polygon;										
+										result.append (polygon);
 										
 									when MILLED =>
 										contour := terminal.millings;
-										rotate;										
-										finalize_tht_1;
+										mirror_and_rotate;										
+										finalize (do_offset => true);
 										
 								end case;
 							
@@ -316,8 +315,8 @@ is
 								else
 									contour := terminal.pad_shape_tht.bottom;
 								end if;
-								rotate;
-								finalize_smt;
+								mirror_and_rotate;
+								finalize;
 
 							when OUTER_BOTTOM =>
 								if terminal_position.face = BOTTOM then
@@ -325,8 +324,8 @@ is
 								else
 									contour := terminal.pad_shape_tht.bottom;
 								end if;
-								rotate;
-								finalize_smt;
+								mirror_and_rotate;
+								finalize;
 						end case;
 						
 
@@ -334,17 +333,17 @@ is
 						if layer_category = OUTER_TOP and terminal_position.face = TOP then
 							contour := terminal.pad_shape_smt;
 							rotate_by (contour, to_rotation (terminal_position.rotation));
-							finalize_smt;						
+							finalize;						
 							
 						elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
 							contour := terminal.pad_shape_smt;
 							mirror (contour, Y);
 							rotate_by (contour, - to_rotation (terminal_position.rotation));
-							finalize_smt;
+							finalize;
 						end if;
 				end case;
 
-			end query_device;
+			end query_device_port;
 
 			
 		begin
@@ -355,14 +354,14 @@ is
 			-- In variable "ports" we are interested in selector "devices" exclusively
 			-- because submodule ports and netchangers are just virtual devices
 			-- that connect two conductor tracks:
-			ports.devices.iterate (query_device'access);
-			
-			-- CS
-			return terminals;
-		end get_terminals;
+			ports.devices.iterate (query_device_port'access);
+	
+			return result;
+		end get_terminal_polygons;
 
 		
-		
+		-- Extracts all conductor objects connected with the given net
+		-- and appends them to the result:
 		procedure query_net (n : in pac_nets.cursor) is
 
 			-- The clearance between net and zone is either the given zone_clearance
@@ -372,8 +371,10 @@ is
 			clearance : constant type_track_clearance := 
 				get_greatest (zone_clearance, net_class.clearance);
 
-			-- The polygons of the candidate net are collected here:
+			-- The polygons of the candidate net are collected here
+			-- (later they will be appended to the result):
 			polygons : pac_polygon_list.list;
+
 			
 			route : et_pcb.type_route renames element (n).route;
 
@@ -436,7 +437,7 @@ is
 				-- CS fill zones, ... see et_pcb.type_route
 				
 				-- terminals of packages
-				terminals := get_terminals (n);
+				terminals := get_terminal_polygons (n);
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 				
 				offset_polygons (polygons, type_float_internal_positive (clearance));
