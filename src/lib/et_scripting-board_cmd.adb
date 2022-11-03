@@ -53,7 +53,7 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
-
+with et_board_ops.devices;
 -- to do:
 
 
@@ -2504,6 +2504,8 @@ is
 
 	
 	procedure add_device is -- non-electric device !
+		use et_board_ops.devices;
+		
 		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
 		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
 
@@ -2556,6 +2558,7 @@ is
 	
 	procedure delete_device is -- non-electric device !
 		-- board led_driver delete device FD1
+		use et_board_ops.devices;
 	begin
 		delete_device (
 			module_name		=> module,
@@ -2567,6 +2570,7 @@ is
 	
 	procedure rename_device is -- non-electric device !
 		-- board led_driver rename device FD1 FD3
+		use et_board_ops.devices;
 	begin
 		rename_device (
 			module_name			=> module,
@@ -2975,7 +2979,7 @@ is
 					when NOUN_DEVICE =>
 						case get_field_count is
 							when 6 =>
-								flip_device (
+								et_board_ops.devices.flip_device (
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									face			=> to_face  (f (6)),  -- top/bottom
@@ -3034,7 +3038,7 @@ is
 					when NOUN_DEVICE =>
 						case get_field_count is
 							when 8 =>
-								move_device (
+								et_board_ops.devices.move_device (
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -3175,7 +3179,7 @@ is
 					when NOUN_DEVICE =>
 						case get_field_count is
 							when 7 =>
-								rotate_device (
+								et_board_ops.devices.rotate_device (
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute

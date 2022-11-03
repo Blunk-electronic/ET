@@ -41,6 +41,7 @@ with et_exceptions;					use et_exceptions;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_routing;					use et_routing;
+with et_board_ops.devices;
 
 separate (et_board_ops)
 
@@ -209,7 +210,7 @@ is
 
 			use pac_device_ports;
 			use pac_terminals;
-
+			use et_board_ops.devices;
 
 			-- Converts the terminal, that is linked to the given device port,
 			-- to a polygon and appends it to the result:
@@ -220,7 +221,7 @@ is
 				
 				-- Get the cursor to the device in the schematic:
 				device_cursor : constant pac_devices_sch.cursor := 
-					locate_device (module_cursor, port.device_name);
+					et_board_ops.devices.locate_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal that is linked
 				-- with the port:

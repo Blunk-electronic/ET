@@ -137,64 +137,6 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Adds a non-electric device to the board:
-	procedure add_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		package_model	: in et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
-		position		: in type_package_position; -- x,y,rotation,face
-		prefix			: in pac_device_prefix.bounded_string; -- FD
-		log_threshold	: in type_log_level);
-
-	-- CS procedure add_device with explicit device name like MH1
-	-- CS procedure copy_device
-
-	
-	-- Moves a device in the board layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-	procedure move_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level);
-
-	
-	-- Rotates a device in the board layout.
-	-- Leaves x/y and face (top/bottom) as it is.
-	procedure rotate_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_rotation; -- 90
-		log_threshold	: in type_log_level);
-
-	
-	-- Deletes a non-electric device in the board layout.
-	-- Electric devices must be deleted in the schematic domain !
-	procedure delete_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- FD1
-		log_threshold	: in type_log_level);
-
-	
-	-- Renames a non-electric device in the board layout.
-	procedure rename_device (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name_before	: in type_device_name; -- FD1
-		device_name_after	: in type_device_name; -- FD3
-		log_threshold		: in type_log_level);
-
-	
-	-- Flips a device in the board layout from top to bottom or vice versa.
-	-- Leaves x/y and rotation as it is.
-	-- Warns operator if device already on desired face of board.
-	procedure flip_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		face			: in type_face; -- top/bottom
-		log_threshold	: in type_log_level);
-
-	
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_submodule (
@@ -211,34 +153,6 @@ package et_board_ops is
 	procedure make_pick_and_place (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
-
-	
-
-
-	
-	-- Returns a cursor to the requested device in the given module.
-	function locate_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name)
-		return et_schematic.pac_devices_sch.cursor;
-
-	
-	-- Returns the position of a terminal of the given device in the board.
-	-- The device must be real (appearance SCH_PCB).
-	function get_terminal_position (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
-		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
-		return type_terminal_position_fine;
-
-
-	-- Returns the positions (x/y) of the terminals of
-	-- devices, netchangers and submodules of the given net.
-	-- The default assembly variant is assumed (means all devices are mounted).
-	function get_terminal_positions (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.pac_nets.cursor)
-		return pac_geometry_brd.pac_vectors.list;
 
 	
 	-- Returns the positions (x/y) of all vias of the given net.

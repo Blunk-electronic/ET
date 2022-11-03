@@ -39,7 +39,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with et_exceptions;					use et_exceptions;
 with et_ratsnest;					use et_ratsnest;
---with et_routing;					use et_routing;
+with et_board_ops.devices;			use et_board_ops.devices;
 
 
 separate (et_board_ops)
