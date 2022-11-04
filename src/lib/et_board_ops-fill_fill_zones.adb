@@ -212,19 +212,20 @@ is
 			use pac_terminals;
 			use et_board_ops.devices;
 
+			
 			-- Converts the terminal, that is linked to the given device port,
 			-- to a polygon and appends it to the result:
 			procedure query_device_port (d : in pac_device_ports.cursor) is
 
 				port : type_device_port renames element (d);
-				-- Now port the device name, unit name and port name.
+				-- Now port contains the device name, unit name and port name.
 				
 				-- Get the cursor to the device in the schematic:
 				device_cursor : constant pac_devices_sch.cursor := 
 					locate_device (module_cursor, port.device_name);
 
-				-- Get the cursor to the physical terminal that is linked
-				-- with the port:
+				-- Get the cursor to the physical terminal (in the package model)
+				-- that is linked with the port:
 				terminal_cursor : constant pac_terminals.cursor := 
 					get_terminal (device_cursor, port.unit_name, port.port_name);
 
@@ -352,9 +353,9 @@ is
 			-- Therefore we do not pass a specific assembly variant here.
 			ports := get_ports (net_cursor); 
 
-			-- In variable "ports" we are interested in selector "devices" exclusively
-			-- because submodule ports and netchangers are just virtual devices
-			-- that connect two conductor tracks:
+			-- In variable "ports" we are interested in selector "devices" exclusively.
+			-- Submodule ports and netchangers are just virtual devices
+			-- that connect two conductor tracks. They can therefore be ignored:
 			ports.devices.iterate (query_device_port'access);
 	
 			return result;
@@ -363,11 +364,11 @@ is
 		
 		-- Extracts all conductor objects connected with the given net
 		-- and appends them to the result:
-		procedure query_net (n : in pac_nets.cursor) is
+		procedure query_net (net_cursor : in pac_nets.cursor) is
 
 			-- The clearance between net and zone is either the given zone_clearance
 			-- or the clearance of the net itself. However, the greater value is applied:
-			net_class : constant type_net_class := get_net_class (module_cursor, n);
+			net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
 			
 			clearance : constant type_track_clearance := 
 				get_greatest (zone_clearance, net_class.clearance);
@@ -377,7 +378,7 @@ is
 			polygons : pac_polygon_list.list;
 
 			
-			route : et_pcb.type_route renames element (n).route;
+			route : et_pcb.type_route renames element (net_cursor).route;
 
 			procedure query_line (l : in pac_conductor_lines.cursor) is
 				use pac_conductor_lines;
@@ -438,7 +439,7 @@ is
 				-- CS fill zones, ... see et_pcb.type_route
 				
 				-- terminals of packages
-				terminals := get_terminal_polygons (n);
+				terminals := get_terminal_polygons (net_cursor);
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 				
 				offset_polygons (polygons, type_float_internal_positive (clearance));
@@ -454,7 +455,7 @@ is
 				do_it;
 			else
 				-- Otherwise skip the parent net and process all other nets:
-				if key (n) /= parent_net_name then
+				if key (net_cursor) /= parent_net_name then
 					do_it;
 				--else
 					--log (text => "skipping parent net " 
@@ -464,6 +465,17 @@ is
 			end if;
 		end query_net;
 
+
+		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
+			use et_board_ops.devices;
+			
+			terminals : constant pac_terminals.map := 
+				get_unconnected_terminals (module_cursor, device_cursor);
+		begin
+			null; -- CS
+		end query_device;
+
+		
 		
 		-- TEXTS ---------------------------------------------------------------
 		use et_conductor_text.boards.pac_conductor_texts;
@@ -512,6 +524,9 @@ is
 		-- Query nets. Exempt the parent net (if specified by argument parent_net):
 		element (module_cursor).nets.iterate (query_net'access);
 
+		-- Query unconnected terminals of devices:
+		element (module_cursor).devices.iterate (query_device'access);
+			
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		

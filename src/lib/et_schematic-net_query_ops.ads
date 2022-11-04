@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
--- NOTE: This package is currently not used. Just experimental stuff.
+-- NOTE: THIS PACKAGE IS CURRENTLY NOT USED. JUST EXPERIMENTAL STUFF.
 
 with et_submodules;
 

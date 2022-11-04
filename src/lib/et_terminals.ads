@@ -43,11 +43,12 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
+with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_general;
---with et_string_processing;		use et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
@@ -365,6 +366,8 @@ package et_terminals is
 	function to_terminal_name (terminal : in string) return pac_terminal_name.bounded_string;
 
 
+	package pac_terminal_names is new doubly_linked_lists (pac_terminal_name.bounded_string);
+	
 	
 	-- GUI relevant only:
 	terminal_name_font : constant et_text.type_font := (
@@ -382,11 +385,11 @@ package et_terminals is
 		terminal		: in type_terminal;
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in type_log_level);
+
 	
 	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
-		element_type	=> type_terminal,
-		"<"				=> pac_terminal_name."<");
+		element_type	=> type_terminal);
 
 
 	-- Iterates the terminate. Aborts the process when the proceed-flag goes false:
@@ -394,7 +397,25 @@ package et_terminals is
 		terminals	: in pac_terminals.map;
 		process		: not null access procedure (position : pac_terminals.cursor);
 		proceed		: not null access boolean);
-	
+
+
+	-- Removes from given list "terminals" those given by list "to_be_removed".
+	-- Assumes that the terminals given in "to_be_removed" do exist
+	-- in "terminals". Otherwise exception is raised:
+	procedure remove_terminals (
+		terminals		: in out pac_terminals.map;
+		to_be_removed	: in pac_terminal_names.list); -- 1, 2, 9, 15
+
+
+	-- CS
+	-- The "negative" of procedure remove_terminals.
+	-- Keeps in given list "terminals" those given by list "to_be_kept".
+	-- Assumes that the terminals given in "to_be_kept" do exist
+	-- in "terminals". Otherwise exception is raised:
+	--procedure keep_terminals (
+		--terminals	: in out pac_terminals.map;
+		--to_be_kept	: in pac_terminal_names.list); -- 1, 2, 9, 15
+
 	
 end et_terminals;
 

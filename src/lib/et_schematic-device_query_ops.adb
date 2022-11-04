@@ -94,6 +94,7 @@ package body et_schematic.device_query_ops is
 	end get_package_variant;
 
 	
+	
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
 		return pac_package_model_file_name.bounded_string -- libraries/packages/smd/SOT23.pac
@@ -117,6 +118,19 @@ package body et_schematic.device_query_ops is
 		return get_package_model (device_cursor_lib, device_variant);
 	end get_package_model;
 
+	
+
+	function get_package_model (
+		device : in pac_devices_sch.cursor)
+		return pac_packages_lib.cursor
+	is
+		package_model : constant pac_package_model_file_name.bounded_string :=
+			get_package_model (device);  -- libraries/packages/smd/SOT23.pac
+	begin
+		return locate_package_model (package_model);
+	end get_package_model;
+
+	
 	
 	function has_real_package (
 		device : in pac_devices_sch.cursor) 

@@ -317,20 +317,21 @@ package et_packages is
 
 	
 	-- A package in the library extends the base package type:
-	type type_package_lib is new type_package_base with record
+	type type_package_lib is new type_package_base with record -- CS rename to type_package_model ?
 		-- CS default for face ?
 		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: pac_terminals.map;
 	end record;
 
+	
 	-- CS: this should be a hashed map:
-	package pac_packages_lib is new indefinite_ordered_maps (
+	package pac_packages_lib is new indefinite_ordered_maps ( -- CS rename to pac_package_models
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
 		element_type	=> type_package_lib);
 	
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	packages_lib	 : pac_packages_lib.map;
+	packages_lib	 : pac_packages_lib.map; -- CS rename to package_model_library ?
 
 
 

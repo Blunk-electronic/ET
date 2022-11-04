@@ -265,6 +265,7 @@ package body et_terminals is
 		log_indentation_down;
 	end terminal_properties;
 
+	
 
 	procedure iterate (
 		terminals	: in pac_terminals.map;
@@ -279,7 +280,53 @@ package body et_terminals is
 			next (c);
 		end loop;
 	end iterate;
+
 	
+
+	procedure remove_terminals (
+		terminals		: in out pac_terminals.map;
+		to_be_removed	: in pac_terminal_names.list)
+	is
+		use pac_terminal_names;
+
+		
+		procedure query_name (name : in pac_terminal_names.cursor) is
+			use pac_terminals;
+			--t_cursor : pac_terminals.cursor := find (terminals, element (name));
+		begin
+			--if t_cursor /= pac_terminals.no_element then
+				--delete (terminals, t_cursor);
+				---- exclude (terminals, t
+			--else
+				--null; -- CS warning ?
+			--end if;
+
+			-- Delete the terminal indicated by "name" in list "terminals".
+			-- The terminal indicated by "name" should exist in
+			-- list "terminals":
+			delete (terminals, element (name));
+
+			exception
+				when constraint_error =>
+					--raise semantic_error_1 with "Terminal " 
+					--& enclose_in_quotes (to_string (element (name))) 
+					--& " not found !";
+
+					put_line ("WARNING: Terminal " 
+						& enclose_in_quotes (to_string (element (name))) 
+						& " not found !");
+
+					-- CS better a log message ?
+
+		end query_name;
+
+		
+	begin
+		to_be_removed.iterate (query_name'access);
+		null;
+	end remove_terminals;
+
+
 	
 end et_terminals;
 

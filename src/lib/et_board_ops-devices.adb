@@ -877,6 +877,101 @@ package body et_board_ops.devices is
 		
 		return result;
 	end get_terminal_positions;
+
+
+
+	function get_all_terminals (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return pac_terminals.map
+	is
+		use pac_packages_lib;
+		package_model : constant pac_packages_lib.cursor := 
+			get_package_model (device_cursor);
+	begin
+		return element (package_model).terminals;
+	end get_all_terminals;
+	
+	
+	function get_unconnected_terminals (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return pac_terminals.map
+	is
+		use et_nets;
+		use pac_terminals;
+		result : pac_terminals.map;
+
+		-- Get all terminals of the given device (according to its package variant):
+		all_terminals : pac_terminals.map := get_all_terminals (device_cursor);
+
+		-- Here we will store the terminals of the given device which are
+		-- connected with nets:
+		connected_terminals : pac_terminal_names.list;
+
+		
+		procedure query_net (net_cursor : in pac_nets.cursor) is
+			-- Get the ports of all devices connected with the given net.
+			-- Since this query is about the default assembly variant,
+			-- we do not pass a specific assembly variant here.
+			ports : constant type_ports := get_ports (net_cursor);
+
+			use pac_device_ports;
+
+			
+			procedure query_device_port (d : in pac_device_ports.cursor) is
+
+				port : type_device_port renames element (d);
+				-- Now port contains the device name, unit name and port name.
+				
+				-- Get the cursor to the device in the schematic:
+				device_cursor : constant pac_devices_sch.cursor := 
+					locate_device (module_cursor, port.device_name);
+
+				-- Get the cursor to the physical terminal (in the package model)
+				-- that is linked with the port:
+				terminal_cursor : constant pac_terminals.cursor := 
+					get_terminal (device_cursor, port.unit_name, port.port_name);
+
+				-- Get the terminal name (like 3 or H5):
+				terminal_name : constant pac_terminal_name.bounded_string := 
+					key (terminal_cursor);
+				
+			begin
+				--put_line ("dev " & to_string (key (net_cursor)));
+				if key (device_cursor) = key (get_unconnected_terminals.device_cursor) then
+				
+				-- Store the terminal name in list connected_terminals:
+					connected_terminals.append (terminal_name);
+				end if;
+			end query_device_port;
+
+			
+		begin
+			--put_line ("net " & to_string (key (net_cursor)));
+			
+			-- In variable "ports" we are interested in selector "devices" exclusively.
+			-- Submodule ports and netchangers are just virtual devices
+			-- that connect two conductor tracks. They can therefore be ignored:
+			ports.devices.iterate (query_device_port'access);
+		end query_net;
+
+		
+	begin
+		--put_line ("device " & to_string (key (device_cursor)));
+		--put_line ("all " & count_type'image (all_terminals.length));
+		
+		element (module_cursor).nets.iterate (query_net'access);
+
+		--put_line ("connected " & count_type'image (connected_terminals.length));
+		
+		-- Remove the connected_terminals from all_terminals
+		-- so that only the unconneced terminals are left:
+		remove_terminals (all_terminals, connected_terminals);
+		
+		return result;
+	end get_unconnected_terminals;
+	
+
 	
 end et_board_ops.devices;
 	

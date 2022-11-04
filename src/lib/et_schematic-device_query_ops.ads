@@ -54,7 +54,7 @@ package et_schematic.device_query_ops is
 		return boolean;
 
 
-	-- Maps from schematic device to library model:
+	-- Maps from schematic device to device model (in library):
 	function get_device_model (
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor;
@@ -91,9 +91,17 @@ package et_schematic.device_query_ops is
 	-- Returns the name of the package model of the given device
 	-- according to the current package variant of the device.
 	-- The given device must be real. Otherwise constraint error arises here.	
-	function get_package_model (
+	function get_package_model ( -- CS rename to get_package_model_name
 		device : in pac_devices_sch.cursor)
 		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+
+
+	-- Returns the cursor to the package model of the given device
+	-- according to the current package variant of the device.
+	-- The given device must be real. Otherwise constraint error arises here.	
+	function get_package_model (
+		device : in pac_devices_sch.cursor)
+		return pac_packages_lib.cursor;
 
 	
 	-- Returns true if the given device has a real package.
