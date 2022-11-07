@@ -902,9 +902,9 @@ package body et_board_ops.devices is
 	is
 		use et_nets;
 		use pac_terminals;
-		result : pac_terminals.map;
 
-		-- Get all terminals of the given device (according to its package variant):
+		-- Get all terminals of the given device (according to its package variant).
+		-- Later the connected terminals will be removed from this list:
 		all_terminals : pac_terminals.map := get_all_terminals (device_cursor);
 
 		-- Here we will store the terminals of the given device which are
@@ -970,8 +970,8 @@ package body et_board_ops.devices is
 		-- Remove the connected_terminals from all_terminals
 		-- so that only the unconneced terminals are left:
 		remove_terminals (all_terminals, connected_terminals);
-		
-		return result;
+
+		return all_terminals;
 	end get_unconnected_terminals;
 	
 

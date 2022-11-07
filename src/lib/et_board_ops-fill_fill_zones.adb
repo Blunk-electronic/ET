@@ -359,7 +359,10 @@ is
 			end if;
 		end query_net;
 
-
+		
+		-- This procedure takes a cursor to a device in the schematic,
+		-- converts the outlines of its unconnected terminals to polygons,
+		-- offsets them by the zone_clearance and finally appends them to the result:
 		procedure query_device_terminals_unconnected (
 			device_cursor : in pac_devices_sch.cursor) 
 		is
@@ -368,17 +371,24 @@ is
 			terminals : constant pac_terminals.map := 
 				get_unconnected_terminals (module_cursor, device_cursor);
 
+			
 			procedure query_terminal (terminal_cursor : in pac_terminals.cursor) is
 				-- Convert the terminal outline to a polygon:
-				terminal_polygon : constant type_terminal_polygon := to_polygon (
-					module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
+				terminal_polygon : type_terminal_polygon := to_polygon (
+					module_cursor, device_cursor, terminal_cursor, 
+					layer_category, fill_tolerance);
 			begin
+				--put_line ("nc " & to_string (pac_terminals.key (terminal_cursor)));
+				
 				if terminal_polygon.exists then
+					offset_polygon (terminal_polygon.polygon, zone_clearance_float);
 					result.append (terminal_polygon.polygon);
 				end if;
 			end query_terminal;
-				
+
+			
 		begin
+			--put_line ("dev " & to_string (key (device_cursor)));
 			terminals.iterate (query_terminal'access);
 		end query_device_terminals_unconnected;
 
