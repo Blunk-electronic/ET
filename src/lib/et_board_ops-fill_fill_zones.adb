@@ -184,7 +184,7 @@ is
 		use pac_overlap_status;
 		overlap_status : pac_overlap_status.set := to_set (B_INSIDE_A);
 		
-		
+			
 		-- NETS -------------------------------------------------------------
 
 		-- If a parent net was given (via argument parent_net) then
@@ -209,8 +209,6 @@ is
 			ports : et_nets.type_ports;
 
 			use pac_device_ports;
-			use pac_terminals;
-			use et_board_ops.devices;
 
 			
 			-- Converts the terminal, that is linked to the given device port,
@@ -229,122 +227,18 @@ is
 				terminal_cursor : constant pac_terminals.cursor := 
 					get_terminal (device_cursor, port.unit_name, port.port_name);
 
-				-- Get the actual terminal as described in the package model:
-				terminal : constant et_terminals.type_terminal := 
-					element (terminal_cursor);
-
-				
-				-- Get the terminal name (like 3 or H5):
-				terminal_name : constant pac_terminal_name.bounded_string := 
-					key (terminal_cursor);
-				
-				-- Get the terminal position (incl. rotation and face):
-				terminal_position : constant type_terminal_position_fine := 
-					get_terminal_position (module_cursor, device_cursor, terminal_name);
-
-
-				-- intermediate places to store a single polygon and a single contour:
-				polygon : type_polygon;
-				contour : type_contour;
-
-				-- The displacement required to move the contour to 
-				-- its final position:
-				terminal_displacement : constant type_distance_relative := 
-					to_distance_relative (terminal_position.place);
-
-
-				-- Converts the contour to a polygon:
-				procedure make_polygon is begin
-					polygon := to_polygon (
-						contour		=> contour,
-						tolerance	=> fill_tolerance,
-						mode		=> EXPAND, -- CS ?
-						debug		=> false);
-				end make_polygon;
-			
-
-				-- Moves the contour to the final position, converts it to a polygon
-				-- and appends the polygon to the result.
-				-- Optionally, if required by the caller, offsets the polygon edges
-				-- by the width of the inner signal layer:
-				procedure finalize (do_offset : in boolean := false) is begin
-					move_by (contour, terminal_displacement);
-					make_polygon;
-					if do_offset then
-						offset_polygon (polygon, type_float_internal (terminal.width_inner_layers));
-					end if;
-					result.append (polygon);
-				end finalize;
-
-
-				-- Mirrors the contour (if terminal is flipped to bottom side) and
-				-- rotates the contour:
-				procedure mirror_and_rotate is begin
-					if terminal_position.face = BOTTOM then
-						mirror (contour, Y);
-
-						-- if on bottom side: rotate CW
-						rotate_by (contour, - to_rotation (terminal_position.rotation));
-					else
-						-- if on top side: rotate CCW
-						rotate_by (contour, + to_rotation (terminal_position.rotation));
-					end if;
-				end mirror_and_rotate;
-
+				-- Convert the terminal outline to a polygon:
+				use et_board_ops.devices;
+				terminal_polygon : constant type_terminal_polygon := to_polygon (
+					module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
 				
 			begin -- query_device_port
-				
-				case terminal.technology is
-					when THT => 
-						case layer_category is
-							when INNER =>								
-								case terminal.tht_hole is
-									when DRILLED =>
-										contour := get_inner_contour (terminal, terminal_position.place);
-										make_polygon;										
-										result.append (polygon);
-										
-									when MILLED =>
-										contour := terminal.millings;
-										mirror_and_rotate;										
-										finalize (do_offset => true);
-										
-								end case;
-							
-							when OUTER_TOP =>
-								if terminal_position.face = TOP then
-									contour := terminal.pad_shape_tht.top;
-								else
-									contour := terminal.pad_shape_tht.bottom;
-								end if;
-								mirror_and_rotate;
-								finalize;
-
-							when OUTER_BOTTOM =>
-								if terminal_position.face = BOTTOM then
-									contour := terminal.pad_shape_tht.top;
-								else
-									contour := terminal.pad_shape_tht.bottom;
-								end if;
-								mirror_and_rotate;
-								finalize;
-						end case;
-						
-
-					when SMT =>
-						if layer_category = OUTER_TOP and terminal_position.face = TOP then
-							contour := terminal.pad_shape_smt;
-							rotate_by (contour, to_rotation (terminal_position.rotation));
-							finalize;						
-							
-						elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
-							contour := terminal.pad_shape_smt;
-							mirror (contour, Y);
-							rotate_by (contour, - to_rotation (terminal_position.rotation));
-							finalize;
-						end if;
-				end case;
-
+				-- If the terminal does not affect the current signal layer,
+				-- then nothing happens here. Otherwise the outline of the terminal
+				-- will be appended to the result:
+				if terminal_polygon.exists then
+					result.append (terminal_polygon.polygon);
+				end if;
 			end query_device_port;
 
 			
@@ -466,14 +360,27 @@ is
 		end query_net;
 
 
-		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
+		procedure query_device_terminals_unconnected (
+			device_cursor : in pac_devices_sch.cursor) 
+		is
 			use et_board_ops.devices;
 			
 			terminals : constant pac_terminals.map := 
 				get_unconnected_terminals (module_cursor, device_cursor);
+
+			procedure query_terminal (terminal_cursor : in pac_terminals.cursor) is
+				-- Convert the terminal outline to a polygon:
+				terminal_polygon : constant type_terminal_polygon := to_polygon (
+					module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
+			begin
+				if terminal_polygon.exists then
+					result.append (terminal_polygon.polygon);
+				end if;
+			end query_terminal;
+				
 		begin
-			null; -- CS
-		end query_device;
+			terminals.iterate (query_terminal'access);
+		end query_device_terminals_unconnected;
 
 		
 		
@@ -525,7 +432,7 @@ is
 		element (module_cursor).nets.iterate (query_net'access);
 
 		-- Query unconnected terminals of devices:
-		element (module_cursor).devices.iterate (query_device'access);
+		element (module_cursor).devices.iterate (query_device_terminals_unconnected'access);
 			
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);

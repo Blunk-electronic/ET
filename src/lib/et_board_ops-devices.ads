@@ -44,11 +44,6 @@ package et_board_ops.devices is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_shapes_and_text;
-	use pac_contours;
-	use pac_text_board;
-	use pac_net_name;
-
 	
 	-- Adds a non-electric device to the board:
 	procedure add_device (
@@ -116,8 +111,18 @@ package et_board_ops.devices is
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine;
+
 	
-							   
+	-- CS ?
+	-- Same as above function but takes a terminal cursor instead of a terminal name
+	--function get_terminal_position (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
+		--terminal_cursor	: in pac_terminals.cursor) -- H7, 14
+		--return type_terminal_position_fine;
+
+
+	
 	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
 	-- The default assembly variant is assumed (means all devices are mounted).
@@ -143,7 +148,30 @@ package et_board_ops.devices is
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map;
 
-											
+
+
+	-- This controlled type is used by the functon to_polygon below:
+	type type_terminal_polygon (exists : boolean) is record
+		case exists is
+			when TRUE	=> polygon : pac_polygons.type_polygon;
+			when FALSE	=> null;
+		end case;
+	end record;
+
+	
+	-- Returns the contour of a terminal as a polygon.
+	-- If the terminal does not affect the given layer category,
+	-- then nothing happens here -> returns just a "false".
+	-- See specification of type_terminal_polygon above.
+	function to_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
+		terminal_cursor	: in pac_terminals.cursor;
+		layer_category	: in type_signal_layer_category;
+		tolerance		: in type_distance_positive)
+		return type_terminal_polygon;
+
+	
 end et_board_ops.devices;
 
 -- Soli Deo Gloria
