@@ -55,7 +55,6 @@ package et_conductor_segment is
 	use pac_polygons;
 	
 	use pac_geometry_2;
-	--use pac_text_fab;
 
 	
 -- LINES
@@ -68,21 +67,6 @@ package et_conductor_segment is
 
 
 
-	
-	-- ? CS type_edge_cap is new type_arc with null record;
-	--type type_edge_arc is new pac_geometry_brd.type_arc;
-	--type type_edge_line is new pac_geometry_brd.type_line;
-	
-
-	-- The outline of a conductor line segment:
-	--type type_conductor_line_segment is private;
-
-	
-	--function to_string (
-		--segment : in type_conductor_line_segment)
-		--return string;
-
-
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
@@ -92,22 +76,6 @@ package et_conductor_segment is
 
 
 	
-	
-	--function get_left_edge (segment : in type_conductor_line_segment)
-		--return type_edge_line;
-
-	
-	--function get_right_edge (segment : in type_conductor_line_segment)
-		--return type_edge_line;
-
-	
-	--function get_start_cap (segment : in type_conductor_line_segment)
-		--return type_edge_arc;
-
-	
-	--function get_end_cap (segment : in type_conductor_line_segment)
-		--return type_edge_arc;
-
 	
 	-- Computes the shortest distance from a point to
 	-- a conductor line segment. If the return is negative,
@@ -142,34 +110,12 @@ package et_conductor_segment is
 	end record;
 
 	
-	--type type_conductor_arc_segment is private;
-
-	
-	--function to_string (segment : in type_conductor_arc_segment)
-		--return string;
-
 	
 	function to_polygon (
 		arc 		: in type_conductor_arc;
 		tolerance	: in type_distance_positive)							
 		return type_polygon;
-
 	
-	--function get_inner_edge (segment : in type_conductor_arc_segment)
-		--return type_edge_arc;
-
-	
-	--function get_outer_edge (segment : in type_conductor_arc_segment)
-		--return type_edge_arc;
-
-	
-	--function get_start_cap (segment : in type_conductor_arc_segment)
-		--return type_edge_arc;
-
-	
-	--function get_end_cap (segment : in type_conductor_arc_segment)
-		--return type_edge_arc;
-
 
 	-- Computes the shortest distance from a point to
 	-- a conductor arc segment. If the return is negative,
@@ -209,20 +155,6 @@ package et_conductor_segment is
 		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in type_log_level);
 
-
-	
-	
---private
-	
-	--type type_conductor_line_segment is record
-		--left_edge, right_edge : type_edge_line;
-		--cap_start, cap_end : type_edge_arc;
-	--end record;
-	
-	--type type_conductor_arc_segment is record
-		--inner_edge, outer_edge : type_edge_arc;
-		--cap_start, cap_end : type_edge_arc;
-	--end record;
 
 	
 end et_conductor_segment;

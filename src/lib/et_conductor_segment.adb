@@ -43,34 +43,7 @@ package body et_conductor_segment is
 
 	
 	
--- LINES
-	
-	
-	--function to_string (segment : in type_conductor_line_segment)
-		--return string
-	--is 
-		--use pac_geometry_brd;
-	--begin
-		--return ("line segment:" 
-			--& " edge left: " & to_string (segment.left_edge)
-			--& " / cap end: " & to_string (segment.cap_end)
-			--& " / edge right: " & to_string (segment.right_edge)
-			--& " / cap start: " & to_string (segment.cap_start));
-	--end to_string;
-
-
-	--function to_edge_line (
-		--cl : in type_conductor_line)
-		--return type_edge_line
-	--is 
-		--r : type_edge_line;
-	--begin
-		--r.start_point := to_vector (cl.start_point);
-		--r.end_point   := to_vector (cl.end_point);
-		--return r;
-	--end to_edge_line;
-
-
+-- LINES	
 	
 	function to_polygon (
 		line 		: in type_conductor_line;
@@ -85,34 +58,6 @@ package body et_conductor_segment is
 	end to_polygon;
 
 
-
-	
-	--function get_left_edge (segment : in type_conductor_line_segment)
-		--return type_edge_line
-	--is begin
-		--return segment.left_edge;
-	--end get_left_edge;
-
-	
-	--function get_right_edge (segment : in type_conductor_line_segment)
-		--return type_edge_line
-	--is begin
-		--return segment.right_edge;
-	--end get_right_edge;
-
-	
-	--function get_start_cap (segment : in type_conductor_line_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.cap_start;
-	--end get_start_cap;
-
-	
-	--function get_end_cap (segment : in type_conductor_line_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.cap_end;
-	--end get_end_cap;	
 	
 
 	--function get_shortest_distance (
@@ -208,17 +153,6 @@ package body et_conductor_segment is
 	
 -- ARCS
 
-	--function to_string (segment : in type_conductor_arc_segment)
-		--return string
-	--is begin
-		--return ("arc segment:" 
-			--& " outer edge:" & to_string (segment.outer_edge)
-			--& " cap end" & to_string (segment.cap_end)
-			--& " inner edge:" & to_string (segment.inner_edge)
-			--& " cap start:" & to_string (segment.cap_start));
-	--end to_string;
-
-
 	
 	function to_polygon (
 		arc 		: in type_conductor_arc;
@@ -233,33 +167,6 @@ package body et_conductor_segment is
 	end to_polygon;
 
 	
-	--function get_inner_edge (segment : in type_conductor_arc_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.inner_edge;
-	--end get_inner_edge;
-
-	
-	--function get_outer_edge (segment : in type_conductor_arc_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.outer_edge;
-	--end get_outer_edge;
-
-	
-	--function get_start_cap (segment : in type_conductor_arc_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.cap_start;
-	--end get_start_cap;
-
-	
-	--function get_end_cap (segment : in type_conductor_arc_segment)
-		--return type_edge_arc
-	--is begin
-		--return segment.cap_end;
-	--end get_end_cap;
-
 	
 	--function get_shortest_distance (
 		--point	: in type_point;
