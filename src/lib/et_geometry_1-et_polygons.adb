@@ -3367,7 +3367,7 @@ package body et_geometry_1.et_polygons is
 		arc.center := center.end_point;
 		arc.start_point := edge_right.end_point;
 		arc.end_point := edge_left.start_point;
-		arc.direction := CCW;
+		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
 		edges := to_edges (arc, tolerance, EXPAND);
@@ -3381,17 +3381,108 @@ package body et_geometry_1.et_polygons is
 		arc.center := center.start_point;
 		arc.start_point := edge_left.end_point;
 		arc.end_point := edge_right.start_point;
-		arc.direction := CCW;
+		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
 		edges := to_edges (arc, tolerance, EXPAND);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 
-		optimize_edges (result);
+		optimize_edges (result); -- MANDATORY !!
 		
 		return result;
 	end to_polygon;
 
+
+	function to_polygon (
+		arc			: in type_arc;
+		width		: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive)
+		return type_polygon
+	is
+		result : type_polygon;
+
+		-- Normalize given arc so that it runs CCW.
+		-- Basing on arc_n everything else will be computed.
+		arc_n : constant type_arc := normalize_arc (arc);
+
+		center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
+		half_width    : constant type_float_internal_positive := width * 0.5;
+		inner_radius, outer_radius : type_float_internal_positive;
+
+		
+		-- At first we build a contour consisting of 4 arcs. These
+		-- arcs form the outer contour of an arc with a given linewidth.
+		-- In the end these arcs are converted to edges of the resulting polygon.
+		
+		-- There will be an arc on the inner side (small radius) 
+		-- and another on the outer side (great radius).
+		arc_i, arc_o : type_arc_angles;
+
+		-- There will be an arc on the start and an arc on the end.
+		-- These arcs form the round caps:
+		arc_s, arc_e : type_arc;
+
+		scratch_i, scratch_o : type_arc;		
+
+		edges : pac_edges.list;
+		mode : constant type_approximation_mode := EXPAND; -- CS
+	begin
+		-- set radii
+		inner_radius := center_radius - half_width;
+		outer_radius := center_radius + half_width;
+
+		-- set outer edge:
+		arc_o := to_arc_angles (arc_n);
+		arc_o.radius := outer_radius;
+		scratch_o := to_arc (arc_o);
+
+		-- set inner edge:
+		arc_i := to_arc_angles (reverse_arc (arc_n));
+		arc_i.radius := inner_radius;
+		scratch_i := to_arc (arc_i);
+		
+		-- set cap at start point:		
+		arc_s.start_point := scratch_i.end_point;
+		arc_s.end_point   := scratch_o.start_point;
+		arc_s.direction   := arc_direction_default;
+		arc_s.center      := arc_n.start_point;
+		
+		-- set cap at end point:
+		arc_e.start_point := scratch_o.end_point;
+		arc_e.end_point   := scratch_i.start_point;
+		arc_e.direction   := arc_direction_default;
+		arc_e.center      := arc_n.end_point;
+
+
+		--put_line ("start " & to_string (arc_s));
+		--put_line ("outer " & to_string (scratch_o));
+		--put_line ("end   " & to_string (arc_e));
+		--put_line ("inner " & to_string (scratch_i));
+
+		
+		-- Approximate the four arcs to edges and append them to
+		-- the resulting polygon:
+
+		-- cap on start:
+		edges := to_edges (arc_s, tolerance, mode);
+		result.edges.splice (before => pac_edges.no_element, source => edges);
+
+		-- outer arc:
+		edges := to_edges (scratch_o, tolerance, mode);
+		result.edges.splice (before => pac_edges.no_element, source => edges);
+
+		-- cap on end:
+		edges := to_edges (arc_e, tolerance, mode);
+		result.edges.splice (before => pac_edges.no_element, source => edges);
+
+		-- inner arc:
+		edges := to_edges (scratch_i, tolerance, mode);
+		result.edges.splice (before => pac_edges.no_element, source => edges);
+
+		optimize_edges (result); -- MANDATORY !!
+		
+		return result;
+	end to_polygon;
 	
 	
 end et_geometry_1.et_polygons;

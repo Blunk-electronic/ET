@@ -283,6 +283,17 @@ is
 				end if;
 			end query_line;
 
+			
+			procedure query_arc (a : in pac_conductor_arcs.cursor) is
+				use pac_conductor_arcs;
+				arc : type_conductor_arc renames element (a);
+			begin
+				if arc.layer = layer then
+					polygons.append (to_polygon (arc, fill_tolerance));
+				end if;
+			end query_arc;
+
+			
 
 			procedure query_via (v : in pac_vias.cursor) is
 				use pac_vias;
@@ -324,8 +335,7 @@ is
 			begin
 				-- Query track segments:
 				route.lines.iterate (query_line'access);
-
-				-- CS route.arcs.iterate (query_arc'access);
+				route.arcs.iterate (query_arc'access);
 				
 				-- Query vias:
 				route.vias.iterate (query_via'access);

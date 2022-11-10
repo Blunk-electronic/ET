@@ -821,7 +821,7 @@ package et_geometry_1 is
 
 -- LINE
 	
-	type type_line is record
+	type type_line is record -- CS rename to type_line_fine
 		start_point	: type_vector;
 		end_point	: type_vector;
 	end record;
@@ -966,12 +966,15 @@ package et_geometry_1 is
 	
 
 -- ARC
+
+	arc_direction_default : constant type_direction_of_rotation := CCW;
 	
-	type type_arc is record
+	type type_arc is record -- CS rename to type_arc_fine
 		center		: type_vector;
 		start_point	: type_vector;
 		end_point	: type_vector;
-		direction	: type_direction_of_rotation := CW;
+		direction	: type_direction_of_rotation := CW; 
+		-- CS should be arc_direction_default
 	end record;
 
 
@@ -1026,7 +1029,7 @@ package et_geometry_1 is
 		radius		: type_float_internal_positive;
 		angle_start	: type_angle; -- can be negative
 		angle_end	: type_angle; -- can be negative
-		direction	: type_direction_of_rotation := CCW;
+		direction	: type_direction_of_rotation := arc_direction_default;
 	end record;
 
 

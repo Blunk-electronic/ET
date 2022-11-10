@@ -224,52 +224,12 @@ package body et_conductor_segment is
 		arc 		: in type_conductor_arc;
 		tolerance	: in type_distance_positive)							
 		return type_polygon
-	is
-		--arc_n : type_conductor_arc := arc;
-		--arc_i, arc_o : type_arc_angles;
-		
-		--center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
-		--half_width : constant type_float_internal_positive := type_float_internal (arc_n.width * 0.5);
-		--inner_radius, outer_radius : type_float_internal_positive;
+	is begin
+		return to_polygon (
+			arc			=> to_arc_fine (arc),
+			width		=> type_float_internal_positive (arc.width),
+			tolerance	=> type_float_internal_positive (tolerance));
 
-		result : type_polygon;		
-	begin
-		-- CS
-		
-		-- normalize given arc so that it runs CW:
-		--if arc_n.direction = CCW then
-			--reverse_arc (arc_n);
-		--end if;
-
-		---- set radii
-		--inner_radius := center_radius - half_width;
-		--outer_radius := center_radius + half_width;
-
-
-		---- set outer edge:
-		--arc_o := to_arc_angles (arc_n);
-		--arc_o.radius := outer_radius;
-		--result.outer_edge := to_arc (arc_o);
-
-		---- set inner edge:
-		--arc_i := to_arc_angles (reverse_arc (arc_n));
-		--arc_i.radius := type_float_internal (inner_radius);
-		--result.inner_edge := to_arc (arc_i);
-
-		---- set start and end points of caps:
-		---- cap at start point:
-		--result.cap_start.start_point := result.inner_edge.end_point;
-		--result.cap_start.end_point   := result.outer_edge.start_point;
-		--result.cap_start.direction := CW;
-		--result.cap_start.center := to_vector (arc_n.start_point);
-		
-		---- cap at end point:
-		--result.cap_end.start_point := result.outer_edge.end_point;
-		--result.cap_end.end_point   := result.inner_edge.start_point;
-		--result.cap_end.direction := CW;
-		--result.cap_end.center := to_vector (arc_n.end_point);
-
-		return result;
 	end to_polygon;
 
 	
