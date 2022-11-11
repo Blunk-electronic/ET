@@ -98,7 +98,7 @@ is
 	-- Expands the board_holes_master by half the given line width
 	-- and loads variable "holes" with the result:
 	procedure expand_holes (
-		line_width	: in type_track_width)
+		linewidth	: in type_track_width)
 	is begin
 		holes := board_holes_master;
 		
@@ -106,14 +106,17 @@ is
 			 level => log_threshold + 4);
 				
 		-- Expand the holes by half the line width of the fill lines:
-		offset_holes (holes, line_width * 0.5);
+		offset_holes (holes, linewidth * 0.5);
 
 		multi_union (holes);
 	end expand_holes;
 
 
-	-- Crops the given zone by the outer board contours and the holes.
-	-- Assumes that variable "holes" has been updated by procedure expand_holes:
+	-- Clips the given zone by the outer board contours.
+	-- The result - a list of islands - will be cropped by the holes.
+	-- Assumes that variable "holes" has been updated by procedure expand_holes.
+	-- The result is a list of polygons because the given zone may disintegrate
+	-- into smaller fragments:
 	function zone_to_polygons (
 		zone		: in type_polygon;
 		line_width	: in type_track_width)
@@ -137,7 +140,7 @@ is
 		-- The zone may shrink or disintegrate into smaller islands:
 		islands := clip (zone, outer_contour);
 
-		-- Now we crop the islands by the holes.
+		-- Now we crop the islands by the holes. The outcome are even more islands.
 		-- This adresses holes that
 		-- - cause islands to shrink
 		-- - cause a fragmentation of islands
@@ -157,7 +160,8 @@ is
 	-- Returns a list of polygons caused by conductor
 	-- objects (tracks, terminals, vias, texts, fiducials) in the given signal layer.
 	-- The polygons are expanded by the zone_clearance or by
-	-- the clearance of a particular net (the greater value of them is applied):
+	-- the clearance of a particular net (the greater value of them is applied).
+	-- Returns only those polygons which are inside the given zone:
 	function conductors_to_polygons (
 		zone			: in type_polygon;
 		zone_clearance	: in type_track_clearance;
@@ -689,7 +693,7 @@ is
 
 		
 		-- Now we start collecting contours of objects inside the zone.
-		-- The will be put in the cropping basket.
+		-- They will be put in the cropping basket.
 		-- Later everything in the basket will be used to crop the islands (of the zone)
 		-- and to create inner borders inside the islands:
 		empty_basket (cropping_basket);
@@ -700,7 +704,8 @@ is
 
 
 		
-		-- Get the contours of all conductor objects in the affected layer.
+		-- Get the contours of all conductor objects in the affected layer
+		-- and in the zone_polygon.
 		-- This is about tracks, terminals, vias, texts and fiducials.
 		-- The clearance of these objects to the zone is determined by
 		-- the zone isolation or the net clearance. The greater value is applied:
