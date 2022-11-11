@@ -3339,14 +3339,15 @@ package body et_geometry_1.et_polygons is
 
 	function to_polygon (
 		line		: in type_line;
-		width		: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive)
+		linewidth	: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode)
 		return type_polygon
 	is
 		result : type_polygon;
 
 		direction : constant type_angle := get_direction (line);
-		distance : constant type_float_internal_positive := width * 0.5;
+		distance : constant type_float_internal_positive := linewidth * 0.5;
 
 		center : constant type_edge := type_edge (line);
 		edge_right, edge_left : type_edge := center;
@@ -3370,7 +3371,7 @@ package body et_geometry_1.et_polygons is
 		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, tolerance, EXPAND);
+		edges := to_edges (arc, tolerance, mode);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 		-- Container edges is now empty.
 
@@ -3384,7 +3385,7 @@ package body et_geometry_1.et_polygons is
 		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
-		edges := to_edges (arc, tolerance, EXPAND);
+		edges := to_edges (arc, tolerance, mode);
 		result.edges.splice (before => pac_edges.no_element, source => edges);
 
 		optimize_edges (result); -- MANDATORY !!
@@ -3395,8 +3396,9 @@ package body et_geometry_1.et_polygons is
 
 	function to_polygon (
 		arc			: in type_arc;
-		width		: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive)
+		linewidth	: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode)
 		return type_polygon
 	is
 		result : type_polygon;
@@ -3406,7 +3408,7 @@ package body et_geometry_1.et_polygons is
 		arc_n : constant type_arc := normalize_arc (arc);
 
 		center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
-		half_width    : constant type_float_internal_positive := width * 0.5;
+		half_width    : constant type_float_internal_positive := linewidth * 0.5;
 		inner_radius, outer_radius : type_float_internal_positive;
 
 		
@@ -3425,7 +3427,7 @@ package body et_geometry_1.et_polygons is
 		scratch_i, scratch_o : type_arc;		
 
 		edges : pac_edges.list;
-		mode : constant type_approximation_mode := EXPAND; -- CS
+
 	begin
 		-- set radii
 		inner_radius := center_radius - half_width;

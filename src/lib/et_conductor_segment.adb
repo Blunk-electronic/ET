@@ -52,8 +52,9 @@ package body et_conductor_segment is
 	is begin
 		return to_polygon (
 			line		=> to_line_fine (line),
-			width		=> type_float_internal_positive (line.width),
-			tolerance	=> type_float_internal_positive (tolerance));
+			linewidth	=> type_float_internal_positive (line.width),
+			tolerance	=> type_float_internal_positive (tolerance),
+			mode		=> EXPAND);
 
 	end to_polygon;
 
@@ -161,8 +162,9 @@ package body et_conductor_segment is
 	is begin
 		return to_polygon (
 			arc			=> to_arc_fine (arc),
-			width		=> type_float_internal_positive (arc.width),
-			tolerance	=> type_float_internal_positive (tolerance));
+			linewidth	=> type_float_internal_positive (arc.width),
+			tolerance	=> type_float_internal_positive (tolerance),
+			mode		=> EXPAND);
 
 	end to_polygon;
 

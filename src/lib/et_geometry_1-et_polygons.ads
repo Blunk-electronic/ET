@@ -883,9 +883,9 @@ package et_geometry_1.et_polygons is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line		: in type_line;
-		width		: in type_float_internal_positive;  -- CS rename to linewidth
-		tolerance	: in type_float_internal_positive)
-		-- CS mode		: in type_approximation_mode
+		linewidth	: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode)
 		return type_polygon;
 	
 
@@ -893,9 +893,9 @@ package et_geometry_1.et_polygons is
 	-- with round caps on the arc ends:
 	function to_polygon (
 		arc			: in type_arc;
-		width		: in type_float_internal_positive; -- CS rename to linewidth
-		tolerance	: in type_float_internal_positive)
-		-- CS mode		: in type_approximation_mode
+		linewidth	: in type_float_internal_positive;
+		tolerance	: in type_float_internal_positive;
+		mode		: in type_approximation_mode)
 		return type_polygon;
 
 	

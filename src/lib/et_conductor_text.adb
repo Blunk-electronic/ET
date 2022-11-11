@@ -74,7 +74,7 @@ package body et_conductor_text is
 		procedure query_line (l : in pac_character_lines.cursor) is
 			use pac_character_lines;
 			p : type_polygon := to_polygon (
-				pac_geometry_brd.type_line (element (l)), linewidth, tolerance_float);
+				pac_geometry_brd.type_line (element (l)), linewidth, tolerance_float, EXPAND);
 		begin
 			if debug then
 				put_line (to_string (element (l)));
