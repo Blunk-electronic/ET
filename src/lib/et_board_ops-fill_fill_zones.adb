@@ -95,11 +95,17 @@ is
 
 
 	
-	-- Expands the board_holes_master by half the given line width
-	-- and loads variable "holes" with the result:
+	-- Expands the board_holes_master by half the given linewidth.
+	-- Extracts the holes that are in the given zone.
+	-- Loads variable "holes" with the result:
 	procedure expand_holes (
+		zone		: in type_polygon;
 		linewidth	: in type_track_width)
-	is begin
+	is 
+		use pac_overlap_status;
+		overlap_status : pac_overlap_status.set := to_set (B_INSIDE_A);
+
+	begin
 		holes := board_holes_master;
 		
 		log (text => "expanding holes (" & count_type'image (holes.length) & ") ...", 
@@ -108,10 +114,16 @@ is
 		-- Expand the holes by half the line width of the fill lines:
 		offset_holes (holes, linewidth * 0.5);
 
+		-- Extract those holes that are inside the zone:
+		-- NOTE: Variable overlap_status already contains B_INSIDE_A. See declaration above.
+		overlap_status.insert (A_OVERLAPS_B);
+		holes := get_polygons (zone, holes, overlap_status);
+				
 		multi_union (holes);
 	end expand_holes;
 
 
+	
 	-- Clips the given zone by the outer board contours.
 	-- The result - a list of islands - will be cropped by the holes.
 	-- Assumes that variable "holes" has been updated by procedure expand_holes.
@@ -678,9 +690,10 @@ is
 
 		-- CS log lowest left vertex
 
-		-- The holes inside the board area will crop the zone later.
-		-- Therefore they must be made greater than they acutually are:
-		expand_holes (linewidth); -- updates variable "holes"
+		-- The holes inside the board area and inside the zone
+		-- will crop the zone later. Since the zone border has a linewidth,
+		-- the holes must be made greater than they acutually are:
+		expand_holes (zone_polygon, linewidth); -- updates variable "holes"
 		
 		-- Crop the zone by the outer board edges and the holes (stored in
 		-- variable "holes").
