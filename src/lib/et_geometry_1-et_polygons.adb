@@ -2740,6 +2740,7 @@ package body et_geometry_1.et_polygons is
 	end get_intersections;
 
 
+
 	
 	function get_overlap_status (
 		polygon_A, polygon_B	: in type_polygon;

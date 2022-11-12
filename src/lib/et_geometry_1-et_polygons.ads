@@ -773,6 +773,7 @@ package et_geometry_1.et_polygons is
 
 	-- For lists of overlap statuses:
 	package pac_overlap_status is new ordered_sets (type_overlap_status);
+
 	
 	
 	-- Returns the overlap status of polygon A and B.

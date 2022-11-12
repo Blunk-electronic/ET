@@ -94,18 +94,29 @@ is
 	holes : pac_polygon_list.list;
 
 
+	-- The default set to test overlap statuses contains B_INSIDE_A and A_OVERLAPS_B.
+	-- This function creates such a set:
+	function make_overlap_status_set return pac_overlap_status.set is
+		use pac_overlap_status;
+		S : pac_overlap_status.set := to_set (B_INSIDE_A);
+	begin
+		S.insert (A_OVERLAPS_B);
+		return S;
+	end make_overlap_status_set;
+	
+	
+	overlap_status_set : constant pac_overlap_status.set := make_overlap_status_set;
+
+	
 	
 	-- Expands the board_holes_master by half the given linewidth.
-	-- Extracts the holes that are in the given zone.
+	-- Extracts the holes that are in the given zone and those with 
+	-- overlap the zone.
 	-- Loads variable "holes" with the result:
 	procedure expand_holes (
 		zone		: in type_polygon;
 		linewidth	: in type_track_width)
-	is 
-		use pac_overlap_status;
-		overlap_status : pac_overlap_status.set := to_set (B_INSIDE_A);
-
-	begin
+	is begin
 		holes := board_holes_master;
 		
 		log (text => "expanding holes (" & count_type'image (holes.length) & ") ...", 
@@ -114,10 +125,9 @@ is
 		-- Expand the holes by half the line width of the fill lines:
 		offset_holes (holes, linewidth * 0.5);
 
-		-- Extract those holes that are inside the zone:
-		-- NOTE: Variable overlap_status already contains B_INSIDE_A. See declaration above.
-		overlap_status.insert (A_OVERLAPS_B);
-		holes := get_polygons (zone, holes, overlap_status);
+		-- Extract those holes that are inside the zone and those
+		-- with overlap the zone:
+		holes := get_polygons (zone, holes, overlap_status_set);
 				
 		multi_union (holes);
 	end expand_holes;
@@ -194,13 +204,7 @@ is
 			type_float_internal_positive (zone_clearance);
 
 
-		-- In the course of this function we are mainly interested in polygons
-		-- that are inside the given area. Other statuses may be added to this set
-		-- later:
-		use pac_overlap_status;
-		overlap_status : pac_overlap_status.set := to_set (B_INSIDE_A);
 		
-			
 		-- NETS -------------------------------------------------------------
 
 		-- If a parent net was given (via argument parent_net) then
@@ -479,9 +483,7 @@ is
 		-- - inside the given zone or
 		-- - overlapping the given zone
 		-- must be extracted. 
-		-- NOTE: Variable overlap_status already contains B_INSIDE_A. See declaration above.
-		overlap_status.insert (A_OVERLAPS_B);
-		result := get_polygons (zone, result, overlap_status);
+		result := get_polygons (zone, result, overlap_status_set);
 		
 		log_indentation_down;
 		
