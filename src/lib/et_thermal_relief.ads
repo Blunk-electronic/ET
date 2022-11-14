@@ -126,6 +126,7 @@ package et_thermal_relief is
 
 		-- the space between pad and fill_zone -- CS: rename to thermal_length ?
 		gap			: type_thermal_gap := type_thermal_gap'first;
+		-- CS no need ? The gap is the clearance between terminal and zone.
 	end record;
 	
 	
@@ -139,18 +140,23 @@ package et_thermal_relief is
 	
 
 
+-- CS NOT CLEARLY DEFINED STUFF YET !
+
+	-- Instead of lines, just the point where the spokes start
+	-- seems to suffice.
+	
 	-- CS type_spoke ?
 	-- CS list of spokes forms the relief of a pad
 
 	-- The spokes of a single pad:
-	type type_spokes is record
-		lines : et_conductor_segment.pac_conductor_lines.list;
-	end record;
+	--type type_spokes is record
+		--lines : et_conductor_segment.pac_conductor_lines.list;
+	--end record;
 
-	-- The spokes of the whole fill zone:
-	package pac_spokes is new doubly_linked_lists (type_spokes);
+	---- The spokes of the whole fill zone:
+	--package pac_spokes is new doubly_linked_lists (type_spokes);
 
-	no_spokes : constant pac_spokes.list := pac_spokes.empty_list;
+	--no_spokes : constant pac_spokes.list := pac_spokes.empty_list;
 	
 	
 end et_thermal_relief;

@@ -37,11 +37,15 @@
 
 with ada.strings;					use ada.strings;
 with ada.exceptions;
+--with ada.tags;
+
 with et_exceptions;					use et_exceptions;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_routing;					use et_routing;
 with et_board_ops.devices;
+with et_thermal_relief;				use et_thermal_relief;
+
 
 separate (et_board_ops)
 
@@ -177,6 +181,12 @@ is
 
 		return islands;
 	end zone_to_polygons;
+
+
+	-- Temporarily storage for properties of zones connected with a net:
+	relief_properties	: type_relief_properties;
+	terminal_connection	: type_pad_connection := pad_connection_default;
+	terminal_technology	: type_pad_technology := pad_technology_default;
 	
 	
 	-- Returns a list of polygons caused by conductor
@@ -185,7 +195,7 @@ is
 	-- the clearance of a particular net (the greater value of them is applied).
 	-- Returns only those polygons which are inside the given zone:
 	function conductors_to_polygons (
-		zone			: in type_polygon;
+		zone_polygon	: in type_polygon;
 		zone_clearance	: in type_track_clearance;
 		linewidth		: in type_track_width;								
 		layer 			: in type_signal_layer;
@@ -374,18 +384,30 @@ is
 			
 		begin -- extract_conductor_objects
 			
-			-- If no parent net was given, then query all nets:
-			if parent_net = pac_nets.no_element then
+			-- If no parent net was given, then the given zone is 
+			-- assumed to be a floating zone. If a parent net was given,
+			-- then the zone is connected with a net:
+			if parent_net = pac_nets.no_element then -- floating zone
 				do_it;
 			else
-				-- Otherwise skip the parent net and process all other nets:
-				if key (net_cursor) /= parent_net_name then
-					do_it;
-				--else
-					--log (text => "skipping parent net " 
-						--& enclose_in_quotes (to_string (parent_net_name)),
-						--level => log_threshold + 4);
-				end if;
+				-- Zone is connected with a net:
+				-- NOTE: This is relevant exclusively for zones connected with a net !
+				case terminal_connection is
+					when SOLID =>
+						-- Skip the parent net and process all other nets.
+						-- Thus all conductor objects of the parent net will be completely
+						-- embedded in the fill zone:
+						if key (net_cursor) /= parent_net_name then
+							do_it;
+							----else
+							----log (text => "skipping parent net " 
+								----& enclose_in_quotes (to_string (parent_net_name)),
+								----level => log_threshold + 4);
+						end if;
+
+					when THERMAL =>
+						do_it;
+				end case;
 			end if;
 		end extract_conductor_objects;
 
@@ -484,7 +506,7 @@ is
 		-- - inside the given zone or
 		-- - overlapping the given zone
 		-- must be extracted. 
-		result := get_polygons (zone, result, overlap_status_set);
+		result := get_polygons (zone_polygon, result, overlap_status_set);
 		
 		log_indentation_down;
 		
@@ -558,9 +580,12 @@ is
 	-- with the given linewidth and clearance to foreign conductor
 	-- objects. If a certain conductor object requires a greater
 	-- clearance, then that clearance will take precedence.
-	-- If a parent net is given then the conductor objects of this
-	-- net will be ignored so that they are embedded in the fill
-	-- zone:
+	-- If a parent net is given - via cursor - then the conductor objects of this
+	-- net will be treated in a special way. Then the given zone must be a 
+	-- type_route_hatched or a type_route_solid.
+	-- - terminals may be embedded in the zone or may get connected via thermal relieves.
+	-- - tracks may be embedded in the zone or the zone will be filled around them.
+	-- - see specification of type_route_solid and type_route_hatched.
 	procedure fill_zone (
 		zone		: in out type_zone'class;
 		linewidth	: in type_track_width;
@@ -733,7 +758,7 @@ is
 		-- The clearance of these objects to the zone is determined by
 		-- the zone isolation or the net clearance. The greater value is applied:
 		conductors := conductors_to_polygons (
-			zone			=> zone_polygon,
+			zone_polygon	=> zone_polygon,
 			zone_clearance	=> clearance,
 			linewidth		=> linewidth,									 
 			layer			=> layer,
@@ -876,7 +901,7 @@ is
 		is
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;		
-		
+
 			
 			procedure route_solid (
 				net_name	: in pac_net_name.bounded_string;
@@ -890,6 +915,15 @@ is
 				procedure do_it (
 					zone : in out type_route_solid)
 				is begin
+					-- load temporarily variables of zone properties:
+					relief_properties := zone.relief_properties;
+					terminal_connection	:= zone.connection;
+
+					if zone.connection = SOLID then
+						terminal_technology	:= zone.technology;
+					end if;
+
+					
 					fill_zone (
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
@@ -923,6 +957,15 @@ is
 				procedure do_it (
 					zone : in out type_route_hatched)
 				is begin
+					-- load temporarily variables of zone properties:
+					relief_properties := zone.relief_properties;
+					terminal_connection	:= zone.connection;
+
+					if zone.connection = SOLID then
+						terminal_technology	:= zone.technology;
+					end if;
+
+					
 					fill_zone (
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
