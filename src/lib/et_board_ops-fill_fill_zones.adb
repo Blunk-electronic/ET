@@ -278,7 +278,7 @@ is
 		
 		-- Extracts all conductor objects connected with the given net
 		-- and appends them to the result:
-		procedure query_net (net_cursor : in pac_nets.cursor) is
+		procedure extract_conductor_objects (net_cursor : in pac_nets.cursor) is
 
 			-- The clearance between net and zone is either the given zone_clearance
 			-- or the clearance of the net itself. However, the greater value is applied:
@@ -372,7 +372,7 @@ is
 			end do_it;
 			
 			
-		begin -- query_net
+		begin -- extract_conductor_objects
 			
 			-- If no parent net was given, then query all nets:
 			if parent_net = pac_nets.no_element then
@@ -387,13 +387,13 @@ is
 						--level => log_threshold + 4);
 				end if;
 			end if;
-		end query_net;
+		end extract_conductor_objects;
 
 		
 		-- This procedure takes a cursor to a device in the schematic,
 		-- converts the outlines of its unconnected terminals to polygons,
 		-- offsets them by the zone_clearance and finally appends them to the result:
-		procedure query_device_terminals_unconnected (
+		procedure extract_unconnected_terminals (
 			device_cursor : in pac_devices_sch.cursor) 
 		is
 			use et_board_ops.devices;
@@ -420,7 +420,7 @@ is
 		begin
 			--put_line ("dev " & to_string (key (device_cursor)));
 			terminals.iterate (query_terminal'access);
-		end query_device_terminals_unconnected;
+		end extract_unconnected_terminals;
 
 		
 		
@@ -468,11 +468,12 @@ is
 		-- by argument parent_net:
 		set_parent_net_name;
 
-		-- Query nets. Exempt the parent net (if specified by argument parent_net):
-		element (module_cursor).nets.iterate (query_net'access);
+		-- Extract conductor objects of nets. 
+		-- Exempt the parent net (if specified by argument parent_net):
+		element (module_cursor).nets.iterate (extract_conductor_objects'access);
 
-		-- Query unconnected terminals of devices:
-		element (module_cursor).devices.iterate (query_device_terminals_unconnected'access);
+		-- Extract unconnected terminals of devices:
+		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
 			
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
@@ -556,7 +557,7 @@ is
 	-- Fill the given zone that is in the given layer
 	-- with the given linewidth and clearance to foreign conductor
 	-- objects. If a certain conductor object requires a greater
-	-- clearance, then that clearance will prevail.
+	-- clearance, then that clearance will take precedence.
 	-- If a parent net is given then the conductor objects of this
 	-- net will be ignored so that they are embedded in the fill
 	-- zone:
@@ -574,7 +575,9 @@ is
 		conductors, restrict, cutouts : pac_polygon_list.list;
 		cropping_basket : pac_polygon_list.list;
 
-		
+
+		-- Iterates the islands and assigns them to the given zone.
+		-- This is about the outer border of the islands only.
 		procedure set_islands is
 			
 			procedure query_island (i : in pac_polygon_list.cursor) is begin
@@ -588,6 +591,10 @@ is
 		end set_islands;
 
 
+		-- Iterates the islands, detects polygons that
+		-- form the inner borders. Inner borders are caused by objects
+		-- that are completely inside a particular island.
+		-- Inner borders can be regarded as cutout areas inside an island.
 		procedure set_inner_borders is 
 			island_cursor : pac_islands.cursor := zone.islands.first;
 
@@ -610,7 +617,9 @@ is
 			end loop;					
 		end set_inner_borders;
 
-			
+		
+		-- Fills the islands according to the fill style
+		-- of the given zone:
 		procedure fill_islands is 
 			island_cursor : pac_islands.cursor := zone.islands.first;
 		begin
@@ -651,8 +660,7 @@ is
 						end loop;					
 
 					end;					
-			end case;
-			
+			end case;			
 		end fill_islands;
 		
 		
