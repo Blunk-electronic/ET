@@ -144,12 +144,26 @@ package et_fill_zones.boards is
 
 	
 -- FILL ZONES CONNECTED WITH A NET (part of a route)
+
+	-- Tracks that are not connected with a fill zone cause 
+	-- cutout areas inside the zone. These tracks are foreign to the
+	-- zone.
+	-- In contrast, a track of a native net - connected with the zone - usually
+	-- does not cause a cutout area. So the track gets embedded in the zone.
+	-- After filling the zone, the track gets overpainted and becomes 
+	-- invisible. It becomes visible again if the fill of the zone is cleared.
+	-- However, if the user insists on not-embedding then we need
+	-- a simple boolean type to express this requirement:
+	type type_native_tracks_embedded is new boolean;
 	
 	
 	type type_route_solid (connection : type_pad_connection) 
 		is new type_zone_solid
 	with record
 		properties	: type_properties;
+
+		-- By default, native tracks are embedded in the zone:
+		native_tracks_embedded : type_native_tracks_embedded := false;
 
 		case connection is
 			when THERMAL =>
@@ -168,7 +182,10 @@ package et_fill_zones.boards is
 		is new type_zone_hatched 
 	with record
 		properties	: type_properties;
-				
+
+		-- By default, native tracks are embedded in the zone:
+		native_tracks_embedded : type_native_tracks_embedded := false;
+	
 		case connection is
 			when THERMAL =>
 				relief_properties	: type_relief_properties;

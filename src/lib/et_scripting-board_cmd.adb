@@ -2087,13 +2087,14 @@ is
 					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
-					connection		=> THERMAL,
+					connection			=> THERMAL,
 					relief_properties	=> settings.polygons_conductor.thermal,
 					relief_spokes		=> no_spokes,
 					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>));
+						others			=> <>),
+					others				=> <>);
 					   
 				place_fill_zone (
 					module_cursor	=> module_cursor,
@@ -2121,7 +2122,8 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>));
+						others			=> <>),
+					others				=> <>);
 					   
 				place_fill_zone (
 					module_cursor	=> module_cursor,
@@ -2151,7 +2153,8 @@ is
 					properties		=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>));
+						others			=> <>),
+					others				=> <>);
 					   
 				place_fill_zone (
 					module_cursor	=> module_cursor,
@@ -2180,7 +2183,8 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						others			=> <>));
+						others			=> <>),
+					others				=> <>);
 					   
 				place_fill_zone (
 					module_cursor	=> module_cursor,
