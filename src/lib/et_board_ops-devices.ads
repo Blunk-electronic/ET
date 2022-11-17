@@ -153,13 +153,16 @@ package et_board_ops.devices is
 	-- This controlled type is used by the functon to_polygon below:
 	type type_terminal_polygon (exists : boolean) is record
 		case exists is
-			when TRUE	=> polygon : pac_polygons.type_polygon;
+			when TRUE	=> 
+				polygon		: pac_polygons.type_polygon;
+				position	: type_terminal_position_fine;
+				
 			when FALSE	=> null;
 		end case;
 	end record;
 
 	
-	-- Returns the contour of a terminal as a polygon.
+	-- Returns the position of a terminal and its contour as a polygon.
 	-- If the terminal does not affect the given layer category,
 	-- then nothing happens here -> returns just a "false".
 	-- See specification of type_terminal_polygon above.

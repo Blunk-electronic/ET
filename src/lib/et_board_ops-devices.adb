@@ -1107,7 +1107,10 @@ package body et_board_ops.devices is
 
 
 		if exists then
-			return (exists => TRUE, polygon => result);
+			return (
+				exists		=> TRUE, 
+				polygon		=> result, 
+				position	=> terminal_position);
 		else
 			return (exists => FALSE);
 		end if;

@@ -37,7 +37,9 @@
 
 with ada.strings;					use ada.strings;
 with ada.exceptions;
---with ada.tags;
+with ada.containers; 				use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 
 with et_exceptions;					use et_exceptions;
 
@@ -188,22 +190,46 @@ is
 	terminal_connection	: type_pad_connection := pad_connection_default;
 	terminal_technology	: type_pad_technology := pad_technology_default;
 	native_tracks_embedded : type_native_tracks_embedded := false;
+
+
+	type type_terminal_with_relief is record
+		-- The position, face and rotation of the terminal in the board:
+		position	: type_terminal_position_fine;
+
+		-- The outline of the terminal in the board:
+		outline		: type_polygon;
+
+		-- This cursor points to the terminal as defined in the package model:
+		terminal	: pac_terminals.cursor; 
+	end record;
+
+	
+	package pac_terminals_with_relief is new 
+		doubly_linked_lists (type_terminal_with_relief);
+
+	type type_conductor_to_polygons_result is record
+		polygons				: pac_polygon_list.list;
+		terminals_with_relief	: pac_terminals_with_relief.list;
+	end record;
 	
 	
 	-- Returns a list of polygons caused by conductor
 	-- objects (tracks, terminals, vias, texts, fiducials) in the given signal layer.
 	-- The polygons are expanded by the zone_clearance or by
 	-- the clearance of a particular net (the greater value of them is applied).
-	-- Returns only those polygons which are inside the given zone:
+	-- Returns only those polygons which are inside the given zone.
+	-- As a byproduct, the return also contains a list of terminals that require
+	-- thermal reliefes. If the zone is not connected with the given parent_net, then the
+	-- list "terminals_with_relief" is empty:
 	function conductors_to_polygons (
 		zone_polygon	: in type_polygon;
 		zone_clearance	: in type_track_clearance;
 		linewidth		: in type_track_width;								
 		layer 			: in type_signal_layer;
 		parent_net		: in pac_nets.cursor := pac_nets.no_element)
-		return pac_polygon_list.list
+		return type_conductor_to_polygons_result
 	is
-		result : pac_polygon_list.list;
+		result : type_conductor_to_polygons_result;
 
 		layer_category : type_signal_layer_category;
 
@@ -230,7 +256,14 @@ is
 		end set_parent_net_name;
 	
 
-		-- Converts the terminals of the given net to a list of polygons:
+		collect_terminals_with_relief : boolean := false;
+			
+
+		
+		-- Converts the terminals of the given net to a list of polygons.
+		-- If the flag "collect_terminals_with_relief" is true, then the information required
+		-- to compute the thermal reliefes is collected in 
+		-- list "terminals_with_thermal_relief":
 		function get_terminal_polygons (net_cursor : in pac_nets.cursor)
 			return pac_polygon_list.list
 		is
@@ -262,6 +295,8 @@ is
 				use et_board_ops.devices;
 				terminal_polygon : constant type_terminal_polygon := to_polygon (
 					module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
+
+				terminal_zone_overlap : type_overlap_status;
 				
 			begin -- query_device_port
 				-- If the terminal does not affect the current signal layer,
@@ -269,6 +304,27 @@ is
 				-- will be appended to the result:
 				if terminal_polygon.exists then
 					result.append (terminal_polygon.polygon);
+				end if;
+
+				-- If the terminals of this net require thermal reliefes, then
+				-- collect the necessary information:
+				if collect_terminals_with_relief then
+
+					-- Do a preselection of those terminals that are overlapping
+					-- the given zone or are inside the given zone:
+					terminal_zone_overlap := get_overlap_status (
+						polygon_A => terminal_polygon.polygon,
+						polygon_B => zone_polygon);
+
+					case terminal_zone_overlap is
+						when A_INSIDE_B | A_OVERLAPS_B =>
+							conductors_to_polygons.result.terminals_with_relief.append ((
+								position => terminal_polygon.position, -- in the board
+								outline	 => terminal_polygon.polygon, -- in the board
+								terminal => terminal_cursor));  -- in the package model
+
+						when others => null;
+					end case;
 				end if;
 			end query_device_port;
 
@@ -386,7 +442,7 @@ is
 				-- expand polygons by clearance
 				offset_polygons (polygons, type_float_internal_positive (clearance));
 
-				result.splice (before => pac_polygon_list.no_element, source => polygons);
+				result.polygons.splice (before => pac_polygon_list.no_element, source => polygons);
 			end convert_conductor_objects_to_polygons;
 			
 
@@ -396,11 +452,6 @@ is
 			in_parent_net : boolean := false;
 
 
-			procedure make_thermal is 
-			begin
-				null;
-			end make_thermal;
-
 			
 		begin -- extract_conductor_objects
 			
@@ -408,6 +459,7 @@ is
 			-- assumed to be a floating zone. If a parent net was given,
 			-- then the zone is connected with a net:
 			if parent_net = pac_nets.no_element then -- floating zone
+				collect_terminals_with_relief := false;
 				convert_conductor_objects_to_polygons;
 			else
 				-- Zone is connected with a net:
@@ -424,14 +476,20 @@ is
 						-- Thus all conductor objects of the parent net will be completely
 						-- embedded in the fill zone:
 						if not in_parent_net then
+							collect_terminals_with_relief := false;
 							convert_conductor_objects_to_polygons;
 						end if;
 
 					when THERMAL =>
+						if in_parent_net then
+							collect_terminals_with_relief := true;
+						else
+							collect_terminals_with_relief := false;
+						end if;
 						convert_conductor_objects_to_polygons;
-						make_thermal;
 				end case;
 			end if;
+
 		end extract_conductor_objects;
 
 		
@@ -457,7 +515,7 @@ is
 				
 				if terminal_polygon.exists then
 					offset_polygon (terminal_polygon.polygon, zone_clearance_float);
-					result.append (terminal_polygon.polygon);
+					result.polygons.append (terminal_polygon.polygon);
 				end if;
 			end query_terminal;
 
@@ -485,7 +543,7 @@ is
 				-- NOTE: The borders of the characters of the text should not overlap.
 				-- Therefore there is no need for unioning the characters at this time.
 				
-				result.splice (
+				result.polygons.splice (
 					before => pac_polygon_list.no_element,
 					source => borders);
 
@@ -529,7 +587,7 @@ is
 		-- - inside the given zone or
 		-- - overlapping the given zone
 		-- must be extracted. 
-		result := get_polygons (zone_polygon, result, overlap_status_set);
+		result.polygons := get_polygons (zone_polygon, result.polygons, overlap_status_set);
 		
 		log_indentation_down;
 		
@@ -620,7 +678,8 @@ is
 		zone_polygon : type_polygon;
 		
 		islands : pac_polygon_list.list;
-		conductors, restrict, cutouts : pac_polygon_list.list;
+		restrict, cutouts : pac_polygon_list.list;
+		conductors_to_polygons_result : type_conductor_to_polygons_result;
 		cropping_basket : pac_polygon_list.list;
 
 
@@ -710,7 +769,27 @@ is
 					end;					
 			end case;			
 		end fill_islands;
-		
+
+
+		procedure make_thermal_reliefes is
+			use pac_terminals_with_relief;
+			
+			procedure query_terminal (t : pac_terminals_with_relief.cursor) is
+				terminal : type_terminal_with_relief renames element (t);
+				use pac_terminals;
+			begin
+				log (text => " terminal " & to_string (key (terminal.terminal))
+					 & "pos " & to_string (terminal.position.place),
+					 level => log_threshold + 4);
+				null;
+			end query_terminal;
+			
+		begin
+			log (text => "making thermal reliefes", level => log_threshold + 4);
+			iterate (conductors_to_polygons_result.terminals_with_relief, query_terminal'access);
+			
+		end make_thermal_reliefes;
+
 		
 	begin -- fill_zone
 		log (text => "zone with corner nearest to origin:" 
@@ -780,14 +859,14 @@ is
 		-- This is about tracks, terminals, vias, texts and fiducials.
 		-- The clearance of these objects to the zone is determined by
 		-- the zone isolation or the net clearance. The greater value is applied:
-		conductors := conductors_to_polygons (
+		conductors_to_polygons_result := conductors_to_polygons (
 			zone_polygon	=> zone_polygon,
 			zone_clearance	=> clearance,
 			linewidth		=> linewidth,									 
 			layer			=> layer,
 			parent_net		=> parent_net);
 
-		put_into_basket (cropping_basket, conductors);
+		put_into_basket (cropping_basket, conductors_to_polygons_result.polygons);
 		--put_line ("A3");
 
 
@@ -836,6 +915,10 @@ is
 		-- Assign inner borders to the islands of the zone:
 		set_inner_borders;
 
+		if parent_net /= pac_nets.no_element then
+			make_thermal_reliefes;
+		end if;
+		
 		-- Fill the islands with stripes:
 		fill_islands;
 
