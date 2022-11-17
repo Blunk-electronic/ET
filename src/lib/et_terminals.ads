@@ -306,6 +306,13 @@ package et_terminals is
 				stencil_shape			: type_stencil;
 
 		end case;
+
+		-- CS: For the future: 
+		-- Automatically generated thermal reliefs may not suffice 
+		-- for large terminals. A flag that determines whether reliefs should be
+		-- automatically computed or user defined origins of spokes should be used.
+		-- There could be user defined points where the spokes start.
+			
 	end record;
 
 

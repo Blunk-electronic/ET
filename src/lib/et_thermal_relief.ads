@@ -137,27 +137,7 @@ package et_thermal_relief is
 	text_pad_connection : constant string := "pad_connection";	
 	text_pad_technology : constant string := "connected_with";	
 
-	
 
-
--- CS NOT CLEARLY DEFINED STUFF YET !
-
-	-- Instead of lines, just the point where the spokes start
-	-- seems to suffice.
-	
-	-- CS type_spoke ?
-	-- CS list of spokes forms the relief of a pad
-
-	-- The spokes of a single pad:
-	--type type_spokes is record
-		--lines : et_conductor_segment.pac_conductor_lines.list;
-	--end record;
-
-	---- The spokes of the whole fill zone:
-	--package pac_spokes is new doubly_linked_lists (type_spokes);
-
-	--no_spokes : constant pac_spokes.list := pac_spokes.empty_list;
-	
 	
 end et_thermal_relief;
 
