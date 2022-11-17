@@ -187,6 +187,7 @@ is
 	relief_properties	: type_relief_properties;
 	terminal_connection	: type_pad_connection := pad_connection_default;
 	terminal_technology	: type_pad_technology := pad_technology_default;
+	native_tracks_embedded : type_native_tracks_embedded := false;
 	
 	
 	-- Returns a list of polygons caused by conductor
@@ -360,7 +361,10 @@ is
 			end query_via;
 
 
-			procedure do_it is 
+			-- Converts tracks, vias and terminals to polygons,
+			-- expands them by the clearance and appends them to
+			-- the result:
+			procedure convert_conductor_objects_to_polygons is 
 				terminals : pac_polygon_list.list;
 			begin
 				-- Query track segments:
@@ -370,17 +374,33 @@ is
 				-- Query vias:
 				route.vias.iterate (query_via'access);
 				
-				-- CS fill zones, ... see et_pcb.type_route
+				-- CS evaluate native_tracks_embedded ?
+
 				
+				-- CS fill zones, ... see et_pcb.type_route
+
 				-- terminals of packages
 				terminals := get_terminal_polygons (net_cursor);
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
-				
+
+				-- expand polygons by clearance
 				offset_polygons (polygons, type_float_internal_positive (clearance));
 
 				result.splice (before => pac_polygon_list.no_element, source => polygons);
-			end do_it;
+			end convert_conductor_objects_to_polygons;
 			
+
+			-- If we are processing a zone that is connected with a net,
+			-- and the candidate is the parent net of the zone, then this
+			-- flag is set to true:
+			in_parent_net : boolean := false;
+
+
+			procedure make_thermal is 
+			begin
+				null;
+			end make_thermal;
+
 			
 		begin -- extract_conductor_objects
 			
@@ -388,25 +408,28 @@ is
 			-- assumed to be a floating zone. If a parent net was given,
 			-- then the zone is connected with a net:
 			if parent_net = pac_nets.no_element then -- floating zone
-				do_it;
+				convert_conductor_objects_to_polygons;
 			else
 				-- Zone is connected with a net:
 				-- NOTE: This is relevant exclusively for zones connected with a net !
+
+				if key (net_cursor) = parent_net_name then
+					in_parent_net := true;
+				end if;
+
+				
 				case terminal_connection is
 					when SOLID =>
 						-- Skip the parent net and process all other nets.
 						-- Thus all conductor objects of the parent net will be completely
 						-- embedded in the fill zone:
-						if key (net_cursor) /= parent_net_name then
-							do_it;
-							----else
-							----log (text => "skipping parent net " 
-								----& enclose_in_quotes (to_string (parent_net_name)),
-								----level => log_threshold + 4);
+						if not in_parent_net then
+							convert_conductor_objects_to_polygons;
 						end if;
 
 					when THERMAL =>
-						do_it;
+						convert_conductor_objects_to_polygons;
+						make_thermal;
 				end case;
 			end if;
 		end extract_conductor_objects;
@@ -918,6 +941,7 @@ is
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
+					native_tracks_embedded := zone.native_tracks_embedded;
 
 					if zone.connection = SOLID then
 						terminal_technology	:= zone.technology;
@@ -960,6 +984,7 @@ is
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
+					native_tracks_embedded := zone.native_tracks_embedded;
 
 					if zone.connection = SOLID then
 						terminal_technology	:= zone.technology;
