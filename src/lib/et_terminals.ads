@@ -255,7 +255,8 @@ package et_terminals is
 			-- first (which is easier) in the package model. Then, by applying an angle,
 			-- the countour would be rotated to its final position.
 
-			-- CS thermal_relief on/off
+			-- CS: When reading a package model, make sure position is inside
+			-- the pad shape.
 			
 		case technology is
 			when THT =>
@@ -312,7 +313,8 @@ package et_terminals is
 		-- for large terminals. A flag that determines whether reliefs should be
 		-- automatically computed or user defined origins of spokes should be used.
 		-- There could be user defined points where the spokes start.
-			
+
+		-- CS thermal_relief on/off ?		
 	end record;
 
 
