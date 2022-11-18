@@ -3487,6 +3487,47 @@ package body et_geometry_1.et_polygons is
 		return result;
 	end to_polygon;
 	
+
+
+	function get_distance_to_border (
+		polygon		: in type_polygon;
+		point		: in type_vector;
+		direction	: in type_angle)
+		return type_float_internal_positive
+	is
+		result : type_float_internal_positive;
+
+		location : constant type_location := get_location (polygon, point);
+		
+		ray : constant type_ray := (point, direction);
+		
+		proceed : aliased boolean := true;
+		
+		procedure query_edge (c : in pac_edges.cursor) is
+			edge : type_edge renames element (c);
+			I : constant type_intersection_of_two_lines := get_intersection (ray, edge);
+		begin
+			if I.status = EXISTS then
+				proceed := false;
+				result := get_distance_total (point, I.intersection.vector);
+			end if;
+		end query_edge;
+		
+	begin
+		case location is
+			when INSIDE =>
+				iterate (polygon.edges, query_edge'access, proceed'access);
+
+			when OUTSIDE => 
+				raise semantic_error_1 with "Point is outside of polygon !";
+				
+			when ON_EDGE | ON_VERTEX =>
+				result := 0.0;
+		end case;
+
+		return result;
+	end get_distance_to_border;
+
 	
 end et_geometry_1.et_polygons;
 

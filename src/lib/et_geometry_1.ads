@@ -692,11 +692,13 @@ package et_geometry_1 is
 
 	
 	-- In general an intersection is composed of a 
-	-- location vector, where the two objects meet,
-	-- and and the angle at which they intersect:
+	-- location vector, where the two lines meet,
+	-- and and the angle at which they intersect.
+	-- The angle of intersection is measured between the 
+	-- start points of the two lines. It is always positive.
 	type type_intersection is record
-		vector	: type_vector; -- location vector
-		angle	: type_angle := 0.0; -- CS required ?
+		vector	: type_vector; -- location vector -- CS rename to point
+		angle	: type_angle_positive := 0.0; -- CS required ?
 	end record;
 
 	
@@ -935,10 +937,21 @@ package et_geometry_1 is
 	-- then returns the location vector of the intersection.
 	-- If the intersection is before start point or
 	-- beyond end point of the given line, return NOT_EXISTENT.
-	-- NOTE: The angle of intersection is measured between the 
-	-- start points of the two lines. It is always positive.
 	function get_intersection (
 		line_vector : in type_line_vector;
+		line		: in type_line;
+		debug		: in boolean := false)
+		return type_intersection_of_two_lines;
+
+	
+	-- Tests whether the given ray intersects the given candidate line.
+	-- If there is an intersection between start and end point
+	-- of the candidate line (start and end point included),
+	-- then returns the location vector of the intersection.
+	-- If the intersection is before start point or
+	-- beyond end point of the given line, return NOT_EXISTENT.
+	function get_intersection (
+		ray			: in type_ray;
 		line		: in type_line;
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines;

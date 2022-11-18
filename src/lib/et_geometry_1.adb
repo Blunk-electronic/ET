@@ -1918,6 +1918,18 @@ package body et_geometry_1 is
 	
 
 	function get_intersection (
+		ray			: in type_ray;
+		line		: in type_line;
+		debug		: in boolean := false)
+		return type_intersection_of_two_lines
+	is
+		line_vector : constant type_line_vector := to_line_vector (ray);
+	begin
+		return get_intersection (line_vector, line, debug);
+	end get_intersection;
+
+	
+	function get_intersection (
 		line_1 : in type_line;
 		line_2 : in type_line)
 		return type_intersection_of_two_lines

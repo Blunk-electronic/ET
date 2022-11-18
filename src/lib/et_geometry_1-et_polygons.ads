@@ -899,6 +899,20 @@ package et_geometry_1.et_polygons is
 		mode		: in type_approximation_mode)
 		return type_polygon;
 
+
+	-- Returns the distance of a given point in given 
+	-- direction to the border. The function assumes
+	-- that the point is INSIDE the polygon !
+	-- If the point is outside of the polygon, then an exception
+	-- will be raised.
+	-- The function builds a ray that starts at point and runs
+	-- into the given direction. The iteration stops at the first 
+	-- edge that intersects the ray.
+	function get_distance_to_border (
+		polygon		: in type_polygon;
+		point		: in type_vector;
+		direction	: in type_angle)
+		return type_float_internal_positive;
 	
 end et_geometry_1.et_polygons;
 
