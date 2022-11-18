@@ -192,21 +192,6 @@ is
 	native_tracks_embedded : type_native_tracks_embedded := false;
 
 
-	type type_terminal_with_relief is record
-		-- The position, face and rotation of the terminal in the board:
-		position	: type_terminal_position_fine;
-
-		-- The outline of the terminal in the board:
-		outline		: type_polygon;
-
-		-- This cursor points to the terminal as defined in the package model:
-		terminal	: pac_terminals.cursor; 
-	end record;
-
-	
-	package pac_terminals_with_relief is new 
-		doubly_linked_lists (type_terminal_with_relief);
-
 	type type_conductor_to_polygons_result is record
 		polygons				: pac_polygon_list.list;
 		terminals_with_relief	: pac_terminals_with_relief.list;
@@ -777,11 +762,20 @@ is
 			procedure query_terminal (t : pac_terminals_with_relief.cursor) is
 				terminal : type_terminal_with_relief renames element (t);
 				use pac_terminals;
+
+				distance_center_to_border : type_float_internal_positive;
+				angle : type_angle := terminal.position.rotation;
 			begin
 				log (text => " terminal " & to_string (key (terminal.terminal))
-					 & "pos " & to_string (terminal.position.place),
+					 & " pos " & to_string (terminal.position.place),
 					 level => log_threshold + 4);
-				null;
+
+				distance_center_to_border := get_distance_to_border (
+					terminal.outline, terminal.position.place, angle);
+
+				log (text => " distance to border " & to_string (distance_center_to_border),
+					 level => log_threshold + 4);
+				
 			end query_terminal;
 			
 		begin

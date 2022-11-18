@@ -338,6 +338,8 @@ package et_terminals is
 	-- Fixed point coordinates would not be useful here.
 	type type_terminal_position_fine is record
 		technology	: type_assembly_technology;
+
+		-- Should be inside the pad. Geometrical center:
 		place		: type_vector;
 		rotation	: type_angle := 0.0;
 
@@ -356,10 +358,6 @@ package et_terminals is
 		terminal	: in type_terminal; -- MUST be a THT terminal with drilled hole !
 		position	: in type_vector)
 		return type_contour;
-
-	
-	-- package pac_terminal_positions is new indefinite_doubly_linked_lists (type_terminal_position);
-
 	
 	
 	-- A terminal is the physical point where electrical energy comes in or out of the device.
@@ -425,6 +423,24 @@ package et_terminals is
 		--terminals	: in out pac_terminals.map;
 		--to_be_kept	: in pac_terminal_names.list); -- 1, 2, 9, 15
 
+
+	
+
+	type type_terminal_with_relief is record
+		-- The position, face and rotation of the terminal in the board:
+		position	: type_terminal_position_fine;
+
+		-- The outline of the terminal in the board:
+		outline		: type_polygon;
+
+		-- This cursor points to the terminal as defined in the package model:
+		terminal	: pac_terminals.cursor; 
+	end record;
+
+	
+	package pac_terminals_with_relief is new doubly_linked_lists (type_terminal_with_relief);
+
+	
 	
 end et_terminals;
 
