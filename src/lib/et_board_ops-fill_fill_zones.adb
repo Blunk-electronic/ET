@@ -763,9 +763,9 @@ is
 			log (text => "making thermal reliefes", level => log_threshold + 4);
 
 			reliefes := make_reliefes (
-				terminals	=> conductors_to_polygons_result.terminals_with_relief,
-				clearance	=> clearance,
-				spoke_width	=> linewidth);
+				terminals		=> conductors_to_polygons_result.terminals_with_relief,
+				zone_clearance	=> clearance,
+				zone_linewidth	=> linewidth);
 			
 		end make_thermal_reliefes;
 

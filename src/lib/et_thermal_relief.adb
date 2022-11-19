@@ -64,20 +64,42 @@ package body et_thermal_relief is
 
 	function make_relief (
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
-		clearance		: in type_track_clearance;
-		spoke_width		: in type_thermal_width)
+		zone_clearance	: in type_track_clearance;
+		zone_linewidth	: in type_track_width)
 		return type_relief
 	is
 		use pac_terminals_with_relief;
 		terminal : type_terminal_with_relief renames element (terminal_cursor);
+
+		zone_clearance_float : constant type_float_internal_positive := 
+			type_float_internal_positive (zone_clearance);
+
+		zone_linewidth_half_float : constant type_float_internal_positive :=
+			0.5 * type_float_internal_positive (zone_linewidth);
+		
+		center : type_vector renames terminal.position.place;
+		outline : type_polygon renames terminal.outline;
 		
 		result : type_relief;
 
-		distance_center_to_border : type_float_internal_positive;
+		spoke_length : type_float_internal_positive;
 		angle : type_angle := terminal.position.rotation;
+		relief : type_relief;
 	begin
-		distance_center_to_border := get_distance_to_border (
-			terminal.outline, terminal.position.place, angle);
+		relief.width := zone_linewidth;
+
+		for i in 1 .. 4 loop
+			spoke_length := 
+				  get_distance_to_border (outline, center, angle)
+				+ zone_clearance_float
+				+ zone_linewidth_half_float;
+
+			relief.spokes.append ((
+				start_point	=> center,
+				end_point	=> move_by (center, angle, spoke_length)));
+			
+			angle := angle + 90.0;
+		end loop;
 
 		---log (text => " terminal " & to_string (key (terminal.terminal))
 					 --& " pos " & to_string (terminal.position.place),
@@ -97,8 +119,8 @@ package body et_thermal_relief is
 	
 	function make_reliefes (
 		terminals		: in pac_terminals_with_relief.list;
-		clearance		: in type_track_clearance;
-		spoke_width		: in type_thermal_width)
+		zone_clearance	: in type_track_clearance;
+		zone_linewidth	: in type_track_width)
 		return pac_reliefes.list
 	is
 		result : pac_reliefes.list;
@@ -107,7 +129,7 @@ package body et_thermal_relief is
 
 		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
 		begin
-			result.append (make_relief (c, clearance, spoke_width));
+			result.append (make_relief (c, zone_clearance, zone_linewidth));
 		end query_terminal;
 		
 	begin

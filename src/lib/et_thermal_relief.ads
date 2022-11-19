@@ -153,40 +153,49 @@ package et_thermal_relief is
 
 
 
-	-- The segments of a thermal relief. These are straight conductor tracks
+	-- The spokes of a thermal symbol. These are straight conductor tracks
 	-- that start inside the pad and run outward into the surrounding fill zone.
-	-- For rectangular or circular pads these segments look like spokes of a wheel.
+	-- For rectangular or circular pads they look like spokes of a wheel.
 	-- Usually there are up to 4 spokes that start at the geometrical
 	-- center of the pad. 
 	-- For irregular pad contours the spokes may start at arbitrary user defined points
 	-- inside the pad - as specified in the terminal properties (see et_terminals.type_terminal):
-	package pac_spokes is new doubly_linked_lists (pac_geometry_2.type_line);
+	package pac_spokes is new doubly_linked_lists (pac_geometry_brd.type_line);
 
-	-- All spokes of a thermal relief have the same linewidth:
-	type type_relief is record
+	-- All spokes of a single thermal relief have the same linewidth:
+	type type_relief is record -- CS rename to type_thermal_symbol ?
 		width	: type_track_width;
 		spokes	: pac_spokes.list;
 	end record;
 
 	
 	-- Creates a thermal relief for the given single terminal.
-	-- The clearance is the spacing between pad outline and fill zone.
+	-- The width and length of the generted thermal spokes depends on several things:
+	-- - zone clearance 
+	-- - zone linewidth
+	-- - pad geometry
+	-- - pad technology
+	-- - CS gap size ?
 	function make_relief (
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
-		clearance		: in type_track_clearance;
-		spoke_width		: in type_thermal_width)
+		zone_clearance	: in type_track_clearance;
+		zone_linewidth	: in type_track_width)
 		return type_relief;
 	
-	package pac_reliefes is new doubly_linked_lists (type_relief);
+	package pac_reliefes is new doubly_linked_lists (type_relief); -- CS rename to pac_thermal_symbols ?
 
 
 	-- Creates for all given terminals a list of thermal reliefes.
-	-- The clearance is the spacing between pad outlines and fill zone.
-	-- The clearance and spoke width are applied to ALL terminals:
+	-- The width and length of the generted thermal spokes depends on several things:
+	-- - zone clearance 
+	-- - zone linewidth
+	-- - pad geometry
+	-- - pad technology
+	-- - CS gap size ?
 	function make_reliefes (
 		terminals		: in pac_terminals_with_relief.list;
-		clearance		: in type_track_clearance;
-		spoke_width		: in type_thermal_width)
+		zone_clearance	: in type_track_clearance;
+		zone_linewidth	: in type_track_width)
 		return pac_reliefes.list;
 	
 	

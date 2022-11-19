@@ -110,7 +110,7 @@ package et_fill_zones.boards is
 
 	
 	
--- FOATING FILL ZONES (not connected to any net):
+-- FLOATING FILL ZONES (not connected to any net):
 	
 	type type_floating_solid is new 
 		type_zone (fill_style => SOLID)
