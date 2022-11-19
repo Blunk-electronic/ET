@@ -426,21 +426,6 @@ package et_terminals is
 
 	
 
-	type type_terminal_with_relief is record
-		-- The position, face and rotation of the terminal in the board:
-		position	: type_terminal_position_fine;
-
-		-- The outline of the terminal in the board:
-		outline		: type_polygon;
-
-		-- This cursor points to the terminal as defined in the package model:
-		terminal	: pac_terminals.cursor; 
-	end record;
-
-	
-	package pac_terminals_with_relief is new doubly_linked_lists (type_terminal_with_relief);
-
-	
 	
 end et_terminals;
 

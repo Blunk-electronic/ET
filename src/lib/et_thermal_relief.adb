@@ -61,6 +61,61 @@ package body et_thermal_relief is
 	
 
 														 
+
+	function make_relief (
+		terminal_cursor	: in pac_terminals_with_relief.cursor;
+		clearance		: in type_track_clearance;
+		spoke_width		: in type_thermal_width)
+		return type_relief
+	is
+		use pac_terminals_with_relief;
+		terminal : type_terminal_with_relief renames element (terminal_cursor);
+		
+		result : type_relief;
+
+		distance_center_to_border : type_float_internal_positive;
+		angle : type_angle := terminal.position.rotation;
+	begin
+		distance_center_to_border := get_distance_to_border (
+			terminal.outline, terminal.position.place, angle);
+
+		---log (text => " terminal " & to_string (key (terminal.terminal))
+					 --& " pos " & to_string (terminal.position.place),
+					 --level => log_threshold + 4);
+
+				----distance_center_to_border := get_distance_to_border (
+					----terminal.outline, terminal.position.place, angle);
+
+				----log (text => " distance to border " & to_string (distance_center_to_border),
+					 ----level => log_threshold + 4);
+
+
+		
+		return result;
+	end make_relief;
+
+	
+	function make_reliefes (
+		terminals		: in pac_terminals_with_relief.list;
+		clearance		: in type_track_clearance;
+		spoke_width		: in type_thermal_width)
+		return pac_reliefes.list
+	is
+		result : pac_reliefes.list;
+
+		use pac_terminals_with_relief;
+
+		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
+		begin
+			result.append (make_relief (c, clearance, spoke_width));
+		end query_terminal;
+		
+	begin
+		terminals.iterate (query_terminal'access);
+		return result;
+	end make_reliefes;
+
+	
 	
 end et_thermal_relief;
 

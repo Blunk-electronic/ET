@@ -51,19 +51,18 @@ with ada.containers.doubly_linked_lists;
 --with ada.containers.indefinite_ordered_maps;
 --with ada.containers.ordered_sets;
 
-with et_general;
---with et_string_processing;		use et_string_processing;
-
+--with et_general;
 with et_pcb_coordinates;		use et_pcb_coordinates;
---with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
-with et_conductor_segment;
-
+--with et_conductor_segment;
+with et_terminals;				use et_terminals;
 
 package et_thermal_relief is
 	
-	--use pac_geometry_brd;
+	use pac_geometry_brd;
+	use pac_polygons;
+	
 	use pac_geometry_2;
 
 	
@@ -138,6 +137,58 @@ package et_thermal_relief is
 	text_pad_technology : constant string := "connected_with";	
 
 
+
+	type type_terminal_with_relief is record
+		-- The position, face and rotation of the terminal in the board:
+		position	: type_terminal_position_fine;
+
+		-- The outline of the terminal in the board:
+		outline		: type_polygon;
+
+		-- This cursor points to the terminal as defined in the package model:
+		terminal	: pac_terminals.cursor; 
+	end record;
+	
+	package pac_terminals_with_relief is new doubly_linked_lists (type_terminal_with_relief);
+
+
+
+	-- The segments of a thermal relief. These are straight conductor tracks
+	-- that start inside the pad and run outward into the surrounding fill zone.
+	-- For rectangular or circular pads these segments look like spokes of a wheel.
+	-- Usually there are up to 4 spokes that start at the geometrical
+	-- center of the pad. 
+	-- For irregular pad contours the spokes may start at arbitrary user defined points
+	-- inside the pad - as specified in the terminal properties (see et_terminals.type_terminal):
+	package pac_spokes is new doubly_linked_lists (pac_geometry_2.type_line);
+
+	-- All spokes of a thermal relief have the same linewidth:
+	type type_relief is record
+		width	: type_track_width;
+		spokes	: pac_spokes.list;
+	end record;
+
+	
+	-- Creates a thermal relief for the given single terminal.
+	-- The clearance is the spacing between pad outline and fill zone.
+	function make_relief (
+		terminal_cursor	: in pac_terminals_with_relief.cursor;
+		clearance		: in type_track_clearance;
+		spoke_width		: in type_thermal_width)
+		return type_relief;
+	
+	package pac_reliefes is new doubly_linked_lists (type_relief);
+
+
+	-- Creates for all given terminals a list of thermal reliefes.
+	-- The clearance is the spacing between pad outlines and fill zone.
+	-- The clearance and spoke width are applied to ALL terminals:
+	function make_reliefes (
+		terminals		: in pac_terminals_with_relief.list;
+		clearance		: in type_track_clearance;
+		spoke_width		: in type_thermal_width)
+		return pac_reliefes.list;
+	
 	
 end et_thermal_relief;
 

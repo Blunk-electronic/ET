@@ -758,29 +758,14 @@ is
 
 		procedure make_thermal_reliefes is
 			use pac_terminals_with_relief;
-			
-			procedure query_terminal (t : pac_terminals_with_relief.cursor) is
-				terminal : type_terminal_with_relief renames element (t);
-				use pac_terminals;
-
-				distance_center_to_border : type_float_internal_positive;
-				angle : type_angle := terminal.position.rotation;
-			begin
-				log (text => " terminal " & to_string (key (terminal.terminal))
-					 & " pos " & to_string (terminal.position.place),
-					 level => log_threshold + 4);
-
-				distance_center_to_border := get_distance_to_border (
-					terminal.outline, terminal.position.place, angle);
-
-				log (text => " distance to border " & to_string (distance_center_to_border),
-					 level => log_threshold + 4);
-				
-			end query_terminal;
-			
+			reliefes : pac_reliefes.list;
 		begin
 			log (text => "making thermal reliefes", level => log_threshold + 4);
-			iterate (conductors_to_polygons_result.terminals_with_relief, query_terminal'access);
+
+			reliefes := make_reliefes (
+				terminals	=> conductors_to_polygons_result.terminals_with_relief,
+				clearance	=> clearance,
+				spoke_width	=> linewidth);
 			
 		end make_thermal_reliefes;
 
