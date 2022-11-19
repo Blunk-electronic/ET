@@ -187,6 +187,7 @@ is
 
 	-- Temporarily storage for properties of zones connected with a net:
 	relief_properties	: type_relief_properties;
+	terminal_reliefes	: pac_reliefes.list;
 	terminal_connection	: type_pad_connection := pad_connection_default;
 	terminal_technology	: type_pad_technology := pad_technology_default;
 	native_tracks_embedded : type_native_tracks_embedded := false;
@@ -758,15 +759,22 @@ is
 
 		procedure make_thermal_reliefes is
 			use pac_terminals_with_relief;
-			reliefes : pac_reliefes.list;
+			--reliefes_pre : pac_reliefes.list;
 		begin
 			log (text => "making thermal reliefes", level => log_threshold + 4);
 
-			reliefes := make_reliefes (
+			-- Delete all reliefes left over from the previous zone:
+			--terminal_reliefes.clear;
+			
+			terminal_reliefes := make_reliefes (
 				terminals		=> conductors_to_polygons_result.terminals_with_relief,
 				zone_clearance	=> clearance,
 				zone_linewidth	=> linewidth);
-			
+
+			-- CS extract reliefes that connect with the zone
+
+			-- (Re)load the reliefes of the current zone:
+			--terminal_reliefes := reliefes_pre;
 		end make_thermal_reliefes;
 
 		
@@ -1018,6 +1026,8 @@ is
 						parent_net	=> net_cursor
 						--debug		=> true
 						);
+
+					zone.reliefes := terminal_reliefes;
 				end do_it;
 				
 				

@@ -170,10 +170,12 @@ package et_fill_zones.boards is
 		case connection is
 			when THERMAL =>
 				relief_properties	: type_relief_properties;
-				--relief_spokes		: pac_spokes.list;
-				-- CS a flag that determines whether reliefs should be
-				-- automatically computed on filling the zone,
-				-- or user defined spokes should be used (see notes in et_thermal_relief).
+
+				-- Storage place for reliefes.
+				-- Reliefes are always generated automatically
+				-- depending on the terminal geometry, user specific settings, etc ...
+				reliefes			: pac_reliefes.list;
+				
 
 			when SOLID =>
 				-- whether SMT, THT or both kinds of pads connect with the fill_zone

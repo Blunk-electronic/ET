@@ -115,6 +115,7 @@ package et_thermal_relief is
 	function to_pad_technology (technology : in string) return type_pad_technology;
 
 	
+	-- CS not clear how much of this stuff is really important:
 	type type_relief_properties is record
 		-- whether SMT, THT or both kinds of pads connect with the fill_zone
 		technology	: type_pad_technology := pad_technology_default;
@@ -127,7 +128,6 @@ package et_thermal_relief is
 		gap			: type_thermal_gap := type_thermal_gap'first;
 		-- CS no need ? The gap is the clearance between terminal and zone.
 	end record;
-	
 	
 	
 	
@@ -170,7 +170,7 @@ package et_thermal_relief is
 
 	
 	-- Creates a thermal relief for the given single terminal.
-	-- The width and length of the generted thermal spokes depends on several things:
+	-- The width and length of the generated thermal spokes depends on several things:
 	-- - zone clearance 
 	-- - zone linewidth
 	-- - pad geometry
@@ -186,7 +186,7 @@ package et_thermal_relief is
 
 
 	-- Creates for all given terminals a list of thermal reliefes.
-	-- The width and length of the generted thermal spokes depends on several things:
+	-- The width and length of the generated thermal spokes depends on several things:
 	-- - zone clearance 
 	-- - zone linewidth
 	-- - pad geometry

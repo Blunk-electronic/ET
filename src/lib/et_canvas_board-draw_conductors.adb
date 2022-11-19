@@ -45,7 +45,7 @@ with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
-
+with et_thermal_relief;				use et_thermal_relief;
 with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
 with et_display.board;				use et_display.board;
@@ -215,6 +215,26 @@ is
 		island.stripes.iterate (draw_stripe'access);
 	end query_island;
 
+
+	procedure query_relief (c : in pac_reliefes.cursor) is
+		use pac_reliefes;
+		use pac_spokes;
+		
+		relief : type_relief renames element (c);
+
+		procedure query_spoke (s : in pac_spokes.cursor) is begin
+			draw_line (
+				area	=> in_area,
+				context	=> context,
+				line	=> element (s),
+				width	=> relief.width,
+				height	=> self.frame_height);
+		end query_spoke;
+		
+	begin
+		iterate (relief.spokes, query_spoke'access);
+	end query_relief;
+
 	
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
@@ -270,15 +290,18 @@ is
 
 	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
+		zone : type_route_solid renames element (c);
 		drawn : boolean := false;
+
+		use pac_reliefes;
 	begin
 		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
+		if zone.properties.layer = current_layer then
 	
 			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				contour	=> element (c),
+				contour	=> zone,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
@@ -287,9 +310,13 @@ is
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).linewidth;			
+				fill_line_width := zone.linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).islands, query_island'access);
+				iterate (zone.islands, query_island'access);
+
+				if zone.connection = THERMAL then
+					iterate (zone.reliefes, query_relief'access);
+				end if;
 			end if;
 
 		end if;

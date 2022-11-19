@@ -80,7 +80,7 @@ package body et_thermal_relief is
 		center : type_vector renames terminal.position.place;
 		outline : type_polygon renames terminal.outline;
 		
-		result : type_relief;
+		--result : type_relief;
 
 		spoke_length : type_float_internal_positive;
 		angle : type_angle := terminal.position.rotation;
@@ -113,7 +113,8 @@ package body et_thermal_relief is
 
 
 		
-		return result;
+		--return result;
+		return relief;
 	end make_relief;
 
 	
