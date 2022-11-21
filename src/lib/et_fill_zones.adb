@@ -38,6 +38,20 @@
 
 package body et_fill_zones is
 
+
+	procedure iterate (
+		islands	: in pac_islands.list;
+		process	: not null access procedure (position : in pac_islands.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_islands.cursor := islands.first;
+	begin
+		while c /= pac_islands.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
 	
 	procedure make_stripes (
 		island	: in out type_island;
@@ -205,15 +219,60 @@ package body et_fill_zones is
 
 
 	function get_location (
-		zone		: in type_zone;
-		point		: in type_vector;
-		get_nearest	: in boolean := false)
-		return type_location_query_result
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return type_location
 	is
-		result : type_location_query_result;
-	begin
+		location : type_location := NON_CONDUCTING_AREA;
+		
+		--distance_to_border : type_float_internal_positive;
+		
+		proceed : aliased boolean := true;
 
-		return result;
+		
+		procedure query_island (i : in pac_islands.cursor) is
+			island : type_island renames element (i);
+			
+			island_status : constant type_point_status :=
+				get_point_status (island.outer_border, point, debug);
+
+			procedure query_inner_border (b : in pac_polygon_list.cursor) is
+				use pac_polygon_list;
+				inner_border : type_polygon renames element (b);
+				inner_border_status : constant type_point_status :=
+					get_point_status (inner_border, point, debug);
+			begin
+				case inner_border_status.location is
+					when OUTSIDE | ON_VERTEX | ON_EDGE =>
+						proceed := false;
+						location := CONDUCTING_AREA;
+						--distance_to_border := island_status.distance;
+						
+					when INSIDE => null; -- ignore this inner border
+				end case;
+			end query_inner_border;
+
+			
+		begin -- query_island
+			case island_status.location is
+				when INSIDE | ON_VERTEX | ON_EDGE =>
+					iterate (island.inner_borders, query_inner_border'access, proceed'access);
+										
+				when OUTSIDE => null; -- ignore this island
+			end case;
+		end query_island;
+		
+	begin
+		iterate (zone.islands, query_island'access, proceed'access);
+
+		--if location = CONDUCTING_AREA then
+			--return (CONDUCTING_AREA, distance_to_border, nearest_border_point);
+		--else
+			--return (location => NON_CONDUCTING_AREA);
+		--end if;
+
+		return location;
 	end get_location;
 
 	

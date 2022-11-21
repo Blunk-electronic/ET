@@ -94,9 +94,16 @@ package et_fill_zones is
 
 	
 	package pac_islands is new doubly_linked_lists (type_island);
-
+	use pac_islands;
+	
 	no_islands : constant pac_islands.list := pac_islands.empty_list;
 
+	
+	-- Iterates the islands. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		islands	: in pac_islands.list;
+		process	: not null access procedure (position : in pac_islands.cursor);
+		proceed	: not null access boolean);
 
 	
 
@@ -159,22 +166,24 @@ package et_fill_zones is
 
 	type type_location is (CONDUCTING_AREA, NON_CONDUCTING_AREA);
 
-	type type_location_query_result is record
-		location 			: type_location;
-		distance_to_border	: type_float_internal_positive;
-		nearest_border_point: type_vector := null_vector;
-	end record;
+	--type type_location_query_result (
+		--location : type_location)
+	--is record
+		--case location is
+			--when CONDUCTING_AREA =>
+				--distance_to_border	: type_float_internal_positive := 0.0;
+
+			--when NON_CONDUCTING_AREA => null;
+		--end case;
+	--end record;
 
 	-- Tests the given point whether it is in the conducting
 	-- area of a zone or outside the conducting area.
-	-- If get_nearest is true, then the nearest point on
-	-- the border of the conducting are is computed. If get_nearest
-	-- is false, then the nearest border point is a null vector:
 	function get_location (
-		zone		: in type_zone;
-		point		: in type_vector;
-		get_nearest	: in boolean := false)
-		return type_location_query_result;
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return type_location;
 	
 	
 -- SOLID FILLED ZONE:

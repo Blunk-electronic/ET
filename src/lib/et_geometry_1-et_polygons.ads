@@ -397,7 +397,7 @@ package et_geometry_1.et_polygons is
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
 				-- to the polygon:
-				distance : type_float_internal;
+				distance : type_float_internal; -- CS type_float_internal_positive ?
 				
 			when ON_EDGE =>
 				edge : pac_edges.cursor;
@@ -536,7 +536,7 @@ package et_geometry_1.et_polygons is
 	
 		
 	type type_edge_status is record
-		-- The affected edge edge itself:
+		-- The affected edge itself:
 		edge		: type_edge;
 		
 		-- The properties of the start and end point of the line:
