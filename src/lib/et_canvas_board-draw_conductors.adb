@@ -291,9 +291,8 @@ is
 	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		zone : type_route_solid renames element (c);
-		drawn : boolean := false;
-
 		use pac_reliefes;
+		drawn : boolean := false;
 	begin
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
@@ -318,34 +317,38 @@ is
 					iterate (zone.reliefes, query_relief'access);
 				end if;
 			end if;
-
 		end if;
 	end query_fill_zone;
 
 	
-	procedure query_fill_zone (c : in pac_route_hatched.cursor) is 
+	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
+		zone : type_route_hatched renames element (c);
+		use pac_reliefes;
 		drawn : boolean := false;
 	begin		
 		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
+		if zone.properties.layer = current_layer then
 
 			draw_contour (
 				area	=> in_area,
 				context	=> context,
-				contour	=> element (c),
+				contour	=> zone,
 				filled	=> NO, -- because this is merely the contour of the zone !
-				width	=> zero,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
 				drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).linewidth;			
+				fill_line_width := zone.linewidth;			
 				set_line_width (context.cr, type_view_coordinate (fill_line_width));
-				iterate (element (c).islands, query_island'access);
-			end if;
+				iterate (zone.islands, query_island'access);
 
+				if zone.connection = THERMAL then
+					iterate (zone.reliefes, query_relief'access);
+				end if;
+			end if;
 		end if;
 	end query_fill_zone;
 
