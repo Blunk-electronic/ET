@@ -203,6 +203,20 @@ package body et_fill_zones is
 	end fill_island;
 
 
+
+	function get_location (
+		zone		: in type_zone;
+		point		: in type_vector;
+		get_nearest	: in boolean := false)
+		return type_location_query_result
+	is
+		result : type_location_query_result;
+	begin
+
+		return result;
+	end get_location;
+
+	
 	
 
 

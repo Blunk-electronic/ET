@@ -155,7 +155,27 @@ package et_fill_zones is
 
 
 
+-- QUERY POINT TO ZONE LOCATION
 
+	type type_location is (CONDUCTING_AREA, NON_CONDUCTING_AREA);
+
+	type type_location_query_result is record
+		location 			: type_location;
+		distance_to_border	: type_float_internal_positive;
+		nearest_border_point: type_vector := null_vector;
+	end record;
+
+	-- Tests the given point whether it is in the conducting
+	-- area of a zone or outside the conducting area.
+	-- If get_nearest is true, then the nearest point on
+	-- the border of the conducting are is computed. If get_nearest
+	-- is false, then the nearest border point is a null vector:
+	function get_location (
+		zone		: in type_zone;
+		point		: in type_vector;
+		get_nearest	: in boolean := false)
+		return type_location_query_result;
+	
 	
 -- SOLID FILLED ZONE:
 	
