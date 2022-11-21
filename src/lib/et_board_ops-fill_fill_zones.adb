@@ -57,6 +57,10 @@ procedure fill_fill_zones (
 	log_threshold	: in type_log_level;
 	nets 			: in pac_net_names.list := no_net_names)
 is 
+	-- CS: Most of this stuff can be moved to et_fill_zones.boards
+	-- so that solid and hatched zones inherit from primitive operations
+	-- defined for type_zone. 
+	
 	use pac_geometry_brd;
 	use pac_polygons;
 	use pac_polygon_clipping;

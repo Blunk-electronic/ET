@@ -108,6 +108,16 @@ package et_fill_zones.boards is
 
 
 
+	-- CS: For the future. Primitive operations for sold and hatched zones
+	-- should be defined here like:
+	--procedure fill_zone (
+		--zone		: in out type_zone;
+		--linewidth	: in type_track_width;
+		--layer 		: in et_pcb_stack.type_signal_layer;
+		--clearance	: in type_track_clearance;
+		--parent_net	: in pac_nets.cursor := pac_nets.no_element;
+		--debug		: in boolean := false)
+	--is null;
 	
 	
 -- FLOATING FILL ZONES (not connected to any net):
