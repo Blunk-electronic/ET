@@ -230,7 +230,10 @@ is
 		zone_clearance_float : constant type_float_internal_positive :=
 			type_float_internal_positive (zone_clearance);
 
-
+		-- Most offset operations here use a default value:
+		default_offset : constant type_float_internal_positive :=
+			half_linewidth_float + zone_clearance_float;
+		
 		
 		-- NETS -------------------------------------------------------------
 
@@ -334,6 +337,7 @@ is
 
 		
 		-- Extracts all conductor objects connected with the given net
+		-- offsets them by half_linewidth_float + a special clearance
 		-- and appends them to the result:
 		procedure extract_conductor_objects (net_cursor : in pac_nets.cursor) is
 
@@ -430,7 +434,7 @@ is
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 
 				-- expand polygons by clearance
-				offset_polygons (polygons, type_float_internal_positive (clearance));
+				offset_polygons (polygons, half_linewidth_float + type_float_internal_positive (clearance));
 
 				result.polygons.splice (before => pac_polygon_list.no_element, source => polygons);
 			end convert_conductor_objects_to_polygons;
@@ -440,7 +444,6 @@ is
 			-- and the candidate is the parent net of the zone, then this
 			-- flag is set to true:
 			in_parent_net : boolean := false;
-
 
 			
 		begin -- extract_conductor_objects
@@ -485,7 +488,8 @@ is
 		
 		-- This procedure takes a cursor to a device in the schematic,
 		-- converts the outlines of its unconnected terminals to polygons,
-		-- offsets them by the zone_clearance and finally appends them to the result:
+		-- offsets them by the zone_clearance + half_linewidth_float and
+		-- finally appends them to the result:
 		procedure extract_unconnected_terminals (
 			device_cursor : in pac_devices_sch.cursor) 
 		is
@@ -504,7 +508,7 @@ is
 				--put_line ("nc " & to_string (pac_terminals.key (terminal_cursor)));
 				
 				if terminal_polygon.exists then
-					offset_polygon (terminal_polygon.polygon, zone_clearance_float);
+					offset_polygon (terminal_polygon.polygon, default_offset);
 					result.polygons.append (terminal_polygon.polygon);
 				end if;
 			end query_terminal;
@@ -528,7 +532,7 @@ is
 
 				borders := get_borders (text.vectors);
 
-				offset_polygons (borders, half_linewidth_float + zone_clearance_float);
+				offset_polygons (borders, default_offset);
 				
 				-- NOTE: The borders of the characters of the text should not overlap.
 				-- Therefore there is no need for unioning the characters at this time.
@@ -763,7 +767,21 @@ is
 
 		procedure make_thermal_reliefes is
 			use pac_terminals_with_relief;
+			use pac_reliefes;
 			--reliefes_pre : pac_reliefes.list;
+			relief_cursor : pac_reliefes.cursor;
+
+			procedure query_relief (relief : in out type_relief) is
+				use pac_spokes;
+				spoke_cursor : pac_spokes.cursor := relief.spokes.first;
+				location_spoke_end : et_fill_zones.type_location;
+			begin
+				while spoke_cursor /= pac_spokes.no_element loop
+					location_spoke_end := get_location (zone, element (spoke_cursor).end_point);
+					next (spoke_cursor);
+				end loop;
+			end query_relief;
+			
 		begin
 			log (text => "making thermal reliefes", level => log_threshold + 4);
 
@@ -775,7 +793,12 @@ is
 				zone_clearance	=> clearance,
 				zone_linewidth	=> linewidth);
 
-			-- CS extract reliefes that connect with the zone
+			-- extract reliefes that connect with the zone
+			--relief_cursor := terminal_reliefes.first;
+			--while relief_cursor /= pac_reliefes.no_element loop
+				--terminal_reliefes.update_element (relief_cursor, query_relief'access);
+				--next (relief_cursor);
+			--end loop;
 
 			-- (Re)load the reliefes of the current zone:
 			--terminal_reliefes := reliefes_pre;
