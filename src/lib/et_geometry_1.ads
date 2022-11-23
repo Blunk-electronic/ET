@@ -607,6 +607,13 @@ package et_geometry_1 is
 	procedure remove_redundant_vectors (
 		vectors : in out pac_vectors.list);
 
+
+	-- Sorts the list of vectors by the distance of the vectors
+	-- to the given reference point. Nearest comes first:
+	procedure sort_by_distance (
+		vectors		: in out pac_vectors.list;
+		reference	: in type_vector);
+
 	
 -- RAY
 	

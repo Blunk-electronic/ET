@@ -1022,6 +1022,70 @@ package body et_geometry_1 is
 		vectors := target;
 	end remove_redundant_vectors;
 
+
+	procedure sort_by_distance (
+		vectors		: in out pac_vectors.list;
+		reference	: in type_vector)
+	is
+		use pac_vectors;
+
+		type type_item is record
+			-- We will be sorting vectors by their distance to
+			-- the reference point:
+			vector		: type_vector;
+			distance	: type_float_internal_positive;
+		end record;
+
+		
+		function "<" (left, right : in type_item) return boolean is begin
+			if left.distance < right.distance then
+				return true;
+			else
+				return false;
+			end if;
+		end;
+	
+		package pac_items is new doubly_linked_lists (type_item);
+		use pac_items;
+		
+		package pac_sorting is new pac_items.generic_sorting;
+		use pac_sorting;
+
+		items : pac_items.list;
+		
+		
+		procedure query_vector (v : in pac_vectors.cursor) is
+			d : constant type_float_internal_positive := 
+				get_distance_total (reference, element (v));
+		begin
+			items.append (new_item => (
+				vector		=> element (v),
+				distance	=> d));
+
+		end query_vector;
+
+
+		procedure query_item (i : in pac_items.cursor) is begin
+			vectors.append (element (i).vector);
+		end query_item;
+		
+	begin
+		-- Collect vectors and their distance to the reference
+		-- in list "items":
+		vectors.iterate (query_vector'access);
+
+		-- Sort items by the distance to the reference point:
+		sort (items);
+
+		-- The old vectors are no longer required:
+		vectors.clear;
+		-- New vectors will be appended here.
+		
+		-- Traverse items and append them one by one to the
+		-- list of vectors:
+		items.iterate (query_item'access);
+	end sort_by_distance;
+
 	
 	
 	function get_distance_total (
