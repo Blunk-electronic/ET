@@ -51,11 +51,10 @@ with ada.containers.doubly_linked_lists;
 --with ada.containers.indefinite_ordered_maps;
 --with ada.containers.ordered_sets;
 
---with et_general;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
---with et_conductor_segment;
+with et_fill_zones;				use et_fill_zones;
 with et_terminals;				use et_terminals;
 
 package et_thermal_relief is
@@ -177,6 +176,7 @@ package et_thermal_relief is
 	-- - pad technology
 	-- - CS gap size ?
 	function make_relief (
+		zone			: in type_zone'class;
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
 		zone_clearance	: in type_track_clearance;
 		zone_linewidth	: in type_track_width)
@@ -193,8 +193,9 @@ package et_thermal_relief is
 	-- - pad technology
 	-- - CS gap size ?
 	function make_reliefes (
+		zone			: in type_zone'class;
 		terminals		: in pac_terminals_with_relief.list;
-		zone_clearance	: in type_track_clearance;
+		zone_clearance	: in type_track_clearance; -- CS no need ?
 		zone_linewidth	: in type_track_width)
 		return pac_reliefes.list;
 	

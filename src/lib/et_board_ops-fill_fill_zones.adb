@@ -766,21 +766,21 @@ is
 
 
 		procedure make_thermal_reliefes is
-			use pac_terminals_with_relief;
-			use pac_reliefes;
+			--use pac_terminals_with_relief;
+			--use pac_reliefes;
 			--reliefes_pre : pac_reliefes.list;
-			relief_cursor : pac_reliefes.cursor;
+			--relief_cursor : pac_reliefes.cursor;
 
-			procedure query_relief (relief : in out type_relief) is
-				use pac_spokes;
-				spoke_cursor : pac_spokes.cursor := relief.spokes.first;
-				location_spoke_end : et_fill_zones.type_location;
-			begin
-				while spoke_cursor /= pac_spokes.no_element loop
-					location_spoke_end := get_location (zone, element (spoke_cursor).end_point);
-					next (spoke_cursor);
-				end loop;
-			end query_relief;
+			--procedure query_relief (relief : in out type_relief) is
+				--use pac_spokes;
+				--spoke_cursor : pac_spokes.cursor := relief.spokes.first;
+				--location_spoke_end : et_fill_zones.type_location;
+			--begin
+				--while spoke_cursor /= pac_spokes.no_element loop
+					--location_spoke_end := get_location (zone, element (spoke_cursor).end_point);
+					--next (spoke_cursor);
+				--end loop;
+			--end query_relief;
 			
 		begin
 			log (text => "making thermal reliefes", level => log_threshold + 4);
@@ -789,6 +789,7 @@ is
 			--terminal_reliefes.clear;
 			
 			terminal_reliefes := make_reliefes (
+				zone			=> zone,
 				terminals		=> conductors_to_polygons_result.terminals_with_relief,
 				zone_clearance	=> clearance,
 				zone_linewidth	=> linewidth);
@@ -930,7 +931,8 @@ is
 		set_inner_borders;
 
 		if parent_net /= pac_nets.no_element then
-			make_thermal_reliefes;
+			make_thermal_reliefes; 
+			-- bases on the inner borders that we just computed. see statement above
 		end if;
 		
 		-- Fill the islands with stripes:

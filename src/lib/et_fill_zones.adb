@@ -88,7 +88,6 @@ package body et_fill_zones is
 		-- The main collection of x-values where a stripe enters or leaves an outer or inner border:
 		x_main : pac_float_numbers.list;
 		
-		use pac_polygon_list;
 		use pac_float_numbers;
 		use pac_float_numbers_sorting;
 
@@ -209,7 +208,6 @@ package body et_fill_zones is
 						island	: in out type_island;
 						style	: in type_style))
 	is
-		use pac_islands;
 		island : type_island := element (position);
 	begin
 		process (island, style);
@@ -218,6 +216,74 @@ package body et_fill_zones is
 
 
 
+	function between_islands (
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return boolean
+	is
+		proceed : aliased boolean := true;
+		
+		procedure query_island (c : in pac_islands.cursor) is
+			island : type_island renames element (c);
+			
+			status : constant type_point_status :=
+				get_point_status (island.outer_border, point, debug);
+		begin
+			case status.location is
+				when INSIDE | ON_VERTEX | ON_EDGE => proceed := false;
+				when others => null;
+			end case;
+		end query_island;
+		
+	begin
+		iterate (zone.islands, query_island'access, proceed'access);
+		return proceed;
+	end between_islands;
+
+
+
+	function get_inner_border (
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return pac_polygon_list.cursor
+	is
+		result : pac_polygon_list.cursor; -- default no_element
+		proceed : aliased boolean := true;
+
+		
+		procedure query_island (i : in pac_islands.cursor) is
+			island : type_island renames element (i);
+
+			procedure query_inner_border (b : in pac_polygon_list.cursor) is
+				inner_border : type_polygon renames element (b);
+				inner_border_status : constant type_point_status :=
+					get_point_status (inner_border, point, debug);
+			begin
+				case inner_border_status.location is
+					when INSIDE =>
+						proceed := false;
+						result := b;
+						
+					when others => null; -- ignore this inner border
+				end case;
+			end query_inner_border;
+
+			
+		begin
+			iterate (island.inner_borders, query_inner_border'access, proceed'access);
+		end query_island;
+
+		
+	begin
+		iterate (zone.islands, query_island'access, proceed'access);
+		return result;
+	end get_inner_border;
+	
+
+	
+	
 	function get_location (
 		zone	: in type_zone;
 		point	: in type_vector;
@@ -225,11 +291,7 @@ package body et_fill_zones is
 		return type_location
 	is
 		location : type_location := NON_CONDUCTING_AREA;
-		
-		--distance_to_border : type_float_internal_positive;
-		
 		proceed : aliased boolean := true;
-
 		
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
@@ -238,7 +300,6 @@ package body et_fill_zones is
 				get_point_status (island.outer_border, point, debug);
 
 			procedure query_inner_border (b : in pac_polygon_list.cursor) is
-				use pac_polygon_list;
 				inner_border : type_polygon renames element (b);
 				inner_border_status : constant type_point_status :=
 					get_point_status (inner_border, point, debug);
@@ -265,19 +326,105 @@ package body et_fill_zones is
 		
 	begin
 		iterate (zone.islands, query_island'access, proceed'access);
-
-		--if location = CONDUCTING_AREA then
-			--return (CONDUCTING_AREA, distance_to_border, nearest_border_point);
-		--else
-			--return (location => NON_CONDUCTING_AREA);
-		--end if;
-
 		return location;
 	end get_location;
 
-	
-	
 
+	
+	function get_distance_to_nearest_island (
+		zone		: in type_zone;
+		start_point	: in type_vector;
+		direction	: in type_angle;
+		debug		: in boolean := false)
+		return type_distance_to_conducting_area
+	is
+		result_exists : boolean := true;
+		result_distance : type_float_internal_positive := 0.0;
+		ray : constant type_ray := (start_point, direction);
+
+		use pac_vectors;
+		intersections : pac_vectors.list;
+		
+		procedure query_island (i : in pac_islands.cursor) is
+			island : type_island renames element (i);
+
+			procedure query_edge (e : in pac_edges.cursor) is
+				use pac_edges;
+				I : constant type_intersection_of_two_lines := 
+					get_intersection (ray, element (e));
+			begin
+				case I.status is
+					when EXISTS =>
+						intersections.append (I.intersection.vector);
+
+					when others => null;
+				end case;
+			end query_edge;
+			
+		begin
+			island.outer_border.edges.iterate (query_edge'access);
+		end query_island;
+		
+	begin
+		-- Collect the intersections of the ray with the islands
+		-- in container "intersections":
+		zone.islands.iterate (query_island'access);
+
+		-- Extract from "intersections" the one that is closest to start_point:
+		remove_redundant_vectors (intersections);
+		-- CS
+		
+		if result_exists then
+			return (exists => true, distance => result_distance);
+		else
+			return (exists => false);
+		end if;
+	end get_distance_to_nearest_island;
+
+	
+	
+	function get_distance_to_conducting_area (
+		zone		: in type_zone;
+		start_point	: in type_vector;
+		direction	: in type_angle;
+		debug		: in boolean := false)
+		return type_distance_to_conducting_area
+	is
+		result_exists : boolean := true;
+		result_distance : type_float_internal_positive := 0.0;
+
+		location : constant type_location := get_location (zone, start_point, debug);
+		inner_border_cursor : pac_polygon_list.cursor;
+	begin
+		case location is
+			when CONDUCTING_AREA => 
+				null; 
+				-- Start point is already in conducting area.
+				-- Return default values (see declarations above).
+			
+			when NON_CONDUCTING_AREA =>
+				-- Start point is either between islands or inside inner borders:
+				
+				if between_islands (zone, start_point) then
+					-- Point is between islands.
+					return get_distance_to_nearest_island (zone, start_point, direction, debug);
+					-- There might be no island into the given direction. In this case
+					-- the returned value would be just "false".
+				else
+					-- Point is inside an inner border:
+					inner_border_cursor := get_inner_border (zone, start_point);
+					
+					-- There must be a distance to the inner border:					
+					result_distance := get_distance_to_border (
+						element (inner_border_cursor), start_point, direction);
+
+				end if;
+		end case;
+
+		return (exists => true, distance => result_distance);
+	end get_distance_to_conducting_area;
+
+	
 
 	
 -- 	procedure route_fill_zone_properties (

@@ -63,6 +63,7 @@ package body et_thermal_relief is
 														 
 
 	function make_relief (
+		zone			: in type_zone'class;
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
 		zone_clearance	: in type_track_clearance;
 		zone_linewidth	: in type_track_width)
@@ -82,23 +83,33 @@ package body et_thermal_relief is
 		
 		--result : type_relief;
 
-		spoke_length : type_float_internal_positive;
+		spoke_length_min : type_float_internal_positive;
 		angle : type_angle := terminal.position.rotation;
 		relief : type_relief;
+
+		
+			
 	begin
 		relief.width := zone_linewidth;
 
 		for i in 1 .. 4 loop
-			spoke_length := 
-				  get_distance_to_border (outline, center, angle)
-				+ zone_clearance_float
-				+ zone_linewidth_half_float;
+			declare
+				distance_to_conductor : constant type_distance_to_conducting_area := 
+					get_distance_to_conducting_area (zone, center, angle);
 
-			relief.spokes.append ((
-				start_point	=> center,
-				end_point	=> move_by (center, angle, spoke_length)));
+			begin
+				spoke_length_min := 
+					get_distance_to_border (outline, center, angle)
+					+ zone_clearance_float
+					+ zone_linewidth_half_float;
+
+			--relief.spokes.append ((
+				--start_point	=> center,
+				----end_point	=> move_by (center, angle, spoke_length)));
+				--end_point	=> get_nearest_inner_border_point (zone, center, angle)));
 			
-			angle := angle + 90.0;
+				angle := angle + 90.0;
+			end;
 		end loop;
 
 		---log (text => " terminal " & to_string (key (terminal.terminal))
@@ -119,6 +130,7 @@ package body et_thermal_relief is
 
 	
 	function make_reliefes (
+		zone			: in type_zone'class;
 		terminals		: in pac_terminals_with_relief.list;
 		zone_clearance	: in type_track_clearance;
 		zone_linewidth	: in type_track_width)
@@ -130,7 +142,7 @@ package body et_thermal_relief is
 
 		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
 		begin
-			result.append (make_relief (c, zone_clearance, zone_linewidth));
+			result.append (make_relief (zone, c, zone_clearance, zone_linewidth));
 		end query_terminal;
 		
 	begin

@@ -65,8 +65,9 @@ package et_fill_zones is
 	
 	use pac_geometry_brd;
 	use pac_contours;
+	
 	use pac_polygons;
-
+	use pac_polygon_list;
 	
 	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
 
@@ -164,26 +165,85 @@ package et_fill_zones is
 
 -- QUERY POINT TO ZONE LOCATION
 
-	type type_location is (CONDUCTING_AREA, NON_CONDUCTING_AREA);
+	-- Returns true if the given point lies between
+	-- the islands. If the point lies exactly on the edge
+	-- of an island, then it is regarded as lying ON the island,
+	-- thus the return would be false:
+	function between_islands (
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return boolean;
 
-	--type type_location_query_result (
-		--location : type_location)
-	--is record
-		--case location is
-			--when CONDUCTING_AREA =>
-				--distance_to_border	: type_float_internal_positive := 0.0;
 
-			--when NON_CONDUCTING_AREA => null;
-		--end case;
-	--end record;
+	-- If the given point lies inside an inner border,
+	-- then this function returns the cursor to that inner border.
+	-- If the point lies elsewhere, then the result is no_element:
+	function get_inner_border (
+		zone	: in type_zone;
+		point	: in type_vector;
+		debug	: in boolean := false)
+		return pac_polygon_list.cursor;
+	
+								  
+	type type_location is (
+		-- A place where conducting material is.
+		-- If the place is exactly on the edge between
+		-- conducting and non-conducting area then
+		-- it is regarded as INSIDE the conducting area:
+		CONDUCTING_AREA, 
+
+		-- A place where no conducting material is. This
+		-- can be between islands or inside inner borders:
+		NON_CONDUCTING_AREA); 
+
+	
 
 	-- Tests the given point whether it is in the conducting
 	-- area of a zone or outside the conducting area.
+	-- See details in type specification of type_location:
 	function get_location (
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
 		return type_location;
+
+
+										
+	type type_distance_to_conducting_area (exists : boolean) is record
+		case exists is
+			when TRUE => distance : type_float_internal_positive;
+			when FALSE => null;
+		end case;
+	end record;	
+
+
+	-- Returns the distance of a point to the nearest
+	-- island into the given direction.
+	-- Assumes, the given start point is somewhere between the islands.
+	-- Returns just "false" if no conducting area found in
+	-- the given direction:
+	function get_distance_to_nearest_island (
+		zone		: in type_zone;
+		start_point	: in type_vector;
+		direction	: in type_angle;
+		debug		: in boolean := false)
+		return type_distance_to_conducting_area;
+
+
+	
+	-- Returns the distance to the conducting area
+	-- of a ray starting at start_point and running into
+	-- given direction. If the start point is already in
+	-- a conducting area, then the returned distance is zero.
+	-- Returns just "false" if no conducting area found in
+	-- the given direction:
+	function get_distance_to_conducting_area (
+		zone		: in type_zone;
+		start_point	: in type_vector;
+		direction	: in type_angle;
+		debug		: in boolean := false)
+		return type_distance_to_conducting_area;
 	
 	
 -- SOLID FILLED ZONE:
