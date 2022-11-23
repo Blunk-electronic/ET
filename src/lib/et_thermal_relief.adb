@@ -66,9 +66,11 @@ package body et_thermal_relief is
 		zone			: in type_zone'class;
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
 		zone_clearance	: in type_track_clearance;
-		zone_linewidth	: in type_track_width)
+		zone_linewidth	: in type_track_width;
+		debug			: in boolean := false)
 		return type_relief
 	is
+		use pac_terminals;
 		use pac_terminals_with_relief;
 		terminal : type_terminal_with_relief renames element (terminal_cursor);
 
@@ -92,22 +94,41 @@ package body et_thermal_relief is
 	begin
 		relief.width := zone_linewidth;
 
+		if debug then
+			put_line ("terminal " & to_string (key (terminal.terminal))
+				& " pos. " & to_string (terminal.position.place)
+				& " angle " & to_string (terminal.position.rotation));
+		end if;
+
+		
 		for i in 1 .. 4 loop
+			if debug then
+				put_line ("direction " & to_string (angle));
+			end if;
+				
 			declare
-				distance_to_conductor : constant type_distance_to_conducting_area := 
-					get_distance_to_conducting_area (zone, center, angle);
+				distance_to_conducting_area : constant type_distance_to_conducting_area := 
+					get_distance_to_conducting_area (zone, center, angle, debug);
 
 			begin
-				spoke_length_min := 
-					get_distance_to_border (outline, center, angle)
-					+ zone_clearance_float
-					+ zone_linewidth_half_float;
+				if distance_to_conducting_area.exists then
 
-			--relief.spokes.append ((
-				--start_point	=> center,
-				----end_point	=> move_by (center, angle, spoke_length)));
-				--end_point	=> get_nearest_inner_border_point (zone, center, angle)));
-			
+					if debug then
+						put_line ("distance to conducting area " 
+							& to_string (distance_to_conducting_area.distance));
+					end if;
+
+					
+					--spoke_length_min := 
+						--get_distance_to_border (outline, center, angle)
+						--+ zone_clearance_float
+						--+ zone_linewidth_half_float;
+
+					--relief.spokes.append ((
+						--start_point	=> center,
+						--end_point	=> move_by (center, angle, spoke_length_min)));
+
+				end if;
 				angle := angle + 90.0;
 			end;
 		end loop;
@@ -138,11 +159,13 @@ package body et_thermal_relief is
 	is
 		result : pac_reliefes.list;
 
+		debug : boolean := true;
+		
 		use pac_terminals_with_relief;
 
 		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
 		begin
-			result.append (make_relief (zone, c, zone_clearance, zone_linewidth));
+			result.append (make_relief (zone, c, zone_clearance, zone_linewidth, debug));
 		end query_terminal;
 		
 	begin

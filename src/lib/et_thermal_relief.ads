@@ -179,7 +179,8 @@ package et_thermal_relief is
 		zone			: in type_zone'class;
 		terminal_cursor	: in pac_terminals_with_relief.cursor;
 		zone_clearance	: in type_track_clearance;
-		zone_linewidth	: in type_track_width)
+		zone_linewidth	: in type_track_width;
+		debug			: in boolean := false)
 		return type_relief;
 	
 	package pac_reliefes is new doubly_linked_lists (type_relief); -- CS rename to pac_thermal_symbols ?

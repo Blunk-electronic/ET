@@ -1988,8 +1988,35 @@ package body et_geometry_1 is
 		return type_intersection_of_two_lines
 	is
 		line_vector : constant type_line_vector := to_line_vector (ray);
+
+		I : constant type_intersection_of_two_lines := 
+			get_intersection (line_vector, line, debug);
+		
+		dp : type_distance_polar;
 	begin
-		return get_intersection (line_vector, line, debug);
+		case I.status is
+			when EXISTS =>
+				dp := get_distance (ray.start_point, I.intersection.vector);
+
+				put_line ("dp " & to_string (dp.angle) & " " & to_string (ray.direction));
+				if dp.angle = ray.direction then -- CS consider rounding errors ?
+					put_line ("match");
+					return I;
+					
+				else
+					put_line ("mismatch");
+					return (status => NOT_EXISTENT);
+				end if;
+
+			when others => 
+				return (status => NOT_EXISTENT);
+		end case;
+		
+		--if debug then
+			--put_line (to_string (line_vector));
+		--end if;
+		
+		--return get_intersection (line_vector, line, debug);
 	end get_intersection;
 
 	

@@ -355,6 +355,10 @@ package body et_fill_zones is
 			begin
 				case I.status is
 					when EXISTS =>
+						if debug then
+							put_line (" intersection at " & to_string (I.intersection.vector));
+						end if;
+
 						intersections.append (I.intersection.vector);
 
 					when others => null;
@@ -362,22 +366,33 @@ package body et_fill_zones is
 			end query_edge;
 			
 		begin
+			if debug then
+				put_line (" island");
+			end if;
+
 			island.outer_border.edges.iterate (query_edge'access);
 		end query_island;
 		
 	begin
+		if debug then
+			put_line ("ray " & to_string (start_point) & " direction " & to_string (direction));
+		end if;
+		
 		-- Collect the intersections of the ray with the islands
 		-- in container "intersections":
 		zone.islands.iterate (query_island'access);
 
-		-- Extract from "intersections" the one that is closest to start_point:
-		remove_redundant_vectors (intersections);
-		-- CS
-		
-		if result_exists then
-			return (exists => true, distance => result_distance);
+		if is_empty (intersections) then
+			return (exists => false); -- no island found in given direction
 		else
-			return (exists => false);
+			-- Extract from "intersections" the one that is closest to start_point:
+			remove_redundant_vectors (intersections);
+			sort_by_distance (intersections, start_point);
+		
+			return (
+				exists	 => true,
+				distance => get_distance_total (start_point, intersections.first_element));
+
 		end if;
 	end get_distance_to_nearest_island;
 
@@ -393,7 +408,7 @@ package body et_fill_zones is
 		result_exists : boolean := true;
 		result_distance : type_float_internal_positive := 0.0;
 
-		location : constant type_location := get_location (zone, start_point, debug);
+		location : constant type_location := get_location (zone, start_point);
 		inner_border_cursor : pac_polygon_list.cursor;
 	begin
 		case location is
@@ -401,16 +416,31 @@ package body et_fill_zones is
 				null; 
 				-- Start point is already in conducting area.
 				-- Return default values (see declarations above).
+				if debug then
+					put_line ("in conducting area");
+				end if;
 			
 			when NON_CONDUCTING_AREA =>
+				if debug then
+					put_line ("in non-conducting area");
+				end if;
+
 				-- Start point is either between islands or inside inner borders:
 				
 				if between_islands (zone, start_point) then
+					if debug then
+						put_line ("between islands");
+					end if;
+
 					-- Point is between islands.
 					return get_distance_to_nearest_island (zone, start_point, direction, debug);
 					-- There might be no island into the given direction. In this case
 					-- the returned value would be just "false".
 				else
+					if debug then
+						put_line ("inside inner border");
+					end if;
+				
 					-- Point is inside an inner border:
 					inner_border_cursor := get_inner_border (zone, start_point);
 					
