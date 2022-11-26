@@ -1987,36 +1987,43 @@ package body et_geometry_1 is
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines
 	is
+		-- In this function we must test angles for equality.
+		-- The direction of the ray must be positive in any case:
+		ray_direction_positive : constant type_angle_positive := 
+			to_angle_positive (ray.direction);
+		
 		line_vector : constant type_line_vector := to_line_vector (ray);
 
 		I : constant type_intersection_of_two_lines := 
-			get_intersection (line_vector, line, debug);
+			get_intersection (line_vector, line);
 		
 		dp : type_distance_polar;
 	begin
 		case I.status is
+			-- If line_vector and line intersect:
 			when EXISTS =>
 				dp := get_distance (ray.start_point, I.intersection.vector);
 
-				put_line ("dp " & to_string (dp.angle) & " " & to_string (ray.direction));
-				if dp.angle = ray.direction then -- CS consider rounding errors ?
-					put_line ("match");
+				-- The direction from ray start to intersection must be positive:
+				dp.angle := to_angle_positive (dp.angle);
+
+				--put_line ("dp " & to_string (dp.angle) & " " & to_string (ray_direction_positive));
+				-- Compare directions. The intersection must be in
+				-- the direction of travel of the ray. If it lies in opposide
+				-- direction then it must be ignored:
+				if dp.angle = ray_direction_positive then -- CS consider rounding errors ?
+					--put_line ("intersection valid");					
 					return I;
-					
 				else
-					put_line ("mismatch");
+					--put_line ("intersection ignored");
 					return (status => NOT_EXISTENT);
 				end if;
 
+			-- line_vector and line do no intersect:
 			when others => 
 				return (status => NOT_EXISTENT);
 		end case;
-		
-		--if debug then
-			--put_line (to_string (line_vector));
-		--end if;
-		
-		--return get_intersection (line_vector, line, debug);
+
 	end get_intersection;
 
 	
