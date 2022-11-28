@@ -168,7 +168,9 @@ package et_fill_zones is
 	-- Returns true if the given point lies between
 	-- the islands. If the point lies exactly on the edge
 	-- of an island, then it is regarded as lying ON the island,
-	-- thus the return would be false:
+	-- thus the return would be false.
+	-- NOTE: This function looks at the CENTER LINE of island borders
+	-- only. It does not care about the linewidth of the borders !
 	function between_islands (
 		zone	: in type_zone;
 		point	: in type_vector;
@@ -195,7 +197,15 @@ package et_fill_zones is
 
 		-- A place where no conducting material is. This
 		-- can be between islands or inside inner borders:
-		NON_CONDUCTING_AREA); 
+		NON_CONDUCTING_AREA
+
+		-- NOTE: The border of islands and inner borders
+		-- has a certain linewidth. This linewidth is
+		-- NOT taken into account when it is about this
+		-- type of location !
+		-- The subprograms that use type_location look
+		-- at the CENTER LINE of the borders only !
+		); 
 
 	
 
@@ -222,7 +232,8 @@ package et_fill_zones is
 	-- island into the given direction.
 	-- Assumes, the given start point is somewhere between the islands.
 	-- Returns just "false" if no conducting area found in
-	-- the given direction:
+	-- the given direction.
+	-- See details in type specification of type_location:
 	function get_distance_to_nearest_island (
 		zone		: in type_zone;
 		start_point	: in type_vector;
@@ -237,7 +248,8 @@ package et_fill_zones is
 	-- given direction. If the start point is already in
 	-- a conducting area, then the returned distance is zero.
 	-- Returns just "false" if no conducting area found in
-	-- the given direction:
+	-- the given direction.
+	-- See details in type specification of type_location:
 	function get_distance_to_conducting_area (
 		zone		: in type_zone;
 		start_point	: in type_vector;

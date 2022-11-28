@@ -188,8 +188,8 @@ package body et_pcb_rw is
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
 		-- CS might be a useless feature. inherited from kicad.
 		
-		write (keyword => keyword_thermal_width , parameters => to_string (thermal.width));
-		write (keyword => keyword_thermal_gap   , parameters => to_string (thermal.gap));	
+		write (keyword => keyword_thermal_width,   parameters => to_string (thermal.width));
+		write (keyword => keyword_thermal_gap_max, parameters => to_string (thermal.gap_max));	
 	end;
 
 	

@@ -4381,7 +4381,7 @@ package body et_kicad.pcb is
 					 " smoothing/easing" & to_string (polygon.easing.style) &
 					 " " & keyword_easing_radius & pac_geometry_2.to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " " & text_thermal_gap & pac_geometry_2.to_string (polygon.thermal_gap) &
+					 " " & text_thermal_gap_max & pac_geometry_2.to_string (polygon.thermal_gap) &
 					 " " & text_thermal_width & pac_geometry_2.to_string (polygon.thermal_width) &
 					 " " & text_pad_connection & to_string (polygon.pad_connection) &
 					 " " & text_pad_technology & to_string (polygon.pad_technology),
@@ -5019,7 +5019,7 @@ package body et_kicad.pcb is
 										
 										p.relief_properties := (
 											technology	=> element (polygon_cursor).pad_technology,
-											gap			=> element (polygon_cursor).thermal_gap,
+											gap_max		=> element (polygon_cursor).thermal_gap,
 											width		=> element (polygon_cursor).thermal_width);
 
 										

@@ -72,8 +72,8 @@ package et_thermal_relief is
 	-- on the kind of pad_connection.
 
 	
-	keyword_thermal_width : constant string := "thermal_width";		
-	keyword_thermal_gap : constant string := "thermal_gap";
+	keyword_thermal_width	: constant string := "thermal_width";		
+	keyword_thermal_gap_max	: constant string := "thermal_gap_max";
 	
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
@@ -114,24 +114,25 @@ package et_thermal_relief is
 	function to_pad_technology (technology : in string) return type_pad_technology;
 
 	
-	-- CS not clear how much of this stuff is really important:
+
 	type type_relief_properties is record
-		-- whether SMT, THT or both kinds of pads connect with the fill_zone
+		-- Whether SMT, THT or both kinds of pads connect with the 
+		-- surrounding fill zone:
 		technology	: type_pad_technology := pad_technology_default;
 
 		-- The width of the thermal relief spokes.
 		-- Applies to ALL pads connected with the zone:
 		width		: type_thermal_width := type_thermal_width'first;
 
-		-- the space between pad and fill_zone -- CS: rename to thermal_length ?
-		gap			: type_thermal_gap := type_thermal_gap'first;
-		-- CS no need ? The gap is the clearance between terminal and zone.
+		-- The maximal space between pad and fill zone.
+		-- For spaces greater than gap_max no spoke will be generated:
+		gap_max		: type_thermal_gap := type_thermal_gap'first;
 	end record;
 	
 	
 	
 	text_thermal_width 	: constant string := "thermal_width";	
-	text_thermal_gap 	: constant string := "thermal_gap";	
+	text_thermal_gap_max: constant string := "thermal_gap_max";	
 	text_pad_connection : constant string := "pad_connection";	
 	text_pad_technology : constant string := "connected_with";	
 

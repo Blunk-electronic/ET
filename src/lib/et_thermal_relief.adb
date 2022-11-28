@@ -83,13 +83,9 @@ package body et_thermal_relief is
 		center : type_vector renames terminal.position.place;
 		outline : type_polygon renames terminal.outline;
 		
-		--result : type_relief;
-
 		spoke_length_min : type_float_internal_positive;
 		angle : type_angle := terminal.position.rotation;
 		relief : type_relief;
-
-		
 			
 	begin
 		relief.width := zone_linewidth;
@@ -108,8 +104,10 @@ package body et_thermal_relief is
 				
 			declare
 				distance_to_conducting_area : constant type_distance_to_conducting_area := 
-					get_distance_to_conducting_area (zone, center, angle, debug);
+					--get_distance_to_conducting_area (zone, center, angle, debug);
+					get_distance_to_conducting_area (zone, center, angle);
 
+				base_distance : type_float_internal_positive;
 			begin
 				if distance_to_conducting_area.exists then
 
@@ -118,34 +116,23 @@ package body et_thermal_relief is
 							& to_string (distance_to_conducting_area.distance));
 					end if;
 
+					base_distance := get_distance_to_border (outline, center, angle)
+						+ zone_linewidth_half_float;
 					
-					--spoke_length_min := 
-						--get_distance_to_border (outline, center, angle)
-						--+ zone_clearance_float
-						--+ zone_linewidth_half_float;
+					-- distance_to_conducting_area.distance
+					-- zone.relief_properties.gap
+					
+					spoke_length_min := base_distance + zone_clearance_float;
 
-					--relief.spokes.append ((
-						--start_point	=> center,
-						--end_point	=> move_by (center, angle, spoke_length_min)));
+					relief.spokes.append ((
+						start_point	=> center,
+						end_point	=> move_by (center, angle, spoke_length_min)));
 
 				end if;
 				angle := angle + 90.0;
 			end;
 		end loop;
 
-		---log (text => " terminal " & to_string (key (terminal.terminal))
-					 --& " pos " & to_string (terminal.position.place),
-					 --level => log_threshold + 4);
-
-				----distance_center_to_border := get_distance_to_border (
-					----terminal.outline, terminal.position.place, angle);
-
-				----log (text => " distance to border " & to_string (distance_center_to_border),
-					 ----level => log_threshold + 4);
-
-
-		
-		--return result;
 		return relief;
 	end make_relief;
 

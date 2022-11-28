@@ -1497,9 +1497,9 @@ is
 			expect_field_count (line, 2);
 			et_pcb_rw.relief_properties.width := to_distance (f (line, 2));
 
-		elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
+		elsif kw = keyword_thermal_gap_max then -- thermal_gap_max 0.7
 			expect_field_count (line, 2);
-			et_pcb_rw.relief_properties.gap := to_distance (f (line, 2));
+			et_pcb_rw.relief_properties.gap_max := to_distance (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -2326,9 +2326,9 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.thermal.width := to_distance (f (line, 2));
 
-		elsif kw = keyword_thermal_gap then -- thermal_gap 0.25
+		elsif kw = keyword_thermal_gap_max then -- thermal_gap_max 0.25
 			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.thermal.gap := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.thermal.gap_max := to_distance (f (line, 2));
 
 		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);
