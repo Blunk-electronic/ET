@@ -128,7 +128,14 @@ package et_geometry_1.et_polygons.offsetting is
 		offset		: in type_float_internal;
 		debug		: in boolean := false);
 
+	function offset_polygon (
+		polygon		: in type_polygon;
+		offset		: in type_float_internal;
+		debug		: in boolean := false)
+		return type_polygon;
 
+
+	
 	-- Offsets a list of polygons:
 	function offset_polygons (
 		polygons	: in pac_polygon_list.list;

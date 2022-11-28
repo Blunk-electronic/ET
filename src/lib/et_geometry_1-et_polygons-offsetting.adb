@@ -462,6 +462,21 @@ package body et_geometry_1.et_polygons.offsetting is
 	end offset_polygon;
 
 
+	
+	function offset_polygon (
+		polygon		: in type_polygon;
+		offset		: in type_float_internal;
+		debug		: in boolean := false)
+		return type_polygon
+	is
+		result : type_polygon := polygon;
+	begin
+		offset_polygon (result, offset, debug);
+		return result;
+	end offset_polygon;
+
+
+	
 
 	function offset_polygons (
 		polygons	: in pac_polygon_list.list;
