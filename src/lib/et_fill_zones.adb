@@ -215,6 +215,14 @@ package body et_fill_zones is
 	end fill_island;
 
 
+	function get_half_linewidth (
+		zone	: in type_zone)
+		return type_float_internal_positive
+	is begin
+		return type_float_internal_positive (zone.linewidth) * 0.5;		
+	end get_half_linewidth;
+
+	
 
 	function between_islands (
 		zone	: in type_zone;
@@ -223,12 +231,21 @@ package body et_fill_zones is
 		return boolean
 	is
 		proceed : aliased boolean := true;
+
+		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+
 		
 		procedure query_island (c : in pac_islands.cursor) is
 			island : type_island renames element (c);
+
+			-- Expand the outer border by half_linewidth so that the
+			-- real conducting area of the island is taken into account.
+			expanded : constant type_polygon :=
+				offset_polygon (island.outer_border, half_linewidth);
 			
 			status : constant type_point_status :=
-				get_point_status (island.outer_border, point, debug);
+				--get_point_status (island.outer_border, point, debug);
+				get_point_status (expanded, point, debug);
 		begin
 			case status.location is
 				when INSIDE | ON_VERTEX | ON_EDGE => proceed := false;
@@ -252,14 +269,22 @@ package body et_fill_zones is
 		result : pac_polygon_list.cursor; -- default no_element
 		proceed : aliased boolean := true;
 
+		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
 
 			procedure query_inner_border (b : in pac_polygon_list.cursor) is
 				inner_border : type_polygon renames element (b);
+
+				-- Shrink the inner border by half_linewidth so that the
+				-- real conducting area of the surrounding island is taken into account.
+				shrinked : constant type_polygon :=
+					offset_polygon (inner_border, - half_linewidth);
+
 				inner_border_status : constant type_point_status :=
-					get_point_status (inner_border, point, debug);
+					--get_point_status (inner_border, point, debug);
+					get_point_status (shrinked, point, debug);
 			begin
 				case inner_border_status.location is
 					when INSIDE =>
@@ -292,17 +317,34 @@ package body et_fill_zones is
 	is
 		location : type_location := NON_CONDUCTING_AREA;
 		proceed : aliased boolean := true;
+
+		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+
 		
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
+
+			-- Expand the outer border by half_linewidth so that the
+			-- real conducting area of the island is taken into account.
+			expanded : constant type_polygon :=
+				offset_polygon (island.outer_border, half_linewidth);
 			
 			island_status : constant type_point_status :=
-				get_point_status (island.outer_border, point, debug);
+				--get_point_status (island.outer_border, point, debug);
+				get_point_status (expanded, point, debug);
 
+			
 			procedure query_inner_border (b : in pac_polygon_list.cursor) is
 				inner_border : type_polygon renames element (b);
+
+				-- Shrink the inner border by half_linewidth so that the
+				-- real conducting area of the surrounding island is taken into account.
+				shrinked : constant type_polygon :=
+					offset_polygon (inner_border, - half_linewidth);
+				
 				inner_border_status : constant type_point_status :=
-					get_point_status (inner_border, point, debug);
+					--get_point_status (inner_border, point, debug);
+					get_point_status (shrinked, point, debug);
 			begin
 				case inner_border_status.location is
 					when OUTSIDE | ON_VERTEX | ON_EDGE =>
@@ -342,12 +384,21 @@ package body et_fill_zones is
 		result_distance : type_float_internal_positive := 0.0;
 		ray : constant type_ray := (start_point, direction);
 
+		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+		
 		use pac_vectors;
 		intersections : pac_vectors.list;
+
 		
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
 
+			-- Expand the outer border by half_linewidth so that the
+			-- real conducting area of the island is taken into account.
+			expanded : constant type_polygon :=
+				offset_polygon (island.outer_border, half_linewidth);
+
+			
 			procedure query_edge (e : in pac_edges.cursor) is
 				use pac_edges;
 				I : constant type_intersection_of_two_lines := 
@@ -364,14 +415,17 @@ package body et_fill_zones is
 					when others => null;
 				end case;
 			end query_edge;
+
 			
 		begin
 			if debug then
 				put_line (" island");
 			end if;
 
-			island.outer_border.edges.iterate (query_edge'access);
+			--island.outer_border.edges.iterate (query_edge'access);
+			expanded.edges.iterate (query_edge'access);
 		end query_island;
+
 		
 	begin
 		if debug then
@@ -413,7 +467,6 @@ package body et_fill_zones is
 	begin
 		case location is
 			when CONDUCTING_AREA => 
-				null; 
 				-- Start point is already in conducting area.
 				-- Return default values (see declarations above).
 				if debug then

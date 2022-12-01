@@ -67,6 +67,7 @@ package et_fill_zones is
 	use pac_contours;
 	
 	use pac_polygons;
+	use pac_polygon_offsetting;
 	use pac_polygon_list;
 	
 	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
@@ -163,14 +164,20 @@ package et_fill_zones is
 
 
 
+	function get_half_linewidth (
+		zone	: in type_zone)
+		return type_float_internal_positive;
+	
+
 -- QUERY POINT TO ZONE LOCATION
 
 	-- Returns true if the given point lies between
 	-- the islands. If the point lies exactly on the edge
 	-- of an island, then it is regarded as lying ON the island,
 	-- thus the return would be false.
-	-- NOTE: This function looks at the CENTER LINE of island borders
-	-- only. It does not care about the linewidth of the borders !
+	-- Takes the real conducting area of the island into account,
+	-- means, the full width of the border is considered as part
+	-- of the conducting area:
 	function between_islands (
 		zone	: in type_zone;
 		point	: in type_vector;
@@ -180,7 +187,10 @@ package et_fill_zones is
 
 	-- If the given point lies inside an inner border,
 	-- then this function returns the cursor to that inner border.
-	-- If the point lies elsewhere, then the result is no_element:
+	-- If the point lies elsewhere, then the result is no_element.
+	-- Takes the real conducting area of the surrounding island into account,
+	-- means, the full width of the border is considered as part
+	-- of the conducting area:
 	function get_inner_border (
 		zone	: in type_zone;
 		point	: in type_vector;
@@ -200,11 +210,11 @@ package et_fill_zones is
 		NON_CONDUCTING_AREA
 
 		-- NOTE: The border of islands and inner borders
-		-- has a certain linewidth. This linewidth is
-		-- NOT taken into account when it is about this
+		-- has a certain linewidth. The full linewidth
+		-- IS taken into account when it is about this
 		-- type of location !
-		-- The subprograms that use type_location look
-		-- at the CENTER LINE of the borders only !
+		-- The subprograms that use type_location regard
+		-- the full linewidth as conducting area !
 		); 
 
 	
@@ -231,7 +241,7 @@ package et_fill_zones is
 	-- Returns the distance of a point to the nearest
 	-- island into the given direction.
 	-- Assumes, the given start point is somewhere between the islands.
-	-- Returns just "false" if no conducting area found in
+	-- Returns just "false" if no island found in
 	-- the given direction.
 	-- See details in type specification of type_location:
 	function get_distance_to_nearest_island (
