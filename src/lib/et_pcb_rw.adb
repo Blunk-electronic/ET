@@ -140,6 +140,10 @@ package body et_pcb_rw is
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
+	procedure write_fill_linewidth (width : in type_track_width) is begin
+		write (keyword => keyword_fill_linewidth, parameters => to_string (width));
+	end;
+
 	
 	procedure write_line (line : in type_line'class) is begin
 		write (keyword => keyword_start, parameters => to_string (line.start_point));

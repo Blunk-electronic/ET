@@ -119,7 +119,9 @@ package et_pcb_rw is
 	keyword_locked : constant string := "locked"; -- layout related
 
 	
-	procedure write_width (width : in type_track_width);	
+	procedure write_width (width : in type_track_width);
+	
+	procedure write_fill_linewidth (width : in type_track_width);		
 
 	
 	-- writes start and end point of a line
