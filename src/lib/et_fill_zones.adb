@@ -269,12 +269,17 @@ package body et_fill_zones is
 		result : pac_polygon_list.cursor; -- default no_element
 		proceed : aliased boolean := true;
 
+		scratch : type_polygon;
+		scratch_2 : pac_polygon_list.cursor;
+		
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+
 		
 		procedure query_island (i : in pac_islands.cursor) is
 			island : type_island renames element (i);
 
-			procedure query_inner_border (b : in pac_polygon_list.cursor) is
+			
+			procedure query_lake (b : in pac_polygon_list.cursor) is
 				inner_border : type_polygon renames element (b);
 
 				-- Shrink the inner border by half_linewidth so that the
@@ -284,25 +289,68 @@ package body et_fill_zones is
 
 				inner_border_status : constant type_point_status :=
 					--get_point_status (inner_border, point, debug);
-					get_point_status (shrinked, point, debug);
+					--get_point_status (shrinked, point, debug);
+					get_point_status (shrinked, point);
 			begin
+				if debug then
+					put_line (" lake");
+				end if;
+
 				case inner_border_status.location is
 					when INSIDE =>
 						proceed := false;
 						result := b;
+						scratch := inner_border;
+
+						if debug then
+							put_line ("  inside");
+							--put_line ("  " & to_string (element (b)));
+						end if;
 						
 					when others => null; -- ignore this inner border
+
+						if debug then
+							put_line ("  outside");
+						end if;
+
 				end case;
-			end query_inner_border;
+			end query_lake;
 
 			
 		begin
-			iterate (island.inner_borders, query_inner_border'access, proceed'access);
+			if debug then
+				put_line (" island");
+			end if;
+
+			--iterate (island.inner_borders, query_lake'access, proceed'access);
+			iterate (island.inner_borders, query_lake'access);
+
+			if debug and result /= pac_polygon_list.no_element then
+				put_line (" *1 " & to_string (element (result)));
+			end if;
+
+			scratch_2 := result;
 		end query_island;
 
 		
 	begin
-		iterate (zone.islands, query_island'access, proceed'access);
+		if debug then
+			put_line ("get inner border");
+		end if;
+		
+		--iterate (zone.islands, query_island'access, proceed'access);
+		iterate (zone.islands, query_island'access);
+
+		if debug and result /= pac_polygon_list.no_element then
+			put_line (" *2 " & to_string (element (result)));
+			--put_line (" *3 " & to_string (scratch));
+			put_line (" *3 " & to_string (element (scratch_2)));
+		end if;
+
+		if debug then
+			put_line ("--------------");
+		end if;
+		
 		return result;
 	end get_inner_border;
 	
@@ -316,7 +364,7 @@ package body et_fill_zones is
 		return type_location
 	is
 		location : type_location := NON_CONDUCTING_AREA;
-		proceed : aliased boolean := true;
+		proceed_island : aliased boolean := true;
 
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 
@@ -331,10 +379,13 @@ package body et_fill_zones is
 			
 			island_status : constant type_point_status :=
 				--get_point_status (island.outer_border, point, debug);
-				get_point_status (expanded, point, debug);
+				--get_point_status (expanded, point, debug);
+				get_point_status (expanded, point);
+
+			proceed_lake : aliased boolean := true;
 
 			
-			procedure query_inner_border (b : in pac_polygon_list.cursor) is
+			procedure query_lake (b : in pac_polygon_list.cursor) is
 				inner_border : type_polygon renames element (b);
 
 				-- Shrink the inner border by half_linewidth so that the
@@ -344,30 +395,62 @@ package body et_fill_zones is
 				
 				inner_border_status : constant type_point_status :=
 					--get_point_status (inner_border, point, debug);
-					get_point_status (shrinked, point, debug);
+					--get_point_status (shrinked, point, debug);
+					get_point_status (shrinked, point);
 			begin
+				if debug then
+					put_line ("lake");
+				end if;
+
 				case inner_border_status.location is
 					when OUTSIDE | ON_VERTEX | ON_EDGE =>
-						proceed := false;
-						location := CONDUCTING_AREA;
+						--proceed := false;
+						--location := CONDUCTING_AREA;
 						--distance_to_border := island_status.distance;
+
+						if debug then
+							put_line (" outside");
+						end if;
 						
 					when INSIDE => null; -- ignore this inner border
+						location := NON_CONDUCTING_AREA;
+						proceed_lake := false;
+						if debug then
+							put_line (" inside");
+						end if;
+					
 				end case;
-			end query_inner_border;
+			end query_lake;
 
 			
 		begin -- query_island
+			if debug then
+				put_line ("island");
+			end if;
+			
 			case island_status.location is
 				when INSIDE | ON_VERTEX | ON_EDGE =>
-					iterate (island.inner_borders, query_inner_border'access, proceed'access);
+					location := CONDUCTING_AREA;
+					proceed_island := false;
+					
+					if debug then
+						put_line (" on island");
+					end if;
+					
+					iterate (island.inner_borders, query_lake'access, proceed_lake'access);
 										
 				when OUTSIDE => null; -- ignore this island
 			end case;
 		end query_island;
 		
 	begin
-		iterate (zone.islands, query_island'access, proceed'access);
+		-- location default is NON_CONDUCTING_AREA !
+		
+		if debug then
+			put_line ("get location of point" & to_string (point));
+		end if;
+
+		iterate (zone.islands, query_island'access, proceed_island'access);
 		return location;
 	end get_location;
 
@@ -380,14 +463,19 @@ package body et_fill_zones is
 		debug		: in boolean := false)
 		return type_distance_to_conducting_area
 	is
-		result_exists : boolean := true;
-		result_distance : type_float_internal_positive := 0.0;
+		result_edge_exists : boolean := true;
+		result_distance_to_edge : type_float_internal_positive := 0.0;
+		
+		result_centerline_exists : boolean := true;
+		result_distance_to_centerline : type_float_internal_positive := 0.0;
+		
 		ray : constant type_ray := (start_point, direction);
 
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		
 		use pac_vectors;
-		intersections : pac_vectors.list;
+		intersections_with_edges : pac_vectors.list;
+		intersections_with_centerlines : pac_vectors.list;
 
 		
 		procedure query_island (i : in pac_islands.cursor) is
@@ -397,6 +485,24 @@ package body et_fill_zones is
 			-- real conducting area of the island is taken into account.
 			expanded : constant type_polygon :=
 				offset_polygon (island.outer_border, half_linewidth);
+
+
+			procedure query_centerline (e : in pac_edges.cursor) is
+				use pac_edges;
+				I : constant type_intersection_of_two_lines := 
+					get_intersection (ray, element (e));
+			begin
+				case I.status is
+					when EXISTS =>
+						if debug then
+							put_line (" intersection at " & to_string (I.intersection.vector));
+						end if;
+
+						intersections_with_centerlines.append (I.intersection.vector);
+
+					when others => null;
+				end case;
+			end query_centerline;
 
 			
 			procedure query_edge (e : in pac_edges.cursor) is
@@ -410,7 +516,7 @@ package body et_fill_zones is
 							put_line (" intersection at " & to_string (I.intersection.vector));
 						end if;
 
-						intersections.append (I.intersection.vector);
+						intersections_with_edges.append (I.intersection.vector);
 
 					when others => null;
 				end case;
@@ -422,7 +528,7 @@ package body et_fill_zones is
 				put_line (" island");
 			end if;
 
-			--island.outer_border.edges.iterate (query_edge'access);
+			island.outer_border.edges.iterate (query_centerline'access);
 			expanded.edges.iterate (query_edge'access);
 		end query_island;
 
@@ -436,18 +542,57 @@ package body et_fill_zones is
 		-- in container "intersections":
 		zone.islands.iterate (query_island'access);
 
-		if is_empty (intersections) then
-			return (exists => false); -- no island found in given direction
+		if is_empty (intersections_with_edges) then
+			result_edge_exists := false; -- no island found in given direction
 		else
-			-- Extract from "intersections" the one that is closest to start_point:
-			remove_redundant_vectors (intersections);
-			sort_by_distance (intersections, start_point);
-		
-			return (
-				exists	 => true,
-				distance => get_distance_total (start_point, intersections.first_element));
+			-- Extract from intersections the one that is closest to start_point:
+			remove_redundant_vectors (intersections_with_edges);
+			sort_by_distance (intersections_with_edges, start_point);
 
+			result_distance_to_edge := 
+				get_distance_total (start_point, intersections_with_edges.first_element);
 		end if;
+
+
+		if is_empty (intersections_with_centerlines) then
+			result_centerline_exists := false; -- no centerline found in given direction
+		else
+			-- Extract from intersections the one that is closest to start_point:
+			remove_redundant_vectors (intersections_with_centerlines);
+			sort_by_distance (intersections_with_centerlines, start_point);
+
+			result_distance_to_centerline := 
+				get_distance_total (start_point, intersections_with_centerlines.first_element);
+		end if;
+
+		
+		case result_edge_exists is
+			when TRUE =>
+
+				case result_centerline_exists is
+					when TRUE =>
+						return (
+							edge_exists => true,
+							distance_to_edge =>	result_distance_to_edge,
+							centerline_exists => true,
+							distance_to_centerline => result_distance_to_centerline
+							);
+
+						
+					when FALSE =>
+						return (
+							edge_exists => true,
+							distance_to_edge =>	result_distance_to_edge,
+							centerline_exists => false);
+						
+				end case;
+
+			when FALSE =>
+				return (
+					edge_exists => false,
+					centerline_exists => false);
+		end case;
+		
 	end get_distance_to_nearest_island;
 
 	
@@ -459,19 +604,28 @@ package body et_fill_zones is
 		debug		: in boolean := false)
 		return type_distance_to_conducting_area
 	is
-		result_exists : boolean := true;
-		result_distance : type_float_internal_positive := 0.0;
+		result_edge_exists : boolean := true;
+		result_distance_to_edge : type_float_internal_positive := 0.0;
+		
+		result_centerline_exists : boolean := true;
+		result_distance_to_centerline : type_float_internal_positive := 0.0;
 
 		location : constant type_location := get_location (zone, start_point);
+		--location : constant type_location := get_location (zone, start_point, true);
 		inner_border_cursor : pac_polygon_list.cursor;
+
+		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+		shrinked : type_polygon;
 	begin
 		case location is
 			when CONDUCTING_AREA => 
 				-- Start point is already in conducting area.
-				-- Return default values (see declarations above).
 				if debug then
 					put_line ("in conducting area");
 				end if;
+
+				return in_conducting_area;
+				
 			
 			when NON_CONDUCTING_AREA =>
 				if debug then
@@ -486,25 +640,48 @@ package body et_fill_zones is
 					end if;
 
 					-- Point is between islands.
-					return get_distance_to_nearest_island (zone, start_point, direction, debug);
-					-- There might be no island into the given direction. In this case
-					-- the returned value would be just "false".
+					--return get_distance_to_nearest_island (zone, start_point, direction, debug);
+					return get_distance_to_nearest_island (zone, start_point, direction);
+
 				else
 					if debug then
 						put_line ("inside inner border");
 					end if;
 				
-					-- Point is inside an inner border:
-					inner_border_cursor := get_inner_border (zone, start_point);
+					-- Point is inside an inner border.
 					
-					-- There must be a distance to the inner border:					
-					result_distance := get_distance_to_border (
+					--inner_border_cursor := get_inner_border (zone, start_point);
+					inner_border_cursor := get_inner_border (zone, start_point, true);
+
+					if debug then
+						put_line ("border: " & to_string (element (inner_border_cursor)));
+					end if;
+
+					
+					-- Get the distance to the centerline of the inner border:					
+					result_distance_to_centerline := get_distance_to_border (
 						element (inner_border_cursor), start_point, direction);
 
+					if debug then
+						put_line ("distance to border" & to_string (result_distance_to_centerline));
+					end if;
+
+					
+					-- Shrink the inner border by half_linewidth so that the
+					-- real conducting area of the surrounding island is taken into account.
+					shrinked := offset_polygon (element (inner_border_cursor), - half_linewidth);
+					
+					result_distance_to_edge := get_distance_to_border (shrinked, start_point, direction);
+
+					return (
+						edge_exists				=> true,
+						distance_to_edge		=> result_distance_to_edge,
+						centerline_exists		=> true,
+						distance_to_centerline	=> result_distance_to_centerline);
+					
 				end if;
 		end case;
 
-		return (exists => true, distance => result_distance);
 	end get_distance_to_conducting_area;
 
 	

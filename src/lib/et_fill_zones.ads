@@ -87,7 +87,7 @@ package et_fill_zones is
 		-- They are a result of holes in the PCB, tracks, pads, vias, ...
 		-- We call such a void area an inner border (like a lake inside an island).
 		-- There may be several of them inside the island:
-		inner_borders	: pac_polygon_list.list; 
+		inner_borders	: pac_polygon_list.list; -- CS rename to lakes ?
 
 		-- The horizontal lines that fill the conducting area of the island:		
 		stripes			: pac_stripes.list;
@@ -230,19 +230,38 @@ package et_fill_zones is
 
 
 										
-	type type_distance_to_conducting_area (exists : boolean) is record
-		case exists is
-			when TRUE => distance : type_float_internal_positive;
+	type type_distance_to_conducting_area (
+		edge_exists : boolean;
+		centerline_exists : boolean)
+	is record
+		case edge_exists is
+			when TRUE => 
+				distance_to_edge : type_float_internal_positive;
+
+				case centerline_exists is
+					when TRUE => 
+						distance_to_centerline : type_float_internal_positive;
+					when FALSE => null;
+				end case;
+
 			when FALSE => null;
 		end case;
 	end record;	
 
 
+	in_conducting_area : constant type_distance_to_conducting_area := (
+		edge_exists				=> true,
+		distance_to_edge		=> 0.0,
+		centerline_exists		=> true,
+		distance_to_centerline	=> 0.0);
+
+	
 	-- Returns the distance of a point to the nearest
 	-- island into the given direction.
 	-- Assumes, the given start point is somewhere between the islands.
 	-- Returns just "false" if no island found in
 	-- the given direction.
+	-- CS return
 	-- See details in type specification of type_location:
 	function get_distance_to_nearest_island (
 		zone		: in type_zone;
