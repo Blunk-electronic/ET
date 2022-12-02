@@ -110,35 +110,39 @@ package body et_thermal_relief is
 
 				base_distance : type_float_internal_positive;
 			begin
-				--if distance_to_conducting_area /= in_conducting_area then
-					if distance_to_conducting_area.centerline_exists then
+				-- NOTE: There is no need to test whether the center of the terminal
+				-- is in the non-conducting area of the zone.
 
-						if debug then
-							put_line ("distance to conducting area:");
-							
-							put_line ("to edge " 
-								& to_string (distance_to_conducting_area.distance_to_edge));
+				-- If no centerline of exists in the current direction,
+				-- then no spoke will be computed:
+				if distance_to_conducting_area.centerline_exists then
 
-							put_line ("to centerline of border " 
-								& to_string (distance_to_conducting_area.distance_to_centerline));
-
-							
-						end if;
-
-						base_distance := get_distance_to_border (outline, center, angle)
-							+ zone_linewidth_half_float;
+					if debug then
+						put_line ("distance to conducting area:");
 						
-						-- distance_to_conducting_area.distance
-						-- zone.relief_properties.gap
+						put_line ("to edge " 
+							& to_string (distance_to_conducting_area.distance_to_edge));
+
+						put_line ("to centerline of border " 
+							& to_string (distance_to_conducting_area.distance_to_centerline));
+
 						
-						spoke_length_min := base_distance + zone_clearance_float;
-
-						relief.spokes.append ((
-							start_point	=> center,
-							end_point	=> move_by (center, angle, spoke_length_min)));
-
 					end if;
-				--end if;
+
+					base_distance := get_distance_to_border (outline, center, angle)
+						+ zone_linewidth_half_float;
+					
+					-- distance_to_conducting_area.distance
+					-- zone.relief_properties.gap
+					
+					spoke_length_min := base_distance + zone_clearance_float;
+
+					relief.spokes.append ((
+						start_point	=> center,
+						end_point	=> move_by (center, angle, spoke_length_min)));
+
+				end if;
+
 				angle := angle + 90.0;
 			end;
 		end loop;

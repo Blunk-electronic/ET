@@ -185,17 +185,16 @@ package et_fill_zones is
 		return boolean;
 
 
-	-- If the given point lies inside an inner border,
-	-- then this function returns the cursor to that inner border.
-	-- If the point lies elsewhere, then the result is no_element.
+	-- Assumes the given point is in a lake and returns the
+	-- contours of that lake.
 	-- Takes the real conducting area of the surrounding island into account,
-	-- means, the full width of the border is considered as part
+	-- means, the full width of the shoreline is considered as part
 	-- of the conducting area:
-	function get_inner_border (
+	function get_lake (
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return pac_polygon_list.cursor;
+		return type_polygon;
 	
 								  
 	type type_location is (
@@ -283,6 +282,9 @@ package et_fill_zones is
 		zone		: in type_zone;
 		start_point	: in type_vector;
 		direction	: in type_angle;
+		-- CS
+		-- location_known : in boolean := false;
+		-- location : in type_location := CONDUCTING_AREA
 		debug		: in boolean := false)
 		return type_distance_to_conducting_area;
 	

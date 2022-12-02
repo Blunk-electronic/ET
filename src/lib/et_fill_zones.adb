@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with et_exceptions;				use et_exceptions;
+
 
 package body et_fill_zones is
 
@@ -260,17 +262,14 @@ package body et_fill_zones is
 
 
 
-	function get_inner_border (
+	function get_lake (
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return pac_polygon_list.cursor
+		return type_polygon
 	is
-		result : pac_polygon_list.cursor; -- default no_element
+		result : type_polygon;
 		proceed : aliased boolean := true;
-
-		scratch : type_polygon;
-		scratch_2 : pac_polygon_list.cursor;
 		
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 
@@ -299,20 +298,14 @@ package body et_fill_zones is
 				case inner_border_status.location is
 					when INSIDE =>
 						proceed := false;
-						result := b;
-						scratch := inner_border;
+						result := inner_border;
 
 						if debug then
 							put_line ("  inside");
-							--put_line ("  " & to_string (element (b)));
+							--put_line ("  *0 " & to_string (element (result)));
 						end if;
 						
 					when others => null; -- ignore this inner border
-
-						if debug then
-							put_line ("  outside");
-						end if;
-
 				end case;
 			end query_lake;
 
@@ -322,14 +315,7 @@ package body et_fill_zones is
 				put_line (" island");
 			end if;
 
-			--iterate (island.inner_borders, query_lake'access, proceed'access);
-			iterate (island.inner_borders, query_lake'access);
-
-			if debug and result /= pac_polygon_list.no_element then
-				put_line (" *1 " & to_string (element (result)));
-			end if;
-
-			scratch_2 := result;
+			iterate (island.inner_borders, query_lake'access, proceed'access);
 		end query_island;
 
 		
@@ -338,21 +324,23 @@ package body et_fill_zones is
 			put_line ("get inner border");
 		end if;
 		
-		--iterate (zone.islands, query_island'access, proceed'access);
-		iterate (zone.islands, query_island'access);
-
-		if debug and result /= pac_polygon_list.no_element then
-			put_line (" *2 " & to_string (element (result)));
-			--put_line (" *3 " & to_string (scratch));
-			put_line (" *3 " & to_string (element (scratch_2)));
-		end if;
+		iterate (zone.islands, query_island'access, proceed'access);
 
 		if debug then
-			put_line ("--------------");
+			put_line (" " & to_string (result));
+		end if;
+
+		--if debug then
+			--put_line ("--------------");
+		--end if;
+
+		if proceed then
+			raise semantic_error_1 with "Point is not in a lake !"; 
+			-- CS output something more helpful
 		end if;
 		
 		return result;
-	end get_inner_border;
+	end get_lake;
 	
 
 	
@@ -612,7 +600,7 @@ package body et_fill_zones is
 
 		location : constant type_location := get_location (zone, start_point);
 		--location : constant type_location := get_location (zone, start_point, true);
-		inner_border_cursor : pac_polygon_list.cursor;
+		lake : type_polygon;
 
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		shrinked : type_polygon;
@@ -645,31 +633,30 @@ package body et_fill_zones is
 
 				else
 					if debug then
-						put_line ("inside inner border");
+						put_line ("inside lake");
 					end if;
 				
-					-- Point is inside an inner border.
+					-- Point is in a lake.
 					
-					--inner_border_cursor := get_inner_border (zone, start_point);
-					inner_border_cursor := get_inner_border (zone, start_point, true);
+					--lake := get_lake (zone, start_point, true);
+					lake := get_lake (zone, start_point);
 
-					if debug then
-						put_line ("border: " & to_string (element (inner_border_cursor)));
-					end if;
-
-					
-					-- Get the distance to the centerline of the inner border:					
-					result_distance_to_centerline := get_distance_to_border (
-						element (inner_border_cursor), start_point, direction);
-
-					if debug then
-						put_line ("distance to border" & to_string (result_distance_to_centerline));
-					end if;
+					--if debug then
+						--put_line ("lake: " & to_string (lake));
+					--end if;
 
 					
-					-- Shrink the inner border by half_linewidth so that the
+					-- Get the distance to the centerline of the shore:					
+					result_distance_to_centerline := get_distance_to_border (lake, start_point, direction);
+
+					--if debug then
+						--put_line ("distance to centerline of shore" & to_string (result_distance_to_centerline));
+					--end if;
+
+					
+					-- Shrink the shore by half_linewidth so that the
 					-- real conducting area of the surrounding island is taken into account.
-					shrinked := offset_polygon (element (inner_border_cursor), - half_linewidth);
+					shrinked := offset_polygon (lake, - half_linewidth);
 					
 					result_distance_to_edge := get_distance_to_border (shrinked, start_point, direction);
 
