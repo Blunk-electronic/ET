@@ -139,7 +139,8 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
-	keyword_isolation	: constant string := "isolation";
+	keyword_isolation		: constant string := "isolation";
+	keyword_fill_linewidth	: constant string := "fill_linewidth";
 
 	
 	type type_zone (fill_style : type_fill_style) 

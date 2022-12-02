@@ -1088,8 +1088,12 @@ is
 		-- write the board origin like "origin x 40 y 60"
 		write (
 			keyword		=> keyword_origin,
-			parameters	=> et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin));
-			
+			parameters	=> keyword_x & et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin.x) 
+				& space & keyword_y & et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin.y));
+		
+			--et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin));
+
+		
 		section_mark (section_board, FOOTER);			
 		section_mark (section_drawing_frames, FOOTER);
 	end query_frames;
@@ -1474,7 +1478,7 @@ is
 				section_mark (section_fill_zones_conductor, HEADER);
 
 				write_fill_style (us.polygons_conductor.fill_style);
-				write_width (us.polygons_conductor.linewidth);
+				write_fill_linewidth (us.polygons_conductor.linewidth);
 				write_priority (us.polygons_conductor.priority_level);
 				write_isolation (us.polygons_conductor.isolation);
 				
