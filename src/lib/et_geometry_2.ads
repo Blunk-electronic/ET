@@ -133,7 +133,13 @@ package et_geometry_2 is
 		grid	: in out type_grid;
 		scale	: in type_distance_positive);			
 	
-	function to_string (grid : in type_grid) return string;
+	function to_string (grid : in type_grid) 
+		return string;
+
+	
+	-- Returns the grid in the form: x 2.5 y 2.5
+	function to_string_2 (grid : in type_grid) 
+		return string;
 
 	
 	
@@ -527,8 +533,14 @@ package et_geometry_2 is
 		& axis_separator
 		& "rotation)";
 
-	
+
+	-- Outputs a point in the form: (x/y) 34.5 11.2:
 	function to_string (
+		point : in type_point) 
+		return string;
+
+	-- Outputs a point in the form: x 34.5 y 11.2:
+	function to_string_2 (
 		point : in type_point) 
 		return string;
 

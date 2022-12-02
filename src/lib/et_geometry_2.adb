@@ -239,10 +239,16 @@ package body et_geometry_2 is
 	end scale_grid;
 
 	
-	function to_string (grid : in type_grid) return string is begin
+	function to_string (grid : in type_grid) return string 
+	is begin
 		return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
 	end;
 
+	function to_string_2 (grid : in type_grid) return string 
+	is begin
+		return "x" & to_string (grid.x) 
+		& " y" & to_string (grid.y);
+	end;
 	
 	
 
@@ -898,6 +904,16 @@ package body et_geometry_2 is
 			& axis_separator
 			& to_string (point.y);
 	end to_string;
+
+
+	function to_string_2 (point : in type_point) 
+		return string 
+	is begin
+		return "x"
+			& to_string (point.x)
+			& " y"
+			& to_string (point.y);
+	end to_string_2;
 
 	
 	function round_to_string (

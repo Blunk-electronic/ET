@@ -272,15 +272,11 @@ is
 		section_mark (section_drawing_grid, HEADER);
 
 		section_mark (section_schematic, HEADER);
-		write (keyword => keyword_default, parameters => 
-				keyword_x & to_string (element (module_cursor).grid.x) & space &
-				keyword_y & to_string (element (module_cursor).grid.y));
+		write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).grid));
 		section_mark (section_schematic, FOOTER);
 
 		section_mark (section_board, HEADER);
-		write (keyword => keyword_default, parameters => 
-				keyword_x & to_string (element (module_cursor).board.grid.x) & space &
-				keyword_y & to_string (element (module_cursor).board.grid.y));
+		write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).board.grid));
 		section_mark (section_board, FOOTER);
 		
 		section_mark (section_drawing_grid, FOOTER);
@@ -1055,12 +1051,14 @@ is
 				
 				section_mark (section_sheet, FOOTER);
 			end query_sheet;
+
 			
 		begin -- write_sheet_descriptions
 			section_mark (section_sheet_descriptions, HEADER);
 			iterate (element (module_cursor).frames.descriptions, query_sheet'access);
 			section_mark (section_sheet_descriptions, FOOTER);
 		end write_sheet_descriptions;
+		
 		
 	begin -- query_frames
 		-- schematic frames:
@@ -1088,11 +1086,7 @@ is
 		-- write the board origin like "origin x 40 y 60"
 		write (
 			keyword		=> keyword_origin,
-			parameters	=> keyword_x & et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin.x) 
-				& space & keyword_y & et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin.y));
-		
-			--et_pcb_coordinates.pac_geometry_2.to_string (element (module_cursor).board.origin));
-
+			parameters	=> et_pcb_coordinates.pac_geometry_2.to_string_2 (element (module_cursor).board.origin));
 		
 		section_mark (section_board, FOOTER);			
 		section_mark (section_drawing_frames, FOOTER);
