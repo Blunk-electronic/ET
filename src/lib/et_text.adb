@@ -814,8 +814,8 @@ package body et_text is
 					--when 'y' => add (small_y);
 					--when 'z' => add (small_z);
 					
-					--when '0' => add (digit_0);
-					--when '1' => add (digit_1);
+					when '0' => add (digit_0);
+					when '1' => add (digit_1);
 					--when '2' => add (digit_2);
 					--when '3' => add (digit_3);
 					--when '4' => add (digit_4);

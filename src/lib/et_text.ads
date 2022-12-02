@@ -856,7 +856,8 @@ package et_text is
 
 
 		
-		---- LOWER CASE LETTERS:
+	-- LOWER CASE LETTERS:
+		
 		--small_a : constant type_character (1 .. 7) := (
 			--1	=> (x4, y2, x1, y2),
 			--2	=> (x1, y2, x0, y1),
@@ -1064,24 +1065,48 @@ package et_text is
 			 --3	=> (x0, y0, x4, y0)
 			--);
 
-		---- DIGITS
-		--digit_0 : constant type_character (1 .. 9) := (
-			 --1	=> (x0, y5, x0, y1),
-			 --2	=> (x0, y1, x1, y0),
-			 --3	=> (x1, y0, x3, y0),
-			 --4	=> (x3, y0, x4, y1),
-			 --5	=> (x4, y1, x4, y5),
-			 --6	=> (x4, y5, x3, y6),
-			 --7	=> (x3, y6, x1, y6),
-			 --8	=> (x1, y6, x0, y5),
-			 --9	=> (x0, y1, x4, y5)
-			--);
+	-- DIGITS
 		
-		--digit_1 : constant type_character (1 .. 3) := (
-			 --1	=> (x0, y4, x2, y6),
-			 --2	=> (x2, y6, x2, y0),
-			 --3	=> (x0, y0, x4, y0)
-			--);
+		digit_0 : constant type_character := (
+			segment_ct => 9,
+			segments => (									   
+				1	=> (x0, y5, x0, y1),
+				2	=> (x0, y1, x1, y0),
+				3	=> (x1, y0, x3, y0),
+				4	=> (x3, y0, x4, y1),
+				5	=> (x4, y1, x4, y5),
+				6	=> (x4, y5, x3, y6),
+				7	=> (x3, y6, x1, y6),
+				8	=> (x1, y6, x0, y5),
+				9	=> (x0, y1, x4, y5)),
+
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x3, y6),
+				6	=> set (x1, y6),
+				7	=> set (x0, y5),
+				8	=> set (x0, y1))
+		  );
+
+		
+		digit_1 : constant type_character := (
+			segment_ct => 3,
+			segments => (									   
+				1	=> (x0, y4, x2, y6),
+				2	=> (x2, y6, x2, y0),
+				3	=> (x0, y0, x4, y0)),
+			
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y6),
+				4	=> set (x0, y6))
+		  );
 
 		--digit_2 : constant type_character (1 .. 6) := (
 			 --1	=> (x0, y5, x1, y6),
