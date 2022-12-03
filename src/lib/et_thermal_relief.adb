@@ -137,7 +137,11 @@ package body et_thermal_relief is
 						put_line ("gap max " & to_string (relief_properties.gap_max));
 					end if;
 
-
+					-- The spoke length is the distance from center of terminal
+					-- to centerline of border.
+					-- If the resulting gap between terminal and conducting area
+					-- is less than the gap_max of the relief_properties, then
+					-- append the spoke to the relief:
 					border_to_centerline := D2CA.distance_to_centerline - D2CA.distance_to_edge;
 					
 					gap := D2CA.distance_to_centerline - border_to_centerline

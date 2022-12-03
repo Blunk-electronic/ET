@@ -229,10 +229,17 @@ package et_fill_zones is
 		return type_location;
 
 
-										
+
+	-- The distance between a point and a conducting area is a composite
+	-- of two distances. One is the distance to the edge of the conducting
+	-- area, the other is the distance to the center of the border of the
+	-- conducting area.
+	-- When the distance to a conducting area is computed, a ray is assumed
+	-- that starts at a certain point and travels into a given direction.
+	-- The ray can intersect an edge or the centerline of the border.
 	type type_distance_to_conducting_area (
-		edge_exists : boolean;
-		centerline_exists : boolean)
+		edge_exists			: boolean; -- ray intersects an edge or not
+		centerline_exists	: boolean) -- ray intersects a centerline or not
 	is record
 		case edge_exists is
 			when TRUE => 
@@ -244,11 +251,16 @@ package et_fill_zones is
 					when FALSE => null;
 				end case;
 
+			-- If the ray does not intersect an edge, then it never
+			-- intersects a centerline:
 			when FALSE => null;
 		end case;
 	end record;	
 
 
+	-- If the ray already starts in a conducting area then the
+	-- return of the functions get_distance_to_nearest_island and
+	-- get_distance_to_conducting_area is just this constant:
 	in_conducting_area : constant type_distance_to_conducting_area := (
 		edge_exists				=> true,
 		distance_to_edge		=> 0.0,
@@ -259,10 +271,6 @@ package et_fill_zones is
 	-- Returns the distance of a point to the nearest
 	-- island into the given direction.
 	-- Assumes, the given start point is somewhere between the islands.
-	-- Returns just "false" if no island found in
-	-- the given direction.
-	-- CS return
-	-- See details in type specification of type_location:
 	function get_distance_to_nearest_island (
 		zone		: in type_zone;
 		start_point	: in type_vector;
@@ -272,13 +280,8 @@ package et_fill_zones is
 
 
 	
-	-- Returns the distance to the conducting area
-	-- of a ray starting at start_point and running into
-	-- given direction. If the start point is already in
-	-- a conducting area, then the returned distance is zero.
-	-- Returns just "false" if no conducting area found in
-	-- the given direction.
-	-- See details in type specification of type_location:
+	-- Returns the distance of a point to the conducting area
+	-- in the given direction.
 	function get_distance_to_conducting_area (
 		zone		: in type_zone;
 		start_point	: in type_vector;
