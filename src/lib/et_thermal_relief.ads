@@ -175,13 +175,14 @@ package et_thermal_relief is
 	-- - zone linewidth
 	-- - pad geometry
 	-- - pad technology
-	-- - CS gap size ?
+	-- - max. gap between terminal and sourounding conducting area
 	function make_relief (
-		zone			: in type_zone'class;
-		terminal_cursor	: in pac_terminals_with_relief.cursor;
-		zone_clearance	: in type_track_clearance;
-		zone_linewidth	: in type_track_width;
-		debug			: in boolean := false)
+		zone				: in type_zone'class;
+		relief_properties	: in type_relief_properties;
+		terminal_cursor		: in pac_terminals_with_relief.cursor;
+		zone_clearance		: in type_track_clearance;
+		zone_linewidth		: in type_track_width;
+		debug				: in boolean := false)
 		return type_relief;
 	
 	package pac_reliefes is new doubly_linked_lists (type_relief); -- CS rename to pac_thermal_symbols ?
@@ -193,12 +194,13 @@ package et_thermal_relief is
 	-- - zone linewidth
 	-- - pad geometry
 	-- - pad technology
-	-- - CS gap size ?
+	-- - max. gap between terminals and sourounding conducting area
 	function make_reliefes (
-		zone			: in type_zone'class;
-		terminals		: in pac_terminals_with_relief.list;
-		zone_clearance	: in type_track_clearance; -- CS no need ?
-		zone_linewidth	: in type_track_width)
+		zone				: in type_zone'class;
+		relief_properties	: in type_relief_properties;
+		terminals			: in pac_terminals_with_relief.list;
+		zone_clearance		: in type_track_clearance;
+		zone_linewidth		: in type_track_width)
 		return pac_reliefes.list;
 	
 	

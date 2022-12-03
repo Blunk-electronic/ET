@@ -63,11 +63,12 @@ package body et_thermal_relief is
 														 
 
 	function make_relief (
-		zone			: in type_zone'class;
-		terminal_cursor	: in pac_terminals_with_relief.cursor;
-		zone_clearance	: in type_track_clearance;
-		zone_linewidth	: in type_track_width;
-		debug			: in boolean := false)
+		zone				: in type_zone'class;
+		relief_properties	: in type_relief_properties;					 
+		terminal_cursor		: in pac_terminals_with_relief.cursor;
+		zone_clearance		: in type_track_clearance;
+		zone_linewidth		: in type_track_width;
+		debug				: in boolean := false)
 		return type_relief
 	is
 		use pac_terminals;
@@ -83,7 +84,7 @@ package body et_thermal_relief is
 		center : type_vector renames terminal.position.place;
 		outline : type_polygon renames terminal.outline;
 		
-		spoke_length_min : type_float_internal_positive;
+		
 		angle : type_angle := terminal.position.rotation;
 		relief : type_relief;
 			
@@ -104,43 +105,50 @@ package body et_thermal_relief is
 			end if;
 				
 			declare
-				distance_to_conducting_area : constant type_distance_to_conducting_area := 
-					get_distance_to_conducting_area (zone, center, angle, debug);
-					--get_distance_to_conducting_area (zone, center, angle);
+				-- Get the distance from center of terminal to the 
+				-- conducting area in the current direction:
+				D2CA : constant type_distance_to_conducting_area := 
+					--get_distance_to_conducting_area (zone, center, angle, debug);
+					get_distance_to_conducting_area (zone, center, angle);
 
-				base_distance : type_float_internal_positive;
+				-- The distance from edge to centerline:
+				border_to_centerline : type_float_internal_positive;
+
+				-- The actual gap between terminal and conducting area:
+				gap : type_float_internal_positive;
+				
 			begin
 				-- NOTE: There is no need to test whether the center of the terminal
 				-- is in the non-conducting area of the zone.
 
-				-- If no centerline of exists in the current direction,
+				-- If no centerline exists in the current direction,
 				-- then no spoke will be computed:
-				if distance_to_conducting_area.centerline_exists then
+				if D2CA.centerline_exists then
 
 					if debug then
 						put_line ("distance to conducting area:");
 						
 						put_line ("to edge " 
-							& to_string (distance_to_conducting_area.distance_to_edge));
+							& to_string (D2CA.distance_to_edge));
 
 						put_line ("to centerline of border " 
-							& to_string (distance_to_conducting_area.distance_to_centerline));
+							& to_string (D2CA.distance_to_centerline));
 
-						
+						put_line ("gap max " & to_string (relief_properties.gap_max));
 					end if;
 
-					base_distance := get_distance_to_border (outline, center, angle)
-						+ zone_linewidth_half_float;
-					
-					-- distance_to_conducting_area.distance
-					-- zone.relief_properties.gap
-					
-					spoke_length_min := base_distance + zone_clearance_float;
 
-					relief.spokes.append ((
-						start_point	=> center,
-						end_point	=> move_by (center, angle, spoke_length_min)));
-
+					border_to_centerline := D2CA.distance_to_centerline - D2CA.distance_to_edge;
+					
+					gap := D2CA.distance_to_centerline - border_to_centerline
+						   - get_distance_to_border (outline, center, angle);
+					
+					if gap <= type_float_internal_positive (relief_properties.gap_max) then
+						
+						relief.spokes.append ((
+							start_point	=> center,
+							end_point	=> move_by (center, angle, D2CA.distance_to_centerline)));
+					end if;
 				end if;
 
 				angle := angle + 90.0;
@@ -152,21 +160,23 @@ package body et_thermal_relief is
 
 	
 	function make_reliefes (
-		zone			: in type_zone'class;
-		terminals		: in pac_terminals_with_relief.list;
-		zone_clearance	: in type_track_clearance;
-		zone_linewidth	: in type_track_width)
+		zone				: in type_zone'class;
+		relief_properties	: in type_relief_properties;
+		terminals			: in pac_terminals_with_relief.list;
+		zone_clearance		: in type_track_clearance;
+		zone_linewidth		: in type_track_width)
 		return pac_reliefes.list
 	is
 		result : pac_reliefes.list;
 
-		debug : boolean := true;
+		debug : boolean := false;
 		
 		use pac_terminals_with_relief;
 
 		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
 		begin
-			result.append (make_relief (zone, c, zone_clearance, zone_linewidth, debug));
+			result.append (make_relief (
+				zone, relief_properties, c, zone_clearance, zone_linewidth, debug));
 		end query_terminal;
 		
 	begin

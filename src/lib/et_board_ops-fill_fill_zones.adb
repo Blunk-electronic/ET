@@ -766,43 +766,19 @@ is
 
 
 		procedure make_thermal_reliefes is
-			--use pac_terminals_with_relief;
-			--use pac_reliefes;
-			--reliefes_pre : pac_reliefes.list;
-			--relief_cursor : pac_reliefes.cursor;
-
-			--procedure query_relief (relief : in out type_relief) is
-				--use pac_spokes;
-				--spoke_cursor : pac_spokes.cursor := relief.spokes.first;
-				--location_spoke_end : et_fill_zones.type_location;
-			--begin
-				--while spoke_cursor /= pac_spokes.no_element loop
-					--location_spoke_end := get_location (zone, element (spoke_cursor).end_point);
-					--next (spoke_cursor);
-				--end loop;
-			--end query_relief;
-			
 		begin
 			log (text => "making thermal reliefes", level => log_threshold + 4);
 
 			-- Delete all reliefes left over from the previous zone:
-			--terminal_reliefes.clear;
+			terminal_reliefes.clear;
 			
 			terminal_reliefes := make_reliefes (
-				zone			=> zone,
-				terminals		=> conductors_to_polygons_result.terminals_with_relief,
-				zone_clearance	=> clearance,
-				zone_linewidth	=> linewidth);
+				zone				=> zone,
+				relief_properties	=> relief_properties,								   
+				terminals			=> conductors_to_polygons_result.terminals_with_relief,
+				zone_clearance		=> clearance,
+				zone_linewidth		=> linewidth);
 
-			-- extract reliefes that connect with the zone
-			--relief_cursor := terminal_reliefes.first;
-			--while relief_cursor /= pac_reliefes.no_element loop
-				--terminal_reliefes.update_element (relief_cursor, query_relief'access);
-				--next (relief_cursor);
-			--end loop;
-
-			-- (Re)load the reliefes of the current zone:
-			--terminal_reliefes := reliefes_pre;
 		end make_thermal_reliefes;
 
 		
