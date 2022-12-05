@@ -586,10 +586,12 @@ package body et_fill_zones is
 	
 	
 	function get_distance_to_conducting_area (
-		zone		: in type_zone;
-		start_point	: in type_vector;
-		direction	: in type_angle;
-		debug		: in boolean := false)
+		zone			: in type_zone;
+		start_point		: in type_vector;
+		direction		: in type_angle;
+		location_known	: in type_location_known := false;
+		location		: in type_location := CONDUCTING_AREA;
+		debug			: in boolean := false)
 		return type_distance_to_conducting_area
 	is
 		result_edge_exists : boolean := true;
@@ -598,14 +600,32 @@ package body et_fill_zones is
 		result_centerline_exists : boolean := true;
 		result_distance_to_centerline : type_float_internal_positive := 0.0;
 
-		location : constant type_location := get_location (zone, start_point);
-		--location : constant type_location := get_location (zone, start_point, true);
+		location_computed : type_location;
 		lake : type_polygon;
 
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		shrinked : type_polygon;
 	begin
-		case location is
+		-- If the location of the start point is already known, then
+		-- use the given location for further steps.
+		-- Otherwise the location must be computed:
+		if location_known then
+			location_computed := location;
+
+			if debug then
+				put_line ("location of point already known");
+			end if;
+
+		else
+			if debug then
+				put_line ("compute location of point ...");
+			end if;
+
+			location_computed := get_location (zone, start_point);
+		end if;
+
+		
+		case location_computed is
 			when CONDUCTING_AREA => 
 				-- Start point is already in conducting area.
 				if debug then

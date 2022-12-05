@@ -95,21 +95,28 @@ package body et_thermal_relief is
 			new_line;
 			put_line ("terminal " & to_string (key (terminal.terminal))
 				& " pos. " & to_string (terminal.position.place)
-				& " angle " & to_string (terminal.position.rotation));
+				& " angle " & to_string (terminal.position.rotation)
+				& " gap max. " & to_string (relief_properties.gap_max));
 		end if;
 
 		
 		for i in 1 .. 4 loop
 			if debug then
-				put_line ("direction " & to_string (angle));
+				put_line (" direction " & to_string (angle));
 			end if;
 				
 			declare
 				-- Get the distance from center of terminal to the 
 				-- conducting area in the current direction:
 				D2CA : constant type_distance_to_conducting_area := 
-					--get_distance_to_conducting_area (zone, center, angle, debug);
-					get_distance_to_conducting_area (zone, center, angle);
+					get_distance_to_conducting_area (
+						zone			=> zone, 
+						start_point		=> center, 
+						direction		=> angle,
+						location_known	=> true,
+						location		=> NON_CONDUCTING_AREA,
+						debug			=> false);
+						--debug			=> true);						
 
 				-- The distance from edge to centerline:
 				border_to_centerline : type_float_internal_positive;
@@ -126,15 +133,14 @@ package body et_thermal_relief is
 				if D2CA.centerline_exists then
 
 					if debug then
-						put_line ("distance to conducting area:");
+						put_line (" distance to conducting area:");
 						
-						put_line ("to edge " 
+						put_line ("  to edge       " 
 							& to_string (D2CA.distance_to_edge));
 
-						put_line ("to centerline of border " 
+						put_line ("  to centerline " 
 							& to_string (D2CA.distance_to_centerline));
-
-						put_line ("gap max " & to_string (relief_properties.gap_max));
+						
 					end if;
 
 					-- The spoke length is the distance from center of terminal
@@ -146,8 +152,16 @@ package body et_thermal_relief is
 					
 					gap := D2CA.distance_to_centerline - border_to_centerline
 						   - get_distance_to_border (outline, center, angle);
+
+					if debug then
+						put_line (" gap between pad and conducting area " & to_string (gap));						
+					end if;
+
 					
 					if gap <= type_float_internal_positive (relief_properties.gap_max) then
+						if debug then
+							put_line ("  generate relief spoke");
+						end if;
 						
 						relief.spokes.append ((
 							start_point	=> center,
@@ -174,6 +188,7 @@ package body et_thermal_relief is
 		result : pac_reliefes.list;
 
 		debug : boolean := false;
+		--debug : boolean := true;
 		
 		use pac_terminals_with_relief;
 

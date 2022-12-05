@@ -218,6 +218,8 @@ package et_fill_zones is
 		); 
 
 	
+	type type_location_known is new boolean;
+	
 
 	-- Tests the given point whether it is in the conducting
 	-- area of a zone or outside the conducting area.
@@ -281,15 +283,21 @@ package et_fill_zones is
 
 	
 	-- Returns the distance of a point to the conducting area
-	-- in the given direction.
+	-- in the given direction. By default the argument
+	-- location_known is false. This means, that the location of
+	-- the given point must be determined by the function at first.
+	-- In that case, the argument "location" does not matter.
+	-- If the location is already known by the caller, then computing
+	-- time can be saved. The known location should be
+	-- passed explicitely by the caller. Location_known must be true and
+	-- the actual location given by "location".
 	function get_distance_to_conducting_area (
-		zone		: in type_zone;
-		start_point	: in type_vector;
-		direction	: in type_angle;
-		-- CS
-		-- location_known : in boolean := false;
-		-- location : in type_location := CONDUCTING_AREA
-		debug		: in boolean := false)
+		zone			: in type_zone;
+		start_point		: in type_vector;
+		direction		: in type_angle;
+		location_known	: in type_location_known := false;
+		location		: in type_location := CONDUCTING_AREA; -- don't care if location_known is false
+		debug			: in boolean := false)
 		return type_distance_to_conducting_area;
 	
 	
