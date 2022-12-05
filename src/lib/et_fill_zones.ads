@@ -76,26 +76,26 @@ package et_fill_zones is
 
 
 	-- Fill zones contain islands of conducting area. Inside the islands
-	-- lots of lakes can exist. Both islands and lakes have a shoreline
-	-- that consists of a centerline:
-	type type_shore is tagged record
-		centerline	: type_polygon;
-	end record;
-
+	-- lots of lakes can exist. Both, islands and lakes have a shoreline
+	-- that consists of a centerline.
 	
-	-- Islands have an outer edge where conducting material and
-	-- non-conducting material meet each other:
-	type type_shore_island is new type_shore with record
+	-- Islands have an OUTER edge where conducting material and
+	-- non-conducting material meet each other.
+	-- Islands are filled with lots of fill lines.
+	type type_shore_island is record
+		centerline	: type_polygon;
 		outer_edge	: type_polygon;
 	end record;
 
 	
-	-- Lakes have an inner edge where conducting material of the 
+	-- Lakes have an INNER edge where conducting material of the 
 	-- surrounding area and inner non-conducting material meet each other.
 	-- An island may have multiple inner lakes which are not filled with
 	-- conducting material.
 	-- They are a result of holes in the PCB, tracks, pads, vias, ...
-	type type_lake is new type_shore with record
+	-- A lake causes a cutout area inside an island:
+	type type_lake is record
+		centerline	: type_polygon;
 		inner_edge	: type_polygon;
 	end record;
 
@@ -227,7 +227,7 @@ package et_fill_zones is
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return type_polygon; -- CS return type_lake ?
+		return type_lake;
 	
 								  
 	type type_location is (

@@ -283,12 +283,10 @@ package body et_fill_zones is
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return type_polygon
+		return type_lake
 	is
-		result : type_polygon;
+		result : type_lake;
 		proceed : aliased boolean := true;
-		
-		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 
 		
 		procedure query_island (i : in pac_islands.cursor) is
@@ -311,7 +309,7 @@ package body et_fill_zones is
 				case lake_status.location is
 					when INSIDE =>
 						proceed := false;
-						result := lake.centerline;
+						result := lake;
 
 						if debug then
 							put_line ("  inside");
@@ -340,7 +338,8 @@ package body et_fill_zones is
 		iterate (zone.islands, query_island'access, proceed'access);
 
 		if debug then
-			put_line (" " & to_string (result));
+			put_line (" centerline " & to_string (result.centerline));
+			put_line (" inner edge " & to_string (result.inner_edge));
 		end if;
 
 		--if debug then
@@ -605,7 +604,7 @@ package body et_fill_zones is
 		result_distance_to_centerline : type_float_internal_positive := 0.0;
 
 		location_computed : type_location;
-		lake : type_polygon;
+		lake : type_lake;
 
 		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		shrinked : type_polygon;
@@ -668,21 +667,18 @@ package body et_fill_zones is
 					--if debug then
 						--put_line ("lake: " & to_string (lake));
 					--end if;
-
 					
 					-- Get the distance to the centerline of the shore:					
-					result_distance_to_centerline := get_distance_to_border (lake, start_point, direction);
+					result_distance_to_centerline := 
+						get_distance_to_border (lake.centerline, start_point, direction);
 
 					--if debug then
 						--put_line ("distance to centerline of shore" & to_string (result_distance_to_centerline));
 					--end if;
 
-					
-					-- Shrink the shore by half_linewidth so that the
-					-- real conducting area of the surrounding island is taken into account.
-					shrinked := offset_polygon (lake, - half_linewidth);
-					
-					result_distance_to_edge := get_distance_to_border (shrinked, start_point, direction);
+					-- Get the distance to the inner edge of the shore:
+					result_distance_to_edge := 
+						get_distance_to_border (lake.inner_edge, start_point, direction);
 
 					return (
 						edge_exists				=> true,
