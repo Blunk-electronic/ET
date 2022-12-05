@@ -1734,8 +1734,9 @@ is
 
 	-- Applies to fill zones in conductor layers only.
 	-- Parses a command like "board demo set zone fill solid/hatched"
-	-- or "board demo set set zone isolaton 0.4" and sets the value
-	-- in user specific settings..
+	-- or "board demo set set zone isolation 0.4" and sets the value
+	-- in user specific settings.
+	-- CS: Do a plausibility check of zone parameters against each other.
 	procedure set_fill_zone_properties is
 		kw_fill			: constant string := "fill";
 		kw_width		: constant string := "width";
@@ -1749,7 +1750,7 @@ is
 		
 		kw_connection	: constant string := "connection";
 		kw_thermal		: constant string := "thermal";
-		kw_gap			: constant string := "gap";
+		kw_gap_max		: constant string := "gapmax";
 
 		kw_log			: constant string := "log";
 		
@@ -1913,7 +1914,7 @@ is
 					if f (6) = kw_width then
 						update_element (generic_modules, module_cursor, set_thermal_width'access);
 
-					elsif f (6) = kw_gap then
+					elsif f (6) = kw_gap_max then
 						update_element (generic_modules, module_cursor, set_thermal_gap'access);
 
 					-- CS technology ?
@@ -1922,7 +1923,7 @@ is
 						raise syntax_error_1 with
 						"ERROR: Expect keywords " 
 							& enclose_in_quotes (kw_width) & " or "
-							& enclose_in_quotes (kw_gap) 
+							& enclose_in_quotes (kw_gap_max) 
 							& " after keyword " & enclose_in_quotes (kw_thermal) & " !";
 					end if;
 

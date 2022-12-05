@@ -658,9 +658,11 @@ Commands to set basic properties:
 ```
 board led_driver set zone fill solid # hatched
 ```
+The width of borders and fill lines:
 ```
 board led_driver set zone width 0.35
 ```
+The minimal clearance to other conducting objects:
 ```
 board led_driver set zone isolation 0.3
 ```
@@ -682,11 +684,13 @@ board led_driver set zone hatching border 0.4
 ```
 board led_driver set zone hatching spacing 1.1
 ```
+The linewidth of the spokes of a thermal symbol:
 ```
 board demo set zone thermal width 0.2
 ```
+The maximum gap (in a thermal symbol) between the pad and the surrounding conducting area:
 ```
-board demo set zone thermal gap 0.33
+board demo set zone thermal gapmax 0.33
 ```
 
 When filling zones a lot of logging data mey be generated.
