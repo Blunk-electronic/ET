@@ -651,7 +651,7 @@ is
 	end put_into_basket;
 
 
-	-- Fill the given zone that is in the given layer
+	-- Fills the given zone that is in the given layer
 	-- with the given linewidth and clearance to foreign conductor
 	-- objects. If a certain conductor object requires a greater
 	-- clearance, then that clearance will take precedence.
@@ -693,30 +693,30 @@ is
 
 
 		-- Iterates the islands, detects polygons that
-		-- form the inner borders. Inner borders are caused by objects
+		-- form the lakes (inside the islands). Lakes are caused by objects
 		-- that are completely inside a particular island.
-		-- Inner borders can be regarded as cutout areas inside an island.
-		procedure set_inner_borders is 
+		-- Implicitly, old islands are overwritten:
+		procedure set_lakes is 
 			island_cursor : pac_islands.cursor := zone.islands.first;
 
-			procedure make_inner_borders (
+			procedure make_lakes (
 				island : in out type_island)
 			is 
 				use pac_overlap_status;
 			begin
-				island.inner_borders := get_polygons (
+				island.lakes := get_polygons (
 					area		=> island.outer_border, 
 					polygons	=> cropping_basket,
 					status		=> to_set (B_INSIDE_A));
-			end make_inner_borders;					
+			end make_lakes;					
 				
 		begin
 			while island_cursor /= pac_islands.no_element loop
 				--put_line ("i");
-				zone.islands.update_element (island_cursor, make_inner_borders'access);
+				zone.islands.update_element (island_cursor, make_lakes'access);
 				next (island_cursor);
 			end loop;					
-		end set_inner_borders;
+		end set_lakes;
 
 		
 		-- Fills the islands according to the fill style
@@ -903,8 +903,8 @@ is
 		-- Assign the islands to the zone:
 		set_islands;
 
-		-- Assign inner borders to the islands of the zone:
-		set_inner_borders;
+		-- Assign lakes to the islands of the zone:
+		set_lakes;
 
 		if parent_net /= pac_nets.no_element then
 			make_thermal_reliefes; 

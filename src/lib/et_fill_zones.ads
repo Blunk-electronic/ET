@@ -85,9 +85,9 @@ package et_fill_zones is
 		
 		-- An island may have multiple inner areas which are not filled.
 		-- They are a result of holes in the PCB, tracks, pads, vias, ...
-		-- We call such a void area an inner border (like a lake inside an island).
+		-- We call such void areas "lakes".
 		-- There may be several of them inside the island:
-		inner_borders	: pac_polygon_list.list; -- CS rename to lakes ?
+		lakes			: pac_polygon_list.list;
 
 		-- The horizontal lines that fill the conducting area of the island:		
 		stripes			: pac_stripes.list;

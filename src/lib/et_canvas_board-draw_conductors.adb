@@ -211,7 +211,7 @@ is
 		
 	begin
 		island.outer_border.edges.iterate (draw_edge'access);
-		island.inner_borders.iterate (query_inner_border'access);
+		island.lakes.iterate (query_inner_border'access);
 		island.stripes.iterate (draw_stripe'access);
 	end query_island;
 
