@@ -676,7 +676,9 @@ is
 		conductors_to_polygons_result : type_conductor_to_polygons_result;
 		cropping_basket : pac_polygon_list.list;
 
-
+		half_linewidth_float : constant type_float_internal_positive :=
+			0.5 * type_float_internal_positive (linewidth);
+		
 		-- Iterates the islands and assigns them to the given zone.
 		-- This is about the outer border of the islands only.
 		procedure set_islands is
@@ -695,7 +697,7 @@ is
 		-- Iterates the islands, detects polygons that
 		-- form the lakes (inside the islands). Lakes are caused by objects
 		-- that are completely inside a particular island.
-		-- Implicitly, old islands are overwritten:
+		-- Old lakes are overwritten:
 		procedure set_lakes is 
 			island_cursor : pac_islands.cursor := zone.islands.first;
 
@@ -703,11 +705,31 @@ is
 				island : in out type_island)
 			is 
 				use pac_overlap_status;
+				centerlines : pac_polygon_list.list;
+				
+				procedure query_centerline (cl : in pac_polygon_list.cursor) is
+					centerline : type_polygon renames element (cl);
+				begin
+					-- The inner edges are obtained by shrinking the centerline
+					-- by half the fill linewidth:
+					island.lakes.append ((
+						centerline	=> centerline,
+						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
+				end query_centerline;
+				
 			begin
-				island.lakes := get_polygons (
+				-- Delete old lakes
+				island.lakes.clear;
+				
+				-- Get lakes inside the candidate island.
+				-- These are the centerlines of the lakes:
+				centerlines := get_polygons (
 					area		=> island.outer_border, 
 					polygons	=> cropping_basket,
 					status		=> to_set (B_INSIDE_A));
+
+				-- Iterate the centerlines and compute the inner edges.
+				centerlines.iterate (query_centerline'access);
 			end make_lakes;					
 				
 		begin

@@ -75,7 +75,42 @@ package et_fill_zones is
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
 
+	-- Fill zones contain islands of conducting area. Inside the islands
+	-- lots of lakes can exist. Both islands and lakes have a shoreline
+	-- that consists of a centerline:
+	type type_shore is tagged record
+		centerline	: type_polygon;
+	end record;
 
+	
+	-- Islands have an outer edge where conducting material and
+	-- non-conducting material meet each other:
+	type type_shore_island is new type_shore with record
+		outer_edge	: type_polygon;
+	end record;
+
+	
+	-- Lakes have an inner edge where conducting material of the 
+	-- surrounding area and inner non-conducting material meet each other.
+	-- An island may have multiple inner lakes which are not filled with
+	-- conducting material.
+	-- They are a result of holes in the PCB, tracks, pads, vias, ...
+	type type_lake is new type_shore with record
+		inner_edge	: type_polygon;
+	end record;
+
+	package pac_lakes is new doubly_linked_lists (type_lake);
+	use pac_lakes;
+
+	-- Iterates the lakes. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lakes	: in pac_lakes.list;
+		process	: not null access procedure (position : in pac_lakes.cursor);
+		proceed	: not null access boolean);
+
+
+	
+	
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
 	type type_island is record
@@ -83,11 +118,8 @@ package et_fill_zones is
 		-- An island has a single outer border (like a shoreline):
 		outer_border	: type_polygon;
 		
-		-- An island may have multiple inner areas which are not filled.
-		-- They are a result of holes in the PCB, tracks, pads, vias, ...
-		-- We call such void areas "lakes".
-		-- There may be several of them inside the island:
-		lakes			: pac_polygon_list.list;
+		--lakes			: pac_polygon_list.list;
+		lakes			: pac_lakes.list;
 
 		-- The horizontal lines that fill the conducting area of the island:		
 		stripes			: pac_stripes.list;
@@ -195,7 +227,7 @@ package et_fill_zones is
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return type_polygon;
+		return type_polygon; -- CS return type_lake ?
 	
 								  
 	type type_location is (

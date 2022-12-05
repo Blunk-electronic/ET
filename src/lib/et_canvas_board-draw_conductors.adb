@@ -182,7 +182,7 @@ is
 	
 	procedure query_island (i : in pac_islands.cursor) is
 		use pac_edges;
-		use pac_polygon_list;
+		use pac_lakes;
 		use pac_stripes;
 
 		island : type_island renames element (i);
@@ -196,9 +196,9 @@ is
 				height	=> self.frame_height);
 		end draw_edge;
 
-		procedure query_inner_border (i : in pac_polygon_list.cursor) is begin
-			element (i).edges.iterate (draw_edge'access);
-		end query_inner_border;
+		procedure query_lake (l : in pac_lakes.cursor) is begin
+			element (l).centerline.edges.iterate (draw_edge'access);
+		end query_lake;
 
 		procedure draw_stripe (s : in pac_stripes.cursor) is begin
 			draw_line (
@@ -211,7 +211,7 @@ is
 		
 	begin
 		island.outer_border.edges.iterate (draw_edge'access);
-		island.lakes.iterate (query_inner_border'access);
+		island.lakes.iterate (query_lake'access);
 		island.stripes.iterate (draw_stripe'access);
 	end query_island;
 

@@ -42,6 +42,21 @@ package body et_fill_zones is
 
 
 	procedure iterate (
+		lakes	: in pac_lakes.list;
+		process	: not null access procedure (position : in pac_lakes.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_lakes.cursor := lakes.first;
+	begin
+		while c /= pac_lakes.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+
+	procedure iterate (
 		islands	: in pac_islands.list;
 		process	: not null access procedure (position : in pac_islands.cursor);
 		proceed	: not null access boolean)
@@ -115,11 +130,13 @@ package body et_fill_zones is
 		end query_x_intersection;
 
 		
-		-- This procedure queries an inner border and appends
+		-- This procedure queries a lake and appends
 		-- the x-values of the candidate border to the main collection of
 		-- x-values:
-		procedure query_lake (i : in pac_polygon_list.cursor) is begin
-			status := get_point_status (element (i), start_point);
+		procedure query_lake (l : in pac_lakes.cursor) is
+			lake : type_lake renames element (l);
+		begin			
+			status := get_point_status (lake.centerline, start_point);
 
 			splice (
 				target	=> x_main,
@@ -131,7 +148,7 @@ package body et_fill_zones is
 					--put_line ("bottom: " & to_string (bottom));
 					--put_line ("height: " & to_string (height));
 					put_line ("status : " & to_string (
-						get_point_status (element (i), start_point, true)));
+						get_point_status (lake.centerline, start_point, true)));
 					
 					raise;
 		end query_lake;
@@ -278,18 +295,14 @@ package body et_fill_zones is
 			island : type_island renames element (i);
 
 			
-			procedure query_lake (b : in pac_polygon_list.cursor) is
-				lake : type_polygon renames element (b);
+			procedure query_lake (l : in pac_lakes.cursor) is
+				lake : type_lake renames element (l);
 
-				-- Shrink the inner border by half_linewidth so that the
-				-- real conducting area of the surrounding island is taken into account.
-				shrinked : constant type_polygon :=
-					offset_polygon (lake, - half_linewidth);
-
+				-- This takes the real conducting area of the surrounding 
+				-- island is taken into account:
 				lake_status : constant type_point_status :=
-					--get_point_status (lake, point, debug);
-					--get_point_status (shrinked, point, debug);
-					get_point_status (shrinked, point);
+					get_point_status (lake.inner_edge, point);
+				
 			begin
 				if debug then
 					put_line (" lake");
@@ -298,7 +311,7 @@ package body et_fill_zones is
 				case lake_status.location is
 					when INSIDE =>
 						proceed := false;
-						result := lake;
+						result := lake.centerline;
 
 						if debug then
 							put_line ("  inside");
@@ -373,18 +386,13 @@ package body et_fill_zones is
 			proceed_lake : aliased boolean := true;
 
 			
-			procedure query_lake (b : in pac_polygon_list.cursor) is
-				lake : type_polygon renames element (b);
+			procedure query_lake (l : in pac_lakes.cursor) is
+				lake : type_lake renames element (l);
 
-				-- Shrink the inner border by half_linewidth so that the
-				-- real conducting area of the surrounding island is taken into account.
-				shrinked : constant type_polygon :=
-					offset_polygon (lake, - half_linewidth);
-				
+				-- This takes the real conducting area of the surrounding island into account.
 				lake_status : constant type_point_status :=
-					--get_point_status (lake, point, debug);
-					--get_point_status (shrinked, point, debug);
-					get_point_status (shrinked, point);
+					get_point_status (lake.inner_edge, point);
+
 			begin
 				if debug then
 					put_line ("lake");
@@ -392,10 +400,6 @@ package body et_fill_zones is
 
 				case lake_status.location is
 					when OUTSIDE | ON_VERTEX | ON_EDGE =>
-						--proceed := false;
-						--location := CONDUCTING_AREA;
-						--distance_to_border := island_status.distance;
-
 						if debug then
 							put_line (" outside");
 						end if;
