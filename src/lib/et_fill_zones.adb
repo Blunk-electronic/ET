@@ -606,7 +606,6 @@ package body et_fill_zones is
 		location_computed : type_location;
 		lake : type_lake;
 
-		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
 		shrinked : type_polygon;
 	begin
 		-- If the location of the start point is already known, then
