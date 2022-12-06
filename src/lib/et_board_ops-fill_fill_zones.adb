@@ -694,6 +694,11 @@ is
 						outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
 					others		 => <>)); 
 
+				-- CS: Currently, the outer edge is just an expansion of the centerline.
+				-- The border is drawn with lines that have round caps. These caps cause
+				-- the outer edge to have rounded corners. The computation of the outer edge
+				-- should take this into account.
+				
 				--put_line ("islands total" & count_type'image (zone.islands.length));
 			end query_island;
 			
