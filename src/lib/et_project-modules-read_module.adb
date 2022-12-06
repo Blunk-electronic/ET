@@ -2298,7 +2298,7 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.fill_style := to_fill_style (f (line, 2));
 
-		elsif kw = keyword_fill_linewidth then -- fill_linewidth 0.3
+		elsif kw = keyword_linewidth then -- linewidth 0.3
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.linewidth := to_distance (f (line, 2));
 
@@ -2310,7 +2310,7 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.isolation := to_distance (f (line, 2));
 
-		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.5
+		elsif kw = keyword_spacing then -- spacing 0.5
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.spacing := to_distance (f (line, 2));
 

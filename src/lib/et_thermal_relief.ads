@@ -128,7 +128,8 @@ package et_thermal_relief is
 	
 	
 
-	keyword_relief_width_min	: constant string := "relief_width_min";		
+	keyword_relief_width_min	: constant string := "relief_width_min";
+	keyword_width_min			: constant string := "width_min";
 	keyword_relief_gap_max		: constant string := "relief_gap_max";
 	keyword_gap_max				: constant string := "gap_max";
 	

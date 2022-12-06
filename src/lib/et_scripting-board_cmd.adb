@@ -1737,16 +1737,6 @@ is
 	-- in user specific settings.
 	-- CS: Do a plausibility check of zone parameters against each other.
 	procedure set_fill_zone_properties is
-		kw_fill			: constant string := "fill";
-		kw_width		: constant string := "width";
-		kw_spacing		: constant string := "spacing";
-		kw_isolation	: constant string := "isolation";
-		kw_priority		: constant string := "priority";
-		
-		kw_easing		: constant string := "easing";
-		kw_style		: constant string := "style";
-		kw_radius		: constant string := "radius";
-
 		kw_log			: constant string := "log";
 		
 		use pac_generic_modules;
@@ -1757,13 +1747,13 @@ is
 		procedure expect_keywords is begin
 			raise syntax_error_1 with 
 				"ERROR: Expect keyword "
-				& enclose_in_quotes (kw_width) & comma
+				& enclose_in_quotes (keyword_linewidth) & comma
 				& enclose_in_quotes (keyword_connection) & comma
-				& enclose_in_quotes (kw_priority) & comma
-				& enclose_in_quotes (kw_spacing) & comma
+				& enclose_in_quotes (keyword_priority) & comma
+				& enclose_in_quotes (keyword_spacing) & comma
 				& enclose_in_quotes (keyword_relief) & comma
-				& enclose_in_quotes (kw_easing) & comma
-				& enclose_in_quotes (kw_isolation) & " or "
+				& enclose_in_quotes (keyword_easing) & comma
+				& enclose_in_quotes (keyword_isolation) & " or "
 				& enclose_in_quotes (kw_log) 
 				& " after keyword " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
@@ -1777,12 +1767,12 @@ is
 		end set_fill_style;
 
 		
-		procedure set_min_width (
+		procedure set_linewidth (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
 			module.board.user_settings.polygons_conductor.linewidth := to_distance (f (6));
-		end set_min_width;
+		end set_linewidth;
 
 		
 		procedure set_iso (
@@ -1853,23 +1843,23 @@ is
 		case get_field_count is
 			when 6 => 
 				-- board demo set zone fill solid/hatched
-				if f (5) = kw_fill then
+				if f (5) = keyword_fill then
 					update_element (generic_modules, module_cursor, set_fill_style'access);
 
-				-- board demo set zone width 0.25
-				elsif f (5) = kw_width then
-					update_element (generic_modules, module_cursor, set_min_width'access);
+				-- board demo set zone linewidth 0.25
+				elsif f (5) = keyword_linewidth then
+					update_element (generic_modules, module_cursor, set_linewidth'access);
 
 				-- board demo set zone spacing 0.3
-				elsif f (5) = kw_spacing then
+				elsif f (5) = keyword_spacing then
 					update_element (generic_modules, module_cursor, set_hatching_spacing'access);
 					
 				-- board demo set zone isolaton 0.4
-				elsif f (5) = kw_isolation then
+				elsif f (5) = keyword_isolation then
 					update_element (generic_modules, module_cursor, set_iso'access);
 					
 				-- board demo set zone priority 2
-				elsif f (5) = kw_priority then
+				elsif f (5) = keyword_priority then
 					update_element (generic_modules, module_cursor, set_priority'access);
 
 				-- board demo set zone connection thermal/solid
@@ -1886,27 +1876,27 @@ is
 				
 			when 7 =>
 				-- board demo set zone easing style none/chamfer/fillet
-				if f (5) = kw_easing then
+				if f (5) = keyword_easing then
 
-					if f (6) = kw_style then
+					if f (6) = keyword_style then
 						update_element (generic_modules, module_cursor, set_easing_style'access);
 
-					elsif f (6) = kw_radius then
+					elsif f (6) = keyword_radius then
 						update_element (generic_modules, module_cursor, set_easing_radius'access);
 
 					else
 						raise syntax_error_1 with
 							"ERROR: Expect keywords " 
-							& enclose_in_quotes (kw_style) & " or "
-							& enclose_in_quotes (kw_radius) 
-							& " after keyword " & enclose_in_quotes (kw_easing) & " !";
+							& enclose_in_quotes (keyword_style) & " or "
+							& enclose_in_quotes (keyword_radius) 
+							& " after keyword " & enclose_in_quotes (keyword_easing) & " !";
 					end if;
 
 
 				-- board demo set zone relief width_min/ gap_max 0.3
 				elsif f (5) = keyword_relief then
 
-					if f (6) = kw_width then
+					if f (6) = keyword_width_min then
 						update_element (generic_modules, module_cursor, set_thermal_width'access);
 
 					elsif f (6) = keyword_gap_max then
@@ -1917,7 +1907,7 @@ is
 					else
 						raise syntax_error_1 with
 						"ERROR: Expect keywords " 
-							& enclose_in_quotes (kw_width) & " or "
+							& enclose_in_quotes (keyword_width_min) & " or "
 							& enclose_in_quotes (keyword_gap_max) 
 							& " after keyword " & enclose_in_quotes (keyword_relief) & " !";
 					end if;

@@ -141,7 +141,7 @@ package body et_pcb_rw is
 	end;
 
 	procedure write_fill_linewidth (width : in type_track_width) is begin
-		write (keyword => keyword_fill_linewidth, parameters => to_string (width));
+		write (keyword => keyword_linewidth, parameters => to_string (width));
 	end;
 
 	

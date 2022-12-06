@@ -74,7 +74,11 @@ package et_fill_zones is
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
+	keyword_fill	: constant string := "fill";
+	keyword_style	: constant string := "style";
+	keyword_easing	: constant string := "easing";
 
+	
 	-- Fill zones contain islands of conducting area. Inside the islands
 	-- lots of lakes can exist. Both, islands and lakes have a shoreline
 	-- that consists of a centerline.
@@ -156,7 +160,8 @@ package et_fill_zones is
 	end record;
 	
 
-
+	keyword_spacing : constant string := "spacing";
+	
 	
 	procedure make_stripes (
 		island	: in out type_island;
@@ -176,8 +181,8 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
-	keyword_isolation		: constant string := "isolation";
-	keyword_fill_linewidth	: constant string := "fill_linewidth";
+	keyword_isolation	: constant string := "isolation"; -- CS rename
+	keyword_linewidth	: constant string := "linewidth";
 
 	
 	type type_zone (fill_style : type_fill_style) 
