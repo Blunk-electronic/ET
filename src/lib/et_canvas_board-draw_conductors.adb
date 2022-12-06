@@ -210,7 +210,7 @@ is
 		end draw_stripe;
 		
 	begin
-		island.outer_border.edges.iterate (draw_edge'access);
+		island.shore.centerline.edges.iterate (draw_edge'access);
 		island.lakes.iterate (query_lake'access);
 		island.stripes.iterate (draw_stripe'access);
 	end query_island;

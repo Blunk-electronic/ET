@@ -678,15 +678,21 @@ is
 
 		half_linewidth_float : constant type_float_internal_positive :=
 			0.5 * type_float_internal_positive (linewidth);
+
 		
 		-- Iterates the islands and assigns them to the given zone.
-		-- This is about the outer border of the islands only.
+		-- Computes the outer edges of the islands according to the
+		-- border-width of the candidate zone:
 		procedure set_islands is
 			
-			procedure query_island (i : in pac_polygon_list.cursor) is begin
+			procedure query_island (i : in pac_polygon_list.cursor) is 
+				island_centerline : type_polygon renames element (i);
+			begin
 				zone.islands.append ((
-					outer_border => element (i),
-					others		 => <>));					 
+					shore		 => (
+						centerline => island_centerline,
+						outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
+					others		 => <>)); 
 			end query_island;
 			
 		begin
@@ -724,7 +730,7 @@ is
 				-- Get lakes inside the candidate island.
 				-- These are the centerlines of the lakes:
 				centerlines := get_polygons (
-					area		=> island.outer_border, 
+					area		=> island.shore.centerline, 
 					polygons	=> cropping_basket,
 					status		=> to_set (B_INSIDE_A));
 

@@ -78,15 +78,9 @@ package et_fill_zones is
 	-- Fill zones contain islands of conducting area. Inside the islands
 	-- lots of lakes can exist. Both, islands and lakes have a shoreline
 	-- that consists of a centerline.
-	
-	-- Islands have an OUTER edge where conducting material and
-	-- non-conducting material meet each other.
-	-- Islands are filled with lots of fill lines.
-	type type_shore_island is record
-		centerline	: type_polygon;
-		outer_edge	: type_polygon;
-	end record;
 
+	
+-- LAKES
 	
 	-- Lakes have an INNER edge where conducting material of the 
 	-- surrounding area and inner non-conducting material meet each other.
@@ -110,19 +104,28 @@ package et_fill_zones is
 
 
 	
+-- ISLANDS
+	
+	-- Islands have a shore, consisting of an OUTER edge where conducting
+	-- material and non-conducting material meet each other.
+	-- Islands are filled with lots of fill lines.
+	type type_shore is record
+		centerline	: type_polygon;
+		outer_edge	: type_polygon;
+	end record;
+	
 	
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
 	type type_island is record
-		
-		-- An island has a single outer border (like a shoreline):
-		outer_border	: type_polygon;
-		
-		--lakes			: pac_polygon_list.list;
-		lakes			: pac_lakes.list;
+		-- The shoreline around the island:
+		shore	: type_shore;
+
+		-- The lakes inside the island:
+		lakes	: pac_lakes.list;
 
 		-- The horizontal lines that fill the conducting area of the island:		
-		stripes			: pac_stripes.list;
+		stripes	: pac_stripes.list;
 	end record;
 
 
@@ -139,7 +142,9 @@ package et_fill_zones is
 		process	: not null access procedure (position : in pac_islands.cursor);
 		proceed	: not null access boolean);
 
-	
+
+
+-- FILL STYLE	
 
 	type type_style (style : type_fill_style) is record
 		linewidth : type_track_width;
