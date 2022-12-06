@@ -1493,11 +1493,11 @@ is
 			expect_field_count (line, 2);
 			pad_connection := to_pad_connection (f (line, 2));
 			
-		elsif kw = keyword_thermal_width then -- thermal_width 0.3
+		elsif kw = keyword_relief_width_min then -- relief_width_min 0.3
 			expect_field_count (line, 2);
-			et_pcb_rw.relief_properties.width := to_distance (f (line, 2));
+			et_pcb_rw.relief_properties.width_min := to_distance (f (line, 2));
 
-		elsif kw = keyword_thermal_gap_max then -- thermal_gap_max 0.7
+		elsif kw = keyword_relief_gap_max then -- relief_gap_max 0.7
 			expect_field_count (line, 2);
 			et_pcb_rw.relief_properties.gap_max := to_distance (f (line, 2));
 
@@ -2322,11 +2322,11 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.thermal.technology := to_pad_technology (f (line, 2));
 
-		elsif kw = keyword_thermal_width then -- thermal_width 0.25
+		elsif kw = keyword_relief_width_min then -- relief_width_min 0.25
 			expect_field_count (line, 2);
-			user_settings_board.polygons_conductor.thermal.width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.thermal.width_min := to_distance (f (line, 2));
 
-		elsif kw = keyword_thermal_gap_max then -- thermal_gap_max 0.25
+		elsif kw = keyword_relief_gap_max then -- relief_gap_max 0.25
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.thermal.gap_max := to_distance (f (line, 2));
 
@@ -2341,6 +2341,8 @@ is
 		else
 			invalid_keyword (kw);
 		end if;
+
+		-- CS plausibility check ?
 	end read_user_settings_fill_zones_conductor;
 
 	

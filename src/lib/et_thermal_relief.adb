@@ -90,6 +90,7 @@ package body et_thermal_relief is
 			
 	begin
 		relief.width := zone_linewidth;
+		-- CS: Compare with relief_properties.width_min to ensure a lower limit
 
 		if debug then
 			new_line;

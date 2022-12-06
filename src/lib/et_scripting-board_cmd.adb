@@ -1842,7 +1842,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons_conductor.thermal.width := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.thermal.width_min := to_distance (f (7));
 		end set_thermal_width;	
 
 		

@@ -189,11 +189,9 @@ package body et_pcb_rw is
 	procedure write_thermal (thermal : in type_relief_properties) is
 		use et_pcb;
 	begin
-		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
-		-- CS might be a useless feature. inherited from kicad.
-		
-		write (keyword => keyword_thermal_width,   parameters => to_string (thermal.width));
-		write (keyword => keyword_thermal_gap_max, parameters => to_string (thermal.gap_max));	
+		write (keyword => keyword_pad_technology,   parameters => to_string (thermal.technology));
+		write (keyword => keyword_relief_width_min, parameters => to_string (thermal.width_min));
+		write (keyword => keyword_relief_gap_max,   parameters => to_string (thermal.gap_max));	
 	end;
 
 	

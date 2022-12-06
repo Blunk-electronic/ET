@@ -4381,10 +4381,10 @@ package body et_kicad.pcb is
 					 " smoothing/easing" & to_string (polygon.easing.style) &
 					 " " & keyword_easing_radius & pac_geometry_2.to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " " & text_thermal_gap_max & pac_geometry_2.to_string (polygon.thermal_gap) &
-					 " " & text_thermal_width & pac_geometry_2.to_string (polygon.thermal_width) &
-					 " " & text_pad_connection & to_string (polygon.pad_connection) &
-					 " " & text_pad_technology & to_string (polygon.pad_technology),
+					 " " & keyword_relief_gap_max & pac_geometry_2.to_string (polygon.thermal_gap) &
+					 " " & keyword_relief_width_min & pac_geometry_2.to_string (polygon.thermal_width) &
+					 " " & keyword_pad_connection & to_string (polygon.pad_connection) &
+					 " " & keyword_pad_technology & to_string (polygon.pad_technology),
 					 level => log_threshold + 3);
 
 				-- CS log corner points
@@ -5020,7 +5020,7 @@ package body et_kicad.pcb is
 										p.relief_properties := (
 											technology	=> element (polygon_cursor).pad_technology,
 											gap_max		=> element (polygon_cursor).thermal_gap,
-											width		=> element (polygon_cursor).thermal_width);
+											width_min	=> element (polygon_cursor).thermal_width);
 
 										
 										load_segments (p, (
