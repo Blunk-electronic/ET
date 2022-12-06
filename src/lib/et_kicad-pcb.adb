@@ -4383,7 +4383,7 @@ package body et_kicad.pcb is
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
 					 " " & keyword_relief_gap_max & pac_geometry_2.to_string (polygon.thermal_gap) &
 					 " " & keyword_relief_width_min & pac_geometry_2.to_string (polygon.thermal_width) &
-					 " " & keyword_pad_connection & to_string (polygon.pad_connection) &
+					 " " & keyword_connection & to_string (polygon.pad_connection) &
 					 " " & keyword_pad_technology & to_string (polygon.pad_technology),
 					 level => log_threshold + 3);
 

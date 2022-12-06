@@ -684,13 +684,13 @@ board led_driver set zone hatching border 0.4
 ```
 board led_driver set zone hatching spacing 1.1
 ```
-The linewidth of the spokes of a thermal symbol:
+The minimal linewidth of the spokes of a thermal symbol:
 ```
-board demo set zone thermal width 0.2
+board demo set zone relief width_min 0.2
 ```
 The maximum gap (in a thermal symbol) between the pad and the surrounding conducting area:
 ```
-board demo set zone thermal gapmax 0.33
+board demo set zone relief gap_max 0.33
 ```
 
 When filling zones a lot of logging data mey be generated.

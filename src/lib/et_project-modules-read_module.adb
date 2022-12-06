@@ -1489,7 +1489,7 @@ is
 			expect_field_count (line, 2);
 			et_pcb_rw.relief_properties.technology := to_pad_technology (f (line, 2));
 
-		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
+		elsif kw = keyword_connection then -- connection thermal/solid
 			expect_field_count (line, 2);
 			pad_connection := to_pad_connection (f (line, 2));
 			
@@ -2314,7 +2314,7 @@ is
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.spacing := to_distance (f (line, 2));
 
-		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
+		elsif kw = keyword_connection then -- connection thermal/solid
 			expect_field_count (line, 2);
 			user_settings_board.polygons_conductor.connection := to_pad_connection (f (line, 2));
 

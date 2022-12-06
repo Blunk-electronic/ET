@@ -63,17 +63,10 @@ package et_thermal_relief is
 	use pac_polygons;
 	
 	use pac_geometry_2;
-
 	
-	-- A fill_zone in a signal layer is usually connected with 
-	-- THT or SMD pads (or both) via thermals, solid (or not at all).
-	-- For this reason we define a controlled type here because some
-	-- properties may exist (or may not exists) depending
-	-- on the kind of pad_connection.
 
-	
-	keyword_relief_width_min	: constant string := "relief_width_min";		
-	keyword_relief_gap_max		: constant string := "relief_gap_max";
+	keyword_relief : constant string := "relief";
+
 	
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
@@ -82,16 +75,18 @@ package et_thermal_relief is
 		range thermal_width_min .. thermal_width_max;
 
 	
-	-- If a terminal is connected/associated with a polyon, then
+	-- If a terminal is connected/associated with a polygon, then
 	-- this is the space between pad and fill_zone:
 	thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
 	thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
 	subtype type_thermal_gap is type_track_clearance range thermal_gap_min .. thermal_gap_max;
 
 
+	
 	-- Polygons which are connected with a net
 	-- can be connected with pads by thermals or solid:
-	keyword_pad_connection : constant string := "pad_connection";
+	keyword_connection : constant string := "connection";
+	
 	type type_pad_connection is (THERMAL, SOLID);
 	pad_connection_default : constant type_pad_connection := THERMAL;
 
@@ -131,9 +126,13 @@ package et_thermal_relief is
 		gap_max		: type_thermal_gap := type_thermal_gap'first;
 	end record;
 	
+	
 
-
-
+	keyword_relief_width_min	: constant string := "relief_width_min";		
+	keyword_relief_gap_max		: constant string := "relief_gap_max";
+	keyword_gap_max				: constant string := "gap_max";
+	
+	
 	type type_terminal_with_relief is record
 		-- The position, face and rotation of the terminal in the board:
 		position	: type_terminal_position_fine;

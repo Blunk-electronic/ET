@@ -229,7 +229,7 @@ package body et_pcb_rw is
 	procedure write_pad_connection (connection : in type_pad_connection) is
 		use et_pcb;
 	begin
-		write (keyword => keyword_pad_connection, parameters => to_string (connection));
+		write (keyword => keyword_connection, parameters => to_string (connection));
 	end;
 
 	

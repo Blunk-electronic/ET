@@ -1732,7 +1732,6 @@ is
 -- ROUTE / TRACK / POLYGON
 
 
-	-- Applies to fill zones in conductor layers only.
 	-- Parses a command like "board demo set zone fill solid/hatched"
 	-- or "board demo set set zone isolation 0.4" and sets the value
 	-- in user specific settings.
@@ -1747,10 +1746,6 @@ is
 		kw_easing		: constant string := "easing";
 		kw_style		: constant string := "style";
 		kw_radius		: constant string := "radius";
-		
-		kw_connection	: constant string := "connection";
-		kw_thermal		: constant string := "thermal";
-		kw_gap_max		: constant string := "gapmax";
 
 		kw_log			: constant string := "log";
 		
@@ -1763,10 +1758,10 @@ is
 			raise syntax_error_1 with 
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (kw_width) & comma
-				& enclose_in_quotes (kw_connection) & comma
+				& enclose_in_quotes (keyword_connection) & comma
 				& enclose_in_quotes (kw_priority) & comma
 				& enclose_in_quotes (kw_spacing) & comma
-				& enclose_in_quotes (kw_thermal) & comma
+				& enclose_in_quotes (keyword_relief) & comma
 				& enclose_in_quotes (kw_easing) & comma
 				& enclose_in_quotes (kw_isolation) & " or "
 				& enclose_in_quotes (kw_log) 
@@ -1878,7 +1873,7 @@ is
 					update_element (generic_modules, module_cursor, set_priority'access);
 
 				-- board demo set zone connection thermal/solid
-				elsif f (5) = kw_connection then
+				elsif f (5) = keyword_connection then
 					update_element (generic_modules, module_cursor, set_connection'access);
 
 				-- board demo set zone log NORMAL/HIGH/INSANE
@@ -1908,23 +1903,23 @@ is
 					end if;
 
 
-				-- board demo set zone thermal width/gap 0.3
-				elsif f (5) = kw_thermal then
+				-- board demo set zone relief width_min/ gap_max 0.3
+				elsif f (5) = keyword_relief then
 
 					if f (6) = kw_width then
 						update_element (generic_modules, module_cursor, set_thermal_width'access);
 
-					elsif f (6) = kw_gap_max then
+					elsif f (6) = keyword_gap_max then
 						update_element (generic_modules, module_cursor, set_thermal_gap'access);
 
-					-- CS technology ?
+					-- CS technology ?	
 						
 					else
 						raise syntax_error_1 with
 						"ERROR: Expect keywords " 
 							& enclose_in_quotes (kw_width) & " or "
-							& enclose_in_quotes (kw_gap_max) 
-							& " after keyword " & enclose_in_quotes (kw_thermal) & " !";
+							& enclose_in_quotes (keyword_gap_max) 
+							& " after keyword " & enclose_in_quotes (keyword_relief) & " !";
 					end if;
 
 					
