@@ -693,6 +693,8 @@ is
 						centerline => island_centerline,
 						outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
 					others		 => <>)); 
+
+				--put_line ("islands total" & count_type'image (zone.islands.length));
 			end query_island;
 			
 		begin
@@ -703,7 +705,6 @@ is
 		-- Iterates the islands, detects polygons that
 		-- form the lakes (inside the islands). Lakes are caused by objects
 		-- that are completely inside a particular island.
-		-- Old lakes are overwritten:
 		procedure set_lakes is 
 			island_cursor : pac_islands.cursor := zone.islands.first;
 
@@ -724,9 +725,6 @@ is
 				end query_centerline;
 				
 			begin
-				-- Delete old lakes
-				island.lakes.clear;
-				
 				-- Get lakes inside the candidate island.
 				-- These are the centerlines of the lakes:
 				centerlines := get_polygons (
@@ -827,7 +825,7 @@ is
 		--end if;
 
 		
-		-- Remove the old fill:
+		-- Remove the old fill (incl. islands, lakes and thermal reliefes):
 		zone.islands := no_islands;
 		
 		-- Convert the contour of the candidate fill zone to a polygon.

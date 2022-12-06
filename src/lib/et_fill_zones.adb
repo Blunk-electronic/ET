@@ -584,8 +584,6 @@ package body et_fill_zones is
 
 		location_computed : type_location;
 		lake : type_lake;
-
-		shrinked : type_polygon;
 	begin
 		-- If the location of the start point is already known, then
 		-- use the given location for further steps.
