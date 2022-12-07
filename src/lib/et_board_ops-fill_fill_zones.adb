@@ -722,11 +722,16 @@ is
 				procedure query_centerline (cl : in pac_polygon_list.cursor) is
 					centerline : type_polygon renames element (cl);
 				begin
+					if debug then
+						put_line ("   centerline");
+					end if;
+
 					-- The inner edges are obtained by shrinking the centerline
 					-- by half the fill linewidth:
 					island.lakes.append ((
 						centerline	=> centerline,
-						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
+						--inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
+						inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
 				end query_centerline;
 				
 			begin
@@ -743,7 +748,11 @@ is
 				
 		begin
 			while island_cursor /= pac_islands.no_element loop
-				--put_line ("i");
+
+				if debug then
+					put_line ("  island");
+				end if;
+
 				zone.islands.update_element (island_cursor, make_lakes'access);
 				next (island_cursor);
 			end loop;					
@@ -818,8 +827,10 @@ is
 			 & to_string (get_corner_nearest_to_origin (zone)),
 			level => log_threshold + 3);
 
-	
-		--put_line ("fill zone");
+
+		if debug then
+			put_line ("fill zone");
+		end if;
 		
 		log_indentation_up;
 
@@ -832,8 +843,13 @@ is
 		
 		-- Remove the old fill (incl. islands, lakes and thermal reliefes):
 		zone.islands := no_islands;
+
 		
-		-- Convert the contour of the candidate fill zone to a polygon.
+		-- Convert the contour of the candidate fill zone to a polygon:
+		if debug then
+			put_line (" convert contour to polygon");
+		end if;
+		
 		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
 		-- NOTE: The SHRINK argument applies to the approximation mode of 
 		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
@@ -861,8 +877,6 @@ is
 			zone		=> zone_polygon,
 			line_width	=> linewidth);
 
-		--put_line ("A");
-
 		
 		-- Now we start collecting contours of objects inside the zone.
 		-- They will be put in the cropping basket.
@@ -872,8 +886,6 @@ is
 		
 		-- Collect holes in basket:
 		put_into_basket (cropping_basket, holes);
-		--put_line ("A2");
-
 
 		
 		-- Get the contours of all conductor objects in the affected layer
@@ -889,7 +901,6 @@ is
 			parent_net		=> parent_net);
 
 		put_into_basket (cropping_basket, conductors_to_polygons_result.polygons);
-		--put_line ("A3");
 
 
 		
@@ -906,7 +917,12 @@ is
 		
 
 		-- Union the content of the cropping basket as much as possible:
-		multi_union (cropping_basket, debug);
+		if debug then
+			put_line (" union cropping basket");
+		end if;
+		
+		--multi_union (cropping_basket, debug);
+		multi_union (cropping_basket);
 		
 		-- Now the basket is ready to crop its content with the islands.
 		-- The result are even more islands:
@@ -918,34 +934,57 @@ is
 		--multi_union_2 (cropping_basket, debug); -- debug messages on
 		--multi_union (cropping_basket);
 
-		--if debug then
-			--put_line ("B1");
-		--end if;
+		if debug then
+			put_line (" crop islands with cropping basket");
+		end if;
 		
 		islands := multi_crop_2 (
 			polygon_B_list	=> islands,
 			polygon_A_list	=> cropping_basket,
 			debug			=> false);
 
-		--if debug then
-			--put_line ("C");
-		--end if;
+
 		
 		-- Assign the islands to the zone:
+		if debug then
+			put_line (" set islands");
+		end if;
+
 		set_islands;
 
+
+		
 		-- Assign lakes to the islands of the zone:
+		if debug then
+			put_line (" set lakes");
+		end if;
+
 		set_lakes;
 
+
+
+		
 		if parent_net /= pac_nets.no_element then
+
+			if debug then
+				put_line (" make thermal reliefes");
+			end if;
+			
 			make_thermal_reliefes; 
 			-- bases on the inner borders that we just computed. see statement above
 		end if;
+
+
+
 		
 		-- Fill the islands with stripes:
+		if debug then
+			put_line (" fill islands");
+		end if;
+
 		fill_islands;
 
-		--put_line ("E");
+
 		
 		log_indentation_down;
 		
@@ -1059,8 +1098,9 @@ is
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
 						clearance	=> get_greatest (zone.isolation, net_class.clearance),
-						parent_net	=> net_cursor
-						--debug		=> true
+						parent_net	=> net_cursor,
+						--debug		=> false,
+						debug		=> true
 						);
 
 					zone.reliefes := terminal_reliefes;
