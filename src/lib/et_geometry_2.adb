@@ -118,6 +118,26 @@ package body et_geometry_2 is
 		end if;
 	end clip_distance;
 
+
+	procedure limit_to_maximum (
+		distance	: in out type_distance;
+		maximum		: in type_distance)
+	is begin
+		if distance > maximum then
+			distance := maximum;
+		end if;
+	end limit_to_maximum;
+
+	
+	procedure limit_to_minimum (
+		distance	: in out type_distance;
+		minimum		: in type_distance)
+	is begin
+		if distance < minimum then
+			distance := minimum;
+		end if;
+	end limit_to_minimum;
+
 	
 	
 	function mil_to_distance (mil : in string) return type_distance is begin

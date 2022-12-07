@@ -87,6 +87,23 @@ package et_geometry_2 is
 	procedure clip_distance (d : in out type_distance);
 
 
+	-- Limits a distance to a given maximum.
+	-- Examples: 
+	-- 1. distance = 100.0, maximum = 80.0 -> distance becomes 80.0
+	-- 2. distance =  70.0, maximum = 80.0 -> distance remains 70.0
+	procedure limit_to_maximum (
+		distance	: in out type_distance;
+		maximum		: in type_distance);
+
+	-- Limits a distance to a given minimum.
+	-- Examples: 
+	-- 1. distance =  80.0, minimum = 70.0 -> distance remains 80.0
+	-- 2. distance =  60.0, minimum = 70.0 -> distance becomes 70.0
+	procedure limit_to_minimum (
+		distance	: in out type_distance;
+		minimum		: in type_distance);
+
+
 	
 	-- Converts a mil number (given as a string) to millimeters.	
 	function mil_to_distance (mil : in string) return type_distance;
