@@ -74,30 +74,35 @@ package body et_thermal_relief is
 		use pac_terminals;
 		use pac_terminals_with_relief;
 		terminal : type_terminal_with_relief renames element (terminal_cursor);
-
-		zone_clearance_float : constant type_float_internal_positive := 
-			type_float_internal_positive (zone_clearance);
-
-		zone_linewidth_half_float : constant type_float_internal_positive :=
-			0.5 * type_float_internal_positive (zone_linewidth);
 		
 		center : type_vector renames terminal.position.place;
 		outline : type_polygon renames terminal.outline;
-		
 		
 		angle : type_angle := terminal.position.rotation;
 		relief : type_relief;
 			
 	begin
+		-- CS: 
+		-- 1. test thermal_relief on/off flag (see et_terminals.type_terminal)
+		--    If off, then no thermal relief is to be generated. Skip terminal completely.
+		-- 2. Limit maximum spoke width to drill size, pad size, ... ?
+		-- 3. If a spoke width greater than the zone_linewidth is required then the
+		--    current simple concept of type_relief must be extended. A spoke would then
+		--    consist of several parallel lines of zone_linewidth.
+		
 		relief.width := zone_linewidth;
-		-- CS: Compare with relief_properties.width_min to ensure a lower limit
+		
+		-- Ensure a minimum width of the spokes:
+		limit_to_minimum (relief.width, relief_properties.width_min);
+		
 
 		if debug then
 			new_line;
 			put_line ("terminal " & to_string (key (terminal.terminal))
 				& " pos. " & to_string (terminal.position.place)
 				& " angle " & to_string (terminal.position.rotation)
-				& " gap max. " & to_string (relief_properties.gap_max));
+				& " gap max. " & to_string (relief_properties.gap_max)
+				& " linewidth " & to_string (relief.width));
 		end if;
 
 		

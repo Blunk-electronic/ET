@@ -658,7 +658,8 @@ Commands to set basic properties:
 ```
 board led_driver set zone fill solid # hatched
 ```
-The width of borders and fill lines:
+The linewidth of the zone dictates the linewidth of borders and fill lines.
+Currently this setting also applies to the linewidth of thermal relief spokes.
 ```
 board led_driver set zone width 0.35
 ```
