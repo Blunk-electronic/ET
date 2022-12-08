@@ -1099,8 +1099,8 @@ is
 						layer		=> zone.properties.layer,
 						clearance	=> get_greatest (zone.isolation, net_class.clearance),
 						parent_net	=> net_cursor,
-						--debug		=> false,
-						debug		=> true
+						debug		=> false
+						--debug		=> true
 						);
 
 					zone.reliefes := terminal_reliefes;
