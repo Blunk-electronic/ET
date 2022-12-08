@@ -219,12 +219,12 @@ package body et_canvas_board is
 	is 
 		p : type_model_point; -- to be returned
 	begin
-		p.x := type_float_internal (get_x (drawing_point))
+		p.x := type_float (get_x (drawing_point))
 				+ self.frame_bounding_box.x
-				+ type_float_internal (self.board_origin.x);
+				+ type_float (self.board_origin.x);
 
 		p.y := self.frame_height
-				- type_float_internal (get_y (drawing_point))
+				- type_float (get_y (drawing_point))
 			   + self.frame_bounding_box.y
 			   - self.board_origin.y;
 		
@@ -491,10 +491,10 @@ package body et_canvas_board is
 			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
 			draw_line (in_area, context, line_horizontal, origin_line_width, 
-				type_float_internal_positive (self.frame_height));
+				type_float_positive (self.frame_height));
 			
 			draw_line (in_area, context, line_vertical, origin_line_width,
-				type_float_internal_positive (self.frame_height));
+				type_float_positive (self.frame_height));
 
 		--end if;
 	end draw_text_origin;
@@ -593,7 +593,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				draw_vector_text (in_area, context, v_text,
-					text_place.text.line_width, type_float_internal_positive (self.frame_height));
+					text_place.text.line_width, type_float_positive (self.frame_height));
 
 			end if;
 		end if;
@@ -646,7 +646,7 @@ package body et_canvas_board is
 
 			-- Draw the text:
 			draw_vector_text (in_area, context, v_text,
-				text_place.text.line_width, type_float_internal_positive (self.frame_height));
+				text_place.text.line_width, type_float_positive (self.frame_height));
 		end if;
 	end draw_text_being_placed_in_outline;
 
@@ -713,7 +713,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				draw_vector_text (in_area, context, v_text,
-					text_place.text.line_width, type_float_internal_positive (self.frame_height));
+					text_place.text.line_width, type_float_positive (self.frame_height));
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;
@@ -1114,22 +1114,22 @@ package body et_canvas_board is
 	
 	function frame_height (
 		self : not null access type_view)
-		return type_float_internal_positive 
+		return type_float_positive 
 	is 
 		use et_canvas_schematic;
 	begin
-		return type_float_internal_positive (
+		return type_float_positive (
 			element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
 
 	
 	function frame_width (
 		self : not null access type_view)
-		return type_float_internal_positive 
+		return type_float_positive 
 	is 
 		use et_canvas_schematic;
 	begin
-		return type_float_internal_positive (
+		return type_float_positive (
 			element (current_active_module).board.frame.frame.size.x);
 	end frame_width;
 

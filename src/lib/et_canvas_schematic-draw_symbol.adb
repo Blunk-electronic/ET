@@ -321,7 +321,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
 			circle.center := line.start_point;
-			circle.radius := type_float_internal_positive (port_circle_radius);
+			circle.radius := type_float_positive (port_circle_radius);
 
 			-- the circle is not filled -> argument "filled" is NO
 			draw_circle (in_area, context, circle, NO, port_circle_line_width, self.frame_height);

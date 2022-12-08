@@ -166,7 +166,7 @@ is
 		-- Shrink the outer contour (of the board) by half the line 
 		-- width of the zone border:
 		log (text => "outer contour ...", level => log_threshold + 4);
-		offset_polygon (outer_contour, - type_float_internal_positive (line_width) * 0.5);
+		offset_polygon (outer_contour, - type_float_positive (line_width) * 0.5);
 
 		-- Clip the fill zone by the outer contour of the board.
 		-- The zone may shrink or disintegrate into smaller islands:
@@ -224,14 +224,14 @@ is
 		layer_category : type_signal_layer_category;
 
 		
-		half_linewidth_float : constant type_float_internal_positive := 
-			type_float_internal_positive (linewidth * 0.5);
+		half_linewidth_float : constant type_float_positive := 
+			type_float_positive (linewidth * 0.5);
 
-		zone_clearance_float : constant type_float_internal_positive :=
-			type_float_internal_positive (zone_clearance);
+		zone_clearance_float : constant type_float_positive :=
+			type_float_positive (zone_clearance);
 
 		-- Most offset operations here use a default value:
-		default_offset : constant type_float_internal_positive :=
+		default_offset : constant type_float_positive :=
 			half_linewidth_float + zone_clearance_float;
 		
 		
@@ -434,7 +434,7 @@ is
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 
 				-- expand polygons by clearance
-				offset_polygons (polygons, half_linewidth_float + type_float_internal_positive (clearance));
+				offset_polygons (polygons, half_linewidth_float + type_float_positive (clearance));
 
 				result.polygons.splice (before => pac_polygon_list.no_element, source => polygons);
 			end convert_conductor_objects_to_polygons;
@@ -676,8 +676,8 @@ is
 		conductors_to_polygons_result : type_conductor_to_polygons_result;
 		cropping_basket : pac_polygon_list.list;
 
-		half_linewidth_float : constant type_float_internal_positive :=
-			0.5 * type_float_internal_positive (linewidth);
+		half_linewidth_float : constant type_float_positive :=
+			0.5 * type_float_positive (linewidth);
 
 		
 		-- Iterates the islands and assigns them to the given zone.
@@ -730,8 +730,8 @@ is
 					-- by half the fill linewidth:
 					island.lakes.append ((
 						centerline	=> centerline,
-						--inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
-						inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
+						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
+						--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
 				end query_centerline;
 				
 			begin
@@ -861,7 +861,7 @@ is
 		-- The border of the zone is drawn with the given linewidth.
 		-- The zone must be shrinked by half the linewidth so that the 
 		-- outline of the border is congruent to the zone drawn by the operator:
-		offset_polygon (zone_polygon, - type_float_internal_positive (linewidth) * 0.5);
+		offset_polygon (zone_polygon, - type_float_positive (linewidth) * 0.5);
 
 		-- CS log lowest left vertex
 
@@ -1247,7 +1247,7 @@ begin -- fill_fill_zones
 		& to_string (offset_scratch),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_contour_master, type_float_internal (offset_scratch));
+	offset_polygon (board_outer_contour_master, type_float (offset_scratch));
 	-- for debuggin use:
 	--offset_polygon (board_outer_contour_master, offset_scratch, true);
 	-- CS consider half the line width !

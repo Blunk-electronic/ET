@@ -151,7 +151,7 @@ package et_geometry_2.contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_point)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 
@@ -353,7 +353,7 @@ private
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 
 	-- The location of a point relative to a contour:
@@ -369,7 +369,7 @@ private
 	-- The intersection of a probe line with a segment of the contour can
 	-- be described as:
 	type type_probe_line_intersection_contour is record
-		x_position	: type_float_internal;
+		x_position	: type_float;
 		angle		: type_angle := 0.0;
 		segment		: type_intersected_segment;
 	end record;
@@ -394,7 +394,7 @@ private
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
 				-- to the contour:
-				distance : type_float_internal;
+				distance : type_float;
 				
 			when ON_EDGE =>
 				edge : pac_segments.cursor;

@@ -88,7 +88,7 @@ package body et_pcb_contour is
 				--put_line (" hole in : " & to_string (element (c)));
 			--end if;
 			
-			--offset_polygon (p, type_float_internal_positive (offset));
+			--offset_polygon (p, type_float_positive (offset));
 
 			--if debug then
 				--put_line (" hole out: " & to_string (p));
@@ -102,7 +102,7 @@ package body et_pcb_contour is
 			put_line ("offsetting holes by " & to_string (offset) & "mm");
 		end if;
 
-		offset_polygons (holes, type_float_internal_positive (offset));
+		offset_polygons (holes, type_float_positive (offset));
 		
 		--holes.iterate (query_hole'access);
 

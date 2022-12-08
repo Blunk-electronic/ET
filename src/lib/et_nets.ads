@@ -76,7 +76,7 @@ package et_nets is
 	type type_junction_symbol is new type_circle with null record;
 	
 	junction_symbol : type_junction_symbol := (
-			radius 	=> type_float_internal (junction_radius),
+			radius 	=> type_float (junction_radius),
 			others	=> <>);
 
 

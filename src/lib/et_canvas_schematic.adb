@@ -200,11 +200,11 @@ package body et_canvas_schematic is
 	is 
 		p : type_model_point; -- to be returned
 	begin
-		p.x := type_float_internal (get_x (drawing_point)) 
+		p.x := type_float (get_x (drawing_point)) 
 			+ self.frame_bounding_box.x;
 		
 		p.y := self.frame_height 
-			- type_float_internal (get_y (drawing_point))
+			- type_float (get_y (drawing_point))
 			+ self.frame_bounding_box.y;
 			
 		return p;
@@ -482,7 +482,7 @@ package body et_canvas_schematic is
 					context		=> context,
 					line		=> to_line_fine (line),
 					width		=> net_line_width,
-					height		=> type_float_internal_positive (self.frame_height));
+					height		=> type_float_positive (self.frame_height));
 			end draw;
 			
 		begin -- compute_route
@@ -820,14 +820,14 @@ package body et_canvas_schematic is
 			context		=> context,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
-			height		=> type_float_internal_positive (self.frame_height));
+			height		=> type_float_positive (self.frame_height));
 
 		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
-			height		=> type_float_internal_positive (self.frame_height));
+			height		=> type_float_positive (self.frame_height));
 		
 		cairo.stroke (context.cr);		
 
@@ -869,22 +869,22 @@ package body et_canvas_schematic is
 	
 	function frame_height (
 		self : not null access type_view)
-		return type_float_internal_positive 
+		return type_float_positive 
 	is 
 		use et_project.modules.pac_generic_modules;
 	begin
-		return type_float_internal_positive (
+		return type_float_positive (
 			element (current_active_module).frames.frame.size.y);
 	end frame_height;
 
 	
 	function frame_width (
 		self : not null access type_view)
-		return type_float_internal_positive 
+		return type_float_positive 
 	is 
 		use et_project.modules.pac_generic_modules;
 	begin
-		return type_float_internal_positive (
+		return type_float_positive (
 			element (current_active_module).frames.frame.size.x);
 	end frame_width;
 

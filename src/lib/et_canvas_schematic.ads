@@ -298,12 +298,12 @@ package et_canvas_schematic is
 	
 	overriding function frame_height (
 		self : not null access type_view)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	overriding function frame_width (
 		self : not null access type_view)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 	
 	overriding function title_block_position (

@@ -86,11 +86,11 @@ package body et_routing is
 		point			: in type_point;
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
-		return type_float_internal_positive
+		return type_float_positive
 	is
-		result : type_float_internal_positive := type_float_internal'last;
+		result : type_float_positive := type_float'last;
 
-		procedure update (d : in type_float_internal_positive) is begin
+		procedure update (d : in type_float_positive) is begin
 			--log (text => " dh" & to_string (get_absolute (d)), level => lth + 1);
 			if d < result then
 				result := d;
@@ -495,7 +495,7 @@ package body et_routing is
 			--spacing : type_distance_positive;
 
 			---- The angle between clearance and spacing:
-			--angle : constant type_float_internal := type_float_internal (90.0 - i_center.intersection.angle);
+			--angle : constant type_float := type_float (90.0 - i_center.intersection.angle);
 
 			--use pac_functions_distance;
 		--begin
@@ -515,10 +515,10 @@ package body et_routing is
 				----mode	=> UP));
 
 			--spacing := type_distance (round (
-				--d_fine	=> to_distance (type_float_internal (clearance) / cos (angle, units_per_cycle)),
+				--d_fine	=> to_distance (type_float (clearance) / cos (angle, units_per_cycle)),
 				--mode	=> UP));
 			
-			----spacing := to_distance (type_float_internal (clearance) / cos (angle, units_per_cycle));
+			----spacing := to_distance (type_float (clearance) / cos (angle, units_per_cycle));
 			
 			----log (text => "spacing float " & float'image (float (clearance) / cos (angle, float (units_per_cycle))));
 			----log (text => "spacing       " & to_string (spacing));

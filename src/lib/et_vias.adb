@@ -213,7 +213,7 @@ package body et_vias is
 	begin
 		return optimize_edges ((
 			edges => (to_edges (
-				circle		=> (position, type_float_internal_positive (restring + diameter * 0.5)),
+				circle		=> (position, type_float_positive (restring + diameter * 0.5)),
 				mode		=> EXPAND,				   
 				tolerance	=> tolerance)),
 

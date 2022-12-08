@@ -48,65 +48,65 @@ with et_logging;				use et_logging;
 
 
 generic
-	type type_float_internal is digits <>; -- CS rename to type_float ?
-	accuracy : type_float_internal;
+	type type_float is digits <>;
+	accuracy : type_float;
 	
 package et_geometry_1 is
 
 
-	--function equal (left, right : in type_float_internal) return boolean renames "=";
+	--function equal (left, right : in type_float) return boolean renames "=";
 	
 	-- Returns true if the given arguments are equal.
 	-- Considers them as equal if their difference is less or equal 
 	-- the constant "accuracy":
-	function "=" (left, right : in type_float_internal) return boolean;
+	function "=" (left, right : in type_float) return boolean;
 
-	--function ">=" (left, right : in type_float_internal) return boolean;
+	--function ">=" (left, right : in type_float) return boolean;
 
 	-- CS: for some reason this redefining causes an exception:
 	-- "raised STORAGE_ERROR : stack overflow or erroneous memory access"
-	--function "<=" (left, right : in type_float_internal) return boolean;
+	--function "<=" (left, right : in type_float) return boolean;
 	
 	
 	function get_average (
-		f1, f2 : in type_float_internal)
-		return type_float_internal;
+		f1, f2 : in type_float)
+		return type_float;
 
 	
 	-- Converts a mil number (given as a string) to millimeters.	
-	function mil_to_distance (mil : in string) return type_float_internal;
+	function mil_to_distance (mil : in string) return type_float;
 	-- CS rename to mil_to_float
 
-	function distance_to_mil (d : in type_float_internal) return string;
+	function distance_to_mil (d : in type_float) return string;
 
 	
-	function to_string (f : in type_float_internal) return string;
+	function to_string (f : in type_float) return string;
 
-	function to_float (s : in string) return type_float_internal;
+	function to_float (s : in string) return type_float;
 	
-	subtype type_float_internal_positive is type_float_internal range 0.0 .. type_float_internal'last;
+	subtype type_float_positive is type_float range 0.0 .. type_float'last;
 
 
 	
-	subtype type_angle is type_float_internal range -720.0 .. 720.0;
+	subtype type_angle is type_float range -720.0 .. 720.0;
 	subtype type_angle_positive is type_angle range 0.0 .. 360.0;
 
 	function to_angle (a : in string) return type_angle;
 	
-	units_per_cycle : constant type_float_internal := 360.0;
+	units_per_cycle : constant type_float := 360.0;
 
 
-	radians_max : constant type_float_internal := - 2.0 * ada.numerics.pi;
-	-- CS should be: radians_max : constant type_float_internal := 2.0 * ada.numerics.pi;
+	radians_max : constant type_float := - 2.0 * ada.numerics.pi;
+	-- CS should be: radians_max : constant type_float := 2.0 * ada.numerics.pi;
 
-	subtype type_radians is type_float_internal range (- radians_max) .. radians_max;
+	subtype type_radians is type_float range (- radians_max) .. radians_max;
 
 	
 	--Converts degrees to radians.
-	function to_radians (degrees : in type_angle) return type_float_internal;
+	function to_radians (degrees : in type_angle) return type_float;
 
 	--Converts radians to degrees.
-	function to_degrees (radians : in type_float_internal) return type_angle;
+	function to_degrees (radians : in type_float) return type_angle;
 
 
 	
@@ -122,38 +122,38 @@ package et_geometry_1 is
 	
 
 
-	-- The number of decimal places when rounding or type_float_internal
+	-- The number of decimal places when rounding or type_float
 	-- is required:
 	--subtype type_rounding_accuracy is positive 
-		--range 1 .. type_float_internal'digits;
+		--range 1 .. type_float'digits;
 	
 	--procedure round (
-		--f : in out type_float_internal;	-- the number to be rounded
+		--f : in out type_float;	-- the number to be rounded
 		--a : in type_rounding_accuracy);	-- the accuracy, the number of decimal places
 
 	--function round (
-		--f : in type_float_internal;
+		--f : in type_float;
 		--a : in type_rounding_accuracy)
-		--return type_float_internal;
+		--return type_float;
 
 	
 
 
 	package pac_float_numbers_functions is new 
-		ada.numerics.generic_elementary_functions (type_float_internal);
+		ada.numerics.generic_elementary_functions (type_float);
 	
 	use pac_float_numbers_functions;
 
 
 	
 	package pac_float_numbers_io is new 
-		ada.text_io.float_io (type_float_internal);
+		ada.text_io.float_io (type_float);
 
 
 	
 
 	package pac_float_numbers is new 
-		doubly_linked_lists (type_float_internal);
+		doubly_linked_lists (type_float);
 
 
 
@@ -195,32 +195,32 @@ package et_geometry_1 is
 
 	-- Returns 1.0 if given x is greater or equal zero.
 	-- Returns -1.0 if x less than zero.
-	function sgn (x : type_float_internal) return type_float_internal;
+	function sgn (x : type_float) return type_float;
 
 
 
 	-- Returns the greatest of the given numbers. 
 	-- If both are equal then "right" will be returned.
 	function get_greatest (
-		left, right : in type_float_internal)
-		return type_float_internal;
+		left, right : in type_float)
+		return type_float;
 
 	
 	-- Returns the smallest of the given numbers. 
 	-- If both are equal then "right" will be returned.
 	function get_smallest (
-		left, right : in type_float_internal)
-		return type_float_internal;
+		left, right : in type_float)
+		return type_float;
 
 
 
 	function to_distance (df : in string)
-		return type_float_internal;
+		return type_float;
 	
-	--function to_distance (f : in type_float_internal)
+	--function to_distance (f : in type_float)
 		--return type_distance;
 
-	--function to_rotation (f : in type_float_internal)
+	--function to_rotation (f : in type_float)
 		--return type_rotation;
 
 	
@@ -259,13 +259,13 @@ package et_geometry_1 is
 
 
 	type type_offset is record
-		x, y : type_float_internal := 0.0;
+		x, y : type_float := 0.0;
 		-- CS z ?
 	end record;
 
 	
 	function to_offset (
-		x, y : in type_float_internal)
+		x, y : in type_float)
 		-- CS z zero as default
 		return type_offset;
 
@@ -306,7 +306,7 @@ package et_geometry_1 is
 
 	
 	function to_polar (
-		absolute	: in type_float_internal_positive;
+		absolute	: in type_float_positive;
 		angle		: in type_angle)
 		return type_distance_polar;
 
@@ -316,7 +316,7 @@ package et_geometry_1 is
 	-- is NOT changed.
 	procedure set_absolute (
 		distance : in out type_distance_polar;
-		absolute : in type_float_internal_positive);
+		absolute : in type_float_positive);
 
 	
 	procedure set_angle (
@@ -340,7 +340,7 @@ package et_geometry_1 is
 	-- Returns the absolute of the given polar distance:
 	function get_absolute (
 		distance : in type_distance_polar)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 
@@ -354,7 +354,7 @@ package et_geometry_1 is
 
 	-- A location vector:
 	type type_vector is	record
-		x, y, z : type_float_internal := 0.0;
+		x, y, z : type_float := 0.0;
 	end record;
 
 	
@@ -404,33 +404,33 @@ package et_geometry_1 is
 
 	
 	function set (
-		x : in type_float_internal;
-		y : in type_float_internal;
-		z : in type_float_internal := 0.0)
+		x : in type_float;
+		y : in type_float;
+		z : in type_float := 0.0)
 		return type_vector;
 	
 	
 	function get_x (
 		v	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 	function get_y (
 		v	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 	function get_z (
 		v	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 
 	function get_absolute (
 		vector	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 
 	function get_sum_of_squared_components (
 		vector	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 	
 	-- Compares two location vectors by their distance to the origin:
@@ -443,7 +443,7 @@ package et_geometry_1 is
 	-- vector by the scaling factor s:
 	function scale (
 		v	: in type_vector;
-		s	: in type_float_internal)
+		s	: in type_float)
 		return type_vector;
 
 	
@@ -466,12 +466,12 @@ package et_geometry_1 is
 	
 	function dot_product ( -- german: Skalarprodukt
 		a, b	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 	
 	function mixed_product ( -- german: Spatprodukt
 		a, b, c	: in type_vector)
-		return type_float_internal;
+		return type_float;
 	-- NOTE: Also called scalar triple product or box product.
 
 								
@@ -481,7 +481,7 @@ package et_geometry_1 is
 	-- must not be zero.
 	function divide (
 		a, b	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 
 	-- Returns the total distance between the given two location vectors.
@@ -489,7 +489,7 @@ package et_geometry_1 is
 	function get_distance_total ( -- CS rename to get_distance_absolute
 		v1 : in type_vector;
 		v2 : in type_vector)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 	-- Returns the distance of location vector_one to vector_two.	
@@ -533,13 +533,13 @@ package et_geometry_1 is
 	procedure move_by (
 		v			: in out type_vector;
 		direction	: in type_angle;
-		distance	: in type_float_internal); -- CS type_float_internal_positive ?
+		distance	: in type_float); -- CS type_float_positive ?
 
 
 	function move_by (
 		v			: in type_vector;
 		direction	: in type_angle;
-		distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		distance	: in type_float) -- CS type_float_positive ?
 		return type_vector;
 
 
@@ -576,7 +576,7 @@ package et_geometry_1 is
 	-- Scales a list of vectors by the given factor:
 	procedure scale (
 		vectors	: in out pac_vectors.list;
-		factor	: in type_float_internal_positive);
+		factor	: in type_float_positive);
 	
 
 	-- Moves a list of location vectors by the given offset:
@@ -748,9 +748,9 @@ package et_geometry_1 is
 	-- The boundaries are always relative to a certain origin that
 	-- sits somewhere inside the rectangular box. 
 	type type_boundaries is record
-		smallest_x, smallest_y : type_float_internal := type_float_internal'last;
-		greatest_x, greatest_y : type_float_internal := type_float_internal'first;
-		distance_of_topleft_to_default : type_float_internal := 0.0;
+		smallest_x, smallest_y : type_float := type_float'last;
+		greatest_x, greatest_y : type_float := type_float'first;
+		distance_of_topleft_to_default : type_float := 0.0;
 	end record;
 
 	function to_string (boundaries : in type_boundaries) return string;
@@ -766,31 +766,31 @@ package et_geometry_1 is
 	-- Returns the height of the given boundaries by
 	-- calculating boundaries.greatest_y - boundaries.smallest_y:
 	function get_height (boundaries : in type_boundaries)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Returns the width of the given boundaries by
 	-- calculating boundaries.greatest_x - boundaries.smallest_x:
 	function get_width (boundaries : in type_boundaries)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 	function get_left (boundaries : in type_boundaries)
-		return type_float_internal;
+		return type_float;
 
 	
 	function get_right (boundaries : in type_boundaries)
-		return type_float_internal;
+		return type_float;
 
 	
 	-- Returns the bottom of the given boundaries:
 	function get_bottom (boundaries : in type_boundaries)
-		return type_float_internal;
+		return type_float;
 
 	
 	-- Returns the topof the given boundaries:
 	function get_top (boundaries : in type_boundaries)
-		return type_float_internal;
+		return type_float;
 
 	
 	
@@ -836,13 +836,13 @@ package et_geometry_1 is
 	end record;
 
 
-	line_length_max : constant type_float_internal_positive := type_float_internal_positive'last;
-	line_length_min : constant type_float_internal_positive := 1.0E-10; -- CS refine
+	line_length_max : constant type_float_positive := type_float_positive'last;
+	line_length_min : constant type_float_positive := 1.0E-10; -- CS refine
 
 	
 	function get_length (
 		line : in type_line_fine)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	function to_line_vector (
@@ -862,7 +862,7 @@ package et_geometry_1 is
 
 	procedure scale (
 		line	: in out type_line_fine;
-		factor	: in type_float_internal_positive);
+		factor	: in type_float_positive);
 	
 		
 	-- Moves the start and end points of a 
@@ -929,12 +929,12 @@ package et_geometry_1 is
 	procedure move_by (
 		line		: in out type_line_fine;
 		direction	: in type_angle;
-		distance	: in type_float_internal_positive);
+		distance	: in type_float_positive);
 
 	function move_by (
 		line		: in type_line_fine;
 		direction	: in type_angle;
-		distance	: in type_float_internal_positive)
+		distance	: in type_float_positive)
 		return type_line_fine;
 	
 	
@@ -1006,13 +1006,13 @@ package et_geometry_1 is
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc) 
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 	
 	-- Returns the distance between the end point and the center of the arc.
 	function get_radius_end (
 		arc : in type_arc) 
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Swaps start and end point of an arc. Reverses the direction of the arc:
@@ -1046,7 +1046,7 @@ package et_geometry_1 is
 	
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_vector;
-		radius		: type_float_internal_positive;
+		radius		: type_float_positive;
 		angle_start	: type_angle; -- can be negative
 		angle_end	: type_angle; -- can be negative
 		direction	: type_direction_of_rotation := arc_direction_default;
@@ -1102,7 +1102,7 @@ package et_geometry_1 is
 	function get_distance (
 		line	: in type_line_fine;
 		vector	: in type_vector)
-		return type_float_internal; -- CS type_float_internal_positive
+		return type_float; -- CS type_float_positive
 	
 
 	-- Returns the shortest distance from a given location vector
@@ -1111,7 +1111,7 @@ package et_geometry_1 is
 	function get_shortest_distance (
 		vector	: in type_vector;
 		line	: in type_line_fine)
-		return type_float_internal; -- CS type_float_internal_positive
+		return type_float; -- CS type_float_positive
 
 
 	-- Returns true if the given location vector is on
@@ -1132,7 +1132,7 @@ package et_geometry_1 is
 		-- to the given line. This is where the virtual line intersects
 		-- the given line:
 		intersection	: type_vector := null_vector;
-		distance		: type_float_internal_positive := 0.0;
+		distance		: type_float_positive := 0.0;
 	end record;
 
 
@@ -1153,7 +1153,7 @@ package et_geometry_1 is
 
 	
 	function get_distance (d : in type_distance_point_line) 
-		return type_float_internal;
+		return type_float;
 
 	
 	function get_intersection (d : in type_distance_point_line) 
@@ -1169,7 +1169,7 @@ package et_geometry_1 is
 private
 	
 	type type_distance_polar is record
-		absolute: type_float_internal_positive := 0.0;
+		absolute: type_float_positive := 0.0;
 		angle	: type_angle := 0.0;
 	end record;
 

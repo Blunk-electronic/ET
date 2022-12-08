@@ -209,7 +209,7 @@ package et_fill_zones is
 
 	function get_half_linewidth (
 		zone	: in type_zone)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 
 -- QUERY POINT TO ZONE LOCATION
@@ -287,11 +287,11 @@ package et_fill_zones is
 	is record
 		case edge_exists is
 			when TRUE => 
-				distance_to_edge : type_float_internal_positive;
+				distance_to_edge : type_float_positive;
 
 				case centerline_exists is
 					when TRUE => 
-						distance_to_centerline : type_float_internal_positive;
+						distance_to_centerline : type_float_positive;
 					when FALSE => null;
 				end case;
 

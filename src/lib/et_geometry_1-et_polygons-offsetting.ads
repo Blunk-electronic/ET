@@ -126,12 +126,12 @@ package et_geometry_1.et_polygons.offsetting is
 	-- then shrinks.
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_float_internal;
+		offset		: in type_float;
 		debug		: in boolean := false);
 
 	function offset_polygon (
 		polygon		: in type_polygon;
-		offset		: in type_float_internal;
+		offset		: in type_float;
 		debug		: in boolean := false)
 		return type_polygon;
 
@@ -140,13 +140,13 @@ package et_geometry_1.et_polygons.offsetting is
 	-- Offsets a list of polygons:
 	function offset_polygons (
 		polygons	: in pac_polygon_list.list;
-		offset		: in type_float_internal)
+		offset		: in type_float)
 		return pac_polygon_list.list;
 
 	
 	procedure offset_polygons (
 		polygons	: in out pac_polygon_list.list;
-		offset		: in type_float_internal);
+		offset		: in type_float);
 
 private
 	
@@ -160,7 +160,7 @@ private
 	-- If offset is less than zero, then returns SHRINK.
 	-- If offset is zero, then returns NOTHING:
 	function to_mode (
-		offset : in type_float_internal)
+		offset : in type_float)
 		return type_mode;
 
 	

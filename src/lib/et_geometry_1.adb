@@ -49,7 +49,7 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry_1 is
 
 	
-	function "=" (left, right : in type_float_internal) return boolean is begin
+	function "=" (left, right : in type_float) return boolean is begin
 		if abs (left - right) <= accuracy then
 			return true;
 		else
@@ -58,7 +58,7 @@ package body et_geometry_1 is
 	end "=";
 
 	
-	--function ">=" (left, right : in type_float_internal) return boolean is begin
+	--function ">=" (left, right : in type_float) return boolean is begin
 		--if left = right then
 			--return true;
 		--elsif left > right then
@@ -69,7 +69,7 @@ package body et_geometry_1 is
 	--end ">=";
 
 
-	--function "<=" (left, right : in type_float_internal) return boolean is begin
+	--function "<=" (left, right : in type_float) return boolean is begin
 		--if left = right then
 			--return true;
 		--elsif left < right then
@@ -82,49 +82,49 @@ package body et_geometry_1 is
 	
 	
 	function get_average (
-		f1, f2 : in type_float_internal)
-		return type_float_internal
+		f1, f2 : in type_float)
+		return type_float
 	is begin
 		return (f1 + f2) * 0.5;
 	end get_average;
 
 	
 	--procedure round (
-		--f : in out type_float_internal;
+		--f : in out type_float;
 		--a : in type_rounding_accuracy)
 	--is 
-		--base : constant type_float_internal := 10.0;
+		--base : constant type_float := 10.0;
 	--begin
-		----put_line ("given   :" & type_float_internal'image (f));
+		----put_line ("given   :" & type_float'image (f));
 		----put_line ("accuracy:" & positive'image (a));
 
-		--f := type_float_internal'rounding (f * base**a) * base**(-a); 
+		--f := type_float'rounding (f * base**a) * base**(-a); 
 		
-		----put_line ("rounded :" & type_float_internal'image (f));
+		----put_line ("rounded :" & type_float'image (f));
 		----new_line;
 	--end round;
 
 
 	--function round (
-		--f : in type_float_internal;
+		--f : in type_float;
 		--a : in type_rounding_accuracy)
-		--return type_float_internal
+		--return type_float
 	--is 
-		--base : constant type_float_internal := 10.0;
+		--base : constant type_float := 10.0;
 	--begin
-		--return type_float_internal'rounding (f * base**a) * base**(-a); 
+		--return type_float'rounding (f * base**a) * base**(-a); 
 	--end round;
 
 
-	function mil_to_distance (mil : in string) return type_float_internal is
-		distance_mil : type_float_internal := type_float_internal'value (mil);
+	function mil_to_distance (mil : in string) return type_float is
+		distance_mil : type_float := type_float'value (mil);
 	begin
 		return distance_mil * (25.4 * 0.001);
 	end mil_to_distance;
 	
 
-	function distance_to_mil (d : in type_float_internal) return string is
-		scratch : type_float_internal;
+	function distance_to_mil (d : in type_float) return string is
+		scratch : type_float;
 	begin
 		scratch := d * 1000.00 / 25.4;
 		return to_string (scratch);
@@ -132,13 +132,13 @@ package body et_geometry_1 is
 
 	
 	
-	function to_string (f : in type_float_internal) return string is begin
-		return type_float_internal'image (f);
+	function to_string (f : in type_float) return string is begin
+		return type_float'image (f);
 	end;
 
 	
-	function to_float (s : in string) return type_float_internal is begin
-		return type_float_internal'value (s);
+	function to_float (s : in string) return type_float is begin
+		return type_float'value (s);
 	end to_float;
 	
 
@@ -147,15 +147,15 @@ package body et_geometry_1 is
 	end to_angle;
 
 	
-	function to_radians (degrees : in type_angle) return type_float_internal is
+	function to_radians (degrees : in type_angle) return type_float is
 		use ada.numerics;
 	begin
-		return (pi * type_float_internal (degrees)) / (units_per_cycle * 0.5);
+		return (pi * type_float (degrees)) / (units_per_cycle * 0.5);
 	end to_radians;
 
 	
 	function to_degrees (
-		radians : in type_float_internal)
+		radians : in type_float)
 		return type_angle 
 	is
 		use ada.numerics;
@@ -214,7 +214,7 @@ package body et_geometry_1 is
 		procedure do_reduce is
 
 			procedure query_number (c : in pac_float_numbers.cursor) is 
-				n_candidate : type_float_internal renames element (c);
+				n_candidate : type_float renames element (c);
 			begin
 				if c = numbers.first then
 					result.append (n_candidate);
@@ -234,7 +234,7 @@ package body et_geometry_1 is
 		procedure do_remove is 
 
 			procedure query_number (c : in pac_float_numbers.cursor) is
-				n_candidate : type_float_internal renames element (c);
+				n_candidate : type_float renames element (c);
 			begin
 				if c = numbers.first then
 					-- If next number equals candidate then skip candidate,
@@ -288,7 +288,7 @@ package body et_geometry_1 is
 	
 
 
-	function sgn (x : type_float_internal) return type_float_internal is begin
+	function sgn (x : type_float) return type_float is begin
 		if x >= 0.0 then
 			return 1.0;
 		else
@@ -298,8 +298,8 @@ package body et_geometry_1 is
 
 
 	function get_greatest (
-		left, right : in type_float_internal)
-		return type_float_internal
+		left, right : in type_float)
+		return type_float
 	is begin
 		if left > right then
 			return left;
@@ -312,8 +312,8 @@ package body et_geometry_1 is
 
 	
 	function get_smallest (
-		left, right : in type_float_internal)
-		return type_float_internal
+		left, right : in type_float)
+		return type_float
 	is begin
 		if left < right then
 			return left;
@@ -352,25 +352,25 @@ package body et_geometry_1 is
 
 
 	function to_distance (df : in string)
-		return type_float_internal
+		return type_float
 	is begin
-		return type_float_internal'value (df);
+		return type_float'value (df);
 	end to_distance;
 
 	
-	--function to_distance (f : in type_float_internal)
+	--function to_distance (f : in type_float)
 		--return type_distance 
 	--is
 		--use pac_distance_io;
 		
 		--d1 : type_distance;
-		--d2 : type_float_internal;
+		--d2 : type_float;
 
-		--f1 : constant type_float_internal := 5.0 * type_float_internal (type_distance'small);
+		--f1 : constant type_float := 5.0 * type_float (type_distance'small);
 	--begin
 		--d1 := type_distance (f);
 		
-		--d2 := 10.0 * abs (f - type_float_internal (d1));
+		--d2 := 10.0 * abs (f - type_float (d1));
 		
 		--if f < 0.0 then
 			--if d2 > f1 then
@@ -396,7 +396,7 @@ package body et_geometry_1 is
 			----declare
 				----r : string (1 .. type_distance'digits + 1); -- point
 			----begin
-				------put_line (type_float_internal'image (f) & " " & natural'image (r'length));
+				------put_line (type_float'image (f) & " " & natural'image (r'length));
 				------ CS: IMPROVEMENT REQUIRED !!!
 				----put (to => r, item => f, aft => type_distance'scale, exp => 0);
 				----return type_distance'value (r);
@@ -411,18 +411,18 @@ package body et_geometry_1 is
 	--end to_distance;
 	
 
-	--function to_rotation (f : in type_float_internal)
+	--function to_rotation (f : in type_float)
 		--return type_rotation 
 	--is
 		--use pac_distance_io;
 
 		--d1 : type_rotation := type_rotation (f);
-		--d2 : type_float_internal;
+		--d2 : type_float;
 
-		--f1 : constant type_float_internal := 5.0 * type_float_internal (type_rotation'small);
+		--f1 : constant type_float := 5.0 * type_float (type_rotation'small);
 
 	--begin
-		--d2 := 10.0 * abs (f - type_float_internal (d1));
+		--d2 := 10.0 * abs (f - type_float (d1));
 		
 		--if f < 0.0 then
 			--if d2 > f1 then
@@ -497,7 +497,7 @@ package body et_geometry_1 is
 
 
 	function to_offset (
-		x, y : in type_float_internal)
+		x, y : in type_float)
 		return type_offset
 	is begin
 		return (x, y);
@@ -558,7 +558,7 @@ package body et_geometry_1 is
 	
 	
 	function to_polar (
-		absolute	: in type_float_internal_positive;
+		absolute	: in type_float_positive;
 		angle		: in type_angle)
 		return type_distance_polar
 	is begin
@@ -568,7 +568,7 @@ package body et_geometry_1 is
 	
 	procedure set_absolute (
 		distance : in out type_distance_polar;
-		absolute : in type_float_internal_positive)
+		absolute : in type_float_positive)
 	is begin
 		distance.absolute := absolute;
 	end set_absolute;
@@ -601,7 +601,7 @@ package body et_geometry_1 is
 	
 	function get_absolute (
 		distance : in type_distance_polar) 
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return distance.absolute;
 	end get_absolute;
@@ -699,9 +699,9 @@ package body et_geometry_1 is
 
 	
 	function set (
-		x : in type_float_internal;
-		y : in type_float_internal;
-		z : in type_float_internal := 0.0)
+		x : in type_float;
+		y : in type_float;
+		z : in type_float := 0.0)
 		return type_vector
 	is begin
 		return (x, y, z);
@@ -711,7 +711,7 @@ package body et_geometry_1 is
 	
 	function get_x (
 		v	: in type_vector)
-		return type_float_internal is
+		return type_float is
 	begin
 		return v.x;
 	end get_x;
@@ -719,7 +719,7 @@ package body et_geometry_1 is
 
 	function get_y (
 		v	: in type_vector)
-		return type_float_internal is
+		return type_float is
 	begin
 		return v.y;
 	end get_y;
@@ -727,7 +727,7 @@ package body et_geometry_1 is
 	
 	function get_z (
 		v	: in type_vector)
-		return type_float_internal is
+		return type_float is
 	begin
 		return v.z;
 	end get_z;
@@ -735,7 +735,7 @@ package body et_geometry_1 is
 
 	function get_absolute (
 		vector	: in type_vector)
-		return type_float_internal
+		return type_float
 	is begin
 		return
 			sqrt (
@@ -748,7 +748,7 @@ package body et_geometry_1 is
 
 	function get_sum_of_squared_components (
 		vector	: in type_vector)
-		return type_float_internal
+		return type_float
 	is begin
 		return (
 			vector.x * vector.x + 
@@ -773,7 +773,7 @@ package body et_geometry_1 is
 	
 	function scale (
 		v	: in type_vector;
-		s	: in type_float_internal)
+		s	: in type_float)
 		return type_vector
 	is begin
 		return (
@@ -819,7 +819,7 @@ package body et_geometry_1 is
 	
 	function dot_product (
 		a, b	: in type_vector)
-		return type_float_internal
+		return type_float
 	is begin
 		return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
 	end dot_product;
@@ -827,7 +827,7 @@ package body et_geometry_1 is
 	
 	function mixed_product (
 		a, b, c	: in type_vector)
-		return type_float_internal
+		return type_float
 	is
 		cp : type_vector;
 	begin
@@ -838,9 +838,9 @@ package body et_geometry_1 is
 	
 	function divide (
 		a, b	: in type_vector)
-		return type_float_internal
+		return type_float
 	is
-		lambda : type_float_internal;
+		lambda : type_float;
 	begin
 		-- It does not matter if we use
 		-- the x,y or z component for this calculation.
@@ -910,7 +910,7 @@ package body et_geometry_1 is
 
 	procedure scale (
 		vectors	: in out pac_vectors.list;
-		factor	: in type_float_internal_positive)
+		factor	: in type_float_positive)
 	is
 		use pac_vectors;
 		c : pac_vectors.cursor := vectors.first;
@@ -1033,7 +1033,7 @@ package body et_geometry_1 is
 			-- We will be sorting vectors by their distance to
 			-- the reference point:
 			vector		: type_vector;
-			distance	: type_float_internal_positive;
+			distance	: type_float_positive;
 		end record;
 
 		
@@ -1055,7 +1055,7 @@ package body et_geometry_1 is
 		
 		
 		procedure query_vector (v : in pac_vectors.cursor) is
-			d : constant type_float_internal_positive := 
+			d : constant type_float_positive := 
 				get_distance_total (reference, element (v));
 		begin
 			items.append (new_item => (
@@ -1091,10 +1091,10 @@ package body et_geometry_1 is
 	function get_distance_total (
 		v1 : in type_vector;
 		v2 : in type_vector)
-		return type_float_internal_positive
+		return type_float_positive
 	is 
-		dx : constant type_float_internal := abs (v2.x - v1.x);
-		dy : constant type_float_internal := abs (v2.y - v1.y);
+		dx : constant type_float := abs (v2.x - v1.x);
+		dy : constant type_float := abs (v2.y - v1.y);
 	begin
 		return sqrt (dx ** 2.0 + dy ** 2.0);
 	end get_distance_total;
@@ -1106,14 +1106,14 @@ package body et_geometry_1 is
 	is
 		result : type_distance_polar;
 
-		dx : constant type_float_internal := v2.x - v1.x;
-		dy : constant type_float_internal := v2.y - v1.y;
+		dx : constant type_float := v2.x - v1.x;
+		dy : constant type_float := v2.y - v1.y;
 
-		abs_dx : constant type_float_internal := abs (dx);
-		abs_dy : constant type_float_internal := abs (dy);
+		abs_dx : constant type_float := abs (dx);
+		abs_dy : constant type_float := abs (dy);
 	begin
-		--put_line ("dx " & type_float_internal'image (abs_dx));
-		--put_line ("dy " & type_float_internal'image (abs_dy));
+		--put_line ("dx " & type_float'image (abs_dx));
+		--put_line ("dy " & type_float'image (abs_dy));
 		
 		set_absolute (result, sqrt (abs_dx ** 2 + abs_dy ** 2));
 		
@@ -1148,9 +1148,9 @@ package body et_geometry_1 is
 		rotation	: in type_angle;
 		debug		: in boolean := false)
 	is
-		angle_out			: type_float_internal; -- degrees
-		distance_to_origin	: type_float_internal; -- unit is mm
-		scratch				: type_float_internal;
+		angle_out			: type_float; -- degrees
+		distance_to_origin	: type_float; -- unit is mm
+		scratch				: type_float;
 	begin
 		-- Do nothing if the given rotation is zero.
 		if rotation /= 0.0 then
@@ -1253,9 +1253,9 @@ package body et_geometry_1 is
 	procedure move_by (
 		v			: in out type_vector;
 		direction	: in type_angle;
-		distance	: in type_float_internal)
+		distance	: in type_float)
 	is
-		delta_x, delta_y : type_float_internal := 0.0;
+		delta_x, delta_y : type_float := 0.0;
 	begin
 		-- sin (direction) * distance = delta y
 		-- cos (direction) * distance = delty x
@@ -1271,7 +1271,7 @@ package body et_geometry_1 is
 	function move_by (
 		v			: in type_vector;
 		direction	: in type_angle;
-		distance	: in type_float_internal) -- CS type_float_internal_positive ?
+		distance	: in type_float) -- CS type_float_positive ?
 		return type_vector
 	is
 		result : type_vector := v;
@@ -1304,10 +1304,10 @@ package body et_geometry_1 is
 		v : type_vector;
 	begin
 		-- x = cos (direction) * 1
-		v.x := cos (type_float_internal (ray.direction), units_per_cycle);
+		v.x := cos (type_float (ray.direction), units_per_cycle);
 
 		-- y = sin (direction) * 1
-		v.y := sin (type_float_internal (ray.direction), units_per_cycle);
+		v.y := sin (type_float (ray.direction), units_per_cycle);
 
 		v.z := 0.0; -- we are in a 2D world
 		
@@ -1336,8 +1336,8 @@ package body et_geometry_1 is
 	is 
 		result : type_line_vector := lv;
 	begin
-		result.v_start.x := result.v_start.x + type_float_internal (offset.x);
-		result.v_start.y := result.v_start.y + type_float_internal (offset.y);
+		result.v_start.x := result.v_start.x + type_float (offset.x);
+		result.v_start.y := result.v_start.y + type_float (offset.y);
 
 		return result;
 	end move_by;
@@ -1352,8 +1352,8 @@ package body et_geometry_1 is
 
 		--a := to_rotation (arctan (
 		a := arctan (
-				y		=> type_float_internal (line.v_direction.y), 
-				x		=> type_float_internal (line.v_direction.x), 
+				y		=> type_float (line.v_direction.y), 
+				x		=> type_float (line.v_direction.x), 
 				cycle	=> units_per_cycle);
 
 		-- dz ignored. we are in a 2D world
@@ -1408,7 +1408,7 @@ package body et_geometry_1 is
 		line_1, line_2	: in type_line_vector)
 		return type_angle
 	is 
-		a, b, c : type_float_internal;
+		a, b, c : type_float;
 		r : type_angle;
 	begin
 		a := dot_product (line_1.v_direction, line_2.v_direction);
@@ -1439,8 +1439,8 @@ package body et_geometry_1 is
 		return type_intersection_of_two_lines
 	is 
 		-- scratch variables:
-		a, b, c, d, e, f, g : type_float_internal;
-		lambda : type_float_internal;
+		a, b, c, d, e, f, g : type_float;
+		lambda : type_float;
 
 		-- location vector and angle of intersection to be returned:			
 		i : type_intersection;
@@ -1474,7 +1474,7 @@ package body et_geometry_1 is
 
 		
 		function lines_overlap return boolean is
-			a, b, distance : type_float_internal;
+			a, b, distance : type_float;
 			v1 : type_vector;
 		begin
 			-- The first condition to be fulfilled is that the lines
@@ -1603,42 +1603,42 @@ package body et_geometry_1 is
 
 	
 	function get_height (boundaries : in type_boundaries)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return boundaries.greatest_y - boundaries.smallest_y;
 	end get_height;
 
 	
 	function get_width (boundaries : in type_boundaries)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return boundaries.greatest_x - boundaries.smallest_x;
 	end get_width;
 
 
 	function get_left (boundaries : in type_boundaries)
-		return type_float_internal
+		return type_float
 	is begin
 		return boundaries.smallest_x;
 	end get_left;
 
 	
 	function get_right (boundaries : in type_boundaries)
-		return type_float_internal
+		return type_float
 	is begin
 		return boundaries.greatest_x;
 	end get_right;
 
 	
 	function get_bottom (boundaries : in type_boundaries)
-		return type_float_internal
+		return type_float
 	is begin
 		return boundaries.smallest_y;
 	end get_bottom;
 
 
 	function get_top (boundaries : in type_boundaries)
-		return type_float_internal
+		return type_float
 	is begin
 		return boundaries.greatest_y;
 	end get_top;
@@ -1651,16 +1651,16 @@ package body et_geometry_1 is
 		return boolean
 	is
 		-- The the smallest and greatest x-value occupied by the two boundaries:
-		left   : constant type_float_internal := get_smallest (b1.smallest_x, b2.smallest_x);
-		right  : constant type_float_internal := get_greatest (b1.greatest_x, b2.greatest_x);
+		left   : constant type_float := get_smallest (b1.smallest_x, b2.smallest_x);
+		right  : constant type_float := get_greatest (b1.greatest_x, b2.greatest_x);
 
 		-- The the smallest and greatest y-value occupied by the two boundaries:
-		bottom : constant type_float_internal := get_smallest (b1.smallest_y, b2.smallest_y);
-		top    : constant type_float_internal := get_greatest (b1.greatest_y, b2.greatest_y);
+		bottom : constant type_float := get_smallest (b1.smallest_y, b2.smallest_y);
+		top    : constant type_float := get_greatest (b1.greatest_y, b2.greatest_y);
 		
-		span_h, span_v : type_float_internal_positive;
+		span_h, span_v : type_float_positive;
 
-		sum_h, sum_v : type_float_internal_positive;
+		sum_h, sum_v : type_float_positive;
 
 		result : boolean := false;
 	begin
@@ -1746,7 +1746,7 @@ package body et_geometry_1 is
 
 	function get_length (
 		line : in type_line_fine)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return get_distance_total (line.start_point, line.end_point);
 	end get_length;
@@ -1772,7 +1772,7 @@ package body et_geometry_1 is
 
 	procedure scale (
 		line	: in out type_line_fine;
-		factor	: in type_float_internal_positive)
+		factor	: in type_float_positive)
 	is begin
 		line.start_point := scale (line.start_point, factor);
 		line.end_point   := scale (line.end_point,   factor);
@@ -1922,7 +1922,7 @@ package body et_geometry_1 is
 	procedure move_by (
 		line		: in out type_line_fine;
 		direction	: in type_angle;
-		distance	: in type_float_internal_positive)
+		distance	: in type_float_positive)
 	is begin
 		move_by (line.start_point, direction, distance);
 		move_by (line.end_point, direction, distance);
@@ -1932,7 +1932,7 @@ package body et_geometry_1 is
 	function move_by (
 		line		: in type_line_fine;
 		direction	: in type_angle;
-		distance	: in type_float_internal_positive)
+		distance	: in type_float_positive)
 		return type_line_fine
 	is
 		result : type_line_fine;
@@ -2147,7 +2147,7 @@ package body et_geometry_1 is
 
 	function get_radius_start (
 		arc : in type_arc) 
-		return type_float_internal_positive 
+		return type_float_positive 
 	is begin
 		return get_distance_total (arc.center, arc.start_point);
 	end get_radius_start;
@@ -2155,7 +2155,7 @@ package body et_geometry_1 is
 	
 	function get_radius_end (
 		arc : in type_arc)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return get_distance_total (arc.center, arc.end_point);
 	end get_radius_end;
@@ -2374,7 +2374,7 @@ package body et_geometry_1 is
 		return type_arc 
 	is
 		result : type_arc;
-		x, y : type_float_internal;
+		x, y : type_float;
 		offset : constant type_offset := to_offset (arc.center);
 	begin
 		result.center := arc.center;
@@ -2402,13 +2402,13 @@ package body et_geometry_1 is
 	function get_distance (
 		line	: in type_line_fine;
 		vector	: in type_vector)
-		return type_float_internal
+		return type_float
 	is
 		dv : constant type_vector := to_line_vector (line).v_direction;
 		sv : constant type_vector := line.start_point;
 		
 		d1 : constant type_vector := subtract (vector, sv);
-		m, n : type_float_internal;
+		m, n : type_float;
 	begin
 		m := get_absolute (cross_product (dv, d1));
 		n := get_absolute (dv);
@@ -2421,16 +2421,16 @@ package body et_geometry_1 is
 	function get_shortest_distance (
 		vector	: in type_vector;
 		line	: in type_line_fine)
-		return type_float_internal
+		return type_float
 	is
-		result : type_float_internal := 0.0;
+		result : type_float := 0.0;
 		
 		d : constant type_distance_point_line := get_distance (
 			vector		=> vector,
 			line		=> line,
 			line_range	=> WITH_END_POINTS);
 
-		d_to_start, d_to_end : type_float_internal;
+		d_to_start, d_to_end : type_float;
 	begin
 		--put_line ("point" & to_string (point) & " " & to_string (line));
 		
@@ -2521,8 +2521,8 @@ package body et_geometry_1 is
 			SE : constant type_vector := get_displacement (line.start_point, line.end_point);
 			SV : constant type_vector := get_displacement (line.start_point, vector);
 			SI : type_vector;
-			dp : type_float_internal;
-			sum : type_float_internal_positive;
+			dp : type_float;
+			sum : type_float_positive;
 		begin
 			dp := dot_product (SE, SV);
 			sum := get_sum_of_squared_components (SE);
@@ -2530,7 +2530,7 @@ package body et_geometry_1 is
 		end compute_intersection;
 
 			
-		lambda_forward, lambda_backward : type_float_internal;
+		lambda_forward, lambda_backward : type_float;
 	begin
 		--put_line ("line direction vector: " & to_string (line_direction));
 		--put_line ("line direction angle : " & to_string (line_direction));
@@ -2671,7 +2671,7 @@ package body et_geometry_1 is
 
 	
 	function get_distance (d : in type_distance_point_line) 
-		return type_float_internal
+		return type_float
 	is begin
 		return d.distance;
 	end get_distance;

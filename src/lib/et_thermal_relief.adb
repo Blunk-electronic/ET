@@ -125,10 +125,10 @@ package body et_thermal_relief is
 						--debug			=> true);						
 
 				-- The distance from edge to centerline:
-				border_to_centerline : type_float_internal_positive;
+				border_to_centerline : type_float_positive;
 
 				-- The actual gap between terminal and conducting area:
-				gap : type_float_internal_positive;
+				gap : type_float_positive;
 				
 			begin
 				-- NOTE: There is no need to test whether the center of the terminal
@@ -164,7 +164,7 @@ package body et_thermal_relief is
 					end if;
 
 					
-					if gap <= type_float_internal_positive (relief_properties.gap_max) then
+					if gap <= type_float_positive (relief_properties.gap_max) then
 						if debug then
 							put_line ("  generate relief spoke");
 						end if;

@@ -2839,7 +2839,7 @@ is
 			is 
 				ib : constant type_circle := (
 					center => drill_position, 
-					radius => type_float_internal_positive (drill_size) * 0.5);
+					radius => type_float_positive (drill_size) * 0.5);
 			begin
 				set_color_tht_pad (context.cr);
 
@@ -3012,7 +3012,7 @@ is
 										-- offset the temporary polygon
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> type_float_internal (get_stop_mask_expansion)); -- from DRU
+											offset		=> type_float (get_stop_mask_expansion)); -- from DRU
 
 										-- convert the temporary polygon back to a contour
 										stop_mask_contours := (to_contour (polygon_tmp) with null record);
@@ -3060,7 +3060,7 @@ is
 										-- offset the temporary polygon
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> type_float_internal (stencil_in.shrink_factor));
+											offset		=> type_float (stencil_in.shrink_factor));
 
 										-- convert the temporary polygon back to a contour
 										stencil_contours := (to_contour (polygon_tmp) with null record);
@@ -3167,7 +3167,7 @@ is
 										-- offset the temporary polygon										
 										offset_polygon (
 											polygon		=> polygon_tmp,
-											offset		=> type_float_internal (get_stop_mask_expansion));  -- from DRU
+											offset		=> type_float (get_stop_mask_expansion));  -- from DRU
 
 										-- convert the temporary polygon back to a contour
 										stop_mask_contours := (to_contour (polygon_tmp) with null record);
@@ -3232,7 +3232,7 @@ is
 						-- offset the temporary polygon
 						offset_polygon (
 							polygon		=> polygon_tmp, 
-							offset		=> type_float_internal (restring_width));
+							offset		=> type_float (restring_width));
 
 						-- move the conductor frame to its final position:
 						pad_pos := pad_pos_in;  -- get initial pad position
@@ -3285,8 +3285,8 @@ is
 						set_color_tht_pad (context.cr);
 						set_line_width (context.cr, type_view_coordinate (zero));
 
-						circle.radius := type_float_internal_positive (drill_size) * 0.5 
-										 + type_float_internal_positive (restring);
+						circle.radius := type_float_positive (drill_size) * 0.5 
+										 + type_float_positive (restring);
 						
 						--draw_circle (in_area, context, circle, NO, self.frame_height);
 						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
@@ -3295,7 +3295,7 @@ is
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
-						circle.radius := type_float_internal_positive (drill_size) * 0.5;
+						circle.radius := type_float_positive (drill_size) * 0.5;
 						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
 
 						-- restore default compositing operator:

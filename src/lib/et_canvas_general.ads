@@ -394,7 +394,7 @@ package pac_canvas is
 	-- to convert between drawning and view coordinates.
 	
 	type type_model_point is record
-		x, y : type_float_internal := 0.0;
+		x, y : type_float := 0.0;
 	end record;
 
 	model_origin : constant type_model_point := (0.0, 0.0);
@@ -424,8 +424,8 @@ package pac_canvas is
 	-- a rectangular area is required.
 	-- NOTE: The bounding box is something required in the model plane only.
 	type type_bounding_box is record -- CS rename to type_bounding_box
-		x, y			: type_float_internal; -- position, upper left corner
-		width, height	: type_float_internal_positive; -- size
+		x, y			: type_float; -- position, upper left corner
+		width, height	: type_float_positive; -- size
 	end record;
 
 	no_area : constant type_bounding_box := (others => 0.0);
@@ -686,13 +686,13 @@ package pac_canvas is
 
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.
-	function convert_x (x : in type_float_internal) 
+	-- It just converts from type_float to type_view_coordinate. No shifting, no inverting.
+	function convert_x (x : in type_float) 
 		return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the view.	
-	-- It just converts from type_float_internal to type_view_coordinate. No shifting, no inverting.	
-	function convert_y (y : in type_float_internal) 
+	-- It just converts from type_float to type_view_coordinate. No shifting, no inverting.	
+	function convert_y (y : in type_float) 
 		return type_view_coordinate renames convert_x;
 	
 
@@ -808,13 +808,13 @@ package pac_canvas is
 	-- Returns the height of the drawing frame:
 	function frame_height (
 		self : not null access type_view)
-		return type_float_internal_positive is abstract;
+		return type_float_positive is abstract;
 
 	
 	-- Returns the width of the drawing frame:
 	function frame_width (
 		self : not null access type_view)
-		return type_float_internal_positive is abstract;
+		return type_float_positive is abstract;
 
 	
 	-- Returns the bounding box of the drawing frame:
@@ -970,7 +970,7 @@ package pac_canvas is
 --PRIMITIVE DRAW OPERATIONS------------------
 
 	function make_bounding_box (
-		height		: in type_float_internal;
+		height		: in type_float;
 		boundaries	: in type_boundaries)
 		return type_bounding_box;
 
@@ -988,7 +988,7 @@ package pac_canvas is
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive);
+		height	: in type_float_positive);
 		
 
 	-- This procedure draws the given arc on the given context.
@@ -1004,7 +1004,7 @@ package pac_canvas is
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive);
+		height	: in type_float_positive);
 
 	
 	-- This procedure draws the given circle on the given context.
@@ -1023,7 +1023,7 @@ package pac_canvas is
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive);
+		height	: in type_float_positive);
 		-- CS fill style ?
 
 
@@ -1040,7 +1040,7 @@ package pac_canvas is
 		-- The width for the actual drawing must be set by the caller.
 		width	: in pac_geometry_2.type_distance_positive;
 		
-		height	: in type_float_internal_positive;
+		height	: in type_float_positive;
 
 		-- This flag is set if the contour has been drawn
 		-- because it is inside the given area:
@@ -1052,7 +1052,7 @@ package pac_canvas is
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class;
-		height			: in type_float_internal_positive);
+		height			: in type_float_positive);
 
 	
 	procedure draw_contour_with_arbitrary_cutout (
@@ -1060,7 +1060,7 @@ package pac_canvas is
 		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
-		height			: in type_float_internal_positive);
+		height			: in type_float_positive);
 	
 	
 	-- This procedure draws the a rectangle on the given context.
@@ -1072,9 +1072,9 @@ package pac_canvas is
 		area			: in type_bounding_box;
 		context			: in type_draw_context;
 		position		: in pac_geometry_2.type_point;	-- position of the rectangle (lower left corner)
-		width			: in type_float_internal_positive; -- widht of the rectangle
-		height			: in type_float_internal_positive; -- height of the rectangle
-		frame_height	: in type_float_internal_positive;
+		width			: in type_float_positive; -- widht of the rectangle
+		height			: in type_float_positive; -- height of the rectangle
+		frame_height	: in type_float_positive;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default);
 		-- CS fill style ?
@@ -1129,7 +1129,7 @@ package pac_canvas is
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment;
-		height		: in type_float_internal_positive); -- the height of the drawing frame
+		height		: in type_float_positive); -- the height of the drawing frame
 
 	
 	-- Draw a vectorized text:
@@ -1141,7 +1141,7 @@ package pac_canvas is
 		-- The line width is used for calculating the boundaries
 		-- of the line segments:
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive);
+		height	: in type_float_positive);
 
 
 

@@ -229,10 +229,10 @@ package body et_geometry_2.contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_point)
-		return type_float_internal_positive
+		return type_float_positive
 	is
-		--result : type_distance_polar := to_polar (type_float_internal'last, 0.0);
-		result : type_float_internal_positive := type_float_internal'last;
+		--result : type_distance_polar := to_polar (type_float'last, 0.0);
+		result : type_float_positive := type_float'last;
 		
 		--procedure update (d : in type_distance_polar) is begin
 			----put_line (to_string (d));
@@ -241,7 +241,7 @@ package body et_geometry_2.contours is
 			--end if;
 		--end update;
 
-		procedure update (d : in type_float_internal_positive) is begin
+		procedure update (d : in type_float_positive) is begin
 			--put_line (to_string (d));
 			if d < result then
 				result := d;
@@ -627,7 +627,7 @@ package body et_geometry_2.contours is
 	is
 		result : type_boundaries; -- to be returned
 
-		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
+		half_width : constant type_float_positive := type_float (line_width) * 0.5;
 		
 
 		procedure query_segment (c : in pac_segments.cursor) is begin
@@ -1010,11 +1010,11 @@ package body et_geometry_2.contours is
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
-		return type_float_internal
+		return type_float
 	is
-		result : type_float_internal := type_float_internal'last;
+		result : type_float := type_float'last;
 		
-		procedure update (d : in type_float_internal) is begin
+		procedure update (d : in type_float) is begin
 			--put_line (to_string (d));
 			if d < result then
 				result := d;
@@ -1086,7 +1086,7 @@ package body et_geometry_2.contours is
 		result : unbounded_string;
 		
 		procedure query_intersection (c : pac_probe_line_intersections_contour.cursor) is begin
-			result := result & type_float_internal'image (element (c).x_position) 
+			result := result & type_float'image (element (c).x_position) 
 						& "/" & trim (to_string (element (c).angle), left);
 		end query_intersection;
 
@@ -1159,7 +1159,7 @@ package body et_geometry_2.contours is
 		-- to the actual return:
 		result_status : type_location;
 		result_intersections : pac_probe_line_intersections_contour.list;
-		result_distance : type_float_internal := 0.0;
+		result_distance : type_float := 0.0;
 		result_segment : pac_segments.cursor;
 		result_neigboring_segments : type_neigboring_segments;
 
@@ -1176,22 +1176,22 @@ package body et_geometry_2.contours is
 
 		-- For segments that end or start exactly on the Y value of the probe line
 		-- we define a threshold:
-		y_threshold : constant type_float_internal := get_y (point_v);
+		y_threshold : constant type_float := get_y (point_v);
 
 
 		function crosses_threshold (
 			line		: in type_line;	
-			y_threshold	: in type_float_internal)
+			y_threshold	: in type_float)
 			return boolean
 		is begin
 			if	
-				type_float_internal (get_y (line.start_point)) >= y_threshold and 
-				type_float_internal (get_y (line.end_point))   <  y_threshold then
+				type_float (get_y (line.start_point)) >= y_threshold and 
+				type_float (get_y (line.end_point))   <  y_threshold then
 				return true;
 				
 			elsif
-				type_float_internal (get_y (line.end_point))   >= y_threshold and 
-				type_float_internal (get_y (line.start_point)) <  y_threshold then
+				type_float (get_y (line.end_point))   >= y_threshold and 
+				type_float (get_y (line.start_point)) <  y_threshold then
 				return true;
 				
 			else
@@ -1202,17 +1202,17 @@ package body et_geometry_2.contours is
 
 		function crosses_threshold (
 			arc			: in type_arc;
-			y_threshold	: in type_float_internal)
+			y_threshold	: in type_float)
 			return boolean
 		is begin
 			if	
-				type_float_internal (get_y (arc.start_point)) >= y_threshold and 
-				type_float_internal (get_y (arc.end_point))   <  y_threshold then
+				type_float (get_y (arc.start_point)) >= y_threshold and 
+				type_float (get_y (arc.end_point))   <  y_threshold then
 				return true;
 				
 			elsif
-				type_float_internal (get_y (arc.end_point))   >= y_threshold and 
-				type_float_internal (get_y (arc.start_point)) <  y_threshold then
+				type_float (get_y (arc.end_point))   >= y_threshold and 
+				type_float (get_y (arc.start_point)) <  y_threshold then
 				return true;
 				
 			else
@@ -1236,12 +1236,12 @@ package body et_geometry_2.contours is
 			--center		: in type_point := origin;
 			--radius		: in type_distance_positive := zero)
 		is 
-			xi : constant type_float_internal := get_x (intersection.vector);
+			xi : constant type_float := get_x (intersection.vector);
 		begin
 			-- The intersection will be collected if it is ON or
 			-- AFTER the given start point. If it is before the start
 			-- point then we ignore it:
-			--if xi >= type_float_internal (get_x (point)) then
+			--if xi >= type_float (get_x (point)) then
 			if xi >= get_x (point_v) then
 				
 				append (result_intersections, (
@@ -1286,7 +1286,7 @@ package body et_geometry_2.contours is
 			a_norm : constant type_arc := type_arc (normalize_arc (a));
 			
 			-- the radius of the arc:
-			radius : constant type_float_internal_positive := get_radius_start (a_norm);
+			radius : constant type_float_positive := get_radius_start (a_norm);
 			
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate arc of the contour.
@@ -1420,7 +1420,7 @@ package body et_geometry_2.contours is
 			--put_line ("with redundant intersections:");
 			--c := result.intersections.first;				
 			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (type_float_internal'image (element (c).x_position));
+				--put_line (type_float'image (element (c).x_position));
 				--next (c);
 			--end loop;
 
@@ -1446,7 +1446,7 @@ package body et_geometry_2.contours is
 			--put_line ("without redundant intersections:");
 			--c := result.intersections.first;		
 			--while c /= pac_probe_line_intersections.no_element loop
-				--put_line (type_float_internal'image (element (c).x_position));
+				--put_line (type_float'image (element (c).x_position));
 				--next (c);
 			--end loop;
 

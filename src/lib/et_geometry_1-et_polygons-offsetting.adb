@@ -58,10 +58,10 @@ package body et_geometry_1.et_polygons.offsetting is
 
 	procedure offset_polygon (
 		polygon		: in out type_polygon;
-		offset		: in type_float_internal;
+		offset		: in type_float;
 		debug		: in boolean := false) 
 	is
-		offset_float : constant type_float_internal_positive := abs (offset);
+		offset_float : constant type_float_positive := abs (offset);
 		
 		-- Mode tells whether we are shrinking, expanding
 		-- or whether there is nothing to do:
@@ -465,7 +465,7 @@ package body et_geometry_1.et_polygons.offsetting is
 	
 	function offset_polygon (
 		polygon		: in type_polygon;
-		offset		: in type_float_internal;
+		offset		: in type_float;
 		debug		: in boolean := false)
 		return type_polygon
 	is
@@ -480,7 +480,7 @@ package body et_geometry_1.et_polygons.offsetting is
 
 	function offset_polygons (
 		polygons	: in pac_polygon_list.list;
-		offset		: in type_float_internal)
+		offset		: in type_float)
 		return pac_polygon_list.list
 	is
 		use pac_polygon_list;
@@ -504,7 +504,7 @@ package body et_geometry_1.et_polygons.offsetting is
 
 	procedure offset_polygons (
 		polygons	: in out pac_polygon_list.list;
-		offset		: in type_float_internal)
+		offset		: in type_float)
 	is begin
 		polygons := offset_polygons (polygons, offset);
 	end offset_polygons;
@@ -513,7 +513,7 @@ package body et_geometry_1.et_polygons.offsetting is
 	
 
 	function to_mode (
-		offset : in type_float_internal)
+		offset : in type_float)
 	return type_mode is 
 		result : type_mode := NOTHING;
 	begin

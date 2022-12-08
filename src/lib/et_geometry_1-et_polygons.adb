@@ -81,7 +81,7 @@ package body et_geometry_1.et_polygons is
 
 	function to_edges (
 		arc			: in type_arc;
-		tolerance	: in type_float_internal_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
@@ -102,11 +102,11 @@ package body et_geometry_1.et_polygons is
 		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
 
 		-- Get the radius of the given arc:
-		radius : constant type_float_internal := type_float_internal (arc_angles.radius);
+		radius : constant type_float := type_float (arc_angles.radius);
 
 
 		-- The tolerance must be adjusted according to the given radius.
-		tolerance_dyn : type_float_internal_positive := tolerance;
+		tolerance_dyn : type_float_positive := tolerance;
 
 		-- Adjusts the tolerance. 
 		-- CS: Currently empirically. Need refinement.
@@ -122,13 +122,13 @@ package body et_geometry_1.et_polygons is
 		span : type_angle;
 
 		
-		edge_ct_float : type_float_internal; -- number of edges
+		edge_ct_float : type_float; -- number of edges
 		edge_ct_final : positive; -- real number of edges
 		-- CS subtype to limit the number of edges ?
 
 		-- The theoretical and real angle between the vertices:
-		angle_theo : type_float_internal;
-		angle_real : type_float_internal;
+		angle_theo : type_float;
+		angle_real : type_float;
 
 		-- In case the mode is EXPAND then this is the
 		-- start and end point of a virtual outer arc:
@@ -150,10 +150,10 @@ package body et_geometry_1.et_polygons is
 			begin
 				case arc.direction is
 					when CW =>
-						rotate_by (result, - angle_real * type_float_internal (m)); 
+						rotate_by (result, - angle_real * type_float (m)); 
 
 					when CCW =>
-						rotate_by (result, + angle_real * type_float_internal (m)); 
+						rotate_by (result, + angle_real * type_float (m)); 
 				end case;
 
 				return result;
@@ -227,11 +227,11 @@ package body et_geometry_1.et_polygons is
 
 		-- The result is not an integer. We need a natural number.
 		-- So we must round up to the nearest integer:
-		edge_ct_final := positive (type_float_internal'ceiling (edge_ct_float));
+		edge_ct_final := positive (type_float'ceiling (edge_ct_float));
 		
 		-- The span divided by the natural number of edges
 		-- gives us the real (practical) angle betweeen the vertices:
-		angle_real := span / type_float_internal (edge_ct_final);
+		angle_real := span / type_float (edge_ct_final);
 
 		
 		if debug then
@@ -734,8 +734,8 @@ package body et_geometry_1.et_polygons is
 		-- Iterate all fields of given list of arguments:
 		while place <= field_count (v_fields) loop
 
-			v.position.x := type_float_internal'value (f (place));
-			v.position.y := type_float_internal'value (f (place + 1));
+			v.position.x := type_float'value (f (place));
+			v.position.y := type_float'value (f (place + 1));
 
 			v_list.append (v);
 			
@@ -858,20 +858,20 @@ package body et_geometry_1.et_polygons is
 		-- https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order/1165943#1165943
 		-- http://blog.element84.com/polygon-winding.html
 
-		sum : type_float_internal := 0.0;
+		sum : type_float := 0.0;
 		
 		procedure query_edge (c : in pac_edges.cursor) is
-			x1, x2, y1, y2 : type_float_internal;
+			x1, x2, y1, y2 : type_float;
 		begin
-			x1 := type_float_internal (get_x (element (c).start_point));
-			y1 := type_float_internal (get_y (element (c).start_point));
+			x1 := type_float (get_x (element (c).start_point));
+			y1 := type_float (get_y (element (c).start_point));
 
 			if c /= polygon.edges.last then
-				x2 := type_float_internal (get_x (element (next (c)).start_point));
-				y2 := type_float_internal (get_y (element (next (c)).start_point));
+				x2 := type_float (get_x (element (next (c)).start_point));
+				y2 := type_float (get_y (element (next (c)).start_point));
 			else
-				x2 := type_float_internal (get_x (element (polygon.edges.first).start_point));
-				y2 := type_float_internal (get_y (element (polygon.edges.first).start_point));
+				x2 := type_float (get_x (element (polygon.edges.first).start_point));
+				y2 := type_float (get_y (element (polygon.edges.first).start_point));
 			end if;
 
 			-- Sum over the edges, (x2 − x1)(y2 + y1).
@@ -1058,11 +1058,11 @@ package body et_geometry_1.et_polygons is
 		polygon	: in type_polygon)
 		return pac_edges.cursor
 	is
-		length : type_float_internal_positive := line_length_max;
+		length : type_float_positive := line_length_max;
 		result : pac_edges.cursor; -- to be returned
 
 		procedure query_edge (c : in pac_edges.cursor) is
-			l_tmp : type_float_internal_positive := get_length (element (c));
+			l_tmp : type_float_positive := get_length (element (c));
 		begin
 			if l_tmp < length then
 				length := l_tmp;
@@ -1079,7 +1079,7 @@ package body et_geometry_1.et_polygons is
 
 	function get_shortest_edge (
 		polygon	: in type_polygon)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
 		return get_length (element (get_shortest_edge (polygon)));
 	end get_shortest_edge;
@@ -1088,11 +1088,11 @@ package body et_geometry_1.et_polygons is
 	procedure check_length (
 		polygon	: in type_polygon)
 	is 
-		edge_length_min : constant type_float_internal_positive := 1.0E-6;
+		edge_length_min : constant type_float_positive := 1.0E-6;
 		-- CS use constant defined in package spec
 		
 		procedure query_edge (c : in pac_edges.cursor) is
-			l : type_float_internal_positive := get_length (element (c));
+			l : type_float_positive := get_length (element (c));
 		begin
 			--put_line ("edge length" & to_string (l));
 			
@@ -1166,11 +1166,11 @@ package body et_geometry_1.et_polygons is
 	function get_shortest_distance (
 		polygon	: in type_polygon;
 		point	: in type_vector)
-		return type_float_internal
+		return type_float
 	is
-		result : type_float_internal := type_float_internal'last;
+		result : type_float := type_float'last;
 		
-		procedure update (d : in type_float_internal) is begin
+		procedure update (d : in type_float) is begin
 			--put_line (to_string (d));
 			if d < result then
 				result := d;
@@ -1315,7 +1315,7 @@ package body et_geometry_1.et_polygons is
 		result : unbounded_string;
 		
 		procedure query_intersection (c : pac_float_numbers.cursor) is begin
-			result := result & type_float_internal'image (element (c)); 
+			result := result & type_float'image (element (c)); 
 						--& "/" & trim (to_string (element (c).angle), left);
 		end query_intersection;
 
@@ -1355,8 +1355,8 @@ package body et_geometry_1.et_polygons is
 
 	function get_intersections (
 		status	: in type_point_status;
-		after	: in type_float_internal := type_float_internal'first;
-		before	: in type_float_internal := type_float_internal'last)		
+		after	: in type_float := type_float'first;
+		before	: in type_float := type_float'last)		
 		return pac_vectors.list
 	is
 		result : pac_vectors.list;
@@ -1364,7 +1364,7 @@ package body et_geometry_1.et_polygons is
 		use pac_float_numbers;
 
 		procedure query_intersection (i : in pac_float_numbers.cursor) is
-			x : type_float_internal renames element (i);
+			x : type_float renames element (i);
 		begin
 			if x > after and x < before then
 				result.append ((element (i), status.start.y, 0.0));
@@ -1415,7 +1415,7 @@ package body et_geometry_1.et_polygons is
 
 		use pac_float_numbers;
 		result_intersections : pac_float_numbers.list;
-		result_distance : type_float_internal := 0.0;
+		result_distance : type_float := 0.0;
 		result_edge : pac_edges.cursor;
 		result_neigboring_edges : type_neigboring_edges;
 
@@ -1426,7 +1426,7 @@ package body et_geometry_1.et_polygons is
 
 		-- For segments that end or start exactly on the Y value of the probe line
 		-- we define a threshold:
-		y_threshold : constant type_float_internal := get_y (point);
+		y_threshold : constant type_float := get_y (point);
 
 
 		
@@ -1442,7 +1442,7 @@ package body et_geometry_1.et_polygons is
 		procedure collect_intersection (
 			intersection: in et_geometry_1.type_intersection)
 		is 
-			xi : constant type_float_internal := get_x (intersection.vector);
+			xi : constant type_float := get_x (intersection.vector);
 		begin
 			-- The intersection will be collected if it is ON or
 			-- AFTER the given start point. If it is before the start
@@ -1458,11 +1458,11 @@ package body et_geometry_1.et_polygons is
 		-- threshold then we consider the edge to be threshold-crossing.
 		function crosses_threshold (
 			edge : in type_edge;
-			y_th : in type_float_internal)
+			y_th : in type_float)
 			return boolean
 		is 
 
-			function less_than (left, right : in type_float_internal) return boolean is begin
+			function less_than (left, right : in type_float) return boolean is begin
 				if right - left > accuracy then
 					return true;
 				else
@@ -1471,7 +1471,7 @@ package body et_geometry_1.et_polygons is
 			end less_than;
 
 			
-			function greater_or_equal (left, right : in type_float_internal) return boolean is begin
+			function greater_or_equal (left, right : in type_float) return boolean is begin
 				if right = left then
 					return true;
 				elsif left - right > accuracy then
@@ -1675,7 +1675,7 @@ package body et_geometry_1.et_polygons is
 	is
 		type type_item is record
 			intersection: type_intersection_line_edge;
-			distance	: type_float_internal_positive;
+			distance	: type_float_positive;
 		end record;
 
 		
@@ -1697,7 +1697,7 @@ package body et_geometry_1.et_polygons is
 		use pac_line_edge_intersections;
 		
 		procedure query_intersection (i : in pac_line_edge_intersections.cursor) is 
-			d : type_float_internal_positive;
+			d : type_float_positive;
 		begin
 			d := get_distance_total (reference, element (i).position);
 			
@@ -1944,7 +1944,7 @@ package body et_geometry_1.et_polygons is
 		result : type_edge_status := (edge => edge, others => <>);
 
 		edge_direction : constant type_angle := get_direction (edge);
-		edge_length : constant type_float_internal_positive := get_length (edge);
+		edge_length : constant type_float_positive := get_length (edge);
 		P_rotated : type_polygon;
 		intersections : pac_vectors.list;
 		
@@ -2314,7 +2314,7 @@ package body et_geometry_1.et_polygons is
 		type type_item is record
 			-- We will be sorting intersections only (no regular vertices):
 			vertex		: type_vertex (category => INTERSECTION);
-			distance	: type_float_internal_positive;
+			distance	: type_float_positive;
 		end record;
 
 		
@@ -2334,7 +2334,7 @@ package body et_geometry_1.et_polygons is
 
 		
 		procedure query_vertex (v : in pac_vertices.cursor) is 
-			d : type_float_internal_positive;
+			d : type_float_positive;
 		begin
 			d := get_distance_total (reference, element (v).position);
 			
@@ -3340,15 +3340,15 @@ package body et_geometry_1.et_polygons is
 
 	function to_polygon (
 		line		: in type_line_fine;
-		linewidth	: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive;
+		linewidth	: in type_float_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
 		return type_polygon
 	is
 		result : type_polygon;
 
 		direction : constant type_angle := get_direction (line);
-		distance : constant type_float_internal_positive := linewidth * 0.5;
+		distance : constant type_float_positive := linewidth * 0.5;
 
 		center : constant type_edge := type_edge (line);
 		edge_right, edge_left : type_edge := center;
@@ -3397,8 +3397,8 @@ package body et_geometry_1.et_polygons is
 
 	function to_polygon (
 		arc			: in type_arc;
-		linewidth	: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive;
+		linewidth	: in type_float_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
 		return type_polygon
 	is
@@ -3408,9 +3408,9 @@ package body et_geometry_1.et_polygons is
 		-- Basing on arc_n everything else will be computed.
 		arc_n : constant type_arc := normalize_arc (arc);
 
-		center_radius : constant type_float_internal_positive := get_radius_start (arc_n);
-		half_width    : constant type_float_internal_positive := linewidth * 0.5;
-		inner_radius, outer_radius : type_float_internal_positive;
+		center_radius : constant type_float_positive := get_radius_start (arc_n);
+		half_width    : constant type_float_positive := linewidth * 0.5;
+		inner_radius, outer_radius : type_float_positive;
 
 		
 		-- At first we build a contour consisting of 4 arcs. These
@@ -3493,9 +3493,9 @@ package body et_geometry_1.et_polygons is
 		polygon		: in type_polygon;
 		point		: in type_vector;
 		direction	: in type_angle)
-		return type_float_internal_positive
+		return type_float_positive
 	is
-		result : type_float_internal_positive;
+		result : type_float_positive;
 
 		location : constant type_location := get_location (polygon, point);
 		

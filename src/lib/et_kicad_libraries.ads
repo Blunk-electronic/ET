@@ -260,7 +260,7 @@ package et_kicad_libraries is
 	type type_symbol_arc is new et_symbols.type_arc with record
 		start_angle		: et_coordinates.pac_geometry_sch.type_angle;
 		end_angle		: et_coordinates.pac_geometry_sch.type_angle;
-		radius			: et_coordinates.pac_geometry_sch.type_float_internal_positive;
+		radius			: et_coordinates.pac_geometry_sch.type_float_positive;
  		fill			: type_fill;
 	end record;
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);

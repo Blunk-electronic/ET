@@ -466,8 +466,8 @@ package body et_text is
 			package sorting is new pac_character_lines.generic_sorting;
 
 
-			half_line_width : constant type_float_internal_positive := 
-				type_float_internal (line_width) * 0.5;
+			half_line_width : constant type_float_positive := 
+				type_float (line_width) * 0.5;
 			
 			-- Since there is a line width, the text position must be changed slightly:
 			offset_due_to_line_width : constant type_offset :=
@@ -487,7 +487,7 @@ package body et_text is
 			-- The scaling factor M applies to X and Y axis in the same way.
 			scale_factor : constant type_text_size := size - line_width;
 
-			scale_factor_float : constant type_float_internal_positive := type_float_internal_positive (scale_factor);
+			scale_factor_float : constant type_float_positive := type_float_positive (scale_factor);
 
 			
 			-- For alignment we need the total length of the text:
@@ -645,10 +645,10 @@ package body et_text is
 
 
 					procedure update_text_boundaries is
-						sx : constant type_float_internal := get_x (l.start_point);
-						sy : constant type_float_internal := get_y (l.start_point);
-						ex : constant type_float_internal := get_x (l.end_point);
-						ey : constant type_float_internal := get_y (l.end_point);
+						sx : constant type_float := get_x (l.start_point);
+						sy : constant type_float := get_y (l.start_point);
+						ex : constant type_float := get_x (l.end_point);
+						ey : constant type_float := get_y (l.end_point);
 					begin
 						-- update greatest x (right border):
 						if sx > result.boundaries.greatest_x then

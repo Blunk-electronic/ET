@@ -650,7 +650,7 @@ package body pac_canvas is
 	is 
 		use pac_geometry_2;
 	begin
-		return (type_float_internal (get_x (point)), type_float_internal (get_y (point)));
+		return (type_float (get_x (point)), type_float (get_y (point)));
 	end to_model_point;
 
 	
@@ -729,16 +729,16 @@ package body pac_canvas is
 		rect1 : in out type_bounding_box;
 		rect2 : type_bounding_box) 
 	is
-		right : constant type_float_internal := 
-			type_float_internal'max (rect1.x + rect1.width, rect2.x + rect2.width);
+		right : constant type_float := 
+			type_float'max (rect1.x + rect1.width, rect2.x + rect2.width);
 		
-		bottom : constant type_float_internal :=
-			type_float_internal'max (rect1.y + rect1.height, rect2.y + rect2.height);
+		bottom : constant type_float :=
+			type_float'max (rect1.y + rect1.height, rect2.y + rect2.height);
 	begin
-		rect1.x := type_float_internal'min (rect1.x, rect2.x);
+		rect1.x := type_float'min (rect1.x, rect2.x);
 		rect1.width := right - rect1.x;
 
-		rect1.y := type_float_internal'min (rect1.y, rect2.y);
+		rect1.y := type_float'min (rect1.y, rect2.y);
 		rect1.height := bottom - rect1.y;
 	end;
 
@@ -933,8 +933,8 @@ package body pac_canvas is
 		return type_model_point 
 	is begin
 		return (
-			x	=> type_float_internal (view_point.x / scale) + topleft.x,
-			y	=> type_float_internal (view_point.y / scale) + topleft.y
+			x	=> type_float (view_point.x / scale) + topleft.x,
+			y	=> type_float (view_point.y / scale) + topleft.y
 			);
 	end vtm;
 
@@ -960,8 +960,8 @@ package body pac_canvas is
 		return (
 			x      => p1.x,
 			y      => p1.y,
-			width  => type_float_internal_positive (rect.width / self.scale),
-			height => type_float_internal_positive (rect.height / self.scale));
+			width  => type_float_positive (rect.width / self.scale),
+			height => type_float_positive (rect.height / self.scale));
 	end view_to_model;
 
 	
@@ -1036,8 +1036,8 @@ package body pac_canvas is
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class) is
 	
 		pos : constant type_model_point := (
-			x => type_float_internal (canvas.hadj.get_value),
-			y => type_float_internal (canvas.vadj.get_value));
+			x => type_float (canvas.hadj.get_value),
+			y => type_float (canvas.vadj.get_value));
 
 	begin
 		if pos /= canvas.topleft then
@@ -1272,10 +1272,10 @@ package body pac_canvas is
 		
 		-- Build the area of the drawing:
 		a : constant type_bounding_box := (
-			x 		=> type_float_internal (get_x (p)),
-			y 		=> type_float_internal (get_y (p)), 
-			width 	=> type_float_internal_positive (area.width),
-			height 	=> type_float_internal_positive (area.height));
+			x 		=> type_float (get_x (p)),
+			y 		=> type_float (get_y (p)), 
+			width 	=> type_float_positive (area.width),
+			height 	=> type_float_positive (area.height));
 
 		border_left		: constant type_distance := type_distance (a.x);
 		border_right	: constant type_distance := type_distance (a.x + a.width);
@@ -1587,28 +1587,28 @@ package body pac_canvas is
 		preserve : in type_model_point := model_origin)
 	is
 		-- backup old scale
-		old_scale : constant type_float_internal := type_float_internal (self.scale);
+		old_scale : constant type_float := type_float (self.scale);
 
 		-- save requested scale
-		new_scale : constant type_float_internal := type_float_internal (scale);
+		new_scale : constant type_float := type_float (scale);
 
 		-- for calculating the new topleft point we need those tempoarily variables:
-		cx, cy : type_float_internal;
-		dx, dy : type_float_internal;
+		cx, cy : type_float;
+		dx, dy : type_float;
 		
 		box : type_bounding_box;
 		p   : type_model_point;
 
 		
-		function in_range (d : in type_float_internal) return boolean is 
+		function in_range (d : in type_float) return boolean is 
 
 			use pac_geometry_2;
 			
-			lower_limit : constant type_float_internal := 
-				type_float_internal (type_position_axis'first);
+			lower_limit : constant type_float := 
+				type_float (type_position_axis'first);
 
-			upper_limit : constant type_float_internal := 
-				type_float_internal (type_position_axis'last);
+			upper_limit : constant type_float := 
+				type_float (type_position_axis'last);
 
 		begin
 			if d >= lower_limit and d <= upper_limit then
@@ -1745,8 +1745,8 @@ package body pac_canvas is
 
 				-- calculate the new topleft corner of the visible area:
 				self.topleft := (
-					x	=> box.x - (type_float_internal (w / s) - box.width) / 2.0,
-					y	=> box.y - (type_float_internal (h / s) - box.height) / 2.0
+					x	=> box.x - (type_float (w / s) - box.width) / 2.0,
+					y	=> box.y - (type_float (h / s) - box.height) / 2.0
 					);
 				
 				self.set_adjustment_values;
@@ -1757,7 +1757,7 @@ package body pac_canvas is
 	end scale_to_fit;
 
 	
-	function convert_x (x : in type_float_internal) return type_view_coordinate is begin
+	function convert_x (x : in type_float) return type_view_coordinate is begin
 		return type_view_coordinate (x);
 	end;
 
@@ -1877,12 +1877,12 @@ package body pac_canvas is
 		-- position (upper left corner):
 		--box.x := (paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0;
 		--box.y := (paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0;
-		box.x := type_float_internal ((paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0);
-		box.y := type_float_internal ((paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0);
+		box.x := type_float ((paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0);
+		box.y := type_float ((paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0);
 		
 		-- width and height
-		box.width := type_float_internal_positive (self.get_frame.size.x);
-		box.height := type_float_internal_positive (self.get_frame.size.y);
+		box.width := type_float_positive (self.get_frame.size.x);
+		box.height := type_float_positive (self.get_frame.size.y);
 
 		return box;
 	end frame_bounding_box;
@@ -1894,12 +1894,12 @@ package body pac_canvas is
 	is
 		use et_frames;
 
-		paper_height : constant type_float_internal_positive := type_float_internal_positive (paper_dimension (
+		paper_height : constant type_float_positive := type_float_positive (paper_dimension (
 						paper_size	=> self.get_frame.paper,
 						orientation	=> self.get_frame.orientation,
 						axis		=> Y));
 
-		paper_width : constant type_float_internal_positive := type_float_internal_positive (paper_dimension (
+		paper_width : constant type_float_positive := type_float_positive (paper_dimension (
 						paper_size	=> self.get_frame.paper,
 						orientation	=> self.get_frame.orientation,
 						axis		=> X));
@@ -2120,8 +2120,8 @@ package body pac_canvas is
 	function shift_y (
 		--y		: in pac_shapes.pac_geometry_1.type_distance;
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
-		y		: in type_float_internal;
-		height	: in type_float_internal)
+		y		: in type_float;
+		height	: in type_float)
 		return type_view_coordinate 
 	is begin
 		return type_view_coordinate (height - y);
@@ -2130,10 +2130,10 @@ package body pac_canvas is
 	
 	function shift_y (
 		y		: in pac_geometry_2.type_distance;
-		height	: in type_float_internal)
+		height	: in type_float)
 		return type_view_coordinate 
 	is begin
-		return type_view_coordinate (height - type_float_internal (y));
+		return type_view_coordinate (height - type_float (y));
 	end;
 
 
@@ -2147,9 +2147,9 @@ package body pac_canvas is
 	--end;
 
 	function shift_y (
-		y		: in type_float_internal;
-		height	: in type_float_internal)
-		return type_float_internal 
+		y		: in type_float;
+		height	: in type_float)
+		return type_float 
 	is begin
 		return (height - y);
 	end;
@@ -2157,16 +2157,16 @@ package body pac_canvas is
 	
 	--function shift_y (
 		--y		: in type_distance;
-		--height	: in type_float_internal)
-		--return type_float_internal is
+		--height	: in type_float)
+		--return type_float is
 	--begin
-		--return (height - type_float_internal (y));
+		--return (height - type_float (y));
 	--end;
 
 
 	
 	function make_bounding_box (
-		height		: in type_float_internal;
+		height		: in type_float;
 		boundaries	: in type_boundaries)
 		return type_bounding_box 
 	is begin
@@ -2198,7 +2198,7 @@ package body pac_canvas is
 	is
 		result : type_boundaries;
 
-		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+		half_width : constant type_float_positive := type_float (width) * 0.5;
 	begin
 		-- X axis
 		if point_one.x = point_two.x then -- both points on a vertical line
@@ -2251,36 +2251,36 @@ package body pac_canvas is
 		return type_boundaries
 	is
 		result : type_boundaries;
-		half_width : constant type_float_internal_positive := type_float_internal (width) * 0.5;
+		half_width : constant type_float_positive := type_float (width) * 0.5;
 	begin
 		-- X axis
 		if line.start_point.x = line.end_point.x then -- both points on a vertical line
 
-			result.smallest_x := type_float_internal (line.start_point.x);
-			result.greatest_x := type_float_internal (line.start_point.x);
+			result.smallest_x := type_float (line.start_point.x);
+			result.greatest_x := type_float (line.start_point.x);
 			
 		elsif line.start_point.x < line.end_point.x then
 			
-			result.smallest_x := type_float_internal (line.start_point.x);
-			result.greatest_x := type_float_internal (line.end_point.x);
+			result.smallest_x := type_float (line.start_point.x);
+			result.greatest_x := type_float (line.end_point.x);
 		else
-			result.smallest_x := type_float_internal (line.end_point.x);
-			result.greatest_x := type_float_internal (line.start_point.x);
+			result.smallest_x := type_float (line.end_point.x);
+			result.greatest_x := type_float (line.start_point.x);
 		end if;
 
 		-- Y axis
 		if line.start_point.y = line.end_point.y then -- both points on a horizontal line
 
-			result.smallest_y := type_float_internal (line.start_point.y);
-			result.greatest_y := type_float_internal (line.start_point.y);
+			result.smallest_y := type_float (line.start_point.y);
+			result.greatest_y := type_float (line.start_point.y);
 			
 		elsif line.start_point.y < line.end_point.y then
 			
-			result.smallest_y := type_float_internal (line.start_point.y);
-			result.greatest_y := type_float_internal (line.end_point.y);
+			result.smallest_y := type_float (line.start_point.y);
+			result.greatest_y := type_float (line.end_point.y);
 		else
-			result.smallest_y := type_float_internal (line.end_point.y);
-			result.greatest_y := type_float_internal (line.start_point.y);
+			result.smallest_y := type_float (line.end_point.y);
+			result.greatest_y := type_float (line.start_point.y);
 		end if;
 
 		
@@ -2299,7 +2299,7 @@ package body pac_canvas is
 	function get_bounding_box_line (
 		line	: in type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 		return type_bounding_box
 	is begin
 		return make_bounding_box (height, get_boundaries (line, width));
@@ -2311,7 +2311,7 @@ package body pac_canvas is
 		context	: in type_draw_context;
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is
 		-- compute the bounding box of the given line
 		bounding_box : constant type_bounding_box := 
@@ -2360,7 +2360,7 @@ package body pac_canvas is
 		line_width	: in pac_geometry_2.type_distance_positive) 
 		return type_boundaries
 	is
-		half_width : constant type_float_internal_positive := type_float_internal (line_width) * 0.5;
+		half_width : constant type_float_positive := type_float (line_width) * 0.5;
 		
 		result : type_boundaries; -- to be returned
 
@@ -2368,7 +2368,7 @@ package body pac_canvas is
 		arc_norm : type_arc := type_arc (normalize_arc (arc));
 
 		-- Calculate the radius of the arc:
-		radius : constant type_float_internal_positive := get_radius_start (arc_norm);
+		radius : constant type_float_positive := get_radius_start (arc_norm);
 
 		-- The quadrant of start and end point:
 		q_start : type_quadrant;
@@ -2518,7 +2518,7 @@ package body pac_canvas is
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
 		width	: in pac_geometry_2.type_distance_positive;
 		--		height	: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := get_boundaries (arc, width);
@@ -2580,7 +2580,7 @@ package body pac_canvas is
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive;
 		--height	: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is
 		use pac_geometry_2;
 		use ada.numerics;
@@ -2650,7 +2650,7 @@ package body pac_canvas is
 		-- CS fill style
 
 		--height	: in pac_shapes.pac_geometry_1.type_distance;
-		height	: in type_float_internal_positive;
+		height	: in type_float_positive;
 		drawn	: in out boolean)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given contour:
@@ -2837,7 +2837,7 @@ package body pac_canvas is
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class;
 		--height			: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is 
 		drawn : boolean := false;
 	begin
@@ -2864,7 +2864,7 @@ package body pac_canvas is
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
 		--height			: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is 
 		drawn : boolean := false;
 	begin
@@ -2890,11 +2890,11 @@ package body pac_canvas is
 		context			: in type_draw_context;
 		position		: in pac_geometry_2.type_point; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
-		width			: in type_float_internal_positive;
+		width			: in type_float_positive;
 		--height			: in pac_shapes.pac_geometry_1.type_distance;
-		height			: in type_float_internal_positive;
+		height			: in type_float_positive;
 		--frame_height	: in pac_shapes.pac_geometry_1.type_distance;
-		frame_height	: in type_float_internal_positive;
+		frame_height	: in type_float_positive;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default) 
 	is
@@ -2902,10 +2902,10 @@ package body pac_canvas is
 		
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := (
-			smallest_x	=> type_float_internal (get_x (position)),
-			greatest_x	=> type_float_internal (get_x (position)) + width,
-			smallest_y	=> type_float_internal (get_y (position)),
-			greatest_y	=> type_float_internal (get_y (position)) + height,
+			smallest_x	=> type_float (get_x (position)),
+			greatest_x	=> type_float (get_x (position)) + width,
+			smallest_y	=> type_float (get_y (position)),
+			greatest_y	=> type_float (get_y (position)) + height,
 			others		=> <>);
 
 		-- compute the bounding box of the given arc
@@ -3179,7 +3179,7 @@ package body pac_canvas is
 		rotation	: in pac_geometry_2.type_rotation;
 		alignment	: in type_text_alignment;
 		--height		: in pac_shapes.pac_geometry_1.type_distance)  -- the height of the drawing frame
-		height		: in type_float_internal_positive)
+		height		: in type_float_positive)
 	is
 		text_area : cairo_text_extents;
 
@@ -3229,10 +3229,10 @@ package body pac_canvas is
 		-- To keep things simple, we assume the largest possible bonding box
 		-- for the text. This way the text will be inside the box regardless
 		-- of alignment and rotation:
-		bounding_box.x := type_float_internal (ox - (text_area.width));
-		bounding_box.y := type_float_internal (oy - (text_area.width));
-		bounding_box.width	:= type_float_internal (2.0 * text_area.width);
-		bounding_box.height	:= type_float_internal (2.0 * text_area.width);
+		bounding_box.x := type_float (ox - (text_area.width));
+		bounding_box.y := type_float (oy - (text_area.width));
+		bounding_box.width	:= type_float (2.0 * text_area.width);
+		bounding_box.height	:= type_float (2.0 * text_area.width);
 		
 		-- We draw the text if:
 		--  - no area given or
@@ -3274,7 +3274,7 @@ package body pac_canvas is
 		context	: in type_draw_context;
 		text	: in type_vector_text;
 		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_internal_positive)
+		height	: in type_float_positive)
 	is
 		use pac_text;
 		
@@ -3371,7 +3371,7 @@ package body pac_canvas is
 
 			draw_line (area, context, to_line_fine (line),
 						type_distance_positive (line_width_thin),
-						type_float_internal_positive (frame_size.y));
+						type_float_positive (frame_size.y));
 		end query_line;
 		
 	begin		
@@ -3395,7 +3395,7 @@ package body pac_canvas is
 		procedure draw_line is begin
 			draw_line (area, context, to_line_fine (line),
 					   type_distance_positive (line_width_thin),
-					   type_float_internal_positive (height));
+					   type_float_positive (height));
 		end draw_line;
 
 	begin
@@ -3523,7 +3523,7 @@ package body pac_canvas is
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (CENTER, CENTER),
-				height		=> type_float_internal_positive (frame_size.y));
+				height		=> type_float_positive (frame_size.y));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
@@ -3537,7 +3537,7 @@ package body pac_canvas is
 		procedure draw_line is begin
 			draw_line (area, context, to_line_fine (line),
 					   type_distance_positive (line_width_thin),
-					   type_float_internal_positive (frame_size.y));
+					   type_float_positive (frame_size.y));
 		end draw_line;
 		
 		
@@ -3705,7 +3705,7 @@ package body pac_canvas is
 			origin		=> true,
 			rotation	=> zero_rotation,
 			alignment	=> (LEFT, BOTTOM),
-			height		=> type_float_internal_positive (height));
+			height		=> type_float_positive (height));
 	end draw_text;
 
 

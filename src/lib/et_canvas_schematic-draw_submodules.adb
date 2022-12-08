@@ -65,9 +65,9 @@ is
 				area			=> in_area,
 				context			=> context,
 				position		=> submod_position,
-				width			=> type_float_internal_positive (element (cursor).size.x),
-				height			=> type_float_internal_positive (element (cursor).size.y),
-				frame_height	=> type_float_internal_positive (self.frame_height));
+				width			=> type_float_positive (element (cursor).size.x),
+				height			=> type_float_positive (element (cursor).size.y),
+				frame_height	=> type_float_positive (self.frame_height));
 								
 			cairo.stroke (context.cr);
 		end draw_box;
@@ -92,7 +92,7 @@ is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> type_float_internal_positive (self.frame_height));
+				height		=> type_float_positive (self.frame_height));
 
 		end draw_instance_name;
 		
@@ -116,7 +116,7 @@ is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> type_float_internal_positive (self.frame_height));
+				height		=> type_float_positive (self.frame_height));
 
 		end draw_file_name;
 
@@ -150,7 +150,7 @@ is
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (LEFT, TOP),
-				height		=> pac_geometry_sch.type_float_internal_positive (self.frame_height));
+				height		=> pac_geometry_sch.type_float_positive (self.frame_height));
 
 		end draw_position_in_board;
 
@@ -171,7 +171,7 @@ is
 						position		=> pos,
 						width			=> port_symbol_width,
 						height			=> port_symbol_height,
-						frame_height	=> type_float_internal_positive (self.frame_height));
+						frame_height	=> type_float_positive (self.frame_height));
 					
 				end draw_horizontal;
 
@@ -183,7 +183,7 @@ is
 						position		=> pos,
 						width			=> port_symbol_height,
 						height			=> port_symbol_width,
-						frame_height	=> type_float_internal_positive (self.frame_height));
+						frame_height	=> type_float_positive (self.frame_height));
 
 				end draw_vertical;
 				
@@ -214,7 +214,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					draw_text 
@@ -228,7 +228,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (LEFT, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -251,7 +251,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					draw_text 
@@ -265,7 +265,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (RIGHT, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -288,7 +288,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					draw_text 
@@ -302,7 +302,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (LEFT, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -325,7 +325,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					draw_text 
@@ -339,7 +339,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (RIGHT, CENTER),
-						height		=> type_float_internal_positive (self.frame_height));
+						height		=> type_float_positive (self.frame_height));
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:

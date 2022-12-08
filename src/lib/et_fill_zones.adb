@@ -77,21 +77,21 @@ package body et_fill_zones is
 		-- The boundaries of the island (greatest/smallest x/y):
 		boundaries : constant type_boundaries := get_boundaries (island.shore.centerline);
 
-		height : constant type_float_internal_positive := get_height (boundaries);
-		bottom : constant type_float_internal := get_bottom (boundaries);
+		height : constant type_float_positive := get_height (boundaries);
+		bottom : constant type_float := get_bottom (boundaries);
 
-		--effective_width : type_float_internal_positive;
+		--effective_width : type_float_positive;
 
 		-- The factor that causes the fill stripes to overlap slightly.
 		-- It is required in order to avoid a possible small gap between them
 		-- that could occur during manufacturing.
 		-- The lower the factor the more overlap. 1.0 means no overlap.
-		--overlap_factor : constant type_float_internal_positive := 0.99;
+		--overlap_factor : constant type_float_positive := 0.99;
 
 		
-		stripe_count_rational : type_float_internal_positive;
+		stripe_count_rational : type_float_positive;
 		stripe_count_natural : natural;
-		stripe_spacing : type_float_internal_positive;
+		stripe_spacing : type_float_positive;
 
 		-- The point at which a stripe starts. We will fill the island from bottom to top.
 		-- The lowest left place to start from is outside the island:
@@ -165,24 +165,24 @@ package body et_fill_zones is
 				-- Since the stripes must overlap slightly the effective
 				-- linewidth is smaller than style.linewidth. The effective_width
 				-- is used to compute the number of stripes:
-				--effective_width := type_float_internal_positive (style.linewidth) / overlap_factor;
+				--effective_width := type_float_positive (style.linewidth) / overlap_factor;
 
 				-- Compute the number of stripes in a rational number (like 6.3).
 				--stripe_count_rational := height / effective_width;
-				stripe_count_rational := height / type_float_internal_positive (style.linewidth);
+				stripe_count_rational := height / type_float_positive (style.linewidth);
 
 				-- Round up the number of stripes to the next natural number (like 7)
-				stripe_count_natural := natural (type_float_internal_positive'ceiling (
-						type_float_internal_positive (stripe_count_rational)));
+				stripe_count_natural := natural (type_float_positive'ceiling (
+						type_float_positive (stripe_count_rational)));
 				
 
-				stripe_spacing := height / type_float_internal_positive (stripe_count_natural);
+				stripe_spacing := height / type_float_positive (stripe_count_natural);
 
 
 				-- Compute the rows of stripes from bottom to top:
 				for row in 1 .. stripe_count_natural loop
 				
-					start_point.y := bottom + type_float_internal_positive (row) * stripe_spacing;
+					start_point.y := bottom + type_float_positive (row) * stripe_spacing;
 					
 					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
 					status := get_point_status (island.shore.centerline, start_point, false); -- debug off
@@ -235,9 +235,9 @@ package body et_fill_zones is
 
 	function get_half_linewidth (
 		zone	: in type_zone)
-		return type_float_internal_positive
+		return type_float_positive
 	is begin
-		return type_float_internal_positive (zone.linewidth) * 0.5;		
+		return type_float_positive (zone.linewidth) * 0.5;		
 	end get_half_linewidth;
 
 	
@@ -440,14 +440,14 @@ package body et_fill_zones is
 		return type_distance_to_conducting_area
 	is
 		result_edge_exists : boolean := true;
-		result_distance_to_edge : type_float_internal_positive := 0.0;
+		result_distance_to_edge : type_float_positive := 0.0;
 		
 		result_centerline_exists : boolean := true;
-		result_distance_to_centerline : type_float_internal_positive := 0.0;
+		result_distance_to_centerline : type_float_positive := 0.0;
 		
 		ray : constant type_ray := (start_point, direction);
 
-		half_linewidth : constant type_float_internal_positive := get_half_linewidth (zone);
+		half_linewidth : constant type_float_positive := get_half_linewidth (zone);
 		
 		use pac_vectors;
 		intersections_with_edges : pac_vectors.list;
@@ -577,10 +577,10 @@ package body et_fill_zones is
 		return type_distance_to_conducting_area
 	is
 		result_edge_exists : boolean := true;
-		result_distance_to_edge : type_float_internal_positive := 0.0;
+		result_distance_to_edge : type_float_positive := 0.0;
 		
 		result_centerline_exists : boolean := true;
-		result_distance_to_centerline : type_float_internal_positive := 0.0;
+		result_distance_to_centerline : type_float_positive := 0.0;
 
 		location_computed : type_location;
 		lake : type_lake;

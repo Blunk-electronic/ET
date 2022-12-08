@@ -115,7 +115,7 @@ package et_routing is
 		point			: in type_point;
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 
 	-- Tests whether the given point is in the usable board area. 

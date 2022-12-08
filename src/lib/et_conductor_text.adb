@@ -62,11 +62,11 @@ package body et_conductor_text is
 	is
 		result : pac_polygon_list.list;
 
-		linewidth : constant type_float_internal_positive := 
-			type_float_internal_positive (get_linewidth (text.vectors));
+		linewidth : constant type_float_positive := 
+			type_float_positive (get_linewidth (text.vectors));
 
-		tolerance_float : constant type_float_internal_positive := 
-			type_float_internal_positive (tolerance);
+		tolerance_float : constant type_float_positive := 
+			type_float_positive (tolerance);
 
 
 		use pac_polygon_union;

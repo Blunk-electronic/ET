@@ -242,8 +242,8 @@ package et_text is
 			return string;
 
 		
-		origin_half_size : constant pac_geometry_2.type_distance_positive := 0.5; -- CS type_float_internal_positive ?
-		origin_line_width : constant pac_geometry_2.type_distance_positive := 0.01; -- CS type_float_internal_positive ?
+		origin_half_size : constant pac_geometry_2.type_distance_positive := 0.5; -- CS type_float_positive ?
+		origin_line_width : constant pac_geometry_2.type_distance_positive := 0.01; -- CS type_float_positive ?
 
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
@@ -291,8 +291,8 @@ package et_text is
 -- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
 -- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
-		subtype type_character_height is type_float_internal range -0.4 .. 1.0;
-		subtype type_character_width  is type_float_internal range  0.0 .. 0.7;
+		subtype type_character_height is type_float range -0.4 .. 1.0;
+		subtype type_character_width  is type_float range  0.0 .. 0.7;
 
 		character_width : constant type_character_height := 0.7;
 	

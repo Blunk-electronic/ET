@@ -74,7 +74,7 @@ package et_geometry_1.et_polygons is
 	
 	type type_edge is new type_line_fine;
 
-	edge_length_min : constant type_float_internal_positive := 0.1;
+	edge_length_min : constant type_float_positive := 0.1;
 	
 	
 	overriding function to_string (
@@ -116,7 +116,7 @@ package et_geometry_1.et_polygons is
 	-- end on the end point of the given arc:
 	function to_edges (
 		arc			: in type_arc;
-		tolerance	: in type_float_internal_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
@@ -311,7 +311,7 @@ package et_geometry_1.et_polygons is
 	-- Returns the length of the shortest edge of the given polygon:
 	function get_shortest_edge (
 		polygon	: in type_polygon)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 	-- Checks the length of the edges of the given polygon.
@@ -353,7 +353,7 @@ package et_geometry_1.et_polygons is
 	function get_shortest_distance (
 		polygon	: in type_polygon;
 		point	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 		
 	function is_vertex (
@@ -401,7 +401,7 @@ package et_geometry_1.et_polygons is
 			when OUTSIDE | INSIDE =>
 				-- The shortest distance of the start point (of the probe line)
 				-- to the polygon:
-				distance : type_float_internal; -- CS type_float_internal_positive ?
+				distance : type_float; -- CS type_float_positive ?
 				
 			when ON_EDGE =>
 				edge : pac_edges.cursor;
@@ -431,8 +431,8 @@ package et_geometry_1.et_polygons is
 	-- Likewise the argument "before". x-Values less than "before" are extracted.
 	function get_intersections (
 		status	: in type_point_status;
-		after	: in type_float_internal := type_float_internal'first;
-		before	: in type_float_internal := type_float_internal'last)
+		after	: in type_float := type_float'first;
+		before	: in type_float := type_float'last)
 		return pac_vectors.list;
 
 	
@@ -890,8 +890,8 @@ package et_geometry_1.et_polygons is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line		: in type_line_fine;
-		linewidth	: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive;
+		linewidth	: in type_float_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
 		return type_polygon;
 	
@@ -900,8 +900,8 @@ package et_geometry_1.et_polygons is
 	-- with round caps on the arc ends:
 	function to_polygon (
 		arc			: in type_arc;
-		linewidth	: in type_float_internal_positive;
-		tolerance	: in type_float_internal_positive;
+		linewidth	: in type_float_positive;
+		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
 		return type_polygon;
 
@@ -918,7 +918,7 @@ package et_geometry_1.et_polygons is
 		polygon		: in type_polygon;
 		point		: in type_vector;
 		direction	: in type_angle)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 end et_geometry_1.et_polygons;
 

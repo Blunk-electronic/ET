@@ -118,7 +118,7 @@ package et_geometry_2 is
 	-- Converts a float number to type_distance by rounding
 	-- according to the bankers rule:
 	-- Use it !!!!!
-	function to_distance (f : in type_float_internal)
+	function to_distance (f : in type_float)
 		return type_distance;
 	
 
@@ -254,13 +254,13 @@ package et_geometry_2 is
 	-- according to the bankers rule:
 	-- Use it !!!!!
 	function to_rotation (
-		f : in type_float_internal)
+		f : in type_float)
 		return type_rotation;
 
 
 	function to_angle (
 		a : in type_rotation)
-		return type_float_internal;
+		return type_float;
 	
 	
 	--subtype type_rotation_positive is type_rotation
@@ -464,7 +464,7 @@ package et_geometry_2 is
 	function get_distance_total ( -- CS rename to get_distance_absolute
 		point	: in type_point;
 		vector	: in type_vector)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Returns the distance along the given axis between the given points.
@@ -507,13 +507,13 @@ package et_geometry_2 is
 	-- Computes the total distance between point_one and point_two.
 	function get_distance_total (
 		point_one, point_two : in type_point)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 
 
 	
-	subtype type_catch_zone is type_float_internal_positive
-		range 0.0 .. type_float_internal (type_distance_positive'last/100.0);
+	subtype type_catch_zone is type_float_positive
+		range 0.0 .. type_float (type_distance_positive'last/100.0);
 
 
 	function catch_zone_to_string (
@@ -528,7 +528,7 @@ package et_geometry_2 is
 	-- Returns true if the given distance is less or equal the 
 	-- given catch_zone:
 	function in_catch_zone (
-		distance : in type_float_internal_positive;
+		distance : in type_float_positive;
 		zone	 : in type_catch_zone)
 		return boolean;
 							   
@@ -815,14 +815,14 @@ package et_geometry_2 is
 	
 	-- Returns the length of a line:
 	function get_length (line : in type_line)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 	-- Returns the length of the longest line.
 	-- If both have equal length, then the length of 
 	-- the second line will be returned:
 	function get_greatest_length (l1, l2 : in type_line)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Returns the longest of the given lines.
@@ -869,7 +869,7 @@ package et_geometry_2 is
 	function get_distance (
 		line	: in type_line;
 		vector	: in type_vector)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 
 
@@ -912,13 +912,13 @@ package et_geometry_2 is
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_point)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	function get_shortest_distance (
 		line	: in type_line;
 		point	: in type_vector)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 	
 	-- Tests whether the given line_vector intersects the given 
@@ -1063,7 +1063,7 @@ package et_geometry_2 is
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector)
-		return type_float_internal;
+		return type_float;
 
 	
 	-- If start/end point of the candidate arc is ABOVE-OR-ON the 
@@ -1079,13 +1079,13 @@ package et_geometry_2 is
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc) 
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 	
 	-- Returns the distance between the end point and the center of the arc.
 	function get_radius_end (
 		arc : in type_arc) 
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Test whether the given arc is valid. The arc is valid if:
@@ -1252,7 +1252,7 @@ package et_geometry_2 is
 	
 	type type_circle_base is abstract tagged record
 		center			: type_point;
-		radius  		: type_float_internal_positive := 0.0;
+		radius  		: type_float_positive := 0.0;
 		-- CS locked : type_locked;
 	end record;
 
@@ -1266,12 +1266,12 @@ package et_geometry_2 is
 
 	function to_radius (
 		r : in string)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 
 	function to_diameter (
 		d : in string)
-		return type_float_internal_positive;
+		return type_float_positive;
 	
 
 	
@@ -1319,7 +1319,7 @@ package et_geometry_2 is
 	function get_shortest_distance (
 		point	: in type_vector;
 		circle	: in type_circle)
-		return type_float_internal;
+		return type_float;
 
 
 	
@@ -1391,7 +1391,7 @@ package et_geometry_2 is
 	function get_distance (
 		circle	: in type_circle'class;
 		line	: in type_line'class)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Returns the shortest distance between a circle and an arc.
@@ -1400,7 +1400,7 @@ package et_geometry_2 is
 	function get_distance (
 		circle	: in type_circle'class;
 		arc		: in type_arc'class)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- Returns the shortest distance between two circles.
@@ -1409,7 +1409,7 @@ package et_geometry_2 is
 	function get_distance (
 		circle_1	: in type_circle'class;
 		circle_2	: in type_circle'class)
-		return type_float_internal_positive;
+		return type_float_positive;
 
 	
 	-- The angle of a tangent to a circle:

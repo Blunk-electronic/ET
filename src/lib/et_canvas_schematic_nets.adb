@@ -1018,7 +1018,7 @@ package body et_canvas_schematic_nets is
 						-- Test distance between label and given place.
 						-- Appends the label if distance less or equal catch zone:
 						procedure test_distance is 
-							d : constant type_float_internal := get_distance_total (
+							d : constant type_float := get_distance_total (
 								point_one	=> element (label_cursor).position,
 								point_two	=> place.place);
 						begin

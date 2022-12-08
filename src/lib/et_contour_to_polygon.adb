@@ -75,7 +75,7 @@ package body et_contour_to_polygon is
 		use pac_geometry_brd;
 
 		-- Convert the given tolerance to a float type:
-		f_tol : constant type_float_internal_positive := type_float_internal (tolerance);
+		f_tol : constant type_float_positive := type_float (tolerance);
 	begin
 		return to_edges (to_arc_fine (arc), f_tol, mode, debug);
 	end to_edges;
@@ -138,7 +138,7 @@ package body et_contour_to_polygon is
 
 		return to_edges (
 			arc			=> to_arc (arc), 
-			tolerance	=> type_float_internal_positive (tolerance), 
+			tolerance	=> type_float_positive (tolerance), 
 			mode		=> mode, 
 			debug		=> debug);
 	end to_edges;
