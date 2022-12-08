@@ -816,8 +816,8 @@ package body et_text is
 					
 					when '0' => add (digit_0);
 					when '1' => add (digit_1);
-					--when '2' => add (digit_2);
-					--when '3' => add (digit_3);
+					when '2' => add (digit_2);
+					when '3' => add (digit_3);
 					--when '4' => add (digit_4);
 					--when '5' => add (digit_5);
 					--when '6' => add (digit_6);

@@ -1108,34 +1108,55 @@ package et_text is
 				4	=> set (x0, y6))
 		  );
 
-		--digit_2 : constant type_character (1 .. 6) := (
-			 --1	=> (x0, y5, x1, y6),
-			 --2	=> (x1, y6, x3, y6),
-			 --3	=> (x3, y6, x4, y5),
-			 --4	=> (x4, y5, x4, y4),
-			 --5	=> (x4, y4, x0, y0),
-			 --6	=> (x0, y0, x4, y0)
-			--);
+		
+		digit_2 : constant type_character := (
+			segment_ct => 6,
+			segments => (									   
+				1	=> (x0, y5, x1, y6),
+				2	=> (x1, y6, x3, y6),
+				3	=> (x3, y6, x4, y5),
+				4	=> (x4, y5, x4, y4),
+				5	=> (x4, y4, x0, y0),
+				6	=> (x0, y0, x4, y0)),
+			
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y5),
+				4	=> set (x3, y6),
+				5	=> set (x1, y6),
+				6	=> set (x0, y5))
+			);
 
-		--digit_3 : constant type_character (1 ..11) := (
-			 --1	=> (x0, y5, x1, y6),
-			 --2	=> (x1, y6, x3, y6),
-			 --3	=> (x3, y6, x4, y5),
-			 --4	=> (x4, y5, x4, y4),
-			 --5	=> (x4, y4, x3, y3),
-			 --6	=> (x3, y3, x2, y3),
-			 --7	=> (x3, y3, x4, y2),
-			 --8	=> (x4, y2, x4, y1),
-			 --9	=> (x4, y1, x3, y0),
-			 --10	=> (x3, y0, x1, y0),
-			 --11	=> (x1, y0, x0, y1)
-			--);
+		
+		digit_3 : constant type_character := (
+			segment_ct => 11,
+			segments => (									   
+				1	=> (x0, y5, x1, y6),
+				2	=> (x1, y6, x3, y6),
+				3	=> (x3, y6, x4, y5),
+				4	=> (x4, y5, x4, y4),
+				5	=> (x4, y4, x3, y3),
+				6	=> (x3, y3, x2, y3),
+				7	=> (x3, y3, x4, y2),
+				8	=> (x4, y2, x4, y1),
+				9	=> (x4, y1, x3, y0),
+				10	=> (x3, y0, x1, y0),
+				11	=> (x1, y0, x0, y1)),
 
-		--digit_4 : constant type_character (1 .. 3) := (
-			 --1	=> (x3, y6, x3, y0),
-			 --2	=> (x3, y6, x0, y3),
-			 --3	=> (x0, y3, x4, y3)
-			 --);
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x3, y6),
+				6	=> set (x1, y6),
+				7	=> set (x0, y5),
+				8	=> set (x0, y1))
+			);
+		
 		
 		--digit_5 : constant type_character (1 .. 9) := (
 			 --1	=> (x0, y6, x0, y3),
