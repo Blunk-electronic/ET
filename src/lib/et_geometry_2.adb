@@ -1384,7 +1384,7 @@ package body et_geometry_2 is
 
 	function to_line_fine (
 		line : in type_line)
-		return pac_geometry_1.type_line
+		return type_line_fine
 	is begin
 		return (
 			start_point	=> to_vector (line.start_point),
@@ -1393,7 +1393,7 @@ package body et_geometry_2 is
 
 	
 	function to_line_coarse (
-		line : in pac_geometry_1.type_line)
+		line : in type_line_fine)
 		return type_line'class
 	is 
 		l : type_line;
@@ -1888,7 +1888,7 @@ package body et_geometry_2 is
 		direction	: in type_rotation;
 		distance	: in type_distance_positive) 
 	is 
-		l_tmp : pac_geometry_1.type_line := to_line_fine (line);
+		l_tmp : type_line_fine := to_line_fine (line);
 	begin
 		-- Move start and and point of line into direction by distance.
 		--line.start_point	:= move (line.start_point, direction, distance);

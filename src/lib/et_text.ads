@@ -1247,7 +1247,7 @@ package et_text is
 		-- A character is a list of lines. These lines are machine made. They are
 		-- a result of rotation, scaling, mirroring, ...
 		-- The start and end points are expressed by float numbers.
-		type type_character_line is new pac_geometry_1.type_line;
+		type type_character_line is new pac_geometry_1.type_line_fine;
 		
 		package pac_character_lines is new doubly_linked_lists (type_character_line);
 

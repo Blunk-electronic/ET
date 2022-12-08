@@ -1730,7 +1730,7 @@ package body et_geometry_1 is
 
 	
 	function to_line_vector (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_line_vector
 	is
 		result : type_line_vector;
@@ -1745,7 +1745,7 @@ package body et_geometry_1 is
 
 
 	function get_length (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_float_internal_positive
 	is begin
 		return get_distance_total (line.start_point, line.end_point);
@@ -1753,7 +1753,7 @@ package body et_geometry_1 is
 	
 
 	function to_string (
-		line	: in type_line)
+		line	: in type_line_fine)
 		return string
 	is begin
 		return 
@@ -1764,14 +1764,14 @@ package body et_geometry_1 is
 
 	function make_line (
 		start_point, end_point : in type_vector)
-		return type_line
+		return type_line_fine
 	is begin
 		return (start_point, end_point);
 	end make_line;
 
 
 	procedure scale (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		factor	: in type_float_internal_positive)
 	is begin
 		line.start_point := scale (line.start_point, factor);
@@ -1781,7 +1781,7 @@ package body et_geometry_1 is
 	
 	
 	procedure move_by (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		offset	: in type_offset)
 	is begin
 		move_by (line.start_point, offset);
@@ -1790,7 +1790,7 @@ package body et_geometry_1 is
 
 
 	procedure rotate_by (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		offset	: in type_angle)
 	is begin
 		rotate_by (line.start_point, offset);
@@ -1799,7 +1799,7 @@ package body et_geometry_1 is
 	
 	
 	procedure mirror_line (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		axis	: in type_axis_2d)
 	is begin
 		mirror (line.start_point, axis);
@@ -1808,22 +1808,22 @@ package body et_geometry_1 is
 
 	
 	function reverse_line (
-		line	: in type_line)
-		return type_line
+		line	: in type_line_fine)
+		return type_line_fine
 	is begin
 		return (line.end_point, line.start_point);
 	end reverse_line;
 
 
 	procedure reverse_line (
-		line	: in out type_line)
+		line	: in out type_line_fine)
 	is begin
 		line := reverse_line (line);
 	end reverse_line;
 		
 
 	function get_center (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_vector
 	is
 		result : type_vector;
@@ -1842,7 +1842,7 @@ package body et_geometry_1 is
 
 
 	function get_direction (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_angle
 	is
 		dp : type_vector;
@@ -1862,7 +1862,7 @@ package body et_geometry_1 is
 
 
 	function opposide_direction (
-		right, left : in type_line)
+		right, left : in type_line_fine)
 		return boolean
 	is
 		d1, d2 : type_angle;
@@ -1879,7 +1879,7 @@ package body et_geometry_1 is
 
 	
 	function get_boundaries (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_boundaries
 	is 
 		result : type_boundaries;
@@ -1920,7 +1920,7 @@ package body et_geometry_1 is
 
 	
 	procedure move_by (
-		line		: in out type_line;
+		line		: in out type_line_fine;
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive)
 	is begin
@@ -1930,12 +1930,12 @@ package body et_geometry_1 is
 
 
 	function move_by (
-		line		: in type_line;
+		line		: in type_line_fine;
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive)
-		return type_line
+		return type_line_fine
 	is
-		result : type_line;
+		result : type_line_fine;
 	begin
 		result.start_point := move_by (line.start_point, direction, distance);
 		result.end_point := move_by (line.end_point, direction, distance);		
@@ -1946,7 +1946,7 @@ package body et_geometry_1 is
 	
 	function get_intersection (
 		line_vector : in type_line_vector;
-		line		: in type_line;
+		line		: in type_line_fine;
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines
 	is
@@ -1983,7 +1983,7 @@ package body et_geometry_1 is
 
 	function get_intersection (
 		ray			: in type_ray;
-		line		: in type_line;
+		line		: in type_line_fine;
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines
 	is
@@ -2028,8 +2028,8 @@ package body et_geometry_1 is
 
 	
 	function get_intersection (
-		line_1 : in type_line;
-		line_2 : in type_line)
+		line_1 : in type_line_fine;
+		line_2 : in type_line_fine)
 		return type_intersection_of_two_lines
 	is
 		lv_1 : constant type_line_vector := to_line_vector (line_1);
@@ -2116,7 +2116,7 @@ package body et_geometry_1 is
 
 	
 	function lines_overlap (
-		line_1, line_2 : in type_line)
+		line_1, line_2 : in type_line_fine)
 		return boolean
 	is
 		I2L : constant type_intersection_of_two_lines :=
@@ -2400,7 +2400,7 @@ package body et_geometry_1 is
 -- DISTANCE POINT TO LINE
 
 	function get_distance (
-		line	: in type_line;
+		line	: in type_line_fine;
 		vector	: in type_vector)
 		return type_float_internal
 	is
@@ -2420,7 +2420,7 @@ package body et_geometry_1 is
 
 	function get_shortest_distance (
 		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line_fine)
 		return type_float_internal
 	is
 		result : type_float_internal := 0.0;
@@ -2473,7 +2473,7 @@ package body et_geometry_1 is
 
 	function on_line (
 		vector	: in type_vector;
-		line	: in type_line;
+		line	: in type_line_fine;
 		debug	: in boolean := false)
 		return boolean
 	is
@@ -2496,7 +2496,7 @@ package body et_geometry_1 is
 	
 	function get_distance (
 		vector		: in type_vector;
-		line		: in type_line;
+		line		: in type_line_fine;
 		line_range	: in type_line_range;
 		debug		: in boolean := false)
 		return type_distance_point_line 

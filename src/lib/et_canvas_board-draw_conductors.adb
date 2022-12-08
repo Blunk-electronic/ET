@@ -191,7 +191,7 @@ is
 			draw_line (
 				area	=> in_area,
 				context	=> context,
-				line	=> pac_geometry_brd.type_line (element (e)),
+				line	=> type_line_fine (element (e)),
 				width	=> fill_line_width,
 				height	=> self.frame_height);
 		end draw_edge;
@@ -773,7 +773,7 @@ is
 					draw_line (
 						area		=> in_area,
 						context		=> context,
-						line		=> pac_geometry_brd.type_line (element (c)),
+						line		=> type_line_fine (element (c)),
 						width		=> type_distance (airwire_line_width),
 						height		=> self.frame_height);
 					

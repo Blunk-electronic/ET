@@ -477,11 +477,11 @@ package body et_canvas_board is
 			--start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
 			--end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
-		line_horizontal : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from left to right
+		line_horizontal : constant type_line_fine := ( -- from left to right
 			start_point		=> to_vector (set (x => get_x (p) - origin_half_size, y => get_y (p))),
 			end_point		=> to_vector (set (x => get_x (p) + origin_half_size, y => get_y (p))));
 
-		line_vertical : constant et_pcb_coordinates.pac_geometry_brd.type_line := ( -- from bottom to top
+		line_vertical : constant type_line_fine := ( -- from bottom to top
 			start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - origin_half_size)),
 			end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + origin_half_size)));
 

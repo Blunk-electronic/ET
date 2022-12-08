@@ -3339,7 +3339,7 @@ package body et_geometry_1.et_polygons is
 
 
 	function to_polygon (
-		line		: in type_line;
+		line		: in type_line_fine;
 		linewidth	: in type_float_internal_positive;
 		tolerance	: in type_float_internal_positive;
 		mode		: in type_approximation_mode)

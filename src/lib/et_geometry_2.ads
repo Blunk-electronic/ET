@@ -694,6 +694,7 @@ package et_geometry_2 is
 
 
 -- LINE
+	
 	type type_line_base is abstract tagged record
 		start_point 	: type_point;
 		end_point   	: type_point;
@@ -705,11 +706,11 @@ package et_geometry_2 is
 
 	function to_line_fine (
 		line : in type_line)
-		return pac_geometry_1.type_line;
+		return type_line_fine;
 
 	
 	function to_line_coarse (
-		line : in pac_geometry_1.type_line)
+		line : in type_line_fine)
 		return type_line'class;
 
 

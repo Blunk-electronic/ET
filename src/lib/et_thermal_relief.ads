@@ -156,7 +156,7 @@ package et_thermal_relief is
 	-- center of the pad. 
 	-- For irregular pad contours the spokes may start at arbitrary user defined points
 	-- inside the pad - as specified in the terminal properties (see et_terminals.type_terminal):
-	package pac_spokes is new doubly_linked_lists (pac_geometry_brd.type_line);
+	package pac_spokes is new doubly_linked_lists (type_line_fine);
 
 	-- All spokes of a single thermal relief have the same linewidth:
 	type type_relief is record -- CS rename to type_thermal_symbol ?

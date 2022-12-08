@@ -72,7 +72,7 @@ package et_geometry_1.et_polygons is
 	-- of a given polygon MUST BE CCW !
 
 	
-	type type_edge is new type_line;
+	type type_edge is new type_line_fine;
 
 	edge_length_min : constant type_float_internal_positive := 0.1;
 	
@@ -889,7 +889,7 @@ package et_geometry_1.et_polygons is
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
-		line		: in type_line;
+		line		: in type_line_fine;
 		linewidth	: in type_float_internal_positive;
 		tolerance	: in type_float_internal_positive;
 		mode		: in type_approximation_mode)

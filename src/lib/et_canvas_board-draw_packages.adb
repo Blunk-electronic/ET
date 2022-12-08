@@ -166,11 +166,11 @@ is
 
 		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			line_horizontal : constant pac_geometry_brd.type_line := ( -- from left to right
+			line_horizontal : constant type_line_fine := ( -- from left to right
 				start_point		=> to_vector (set (x => get_x (p) - pac_text_board.origin_half_size, y => get_y (p))),
 				end_point		=> to_vector (set (x => get_x (p) + pac_text_board.origin_half_size, y => get_y (p))));
 
-			line_vertical : constant pac_geometry_brd.type_line := ( -- from bottom to top
+			line_vertical : constant type_line_fine := ( -- from bottom to top
 				start_point		=> to_vector (set (x => get_x (p), y => get_y (p) - pac_text_board.origin_half_size)),
 				end_point		=> to_vector (set (x => get_x (p), y => get_y (p) + pac_text_board.origin_half_size)));
 
@@ -3395,11 +3395,11 @@ is
 
 		
 		procedure draw_package_origin is
-			line_horizontal : constant pac_geometry_brd.type_line := ( -- from left to right
+			line_horizontal : constant type_line_fine := ( -- from left to right
 				start_point		=> to_vector (set (x => get_x (package_position) - et_packages.origin_half_size, y => get_y (package_position))),
 				end_point		=> to_vector (set (x => get_x (package_position) + et_packages.origin_half_size, y => get_y (package_position))));
 
-			line_vertical : constant pac_geometry_brd.type_line := ( -- from bottom to top
+			line_vertical : constant type_line_fine := ( -- from bottom to top
 				start_point		=> to_vector (set (x => get_x (package_position), y => get_y (package_position) - et_packages.origin_half_size)),
 				end_point		=> to_vector (set (x => get_x (package_position), y => get_y (package_position) + et_packages.origin_half_size)));
 

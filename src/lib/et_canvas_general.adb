@@ -2246,7 +2246,7 @@ package body pac_canvas is
 	-- The line has the given width. 
 	-- The boundaries are extended by half the given width.
 	function get_boundaries (
-		line	: in type_line;	
+		line	: in type_line_fine;	
 		width	: in pac_geometry_2.type_distance_positive)
 		return type_boundaries
 	is
@@ -2297,7 +2297,7 @@ package body pac_canvas is
 
 	-- Returns the bounding box of a line that has the given width:
 	function get_bounding_box_line (
-		line	: in type_line;
+		line	: in type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive;
 		height	: in type_float_internal_positive)
 		return type_bounding_box
@@ -2309,9 +2309,8 @@ package body pac_canvas is
 	procedure draw_line (
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
-		line	: in pac_geometry_2.pac_geometry_1.type_line;
+		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance)
 		height	: in type_float_internal_positive)
 	is
 		-- compute the bounding box of the given line
@@ -3287,7 +3286,8 @@ package body pac_canvas is
 		procedure query_line (c : in pac_character_lines.cursor) is 
 
 			-- compute the boundaries (greatest/smallest x/y) of the given line:
-			b : type_boundaries := get_boundaries (type_line (element (c)), width);
+			b : type_boundaries := 
+				get_boundaries (type_line_fine (element (c)), width);
 
 			-- compute the bounding box of the given line
 			bounding_box : constant type_bounding_box := 

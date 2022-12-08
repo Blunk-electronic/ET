@@ -830,7 +830,7 @@ package et_geometry_1 is
 
 -- LINE
 	
-	type type_line is record -- CS rename to type_line_fine
+	type type_line_fine is record
 		start_point	: type_vector;
 		end_point	: type_vector;
 	end record;
@@ -841,63 +841,63 @@ package et_geometry_1 is
 
 	
 	function get_length (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_float_internal_positive;
 
 	
 	function to_line_vector (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_line_vector;
 
 	
 	function to_string (
-		line	: in type_line)
+		line	: in type_line_fine)
 		return string;
 	
 						   
 	function make_line (
 		start_point, end_point : in type_vector)
-		return type_line;
+		return type_line_fine;
 
 
 	procedure scale (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		factor	: in type_float_internal_positive);
 	
 		
 	-- Moves the start and end points of a 
 	-- line by the given offset:
 	procedure move_by (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		offset	: in type_offset);
 
 
 	-- Rotates the start and end points of a line 
 	-- about the origin (in the z-plane):
 	procedure rotate_by (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		offset	: in type_angle);
 
 
 	-- Mirrors a line along the given axis:
 	procedure mirror_line (
-		line	: in out type_line;
+		line	: in out type_line_fine;
 		axis	: in type_axis_2d);
 
 	
 	-- Swaps start and end point of a line:
 	function reverse_line (
-		line	: in type_line)
-		return type_line;
+		line	: in type_line_fine)
+		return type_line_fine;
 	
 	procedure reverse_line (
-		line	: in out type_line);
+		line	: in out type_line_fine);
 
 	
 	-- Returns the point on the given line
 	-- that is right between its start and end point:
 	function get_center (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_vector;
 
 	
@@ -905,7 +905,7 @@ package et_geometry_1 is
 	-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
 	-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
 	function get_direction (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_angle;
 
 	
@@ -915,27 +915,27 @@ package et_geometry_1 is
 	-- Example: The result is true if one line runs 
 	-- in 45 degrees and the other one is oncoming in 225 degrees:
 	function opposide_direction (
-		right, left : in type_line)
+		right, left : in type_line_fine)
 		return boolean;		
 	
 	
 	-- Returns the boundaries of a line:
 	function get_boundaries (
-		line : in type_line)
+		line : in type_line_fine)
 		return type_boundaries;
 
 
 	-- Moves a line into given direction by given distance:
 	procedure move_by (
-		line		: in out type_line;
+		line		: in out type_line_fine;
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive);
 
 	function move_by (
-		line		: in type_line;
+		line		: in type_line_fine;
 		direction	: in type_angle;
 		distance	: in type_float_internal_positive)
-		return type_line;
+		return type_line_fine;
 	
 	
 	-- Tests whether the given line intersects the given candidate line.
@@ -946,7 +946,7 @@ package et_geometry_1 is
 	-- beyond end point of the given line, return NOT_EXISTENT.
 	function get_intersection (
 		line_vector : in type_line_vector;
-		line		: in type_line;
+		line		: in type_line_fine;
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines;
 
@@ -959,7 +959,7 @@ package et_geometry_1 is
 	-- beyond end point of the given line, return NOT_EXISTENT.
 	function get_intersection (
 		ray			: in type_ray;
-		line		: in type_line;
+		line		: in type_line_fine;
 		debug		: in boolean := false)
 		return type_intersection_of_two_lines;
 
@@ -968,8 +968,8 @@ package et_geometry_1 is
 	-- Independendly of start and end points, both lines are regarded as 
 	-- infinitely long beyond their start and end points:
 	function get_intersection (
-		line_1 : in type_line;
-		line_2 : in type_line)
+		line_1 : in type_line_fine;
+		line_2 : in type_line_fine)
 		return type_intersection_of_two_lines;
 	
 	
@@ -977,11 +977,11 @@ package et_geometry_1 is
 	-- Independend of start and end points, both lines are regarded as infinitely
 	-- long beyond their start and end points:
 	function lines_overlap (
-		line_1, line_2 : in type_line)
+		line_1, line_2 : in type_line_fine)
 		return boolean;
 	
 	
-	-- CS Find more subprograms on type_line see et_geometry_2.polygons.
+	-- CS Find more subprograms on type_line_fine see et_geometry_2.polygons.
 	-- Move them there so that they can be used by other callers.
 	
 
@@ -1100,7 +1100,7 @@ package et_geometry_1 is
 	-- This computation does not care about end or start point of the line.
 	-- It assumes an indefinite long line without start or end point.
 	function get_distance (
-		line	: in type_line;
+		line	: in type_line_fine;
 		vector	: in type_vector)
 		return type_float_internal; -- CS type_float_internal_positive
 	
@@ -1110,7 +1110,7 @@ package et_geometry_1 is
 	-- to the line:
 	function get_shortest_distance (
 		vector	: in type_vector;
-		line	: in type_line)
+		line	: in type_line_fine)
 		return type_float_internal; -- CS type_float_internal_positive
 
 
@@ -1118,7 +1118,7 @@ package et_geometry_1 is
 	-- the given line:
 	function on_line (
 		vector	: in type_vector;
-		line	: in type_line;
+		line	: in type_line_fine;
 		debug	: in boolean := false)
 		return boolean;
 	
@@ -1141,7 +1141,7 @@ package et_geometry_1 is
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
 		vector		: in type_vector; 
-		line		: in type_line;
+		line		: in type_line_fine;
 		line_range	: in type_line_range;
 		debug		: in boolean := false)
 		return type_distance_point_line;

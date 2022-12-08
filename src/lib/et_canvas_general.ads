@@ -983,7 +983,7 @@ package pac_canvas is
 	procedure draw_line (
 		area	: in type_bounding_box;	
 		context	: in type_draw_context;
-		line	: in pac_geometry_2.pac_geometry_1.type_line;
+		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.

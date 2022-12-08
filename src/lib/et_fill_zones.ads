@@ -70,7 +70,7 @@ package et_fill_zones is
 	use pac_polygon_offsetting;
 	use pac_polygon_list;
 	
-	package pac_stripes is new doubly_linked_lists (pac_geometry_brd.type_line);
+	package pac_stripes is new doubly_linked_lists (type_line_fine);
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
