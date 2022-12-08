@@ -47,99 +47,33 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_string_processing;		use et_string_processing;
 
-procedure offset is
+procedure offset2 is
 
 	use pac_geometry_2;
 	use pac_geometry_brd;
 	
-	use pac_contours;
 	use pac_polygons;
 	use pac_polygon_offsetting;
 
-	C : type_contour;
-	P_original, P_scratch, P_offset : type_polygon;
-	E_CT : count_type;
 
-	--S : string := "line 0 0 line 100 0 line 100 100 line 0 100";
-	--S : string := "line 0 1 line 100 1 line 100 100 line 0 100";
-	S : string := "line 0 0 arc 20 0 10 0 cw line 30 0 line 50 0 line 50 50 line 0 50";
+	P : type_polygon;
 
-	tolerance : type_distance_positive;
+	--E_CT : count_type;
+
 	mode : type_approximation_mode := SHRINK;
 
-	shrank_polygon_1 : constant type_polygon := to_polygon (
-		  --"1.00000000000000000E+00 1.00000000000000000E+00 "
-          "9.58578643762690495E+00 1.00000000000000000E+00 "
-		& "2.00000000000000000E+01 1.14142135623730950E+01 "
-		& "3.04142135623730950E+01 1.00000000000000000E+00 "
-		& "4.90000000000000000E+01 1.00000000000000000E+00 "
-		& "4.90000000000000000E+01 4.90000000000000000E+01 "
-		& "1.00000000000000000E+00 4.90000000000000000E+01 "
-		& "1.00000000000000000E+00 1.00000000000000000E+00");
+	debug : boolean := true;
 	
 begin
-	
-	C := type_contour (to_contour (S));
-	--put_line ("contour: " & to_string (C));
-	
-	tolerance := 0.01;
-	
-	P_original := to_polygon (C, tolerance, mode);
-	put_line ("original: " & to_string (P_original));
-	
-	offset_polygon (P_original, -0.4, true);
-	--offset_polygon (P_original, -1.0, true); 
-	put_line ("result  : " & to_string (P_original));
+	--P := to_polygon ("0.0 0.0  1.0 0.0  1.0 1.0  0.0 1.0");
+	P := to_polygon ("0.0 0.0  0.5 0.0  0.2 -1.0  0.6 -1.1  1.5 -0.3  1.0 0.0  1.0 1.0  0.0 1.0");
+	put_line ("original: " & to_string (P));
 
-	--new_line;
+	--offset_polygon (P, 1.0, debug);
+	offset_polygon (P, -0.4, debug);
+	put_line ("result  : " & to_string (P));
 
-	goto skip_1;
-
-	
-	--tolerance := 0.1;
-	tolerance := 10.0;
-	
-	-- convert contour to polygon:
-	P_original := to_polygon (C, tolerance, mode);
-	P_scratch := P_original;
-	put_line ("original: " & to_string (P_original));
-
-	--new_line;
-
-	E_CT := get_edges_total (P_original);
-	--E_CT := 2;
-
-	for i in 1 .. E_CT loop
-		P_offset := P_scratch;
-
-		--offset_polygon (P_offset, -1.0); -- debug messages off
-		offset_polygon (P_offset, -1.0, true); -- debug messages on
-
-		new_line;
-		put_line ("offset  : " & to_string (P_offset));
-		
-		--if not are_congruent (P_offset, shrank_polygon_1, true) then -- debug messages on
-		if not are_congruent (P_offset, shrank_polygon_1) then -- debug messages off
-			put_line ("ERROR");
-			put_line ("expected: " & to_string (shrank_polygon_1));
-			put_line ("found   : " & to_string (P_offset));
-		end if;
-		
-		rotate (P_scratch);
-		new_line;
-		put_line ("rotation #" & count_type'image (i)
-			& " / P_scratch: " & to_string (P_scratch));
-
-		if not are_congruent (P_original, P_scratch) then -- debug messages off
-			put_line ("ERROR");
-			--put_line ("expected: " & to_string (P_original));
-			--put_line ("found   : " & to_string (P_scratch));
-		end if;
-
-	end loop;
-
-	<<skip_1>>
-end offset;
+end offset2;
 
 -- Soli Deo Gloria
 
