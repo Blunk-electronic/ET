@@ -224,6 +224,8 @@ package et_geometry_1.et_polygons is
 	-- So "0.0 0.0   7.0 0.0  7.0 0.0   1.0 1.0   0.0 1.0" will be handled like
 	-- "0.0 0.0   7.0 0.0   1.0 1.0   0.0 1.0"
 	-- Raises exception if less than 3 vertices are given.
+	-- If clean_up is true (default), then successive edges running
+	-- into the same or opposide direction will be merged:
 	function to_polygon (
 		vertices	: in string;
 		clean_up	: in type_clean_up := true)
@@ -233,6 +235,8 @@ package et_geometry_1.et_polygons is
 	-- Converts a list of location vectors to a polygon.
 	-- Successive redundant vertices will be ignored:
 	-- Raises exception if less than 3 vertices are given.
+	-- If clean_up is true (default), then successive edges running
+	-- into the same or opposide direction will be merged:
 	function to_polygon (
 		vectors		: in pac_vectors.list;
 		clean_up	: in type_clean_up := true)					
@@ -738,6 +742,8 @@ package et_geometry_1.et_polygons is
 	-- Converts a list of vertices to a polygon.
 	-- The first vertex becomes the end point of the first edge.
 	-- The last vertex becomes the start point of the first edge.
+	-- If clean_up is true (default), then successive edges running
+	-- into the same or opposide direction will be merged:
 	function to_polygon (
 		vertices : in pac_vertices.list;
 		clean_up : in type_clean_up := true)
