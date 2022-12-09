@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -114,16 +114,20 @@ package body et_logging is
 		console		: in boolean := false) 
 	is
 
-		function to_importance (importance : in type_message_importance) return string is begin
+		function to_importance (
+			importance : in type_message_importance)
+			return string 
+		is begin
 			case importance is
 				when NORMAL => return "";
 				when others => return type_message_importance'image (importance) & ": ";
 			end case;
 		end;
+
 		
 		function write_text (indentation_on : in boolean := true) 
-			return string is 
-
+			return string 
+		is 
 			fill : string := natural (log_indentation) * latin_1.space;
 		begin
 			if indentation_on then
@@ -134,8 +138,12 @@ package body et_logging is
 		end;
 		
 	begin -- log
--- 		if level < no_logging then
-			
+		-- 		if level < no_logging then
+
+		if importance = WARNING then
+			increment_warning_counter;			
+		end if;
+		
 			if log_level >= level then
 
 				case importance is
@@ -154,8 +162,6 @@ package body et_logging is
 						end if;
 
 					when WARNING =>
-						increment_warning_counter;
-						
 						put_line (report_handle, write_text (false)); -- indentation off
 
 						if console then
@@ -284,9 +290,9 @@ package body et_logging is
 			put_line (row_separator_double);
 
 			if no_warnings then
-				put_line ("no warnings");
+				put_line ("No warnings");
 			else
-				put_line ("warnings" & warning_count);
+				put_line ("Warnings" & warning_count & ". Increase log level for details.");
 			end if;
 			
 			put_line (row_separator_single);

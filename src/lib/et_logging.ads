@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -107,9 +107,12 @@ package et_logging is
 
 	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
 
-	-- Writes the given text with the current log_indentation in the current output. 
-	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
+	-- Writes the given text with the current log_indentation 
+	-- in the current output. 
+	-- If the system wide log level is greater or equal the 
+	-- given log_level, then given text is put on the log.
 	-- Does not log anything if given level is no_logging.
+	-- Counts warnings independent of log level.
 	procedure log (
 		importance	: in type_message_importance := NORMAL;
 		text		: in string;
