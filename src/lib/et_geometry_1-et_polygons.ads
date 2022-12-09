@@ -876,6 +876,9 @@ package et_geometry_1.et_polygons is
 		return pac_vertices.list;
 
 
+
+	safety_counter_overflow : exception;
+	
 	-- Increments the safety counter. Raises constraint error if limit is
 	-- reached or exceeded:
 

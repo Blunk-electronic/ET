@@ -661,6 +661,7 @@ is
 	-- - terminals may be embedded in the zone or may get connected via thermal relieves.
 	-- - tracks may be embedded in the zone or the zone will be filled around them.
 	-- - see specification of type_route_solid and type_route_hatched.
+	-- If something goes wrong, an exception is raised.
 	procedure fill_zone (
 		zone		: in out type_zone'class;
 		linewidth	: in type_track_width;
@@ -700,6 +701,15 @@ is
 				-- should take this into account.
 				
 				--put_line ("islands total" & count_type'image (zone.islands.length));
+
+				exception when constraint_error =>
+					log (
+						importance => WARNING,
+						text => "Offsetting centerline of island failed !",
+						level => log_threshold + 3);
+					-- CS write centerline edges in logfile ?
+					raise;			
+
 			end query_island;
 			
 		begin
@@ -731,7 +741,16 @@ is
 					island.lakes.append ((
 						centerline	=> centerline,
 						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
-						--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
+					--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
+
+					exception when constraint_error =>
+						log (
+							importance => WARNING,
+							text => "Offsetting centerline of lake failed !",
+							level => log_threshold + 3);
+						-- CS write centerline edges in logfile ?
+						raise;			
+
 				end query_centerline;
 				
 			begin
@@ -1082,7 +1101,10 @@ is
 
 				procedure do_it (
 					zone : in out type_route_solid)
-				is begin
+				is 
+					-- Backup the zone in case something went wrong:
+					zone_bakup : constant type_route_solid := zone; 
+				begin
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
@@ -1104,6 +1126,15 @@ is
 						);
 
 					zone.reliefes := terminal_reliefes;
+
+					-- If something went wrong, restore the zone:
+					exception when constraint_error =>
+						log (
+							importance => WARNING,
+							text => "Zone has not been filled !", 
+							level => log_threshold + 3);
+					
+						zone := zone_bakup;					
 				end do_it;
 				
 				

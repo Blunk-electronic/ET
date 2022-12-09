@@ -270,7 +270,7 @@ package body et_geometry_1.et_polygons.offsetting is
 			while OE /= pac_offset_edges.no_element loop
 				
 				if debug then
-					new_line;
+					--new_line;
 					put_line (to_string (element (OE).edge));
 				end if;
 
@@ -324,9 +324,18 @@ package body et_geometry_1.et_polygons.offsetting is
 		-- The result of STEP 3 are the vertices of the final polygon:
 		vertices : pac_vectors.list;
 
+
+		
 		-- Step 3:
 		-- Traverses through list "intersections" and builds the list "vertices":
 		procedure build_vertices is
+
+			-- This counter prevents infinite looping.
+			-- There can never be more vertices than intersections:
+			safety_counter_max : count_type := intersections.length;
+			safety_counter_current : count_type := 0;
+
+			
 			-- This primary cursor points to an entry in list "intersections":
 			c : pac_edge_intersections.cursor := intersections.first;
 
@@ -371,15 +380,22 @@ package body et_geometry_1.et_polygons.offsetting is
 			end if;
 
 			while c /= pac_edge_intersections.no_element loop
-				-- CS safety counter to prevent infinite looping
-				-- limit could be the number of items in "intersections" ?
 
-				-- If a direct intersection with any following edge exists then
-				-- fast forward to that edge (this skipping the edges inbetween).
+				-- Count loops and abort on safety counter overrun:
+				if safety_counter_current > safety_counter_max then
+					raise safety_counter_overflow with 
+						"(max." & count_type'image (safety_counter_max) & ") !";
+				end if;
+				safety_counter_current := safety_counter_current + 1;
+				
+
+				-- If a direct intersection with any following edge exists, then
+				-- fast forward to that edge (thus skipping the edges inbetween).
 				if element (c).direct_available 
 				and not ignore_next_direct then
 
-					-- Save the primary cursor in order to handle special case A:
+					-- Save the cursor of the inital edge,
+					-- in order to handle special case A:
 					s := c;
 
 					-- Take the direct intersection as vertex:
@@ -392,8 +408,9 @@ package body et_geometry_1.et_polygons.offsetting is
 				
 					-- Special case A:
 					-- Look ahead for another direct intersection.
-					-- If the current edge has a direct intersection with the
-					-- edge indicated by the secondary cursor then the next
+					-- If the current edge (indicated by c) has a direct 
+					-- intersection with the initial
+					-- edge (indicated by s), then the next
 					-- direct intersection is to be ignored and the next
 					-- indirect intersection used instead.
 					-- Otherwise we would end up with just a single vertex:
@@ -416,7 +433,6 @@ package body et_geometry_1.et_polygons.offsetting is
 				end if;
 
 
-				-- Special case B:
 				-- If the just computed vertex has already been found as the very
 				-- first vertex then the round trip along the edges is complete.
 				-- Otherwise the just computed vertex is to be added to the list "vertices":
@@ -431,6 +447,7 @@ package body et_geometry_1.et_polygons.offsetting is
 				end if;
 
 			end loop;
+
 		end build_vertices;
 
 		
@@ -442,15 +459,35 @@ package body et_geometry_1.et_polygons.offsetting is
 			-- Preprocessing the polygon edges.
 			-- For each edge an "offset edge" is computed and stored
 			-- in list offset_edges:
+			if debug then
+				put_line ("preprocessing edges ...");
+			end if;
+			
 			polygon.edges.iterate (preprocess_edge'access);
 
+			
 		-- STEP 2:
+			if debug then
+				put_line ("locating intersections ...");
+			end if;
+			
 			find_intersections;
 
-		-- STEP 3:
-			build_vertices;
 			
+		-- STEP 3:
+			if debug then
+				put_line ("building vertices ...");
+			end if;
+
+			build_vertices;
+
+
+		-- STEP 4:
 			-- Convert the list "vertices" to a polygon.
+			if debug then
+				put_line ("converting vertices to polygon ...");
+			end if;
+
 			-- Overwrite the given polygon with a new one:
 			polygon := to_polygon (vertices);
 
@@ -458,6 +495,12 @@ package body et_geometry_1.et_polygons.offsetting is
 				--raise constraint_error with "Polygon NOT closed !";
 			--end if;
 		end if;
+
+
+
+		exception when event: others =>
+			put_line (exception_name (event) & " " & exception_message (event));
+			raise constraint_error;			
 		
 	end offset_polygon;
 
