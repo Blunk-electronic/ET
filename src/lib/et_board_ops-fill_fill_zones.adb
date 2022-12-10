@@ -1127,14 +1127,25 @@ is
 
 					zone.reliefes := terminal_reliefes;
 
-					-- If something went wrong, restore the zone:
-					exception when constraint_error =>
+					-- If something went wrong, output some
+					-- helpful information and restore the zone:
+					exception when event:
+						others =>
 						log (
 							importance => WARNING,
-							text => "Zone has not been filled !", 
-							level => log_threshold + 3);
+							text => exception_information (event));
 					
-						zone := zone_bakup;					
+						log (
+							importance => WARNING,
+							text => "Zone at"
+								& to_string (get_corner_nearest_to_origin (zone))
+								& " has NOT been filled !");
+							--level => log_threshold + 3);
+
+						-- CS log zone properties ?
+						-- CS write warning in GUI status bar
+						
+						zone := zone_bakup;			
 				end do_it;
 				
 				

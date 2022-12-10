@@ -47,7 +47,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
-with ada.exceptions;
+with ada.exceptions;			use ada.exceptions;
 with ada.tags;
 
 with et_nets;
