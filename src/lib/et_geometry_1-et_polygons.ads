@@ -336,9 +336,11 @@ package et_geometry_1.et_polygons is
 
 	
 	
-	-- Returns the edges of a polygon in human readable form:
+	-- Returns the vertices of a polygon in human readable form.
+	-- If first_only is true, then only the first vertex is output:	
 	function to_string (
-		polygon	: in type_polygon)
+		polygon		: in type_polygon;
+		first_only	: in boolean := false)				   
 		return string;
 
 

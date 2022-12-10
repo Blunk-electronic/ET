@@ -1113,7 +1113,8 @@ package body et_geometry_1.et_polygons is
 
 	
 	function to_string (
-		polygon	: in type_polygon)
+		polygon		: in type_polygon;
+		first_only	: in boolean := false)				   
 		return string
 	is
 		use ada.strings.unbounded;

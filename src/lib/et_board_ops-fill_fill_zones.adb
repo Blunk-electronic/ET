@@ -705,9 +705,10 @@ is
 				exception when constraint_error =>
 					log (
 						importance => WARNING,
-						text => "Offsetting centerline of island failed !",
+						text => "Offsetting centerline of island at"
+							& to_string (polygon => island_centerline, first_only => true) & " failed !",
 						level => log_threshold + 3);
-					-- CS write centerline edges in logfile ?
+
 					raise;			
 
 			end query_island;
@@ -746,9 +747,10 @@ is
 					exception when constraint_error =>
 						log (
 							importance => WARNING,
-							text => "Offsetting centerline of lake failed !",
+							text => "Offsetting centerline of lake at"
+							& to_string (polygon => centerline, first_only => true) & " failed !",
 							level => log_threshold + 3);
-						-- CS write centerline edges in logfile ?
+
 						raise;			
 
 				end query_centerline;
