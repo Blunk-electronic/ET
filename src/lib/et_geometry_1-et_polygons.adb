@@ -3325,18 +3325,31 @@ package body et_geometry_1.et_polygons is
 
 
 	procedure increment_safety_counter (
-		count	: in out natural;
+		counter	: in out natural;
 		limit	: in natural)
 	is begin
-		count := count + 1;
+		counter := counter + 1;
 
-		if count >= limit then
-			raise constraint_error 
-			with "Safety counter overrun ! (max." & natural'image (limit) & ")";
+		if counter >= limit then
+			raise safety_counter_overflow
+			with "(max." & natural'image (limit) & ") !";
 		end if;
 	end increment_safety_counter;
 
 
+	procedure increment_safety_counter_2 (
+		counter	: in out natural;
+		limit	: in natural)
+	is begin
+		if counter > limit then
+			raise safety_counter_overflow
+			with "(max." & natural'image (limit) & ") !";
+		end if;
+		
+		counter := counter + 1;
+	end increment_safety_counter_2;
+
+	
 
 	function to_polygon (
 		line		: in type_line_fine;

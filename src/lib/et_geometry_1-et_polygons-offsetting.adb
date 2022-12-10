@@ -332,8 +332,11 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			-- This counter prevents infinite looping.
 			-- There can never be more vertices than intersections:
-			safety_counter_max : count_type := intersections.length;
-			safety_counter_current : count_type := 0;
+			--safety_counter_max : count_type := intersections.length;
+			--safety_counter_current : count_type := 0;
+
+			safety_counter_limit : constant natural := natural (intersections.length);
+			safety_counter : natural := 0;
 
 			
 			-- This primary cursor points to an entry in list "intersections":
@@ -381,14 +384,9 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			while c /= pac_edge_intersections.no_element loop
 
-				-- Count loops and abort on safety counter overrun:
-				if safety_counter_current > safety_counter_max then
-					raise safety_counter_overflow with 
-						"(max." & count_type'image (safety_counter_max) & ") !";
-				end if;
-				safety_counter_current := safety_counter_current + 1;
+				-- Count loops and abort on safety counter overflow:
+				increment_safety_counter_2 (safety_counter, safety_counter_limit);
 				
-
 				-- If a direct intersection with any following edge exists, then
 				-- fast forward to that edge (thus skipping the edges inbetween).
 				if element (c).direct_available 
