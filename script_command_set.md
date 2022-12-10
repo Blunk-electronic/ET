@@ -660,6 +660,7 @@ board led_driver set zone fill solid # hatched
 ```
 The linewidth of the zone dictates the linewidth of borders and fill lines.
 Currently this setting also applies to the linewidth of thermal relief spokes.
+NOTE: Filling the zone may fail due to large linewidth !
 ```
 board led_driver set zone width 0.35
 ```
