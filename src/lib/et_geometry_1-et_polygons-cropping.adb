@@ -176,8 +176,8 @@ package body et_geometry_1.et_polygons.cropping is
 			
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
-			safety_counter_limit : constant natural := 1000;
-			safety_counter : natural := 0;
+			safety_counter_limit : constant type_safety_count := 1000;
+			safety_counter : type_safety_count := 0;
 
 		begin
 			-- Make the vertices and intersection nodes of polygon A:

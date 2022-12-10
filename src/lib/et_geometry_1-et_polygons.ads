@@ -877,30 +877,32 @@ package et_geometry_1.et_polygons is
 
 
 
+	
 	-- Polygon operations may get stuck in infinite loops.
 	-- In connection with the overflow of a safety counter
 	-- this exception is raised:
 	safety_counter_overflow : exception;
-	
 
-
-	--CS : ? subtype type_safety_counter is natural range 0 .. 10000;
+	-- The counter is limited to a reasonable upper limit.
+	-- CS: Increase if necessary.
+	subtype type_safety_count is natural range 0 .. 10000;
 
 	-- Increments the given counter by 1 first. 
 	-- Then, if the count has reached or exceeded the given limit,
 	-- the exception safety_counter_overflow is raised:
 	procedure increment_safety_counter (
-		counter	: in out natural;
-		limit	: in natural);
+		counter	: in out type_safety_count;
+		limit	: in type_safety_count);
 
 	-- First, if the count is greater then the given limit,
 	-- the exception safety_counter_overflow is raised.
 	-- After comparing, the given counter is incremented by 1: 
 	procedure increment_safety_counter_2 (
-		counter	: in out natural;
-		limit	: in natural);
+		counter	: in out type_safety_count;
+		limit	: in type_safety_count);
 
 
+	
 	
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:

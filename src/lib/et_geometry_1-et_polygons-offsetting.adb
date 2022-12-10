@@ -332,11 +332,10 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			-- This counter prevents infinite looping.
 			-- There can never be more vertices than intersections:
-			--safety_counter_max : count_type := intersections.length;
-			--safety_counter_current : count_type := 0;
-
-			safety_counter_limit : constant natural := natural (intersections.length);
-			safety_counter : natural := 0;
+			safety_counter_limit : constant type_safety_count := 
+				type_safety_count (intersections.length);
+			
+			safety_counter : type_safety_count := 0;
 
 			
 			-- This primary cursor points to an entry in list "intersections":

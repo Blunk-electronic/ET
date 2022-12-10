@@ -172,8 +172,8 @@ package body et_geometry_1.et_polygons.union is
 
 			-- This is a safety measure to prevent indefinite looping.
 			-- CS: Increase upper limit if required:
-			safety_counter_limit : constant natural := 100;
-			safety_counter : natural := 0;
+			safety_counter_limit : constant type_safety_count := 100;
+			safety_counter : type_safety_count := 0;
 
 			-- If there is at least one outside vertex then this method is applied.
 			-- In general the search starts at one selected outside vertex. But
