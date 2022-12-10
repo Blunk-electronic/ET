@@ -292,7 +292,8 @@ package body et_logging is
 			if no_warnings then
 				put_line ("No warnings");
 			else
-				put_line ("Warnings" & warning_count & ". Increase log level for details.");
+				put_line ("Warnings" & warning_count 
+					& ". Increase log level to see hidden warnings and details.");
 			end if;
 			
 			put_line (row_separator_single);
