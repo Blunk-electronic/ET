@@ -358,16 +358,30 @@ package et_geometry_1 is
 	end record;
 
 	
-	-- Returns true if the given two location vectors are equal:
+	-- Returns true if the given two location vectors are equal.
+	-- Compares x,y and z:
 	function "=" (
 		left, right : in type_vector)
 		return boolean;
 
 	
+	-- Returns the vector that is most left downwards.
+	-- Compares first x, then y. Ignores z:
+	function get_lower_left (
+		left, right : in type_vector)
+		return boolean;
+
+
+	
 	null_vector		: constant type_vector := (others => 0.0);
 	unity_vector	: constant type_vector := (others => 1.0);
 
+	bottom_left		: constant type_vector := (x => type_float'first, y => type_float'first, z => 0.0);
+	bottom_right	: constant type_vector := (x => type_float'last,  y => type_float'first, z => 0.0);
+	top_right		: constant type_vector := (x => type_float'last,  y => type_float'last,  z => 0.0);
+	top_left		: constant type_vector := (x => type_float'first, y => type_float'last,  z => 0.0);
 
+	
 	function get_average (
 		v1, v2 : in type_vector)
 		return type_vector;
@@ -563,7 +577,8 @@ package et_geometry_1 is
 	
 	-- Location vectors can be stored in simple lists:	
 	package pac_vectors is new doubly_linked_lists (type_vector);
-
+	use pac_vectors;
+	
 
 	-- Converts an array of vectors to a list.
 	-- The first element of the given array becomes the 
@@ -613,6 +628,19 @@ package et_geometry_1 is
 	procedure sort_by_distance (
 		vectors		: in out pac_vectors.list;
 		reference	: in type_vector);
+
+
+	-- Returns the location vector that is
+	-- furthest left and downwards in the coordinates plane:
+	function get_lowest_left (
+		vectors		: in pac_vectors.list)
+		return type_vector;
+	
+	-- Returns the location vector that is
+	-- furthest right and upwards in the coordinates plane:
+	--function get_hightest_right(
+		--vectors		: in pac_vectors.list)
+		--return type_vector;
 
 	
 -- RAY

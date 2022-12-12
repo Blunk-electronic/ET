@@ -630,6 +630,26 @@ package body et_geometry_1 is
 	end "=";
 
 
+	function get_lower_left (
+		left, right : in type_vector)
+		return boolean 
+	is begin
+		--new_line;
+		--put_line ("left: " & to_string (left));
+		--put_line ("right:" & to_string (right));
+
+		if left.x < right.x then
+			if left.y < right.y then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;			
+		end if;
+	end get_lower_left;
+
+	
 	function get_average (
 		v1, v2 : in type_vector)
 		return type_vector
@@ -912,7 +932,6 @@ package body et_geometry_1 is
 		vectors	: in out pac_vectors.list;
 		factor	: in type_float_positive)
 	is
-		use pac_vectors;
 		c : pac_vectors.cursor := vectors.first;
 		
 		procedure do_it (v : in out type_vector) is begin
@@ -935,8 +954,7 @@ package body et_geometry_1 is
 		vectors	: in out pac_vectors.list;
 		offset	: in type_offset)
 	is 
-		use pac_vectors;
-		
+	
 		procedure move (vector : in out type_vector) is begin
 			move_by (vector, offset);
 		end move;
@@ -955,7 +973,6 @@ package body et_geometry_1 is
 		vectors	: in out pac_vectors.list;
 		angle	: in type_angle)
 	is
-		use pac_vectors;
 		c : pac_vectors.cursor := vectors.first;
 
 		procedure rotate (v : in out type_vector) is begin
@@ -974,7 +991,6 @@ package body et_geometry_1 is
 		vectors	: in out pac_vectors.list;
 		axis	: in type_axis_2d)
 	is
-		use pac_vectors;
 		c : pac_vectors.cursor := vectors.first;
 
 		procedure do_it (v : in out type_vector) is begin
@@ -1008,7 +1024,6 @@ package body et_geometry_1 is
 	procedure remove_redundant_vectors (
 		vectors : in out pac_vectors.list)
 	is
-		use pac_vectors;
 		target : pac_vectors.list;
 
 		procedure query_vector (c : in pac_vectors.cursor) is begin
@@ -1027,8 +1042,6 @@ package body et_geometry_1 is
 		vectors		: in out pac_vectors.list;
 		reference	: in type_vector)
 	is
-		use pac_vectors;
-
 		type type_item is record
 			-- We will be sorting vectors by their distance to
 			-- the reference point:
@@ -1086,6 +1099,25 @@ package body et_geometry_1 is
 		items.iterate (query_item'access);
 	end sort_by_distance;
 
+
+	function get_lowest_left (
+		vectors		: in pac_vectors.list)
+		return type_vector
+	is
+		result : type_vector := top_right;		
+
+		procedure query_vector (v : in pac_vectors.cursor) is
+			vector : type_vector renames element (v);
+		begin
+			if get_lower_left (vector, result) then
+				result := vector;
+			end if;
+		end query_vector;
+		
+	begin
+		vectors.iterate (query_vector'access);
+		return result;
+	end get_lowest_left;
 	
 	
 	function get_distance_total (

@@ -680,6 +680,8 @@ is
 		half_linewidth_float : constant type_float_positive :=
 			0.5 * type_float_positive (linewidth);
 
+		use ada.characters.latin_1;
+		
 		
 		-- Iterates the islands and assigns them to the given zone.
 		-- Computes the outer edges of the islands according to the
@@ -703,14 +705,11 @@ is
 				--put_line ("islands total" & count_type'image (zone.islands.length));
 
 				exception when constraint_error =>
-					log (
-						importance => WARNING,
-						text => "Offsetting centerline of island at"
-							& to_string (polygon => island_centerline, first_only => true) & " failed !",
+					log (importance => WARNING,
+						text => "Offsetting centerline of island failed !" & LF
+							& to_string (polygon => island_centerline, lower_left_only => true),
 						level => log_threshold + 3);
-
 					raise;			
-
 			end query_island;
 			
 		begin
@@ -745,14 +744,11 @@ is
 					--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
 
 					exception when constraint_error =>
-						log (
-							importance => WARNING,
-							text => "Offsetting centerline of lake at"
-							& to_string (polygon => centerline, first_only => true) & " failed !",
+						log (importance => WARNING,
+							text => "Offsetting centerline of lake failed !" & LF
+								& to_string (polygon => centerline, lower_left_only => true),
 							level => log_threshold + 3);
-
-						raise;			
-
+						raise;
 				end query_centerline;
 				
 			begin

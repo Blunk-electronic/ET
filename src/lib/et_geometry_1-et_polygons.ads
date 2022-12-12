@@ -337,10 +337,11 @@ package et_geometry_1.et_polygons is
 	
 	
 	-- Returns the vertices of a polygon in human readable form.
-	-- If first_only is true, then only the first vertex is output:	
+	-- If lower_left_only is true, then only the lowest left vertex
+	-- is output:	
 	function to_string (
-		polygon		: in type_polygon;
-		first_only	: in boolean := false)				   
+		polygon			: in type_polygon;
+		lower_left_only	: in boolean := false)				   
 		return string;
 
 

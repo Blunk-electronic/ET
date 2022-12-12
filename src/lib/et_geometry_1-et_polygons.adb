@@ -1113,8 +1113,8 @@ package body et_geometry_1.et_polygons is
 
 	
 	function to_string (
-		polygon		: in type_polygon;
-		first_only	: in boolean := false)				   
+		polygon			: in type_polygon;
+		lower_left_only	: in boolean := false)				   
 		return string
 	is
 		use ada.strings.unbounded;
@@ -1122,25 +1122,24 @@ package body et_geometry_1.et_polygons is
 		
 		result : unbounded_string := to_unbounded_string ("polygon vertices:");
 
-		ct : natural := 0;
+		use pac_vectors;
+		vertices : constant pac_vectors.list := get_vertices (polygon);
 		
-		procedure query_edge (c : in pac_edges.cursor) is begin
-
-			-- We output the start points only.
-			-- Because: The end point of an edge is always the start point of the
-			-- next edge.
-
-			result := result & LF
-				& to_unbounded_string (to_string (element (c).start_point));
-
-			ct := ct + 1;
-		end query_edge;
-
+		total : constant string := "/ vertices total:" & count_type'image (vertices.length);
+		lowest_left : type_vector;
+		
+		procedure query_vertex (c : in pac_vectors.cursor) is begin
+			result := result & LF & to_unbounded_string (to_string (element (c)));
+		end query_vertex;
 		
 	begin
-		polygon.edges.iterate (query_edge'access);
-		
-		return to_string (result) & LF & "total:" & positive'image (ct);
+		if not lower_left_only then
+			vertices.iterate (query_vertex'access);
+			return to_string (result) & LF & total;
+		else
+			lowest_left := get_lowest_left (vertices);
+			return "polygon lowest left vertex: " & to_string (lowest_left) & " " & total;
+		end if;		
 	end to_string;
 
 
