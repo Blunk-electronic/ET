@@ -167,14 +167,14 @@ package body et_pcb_rw is
 
 	procedure write_spacing (spacing : in type_track_clearance) is
 	begin
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (spacing));
+		write (keyword => keyword_spacing, parameters => to_string (spacing));
 	end;
 
 	
 	procedure write_hatching (hatching : in type_hatching) is
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
+		write (keyword => keyword_spacing, parameters => to_string (hatching.spacing));
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
 
@@ -262,7 +262,7 @@ package body et_pcb_rw is
 					when SOLID => null;
 					when HATCHED =>
 						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
+						write (keyword => keyword_spacing, parameters => to_string (circle.hatching.spacing));
 				end case;
 
 		end case;

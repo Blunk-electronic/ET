@@ -2835,7 +2835,7 @@ package body et_pcb_rw.device_packages is
 													expect_field_count (line, 2);													
 													board_hatching.line_width := to_distance (f (line, 2));
 
-												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+												elsif kw = keyword_spacing then -- spacing 0.3
 													expect_field_count (line, 2);													
 													board_hatching.spacing := to_distance (f (line, 2));
 													
@@ -2985,7 +2985,7 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);													
 												board_hatching.line_width := to_distance (f (line, 2));
 
-											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											elsif kw = keyword_spacing then -- spacing 0.3
 												expect_field_count (line, 2);													
 												board_hatching.spacing := to_distance (f (line, 2));
 												
@@ -3032,7 +3032,7 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);													
 												board_easing.radius := to_distance (f (line, 2));
 												
-											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											elsif kw = keyword_spacing then -- spacing 0.3
 												expect_field_count (line, 2);													
 												fill_spacing := to_distance (f (line, 2));
 

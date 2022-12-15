@@ -160,8 +160,6 @@ package et_fill_zones is
 	end record;
 	
 
-	keyword_spacing : constant string := "spacing";
-	
 	
 	procedure make_stripes (
 		island	: in out type_island;
@@ -182,7 +180,7 @@ package et_fill_zones is
 
 
 	keyword_isolation	: constant string := "isolation"; -- CS rename
-	keyword_linewidth	: constant string := "linewidth";
+
 
 	
 	type type_zone (fill_style : type_fill_style) 

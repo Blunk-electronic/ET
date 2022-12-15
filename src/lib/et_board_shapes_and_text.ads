@@ -104,12 +104,13 @@ package et_board_shapes_and_text is
 
 
 	keyword_width 		: constant string := "width";
-
+	keyword_linewidth	: constant string := "linewidth";
 
 -- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
 	keyword_hatching_line_width		: constant string := "hatching_line_width";
 	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_spacing : constant string := "spacing";
 
 	hatching_line_width_default : constant type_distance_positive := 0.2;
 	hatching_spacing_default	: constant type_distance_positive := 1.0;
