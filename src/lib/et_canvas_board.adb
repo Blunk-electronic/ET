@@ -1275,15 +1275,27 @@ package body et_canvas_board is
 		
 		procedure fill is begin
 			case key is
-				when GDK_LC_p =>
+				when GDK_LC_z =>
 					noun := NOUN_ZONE;
 					fill_fill_zones (current_active_module, NORMAL, log_threshold + 1);
 
-					set_status ("conductor polygons filled");
+					set_status ("zones filled");
 					
 				when others => status_noun_invalid;
 			end case;
 		end fill;
+
+
+		procedure move is begin
+			case key is
+				when GDK_LC_d =>
+					noun := NOUN_DEVICE;
+					set_status (status_click_left & "move device."
+						& status_hint_for_abort);
+					
+				when others => status_noun_invalid;
+			end case;
+		end move;
 
 		
 		procedure place is begin
@@ -1395,6 +1407,10 @@ package body et_canvas_board is
 								when GDK_LC_f =>
 									verb := VERB_FILL;
 									status_enter_noun;
+
+								when GDK_LC_m =>
+									verb := VERB_MOVE;
+									status_enter_noun;
 									
 								when GDK_LC_p =>
 									verb := VERB_PLACE;
@@ -1429,6 +1445,7 @@ package body et_canvas_board is
 							case verb is
 								when VERB_DELETE	=> delete;
 								when VERB_FILL		=> fill;
+								when VERB_MOVE		=> move;
 								when VERB_PLACE		=> place;
 								when VERB_UPDATE	=> update;
 								when others => null; -- CS
@@ -1439,6 +1456,7 @@ package body et_canvas_board is
 				end if;
 		end case;
 
+		
 		redraw;	
 		-- CS use redraw_board if only board affected
 		-- CS redraw after "enter" pressed
@@ -1509,10 +1527,25 @@ package body et_canvas_board is
 					end case;
 					
 				when others => null;
+			end case;
+
+
+			case verb is
+				when VERB_MOVE =>
+					case noun is
+						when NOUN_DEVICE =>
+							null;
+
+						when others => null;
+					end case;
+					
+				when others => null;
 
 			end case;
+			
 		end left_button;
 
+		
 		procedure right_button is
 		begin
 			null;

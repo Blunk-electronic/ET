@@ -84,7 +84,7 @@ package et_canvas_board_vias is
 		& "to place via." 
 		& status_hint_for_abort;
 
-	-- The properties of the text being placed:
+	-- The properties of the via being placed:
 	type type_via_place is record
 		being_moved			: boolean := false;
 
@@ -106,7 +106,7 @@ package et_canvas_board_vias is
 	via_place : type_via_place;
 
 	-- Clears via_place.being_moved and box_properties.displayed.
-	-- Removes the text properties bar.
+	-- Removes the via properties bar.
 	procedure reset_via_place;
 
 	

@@ -7,6 +7,26 @@ Board Layout Editor
 *******************
 
 
++++++++
+Devices
++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Move device
+
+	.. code-block::
+
+		move device X1 absolute -14 24
+		move device X1 relative 1 0
+
+	|VNS| m d
+
+	
+
+
+
 +++++++++++++++++++++
 Ratsnest and Airwires
 +++++++++++++++++++++
@@ -73,7 +93,7 @@ Commands and Verb-Noun key sequences
 
 		fill zone [net name] [net name] [net name] ... 
 
-	|VNS| f p
+	|VNS| f z
 
 
 	
