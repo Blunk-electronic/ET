@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -37,8 +37,8 @@
 -- DESCRIPTION:
 -- 
 
-with et_general;				use et_general;
---with et_geometry;				use et_geometry;
+with et_general;					use et_general;
+with et_geometry;					use et_geometry;
 with et_canvas_general;				use et_canvas_general;
 
 
@@ -50,6 +50,7 @@ with et_canvas_general;				use et_canvas_general;
 --with et_project.modules;		use et_project.modules;
 --with et_schematic;
 --with et_frames;
+with et_devices;					use et_devices;
 
 --with et_board_ops;
 
@@ -59,6 +60,16 @@ with et_canvas_general;				use et_canvas_general;
 
 package et_canvas_board_devices is
 
+
+	type type_device_being_moved is record
+		being_moved			: boolean := false;
+		tool				: type_tool := MOUSE;
+		device				: type_device_name := (others => <>); -- IC45
+	end record;
+
+	device_move : type_device_being_moved;
+
+	
 	-- to be output in the status bar:
 	status_move_device : constant string := 
 		status_click_left 
@@ -66,6 +77,8 @@ package et_canvas_board_devices is
 		& status_press_space
 		& "to move device." 
 		& status_hint_for_abort;
+
+
 
 	
 end et_canvas_board_devices;
