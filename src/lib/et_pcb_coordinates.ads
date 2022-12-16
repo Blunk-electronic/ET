@@ -132,6 +132,10 @@ package et_pcb_coordinates is
 
 	use pac_geometry_2;
 	
+
+	catch_zone_default : constant type_catch_zone := 2.0; 
+	-- CS: should be a general setting for board and package editor in the future
+	
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required) -- CS move to design rules
 	pcb_thickness_min : constant type_distance_positive := 0.1;

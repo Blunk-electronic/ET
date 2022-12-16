@@ -37,41 +37,42 @@
 -- DESCRIPTION:
 -- 
 
+with ada.containers;   	         use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 with et_canvas_general;				use et_canvas_general;
 
-
---with et_pcb_coordinates;		use et_pcb_coordinates;
---use et_pcb_coordinates.pac_geometry_brd;
+with et_pcb_coordinates;			use et_pcb_coordinates;
+use et_pcb_coordinates.pac_geometry_2;
 
 --with et_terminals;				use et_terminals;
 --with et_packages;
---with et_project.modules;		use et_project.modules;
---with et_schematic;
---with et_frames;
+with et_project.modules;			use et_project.modules;
+with et_schematic;
 with et_devices;					use et_devices;
 
---with et_board_ops;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
---with et_canvas_general;				use et_canvas_general;
---with et_canvas_primitive_draw_ops;
---with et_string_processing;			use et_string_processing;
 
 package et_canvas_board_devices is
 
+	use et_project.modules.pac_generic_modules;
+	
 
-	type type_device_being_moved is record
+	type type_electrical_device_being_moved is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 		device				: type_device_name := (others => <>); -- IC45
 	end record;
 
-	device_move : type_device_being_moved;
+	electrical_device_move : type_electrical_device_being_moved;
 
 	
 	-- to be output in the status bar:
-	status_move_device : constant string := 
+	status_move : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
@@ -80,7 +81,65 @@ package et_canvas_board_devices is
 
 
 
+	-- Whenever a device is selected via the GUI, 
+	-- we store its cursor via this type.
+	-- This type is to be used for a device that
+	-- is already placed in the schematic and board. So we use it
+	-- for example for moving, mirroring or rotating of a device.
+	type type_selected_electrical_device is record
+		device	: et_schematic.pac_devices_sch.cursor;
+	end record;
+
+	package pac_proposed_electrical_devices is new 
+		doubly_linked_lists (type_selected_electrical_device);
+	use pac_proposed_electrical_devices;
 	
+	proposed_devices_electrical	: pac_proposed_electrical_devices.list;
+	selected_device_electrical	: pac_proposed_electrical_devices.cursor;
+
+
+	-- Clears the list proposed_devices_electrical.
+	-- Resets selected_device_electrical to no_element.
+	procedure clear_proposed_electrical_devices;
+	
+	
+	-- Collects all units in the vicinity of the given point:	
+	function collect_devices (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point; -- x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_proposed_electrical_devices.list;
+
+
+	-- Advances cursor selected_device_electrical to next device
+	-- in list proposed_devices_electrical:
+	procedure clarify_electrical_device;
+	
+	
+	-- This procedure:
+	-- - Clears list of proposed electrical devices.
+	-- - Sets global variable selected_device_electrical to no_element.
+	-- - resets global variable electrical_device_move to its default values
+	procedure reset_electrical_device_move;
+	
+	
+	-- Locates all devices in the vicinity of given point.
+	-- If more than one device near point found, then it sets the
+	-- cursor selected_device_electrical to the device and requests
+	-- for clarification.
+	procedure find_electrical_devices_for_move (
+		point : in type_point);
+
+
+	-- Assigns the final position after the move to the selected 
+	-- electrical device.
+	-- Resets the global variable ??
+	procedure finalize_move_electrical (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+
+		
 end et_canvas_board_devices;
 
 -- Soli Deo Gloria

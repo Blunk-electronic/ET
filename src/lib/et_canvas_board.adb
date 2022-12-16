@@ -1292,6 +1292,66 @@ package body et_canvas_board is
 					noun := NOUN_DEVICE;
 					set_status (status_click_left & "move device."
 						& status_hint_for_abort);
+
+
+				-- If space pressed then the operator wishes to operate
+				-- by keyboard:
+				when GDK_Space =>
+		
+					case noun is
+						when NOUN_DEVICE =>
+							
+							if not electrical_device_move.being_moved then
+
+								-- Set the tool being used for moving the unit:
+								electrical_device_move.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_electrical_devices_for_move (cursor_main.position);
+								else
+									electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected unit:
+								et_canvas_board_devices.finalize_move_electrical (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+						when others => null;
+					end case;		
+
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+
+						--when NOUN_NAME => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+
+						--when NOUN_PURPOSE => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+
+						when NOUN_DEVICE =>
+							if clarification_pending then
+								clarify_electrical_device;
+							end if;
+							
+						--when NOUN_VALUE => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+							
+						when others => null;							
+					end case;
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1534,7 +1594,24 @@ package body et_canvas_board is
 				when VERB_MOVE =>
 					case noun is
 						when NOUN_DEVICE =>
-							null;
+							if not electrical_device_move.being_moved then
+								-- Set the tool being used for moving the device:
+								electrical_device_move.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_electrical_devices_for_move (point);
+								else
+									electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+
+							else
+								-- Finally assign the pointer position to the
+								-- currently selected device:
+								et_canvas_board_devices.finalize_move_electrical (
+									destination		=> snap_to_grid (self, point),
+									log_threshold	=> log_threshold + 1);
+							end if;
 
 						when others => null;
 					end case;
@@ -1548,7 +1625,35 @@ package body et_canvas_board is
 		
 		procedure right_button is
 		begin
-			null;
+			case verb is
+				when VERB_MOVE =>
+					case noun is
+						
+						--when NOUN_NAME => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+
+						--when NOUN_PURPOSE => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+
+						when NOUN_DEVICE =>
+							if clarification_pending then
+								clarify_electrical_device;
+							end if;
+							
+						--when NOUN_VALUE => 
+							--if clarification_pending then
+								--clarify_placeholder;
+							--end if;
+							
+						when others => null;							
+					end case;
+
+				when others => null; -- CS
+			end case;
 		end right_button;
 
 		
