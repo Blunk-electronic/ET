@@ -37,7 +37,7 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;            use ada.containers;
+with ada.containers;	            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with gtk.window;					use gtk.window;
@@ -46,7 +46,6 @@ with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_2;
 
 with et_geometry;					use et_geometry;
-with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
