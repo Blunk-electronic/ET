@@ -153,6 +153,7 @@ is
 			
 	end unit_is_selected;
 
+	
 	-- Returns true if the given placeholder is selected.
 	function placeholder_is_selected (
 		d : in pac_devices_sch.cursor;
@@ -181,6 +182,7 @@ is
 			end if;
 		end if;
 	end placeholder_is_selected;
+
 	
 	procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
 		
@@ -191,6 +193,7 @@ is
 		unit_position : type_point; -- only x and y relevant
 
 		brightness : type_brightness := NORMAL;
+
 		
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use et_devices;
@@ -261,6 +264,7 @@ is
 						);
 			end case;
 		end locate_symbol;
+
 		
 		procedure query_units (unit_cursor : in et_schematic.pac_units.cursor) is
 			use et_devices;
@@ -273,7 +277,7 @@ is
 			--put_line (to_string (unit_name));
 
 			-- Get the position of the unit (as it is according to the module database).
-			-- If the unit is selected and being moved the the x/y position
+			-- If the unit is selected and being moved, then the x/y position
 			-- will be overwritten by the position of the mouse or the cursor.
 			unit_position := element (unit_cursor).position.place;
 
