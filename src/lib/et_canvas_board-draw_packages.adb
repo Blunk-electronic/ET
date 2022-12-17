@@ -82,6 +82,7 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
 		deepest_conductor_layer (current_active_module);
+
 	
 	procedure draw_package (
 		device_name		: in et_devices.type_device_name; -- IC13, C4
@@ -90,7 +91,8 @@ is
 		model			: in et_packages.pac_package_model_file_name.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_packages.type_flipped;
-		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
+		placeholders	: in et_packages.type_text_placeholders; -- specified in the board. will override default positions
+		brightness		: in type_brightness)
 	is
 		-- CS should improve performance:
 		-- package_offset : constant type_distance_relative := to_distance_relative (package_position.place)
@@ -3407,7 +3409,7 @@ is
 			if face = get_face (package_position) then
 				if device_origins_enabled (get_face (package_position)) then
 
-					set_color_origin (context.cr);
+					set_color_origin (context.cr, brightness);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
 					draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
 					draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
@@ -3436,20 +3438,94 @@ is
 		draw_package_origin;
 	end draw_package;
 
+	
 	use et_schematic;
+
+
+	-- Returns true if the given electrical device matches the device indicated by 
+	-- cursor "selected_device_electrical":
+	function electrical_device_is_selected (
+		d : in pac_devices_sch.cursor)
+		return boolean
+	is
+		use et_devices;
+		use pac_devices_sch;
+		use pac_proposed_electrical_devices;
+	begin
+		-- If there are no selected devices at all, then there is nothing to do:
+		if is_empty (proposed_devices_electrical) then
+			return false;
+		else
+			if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+				
+				-- Compare given device and device name of "selected_device_electrical":
+				if key (d) = key (element (selected_device_electrical).device) then
+				-- CS compare cursors directly ?
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end electrical_device_is_selected;
+
+	
+	-- Returns true if the given non-electrical device matches the device indicated by 
+	-- cursor "selected_non_electrical_device":
+	function non_electrical_device_is_selected (
+		d : in et_pcb.pac_devices_non_electric.cursor)
+		return boolean
+	is
+		-- CS
+		--use pac_proposed_electrical_devices;
+	begin
+		---- If there are no selected devices at all, then there is nothing to do:
+		--if is_empty (proposed_devices_electrical) then
+			--return false;
+		--else
+			--if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+				
+				---- Compare given device and device name of "selected_device_electrical":
+				--if key (d) = key (element (selected_device_electrical).device) then
+				---- CS compare cursors directly ?
+					--return true;
+				--else 
+					--return false;
+				--end if;
+			--else
+				--return false;
+			--end if;
+		--end if;
+		return false;
+	end non_electrical_device_is_selected;
 
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
-		use et_schematic.pac_devices_sch;
+		use et_schematic;
+		use pac_devices_sch;
 
-		procedure query_device (d : in et_schematic.pac_devices_sch.cursor) is
+		
+		-- electrical devices:
+		procedure query_device (d : in pac_devices_sch.cursor) is
+			-- CS use rename
 			use et_symbols;
 			use et_pcb;
+
+			brightness : type_brightness := NORMAL;
 		begin
 			if is_real (d) then
+
+				-- If the device candidate is selected, then we will
+				-- draw it highlighted:
+				if electrical_device_is_selected (d) then
+					brightness := BRIGHT;
+					--put_line ("device selected");
+				end if;
 				
 				draw_package (
 					device_name			=> key (d), -- R1, IC12
@@ -3461,7 +3537,9 @@ is
 
 					-- The text placeholders specified in the board override
 					-- the default placeholders of the model:
-					placeholders		=> element (d).text_placeholders);
+					placeholders		=> element (d).text_placeholders,
+
+					brightness			=> brightness);
 
 			end if;
 		end query_device;
@@ -3477,10 +3555,19 @@ is
 	is
 		use et_pcb;
 		use pac_devices_non_electric;
-		
+
+		-- non-electrical devices:
 		procedure query_device (p : in pac_devices_non_electric.cursor) is 
+			-- CS use rename
 			use et_devices;
+			brightness : type_brightness := NORMAL;
 		begin
+			-- If the device candidate is selected, then we will
+			-- draw it highlighted:
+			if non_electrical_device_is_selected (p) then
+				brightness := BRIGHT;
+			end if;
+			
 			draw_package (
 				device_name			=> key (p), -- H1, FD2
 				package_position	=> element (p).position, -- x/y/rotation/face
@@ -3492,7 +3579,8 @@ is
 				
 				model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
 				device_value		=> to_value (""),
-				device_purpose		=> to_purpose (""));
+				device_purpose		=> to_purpose (""),
+				brightness 			=> brightness);
 
 		end query_device;
 		
@@ -3509,6 +3597,7 @@ begin -- draw_packages
 		position	=> current_active_module,
 		process		=> query_devices'access);
 
+	
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
