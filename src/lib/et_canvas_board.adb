@@ -1420,6 +1420,8 @@ package body et_canvas_board is
 
 				reset_text_place; -- after placing a text
 				reset_via_place; -- after placing a via
+				reset_electrical_device_move; -- after moving a device
+
 				
 			when GDK_F11 =>
 				et_canvas_schematic.previous_module;
@@ -1541,6 +1543,17 @@ package body et_canvas_board is
 		point	: in type_point) 
 	is begin
 		case verb is
+			when VERB_MOVE =>
+				case noun is
+					when NOUN_DEVICE =>
+						if electrical_device_move.being_moved then
+							redraw_board;
+						end if;
+
+					when others => null;
+				end case;
+				
+
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_TEXT =>
@@ -1555,7 +1568,7 @@ package body et_canvas_board is
 						
 					when others => null;
 				end case;
-
+			
 			when others => null;
 		end case;
 		

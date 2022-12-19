@@ -145,6 +145,8 @@ package et_pcb_coordinates is
 
 	
 	type type_package_position is new pac_geometry_2.type_position with private;
+	-- CS move to et_packages ?
+	
 
 	package_position_default : constant type_package_position;
 

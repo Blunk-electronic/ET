@@ -3514,36 +3514,54 @@ is
 
 		
 		-- electrical devices:
-		procedure query_device (d : in pac_devices_sch.cursor) is
-			-- CS use rename
+		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
+			device : type_device_sch renames element (device_cursor);
 			use et_symbols;
 			use et_pcb;
 
 			brightness : type_brightness := NORMAL;
+
+			-- If the device is selected and being moved, then the x/y position
+			-- will be overwritten by the position of the mouse or the cursor.
+			position : type_package_position := device.position; -- incl. rotation and face
 		begin
-			if is_real (d) then
+			if is_real (device_cursor) then
 
 				-- If the device candidate is selected, then we will
 				-- draw it highlighted:
-				if electrical_device_is_selected (d) then
+				if electrical_device_is_selected (device_cursor) then
 					brightness := BRIGHT;
 					--put_line ("device selected");
+
+					if electrical_device_move.being_moved then
+						case electrical_device_move.tool is
+							when MOUSE =>
+								position.place := self.snap_to_grid (self.mouse_position);
+								--put_line ("mouse " & to_string (position.place));								
+							when KEYBOARD =>
+								position.place := cursor_main.position;
+						end case;	
+					end if;
 				end if;
 				
 				draw_package (
-					device_name			=> key (d), -- R1, IC12
-					device_value		=> element (d).value, -- 7400, 100R
-					device_purpose		=> element (d).purpose, -- brightness control
-					model				=> get_package_model (d), -- libraries/packages/smd/SOT23.pac
-					package_position	=> element (d).position, -- x/y/rotation/face
-					flip				=> element (d).flipped,
+					device_name			=> key (device_cursor), -- R1, IC12
+					device_value		=> device.value, -- 7400, 100R
+					device_purpose		=> device.purpose, -- brightness control
+					model				=> get_package_model (device_cursor), -- libraries/packages/smd/SOT23.pac
+					package_position	=> position, -- x/y/rotation/face
+					flip				=> device.flipped,
 
 					-- The text placeholders specified in the board override
 					-- the default placeholders of the model:
-					placeholders		=> element (d).text_placeholders,
+					placeholders		=> device.text_placeholders,
 
 					brightness			=> brightness);
 
+				--if electrical_device_move.being_moved then
+					--update_ratsnest (current_active_module, log_threshold + 10);
+				--end if;
+				
 			end if;
 		end query_device;
 		
