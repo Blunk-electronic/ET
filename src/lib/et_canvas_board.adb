@@ -74,8 +74,7 @@ package body et_canvas_board is
 	-- or the values as defined in the DRU data set.
 	procedure init_via_place is
 		use et_pcb;
-		use et_canvas_schematic;
-		
+
 		use et_design_rules;
 		rules : constant type_design_rules := get_pcb_design_rules (current_active_module);
 
@@ -390,9 +389,7 @@ package body et_canvas_board is
 	
 	function active_module (self : not null access type_view) 
 		return string
-	is
-		use et_canvas_schematic;
-	begin
+	is begin
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
 
@@ -408,8 +405,6 @@ package body et_canvas_board is
 
 	procedure set_grid_x (self : access gtk_entry_record'class) is
 		use et_board_ops;
-		use et_canvas_schematic;
-
 		-- get the current grid
 		grid : type_grid := element (current_active_module).board.grid;
 	begin
@@ -430,7 +425,6 @@ package body et_canvas_board is
 	
 	procedure set_grid_y (self : access gtk_entry_record'class) is
 		use et_board_ops;
-		use et_canvas_schematic;
 		
 		-- get the current grid		
 		grid : type_grid := element (current_active_module).board.grid;
@@ -465,17 +459,7 @@ package body et_canvas_board is
 		in_area	: in type_bounding_box;
 		context	: in type_draw_context) 
 	is		
-		--use et_board_shapes_and_text;
-		--use pac_geometry_2;
 		use pac_text_board;
-		
-		--line_horizontal : constant type_line := ( -- from left to right
-			--start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
-			--end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
-
-		--line_vertical : constant type_line := ( -- from bottom to top
-			--start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
-			--end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		line_horizontal : constant type_line_fine := ( -- from left to right
 			start_point		=> to_vector (set (x => get_x (p) - origin_half_size, y => get_y (p))),
@@ -508,7 +492,6 @@ package body et_canvas_board is
 	is
 		use et_text;
 		use et_meta;
-		use et_canvas_schematic;
 	
 		meta : constant type_board := element (current_active_module).meta.board;
 
@@ -968,9 +951,7 @@ package body et_canvas_board is
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
 		position	: in type_point) 
-	is
-		--use et_canvas_schematic;		
-	begin
+	is begin
 		case coordinates is
 			when ABSOLUTE =>
 				--cursor.position := type_point (round (position, element (current_active_module).board.grid));
@@ -991,7 +972,6 @@ package body et_canvas_board is
 		cursor		: in out type_cursor) 
 	is
 		-- Get the currently active grid:
-		--use et_canvas_schematic;		
 		--grid : constant type_grid := element (current_active_module).board.grid;
 		grid : constant type_grid := self.get_grid;
 
@@ -1088,7 +1068,6 @@ package body et_canvas_board is
 		return type_grid 
 	is
 		-- Get the default grid as defined in the module database:
-		use et_canvas_schematic;
 		g : type_grid := element (current_active_module).board.grid;
 	begin
 		-- Scale the grid according to current grid level:
@@ -1104,10 +1083,8 @@ package body et_canvas_board is
 	
 	function get_frame (
 		self : not null access type_view)
-		return et_frames.type_frame is
-
-		use et_canvas_schematic;
-	begin
+		return et_frames.type_frame 
+	is begin
 		return element (current_active_module).board.frame.frame;
 	end get_frame;
 
@@ -1115,9 +1092,7 @@ package body et_canvas_board is
 	function frame_height (
 		self : not null access type_view)
 		return type_float_positive 
-	is 
-		use et_canvas_schematic;
-	begin
+	is begin
 		return type_float_positive (
 			element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
@@ -1126,9 +1101,7 @@ package body et_canvas_board is
 	function frame_width (
 		self : not null access type_view)
 		return type_float_positive 
-	is 
-		use et_canvas_schematic;
-	begin
+	is begin
 		return type_float_positive (
 			element (current_active_module).board.frame.frame.size.x);
 	end frame_width;
@@ -1145,9 +1118,7 @@ package body et_canvas_board is
 	function board_origin (
 		self : not null access type_view)
 		return type_model_point 
-	is
-		use et_canvas_schematic;
-	begin
+	is begin
 		return to_model_point (element (current_active_module).board.origin);
 	end board_origin;
 
@@ -1213,7 +1184,6 @@ package body et_canvas_board is
 	-- provided by temporarily variable via_place.
 	-- Inserts the via in the module.
 	procedure place_via (destination : in type_point) is
-		use et_canvas_schematic;
 		via : type_via (category => via_place.category);
 	begin
 		if via_place.being_moved then
@@ -1694,9 +1664,7 @@ package body et_canvas_board is
 	
 	procedure save_drawing (
 		self : not null access type_view)
-	is 
-		use et_canvas_schematic;
-	begin
+	is begin
 		save_module;
 	end save_drawing;
 

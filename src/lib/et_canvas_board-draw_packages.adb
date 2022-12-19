@@ -3516,7 +3516,6 @@ is
 		-- electrical devices:
 		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
 			device : type_device_sch renames element (device_cursor);
-			--use et_symbols;
 			use et_pcb;
 
 			brightness : type_brightness := NORMAL;
