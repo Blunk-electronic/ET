@@ -49,7 +49,7 @@ with et_thermal_relief;				use et_thermal_relief;
 with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
 with et_display.board;				use et_display.board;
-
+with et_colors;						use et_colors;
 
 separate (et_canvas_board)
 
@@ -75,6 +75,10 @@ is
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use pac_conductor_texts;
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
 	
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
@@ -814,7 +818,7 @@ is
 				--put_line (to_string (current_layer));
 
 				-- set color according to layer
-				set_color_conductor (context.cr, current_layer);
+				set_color_conductor (context.cr, current_layer, brightness);
 
 				
 				-- freetracks, floating stuff:

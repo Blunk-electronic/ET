@@ -38,8 +38,11 @@
 with ada.text_io;				use ada.text_io;
 with et_stencil;				use et_stencil;
 with et_stencil.boards;			use et_stencil.boards;
+with et_colors;					use et_colors;
+
 
 separate (et_canvas_board)
+
 
 procedure draw_stencil (
 	self    : not null access type_view;
@@ -56,6 +59,10 @@ is
 	use pac_stencil_cutouts;
 	use pac_stencil_texts;
 	
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
 	
 	procedure query_line (c : in pac_stencil_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -179,7 +186,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stencil segments will be drawn with the same color:
-		set_color_stencil (context.cr, face, self.scale);
+		set_color_stencil (context.cr, face, self.scale, brightness);
 
 		case face is
 			when TOP =>

@@ -252,7 +252,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
@@ -289,7 +289,7 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
@@ -328,7 +328,7 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 
 						case circle.filled is
 							when NO =>
@@ -386,7 +386,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 
 						case polygon.fill_style is
 							when SOLID =>
@@ -497,7 +497,7 @@ is
 						-- its final position:
 						move_by (ph.position.place, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 
 						draw_text_origin (ph.position.place, f);
 
@@ -557,7 +557,7 @@ is
 				if silkscreen_enabled (f) then
 	
 					if f = face then
-						set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f, brightness);
 						draw_text_with_content (t, f);
 					end if;
 
@@ -636,7 +636,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
@@ -671,7 +671,7 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
@@ -710,7 +710,7 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 
 						case circle.filled is
 							when NO =>
@@ -768,7 +768,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 
 						case polygon.fill_style is
 							when SOLID =>
@@ -881,7 +881,7 @@ is
 						-- its final position:
 						move_by (ph.position.place, to_distance_relative (package_position.place));
 
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 
 						draw_text_origin (ph.position.place, f);
 
@@ -941,7 +941,7 @@ is
 				if assy_doc_enabled (f) then
 	
 					if f = face then
-						set_color_assy_doc (context.cr, f);
+						set_color_assy_doc (context.cr, f, brightness);
 						draw_text_with_content (t, f);
 					end if;
 
@@ -1014,7 +1014,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_keepout (context.cr, f);
+						set_color_keepout (context.cr, f, brightness);
 						draw_line (in_area, context, to_line_fine (line), keepout_line_width, self.frame_height);
 					end if;
 
@@ -1050,10 +1050,9 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_keepout (context.cr, f);
+						set_color_keepout (context.cr, f, brightness);
 						draw_arc (in_area, context, to_arc_fine (arc), keepout_line_width, self.frame_height);
-					end if;
-					
+					end if;					
 				end if;
 			end draw_arc;
 
@@ -1088,13 +1087,12 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_keepout (context.cr, f);
+						set_color_keepout (context.cr, f, brightness);
 
 						draw_circle (in_area, context, circle, circle.filled,
 							keepout_line_width, self.frame_height);
 						
 					end if;
-
 				end if;
 			end draw_circle;
 
@@ -1133,15 +1131,15 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_keepout (context.cr, f);
+						set_color_keepout (context.cr, f, brightness);
 
 						draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
 						
 					end if;
-
 				end if;
 			end draw_contour;
+
 			
 			procedure query_polygon_top (c : in pac_keepout_contours.cursor) is
 				polygon : type_keepout_contour := element (c);
@@ -1150,6 +1148,7 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
+			
 			procedure query_polygon_bottom (c : in pac_keepout_contours.cursor) is
 				polygon : type_keepout_contour := element (c);
 			begin
@@ -1201,6 +1200,7 @@ is
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
+			
 		begin -- draw_keepout
 			set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 			
@@ -1244,7 +1244,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_stop_mask (context.cr, f, self.scale);
+						set_color_stop_mask (context.cr, f, self.scale, brightness);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
@@ -1281,7 +1281,7 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_stop_mask (context.cr, f, self.scale);
+						set_color_stop_mask (context.cr, f, self.scale, brightness);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
@@ -1320,7 +1320,7 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_stop_mask (context.cr, f, self.scale);
+						set_color_stop_mask (context.cr, f, self.scale, brightness);
 
 						case circle.filled is
 							when NO =>
@@ -1378,7 +1378,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_stop_mask (context.cr, f, self.scale);
+						set_color_stop_mask (context.cr, f, self.scale, brightness);
 
 						case polygon.fill_style is
 							when SOLID =>
@@ -1472,7 +1472,7 @@ is
 				if stop_mask_enabled (f) then
 	
 					if f = face then
-						set_color_stop_mask (context.cr, f, self.scale);
+						set_color_stop_mask (context.cr, f, self.scale, brightness);
 						draw_text_with_content (t, f);
 					end if;
 
@@ -1539,7 +1539,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_stencil (context.cr, f, self.scale);
+						set_color_stencil (context.cr, f, self.scale, brightness);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
@@ -1576,7 +1576,7 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_stencil (context.cr, f, self.scale);
+						set_color_stencil (context.cr, f, self.scale, brightness);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
@@ -1615,7 +1615,7 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_stencil (context.cr, f, self.scale);
+						set_color_stencil (context.cr, f, self.scale, brightness);
 
 						case circle.filled is
 							when NO =>
@@ -1674,7 +1674,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_stencil (context.cr, f, self.scale);
+						set_color_stencil (context.cr, f, self.scale, brightness);
 
 						case polygon.fill_style is
 							when SOLID =>
@@ -1991,7 +1991,7 @@ is
 			
 			
 		begin -- draw_route_restrict
-			set_color_route_restrict (context.cr);
+			set_color_route_restrict (context.cr, brightness);
 			set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
 			
 			-- lines
@@ -2015,7 +2015,7 @@ is
 			element (package_cursor).route_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
-			set_color_route_restrict (context.cr);
+			set_color_route_restrict (context.cr, brightness);
 			element (package_cursor).route_restrict.top.texts.iterate (query_text_top'access);
 			element (package_cursor).route_restrict.bottom.texts.iterate (query_text_bottom'access);			
 		end draw_route_restrict;
@@ -2232,7 +2232,7 @@ is
 		
 			
 		begin -- draw_via_restrict
-			set_color_via_restrict (context.cr);
+			set_color_via_restrict (context.cr, brightness);
 			set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
 			
 			-- lines
@@ -2256,7 +2256,7 @@ is
 			element (package_cursor).via_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
-			set_color_route_restrict (context.cr);
+			set_color_route_restrict (context.cr, brightness);
 			element (package_cursor).via_restrict.top.texts.iterate (query_text_top'access);
 			element (package_cursor).via_restrict.bottom.texts.iterate (query_text_bottom'access);			
 		end draw_via_restrict;
@@ -2445,7 +2445,7 @@ is
 						
 						move_by (line, to_distance_relative (package_position.place));
 
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
@@ -2484,7 +2484,7 @@ is
 						
 						move_by (arc, to_distance_relative (package_position.place));
 
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
@@ -2524,7 +2524,7 @@ is
 						
 						move_by (circle, to_distance_relative (package_position.place));
 
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 
 						set_line_width (context.cr, type_view_coordinate (circle.width));
 
@@ -2574,7 +2574,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 
 						draw_contour (in_area, context, polygon, YES,
 							zero, self.frame_height, drawn);
@@ -2598,6 +2598,7 @@ is
 				draw_contour_solid (polygon, destination);
 			end query_polygon_top_solid;
 
+			
 			procedure query_polygon_bottom_solid (
 				c : in pac_zones_solid.cursor) 
 			is
@@ -2626,7 +2627,7 @@ is
 						
 						move_by (polygon, to_distance_relative (package_position.place));
 
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 
 -- 						draw_contour (in_area, context, polygon, YES, self.frame_height);
 -- CS
@@ -2640,6 +2641,7 @@ is
 				end if;
 				
 			end draw_contour_hatched;
+
 			
 			procedure query_polygon_top_hatched (
 				c : in pac_zones_hatched.cursor) 
@@ -2689,6 +2691,7 @@ is
 
 				end if;
 			end draw_cutout;
+
 			
 			procedure query_cutout_top (
 				c : in packages.pac_cutouts.cursor) 
@@ -2765,7 +2768,7 @@ is
 				if conductor_enabled (ly) then
 	
 					if f = face then
-						set_color_conductor (context.cr, ly);
+						set_color_conductor (context.cr, ly, brightness);
 						draw_conductor_text_with_content (t, f);
 					end if;
 
@@ -2843,7 +2846,7 @@ is
 					center => drill_position, 
 					radius => type_float_positive (drill_size) * 0.5);
 			begin
-				set_color_tht_pad (context.cr);
+				set_color_tht_pad (context.cr, brightness);
 
 				draw_contour_with_circular_cutout (
 					area			=> in_area,
@@ -2859,7 +2862,7 @@ is
 				outer_border	: in type_contour;
 				inner_border	: in type_contour)
 			is begin
-				set_color_tht_pad (context.cr);
+				set_color_tht_pad (context.cr, brightness);
 
 				draw_contour_with_arbitrary_cutout (
 					area			=> in_area,
@@ -2882,7 +2885,7 @@ is
 				is
 					use et_text;
 				begin
-					set_color_terminal_name (context.cr);
+					set_color_terminal_name (context.cr, brightness);
 					
 					draw_text (
 						area		=> in_area,
@@ -2927,7 +2930,7 @@ is
 							-- Move the pad by the position of the package:
 							move_by (pad_pos, to_distance_relative (package_position.place));
 							
-							set_color_terminal_name (context.cr);
+							set_color_terminal_name (context.cr, brightness);
 							
 							draw_text (
 								area		=> in_area,
@@ -2983,7 +2986,7 @@ is
 							-- draw the solder pad (conductor material):
 							if conductor_enabled (ly) then
 
-								set_color_conductor (context.cr, ly);
+								set_color_conductor (context.cr, ly, brightness);
 								
 								draw_contour (in_area, context, pad_outline, YES,
 									zero, self.frame_height, drawn);
@@ -3029,7 +3032,7 @@ is
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 								end case;
 
-								set_color_stop_mask (context.cr, f, self.scale);
+								set_color_stop_mask (context.cr, f, self.scale, brightness);
 
 								draw_contour (in_area, context, stop_mask_contours, YES,
 									zero, self.frame_height, drawn);
@@ -3079,7 +3082,7 @@ is
 								end case;
 
 								
-								set_color_stencil (context.cr, f, self.scale);
+								set_color_stencil (context.cr, f, self.scale, brightness);
 								
 								draw_contour (in_area, context, stencil_contours, YES,
 									zero, self.frame_height, drawn);
@@ -3184,7 +3187,7 @@ is
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 								end case;
 
-								set_color_stop_mask (context.cr, f, self.scale);
+								set_color_stop_mask (context.cr, f, self.scale, brightness);
 								
 								-- draw the outer contour of the stop mask opening
 								draw_contour (
@@ -3284,7 +3287,7 @@ is
 						--set_line_width (context.cr, type_view_coordinate (restring));
 						--circle.radius := (drill_size + restring) * 0.5;
 
-						set_color_tht_pad (context.cr);
+						set_color_tht_pad (context.cr, brightness);
 						set_line_width (context.cr, type_view_coordinate (zero));
 
 						circle.radius := type_float_positive (drill_size) * 0.5 

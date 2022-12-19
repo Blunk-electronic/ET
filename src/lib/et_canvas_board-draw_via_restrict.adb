@@ -37,12 +37,14 @@
 
 --with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
+with et_colors;					use et_colors;
 with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict;			use et_route_restrict;
 with et_via_restrict;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
 separate (et_canvas_board)
+
 
 procedure draw_via_restrict (
 	self    : not null access type_view;
@@ -56,6 +58,11 @@ is
 	use pac_via_restrict_cutouts;
 	use pac_conductor_texts;
 
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
+	
 	
 	procedure query_line (c : in pac_via_restrict_lines.cursor) is begin
 
@@ -189,7 +196,7 @@ is
 	begin
 		cairo.set_line_width (context.cr, type_view_coordinate (et_via_restrict.via_restrict_line_width));
 
-		set_color_via_restrict (context.cr);
+		set_color_via_restrict (context.cr, brightness);
 		
 		iterate (module.board.via_restrict.lines, query_line'access);
 		iterate (module.board.via_restrict.arcs, query_arc'access);

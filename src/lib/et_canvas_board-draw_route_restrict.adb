@@ -37,10 +37,13 @@
 
 --with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
+with et_colors;					use et_colors;
 with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict.boards;	use et_route_restrict.boards;
 
+
 separate (et_canvas_board)
+
 
 procedure draw_route_restrict (
 	self    : not null access type_view;
@@ -54,6 +57,10 @@ is
 	use pac_route_restrict_cutouts;
 	use pac_conductor_texts;
 
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+	
 	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 
@@ -181,11 +188,11 @@ is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) is
-	begin
+		module		: in et_schematic.type_module) 
+	is begin
 		set_line_width (context.cr, type_view_coordinate (et_route_restrict.route_restrict_line_width));
 
-		set_color_route_restrict (context.cr);
+		set_color_route_restrict (context.cr, brightness);
 		
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
@@ -193,7 +200,6 @@ is
 		iterate (module.board.route_restrict.contours, query_polygon'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 		iterate (module.board.route_restrict.texts, query_text'access);
-
 	end query_items;
 
 
@@ -207,6 +213,7 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (current_active_module);
+
 	
 	procedure draw_text_being_placed is 
 		use et_packages;

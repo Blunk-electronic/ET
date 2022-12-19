@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -108,6 +108,7 @@ package et_colors.board is
 	procedure set_color_frame (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
+
 	
 	procedure set_color_origin (
 		context		: in cairo_context;
@@ -132,14 +133,17 @@ package et_colors.board is
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
+	
 	procedure set_color_via_layers (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
+	
 	procedure set_color_via_net_name (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
+	
 	procedure set_color_via_drill_size (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
@@ -147,52 +151,72 @@ package et_colors.board is
 	
 	
 	procedure set_color_silkscreen (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity);
 
+	
 	procedure set_color_assy_doc (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity);
 
+	
 	procedure set_color_stop_mask (
-		context : in cairo_context;
-		face	: in type_face;
-		scale	: in type_scale;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		face		: in type_face;
+		scale		: in type_scale;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity);
 
+	
 	procedure set_color_stencil (
-		context : in cairo_context;
-		face	: in type_face;
-		scale	: in type_scale;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		face		: in type_face;
+		scale		: in type_scale;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity);
 
+	
 	procedure set_color_keepout (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
 
+	
 	procedure set_color_route_restrict (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity);
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
 
+	
 	procedure set_color_via_restrict (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity);
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
 
+	
 	procedure set_color_conductor (
-		context : in cairo_context;
-		layer	: in type_signal_layer;
-		opacity : in type_opacity := default_opacity);
+		context 	: in cairo_context;
+		layer		: in type_signal_layer;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity);
 
+	
 	procedure set_color_terminal_name (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity);
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
 
+	
 	procedure set_color_tht_pad (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity);
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
+
 
 	
 

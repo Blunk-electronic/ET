@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -155,64 +155,48 @@ package body et_colors.board is
 			via_drill_size.blue,
 			color_range (opacity));
 	end set_color_via_drill_size;
-
 	
 	
 	procedure set_color_silkscreen (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity)
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgba (
-					context, 
-					silkscreen_top.red,
-					silkscreen_top.green,
-					silkscreen_top.blue,
-					color_range (opacity));
+				set_color (context, silkscreen_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_source_rgba (
-					context, 
-					silkscreen_bottom.red,
-					silkscreen_bottom.green,
-					silkscreen_bottom.blue,
-					color_range (opacity));
+				set_color (context, silkscreen_bottom, brightness, opacity);
 		end case;
 	end set_color_silkscreen;
 
 	
 	procedure set_color_assy_doc (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity)
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgba (
-					context, 
-					assy_doc_top.red,
-					assy_doc_top.green,
-					assy_doc_top.blue,
-					color_range (opacity));
+				set_color (context, assy_doc_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_source_rgba (
-					context, 
-					assy_doc_bottom.red,
-					assy_doc_bottom.green,
-					assy_doc_bottom.blue,
-					color_range (opacity));
+				set_color (context, assy_doc_bottom, brightness, opacity);
 		end case;
 	end set_color_assy_doc;
 
+	
 	procedure set_color_stop_mask (
-		context : in cairo_context;
-		face	: in type_face;
-		scale	: in type_scale;
-		opacity : in type_opacity := default_opacity) is 
-	begin
+		context 	: in cairo_context;
+		face		: in type_face;
+		scale		: in type_scale;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity) 
+	is begin
+		-- CS handle brightness
 		case face is
 			when TOP =>
 				create_fill_pattern (
@@ -229,16 +213,19 @@ package body et_colors.board is
 					opacity		=> opacity,
 					style		=> stop_mask_fill,
 					scale		=> scale);
-		end case;
-	
+		end case;	
 	end set_color_stop_mask;
+	
 
 	procedure set_color_stencil (
-		context : in cairo_context;
-		face	: in type_face;
-		scale	: in type_scale;
-		opacity : in type_opacity := default_opacity)
+		context 	: in cairo_context;
+		face		: in type_face;
+		scale		: in type_scale;
+		brightness	: in type_brightness;
+		opacity 	: in type_opacity := default_opacity)
 	is begin
+		-- CS handle brightness
+		
 		case face is
 			when TOP =>
 				create_fill_pattern (
@@ -258,90 +245,67 @@ package body et_colors.board is
 				
 		end case;
 	end set_color_stencil;
+	
 
 	procedure set_color_keepout (
-		context : in cairo_context;
-		face	: in type_face;
-		opacity : in type_opacity := default_opacity)
+		context 	: in cairo_context;
+		face		: in type_face;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgba (
-					context, 
-					keepout_top.red,
-					keepout_top.green,
-					keepout_top.blue,
-					color_range (opacity));
+				set_color (context, keepout_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_source_rgba (
-					context, 
-					keepout_bottom.red,
-					keepout_bottom.green,
-					keepout_bottom.blue,
-					color_range (opacity));
+				set_color (context, keepout_bottom, brightness, opacity);
 		end case;
 	end set_color_keepout;
 
+	
 	procedure set_color_route_restrict (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity)
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_source_rgba (
-			context, 
-			route_restrict.red,
-			route_restrict.green,
-			route_restrict.blue,
-			color_range (opacity));
+		set_color (context, route_restrict, brightness, opacity);
 	end set_color_route_restrict;
 
+	
 	procedure set_color_via_restrict (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity)
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_source_rgba (
-			context, 
-			via_restrict.red,
-			via_restrict.green,
-			via_restrict.blue,
-			color_range (opacity));
+		set_color (context, via_restrict, brightness, opacity);
 	end set_color_via_restrict;
 
+	
 	procedure set_color_conductor (
-		context : in cairo_context;
-		layer	: in type_signal_layer;
-		opacity : in type_opacity := default_opacity)
+		context 	: in cairo_context;
+		layer		: in type_signal_layer;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_source_rgba (
-			context, 
-			conductors (layer).red,
-			conductors (layer).green,
-			conductors (layer).blue,
-			color_range (opacity));
+		set_color (context, conductors (layer), brightness, opacity);
 	end set_color_conductor;
+	
 
 	procedure set_color_terminal_name (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity)
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_source_rgba (
-			context, 
-			terminal_names.red,
-			terminal_names.green,
-			terminal_names.blue,
-			color_range (opacity));
+		set_color (context, terminal_names, brightness, opacity);
 	end set_color_terminal_name;
+	
 		
 	procedure set_color_tht_pad (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity)
+		context		: in cairo_context;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_source_rgba (
-			context, 
-			tht_pads.red,
-			tht_pads.green,
-			tht_pads.blue,
-			color_range (opacity));
+		set_color (context, tht_pads, brightness, opacity);
 	end set_color_tht_pad;
 
 	

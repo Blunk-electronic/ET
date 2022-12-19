@@ -38,6 +38,7 @@
 --with ada.text_io;				use ada.text_io;
 with et_keepout;				use et_keepout;
 with et_keepout.boards;			use et_keepout.boards;
+with et_colors;					use et_colors;
 
 separate (et_canvas_board)
 
@@ -55,6 +56,10 @@ is
 	use pac_keepout_contours;
 	use pac_keepout_cutouts;
 	use pac_keepout_texts;
+
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
 
 	
 	procedure query_line (c : in pac_keepout_lines.cursor) is begin
@@ -158,7 +163,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All keepout segments will be drawn with the same color:
-		set_color_keepout (context.cr, face);
+		set_color_keepout (context.cr, face, brightness);
 
 		cairo.set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 		
@@ -179,8 +184,8 @@ is
 				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
 				iterate (module.board.keepout.bottom.texts, query_text'access);
 		end case;
-
 	end query_items;
+	
 	
 begin -- draw_keepout
 -- 	put_line ("draw board keepout ...");

@@ -6,7 +6,7 @@
 --                                                                          --
 --                             B o d y                                      --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -64,7 +64,8 @@ package body et_colors is
 	procedure set_color (
 		context		: in cairo_context;
 		color		: in type_color;
-		brightness	: in type_brightness)
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
 	is 
 		c : type_color;
 	begin

@@ -38,6 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.boards;		use et_stop_mask.boards;
+with et_colors;					use et_colors;
 
 separate (et_canvas_board)
 
@@ -57,6 +58,12 @@ is
 	use et_pcb.pac_text_placeholders;
 	use pac_stop_mask_texts;
 
+
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
+	
 	
 	procedure query_line (c : in pac_stop_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -214,7 +221,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stop mask segments will be drawn with the same color:
-		set_color_stop_mask (context.cr, face, self.scale);
+		set_color_stop_mask (context.cr, face, self.scale, brightness);
 
 		case face is
 			when TOP =>

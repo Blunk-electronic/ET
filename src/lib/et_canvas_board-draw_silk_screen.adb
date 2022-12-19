@@ -38,8 +38,11 @@
 with ada.text_io;				use ada.text_io;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;		use et_silkscreen.boards;
+with et_colors;					use et_colors;
+
 
 separate (et_canvas_board)
+
 
 procedure draw_silk_screen (
 	self    : not null access type_view;
@@ -58,6 +61,12 @@ is
 	use pac_silkscreen_texts;
 	use et_pcb.pac_text_placeholders;
 
+
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
+	
 	
 	procedure query_line (c : in pac_silk_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -214,7 +223,7 @@ is
 		module		: in et_schematic.type_module) is
 	begin
 		-- All silkscreen segments will be drawn with the same color:
-		set_color_silkscreen (context.cr, face);
+		set_color_silkscreen (context.cr, face, brightness);
 
 		case face is
 			when TOP =>

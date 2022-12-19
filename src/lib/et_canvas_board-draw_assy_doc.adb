@@ -38,8 +38,10 @@
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with ada.text_io;				use ada.text_io;
+with et_colors;					use et_colors;
 
 separate (et_canvas_board)
+
 
 procedure draw_assy_doc (
 	self    : not null access type_view;
@@ -58,6 +60,11 @@ is
 	use pac_doc_cutouts;
 	use et_pcb.pac_text_placeholders;
 	use pac_assy_doc_texts;
+
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
 	
 	procedure query_line (c : in pac_doc_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -212,7 +219,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All assy_doc segments will be drawn with the same color:
-		set_color_assy_doc (context.cr, face);
+		set_color_assy_doc (context.cr, face, brightness);
 
 		case face is
 			when TOP =>
@@ -235,6 +242,7 @@ is
 
 		end case;
 	end query_items;
+
 	
 begin -- draw_assy_doc
 -- 	put_line ("draw board assembly documentation ...");
