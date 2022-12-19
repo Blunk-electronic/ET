@@ -3516,7 +3516,7 @@ is
 		-- electrical devices:
 		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
 			device : type_device_sch renames element (device_cursor);
-			use et_symbols;
+			--use et_symbols;
 			use et_pcb;
 
 			brightness : type_brightness := NORMAL;
@@ -3558,9 +3558,7 @@ is
 
 					brightness			=> brightness);
 
-				--if electrical_device_move.being_moved then
-					--update_ratsnest (current_active_module, log_threshold + 10);
-				--end if;
+				-- CS live update ratsnest
 				
 			end if;
 		end query_device;
