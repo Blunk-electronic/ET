@@ -818,12 +818,12 @@ package body et_text is
 					when '1' => add (digit_1);
 					when '2' => add (digit_2);
 					when '3' => add (digit_3);
-					--when '4' => add (digit_4);
-					--when '5' => add (digit_5);
-					--when '6' => add (digit_6);
-					--when '7' => add (digit_7);
-					--when '8' => add (digit_8);
-					--when '9' => add (digit_9);
+					when '4' => add (digit_4);
+					when '5' => add (digit_5);
+					when '6' => add (digit_6);
+					when '7' => add (digit_7);
+					when '8' => add (digit_8);
+					when '9' => add (digit_9);
 
 					--when '+' => add (special_plus);
 					--when '-' => add (special_dash);
