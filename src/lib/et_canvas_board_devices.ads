@@ -79,6 +79,12 @@ package et_canvas_board_devices is
 		& "to move device." 
 		& status_hint_for_abort;
 
+	status_rotate : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rotate device." 
+		& status_hint_for_abort;
 
 
 	-- Whenever a device is selected via the GUI, 
@@ -134,12 +140,22 @@ package et_canvas_board_devices is
 
 	-- Assigns the final position after the move to the selected 
 	-- electrical device.
-	-- Resets the global variable ??
+	-- Resets global variable electrical_device_move:
 	procedure finalize_move_electrical (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
-		
+
+	
+	default_rotation : constant type_rotation := 90.0;
+	
+	-- Rotates the selected electrical device by default_rotation.
+	-- Resets global variable electrical_device_move:
+	procedure finalize_rotate_electrical (
+		rotation		: in type_rotation := default_rotation;
+		log_threshold	: in type_log_level);
+
+	
 end et_canvas_board_devices;
 
 -- Soli Deo Gloria

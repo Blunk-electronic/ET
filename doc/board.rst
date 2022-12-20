@@ -24,7 +24,15 @@ Commands and Verb-Noun key sequences
 	|VNS| m d
 
 	
+#. Rotate device
 
+	.. code-block::
+
+		rotate device
+
+	|VNS| r d
+
+	
 
 
 +++++++++++++++++++++
@@ -42,7 +50,23 @@ Commands and Verb-Noun key sequences
 
 	|VNS| u r
 
+
 	
++++++++++++++++++++++++++++++++++++++
+Routing, laying out Tracks and Traces
++++++++++++++++++++++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Drawing tracks of a net
+
+	.. code-block::
+
+		route net
+
+	|VNS| t n
+
 	
 
 ++++

@@ -822,6 +822,7 @@ package body et_canvas_schematic_units is
 		
 		clear_proposed_units;
 	end finalize_rotate_unit;
+
 	
 	procedure rotate_unit (point : in type_point) is 
 		use et_schematic_ops.units;
@@ -861,6 +862,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end rotate_unit;
 
+	
 	procedure rotate_selected_unit is
 		use et_schematic_ops.units;
 	begin

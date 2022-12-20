@@ -3532,15 +3532,25 @@ is
 					brightness := BRIGHT;
 					--put_line ("device selected");
 
-					if electrical_device_move.being_moved then
-						case electrical_device_move.tool is
-							when MOUSE =>
-								position.place := self.snap_to_grid (self.mouse_position);
-								--put_line ("mouse " & to_string (position.place));								
-							when KEYBOARD =>
-								position.place := cursor_main.position;
-						end case;	
-					end if;
+					case verb is
+						-- If a move operation is in progress, then the mouse
+						-- or cursor position overwrites the device position:
+						when VERB_MOVE =>
+
+							if electrical_device_move.being_moved then
+								case electrical_device_move.tool is
+											
+									when MOUSE =>
+										position.place := self.snap_to_grid (self.mouse_position);
+										--put_line ("mouse " & to_string (position.place));								
+									when KEYBOARD =>
+										position.place := cursor_main.position;
+								end case;	
+							end if;
+
+						-- Other operations leave the device position as it is:
+						when others => null;
+					end case;
 				end if;
 				
 				draw_package (

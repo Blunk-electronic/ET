@@ -150,7 +150,7 @@ package body et_canvas_board_devices is
 	procedure find_electrical_devices_for_move (
 		point : in type_point)
 	is begin
-		log (text => "locating devices for move ...", level => log_threshold);
+		log (text => "locating devices for move/rotate ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -174,6 +174,9 @@ package body et_canvas_board_devices is
 				case verb is
 					when VERB_MOVE => 
 						set_status (status_move);
+
+					when VERB_ROTATE => 
+						set_status (status_rotate);
 						
 					when others => null;
 				end case;
@@ -226,6 +229,41 @@ package body et_canvas_board_devices is
 	end finalize_move_electrical;
 	
 
+
+	procedure finalize_rotate_electrical (
+		rotation		: in type_rotation := default_rotation;
+		log_threshold	: in type_log_level)
+	is
+		sd : type_selected_electrical_device;
+
+		use et_schematic;
+		use pac_devices_sch;
+	begin
+		log (text => "finalizing rotation ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+
+			sd := element (selected_device_electrical);
+			
+			rotate_device (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (sd.device),
+				coordinates		=> RELATIVE,
+				rotation		=> rotation,
+				log_threshold	=> log_threshold);
+			
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+		
+		set_status (status_rotate);
+		
+		reset_electrical_device_move;
+	end finalize_rotate_electrical;
+	
 	
 end et_canvas_board_devices;
 
