@@ -33,7 +33,15 @@ Commands and Verb-Noun key sequences
 	|VNS| r d
 
 	
+#. Flip/mirror device
 
+	.. code-block::
+
+		flip device
+
+	|VNS| l d
+
+	
 
 +++++++++++++++++++++
 Ratsnest and Airwires

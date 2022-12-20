@@ -150,7 +150,7 @@ package body et_canvas_board_devices is
 	procedure find_electrical_devices_for_move (
 		point : in type_point)
 	is begin
-		log (text => "locating devices for move/rotate ...", level => log_threshold);
+		log (text => "locating devices for move/rotate/flip ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -172,6 +172,9 @@ package body et_canvas_board_devices is
 				selected_device_electrical := proposed_devices_electrical.first;
 
 				case verb is
+					when VERB_FLIP => 
+						set_status (status_flip);
+
 					when VERB_MOVE => 
 						set_status (status_move);
 
@@ -263,6 +266,39 @@ package body et_canvas_board_devices is
 		
 		reset_electrical_device_move;
 	end finalize_rotate_electrical;
+	
+
+	procedure finalize_flip_electrical (
+		log_threshold	: in type_log_level)
+	is
+		sd : type_selected_electrical_device;
+
+		use et_schematic;
+		use pac_devices_sch;
+	begin
+		log (text => "finalizing flipping ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+
+			sd := element (selected_device_electrical);
+			
+			flip_device (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (sd.device),
+				face			=> bottom,
+				log_threshold	=> log_threshold);
+			
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+		
+		set_status (status_flip);
+		
+		reset_electrical_device_move;
+	end finalize_flip_electrical;
 	
 	
 end et_canvas_board_devices;

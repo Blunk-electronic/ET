@@ -72,6 +72,13 @@ package et_canvas_board_devices is
 
 	
 	-- to be output in the status bar:
+	status_flip : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to flip device." 
+		& status_hint_for_abort;
+
 	status_move : constant string := 
 		status_click_left 
 		& "or "
@@ -153,6 +160,12 @@ package et_canvas_board_devices is
 	-- Resets global variable electrical_device_move:
 	procedure finalize_rotate_electrical (
 		rotation		: in type_rotation := default_rotation;
+		log_threshold	: in type_log_level);
+
+
+	-- Flips the selected electrical device.
+	-- Resets global variable electrical_device_move:
+	procedure finalize_flip_electrical (
 		log_threshold	: in type_log_level);
 
 	
