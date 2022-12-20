@@ -117,8 +117,8 @@ package et_text is
 	function is_empty (content : in pac_text_content.bounded_string) return boolean;
 	
 	valid_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/ "); 
-	-- NOTE: Update package generic_pac_text when adding more characters here.
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: "); 
+
 
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -858,212 +858,520 @@ package et_text is
 		
 	-- LOWER CASE LETTERS:
 		
-		--small_a : constant type_character (1 .. 7) := (
-			--1	=> (x4, y2, x1, y2),
-			--2	=> (x1, y2, x0, y1),
-			--3	=> (x0, y1, x1, y0),
-			--4	=> (x1, y0, x4, y0),
-			--5	=> (x4, y0, x4, y3),
-			--6	=> (x4, y3, x3, y4),
-			--7	=> (x3, y4, x1, y4)
-			--);
+		small_a : constant type_character := (
+			segment_ct	=> 7,
+			segments => (									 
+				1	=> (x4, y2, x1, y2),
+				2	=> (x1, y2, x0, y1),
+				3	=> (x0, y1, x1, y0),
+				4	=> (x1, y0, x4, y0),
+				5	=> (x4, y0, x4, y3),
+				6	=> (x4, y3, x3, y4),
+				7	=> (x3, y4, x1, y4)),
 
-		--small_b : constant type_character (1 .. 6) := (
-			 --1	=> (x0, y6, x0, y0),
-			 --2	=> (x0, y4, x3, y4),
-			 --3	=> (x3, y4, x4, y3),
-			 --4	=> (x4, y3, x4, y1),
-			 --5	=> (x4, y1, x3, y0),
-			 --6	=> (x3, y0, x0, y0)
-			--);
+			border_vertex_ct => 7,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y3),
+				4	=> set (x3, y4),
+				5	=> set (x1, y4),
+				6	=> set (x0, y3),
+				7	=> set (x0, y1))
+		  );
 
-		--small_c : constant type_character (1 .. 5) := (
-			 --1	=> (x4, y4, x1, y4),
-			 --2	=> (x1, y4, x0, y3),
-			 --3	=> (x0, y3, x0, y1),
-			 --4	=> (x0, y1, x1, y0),
-			 --5	=> (x1, y0, x4, y0)
-			 --);
+			
 
-		--small_d : constant type_character (1 .. 6) := (
-			 --1	=> (x4, y4, x1, y4),
-			 --2	=> (x1, y4, x0, y3),
-			 --3	=> (x0, y3, x0, y1),
-			 --4	=> (x0, y1, x1, y0),
-			 --5	=> (x1, y0, x4, y0),
-			 --6	=> (x4, y6, x4, y0)
-			 --);
+		small_b : constant type_character := (
+			segment_ct => 6,
+			segments => (									 
+				1	=> (x0, y6, x0, y0),
+				2	=> (x0, y4, x3, y4),
+				3	=> (x3, y4, x4, y3),
+				4	=> (x4, y3, x4, y1),
+				5	=> (x4, y1, x3, y0),
+				6	=> (x3, y0, x0, y0)),
 
-		--small_e : constant type_character (1 .. 8) := (
-			 --1	=> (x0, y2, x4, y2),
-			 --2	=> (x4, y2, x4, y3),
-			 --3	=> (x4, y3, x3, y4),
-			 --4	=> (x3, y4, x1, y4),
-			 --5	=> (x1, y4, x0, y3),
-			 --6	=> (x0, y3, x0, y1),
-			 --7	=> (x0, y1, x1, y0),
-			 --8	=> (x1, y0, x3, y0)
-			 --);
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x3, y6),
+				6	=> set (x0, y6))
+		  );
 
-		--small_f : constant type_character (1 .. 3) := (
-			 --1	=> (x3, y6, x2, y5),
-			 --2	=> (x2, y5, x2, y0),
-			 --3	=> (x1, y3, x3, y3)
-			--);
+
+			
+		small_c : constant type_character := (
+			segment_ct => 5,
+			segments => (									 
+				1	=> (x4, y4, x1, y4),
+				2	=> (x1, y4, x0, y3),
+				3	=> (x0, y3, x0, y1),
+				4	=> (x0, y1, x1, y0),
+				5	=> (x1, y0, x4, y0)),
+
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y1))
+		  );
+			
+
+		small_d : constant type_character := (
+			segment_ct => 6,
+			segments => (									 
+				1	=> (x4, y4, x1, y4),
+				2	=> (x1, y4, x0, y3),
+				3	=> (x0, y3, x0, y1),
+				4	=> (x0, y1, x1, y0),
+				5	=> (x1, y0, x4, y0),
+				6	=> (x4, y6, x4, y0)),
+
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x3, y6),
+				6	=> set (x0, y6))
+		  );
+
+
+		small_e : constant type_character := (
+			segment_ct => 8,
+			segments => (									 
+				1	=> (x0, y2, x4, y2),
+				2	=> (x4, y2, x4, y3),
+				3	=> (x4, y3, x3, y4),
+				4	=> (x3, y4, x1, y4),
+				5	=> (x1, y4, x0, y3),
+				6	=> (x0, y3, x0, y1),
+				7	=> (x0, y1, x1, y0),
+				8	=> (x1, y0, x3, y0)),
+			
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y1))
+		  );
+
+
+		small_f : constant type_character := (
+			segment_ct => 3,
+			segments => (								 
+				1	=> (x3, y6, x2, y5),
+				2	=> (x2, y5, x2, y0),
+				3	=> (x1, y3, x3, y3)),
+			
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y6),
+				4	=> set (x1, y6))
+		  );
+
 		
-		--small_g : constant type_character (1 .. 8) := (
-			 --1	=> (x4, y4, x1, y4),
-			 --2	=> (x1, y4, x0, y3),
-			 --3	=> (x0, y3, x0, y1),
-			 --4	=> (x0, y1, x1, y0),
-			 --5	=> (x1, y0, x4, y0),
-			 --6	=> (x4, y4, x4, y7),
-			 --7	=> (x4, y7, x3, y8),
-			 --8	=> (x3, y8, x2, y8)
-			--);
+		small_g : constant type_character := (
+			segment_ct => 8,
+			segments => (								 
+				1	=> (x4, y4, x1, y4),
+				2	=> (x1, y4, x0, y3),
+				3	=> (x0, y3, x0, y1),
+				4	=> (x0, y1, x1, y0),
+				5	=> (x1, y0, x4, y0),
+				6	=> (x4, y4, x4, y7),
+				7	=> (x4, y7, x3, y8),
+				8	=> (x3, y8, x2, y8)),
+			
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x0, y7),
+				2	=> set (x1, y8),
+				3	=> set (x3, y8),
+				4	=> set (x4, y7),
+				5	=> set (x4, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y0))
+		  );
 
-		--small_h : constant type_character (1 .. 5) := (
-			 --1	=> (x0, y6, x0, y0),
-			 --2	=> (x0, y3, x1, y4),
-			 --3	=> (x1, y4, x3, y4),
-			 --4	=> (x3, y4, x4, y3),
-			 --5	=> (x4, y3, x4, y0)
-			--);
-
-		--small_i : constant type_character (1 .. 4) := (
-			 --1	=> (x2, y6, x2, y5),
-			 --2	=> (x1, y3, x2, y3),
-			 --3	=> (x2, y3, x2, y0),
-			 --4	=> (x1, y0, x3, y0) 
-			--);
-
-		--small_j : constant type_character (1 .. 4) := (
-			 --1	=> (x3, y6, x3, y5),
-			 --2	=> (x3, y3, x3, y7),
-			 --3	=> (x3, y7, x2, y8),
-			 --4	=> (x2, y8, x1, y8) 
-			--);
 		
-		--small_k : constant type_character (1 .. 3) := (
-			 --1	=> (x0, y6, x0, y0),
-			 --2	=> (x0, y2, x3, y4),
-			 --3	=> (x0, y2, x3, y0)
-			--);
+		small_h : constant type_character := (
+			segment_ct => 5,
+			segments => (								 
+				1	=> (x0, y6, x0, y0),
+				2	=> (x0, y3, x1, y4),
+				3	=> (x1, y4, x3, y4),
+				4	=> (x3, y4, x4, y3),
+				5	=> (x4, y3, x4, y0)),
 
-		--small_l : constant type_character (1 .. 3) := (
-			 --1	=> (x1, y6, x2, y6),
-			 --2	=> (x2, y6, x2, y0),
-			 --3	=> (x1, y0, x3, y0) 
-			--);
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y5),
+				4	=> set (x3, y6),
+				5	=> set (x0, y6))
+		  );
 
-		--small_m : constant type_character (1 .. 7) := (
-			 --1	=> (x0, y0, x0, y4),
-			 --2	=> (x0, y4, x1, y4),
-			 --3	=> (x1, y4, x2, y3),
-			 --4	=> (x2, y3, x2, y0),
-			 --5	=> (x2, y3, x3, y4),
-			 --6	=> (x3, y4, x4, y3),
-			 --7	=> (x4, y3, x4, y0) 
-			--);
-
-		--small_n : constant type_character (1 .. 4) := (
-			 --1	=> (x0, y0, x0, y4),
-			 --2	=> (x0, y4, x3, y4),
-			 --3	=> (x3, y4, x4, y3),
-			 --4	=> (x4, y3, x4, y0)
-			--);
-
-		--small_o : constant type_character (1 .. 8) := (
-			 --1	=> (x1, y0, x3, y0),
-			 --2	=> (x3, y0, x4, y1),
-			 --3	=> (x4, y1, x4, y3),
-			 --4	=> (x4, y3, x3, y4),
-			 --5	=> (x3, y4, x1, y4),
-			 --6	=> (x1, y4, x0, y3),
-			 --7	=> (x0, y3, x0, y1),
-			 --8	=> (x0, y1, x1, y0)
-			--);
-
-		--small_p : constant type_character (1 .. 6) := (
-			 --1	=> (x0, y4, x0, y8),
-			 --2	=> (x0, y4, x3, y4),
-			 --3	=> (x3, y4, x4, y3),
-			 --4	=> (x4, y3, x4, y1),
-			 --5	=> (x4, y1, x3, y0),
-			 --6	=> (x3, y0, x0, y0)
-			--);
-
-		--small_q : constant type_character (1 .. 6) := (
-			 --1	=> (x4, y4, x1, y4),
-			 --2	=> (x1, y4, x0, y3),
-			 --3	=> (x0, y3, x0, y1),
-			 --4	=> (x0, y1, x1, y0),
-			 --5	=> (x1, y0, x4, y0),
-			 --6	=> (x4, y4, x4, y8)
-			--);
-
-		--small_r : constant type_character (1 .. 3) := (
-			 --1	=> (x0, y4, x0, y0),
-			 --2	=> (x0, y2, x2, y4),
-			 --3	=> (x2, y4, x3, y4)
-			 --);
 		
-		--small_s : constant type_character (1 .. 7) := (
-			 --1	=> (x4, y4, x1, y4),
-			 --2	=> (x1, y4, x0, y3),
-			 --3	=> (x0, y3, x1, y2),
-			 --4	=> (x1, y2, x3, y2),
-			 --5	=> (x3, y2, x4, y1),
-			 --6	=> (x4, y1, x3, y0),
-			 --7	=> (x3, y0, x0, y0)
-			--);
+		small_i : constant type_character := (
+			segment_ct => 4,
+			segments => (								 
+				1	=> (x2, y6, x2, y5),
+				2	=> (x1, y3, x2, y3),
+				3	=> (x2, y3, x2, y0),
+				4	=> (x1, y0, x3, y0)),
 
-		--small_t : constant type_character (1 .. 3) := (
-			 --1	=> (x2, y5, x2, y1),
-			 --2	=> (x2, y1, x3, y0),
-			 --3	=> (x1, y4, x3, y4)
-			--);
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x3, y6),
+				4	=> set (x1, y6))
+			);
 
-		--small_u : constant type_character (1 .. 4) := (
-			 --1	=> (x0, y4, x0, y1),
-			 --2	=> (x0, y1, x1, y0),
-			 --3	=> (x1, y0, x4, y0),
-			 --4	=> (x4, y0, x4, y4)
-			--);
+		
+		small_j : constant type_character := (
+			segment_ct => 4,
+			segments => (								 
+				1	=> (x3, y6, x3, y5),
+				2	=> (x3, y3, x3, y7),
+				3	=> (x3, y7, x2, y8),
+				4	=> (x2, y8, x1, y8)),
+			
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x0, y7),
+				2	=> set (x1, y8),
+				3	=> set (x3, y8),
+				4	=> set (x4, y7),
+				5	=> set (x4, y5),
+				6	=> set (x3, y6),
+				7	=> set (x1, y6),
+				8	=> set (x0, y5))
+			);
 
-		--small_v : constant type_character (1 .. 2) := (
-			 --1	=> (x0, y4, x2, y0),
-			 --2	=> (x2, y0, x4, y4)
-			--);
+			
+		small_k : constant type_character := (
+			segment_ct => 3,
+			segments => (
+				1	=> (x0, y6, x0, y0),
+				2	=> (x0, y2, x3, y4),
+				3	=> (x0, y2, x3, y0)),
 
-		--small_w : constant type_character (1 .. 6) := (
-			 --1	=> (x0, y4, x0, y1),
-			 --2	=> (x0, y1, x1, y0),
-			 --3	=> (x1, y0, x2, y1),
-			 --4	=> (x2, y1, x3, y0),
-			 --5	=> (x3, y0, x4, y1),
-			 --6	=> (x4, y1, x4, y4)
-			--);
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y5),
+				4	=> set (x3, y6),
+				5	=> set (x0, y6))
+			);
+			
 
-		--small_x : constant type_character (1 .. 2) := (
-			 --1	=> (x0, y4, x4, y0),
-			 --2	=> (x4, y4, x0, y0)
-			--);
+		small_l : constant type_character := (
+			segment_ct => 3,
+			segments => (
+				1	=> (x1, y6, x2, y6),
+				2	=> (x2, y6, x2, y0),
+				3	=> (x1, y0, x3, y0)),
 
-		--small_y : constant type_character (1 .. 6) := (
-			 --1	=> (x0, y4, x0, y1),
-			 --2	=> (x0, y1, x1, y0),
-			 --3	=> (x1, y0, x4, y0),
-			 --4	=> (x4, y4, x4, y7),
-			 --5	=> (x4, y7, x3, y8),
-			 --6	=> (x3, y8, x2, y8)
-			 --);
-			 
-		--small_z : constant type_character (1 .. 3) := (
-			 --1	=> (x0, y4, x4, y4),
-			 --2	=> (x4, y4, x0, y0),
-			 --3	=> (x0, y0, x4, y0)
-			--);
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x3, y6),
+				4	=> set (x1, y6))
+			);
+
+		
+		small_m : constant type_character := (
+			segment_ct => 7,
+			segments => (
+				1	=> (x0, y0, x0, y4),
+				2	=> (x0, y4, x1, y4),
+				3	=> (x1, y4, x2, y3),
+				4	=> (x2, y3, x2, y0),
+				5	=> (x2, y3, x3, y4),
+				6	=> (x3, y4, x4, y3),
+				7	=> (x4, y3, x4, y0)),
+			
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y3),
+				4	=> set (x3, y4),
+				5	=> set (x0, y4))				
+			);
+
+			
+		small_n : constant type_character := (
+			segment_ct => 4,
+			segments => (
+				1	=> (x0, y0, x0, y4),
+				2	=> (x0, y4, x3, y4),
+				3	=> (x3, y4, x4, y3),
+				4	=> (x4, y3, x4, y0)),
+			
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y3),
+				4	=> set (x3, y4),
+				5	=> set (x0, y4))				
+			);
+
+		
+		small_o : constant type_character := (
+			segment_ct => 8,
+			segments => (
+				1	=> (x1, y0, x3, y0),
+				2	=> (x3, y0, x4, y1),
+				3	=> (x4, y1, x4, y3),
+				4	=> (x4, y3, x3, y4),
+				5	=> (x3, y4, x1, y4),
+				6	=> (x1, y4, x0, y3),
+				7	=> (x0, y3, x0, y1),
+				8	=> (x0, y1, x1, y0)),
+			
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y1))
+		  );
+
+		
+		small_p : constant type_character := (
+			segment_ct => 6,
+			segments => (
+				1	=> (x0, y4, x0, y8),
+				2	=> (x0, y4, x3, y4),
+				3	=> (x3, y4, x4, y3),
+				4	=> (x4, y3, x4, y1),
+				5	=> (x4, y1, x3, y0),
+				6	=> (x3, y0, x0, y0)),
+
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y8),
+				2	=> set (x3, y8),
+				3	=> set (x4, y7),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x0, y4))
+		  );
+			
+
+		small_q : constant type_character := (
+			segment_ct => 6,
+			segments => (
+				1	=> (x4, y4, x1, y4),
+				2	=> (x1, y4, x0, y3),
+				3	=> (x0, y3, x0, y1),
+				4	=> (x0, y1, x1, y0),
+				5	=> (x1, y0, x4, y0),
+				6	=> (x4, y4, x4, y8)),
+			
+			border_vertex_ct => 7,
+			border => (
+				1	=> set (x0, y7),
+				2	=> set (x1, y8),
+				3	=> set (x4, y8),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3))
+		  );
+
+			
+		small_r : constant type_character := (
+			segment_ct => 3,
+			segments => (
+				1	=> (x0, y4, x0, y0),
+				2	=> (x0, y2, x2, y4),
+				3	=> (x2, y4, x3, y4)),
+
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y3),
+				4	=> set (x3, y4),
+				5	=> set (x0, y4))				
+			);
+
+		
+		small_s : constant type_character := (
+			segment_ct => 7,
+			segments => (
+				1	=> (x4, y4, x1, y4),
+				2	=> (x1, y4, x0, y3),
+				3	=> (x0, y3, x1, y2),
+				4	=> (x1, y2, x3, y2),
+				5	=> (x3, y2, x4, y1),
+				6	=> (x4, y1, x3, y0),
+				7	=> (x3, y0, x0, y0)),
+
+			border_vertex_ct => 7,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y4),
+				5	=> set (x1, y4),
+				6	=> set (x0, y3),
+				7	=> set (x0, y1))
+		  );
+
+
+		small_t : constant type_character := (
+			segment_ct => 3,
+			segments => (
+				1	=> (x2, y5, x2, y1),
+				2	=> (x2, y1, x3, y0),
+				3	=> (x1, y4, x3, y4)),
+
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x4, y1),
+				4	=> set (x4, y5),
+				5	=> set (x1, y5))
+			);
+			
+
+		small_u : constant type_character := (
+			segment_ct => 4,
+			segments => (
+				1	=> (x0, y4, x0, y1),
+				2	=> (x0, y1, x1, y0),
+				3	=> (x1, y0, x4, y0),
+				4	=> (x4, y0, x4, y4)),
+			
+			border_vertex_ct => 5,
+			border => (
+				1	=> set (x0, y1),
+				2	=> set (x1, y0),
+				3	=> set (x4, y0),
+				4	=> set (x4, y4),
+				5	=> set (x0, y4))
+			);
+
+			
+		small_v : constant type_character := (
+			segment_ct => 2,
+			segments => (
+				1	=> (x0, y4, x2, y0),
+				2	=> (x2, y0, x4, y4)),
+
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y4),
+				2	=> set (x1, y0),
+				3	=> set (x3, y0),
+				4	=> set (x4, y4))
+			);
+			
+
+		small_w : constant type_character := (
+			segment_ct => 6,
+			segments => (
+				1	=> (x0, y4, x0, y1),
+				2	=> (x0, y1, x1, y0),
+				3	=> (x1, y0, x2, y1),
+				4	=> (x2, y1, x3, y0),
+				5	=> (x3, y0, x4, y1),
+				6	=> (x4, y1, x4, y4)),
+			
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y1),
+				2	=> set (x1, y0),
+				3	=> set (x3, y0),
+				4	=> set (x4, y1),
+				5	=> set (x4, y4),
+				6	=> set (x0, y4))
+			);
+
+			
+		small_x : constant type_character := (
+			segment_ct => 2,
+			segments => (
+				1	=> (x0, y4, x4, y0),
+				2	=> (x4, y4, x0, y0)),
+
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y4),
+				2	=> set (x0, y0),
+				3	=> set (x4, y0),
+				4	=> set (x4, y4))
+			);
+
+			
+		small_y : constant type_character := (
+			segment_ct => 6,
+			segments => (
+				1	=> (x0, y4, x0, y1),
+				2	=> (x0, y1, x1, y0),
+				3	=> (x1, y0, x4, y0),
+				4	=> (x4, y4, x4, y7),
+				5	=> (x4, y7, x3, y8),
+				6	=> (x3, y8, x2, y8)),
+
+			border_vertex_ct => 6,
+			border => (
+				1	=> set (x0, y7),
+				2	=> set (x1, y8),
+				3	=> set (x3, y8),
+				4	=> set (x4, y7),
+				5	=> set (x4, y4),
+				6	=> set (x0, y4))
+			);
+
+			
+		small_z : constant type_character := (
+			segment_ct => 3,
+			segments => (
+				1	=> (x0, y4, x4, y4),
+				2	=> (x4, y4, x0, y0),
+				3	=> (x0, y0, x4, y0)),
+
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y4),
+				2	=> set (x0, y0),
+				3	=> set (x4, y0),
+				4	=> set (x4, y4))
+			);
+
 
 	-- DIGITS
 		
@@ -1297,33 +1605,92 @@ package et_text is
 				6	=> set (x1, y6),
 				7	=> set (x0, y5),
 				8	=> set (x0, y1))
+			);
+
+		
+	-- SPECIAL CHARACTERS
+		
+		special_plus : constant type_character := (
+			segment_ct => 2,
+			segments => (									   
+				1	=> (x1, y3, x3, y3),
+				2	=> (x2, y4, x2, y2)),
+						
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y1),
+				2	=> set (x3, y1),
+				3	=> set (x4, y2),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y2))
+			);
+
+		
+		special_dash : constant type_character := (
+			segment_ct => 1,
+			segments => (									   
+				1	=> (x1, y3, x3, y3)),
+
+			border_vertex_ct => 8,
+			border => (
+				1	=> set (x1, y1),
+				2	=> set (x3, y1),
+				3	=> set (x4, y2),
+				4	=> set (x4, y3),
+				5	=> set (x3, y4),
+				6	=> set (x1, y4),
+				7	=> set (x0, y3),
+				8	=> set (x0, y2))
+			);
+			
+		
+		special_underline : constant type_character := (
+			segment_ct => 1,
+			segments => (									   
+				1	=> (x0, y0, x4, y0)),
+			
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y1),
+				4	=> set (x0, y1))
+			);
+			
+
+			
+		special_forward_slash : constant type_character := (
+			segment_ct => 1,
+			segments => (									   
+				1	=> (x1, y0, x3, y6)),
+
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x0, y0),
+				2	=> set (x4, y0),
+				3	=> set (x4, y6),
+				4	=> set (x0, y6))
 		  );
 
-		
-		---- SPECIAL CHARACTERS
-		--special_plus : constant type_character (1 .. 2) := (
-			 --1	=> (x1, y3, x3, y3),
-			 --2	=> (x2, y4, x2, y2)
-			 --);
+			
+		special_colon : constant type_character := (
+			segment_ct => 2,
+			segments => (									   
+				1	=> (x2, y3, x2, y3),
+				2	=> (x2, y1, x2, y1)),
 
-		--special_dash : constant type_character (1 .. 1) := (
-			 --1	=> (x1, y3, x3, y3)
-			 --);
-		
-		--special_underline : constant type_character (1 .. 1) := (
-			 --1	=> (x0, y0, x4, y0)
-			 --);
+			border_vertex_ct => 4,
+			border => (
+				1	=> set (x1, y0),
+				2	=> set (x3, y0),
+				3	=> set (x3, y4),
+				4	=> set (x1, y4))
+		  );
 
-		--special_forward_slash : constant type_character (1 .. 1) := (
-			 --1	=> (x1, y0, x3, y6)
-			 --);
-
-		--special_colon : constant type_character (1 .. 2) := (
-			--1	=> (x2, y3, x2, y3),
-			--2	=> (x2, y1, x2, y1)
-			--);
-
-
+			
 		-- A character is a list of lines. These lines are machine made. They are
 		-- a result of rotation, scaling, mirroring, ...
 		-- The start and end points are expressed by float numbers.
