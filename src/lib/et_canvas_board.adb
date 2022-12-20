@@ -1498,7 +1498,7 @@ package body et_canvas_board is
 
 				reset_text_place; -- after placing a text
 				reset_via_place; -- after placing a via
-				reset_electrical_device_move; -- after moving a device
+				reset_electrical_device_move; -- after moving, rotating, flipping a device
 
 				
 			when GDK_F11 =>
