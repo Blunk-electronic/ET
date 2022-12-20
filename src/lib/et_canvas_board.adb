@@ -1421,8 +1421,7 @@ package body et_canvas_board is
 
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
-				when GDK_Space =>
-		
+				when GDK_Space =>		
 					case noun is
 						when NOUN_DEVICE =>							
 							if not electrical_device_move.being_moved then

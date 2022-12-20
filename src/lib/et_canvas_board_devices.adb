@@ -272,6 +272,7 @@ package body et_canvas_board_devices is
 		log_threshold	: in type_log_level)
 	is
 		sd : type_selected_electrical_device;
+		face : type_face;
 
 		use et_schematic;
 		use pac_devices_sch;
@@ -282,11 +283,13 @@ package body et_canvas_board_devices is
 		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
 
 			sd := element (selected_device_electrical);
+			face := get_face (sd.device);
+			flip (face);
 			
 			flip_device (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
 				device_name		=> key (sd.device),
-				face			=> bottom,
+				face			=> face,
 				log_threshold	=> log_threshold);
 			
 		else

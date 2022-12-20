@@ -164,6 +164,15 @@ package body et_board_ops.devices is
 		log_indentation_down;
 	end add_device;
 
+
+	function get_position (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_package_position
+	is begin
+		return element (device_cursor).position;
+	end get_position;
+
+
 	
 	procedure move_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -657,6 +666,19 @@ package body et_board_ops.devices is
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
 	end flip_device;
+
+
+	function get_face (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_face
+	is 
+		position : type_package_position;
+	begin
+		position := element (device_cursor).position;
+		return get_face (position);
+	end get_face;
+
+
 
 	
 	-- Returns the position (x/y/rotation) of a submodule instance.

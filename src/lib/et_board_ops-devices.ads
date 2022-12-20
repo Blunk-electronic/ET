@@ -57,6 +57,13 @@ package et_board_ops.devices is
 	-- CS procedure copy_device
 
 	
+	-- Returns the current position (x/y/rotation/face) of the 
+	-- given electrical device:
+	function get_position (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_package_position;
+
+	
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_device (
@@ -96,12 +103,27 @@ package et_board_ops.devices is
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
+	-- Determines whether the given device is electrical or non-electrical
+	-- by its own:
 	procedure flip_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 
+
+	-- CS
+	--procedure flip_device (
+		--module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		--device_cursor	: in pac_devices_sch.cursor; -- IC45
+		--face			: in type_face; -- top/bottom
+		--log_threshold	: in type_log_level);
+
+	
+	-- Returns the current face of the given electrical device:
+	function get_face (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_face; -- top/bottom
 	
 
 	-- Returns the position of a terminal of the given device in the board.
