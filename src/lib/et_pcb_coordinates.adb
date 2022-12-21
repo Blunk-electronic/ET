@@ -38,30 +38,9 @@ with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-
-with ada.tags;
-
 with ada.exceptions;
-with ada.numerics;
-with ada.numerics.generic_elementary_functions;
-
-with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
-
 	
 	function to_string (face : in type_face) return string is begin
 		return latin_1.space & to_lower (type_face'image (face));
@@ -83,7 +62,10 @@ package body et_pcb_coordinates is
 
 
 	
-	function to_string (p : in type_package_position) return string is begin
+	function to_string (
+		p : in type_package_position) 
+		return string 
+	is begin
 		return position_preamble
 				& to_string (get_x (p))
 				& axis_separator
@@ -94,39 +76,43 @@ package body et_pcb_coordinates is
 				& to_string (p.face);
 
 	end to_string;
+
 	
 	function to_package_position (
 		point 		: in type_point;
 		rotation	: in type_rotation := zero_rotation;
 		face		: in type_face := TOP)
-		return type_package_position is
-	begin
+		return type_package_position 
+	is begin
 		return pos : type_package_position do
 			set (pos, point);
 			set (pos, rotation);
 			pos.face := face;
 		end return;
 	end to_package_position;
+
 	
 	procedure set_face (
 		face	: in type_face;
-		position: in out type_package_position) is
-	begin
+		position: in out type_package_position) 
+	is begin
 		position.face := face;
 	end set_face;
 
-	function get_face (packge : in type_package_position)
-		return type_face is
-	begin
+	
+	function get_face (
+		packge : in type_package_position)
+		return type_face 
+	is begin
 		return packge.face;
 	end get_face;
 	
 	
 	function to_terminal_position (
-	-- Composes from a given point and angle the terminal position.
 		point		: in type_point;
 		rotation	: in type_rotation)
-		return type_position'class is
+		return type_position'class 
+	is
 		pos : type_position;
 	begin
 		--pos := (point with rotation);

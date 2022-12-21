@@ -414,6 +414,14 @@ package et_kicad.pcb is
 	general_modules_max : constant positive := 1_000_000; -- CS adjust if nessecary
 	type type_general_modules is range 0 .. general_modules_max;
 
+
+	-- PCB thickness (limited to reasonable range. CS adjust if required)
+	pcb_thickness_min : constant type_distance_positive := 0.1;
+	pcb_thickness_max : constant type_distance_positive := 20.0;	
+	subtype type_pcb_thickness is type_distance_positive 
+		range pcb_thickness_min .. pcb_thickness_max;
+
+	
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
@@ -421,7 +429,7 @@ package et_kicad.pcb is
 		area_y1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
 		area_x2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
 		area_y2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		thickness	: et_pcb_coordinates.type_pcb_thickness;
+		thickness	: type_pcb_thickness;
 		drawings	: type_general_drawings;
 		tracks		: type_general_tracks;
 		zones		: type_general_zones;
