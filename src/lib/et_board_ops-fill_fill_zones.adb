@@ -556,7 +556,7 @@ is
 		procedure query_non_electrical_device (d : in pac_devices_non_electric.cursor) is
 			polygons : pac_polygon_list.list;
 		begin
-			polygons := get_conductor_polygons (d);
+			polygons := get_conductor_polygons (d, layer_category);
 			offset_polygons (polygons, default_offset);
 
 			-- CS union ?

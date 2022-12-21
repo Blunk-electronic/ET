@@ -355,12 +355,19 @@ package et_packages is
 		return pac_terminals.cursor;
 
 
-	-- Returns the outlines of conductor objects of the package
-	-- as a list of polygons:
-	function get_conductor_polygons (
-		package_cursor : in pac_packages_lib.cursor)
-		return pac_polygon_list.list;
 
+	
+
+	package pac_conductor_contours is new doubly_linked_lists (type_contour);
+	
+	-- Returns the contours of conductor objects of a package.
+	-- Adresses only those objects which are in the given layer category:
+	function get_conductor_contours (
+		package_cursor	: in pac_packages_lib.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_conductor_contours.list;
+
+	
 
 	-- To indicate whether a package has been flipped in the board:
 	type type_flipped is (NO, YES);

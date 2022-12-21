@@ -216,7 +216,8 @@ package body et_pcb is
 	
 
 	function get_conductor_polygons (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
 	is
 		use pac_devices_non_electric;
@@ -224,11 +225,17 @@ package body et_pcb is
 		result : pac_polygon_list.list;
 
 		package_cursor : pac_packages_lib.cursor;
+		
+		package_displacement : constant type_distance_relative :=
+			to_distance_relative (device.position.place);
+
+		contours : pac_conductor_contours.list;
 	begin
 		package_cursor := packages_lib.find (device.package_model);
 		
-		result := get_conductor_polygons (package_cursor);
+		contours := get_conductor_contours (package_cursor, layer_category);
 		-- CS move rotate flip polygons according to device.position, flip status
+		-- CS convert to polygons
 		
 		return result;
 	end get_conductor_polygons;

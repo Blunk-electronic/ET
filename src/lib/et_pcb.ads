@@ -436,9 +436,11 @@ package et_pcb is
 
 
 	-- Returns the outlines of conductor objects of the non-electrical
-	-- device as a list of polygons:
+	-- device as a list of polygons.
+	-- Adresses only those objects which are in the given layer category:
 	function get_conductor_polygons (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
 	

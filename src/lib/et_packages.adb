@@ -276,15 +276,16 @@ package body et_packages is
 	end terminal_properties;
 	
 
-	function get_conductor_polygons (
-		package_cursor : in pac_packages_lib.cursor)
-		return pac_polygon_list.list
+	function get_conductor_contours (
+		package_cursor	: in pac_packages_lib.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_conductor_contours.list
 	is
-		result : pac_polygon_list.list;
+		result : pac_conductor_contours.list;
 	begin
-
+		-- CS
 		return result;
-	end get_conductor_polygons;
+	end get_conductor_contours;
 	
 	
 
