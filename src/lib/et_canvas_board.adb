@@ -867,6 +867,7 @@ package body et_canvas_board is
 
 		
 		procedure draw_board is begin
+			draw_conductor_layers;
 			draw_packages;
 			draw_silkscreen;
 			draw_assy_doc;
@@ -874,7 +875,6 @@ package body et_canvas_board is
 			draw_stop_mask;
 			draw_stencil;
 			draw_pcb_outline;
-			draw_conductor_layers;
 			
 			-- CS draw_submodules
 			
