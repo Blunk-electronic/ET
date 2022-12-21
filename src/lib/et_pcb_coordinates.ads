@@ -72,7 +72,7 @@ package et_pcb_coordinates is
 
 	
 	-- Changes top to bottom and vice versa:
-	procedure flip (face : in out type_face); -- CS rename to toggle
+	procedure toggle (face : in out type_face);
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!

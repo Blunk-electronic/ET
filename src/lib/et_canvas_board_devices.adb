@@ -284,7 +284,7 @@ package body et_canvas_board_devices is
 
 			sd := element (selected_device_electrical);
 			face := get_face (sd.device);
-			flip (face);
+			toggle (face);
 			
 			flip_device (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
