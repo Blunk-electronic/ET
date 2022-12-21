@@ -227,7 +227,7 @@ package body et_pcb is
 	begin
 		package_cursor := packages_lib.find (device.package_model);
 		
-		--result := get_conductor_polygons (device.package_model);
+		result := get_conductor_polygons (package_cursor);
 		-- CS move rotate flip polygons according to device.position, flip status
 		
 		return result;
