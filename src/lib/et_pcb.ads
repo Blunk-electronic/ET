@@ -91,6 +91,7 @@ package et_pcb is
 	
 	use pac_geometry_2;
 	use pac_contours;
+	use pac_polygons;
 	use pac_text_board;
 	
 
@@ -423,6 +424,7 @@ package et_pcb is
 		flipped				: type_flipped := flipped_default;
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		-- CS cursor to package model instead ?
 	end record;
 
 	
@@ -431,6 +433,13 @@ package et_pcb is
 		key_type		=> et_devices.type_device_name, -- H1, FD2, ...
 		"<"				=> et_devices."<",													 
 		element_type	=> type_device_non_electric);
+
+
+	-- Returns the outlines of conductor objects of the non-electrical
+	-- device as a list of polygons:
+	function get_conductor_polygons (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return pac_polygon_list.list;
 
 	
 	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:

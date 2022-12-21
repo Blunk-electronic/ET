@@ -215,7 +215,26 @@ package body et_pcb is
 	end pcb_contour_circle_properties;
 	
 
+	function get_conductor_polygons (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return pac_polygon_list.list
+	is
+		use pac_devices_non_electric;
+		device : type_device_non_electric renames element (device_cursor);
+		result : pac_polygon_list.list;
 
+		package_cursor : pac_packages_lib.cursor;
+	begin
+		package_cursor := packages_lib.find (device.package_model);
+		
+		--result := get_conductor_polygons (device.package_model);
+		-- CS move rotate flip polygons according to device.position, flip status
+		
+		return result;
+	end get_conductor_polygons;
+	
+
+	
 	procedure iterate (
 		devices	: in pac_devices_non_electric.map;
 		process	: not null access procedure (position : in pac_devices_non_electric.cursor);

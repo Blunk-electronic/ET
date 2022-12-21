@@ -276,6 +276,16 @@ package body et_packages is
 	end terminal_properties;
 	
 
+	function get_conductor_polygons (
+		package_cursor : in pac_packages_lib.cursor)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+	begin
+
+		return result;
+	end get_conductor_polygons;
+	
 	
 
 	function to_string (flipped : in type_flipped) return string is begin

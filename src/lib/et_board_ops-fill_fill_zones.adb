@@ -47,6 +47,7 @@ with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_routing;					use et_routing;
 with et_board_ops.devices;
 with et_thermal_relief;				use et_thermal_relief;
+with et_packages;					use et_packages;
 
 
 separate (et_board_ops)
@@ -543,7 +544,29 @@ is
 
 			end if;
 		end query_text;
-		
+
+
+
+		-- NON-ELECTRICAL DEVICES ----------------------------------------------
+		use pac_devices_non_electric;
+
+		-- This procedure takes a cursor to a non-electrical device (like a fiducial),
+		-- extracts the contours of all its conducting objects, offsets each of then
+		-- and appends them to the result:
+		procedure query_non_electrical_device (d : in pac_devices_non_electric.cursor) is
+			polygons : pac_polygon_list.list;
+		begin
+			polygons := get_conductor_polygons (d);
+			offset_polygons (polygons, default_offset);
+
+			-- CS union ?
+			
+			result.polygons.splice (
+				before => pac_polygon_list.no_element,
+				source => polygons);
+
+		end query_non_electrical_device;
+												  
 		
 	begin -- conductors_to_polygons
 		
@@ -575,8 +598,11 @@ is
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
-		-- CS non electrical conductor stuff (foreign floating fill zones, package text, fiducials, ...)
+		-- CS non electrical conductor stuff (foreign floating fill zones, ...)
 
+		-- non-electrical devices (like fiducials):
+		element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
+		
 		-- Now the polygons held in variable "result"
 		-- - inside the given zone or
 		-- - overlapping the given zone

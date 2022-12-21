@@ -82,6 +82,7 @@ package et_packages is
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
+	use pac_polygons;
 	use pac_contours;
 	use pac_text_board;
 
@@ -353,7 +354,12 @@ package et_packages is
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return pac_terminals.cursor;
 
-	
+
+	-- Returns the outlines of conductor objects of the package
+	-- as a list of polygons:
+	function get_conductor_polygons (
+		package_cursor : in pac_packages_lib.cursor)
+		return pac_polygon_list.list;
 
 
 	-- To indicate whether a package has been flipped in the board:
