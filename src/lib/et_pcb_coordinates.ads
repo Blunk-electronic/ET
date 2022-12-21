@@ -78,7 +78,8 @@ package et_pcb_coordinates is
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 
 	distance_digits_left  : constant :=  5;
-	distance_digits_right : constant := 10; -- 0.1pm
+	--distance_digits_right : constant := 10; -- 0.1pm
+	distance_digits_right : constant := 4; -- 1um
 	
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
 	
