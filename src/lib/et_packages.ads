@@ -330,6 +330,9 @@ package et_packages is
 	package pac_packages_lib is new indefinite_ordered_maps ( -- CS rename to pac_package_models
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
 		element_type	=> type_package_lib);
+
+	use pac_packages_lib;
+	
 	
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages_lib	 : pac_packages_lib.map; -- CS rename to package_model_library ?
@@ -360,15 +363,33 @@ package et_packages is
 
 	package pac_conductor_contours is new doubly_linked_lists (type_contour);
 	
-	-- Returns the contours of conductor objects of a package.
-	-- Adresses only those objects which are in the given layer category:
-	function get_conductor_contours (
+	-- Returns the contours of the terminals of a package.
+	-- Adresses only those terminals which are affected by
+	-- the given layer category:
+	function get_terminal_contours (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_conductor_contours.list;
 
-	
+	-- CS
+	--function get_text_contours (
+		--package_cursor	: in pac_packages_lib.cursor;
+		--layer_category	: in type_signal_layer_category)
+		--return pac_conductor_contours.list;
 
+	-- CS
+	--function get_conductor_contours (
+		--package_cursor	: in pac_packages_lib.cursor;
+		--layer_category	: in type_signal_layer_category)
+		--return pac_conductor_contours.list;
+
+	-- CS
+	--function get_hole_contours (
+		--package_cursor	: in pac_packages_lib.cursor)
+		--return pac_conductor_contours.list;
+
+
+	
 	-- To indicate whether a package has been flipped in the board:
 	type type_flipped is (NO, YES);
 	flipped_default : constant type_flipped := NO;

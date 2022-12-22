@@ -1030,7 +1030,7 @@ package body et_board_ops.devices is
 			to_distance_relative (terminal_position.place);
 
 		
-		-- intermediate place to a contour:
+		-- intermediate storage place of a contour:
 		contour : type_contour;
 
 

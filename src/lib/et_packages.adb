@@ -276,16 +276,62 @@ package body et_packages is
 	end terminal_properties;
 	
 
-	function get_conductor_contours (
+	function get_terminal_contours (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_conductor_contours.list
 	is
+		packge : type_package_lib renames element (package_cursor);
+		
 		result : pac_conductor_contours.list;
+		
+
+		procedure query_terminal (t : in pac_terminals.cursor) is
+			use pac_terminals;
+			terminal : type_terminal renames element (t);
+		begin
+			case terminal.technology is
+				when THT => 
+					case layer_category is
+						when INNER =>								
+							case terminal.tht_hole is
+								when DRILLED =>
+									result.append (get_inner_contour (
+										terminal, to_vector (terminal.position.place)));
+									
+								when MILLED =>
+									result.append (terminal.millings);
+							end case;
+						
+						when OUTER_TOP =>
+							result.append (terminal.pad_shape_tht.top);
+
+						when OUTER_BOTTOM =>
+							result.append (terminal.pad_shape_tht.bottom);
+					end case;
+					
+
+				when SMT =>
+					case layer_category is
+						when OUTER_TOP =>
+							if terminal.face = TOP then
+								result.append (terminal.pad_shape_smt);
+							end if;
+						
+						when OUTER_BOTTOM =>
+							if terminal.face = BOTTOM then
+								result.append (terminal.pad_shape_smt);
+							end if;
+
+						when INNER => null; -- there are no SMT pads in inner layers
+					end case;
+			end case;
+		end query_terminal;
+		
 	begin
-		-- CS
+		packge.terminals.iterate (query_terminal'access);
 		return result;
-	end get_conductor_contours;
+	end get_terminal_contours;
 	
 	
 

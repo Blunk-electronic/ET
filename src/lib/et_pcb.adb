@@ -215,7 +215,7 @@ package body et_pcb is
 	end pcb_contour_circle_properties;
 	
 
-	function get_conductor_polygons (
+	function get_terminal_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
@@ -232,13 +232,18 @@ package body et_pcb is
 		contours : pac_conductor_contours.list;
 	begin
 		package_cursor := packages_lib.find (device.package_model);
+
+		if device.flipped = NO then
+			contours := get_terminal_contours (package_cursor, layer_category);
+		else
+			contours := get_terminal_contours (package_cursor, invert_category (layer_category));
+		end if;
 		
-		contours := get_conductor_contours (package_cursor, layer_category);
 		-- CS move rotate flip polygons according to device.position, flip status
 		-- CS convert to polygons
 		
 		return result;
-	end get_conductor_polygons;
+	end get_terminal_polygons;
 	
 
 	

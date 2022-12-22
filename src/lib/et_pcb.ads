@@ -435,13 +435,32 @@ package et_pcb is
 		element_type	=> type_device_non_electric);
 
 
-	-- Returns the outlines of conductor objects of the non-electrical
+	-- Returns the outlines of terminals of the non-electrical
 	-- device as a list of polygons.
-	-- Adresses only those objects which are in the given layer category:
-	function get_conductor_polygons (
+	-- Adresses only those terminals which are affected by
+	-- the given layer category:
+	function get_terminal_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
+
+	-- CS
+	--function get_text_polygons (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--layer_category	: in type_signal_layer_category)
+		--return pac_polygon_list.list;
+
+	-- CS
+	--function get_conductor_polygons (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--layer_category	: in type_signal_layer_category)
+		--return pac_polygon_list.list;
+
+	-- CS
+	--function get_hole_polygons (
+		--device_cursor	: in pac_devices_non_electric.cursor)
+		--return pac_polygon_list.list;
+	
 
 	
 	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
