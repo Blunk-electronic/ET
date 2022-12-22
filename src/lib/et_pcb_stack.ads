@@ -46,13 +46,10 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
--- with ada.containers.doubly_linked_lists;
 with ada.containers.vectors;
--- with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
+
 with et_logging;				use et_logging;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 
@@ -68,6 +65,10 @@ package et_pcb_stack is
 	
 	type type_signal_layer_category is (OUTER_TOP, INNER, OUTER_BOTTOM);
 
+	
+	function invert_category (cat : in type_signal_layer_category)
+		return type_signal_layer_category;
+	
 	
 	signal_layer_top : constant positive := 1; -- CS rename signal to conductor
 	signal_layer_bottom : constant positive := 100;

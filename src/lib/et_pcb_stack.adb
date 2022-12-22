@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -34,38 +34,42 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-
 with ada.exceptions;
 
-with et_coordinates;
 with et_string_processing;		use et_string_processing;
+
 
 package body et_pcb_stack is
 
+		
+	function invert_category (cat : in type_signal_layer_category)
+		return type_signal_layer_category
+	is 
+		result : type_signal_layer_category := INNER;
+	begin
+		case cat is
+			when OUTER_TOP		=> result := OUTER_BOTTOM;
+			when OUTER_BOTTOM	=> result := OUTER_TOP;
+			when INNER			=> null; -- assume default
+		end case;
+
+		return result;
+	end invert_category;
+
+	
 	function to_string (layer : in type_signal_layer) return string is begin
 		return trim (type_signal_layer'image (layer), left);
 	end to_string;
 
+	
 	function to_signal_layer (layer : in string) return type_signal_layer is begin
 		return type_signal_layer'value (layer);
 	end to_signal_layer;
 
+	
 	function to_string (layers : in type_signal_layers.set) return string is
 	-- Returns a string like '[1,3,5-9]'.
 	-- CS: Currently the range notation like 5-9 is not supported. The return is 5,6,7,8,9 instead.
@@ -107,6 +111,7 @@ package body et_pcb_stack is
 		return to_string (layer_string);
 	end;
 
+	
 	function to_layers (layers : in string) 
 		return type_signal_layers.set 
 	is
@@ -118,6 +123,7 @@ package body et_pcb_stack is
 		use number_string;
 		number : number_string.bounded_string;
 
+		
 		procedure reset_number is begin 
 			number := to_bounded_string ("");
 		end;
@@ -125,9 +131,11 @@ package body et_pcb_stack is
 		range_started : boolean := false;
 		range_start, range_end : type_signal_layer;
 
+		
 		procedure warning (layer : in type_signal_layer) is begin
 			log (WARNING, "Multiple occurence of layer " & to_string (layer) & " !");
 		end;
+
 		
 		procedure insert_layer is 
 			l : type_signal_layer := to_signal_layer (to_string (number));
@@ -216,11 +224,13 @@ package body et_pcb_stack is
 		return layer_set;
 	end to_layers;
 
+	
 	function deepest_layer (stack : in type_stack) return type_signal_layer is begin
 		-- Because the bottom layer is always there, we add 1:
 		return stack.layers.last_index + 1;
 	end deepest_layer;
 
+	
 	function signal_layer_valid (
 		signal_layer 	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check)
@@ -241,6 +251,7 @@ package body et_pcb_stack is
 		return result;
 	end signal_layer_valid;	
 
+	
 	procedure mirror (
 		signal_layers	: in out type_signal_layers.set;
 		deepest_layer	: in type_signal_layer) 
