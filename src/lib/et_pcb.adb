@@ -221,42 +221,56 @@ package body et_pcb is
 		return pac_polygon_list.list
 	is
 		use pac_devices_non_electric;
-		device : type_device_non_electric renames element (device_cursor);
 		result : pac_polygon_list.list;
+		
+		device : type_device_non_electric renames element (device_cursor);
 
 		package_cursor : pac_packages_lib.cursor;
 		
 		package_displacement : constant type_distance_relative :=
 			to_distance_relative (device.position.place);
 
-		contours : pac_contour_list.list;
+		terminals	: pac_contour_list.list;
+		conductors	: pac_polygon_list.list;
 
 		use et_contour_to_polygon;
 	begin
 		package_cursor := packages_lib.find (device.package_model);
 
+		-- TERMINALS:
 		if device.flipped = NO then
-			contours := get_terminal_contours (package_cursor, layer_category);
-			--put_line (to_string (contours.last_element));
-			-- CS get_text_contours
-			-- CS get_conductor_contours
-			-- CS fill zones
-			rotate_contours (contours, device.position.rotation);
+			terminals := get_terminal_contours (package_cursor, layer_category);
+			rotate_contours (terminals, device.position.rotation);
 		else
-			contours := get_terminal_contours (package_cursor, invert_category (layer_category));
-			mirror_contours (contours);
-			rotate_contours (contours, - device.position.rotation);
+			terminals := get_terminal_contours (package_cursor, invert_category (layer_category));
+			mirror_contours (terminals);
+			rotate_contours (terminals, - device.position.rotation);
 		end if;
 
-		move_contours (contours, package_displacement);
-
+		move_contours (terminals, package_displacement);
 		
-		return to_polygons (
-			contours	=> contours,
+		result := to_polygons (
+			contours	=> terminals,
 			tolerance	=> fill_tolerance,
 			mode		=> EXPAND,
 			debug		=> false);
 
+
+		-- CONDUCTOR OBJECTS
+		if device.flipped = NO then
+			conductors := get_conductor_polygons (package_cursor, layer_category);
+			
+			-- CS get_text_contours
+			-- CS fill zones
+			
+			--rotate_contours (contours, device.position.rotation);
+		else
+			conductors := get_conductor_polygons (package_cursor, invert_category (layer_category));
+			-- CS mirror, rotate and move conductor polygons
+		end if;
+
+		result.splice (before => pac_polygon_list.no_element, source => conductors);
+		return result;
 	end get_conductor_polygons;
 	
 

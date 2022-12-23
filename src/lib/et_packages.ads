@@ -375,11 +375,10 @@ package et_packages is
 		--layer_category	: in type_signal_layer_category)
 		--return pac_conductor_contours.list;
 
-	-- CS
-	--function get_conductor_contours (
-		--package_cursor	: in pac_packages_lib.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return pac_conductor_contours.list;
+	function get_conductor_polygons (
+		package_cursor	: in pac_packages_lib.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list;
 
 	-- CS
 	--function get_hole_contours (

@@ -345,6 +345,21 @@ package body et_packages is
 		packge.terminals.iterate (query_terminal'access);
 		return result;
 	end get_terminal_contours;
+
+
+	function get_conductor_polygons (
+		package_cursor	: in pac_packages_lib.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list
+	is 
+		packge : type_package_lib renames element (package_cursor);
+		
+		result : pac_polygon_list.list;
+	begin
+		-- CS
+
+		return result;
+	end get_conductor_polygons;
 	
 	
 
