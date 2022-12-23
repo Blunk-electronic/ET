@@ -820,7 +820,7 @@ package body et_geometry_2.contours is
 	
 	procedure mirror (
 		contour	: in out type_contour;
-		axis	: in type_axis_2d) 
+		axis	: in type_axis_2d := Y) 
 	is
 
 		procedure mirror_segment (c : in pac_segments.cursor) is
@@ -1531,6 +1531,66 @@ package body et_geometry_2.contours is
 
 
 
+
+
+	procedure move_contours (
+		contours	: in out pac_contour_list.list;
+		offset		: in type_distance_relative)
+	is
+		result : pac_contour_list.list;
+		
+		procedure query_contour (c : in pac_contour_list.cursor) is 
+			c_new : type_contour := element (c);
+		begin
+			move_by (c_new, offset);
+			result.append (c_new);
+		end query_contour;
+		
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end move_contours;
+
+	
+	procedure mirror_contours (
+		contours	: in out pac_contour_list.list;
+		axis		: in type_axis_2d := Y)
+	is
+		result : pac_contour_list.list;
+		
+		procedure query_contour (c : in pac_contour_list.cursor) is 
+			c_new : type_contour := element (c);
+		begin
+			mirror (c_new);
+			result.append (c_new);
+		end query_contour;
+
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end mirror_contours;
+
+	
+	procedure rotate_contours (
+		contours	: in out pac_contour_list.list;
+		rotation	: in type_rotation)
+	is
+		result : pac_contour_list.list;
+		
+		procedure query_contour (c : in pac_contour_list.cursor) is 
+			c_new : type_contour := element (c);
+		begin
+			rotate_by (c_new, rotation);
+			result.append (c_new);
+		end query_contour;
+
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end rotate_contours;
+
+		
+	
 	
 end et_geometry_2.contours;
 

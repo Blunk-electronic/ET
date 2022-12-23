@@ -263,19 +263,19 @@ package et_geometry_2.contours is
 
 
 	-- Moves a contour by the given offset. 
-	procedure move_by (
+	procedure move_by ( -- CS rename to move_contour
 		contour	: in out type_contour;
 		offset	: in type_distance_relative);
 	
 
 	-- Mirrors a contour along the given axis.
-	procedure mirror (
+	procedure mirror ( -- CS rename to mirror_contour
 		contour	: in out type_contour;
-		axis	: in type_axis_2d);
+		axis	: in type_axis_2d := Y);
 	
 
 	-- Rotates a contour about the origin by the given rotation.
-	procedure rotate_by (
+	procedure rotate_by ( -- CS rename to rotate_contour
 		contour		: in out type_contour;
 		rotation	: in type_rotation);
 
@@ -343,23 +343,16 @@ package et_geometry_2.contours is
 		contour	: in type_contour;
 		point	: in type_point)
 		return boolean;
-	
 
+
+
+	
+--private
+					   
 	function get_shortest_distance (
 		contour	: in type_contour;
 		point	: in type_vector)
 		return type_float;
-	
-
-	function get_point_to_contour_status (
-		contour		: in type_contour;	
-		point		: in type_point)
-		return type_point_to_contour_status;
-
-
-	
-private
-					   
 
 
 	-- The location of a point relative to a contour:
@@ -416,6 +409,34 @@ private
 		i : in type_point_to_contour_status)
 		return string;
 
+
+	function get_point_to_contour_status (
+		contour		: in type_contour;	
+		point		: in type_point)
+		return type_point_to_contour_status;
+
+
+	
+	package pac_contour_list is new doubly_linked_lists (type_contour);
+	use pac_contour_list;
+
+
+	-- Moves a list of contours by the given offset:
+	procedure move_contours (
+		contours	: in out pac_contour_list.list;
+		offset		: in type_distance_relative);
+
+	
+	-- Mirrors a list of contours along the given axis:
+	procedure mirror_contours (
+		contours	: in out pac_contour_list.list;
+		axis		: in type_axis_2d := Y);
+
+
+	-- Rotates a list of contours by the given angle:
+	procedure rotate_contours (
+		contours	: in out pac_contour_list.list;
+		rotation	: in type_rotation);
 
 	
 end et_geometry_2.contours;
