@@ -83,7 +83,7 @@ with et_silkscreen.boards;			use et_silkscreen.boards;
 with et_assy_doc.boards;			use et_assy_doc.boards;
 with et_keepout.boards;				use et_keepout.boards;
 with et_pcb_contour;				use et_pcb_contour;
-
+with et_contour_to_polygon;
 with et_ratsnest;
 
 
@@ -435,26 +435,16 @@ package et_pcb is
 		element_type	=> type_device_non_electric);
 
 
-	-- Returns the outlines of terminals of the non-electrical
+	-- Returns the outlines of conductor objects of the non-electrical
 	-- device as a list of polygons.
-	-- Adresses only those terminals which are affected by
+	-- Adresses only those objects which are affected by
 	-- the given layer category:
-	function get_terminal_polygons (
+	function get_conductor_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
-	-- CS
-	--function get_text_polygons (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return pac_polygon_list.list;
 
-	-- CS
-	--function get_conductor_polygons (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return pac_polygon_list.list;
 
 	-- CS
 	--function get_hole_polygons (

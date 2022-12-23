@@ -279,11 +279,11 @@ package body et_packages is
 	function get_terminal_contours (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
-		return pac_conductor_contours.list
+		return pac_contour_list.list
 	is
 		packge : type_package_lib renames element (package_cursor);
 		
-		result : pac_conductor_contours.list;
+		result : pac_contour_list.list;
 		
 
 		procedure query_terminal (t : in pac_terminals.cursor) is

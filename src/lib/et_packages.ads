@@ -361,15 +361,13 @@ package et_packages is
 
 	
 
-	package pac_conductor_contours is new doubly_linked_lists (type_contour);
-	
 	-- Returns the contours of the terminals of a package.
 	-- Adresses only those terminals which are affected by
 	-- the given layer category:
 	function get_terminal_contours (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
-		return pac_conductor_contours.list;
+		return pac_contour_list.list;
 
 	-- CS
 	--function get_text_contours (
