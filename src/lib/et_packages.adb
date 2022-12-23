@@ -289,6 +289,18 @@ package body et_packages is
 		procedure query_terminal (t : in pac_terminals.cursor) is
 			use pac_terminals;
 			terminal : type_terminal renames element (t);
+
+			displacement : constant type_distance_relative :=
+				to_distance_relative (terminal.position.place);
+
+			procedure finalize (c : in type_contour) is 
+				contour : type_contour := c;
+			begin
+				rotate_by (contour, terminal.position.rotation);
+				move_by (contour, displacement);
+				result.append (contour);
+			end finalize;
+	
 		begin
 			case terminal.technology is
 				when THT => 
@@ -296,18 +308,19 @@ package body et_packages is
 						when INNER =>								
 							case terminal.tht_hole is
 								when DRILLED =>
-									result.append (get_inner_contour (
+									finalize (get_inner_contour (
 										terminal, to_vector (terminal.position.place)));
-									
-								when MILLED =>
-									result.append (terminal.millings);
-							end case;
-						
-						when OUTER_TOP =>
-							result.append (terminal.pad_shape_tht.top);
 
+								when MILLED =>
+									finalize (terminal.millings);
+							end case;
+
+							
+						when OUTER_TOP =>
+							finalize (terminal.pad_shape_tht.top);
+							
 						when OUTER_BOTTOM =>
-							result.append (terminal.pad_shape_tht.bottom);
+							finalize (terminal.pad_shape_tht.bottom);
 					end case;
 					
 
@@ -315,12 +328,12 @@ package body et_packages is
 					case layer_category is
 						when OUTER_TOP =>
 							if terminal.face = TOP then
-								result.append (terminal.pad_shape_smt);
+								finalize (terminal.pad_shape_smt);
 							end if;
 						
 						when OUTER_BOTTOM =>
 							if terminal.face = BOTTOM then
-								result.append (terminal.pad_shape_smt);
+								finalize (terminal.pad_shape_smt);
 							end if;
 
 						when INNER => null; -- there are no SMT pads in inner layers
