@@ -105,6 +105,15 @@ package et_contour_to_polygon is
 		return type_polygon;
 
 
+	-- Converts a list of contours to a list of polygons:
+	function to_polygons (
+		contours	: in pac_contour_list.list;
+		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
+		debug		: in boolean := false)					
+		return pac_polygon_list.list;
+
+	
 	-- Converts a polygon to a contour.
 	-- Since a polygon consists of edges (lines) only,
 	-- the resulting contour will also contain only line segments.
@@ -114,7 +123,9 @@ package et_contour_to_polygon is
 		debug	: in boolean := false)					
 		return type_contour;
 	
-	
+
+							 
+							 
 end et_contour_to_polygon;
 
 -- Soli Deo Gloria

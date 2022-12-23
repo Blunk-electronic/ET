@@ -232,6 +232,28 @@ package body et_contour_to_polygon is
 	end to_polygon;
 
 
+	function to_polygons (
+		contours	: in pac_contour_list.list;
+		tolerance	: in type_distance_positive;
+		mode		: in type_approximation_mode;
+		debug		: in boolean := false)					
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_contour (c : in pac_contour_list.cursor) is 
+			use pac_contour_list;
+		begin
+			result.append (to_polygon (element (c), tolerance, mode, debug));
+		end query_contour;
+		
+	begin
+		contours.iterate (query_contour'access);
+		return result;
+	end to_polygons;
+
+
+	
 	function to_contour (
 		polygon	: in type_polygon;
 		debug	: in boolean := false)					

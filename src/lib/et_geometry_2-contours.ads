@@ -345,15 +345,21 @@ package et_geometry_2.contours is
 		return boolean;
 	
 
+	function get_shortest_distance (
+		contour	: in type_contour;
+		point	: in type_vector)
+		return type_float;
+	
+
+	function get_point_to_contour_status (
+		contour		: in type_contour;	
+		point		: in type_point)
+		return type_point_to_contour_status;
 
 
 	
 private
 					   
-	function get_shortest_distance (
-		contour	: in type_contour;
-		point	: in type_vector)
-		return type_float;
 
 
 	-- The location of a point relative to a contour:
@@ -410,11 +416,6 @@ private
 		i : in type_point_to_contour_status)
 		return string;
 
-
-	function get_point_to_contour_status (
-		contour		: in type_contour;	
-		point		: in type_point)
-		return type_point_to_contour_status;
 
 	
 end et_geometry_2.contours;
