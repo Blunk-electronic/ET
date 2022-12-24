@@ -198,9 +198,10 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.top.lines, write_line'access);
 			iterate (packge.conductors.top.arcs, write_arc'access);
 			iterate (packge.conductors.top.circles, write_circle'access);
-			iterate (packge.conductors.top.fill_zones.solid, write_polygon'access);
-			iterate (packge.conductors.top.fill_zones.hatched, write_polygon'access);
-			iterate (packge.conductors.top.cutouts,  write_cutout'access);			
+			-- CS
+			--iterate (packge.conductors.top.fill_zones.solid, write_polygon'access);
+			--iterate (packge.conductors.top.fill_zones.hatched, write_polygon'access);
+			--iterate (packge.conductors.top.cutouts,  write_cutout'access);			
 			iterate (packge.conductors.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
@@ -209,9 +210,10 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.bottom.lines, write_line'access);
 			iterate (packge.conductors.bottom.arcs, write_arc'access);
 			iterate (packge.conductors.bottom.circles, write_circle'access);
-			iterate (packge.conductors.bottom.fill_zones.solid, write_polygon'access);
-			iterate (packge.conductors.bottom.fill_zones.hatched, write_polygon'access);
-			iterate (packge.conductors.bottom.cutouts, write_cutout'access);
+			-- CS
+			--iterate (packge.conductors.bottom.fill_zones.solid, write_polygon'access);
+			--iterate (packge.conductors.bottom.fill_zones.hatched, write_polygon'access);
+			--iterate (packge.conductors.bottom.cutouts, write_cutout'access);
 			iterate (packge.conductors.bottom.texts, write_text'access);			
 			section_mark (section_bottom, FOOTER);
 
@@ -1432,25 +1434,30 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_zones_solid.append (
-								container	=> packge.conductors.top.fill_zones.solid, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										linewidth 	=> polygon_width_min,
-										isolation	=> polygon_isolation));
+							-- CS
+							--pac_zones_solid.append (
+								--container	=> packge.conductors.top.fill_zones.solid, 
+								--new_item	=> (contour with
+										--fill_style	=> SOLID,
+										--easing		=> board_easing,
+										--islands		=> no_islands,
+										--linewidth 	=> polygon_width_min,
+										--isolation	=> polygon_isolation));
 
+							null;
+							
 						when HATCHED =>
-							pac_zones_hatched.append (
-								container	=> packge.conductors.top.fill_zones.hatched, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										spacing		=> fill_spacing,
-										linewidth 	=> polygon_width_min,
-										isolation	=> polygon_isolation));
+							-- CS
+							--pac_zones_hatched.append (
+								--container	=> packge.conductors.top.fill_zones.hatched, 
+								--new_item	=> (contour with
+										--fill_style	=> HATCHED,
+										--easing		=> board_easing,
+										--islands		=> no_islands,
+										--spacing		=> fill_spacing,
+										--linewidth 	=> polygon_width_min,
+										--isolation	=> polygon_isolation));
+							null;
 					end case;
 										
 					-- clean up for next polygon
@@ -1461,25 +1468,30 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_zones_solid.append (
-								container	=> packge.conductors.bottom.fill_zones.solid, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										linewidth 	=> polygon_width_min,
-										isolation	=> polygon_isolation));
+							-- CS
+							--pac_zones_solid.append (
+								--container	=> packge.conductors.bottom.fill_zones.solid, 
+								--new_item	=> (contour with
+										--fill_style	=> SOLID,
+										--easing		=> board_easing,
+										--islands		=> no_islands,
+										--linewidth 	=> polygon_width_min,
+										--isolation	=> polygon_isolation));
 
+							null;
+							
 						when HATCHED =>
-							pac_zones_hatched.append (
-								container	=> packge.conductors.bottom.fill_zones.hatched, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										spacing		=> fill_spacing,
-										linewidth 	=> polygon_width_min,
-										isolation	=> polygon_isolation));
+							-- CS
+							--pac_zones_hatched.append (
+								--container	=> packge.conductors.bottom.fill_zones.hatched, 
+								--new_item	=> (contour with
+										--fill_style	=> HATCHED,
+										--easing		=> board_easing,
+										--islands		=> no_islands,
+										--spacing		=> fill_spacing,
+										--linewidth 	=> polygon_width_min,
+										--isolation	=> polygon_isolation));
+							null;
 					end case;
 										
 					-- clean up for next polygon
@@ -1609,9 +1621,10 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_cutout_top is begin
-					pac_stop_cutouts.append (
-						container	=> packge.stop_mask.top.cutouts, 
-						new_item	=> contour);
+					-- CS
+					--pac_stop_cutouts.append (
+						--container	=> packge.stop_mask.top.cutouts, 
+						--new_item	=> contour);
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1619,9 +1632,10 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_cutout_bottom is begin
-					pac_stop_cutouts.append (
-						container	=> packge.stop_mask.bottom.cutouts, 
-						new_item	=> contour);
+					-- CS
+					--pac_stop_cutouts.append (
+						--container	=> packge.stop_mask.bottom.cutouts, 
+						--new_item	=> contour);
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1629,19 +1643,21 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_conductor_cutout_top is begin
-					et_fill_zones.packages.pac_cutouts.append (
-						container	=> packge.conductors.top.cutouts, 
-						new_item	=> contour);
-										
+					-- CS
+					--et_fill_zones.packages.pac_cutouts.append (
+						--container	=> packge.conductors.top.cutouts, 
+						--new_item	=> contour);
+
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
 
 				
 				procedure append_conductor_cutout_bottom is begin
-					et_fill_zones.packages.pac_cutouts.append (
-						container	=> packge.conductors.bottom.cutouts, 
-						new_item	=> contour);
+					-- CS
+					--et_fill_zones.packages.pac_cutouts.append (
+						--container	=> packge.conductors.bottom.cutouts, 
+						--new_item	=> contour);
 										
 					-- clean up for next polygon
 					board_reset_contour;

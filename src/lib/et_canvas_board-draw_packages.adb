@@ -2806,16 +2806,19 @@ is
 			element (package_cursor).conductors.bottom.circles.iterate (query_circle_bottom'access);
 
 			-- fill zones solid
-			element (package_cursor).conductors.top.fill_zones.solid.iterate (query_polygon_top_solid'access);
-			element (package_cursor).conductors.bottom.fill_zones.solid.iterate (query_polygon_bottom_solid'access);
+			-- CS
+			--element (package_cursor).conductors.top.fill_zones.solid.iterate (query_polygon_top_solid'access);
+			--element (package_cursor).conductors.bottom.fill_zones.solid.iterate (query_polygon_bottom_solid'access);
 
 			-- fill zones hatched
-			element (package_cursor).conductors.top.fill_zones.hatched.iterate (query_polygon_top_hatched'access);
-			element (package_cursor).conductors.bottom.fill_zones.hatched.iterate (query_polygon_bottom_hatched'access);
+			-- CS
+			--element (package_cursor).conductors.top.fill_zones.hatched.iterate (query_polygon_top_hatched'access);
+			--element (package_cursor).conductors.bottom.fill_zones.hatched.iterate (query_polygon_bottom_hatched'access);
 
 			-- cutouts
-			element (package_cursor).conductors.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).conductors.bottom.cutouts.iterate (query_cutout_bottom'access);
+			-- CS
+			--element (package_cursor).conductors.top.cutouts.iterate (query_cutout_top'access);
+			--element (package_cursor).conductors.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
 			element (package_cursor).conductors.top.texts.iterate (query_text_top'access);

@@ -196,8 +196,8 @@ package et_packages is
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
-		fill_zones	: type_fill_zones;
-		cutouts		: packages.pac_cutouts.list;
+		--fill_zones	: type_fill_zones;
+		--cutouts		: packages.pac_cutouts.list;
 		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 	
@@ -209,6 +209,11 @@ package et_packages is
 		bottom	: type_conductor_objects;
 	end record;
 
+	-- CS ?
+	--type type_fill_zones_both_sides is record
+		--fill_zones	: type_fill_zones;
+		--cutouts		: packages.pac_cutouts.list;
+	--end record;
 
 	-- Mirrors the given non-electric conductor objects 
 	-- along the given axis:
@@ -306,6 +311,7 @@ package et_packages is
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
 		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
+		-- CS fill_zones		: type_fill_zones_both_sides; -- floating zones
 		keepout 		: type_keepout_both_sides;
 		stop_mask		: type_stop_mask_both_sides; -- not terminal related
 		stencil			: type_stencil_both_sides; -- not terminal related

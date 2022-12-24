@@ -557,12 +557,14 @@ is
 			polygons : pac_polygon_list.list;
 		begin
 			polygons := get_conductor_polygons (d, layer_category);
-			-- includes: terminals, text, conductors, fill zones
+			-- includes: terminals, text, conductors
 
 			offset_polygons (polygons, default_offset);
 
 			-- CS holes (mind clearance to board edge)
-			-- CS cutouts
+
+			-- CS cutouts, fill zones ?
+
 			-- CS union ?
 			
 			result.polygons.splice (
