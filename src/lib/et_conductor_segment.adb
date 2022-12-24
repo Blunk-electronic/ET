@@ -137,6 +137,81 @@ package body et_conductor_segment is
 	--end get_shortest_distance;
 
 
+	procedure mirror_lines (
+		lines	: in out pac_conductor_lines.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_conductor_lines.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is
+			line : type_conductor_line := element (c);
+		begin
+			mirror (line, Y);
+			result.append (line);
+		end;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end mirror_lines;
+
+
+	procedure rotate_lines (
+		lines	: in out pac_conductor_lines.list;
+		angle	: in type_rotation)
+	is
+		result : pac_conductor_lines.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is
+			line : type_conductor_line := element (c);
+		begin
+			rotate_by (line, angle);
+			result.append (line);
+		end;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end rotate_lines;
+
+
+	procedure move_lines (
+		lines	: in out pac_conductor_lines.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_conductor_lines.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is
+			line : type_conductor_line := element (c);
+		begin
+			move_by (line, offset);
+			result.append (line);
+		end;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end move_lines;
+
+
+	function to_polygons (
+		lines		: in pac_conductor_lines.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is begin
+			result.append (to_polygon (element (c), tolerance));
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		return result;
+	end to_polygons;
+
+	
+	
 	procedure line_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;

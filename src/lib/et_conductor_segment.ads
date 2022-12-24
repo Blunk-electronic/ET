@@ -92,6 +92,31 @@ package et_conductor_segment is
 	use pac_conductor_lines;
 	
 
+	-- Mirrors a list of lines along the given axis:
+	procedure mirror_lines (
+		lines	: in out pac_conductor_lines.list;
+		axis	: in type_axis_2d := Y);
+
+	
+	-- Rotates a list of lines by the given angle about the origin:
+	procedure rotate_lines (
+		lines	: in out pac_conductor_lines.list;
+		angle	: in type_rotation);
+
+
+	-- Moves a list of lines by the given offset:
+	procedure move_lines (
+		lines	: in out pac_conductor_lines.list;
+		offset	: in type_distance_relative);
+
+
+	-- Converts a list of lines to a list of polygons:
+	function to_polygons (
+		lines		: in pac_conductor_lines.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
+							 
+	
 	-- Logs the properties of the given line:
 	procedure line_conductor_properties (
 		face			: in type_face;

@@ -173,9 +173,9 @@ package body et_packages is
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		axis		: in type_axis_2d := Y)
-	is
-	begin
-		-- CS
+	is begin
+		mirror_lines (conductors.lines, axis);
+		-- CS arcs, circles, texts
 		null;
 	end mirror_conductor_objects;
 
@@ -183,19 +183,20 @@ package body et_packages is
 	procedure rotate_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		angle		: in type_rotation)
-	is
-	begin
-		-- CS
+	is begin
+		rotate_lines (conductors.lines, angle);
+		-- CS arcs, circles, texts
 		null;
 	end rotate_conductor_objects;
 
+	
 
 	procedure move_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		offset		: in type_distance_relative)
-	is
-	begin
-		-- CS
+	is begin
+		move_lines (conductors.lines, offset);
+		-- CS arcs, circles, texts
 		null;
 	end move_conductor_objects;
 
@@ -207,8 +208,8 @@ package body et_packages is
 	is
 		result : pac_polygon_list.list;
 	begin
-
-		-- CS
+		result := to_polygons (conductors.lines, tolerance);
+		-- CS arcs, circles, texts
 		return result;
 	end to_polygons;
 
