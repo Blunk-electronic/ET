@@ -210,9 +210,31 @@ package et_packages is
 	end record;
 
 
+	-- Mirrors the given non-electric conductor objects 
+	-- along the given axis:
+	procedure mirror_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		axis		: in type_axis_2d := Y);
 
+	-- Rotates the given non-electric conductor objects 
+	-- by the given angle:
+	procedure rotate_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		angle		: in type_rotation);
 
+	-- Moves the given non-electric conductor objects 
+	-- by the given offset:
+	procedure move_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		offset		: in type_distance_relative);
 
+	-- Converts the given non-electric conductor objects
+	-- to polygons:
+	function to_polygons (
+		conductors	: in type_conductor_objects;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
+		
 	
 	-- Silk screen objects include placeholders:
 	type type_silk_screen 
@@ -369,16 +391,17 @@ package et_packages is
 		layer_category	: in type_signal_layer_category)
 		return pac_contour_list.list;
 
-	-- CS
-	--function get_text_contours (
-		--package_cursor	: in pac_packages_lib.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return pac_conductor_contours.list;
 
-	function get_conductor_polygons (
+	-- Returns the non-electric conductor objects of
+	-- the given package. Adresses only those objects
+	-- which are affected by the given layer category.
+	-- Raises exception if layer category INNER is given,
+	-- because there are no non-electric objects in inner layers:
+	function get_conductor_objects (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
-		return pac_polygon_list.list;
+		-- CS layer_category	: in type_signal_layer_category_outer) ?
+		return type_conductor_objects;
 
 	-- CS
 	--function get_hole_contours (

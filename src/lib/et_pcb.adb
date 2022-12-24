@@ -231,7 +231,9 @@ package body et_pcb is
 			to_distance_relative (device.position.place);
 
 		terminals	: pac_contour_list.list;
-		conductors	: pac_polygon_list.list;
+		
+		conductors	: type_conductor_objects; -- non-electrical
+		conductor_polygons : pac_polygon_list.list;
 
 		use et_contour_to_polygon;
 	begin
@@ -257,19 +259,25 @@ package body et_pcb is
 
 
 		-- CONDUCTOR OBJECTS
-		if device.flipped = NO then
-			conductors := get_conductor_polygons (package_cursor, layer_category);
-			
-			-- CS get_text_contours
-			-- CS fill zones
-			
-			--rotate_contours (contours, device.position.rotation);
-		else
-			conductors := get_conductor_polygons (package_cursor, invert_category (layer_category));
-			-- CS mirror, rotate and move conductor polygons
-		end if;
+		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+			if device.flipped = NO then
+				conductors := get_conductor_objects (package_cursor, layer_category);
+				rotate_conductor_objects (conductors, + device.position.rotation);
+			else
+				conductors := get_conductor_objects (package_cursor, invert_category (layer_category));
+				mirror_conductor_objects (conductors);
+				rotate_conductor_objects (conductors, - device.position.rotation);
+			end if;
 
-		result.splice (before => pac_polygon_list.no_element, source => conductors);
+			move_conductor_objects (conductors, package_displacement);
+
+			-- convert conductor objects to polygons:
+			conductor_polygons := to_polygons (conductors, fill_tolerance);
+		end if;
+		
+		result.splice (before => pac_polygon_list.no_element, source => conductor_polygons);
+
+
 		return result;
 	end get_conductor_polygons;
 	

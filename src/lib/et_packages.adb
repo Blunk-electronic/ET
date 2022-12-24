@@ -170,8 +170,50 @@ package body et_packages is
 	end;
 
 
-	
+	procedure mirror_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		axis		: in type_axis_2d := Y)
+	is
+	begin
+		-- CS
+		null;
+	end mirror_conductor_objects;
 
+
+	procedure rotate_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		angle		: in type_rotation)
+	is
+	begin
+		-- CS
+		null;
+	end rotate_conductor_objects;
+
+
+	procedure move_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		offset		: in type_distance_relative)
+	is
+	begin
+		-- CS
+		null;
+	end move_conductor_objects;
+
+	
+	function to_polygons (
+		conductors	: in type_conductor_objects;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+	begin
+
+		-- CS
+		return result;
+	end to_polygons;
+
+
+	
 -- 	procedure log_plated_millings (
 -- 		millings 		: in type_plated_millings;
 -- 		log_threshold	: in type_log_level)
@@ -347,19 +389,24 @@ package body et_packages is
 	end get_terminal_contours;
 
 
-	function get_conductor_polygons (
+	function get_conductor_objects (
 		package_cursor	: in pac_packages_lib.cursor;
 		layer_category	: in type_signal_layer_category)
-		return pac_polygon_list.list
+		return type_conductor_objects
 	is 
 		packge : type_package_lib renames element (package_cursor);
-		
-		result : pac_polygon_list.list;
 	begin
-		-- CS
+		case layer_category is
+			when OUTER_TOP =>
+				return packge.conductors.top;
 
-		return result;
-	end get_conductor_polygons;
+			when OUTER_BOTTOM =>
+				return packge.conductors.bottom;
+
+			when INNER =>
+				raise constraint_error; -- CS semantic_error ? Error message ?
+		end case;
+	end get_conductor_objects;
 	
 	
 

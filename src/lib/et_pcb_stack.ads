@@ -63,8 +63,12 @@ package et_pcb_stack is
 	keyword_layers		: constant string := "layers";
 
 	
-	type type_signal_layer_category is (OUTER_TOP, INNER, OUTER_BOTTOM);
+	type type_signal_layer_category is (OUTER_TOP, INNER, OUTER_BOTTOM); 
+	-- CS does the order matter ? Use this instead:
+	--type type_signal_layer_category is (OUTER_TOP, OUTER_BOTTOM, INNER); 
 
+	--CS subtype type_signal_layer_category_outer is type_signal_layer_category
+		--range (OUTER_BOTTOM .. OUTER_BOTTOM);
 	
 	function invert_category (cat : in type_signal_layer_category)
 		return type_signal_layer_category;
