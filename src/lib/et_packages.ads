@@ -233,13 +233,16 @@ package et_packages is
 		conductors	: in out type_conductor_objects;
 		offset		: in type_distance_relative);
 
-	-- Converts the given non-electric conductor objects
-	-- to polygons:
+	
+	-- Converts the given non-electric conductor objects to polygons.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a conductor circle is converted to a polygon.
 	function to_polygons (
 		conductors	: in type_conductor_objects;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 		
+
 	
 	-- Silk screen objects include placeholders:
 	type type_silk_screen 

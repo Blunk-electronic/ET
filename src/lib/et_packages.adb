@@ -218,7 +218,7 @@ package body et_packages is
 		scratch := to_polygons (conductors.arcs, tolerance);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
 
-		-- circles
+		-- circles (outer edges only ):
 		scratch := to_polygons_outside (conductors.circles, tolerance);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
 		

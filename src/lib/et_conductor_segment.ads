@@ -48,7 +48,6 @@ with et_design_rules;			use et_design_rules;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
-
 package et_conductor_segment is
 
 	use pac_geometry_brd;

@@ -36,8 +36,9 @@
 --
 --   to do:
 
-with ada.strings;			use ada.strings;
-
+with ada.text_io;				use ada.text_io;
+with ada.strings;				use ada.strings;
+with et_contour_to_polygon;
 
 package body et_conductor_segment is
 
@@ -385,14 +386,17 @@ package body et_conductor_segment is
 		tolerance	: in type_distance_positive)							
 		return type_polygon
 	is 
+		use et_contour_to_polygon;
 		result : type_polygon;
+		outer_radius : constant type_float_positive := 
+			circle.radius + 0.5 * type_float_positive (circle.width);
 	begin
-		--return to_polygon (
-			--arc			=> to_arc_fine (arc),
-			--linewidth	=> type_float_positive (arc.width),
-			--tolerance	=> type_float_positive (tolerance),
-			--mode		=> EXPAND);
+		result.edges := to_edges (
+			circle		=> (circle.center, outer_radius),
+			tolerance	=> tolerance,
+			mode		=> EXPAND);
 
+		optimize_edges (result); -- MANDATORY !!
 		return result;
 	end to_polygon_outside;
 
@@ -402,14 +406,17 @@ package body et_conductor_segment is
 		tolerance	: in type_distance_positive)							
 		return type_polygon
 	is 
+		use et_contour_to_polygon;
 		result : type_polygon;
+		inner_radius : constant type_float_positive :=
+			circle.radius - 0.5 * type_float_positive (circle.width);
 	begin
-		--return to_polygon (
-			--arc			=> to_arc_fine (arc),
-			--linewidth	=> type_float_positive (arc.width),
-			--tolerance	=> type_float_positive (tolerance),
-			--mode		=> EXPAND);
+		result.edges := to_edges (
+			circle		=> (circle.center, inner_radius),
+			tolerance	=> tolerance,
+			mode		=> SHRINK);
 
+		optimize_edges (result); -- MANDATORY !!
 		return result;
 	end to_polygon_inside;
 
