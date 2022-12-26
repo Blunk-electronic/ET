@@ -175,8 +175,9 @@ package body et_packages is
 		axis		: in type_axis_2d := Y)
 	is begin
 		mirror_lines (conductors.lines, axis);
-		-- CS arcs, circles, texts
-		null;
+		mirror_arcs (conductors.arcs, axis);
+		mirror_circles (conductors.circles, axis);
+		-- CS texts
 	end mirror_conductor_objects;
 
 
@@ -185,8 +186,9 @@ package body et_packages is
 		angle		: in type_rotation)
 	is begin
 		rotate_lines (conductors.lines, angle);
-		-- CS arcs, circles, texts
-		null;
+		rotate_arcs (conductors.arcs, angle);
+		rotate_circles (conductors.circles, angle);
+		-- CS texts
 	end rotate_conductor_objects;
 
 	
@@ -196,8 +198,9 @@ package body et_packages is
 		offset		: in type_distance_relative)
 	is begin
 		move_lines (conductors.lines, offset);
-		-- CS arcs, circles, texts
-		null;
+		move_arcs (conductors.arcs, offset);
+		move_circles (conductors.circles, offset);
+		-- CS texts
 	end move_conductor_objects;
 
 	
@@ -206,10 +209,20 @@ package body et_packages is
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
-		result : pac_polygon_list.list;
+		result, scratch : pac_polygon_list.list;
 	begin
+		-- lines:
 		result := to_polygons (conductors.lines, tolerance);
-		-- CS arcs, circles, texts
+
+		-- arcs:
+		scratch := to_polygons (conductors.arcs, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+
+		-- circles
+		scratch := to_polygons_outside (conductors.circles, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		
+		-- CS texts
 		return result;
 	end to_polygons;
 

@@ -438,6 +438,8 @@ package et_pcb is
 	-- Returns the outlines of conductor objects of the non-electrical
 	-- device as a list of polygons.
 	-- Conductor objects are: terminals, texts, lines, arcs, circles, fill zones
+	-- Note regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a conductor circle is converted to a polygon.
 	-- Adresses only those objects which are affected by
 	-- the given layer category:
 	function get_conductor_polygons (

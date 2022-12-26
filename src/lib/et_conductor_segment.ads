@@ -153,6 +153,32 @@ package et_conductor_segment is
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
+
+
+	-- Mirrors a list of arcs along the given axis:
+	procedure mirror_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		axis	: in type_axis_2d := Y);
+
+	
+	-- Rotates a list of arcs by the given angle about the origin:
+	procedure rotate_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		angle	: in type_rotation);
+
+
+	-- Moves a list of arcs by the given offset:
+	procedure move_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		offset	: in type_distance_relative);
+
+
+	-- Converts a list of arcs to a list of polygons:
+	function to_polygons (
+		arcs		: in pac_conductor_arcs.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
+
 	
 	-- Logs the properties of the given arc:
 	procedure arc_conductor_properties (
@@ -169,9 +195,56 @@ package et_conductor_segment is
 		width	: type_track_width := type_track_width'first;
 	end record;
 
+
+	-- Converts the outer edge of a conductor circle to a polygon:	
+	function to_polygon_outside (
+		circle 		: in type_conductor_circle;
+		tolerance	: in type_distance_positive)							
+		return type_polygon;
+
 	
-	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
+	-- Converts the inner edge of a conductor circle to a polygon:	
+	function to_polygon_inside (
+		circle 		: in type_conductor_circle;
+		tolerance	: in type_distance_positive)							
+		return type_polygon;
+
+
+	
+	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
+
+
+	-- Mirrors a list of circles along the given axis:
+	procedure mirror_circles (
+		circles	: in out pac_conductor_circles.list;
+		axis	: in type_axis_2d := Y);
+
+	
+	-- Rotates a list of circles by the given angle about the origin:
+	procedure rotate_circles (
+		circles	: in out pac_conductor_circles.list;
+		angle	: in type_rotation);
+
+
+	-- Moves a list of circles by the given offset:
+	procedure move_circles (
+		circles	: in out pac_conductor_circles.list;
+		offset	: in type_distance_relative);
+
+
+	-- Converts the outer edges of circles to a list of polygons:
+	function to_polygons_outside (
+		circles		: in pac_conductor_circles.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
+
+
+	-- Converts the inner edges of circles to a list of polygons:
+	function to_polygons_inside (
+		circles		: in pac_conductor_circles.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
 
 	
 	-- Logs the properties of the given circle:

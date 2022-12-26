@@ -242,7 +242,6 @@ package body et_conductor_segment is
 			mode		=> EXPAND);
 
 	end to_polygon;
-
 	
 	
 	--function get_shortest_distance (
@@ -291,6 +290,81 @@ package body et_conductor_segment is
 	--end get_shortest_distance;
 	
 
+	procedure mirror_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_conductor_arcs.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is
+			arc : type_conductor_arc := element (c);
+		begin
+			mirror (arc, Y);
+			result.append (arc);
+		end;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end mirror_arcs;
+
+
+	procedure rotate_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		angle	: in type_rotation)
+	is
+		result : pac_conductor_arcs.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is
+			arc : type_conductor_arc := element (c);
+		begin
+			rotate_by (arc, angle);
+			result.append (arc);
+		end;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end rotate_arcs;
+
+
+	procedure move_arcs (
+		arcs	: in out pac_conductor_arcs.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_conductor_arcs.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is
+			arc : type_conductor_arc := element (c);
+		begin
+			move_by (arc, offset);
+			result.append (arc);
+		end;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end move_arcs;
+
+
+	function to_polygons (
+		arcs		: in pac_conductor_arcs.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is begin
+			result.append (to_polygon (element (c), tolerance));
+		end query_arc;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		return result;
+	end to_polygons;
+
+
+	
 	procedure arc_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
@@ -303,6 +377,132 @@ package body et_conductor_segment is
 			 & to_string (arc)
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_conductor_properties;
+
+
+
+	function to_polygon_outside (
+		circle 		: in type_conductor_circle;
+		tolerance	: in type_distance_positive)							
+		return type_polygon
+	is 
+		result : type_polygon;
+	begin
+		--return to_polygon (
+			--arc			=> to_arc_fine (arc),
+			--linewidth	=> type_float_positive (arc.width),
+			--tolerance	=> type_float_positive (tolerance),
+			--mode		=> EXPAND);
+
+		return result;
+	end to_polygon_outside;
+
+
+	function to_polygon_inside (
+		circle 		: in type_conductor_circle;
+		tolerance	: in type_distance_positive)							
+		return type_polygon
+	is 
+		result : type_polygon;
+	begin
+		--return to_polygon (
+			--arc			=> to_arc_fine (arc),
+			--linewidth	=> type_float_positive (arc.width),
+			--tolerance	=> type_float_positive (tolerance),
+			--mode		=> EXPAND);
+
+		return result;
+	end to_polygon_inside;
+
+	
+	procedure mirror_circles (
+		circles	: in out pac_conductor_circles.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_conductor_circles.list;
+
+		procedure query_circle (c : in pac_conductor_circles.cursor) is
+			circle : type_conductor_circle := element (c);
+		begin
+			mirror (circle, Y);
+			result.append (circle);
+		end;
+		
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end mirror_circles;
+
+
+	procedure rotate_circles (
+		circles	: in out pac_conductor_circles.list;
+		angle	: in type_rotation)
+	is
+		result : pac_conductor_circles.list;
+
+		procedure query_circle (c : in pac_conductor_circles.cursor) is
+			circle : type_conductor_circle := element (c);
+		begin
+			rotate_by (circle, angle);
+			result.append (circle);
+		end;
+		
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end rotate_circles;
+
+
+	procedure move_circles (
+		circles	: in out pac_conductor_circles.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_conductor_circles.list;
+
+		procedure query_circle (c : in pac_conductor_circles.cursor) is
+			circle : type_conductor_circle := element (c);
+		begin
+			move_by (circle, offset);
+			result.append (circle);
+		end;
+		
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end move_circles;
+
+
+	function to_polygons_outside (
+		circles		: in pac_conductor_circles.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_circle (c : in pac_conductor_circles.cursor) is begin
+			result.append (to_polygon_outside (element (c), tolerance));
+		end query_circle;
+		
+	begin
+		circles.iterate (query_circle'access);
+		return result;
+	end to_polygons_outside;
+
+
+	function to_polygons_inside (
+		circles		: in pac_conductor_circles.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_circle (c : in pac_conductor_circles.cursor) is begin
+			result.append (to_polygon_inside (element (c), tolerance));
+		end query_circle;
+		
+	begin
+		circles.iterate (query_circle'access);
+		return result;
+	end to_polygons_inside;
 
 	
 
