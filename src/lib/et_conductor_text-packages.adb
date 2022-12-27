@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -53,6 +53,84 @@ package body et_conductor_text.packages is
 		end loop;
 	end iterate;
 	
+
+	procedure mirror_texts (
+		texts	: in out pac_conductor_texts.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_conductor_texts.list;
+
+		procedure query_text (c : in pac_conductor_texts.cursor) is 
+			t : type_conductor_text := element (c);
+		begin
+			mirror_text (t);
+			result.append (t);
+		end query_text;
+		
+	begin
+		texts.iterate (query_text'access);
+		texts := result;
+	end mirror_texts;
+
+
+	procedure rotate_texts (
+		texts	: in out pac_conductor_texts.list;
+		angle	: in type_rotation)
+	is
+		result : pac_conductor_texts.list;
+
+		procedure query_text (c : in pac_conductor_texts.cursor) is 
+			t : type_conductor_text := element (c);
+		begin
+			rotate_text (t, angle);
+			result.append (t);
+		end query_text;
+
+	begin
+		texts.iterate (query_text'access);
+		texts := result;
+	end rotate_texts;
+
+
+	-- Moves a list of texts by the given offset:
+	procedure move_texts (
+		texts	: in out pac_conductor_texts.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_conductor_texts.list;
+
+		procedure query_text (c : in pac_conductor_texts.cursor) is 
+			t : type_conductor_text := element (c);
+		begin
+			move_text (t, offset);
+			result.append (t);
+		end query_text;
+
+	begin
+		texts.iterate (query_text'access);
+		texts := result;
+	end move_texts;
+
+	
+	function to_polygons (
+		texts		: in pac_conductor_texts.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_text (c : in pac_conductor_texts.cursor) is
+			scratch : pac_polygon_list.list;
+		begin
+			scratch := to_polygons (element (c), tolerance);
+			result.splice (before => pac_polygon_list.no_element, source => scratch);
+		end query_text;
+		
+	begin
+		texts.iterate (query_text'access);
+		return result;
+	end to_polygons;
+
 	
 		
 end et_conductor_text.packages;

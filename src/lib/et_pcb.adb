@@ -258,7 +258,7 @@ package body et_pcb is
 			debug		=> false);
 
 
-		-- CONDUCTOR OBJECTS
+		-- CONDUCTOR OBJECTS (lines, arcs, circles, texts)
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
 			if device.flipped = NO then
 				conductors := get_conductor_objects (package_cursor, layer_category);

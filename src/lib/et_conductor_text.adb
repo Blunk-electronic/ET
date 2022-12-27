@@ -54,6 +54,36 @@ package body et_conductor_text is
 	end face_to_mirror;
 
 
+
+	procedure mirror_text (
+		texts	: in out type_conductor_text;
+		axis	: in type_axis_2d := Y)
+	is
+	begin
+		null;
+	end mirror_text;
+
+
+	procedure rotate_text (
+		texts	: in out type_conductor_text;
+		angle	: in type_rotation)
+	is
+	begin
+		null;
+	end rotate_text;
+
+
+
+	procedure move_text (
+		texts	: in out type_conductor_text;
+		offset	: in type_distance_relative)
+	is
+	begin
+		null;
+	end move_text;
+
+	
+
 	function to_polygons (
 		text		: in type_conductor_text;
 		tolerance	: in type_distance_positive;

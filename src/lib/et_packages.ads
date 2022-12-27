@@ -222,7 +222,7 @@ package et_packages is
 		axis		: in type_axis_2d := Y);
 
 	-- Rotates the given non-electric conductor objects 
-	-- by the given angle:
+	-- by the given angle about the origin:
 	procedure rotate_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		angle		: in type_rotation);

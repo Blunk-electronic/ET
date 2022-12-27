@@ -36,10 +36,13 @@
 --
 --   to do:
 
+
+
 package et_conductor_text.packages is
 	
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+	use pac_conductor_texts;
 
 	
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
@@ -48,7 +51,32 @@ package et_conductor_text.packages is
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);
 		proceed	: not null access boolean);
 	
-		
+
+	-- Mirrors a list of texts along the given axis:
+	procedure mirror_texts (
+		texts	: in out pac_conductor_texts.list;
+		axis	: in type_axis_2d := Y);
+
+
+	-- Rotates a list of texts by the given angle about the origin:
+	procedure rotate_texts (
+		texts	: in out pac_conductor_texts.list;
+		angle	: in type_rotation);
+
+
+	-- Moves a list of texts by the given offset:
+	procedure move_texts (
+		texts	: in out pac_conductor_texts.list;
+		offset	: in type_distance_relative);
+
+
+	-- Converts a list of texts to a list of polygons:
+	function to_polygons (
+		texts		: in pac_conductor_texts.list;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list;
+
+	
 end et_conductor_text.packages;
 
 -- Soli Deo Gloria

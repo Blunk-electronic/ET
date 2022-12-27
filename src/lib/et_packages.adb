@@ -177,7 +177,7 @@ package body et_packages is
 		mirror_lines (conductors.lines, axis);
 		mirror_arcs (conductors.arcs, axis);
 		mirror_circles (conductors.circles, axis);
-		-- CS texts
+		mirror_texts (conductors.texts);
 	end mirror_conductor_objects;
 
 
@@ -188,7 +188,7 @@ package body et_packages is
 		rotate_lines (conductors.lines, angle);
 		rotate_arcs (conductors.arcs, angle);
 		rotate_circles (conductors.circles, angle);
-		-- CS texts
+		rotate_texts (conductors.texts, angle);
 	end rotate_conductor_objects;
 
 	
@@ -200,7 +200,7 @@ package body et_packages is
 		move_lines (conductors.lines, offset);
 		move_arcs (conductors.arcs, offset);
 		move_circles (conductors.circles, offset);
-		-- CS texts
+		move_texts (conductors.texts, offset);
 	end move_conductor_objects;
 
 	
@@ -222,7 +222,10 @@ package body et_packages is
 		scratch := to_polygons_outside (conductors.circles, tolerance);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
 		
-		-- CS texts
+		-- texts
+		scratch := to_polygons (conductors.texts, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		
 		return result;
 	end to_polygons;
 

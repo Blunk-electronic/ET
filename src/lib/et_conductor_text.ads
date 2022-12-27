@@ -41,6 +41,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
@@ -71,6 +72,26 @@ package et_conductor_text is
 	record
 		vectors	: type_vector_text; -- CS rename to text ?
 	end record;
+
+
+	
+	-- Mirrors a text along the given axis:
+	procedure mirror_text (
+		texts	: in out type_conductor_text;
+		axis	: in type_axis_2d := Y);
+
+
+	-- Rotates a text by the given angle about the origin:
+	procedure rotate_text (
+		texts	: in out type_conductor_text;
+		angle	: in type_rotation);
+
+
+	-- Moves a text by the given offset:
+	procedure move_text (
+		texts	: in out type_conductor_text;
+		offset	: in type_distance_relative);
+
 
 	
 	function to_polygons (
