@@ -184,7 +184,8 @@ package et_geometry_1.et_polygons is
 
 	-- If polygons are to be stored, then use this package:
 	package pac_polygon_list is new doubly_linked_lists (type_polygon);
-
+	use pac_polygon_list;
+	
 
 	-- Updates the boundaries of the given list of polygons:
 	procedure update_boundaries (
@@ -248,16 +249,29 @@ package et_geometry_1.et_polygons is
 		return pac_vectors.list;
 
 
+	
 	-- Mirrors a polygon along the given axis:
 	procedure mirror_polygon (
 		polygon	: in out type_polygon;
 		axis	: in type_axis_2d);
-	
 
+	-- MIrrors a list of polygons along the given axis:
+	procedure mirror_polygons (
+		polygons	: in out pac_polygon_list.list;
+		axis		: in type_axis_2d);
+
+
+	
 	-- Rotates a polygon by the given angle about the origin:
 	procedure rotate_polygon (
 		polygon	: in out type_polygon;
 		angle	: in type_angle);
+
+	-- Rotates a list of polygons by the given angle about the origin:
+	procedure rotate_polygons (
+		polygons	: in out pac_polygon_list.list;
+		angle		: in type_angle);
+
 
 	
 	-- Rotates a polygon about the given center by the given angle:
@@ -268,10 +282,17 @@ package et_geometry_1.et_polygons is
 		return type_polygon;
 
 
+	
 	-- Moves a polygon by the given offset:
 	procedure move_polygon (
 		polygon	: in out type_polygon;
 		offset	: in type_offset);
+
+	-- Moves a list of polygons by the given offset:
+	procedure move_polygons (
+		polygons	: in out pac_polygon_list.list;
+		offset		: in type_offset);
+
 
 	
 	-- Returns the boundaries of the given polygon.

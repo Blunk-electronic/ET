@@ -810,6 +810,25 @@ package body et_geometry_1.et_polygons is
 	end mirror_polygon;
 	
 
+	procedure mirror_polygons (
+		polygons	: in out pac_polygon_list.list;
+		axis		: in type_axis_2d)
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_polygon (c : in pac_polygon_list.cursor) is
+			p : type_polygon := element (c);
+		begin
+			mirror_polygon (p, axis);
+			result.append (p);
+		end query_polygon;
+
+	begin 
+		polygons.iterate (query_polygon'access);
+		polygons := result;
+	end mirror_polygons;
+
+	
 	procedure rotate_polygon (
 		polygon	: in out type_polygon;
 		angle	: in type_angle)
@@ -827,6 +846,26 @@ package body et_geometry_1.et_polygons is
 		polygon.edges.iterate (query_edge'access);
 		polygon.edges := result;
 	end rotate_polygon;
+	
+
+	procedure rotate_polygons (
+		polygons	: in out pac_polygon_list.list;
+		angle		: in type_angle)
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_polygon (c : in pac_polygon_list.cursor) is
+			p : type_polygon := element (c);
+		begin
+			rotate_polygon (p, angle);
+			result.append (p);
+		end query_polygon;
+
+	begin 
+		polygons.iterate (query_polygon'access);
+		polygons := result;
+	end rotate_polygons;
+
 	
 	
 	function rotate (
@@ -864,6 +903,26 @@ package body et_geometry_1.et_polygons is
 		polygon.edges.iterate (query_edge'access);
 		polygon.edges := result;
 	end move_polygon;
+
+
+	procedure move_polygons (
+		polygons	: in out pac_polygon_list.list;
+		offset		: in type_offset)
+	is
+		result : pac_polygon_list.list;
+
+		procedure query_polygon (c : in pac_polygon_list.cursor) is
+			p : type_polygon := element (c);
+		begin
+			move_polygon (p, offset);
+			result.append (p);
+		end query_polygon;
+
+	begin 
+		polygons.iterate (query_polygon'access);
+		polygons := result;
+	end move_polygons;
+
 
 	
 	
