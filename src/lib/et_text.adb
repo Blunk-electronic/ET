@@ -906,8 +906,25 @@ package body et_text is
 			text	: in out type_vector_text;
 			axis	: in type_axis_2d := Y)
 		is
+			use pac_polygons;
+			result : pac_character_lines.list;
+				
+			procedure query_line (c : in pac_character_lines.cursor) is
+				line : type_character_line := element (c);
+			begin
+				mirror_line (line, axis);
+				result.append (line);
+			end query_line;
+			
 		begin
-			null;
+			-- line segments:
+			text.lines.iterate (query_line'access);
+			text.lines := result;
+
+			-- borders
+			mirror_polygons (text.borders, axis);
+
+			-- CS boundaries
 		end mirror_vector_text;
 
 
@@ -915,8 +932,27 @@ package body et_text is
 			text	: in out type_vector_text;
 			angle	: in type_rotation)
 		is
+			angle_float : constant type_angle := type_angle (angle);
+			
+			use pac_polygons;
+			result : pac_character_lines.list;
+				
+			procedure query_line (c : in pac_character_lines.cursor) is
+				line : type_character_line := element (c);
+			begin
+				rotate_by (line, angle_float);
+				result.append (line);
+			end query_line;
+			
 		begin
-			null;
+			-- line segments:
+			text.lines.iterate (query_line'access);
+			text.lines := result;
+
+			-- borders
+			rotate_polygons (text.borders, angle_float);
+
+			-- CS boundaries
 		end rotate_vector_text;
 
 
@@ -924,8 +960,27 @@ package body et_text is
 			text	: in out type_vector_text;
 			offset	: in type_distance_relative)
 		is
+			offset_float : constant type_offset := to_offset (offset);
+			
+			use pac_polygons;
+			result : pac_character_lines.list;
+				
+			procedure query_line (c : in pac_character_lines.cursor) is
+				line : type_character_line := element (c);
+			begin
+				move_by (line, offset_float);
+				result.append (line);
+			end query_line;
+			
 		begin
-			null;
+			-- line segments:
+			text.lines.iterate (query_line'access);
+			text.lines := result;
+
+			-- borders
+			move_polygons (text.borders, offset_float);
+
+			-- CS boundaries
 		end move_vector_text;
 
 		
