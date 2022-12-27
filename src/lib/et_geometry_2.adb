@@ -550,6 +550,14 @@ package body et_geometry_2 is
 	end to_distance_relative;
 
 	
+	function to_offset (
+		distance : in type_distance_relative)
+		return type_offset
+	is begin
+		return (
+			x => type_float (distance.x),
+			y => type_float (distance.y));
+	end to_offset;
 
 	
 	

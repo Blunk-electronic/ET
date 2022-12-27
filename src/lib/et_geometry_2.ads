@@ -314,6 +314,10 @@ package et_geometry_2 is
 		return type_distance_relative;
 
 
+	function to_offset (
+		distance : in type_distance_relative)
+		return type_offset;
+
 	
 ---- POLAR:
 
