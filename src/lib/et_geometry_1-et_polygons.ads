@@ -254,12 +254,24 @@ package et_geometry_1.et_polygons is
 		axis	: in type_axis_2d);
 	
 
+	-- Rotates a polygon by the given angle about the origin:
+	procedure rotate_polygon (
+		polygon	: in out type_polygon;
+		angle	: in type_angle);
+
+	
 	-- Rotates a polygon about the given center by the given angle:
 	function rotate (
 		polygon	: in type_polygon;
 		center	: in type_vector;
 		angle	: in type_angle)
 		return type_polygon;
+
+
+	-- Moves a polygon by the given offset:
+	procedure move_polygon (
+		polygon	: in out type_polygon;
+		offset	: in type_offset);
 
 	
 	-- Returns the boundaries of the given polygon.

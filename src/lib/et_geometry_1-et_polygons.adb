@@ -809,6 +809,24 @@ package body et_geometry_1.et_polygons is
 		polygon := to_polygon (vertices);
 	end mirror_polygon;
 	
+
+	procedure rotate_polygon (
+		polygon	: in out type_polygon;
+		angle	: in type_angle)
+	is
+		result : pac_edges.list;
+		
+		procedure query_edge (c : in pac_edges.cursor) is
+			edge : type_edge := element (c);
+		begin
+			rotate_by (edge, angle);
+			result.append (edge);
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+		polygon.edges := result;
+	end rotate_polygon;
 	
 	
 	function rotate (
@@ -827,6 +845,25 @@ package body et_geometry_1.et_polygons is
 
 		return to_polygon (vertices);
 	end rotate;
+
+
+	procedure move_polygon (
+		polygon	: in out type_polygon;
+		offset	: in type_offset)
+	is
+		result : pac_edges.list;
+		
+		procedure query_edge (c : in pac_edges.cursor) is
+			edge : type_edge := element (c);
+		begin
+			move_by (edge, offset);
+			result.append (edge);
+		end query_edge;
+		
+	begin
+		polygon.edges.iterate (query_edge'access);
+		polygon.edges := result;
+	end move_polygon;
 
 	
 	
