@@ -92,7 +92,7 @@ package body et_conductor_text.packages is
 	end rotate_texts;
 
 
-	-- Moves a list of texts by the given offset:
+
 	procedure move_texts (
 		texts	: in out pac_conductor_texts.list;
 		offset	: in type_distance_relative)

@@ -56,30 +56,26 @@ package body et_conductor_text is
 
 
 	procedure mirror_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		axis	: in type_axis_2d := Y)
-	is
-	begin
-		null;
+	is begin
+		mirror_vector_text (text.vectors);
 	end mirror_text;
 
 
 	procedure rotate_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		angle	: in type_rotation)
-	is
-	begin
-		null;
+	is begin
+		rotate_vector_text (text.vectors, angle);
 	end rotate_text;
 
 
-
 	procedure move_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		offset	: in type_distance_relative)
-	is
-	begin
-		null;
+	is begin
+		move_vector_text (text.vectors, offset);
 	end move_text;
 
 	

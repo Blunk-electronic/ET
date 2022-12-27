@@ -901,6 +901,34 @@ package body et_text is
 			return text.boundaries;
 		end get_boundaries;
 
+
+		procedure mirror_vector_text (
+			text	: in out type_vector_text;
+			axis	: in type_axis_2d := Y)
+		is
+		begin
+			null;
+		end mirror_vector_text;
+
+
+		procedure rotate_vector_text (
+			text	: in out type_vector_text;
+			angle	: in type_rotation)
+		is
+		begin
+			null;
+		end rotate_vector_text;
+
+
+		procedure move_vector_text (
+			text	: in out type_vector_text;
+			offset	: in type_distance_relative)
+		is
+		begin
+			null;
+		end move_vector_text;
+
+		
 		
 	end generic_pac_text;
 

@@ -77,19 +77,19 @@ package et_conductor_text is
 	
 	-- Mirrors a text along the given axis:
 	procedure mirror_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		axis	: in type_axis_2d := Y);
 
 
 	-- Rotates a text by the given angle about the origin:
 	procedure rotate_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		angle	: in type_rotation);
 
 
 	-- Moves a text by the given offset:
 	procedure move_text (
-		texts	: in out type_conductor_text;
+		text	: in out type_conductor_text;
 		offset	: in type_distance_relative);
 
 

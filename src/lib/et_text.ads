@@ -1773,6 +1773,23 @@ package et_text is
 			return pac_geometry_1.type_boundaries;
 
 
+		-- Mirrors a vector text along the given axis:
+		procedure mirror_vector_text (
+			text	: in out type_vector_text;
+			axis	: in type_axis_2d := Y);
+		
+
+		-- Rotates a vector text by the given angle about the origin:
+		procedure rotate_vector_text (
+			text	: in out type_vector_text;
+			angle	: in type_rotation);
+
+
+		-- Move a vector text by the given offset:
+		procedure move_vector_text (
+			text	: in out type_vector_text;
+			offset	: in type_distance_relative);
+
 		
 	private
 		type type_vector_text is record
