@@ -70,10 +70,10 @@ package et_conductor_text.packages is
 		offset	: in type_distance_relative);
 
 
-	-- Converts a list of texts to a list of polygons:
+	-- Converts a list of texts to a list of polygons.
+	-- Adresses the borders of the vector texts only.
 	function to_polygons (
-		texts		: in pac_conductor_texts.list;
-		tolerance	: in type_distance_positive)
+		texts		: in pac_conductor_texts.list)
 		return pac_polygon_list.list;
 
 	

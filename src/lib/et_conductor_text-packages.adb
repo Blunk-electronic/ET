@@ -36,6 +36,9 @@
 --
 --   to do:
 
+with ada.text_io;			use ada.text_io;
+
+
 package body et_conductor_text.packages is
 	
 
@@ -113,16 +116,16 @@ package body et_conductor_text.packages is
 
 	
 	function to_polygons (
-		texts		: in pac_conductor_texts.list;
-		tolerance	: in type_distance_positive)
+		texts		: in pac_conductor_texts.list)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 
 		procedure query_text (c : in pac_conductor_texts.cursor) is
+			text : type_conductor_text renames element (c);
 			scratch : pac_polygon_list.list;
 		begin
-			scratch := to_polygons (element (c), tolerance);
+			scratch := get_borders (text.vectors);
 			result.splice (before => pac_polygon_list.no_element, source => scratch);
 		end query_text;
 		
