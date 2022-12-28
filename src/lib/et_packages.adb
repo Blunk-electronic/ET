@@ -223,7 +223,7 @@ package body et_packages is
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
 		
 		-- texts
-		scratch := to_polygons (conductors.texts, tolerance);
+		scratch := to_polygons (conductors.texts);
 		result.splice (before => pac_polygon_list.no_element, source => scratch);
 		
 		return result;
