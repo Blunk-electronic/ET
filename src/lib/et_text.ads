@@ -1774,6 +1774,11 @@ package et_text is
 			return pac_geometry_1.type_boundaries;
 
 
+		-- Computes the boundaries of the given vector text:
+		procedure update_text_boundaries (
+			text	: in out type_vector_text);
+
+		
 		-- Mirrors a vector text along the given axis:
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
@@ -1790,7 +1795,7 @@ package et_text is
 		procedure move_vector_text (
 			text	: in out type_vector_text;
 			offset	: in type_distance_relative);
-
+		
 		
 	private
 		type type_vector_text is record

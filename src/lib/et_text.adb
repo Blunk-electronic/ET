@@ -493,7 +493,8 @@ package body et_text is
 			-- For alignment we need the total length of the text:
 			text_length : constant type_distance_positive := to_distance (half_line_width) +
 				type_distance (text'length - 1) * type_distance (spacing * scale_factor);
-
+			-- CS constraint_error raised if text length is zero !
+			
 			text_length_half : constant type_distance_positive := text_length * 0.5;
 
 			text_height : constant type_distance_positive := size;
@@ -902,6 +903,77 @@ package body et_text is
 		end get_boundaries;
 
 
+		procedure update_text_boundaries (
+			text	: in out type_vector_text)
+		is
+			half_line_width : constant type_float_positive := type_float (text.width) * 0.5;
+			
+			procedure query_line (c : in pac_character_lines.cursor) is
+				l : type_character_line renames element (c);
+				sx : constant type_float := get_x (l.start_point);
+				sy : constant type_float := get_y (l.start_point);
+				ex : constant type_float := get_x (l.end_point);
+				ey : constant type_float := get_y (l.end_point);
+			begin
+				-- update greatest x (right border):
+				if sx > text.boundaries.greatest_x then
+					text.boundaries.greatest_x := sx;
+				end if;
+
+				if ex > text.boundaries.greatest_x then
+					text.boundaries.greatest_x := ex;
+				end if;
+
+				
+				-- update greatest y (upper border):
+				if sy > text.boundaries.greatest_y then
+					text.boundaries.greatest_y := sy;
+				end if;
+
+				if ey > text.boundaries.greatest_y then
+					text.boundaries.greatest_y := ey;
+				end if;
+
+
+				-- update smallest x (left border):
+				if sx < text.boundaries.smallest_x then
+					text.boundaries.smallest_x := sx;
+				end if;
+
+				if ex < text.boundaries.smallest_x then
+					text.boundaries.smallest_x := ex;
+				end if;
+
+				
+				-- update smallest y (lower border):
+				if sy < text.boundaries.smallest_y then
+					text.boundaries.smallest_y := sy;
+				end if;
+
+				if ey < text.boundaries.smallest_y then
+					text.boundaries.smallest_y := ey;
+				end if;
+
+			end query_line;
+			
+		begin
+			-- clear the old boundaries:
+			text.boundaries := (others => <>);
+
+			-- iterate all line segments:
+			text.lines.iterate (query_line'access);
+
+			-- Since the lines have a width, the boundaries must
+			-- be extended by half the line width:
+			text.boundaries.greatest_x := text.boundaries.greatest_x + half_line_width;
+			text.boundaries.greatest_y := text.boundaries.greatest_y + half_line_width;
+
+			text.boundaries.smallest_x := text.boundaries.smallest_x - half_line_width;
+			text.boundaries.smallest_y := text.boundaries.smallest_y - half_line_width;
+		end update_text_boundaries;
+
+
+		
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_axis_2d := Y)
@@ -924,7 +996,8 @@ package body et_text is
 			-- borders
 			mirror_polygons (text.borders, axis);
 
-			-- CS boundaries
+			-- boundaries
+			update_text_boundaries (text);
 		end mirror_vector_text;
 
 
@@ -952,7 +1025,8 @@ package body et_text is
 			-- borders
 			rotate_polygons (text.borders, angle_float);
 
-			-- CS boundaries
+			-- boundaries
+			update_text_boundaries (text);
 		end rotate_vector_text;
 
 
@@ -980,10 +1054,10 @@ package body et_text is
 			-- borders
 			move_polygons (text.borders, offset_float);
 
-			-- CS boundaries
+			-- boundaries
+			update_text_boundaries (text);
 		end move_vector_text;
-
-		
+	
 		
 	end generic_pac_text;
 
