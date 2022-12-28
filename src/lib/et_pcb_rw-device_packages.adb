@@ -1218,6 +1218,136 @@ package body et_pcb_rw.device_packages is
 			
 		end build_terminal;
 
+
+
+		procedure build_text is begin
+			case stack.parent is
+				when SEC_TOP =>
+					case stack.parent (degree => 2) is
+						when SEC_CONDUCTOR =>
+							
+							append (
+								container	=> packge.conductors.top.texts,
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment,
+										make_border	=> true)));
+
+							
+						when SEC_ROUTE_RESTRICT =>
+
+							append (
+								container	=> packge.route_restrict.top.texts,
+								new_item	=> (pac_text with others => <>));
+
+							
+						when SEC_VIA_RESTRICT =>
+
+							append (
+								container	=> packge.via_restrict.top.texts,
+								new_item	=> (pac_text with others => <>));
+
+							
+						when SEC_SILK_SCREEN =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.silk_screen.top.texts,
+								new_item	=> pac_text);
+
+
+						when SEC_ASSEMBLY_DOCUMENTATION =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.assembly_documentation.top.texts,
+								new_item	=> pac_text);
+
+							
+						when SEC_STOP_MASK =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.stop_mask.top.texts,
+								new_item	=> pac_text);
+
+
+							
+						-- CS SEC_KEEPOUT
+							
+						when others => invalid_section;
+					end case;
+
+					-- clean up for next text
+					pac_text := (others => <>);
+
+					
+				when SEC_BOTTOM =>
+					case stack.parent (degree => 2) is
+						when SEC_CONDUCTOR =>
+							
+							append (
+								container	=> packge.conductors.bottom.texts,
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										mirror		=> YES,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment,
+										make_border	=> true)));
+
+
+						when SEC_ROUTE_RESTRICT =>
+
+							append (
+								container	=> packge.route_restrict.bottom.texts,
+								new_item	=> (pac_text with others => <>));
+
+
+						when SEC_VIA_RESTRICT =>
+
+							append (
+								container	=> packge.via_restrict.bottom.texts,
+								new_item	=> (pac_text with others => <>));
+
+							
+						when SEC_SILK_SCREEN =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.silk_screen.bottom.texts,
+								new_item	=> pac_text);
+
+
+						when SEC_ASSEMBLY_DOCUMENTATION =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.assembly_documentation.bottom.texts,
+								new_item	=> pac_text);
+
+							
+						when SEC_STOP_MASK =>
+
+							pac_texts_fab_with_content.append (
+								container	=> packge.stop_mask.bottom.texts,
+								new_item	=> pac_text);
+
+							
+						-- CS SEC_KEEPOUT
+							
+						when others => invalid_section;
+					end case;
+					
+					-- clean up for next text
+					pac_text := (others => <>);
+
+				when others => invalid_section;
+			end case;
+
+		end build_text;
+			
 		
 		procedure process_line is 
 
@@ -2375,128 +2505,7 @@ package body et_pcb_rw.device_packages is
 						end case;
 
 					when SEC_TEXT =>
-						case stack.parent is
-							when SEC_TOP =>
-								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR =>
-										
-										append (
-											container	=> packge.conductors.top.texts,
-											--new_item	=> (pac_text with others => <>));
-											new_item	=> (pac_text with vectorize_text (
-													content		=> pac_text.content,
-													size		=> pac_text.size,
-													rotation	=> pac_text.position.rotation,
-													position	=> pac_text.position.place,
-													line_width	=> pac_text.line_width,
-													alignment	=> pac_text.alignment,
-													make_border	=> true)));
-
-									when SEC_ROUTE_RESTRICT =>
-
-										append (
-											container	=> packge.route_restrict.top.texts,
-											new_item	=> (pac_text with others => <>));
-										
-									when SEC_VIA_RESTRICT =>
-
-										append (
-											container	=> packge.via_restrict.top.texts,
-											new_item	=> (pac_text with others => <>));
-
-										
-									when SEC_SILK_SCREEN =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.silk_screen.top.texts,
-											new_item	=> pac_text);
-
-
-									when SEC_ASSEMBLY_DOCUMENTATION =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.assembly_documentation.top.texts,
-											new_item	=> pac_text);
-										
-									when SEC_STOP_MASK =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.stop_mask.top.texts,
-											new_item	=> pac_text);
-
-
-										
-									-- CS SEC_KEEPOUT
-										
-									when others => invalid_section;
-								end case;
-
-								-- clean up for next text
-								pac_text := (others => <>);
-
-								
-							when SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR =>
-										
-										append (
-											container	=> packge.conductors.bottom.texts,
-											--new_item	=> (pac_text with others => <>));
-											new_item	=> (pac_text with vectorize_text (
-													content		=> pac_text.content,
-													size		=> pac_text.size,
-													rotation	=> pac_text.position.rotation,
-													position	=> pac_text.position.place,
-													mirror		=> YES,
-													line_width	=> pac_text.line_width,
-													alignment	=> pac_text.alignment,
-													make_border	=> true)));
-
-
-									when SEC_ROUTE_RESTRICT =>
-
-										append (
-											container	=> packge.route_restrict.bottom.texts,
-											new_item	=> (pac_text with others => <>));
-
-
-									when SEC_VIA_RESTRICT =>
-
-										append (
-											container	=> packge.via_restrict.bottom.texts,
-											new_item	=> (pac_text with others => <>));
-
-										
-									when SEC_SILK_SCREEN =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.silk_screen.bottom.texts,
-											new_item	=> pac_text);
-
-
-									when SEC_ASSEMBLY_DOCUMENTATION =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.assembly_documentation.bottom.texts,
-											new_item	=> pac_text);
-										
-									when SEC_STOP_MASK =>
-
-										pac_texts_fab_with_content.append (
-											container	=> packge.stop_mask.bottom.texts,
-											new_item	=> pac_text);
-
-										
-									-- CS SEC_KEEPOUT
-										
-									when others => invalid_section;
-								end case;
-								
-								-- clean up for next text
-								pac_text := (others => <>);
-
-							when others => invalid_section;
-						end case;
+						build_text;
 
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
