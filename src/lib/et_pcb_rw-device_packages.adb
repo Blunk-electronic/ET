@@ -921,6 +921,7 @@ package body et_pcb_rw.device_packages is
 		--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
 		smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
 
+		
 		procedure read_text is
 			kw : constant string := f (line, 1);
 		begin
@@ -2381,7 +2382,15 @@ package body et_pcb_rw.device_packages is
 										
 										append (
 											container	=> packge.conductors.top.texts,
-											new_item	=> (pac_text with others => <>));
+											--new_item	=> (pac_text with others => <>));
+											new_item	=> (pac_text with vectorize_text (
+													content		=> pac_text.content,
+													size		=> pac_text.size,
+													rotation	=> pac_text.position.rotation,
+													position	=> pac_text.position.place,
+													line_width	=> pac_text.line_width,
+													alignment	=> pac_text.alignment,
+													make_border	=> true)));
 
 									when SEC_ROUTE_RESTRICT =>
 
@@ -2432,7 +2441,16 @@ package body et_pcb_rw.device_packages is
 										
 										append (
 											container	=> packge.conductors.bottom.texts,
-											new_item	=> (pac_text with others => <>));
+											--new_item	=> (pac_text with others => <>));
+											new_item	=> (pac_text with vectorize_text (
+													content		=> pac_text.content,
+													size		=> pac_text.size,
+													rotation	=> pac_text.position.rotation,
+													position	=> pac_text.position.place,
+													mirror		=> YES,
+													line_width	=> pac_text.line_width,
+													alignment	=> pac_text.alignment,
+													make_border	=> true)));
 
 
 									when SEC_ROUTE_RESTRICT =>
