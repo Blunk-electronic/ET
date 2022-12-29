@@ -37,16 +37,16 @@
 --   to do:
 --		- separate in two packages things related to board and device package.
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
+with ada.text_io;					use ada.text_io;
+with ada.characters;				use ada.characters;
 with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+with ada.characters.handling;		use ada.characters.handling;
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
+with ada.strings.maps;				use ada.strings.maps;
+with ada.strings.bounded; 			use ada.strings.bounded;
+with ada.containers; 				use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -55,20 +55,20 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_geometry;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_text;
-with et_drills;					use et_drills;
-with et_vias;					use et_vias;
-with et_packages;				use et_packages;
-with et_devices;
-with et_pcb_stack;				use et_pcb_stack;
+with et_drills;						use et_drills;
+with et_vias;						use et_vias;
+with et_packages;					use et_packages;
+with et_devices;					use et_devices;
+with et_pcb_stack;					use et_pcb_stack;
 with et_frames;
-with et_design_rules;			use et_design_rules;
+with et_design_rules;				use et_design_rules;
 
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
@@ -430,8 +430,7 @@ package et_pcb is
 	
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
-		key_type		=> et_devices.type_device_name, -- H1, FD2, ...
-		"<"				=> et_devices."<",													 
+		key_type		=> type_device_name, -- H1, FD2, ...
 		element_type	=> type_device_non_electric);
 
 	use pac_devices_non_electric;
