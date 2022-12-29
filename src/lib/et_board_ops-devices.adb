@@ -153,7 +153,7 @@ package body et_board_ops.devices is
 			log_threshold	=> log_threshold + 1);
 
 		-- locate the package in the library
-		package_cursor_lib := locate_package_model (package_model);
+		package_cursor_lib := get_package_model (package_model);
 
 		-- add the device to the module
 		update_element (
@@ -748,10 +748,10 @@ package body et_board_ops.devices is
 		package_position := pac_devices_sch.element (device_cursor).position;
 		
 		-- Set the cursor to package model:
-		package_model_cursor := locate_package_model (model);
+		package_model_cursor := get_package_model (model);
 
 		-- Locate the desired terminal in the package model:
-		terminal_cursor := terminal_properties (package_model_cursor, terminal_name);
+		terminal_cursor := get_terminal (package_model_cursor, terminal_name);
 		if terminal_cursor = pac_terminals.no_element then
 			terminal_not_found (terminal_name);
 		end if;

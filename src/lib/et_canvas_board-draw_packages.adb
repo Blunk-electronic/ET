@@ -146,7 +146,8 @@ is
 		
 		
 		-- locate the package model in the package library:
-		package_cursor : constant et_packages.pac_package_models.cursor := locate_package_model (model);
+		package_cursor : constant et_packages.pac_package_models.cursor := 
+			get_package_model (model);
 
 		
 		-- Maps from meaning of given placeholder to text content:

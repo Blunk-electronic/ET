@@ -127,7 +127,7 @@ package body et_schematic.device_query_ops is
 		package_model : constant pac_package_model_file_name.bounded_string :=
 			get_package_model (device);  -- libraries/packages/smd/SOT23.pac
 	begin
-		return locate_package_model (package_model);
+		return get_package_model (package_model);
 	end get_package_model;
 
 	
@@ -251,10 +251,10 @@ package body et_schematic.device_query_ops is
 
 	begin
 		-- Get a cursor to the package model:
-		package_cursor := locate_package_model (element (variant_lib).package_model);
+		package_cursor := get_package_model (element (variant_lib).package_model);
 		
 		-- Get the cursor to the actual terminal:
-		return terminal_properties (package_cursor, terminal_name);
+		return get_terminal (package_cursor, terminal_name);
 	end get_terminal;
 
 	

@@ -341,7 +341,7 @@ package et_packages is
 
 	
 	-- CS: this should be a hashed map:
-	package pac_package_models is new indefinite_ordered_maps ( -- CS rename to pac_package_models
+	package pac_package_models is new indefinite_ordered_maps (
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
 		element_type	=> type_package_model);
 
@@ -355,7 +355,7 @@ package et_packages is
 
 	
 	-- Returns a cursor to the given package model.
-	function locate_package_model ( -- CS rename to get_package_model ?
+	function get_package_model (
 		model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor;
 
@@ -366,7 +366,7 @@ package et_packages is
 	
 	-- Returns a cursor to the requested terminal (with all its properties) 
 	-- within the given package model:
-	function terminal_properties ( -- CS rename to get_terminal ?
+	function get_terminal (
 		cursor		: in pac_package_models.cursor;
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return pac_terminals.cursor;

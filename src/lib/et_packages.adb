@@ -291,7 +291,7 @@ package body et_packages is
 	end to_package_description;
 
 	
-	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
+	function get_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor 
 	is begin
 		return pac_package_models.find (package_models, model_name);
@@ -312,7 +312,7 @@ package body et_packages is
 	end is_real;
 
 	
-	function terminal_properties (
+	function get_terminal (
 		cursor		: in pac_package_models.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
 		return pac_terminals.cursor 
@@ -328,13 +328,13 @@ package body et_packages is
 			terminal_cursor := find (model.terminals, terminal);
 		end;
 		
-	begin -- terminal_position
+	begin
 		pac_package_models.query_element (
 			position	=> cursor,
 			process		=> query_terminals'access);
 
 		return terminal_cursor;
-	end terminal_properties;
+	end get_terminal;
 	
 
 	function get_terminal_contours (
