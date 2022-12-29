@@ -64,8 +64,6 @@ with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules;					use et_design_rules;
 with et_conductor_segment;				use et_conductor_segment;
-with et_fill_zones;						use et_fill_zones;
-with et_fill_zones.packages;			use et_fill_zones.packages;
 with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
@@ -191,13 +189,10 @@ package et_packages is
 
 	-- All objects of this category are floating. Means they
 	-- have no connection to a pad or a track (net):
-	
 	type type_conductor_objects is record 
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
-		--fill_zones	: type_fill_zones;
-		--cutouts		: packages.pac_cutouts.list;
 		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 	
@@ -209,11 +204,6 @@ package et_packages is
 		bottom	: type_conductor_objects;
 	end record;
 
-	-- CS ?
-	--type type_fill_zones_both_sides is record
-		--fill_zones	: type_fill_zones;
-		--cutouts		: packages.pac_cutouts.list;
-	--end record;
 
 	-- Mirrors the given non-electric conductor objects 
 	-- along the given axis:
@@ -314,7 +304,6 @@ package et_packages is
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
 		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
-		-- CS fill_zones		: type_fill_zones_both_sides; -- floating zones
 		keepout 		: type_keepout_both_sides;
 		stop_mask		: type_stop_mask_both_sides; -- not terminal related
 		stencil			: type_stencil_both_sides; -- not terminal related
