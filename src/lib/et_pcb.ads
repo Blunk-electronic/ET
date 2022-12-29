@@ -434,9 +434,12 @@ package et_pcb is
 		"<"				=> et_devices."<",													 
 		element_type	=> type_device_non_electric);
 
-
+	use pac_devices_non_electric;
+	
+	
 	-- Returns the outlines of conductor objects of the non-electrical
-	-- device as a list of polygons.
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
 	-- Conductor objects are: terminals, texts, lines, arcs, circles, fill zones
 	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
 	--  edge of a conductor circle is converted to a polygon.
@@ -448,11 +451,12 @@ package et_pcb is
 		return pac_polygon_list.list;
 
 
-
-	-- CS
-	--function get_hole_polygons (
-		--device_cursor	: in pac_devices_non_electric.cursor)
-		--return pac_polygon_list.list;
+	-- Returns the outlines of holes of the non-electrical device
+	-- (according to its position and rotation in the board) as
+	-- a list of polygon:
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_polygon_list.list;
 	
 
 	

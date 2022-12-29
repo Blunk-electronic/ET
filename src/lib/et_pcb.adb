@@ -220,7 +220,6 @@ package body et_pcb is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
 	is
-		use pac_devices_non_electric;
 		result : pac_polygon_list.list;
 		
 		device : type_device_non_electric renames element (device_cursor);
@@ -282,6 +281,36 @@ package body et_pcb is
 	end get_conductor_polygons;
 	
 
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+		
+		device : type_device_non_electric renames element (device_cursor);
+
+		package_cursor : pac_packages_lib.cursor;
+		
+		package_displacement : constant type_distance_relative :=
+			to_distance_relative (device.position.place);
+
+	begin
+		package_cursor := packages_lib.find (device.package_model);
+
+		--result := to_polygons (
+			--contours	=> terminals,
+			--tolerance	=> fill_tolerance,
+			--mode		=> EXPAND,
+			--debug		=> false);
+
+		--result.splice (before => pac_polygon_list.no_element, source => conductor_polygons);
+
+		-- CS
+
+		return result;
+	end get_hole_polygons;
+		
+		
 	
 	procedure iterate (
 		devices	: in pac_devices_non_electric.map;

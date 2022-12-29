@@ -551,26 +551,33 @@ is
 		use pac_devices_non_electric;
 
 		-- This procedure takes a cursor to a non-electrical device (like a fiducial),
-		-- extracts the contours of all its conducting objects, offsets each of then
-		-- and appends them to the result:
+		-- extracts the contours of all its conducting objects and holes, 
+		-- offsets each of then and appends them to the result:
 		procedure query_non_electrical_device (d : in pac_devices_non_electric.cursor) is
 			polygons : pac_polygon_list.list;
 		begin
+			-- conductors: such as terminals, text, lines, arcs, circles, fill zones
 			polygons := get_conductor_polygons (d, layer_category);
-			-- includes: terminals, text, conductors
-
 			offset_polygons (polygons, default_offset);
 
-			-- CS holes (mind clearance to board edge)
-
-			-- CS cutouts, fill zones ?
-
-			-- CS union ?
-			
 			result.polygons.splice (
 				before => pac_polygon_list.no_element,
 				source => polygons);
 
+			
+			-- holes:
+			polygons := get_hole_polygons (d);
+			offset_polygons (polygons, half_linewidth_float 
+				+ type_float_positive (design_rules.clearances.conductor_to_board_edge));
+
+
+			result.polygons.splice (
+				before => pac_polygon_list.no_element,
+				source => polygons);
+
+			-- CS cutouts
+			
+			-- CS union ?
 		end query_non_electrical_device;
 												  
 		
@@ -600,7 +607,11 @@ is
 
 		-- Extract unconnected terminals of devices:
 		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
-			
+
+		-- non-electrical stuff of electrical devices
+		-- CS
+
+		
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
