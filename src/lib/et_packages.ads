@@ -307,18 +307,13 @@ package et_packages is
 		keepout 		: type_keepout_both_sides;
 		stop_mask		: type_stop_mask_both_sides; -- not terminal related
 		stencil			: type_stencil_both_sides; -- not terminal related
-
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;
-
-		-- PCB contour:
-		-- These structures are cutout areas inside the board area:
-		holes			: pac_holes.list;
+		holes			: pac_holes.list; -- PCB contour
 		
 		-- NOTE: There is no reason to allow texts in contours here.
 		-- The text would most likely end up somewhere inside the board area. 
 		-- This in turn would cause the DRC to output errors.
-
 		
 		technology		: type_assembly_technology := SMT; -- set by majority of terminals
 		
@@ -326,7 +321,6 @@ package et_packages is
 		case appearance is
 			when REAL =>
 				null; -- CS
-				--package_contour	: type_package_contour;
 			when VIRTUAL =>
 				null; -- fiducials, testpoints, board edge connectors, ...
 		end case;
@@ -338,7 +332,7 @@ package et_packages is
 
 	
 	-- A package in the library extends the base package type:
-	type type_package_lib is new type_package_base with record -- CS rename to type_package_model ?
+	type type_package_model is new type_package_base with record
 		-- CS default for face ?
 		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
@@ -347,15 +341,15 @@ package et_packages is
 
 	
 	-- CS: this should be a hashed map:
-	package pac_packages_lib is new indefinite_ordered_maps ( -- CS rename to pac_package_models
+	package pac_package_models is new indefinite_ordered_maps ( -- CS rename to pac_package_models
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
-		element_type	=> type_package_lib);
+		element_type	=> type_package_model);
 
-	use pac_packages_lib;
+	use pac_package_models;
 	
 	
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	packages_lib	 : pac_packages_lib.map; -- CS rename to package_model_library ?
+	package_models	 : pac_package_models.map;
 
 
 
@@ -363,7 +357,7 @@ package et_packages is
 	-- Returns a cursor to the given package model.
 	function locate_package_model ( -- CS rename to get_package_model ?
 		model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
-		return pac_packages_lib.cursor;
+		return pac_package_models.cursor;
 
 	
 	-- Returns true if the given package is real (means it has a height).
@@ -373,7 +367,7 @@ package et_packages is
 	-- Returns a cursor to the requested terminal (with all its properties) 
 	-- within the given package model:
 	function terminal_properties ( -- CS rename to get_terminal ?
-		cursor		: in pac_packages_lib.cursor;
+		cursor		: in pac_package_models.cursor;
 		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return pac_terminals.cursor;
 
@@ -385,7 +379,7 @@ package et_packages is
 	-- Adresses only those terminals which are affected by
 	-- the given layer category:
 	function get_terminal_contours (
-		package_cursor	: in pac_packages_lib.cursor;
+		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_contour_list.list;
 
@@ -396,14 +390,14 @@ package et_packages is
 	-- Raises exception if layer category INNER is given,
 	-- because there are no non-electric objects in inner layers:
 	function get_conductor_objects (
-		package_cursor	: in pac_packages_lib.cursor;
+		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		-- CS layer_category	: in type_signal_layer_category_outer) ?
 		return type_conductor_objects;
 
 	-- CS
 	--function get_hole_contours (
-		--package_cursor	: in pac_packages_lib.cursor)
+		--package_cursor	: in pac_package_models.cursor)
 		--return pac_conductor_contours.list;
 
 

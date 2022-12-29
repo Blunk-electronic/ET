@@ -66,11 +66,11 @@ package body et_board_ops.devices is
 
 
 	function get_placeholders (
-		package_cursor : in et_packages.pac_packages_lib.cursor)
+		package_cursor : in et_packages.pac_package_models.cursor)
 		return et_packages.type_text_placeholders 
 	is
 		use et_packages;
-		use pac_packages_lib;
+		use pac_package_models;
 	begin
 		return p : type_text_placeholders do
 		
@@ -95,7 +95,7 @@ package body et_board_ops.devices is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		package_cursor_lib : et_packages.pac_packages_lib.cursor;
+		package_cursor_lib : et_packages.pac_package_models.cursor;
 		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
@@ -732,7 +732,7 @@ package body et_board_ops.devices is
 		terminal_position_face : type_face := TOP; -- top/bottom
 
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-		package_model_cursor : pac_packages_lib.cursor;
+		package_model_cursor : pac_package_models.cursor;
 
 		use pac_terminals;
 		-- This cursor points to the terminal in the package model:
@@ -909,8 +909,8 @@ package body et_board_ops.devices is
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map
 	is
-		use pac_packages_lib;
-		package_model : constant pac_packages_lib.cursor := 
+		use pac_package_models;
+		package_model : constant pac_package_models.cursor := 
 			get_package_model (device_cursor);
 	begin
 		return element (package_model).terminals;

@@ -99,12 +99,14 @@ package et_pcb_rw.device_packages is
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_package_appearance;
 		log_threshold	: in type_log_level);
+
 	
 	-- Saves the given package model in a file specified by file_name.							   
 	procedure save_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package_lib; -- the actual device model
+		packge			: in type_package_model; -- the actual device model
 		log_threshold	: in type_log_level);
+
 	
 	-- Opens the package file and stores the package in container et_packages.packages.
 	-- If check_layers.check is YES, then a check will be done that tests

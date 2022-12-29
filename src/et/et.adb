@@ -415,6 +415,7 @@ procedure et is
 
 	end import_project;
 
+	
 	procedure save_package_as is 
 		use et_packages;
 		use et_packages.pac_package_model_file_name;
@@ -427,11 +428,12 @@ procedure et is
 		if length (package_name_save_as) > 0 then
 			et_pcb_rw.device_packages.save_package (
 				file_name 		=> package_name_save_as,
-				packge			=> pac_packages_lib.last_element (et_packages.packages_lib),
+				packge			=> pac_package_models.last_element (et_packages.package_models),
 				log_threshold	=> 0);
 		end if;
 	end;
 
+	
 	procedure save_symbol_as is 
 		use et_symbols.pac_symbol_model_file;
 	begin

@@ -3736,8 +3736,8 @@ package body et_kicad_to_native is
 				package_name			: et_packages.pac_package_name.bounded_string;
 				package_model			: et_packages.pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
-				use et_packages.pac_packages_lib;
-				package_cursor			: et_packages.pac_packages_lib.cursor;
+				use et_packages.pac_package_models;
+				package_cursor			: et_packages.pac_package_models.cursor;
 				inserted				: boolean;
 			begin
 				-- Loop in kicad packages (footprints) of the current library.
@@ -3757,8 +3757,8 @@ package body et_kicad_to_native is
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
-					et_packages.pac_packages_lib.insert (
-						container	=> et_packages.packages_lib,
+					et_packages.pac_package_models.insert (
+						container	=> et_packages.package_models,
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
@@ -3860,9 +3860,9 @@ package body et_kicad_to_native is
 					log_threshold	=> log_threshold + 1); 
 			end save_device;
 
-			use et_packages.pac_packages_lib;
+			use et_packages.pac_package_models;
 			
-			procedure save_package (package_cursor : in et_packages.pac_packages_lib.cursor) is
+			procedure save_package (package_cursor : in et_packages.pac_package_models.cursor) is
 				use et_packages.pac_package_model_file_name;
 			begin
 				et_pcb_rw.device_packages.save_package (
@@ -3886,7 +3886,7 @@ package body et_kicad_to_native is
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (et_packages.packages_lib, save_package'access);
+			iterate (et_packages.package_models, save_package'access);
 			log_indentation_down;
 
 			log_indentation_down;			

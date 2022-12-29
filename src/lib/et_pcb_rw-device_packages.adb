@@ -69,20 +69,20 @@ package body et_pcb_rw.device_packages is
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
 		
 		-- Test if package already exists. If already exists, issue warning and exit.
-		if pac_packages_lib.contains (packages_lib, package_name) then
+		if pac_package_models.contains (package_models, package_name) then
 			log (WARNING, text => "package already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
 				when REAL =>
-					pac_packages_lib.insert (
-						container	=> packages_lib,
+					pac_package_models.insert (
+						container	=> package_models,
 						key			=> package_name,
 						new_item	=> (appearance => REAL, others => <>)
 						);
 
 				when VIRTUAL =>
-					pac_packages_lib.insert (
-						container	=> packages_lib,
+					pac_package_models.insert (
+						container	=> package_models,
 						key			=> package_name,
 						new_item	=> (appearance => VIRTUAL, others => <>)
 						);
@@ -95,7 +95,7 @@ package body et_pcb_rw.device_packages is
 
 	procedure save_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
-		packge			: in type_package_lib; -- the actual package model
+		packge			: in type_package_model; -- the actual package model
 		log_threshold	: in type_log_level) 
 	is
 		use pac_package_model_file_name;
@@ -876,7 +876,7 @@ package body et_pcb_rw.device_packages is
 
 		-- Once the appearance has been read, a new package will be created where this 
 		-- pointer is pointing at:
-		packge					: access type_package_lib;
+		packge					: access type_package_model;
 		pac_appearance			: type_package_appearance := package_appearance_default;
 
 		-- The description and technology will be assigned once the complete
@@ -2724,12 +2724,12 @@ package body et_pcb_rw.device_packages is
 								-- where pointer packge is pointing at:
 								case pac_appearance is
 									when REAL =>
-										packge := new type_package_lib' (
+										packge := new type_package_model' (
 													appearance	=> REAL,
 													others		=> <>);
 
 									when VIRTUAL =>
-										packge := new type_package_lib' (
+										packge := new type_package_model' (
 													appearance	=> VIRTUAL,
 													others		=> <>);
 								end case;
@@ -3181,7 +3181,7 @@ package body et_pcb_rw.device_packages is
 		
 		-- test if container et_pcb.packages already contains the package
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_packages_lib.contains (packages_lib, file_name) then
+		if pac_package_models.contains (package_models, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -3225,8 +3225,8 @@ package body et_pcb_rw.device_packages is
 			packge.technology := pac_technology;
 
 			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
-			pac_packages_lib.insert (
-				container	=> packages_lib, 
+			pac_package_models.insert (
+				container	=> package_models, 
 				key			=> file_name, -- libraries/packages/S_SO14.pac
 				new_item	=> packge.all);
 

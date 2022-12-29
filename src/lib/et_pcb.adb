@@ -224,7 +224,7 @@ package body et_pcb is
 		
 		device : type_device_non_electric renames element (device_cursor);
 
-		package_cursor : pac_packages_lib.cursor;
+		package_cursor : pac_package_models.cursor;
 		
 		package_displacement : constant type_distance_relative :=
 			to_distance_relative (device.position.place);
@@ -236,7 +236,7 @@ package body et_pcb is
 
 		use et_contour_to_polygon;
 	begin
-		package_cursor := packages_lib.find (device.package_model);
+		package_cursor := package_models.find (device.package_model);
 
 		-- TERMINALS:
 		if device.flipped = NO then
@@ -289,13 +289,13 @@ package body et_pcb is
 		
 		device : type_device_non_electric renames element (device_cursor);
 
-		package_cursor : pac_packages_lib.cursor;
+		package_cursor : pac_package_models.cursor;
 		
 		package_displacement : constant type_distance_relative :=
 			to_distance_relative (device.position.place);
 
 	begin
-		package_cursor := packages_lib.find (device.package_model);
+		package_cursor := package_models.find (device.package_model);
 
 		--result := to_polygons (
 			--contours	=> terminals,

@@ -283,24 +283,26 @@ package body et_packages is
 		end if;
 	end to_string;
 
+	
 	function to_package_description (description : in string) 
 		return pac_package_description.bounded_string 
 	is begin
 		return pac_package_description.to_bounded_string (description);
 	end to_package_description;
 
+	
 	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
-		return pac_packages_lib.cursor 
+		return pac_package_models.cursor 
 	is begin
-		return pac_packages_lib.find (packages_lib, model_name);
+		return pac_package_models.find (package_models, model_name);
 	end;
 
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
-			use pac_packages_lib;
-		cursor : pac_packages_lib.cursor;
+			use pac_package_models;
+		cursor : pac_package_models.cursor;
 	begin
-		cursor := find (packages_lib, package_name);
+		cursor := find (package_models, package_name);
 
 		if element (cursor).appearance = REAL then
 			return true;
@@ -311,7 +313,7 @@ package body et_packages is
 
 	
 	function terminal_properties (
-		cursor		: in pac_packages_lib.cursor;
+		cursor		: in pac_package_models.cursor;
 		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
 		return pac_terminals.cursor 
 	is
@@ -319,7 +321,7 @@ package body et_packages is
 
 		procedure query_terminals (
 			model_name	: in pac_package_model_file_name.bounded_string;
-			model		: in type_package_lib) 
+			model		: in type_package_model) 
 		is
 			use pac_terminals;
 		begin
@@ -327,7 +329,7 @@ package body et_packages is
 		end;
 		
 	begin -- terminal_position
-		pac_packages_lib.query_element (
+		pac_package_models.query_element (
 			position	=> cursor,
 			process		=> query_terminals'access);
 
@@ -336,11 +338,11 @@ package body et_packages is
 	
 
 	function get_terminal_contours (
-		package_cursor	: in pac_packages_lib.cursor;
+		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_contour_list.list
 	is
-		packge : type_package_lib renames element (package_cursor);
+		packge : type_package_model renames element (package_cursor);
 		
 		result : pac_contour_list.list;
 		
@@ -407,11 +409,11 @@ package body et_packages is
 
 
 	function get_conductor_objects (
-		package_cursor	: in pac_packages_lib.cursor;
+		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
 		return type_conductor_objects
 	is 
-		packge : type_package_lib renames element (package_cursor);
+		packge : type_package_model renames element (package_cursor);
 	begin
 		case layer_category is
 			when OUTER_TOP =>

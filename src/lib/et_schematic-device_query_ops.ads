@@ -101,7 +101,7 @@ package et_schematic.device_query_ops is
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
-		return pac_packages_lib.cursor;
+		return pac_package_models.cursor;
 
 	
 	-- Returns true if the given device has a real package.

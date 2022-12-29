@@ -103,7 +103,7 @@ is
 		use pac_polygons;
 		use pac_polygon_offsetting;
 
-		use pac_packages_lib;
+		use pac_package_models;
 
 		
 		function flipped return boolean is 
@@ -146,7 +146,7 @@ is
 		
 		
 		-- locate the package model in the package library:
-		package_cursor : constant et_packages.pac_packages_lib.cursor := locate_package_model (model);
+		package_cursor : constant et_packages.pac_package_models.cursor := locate_package_model (model);
 
 		
 		-- Maps from meaning of given placeholder to text content:

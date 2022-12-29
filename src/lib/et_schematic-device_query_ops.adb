@@ -122,7 +122,7 @@ package body et_schematic.device_query_ops is
 
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
-		return pac_packages_lib.cursor
+		return pac_package_models.cursor
 	is
 		package_model : constant pac_package_model_file_name.bounded_string :=
 			get_package_model (device);  -- libraries/packages/smd/SOT23.pac
@@ -246,8 +246,8 @@ package body et_schematic.device_query_ops is
 			get_terminal (variant_lib, unit, port);
 
 		use et_packages;
-		use pac_packages_lib;
-		package_cursor : pac_packages_lib.cursor;
+		use pac_package_models;
+		package_cursor : pac_package_models.cursor;
 
 	begin
 		-- Get a cursor to the package model:
