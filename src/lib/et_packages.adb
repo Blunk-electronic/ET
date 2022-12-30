@@ -427,6 +427,26 @@ package body et_packages is
 		end case;
 	end get_conductor_objects;
 	
+
+	function get_route_restrict_objects (
+		package_cursor	: in pac_package_models.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case layer_category is
+			when OUTER_TOP =>
+				return packge.route_restrict.top;
+
+			when OUTER_BOTTOM =>
+				return packge.route_restrict.bottom;
+
+			when INNER =>
+				raise constraint_error; -- CS semantic_error ? Error message ?
+		end case;
+	end get_route_restrict_objects;
+
 	
 	function get_hole_contours (
 		package_cursor	: in pac_package_models.cursor)

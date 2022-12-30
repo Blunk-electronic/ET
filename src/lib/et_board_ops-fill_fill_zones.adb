@@ -580,7 +580,14 @@ is
 				source => polygons);
 
 
-			
+			-- route restrict:
+			polygons := get_route_restrict_polygons (d, layer_category);
+			offset_polygons (polygons, half_linewidth_float);
+
+			result.polygons.splice (
+				before => pac_polygon_list.no_element,
+				source => polygons);
+
 			-- CS union ?
 		end query_non_electrical_device;
 												  

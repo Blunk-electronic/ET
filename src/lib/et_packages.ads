@@ -395,6 +395,16 @@ package et_packages is
 		-- CS layer_category	: in type_signal_layer_category_outer) ?
 		return type_conductor_objects;
 
+
+	-- Returns the contours of route restrict objects of
+	-- the given package. Adresses only those objects
+	-- which are affected by the given layer category:
+	function get_route_restrict_objects (
+		package_cursor	: in pac_package_models.cursor;
+		layer_category	: in type_signal_layer_category)
+		-- CS layer_category	: in type_signal_layer_category_outer) ?
+		return et_route_restrict.packages.type_one_side;
+
 	
 	-- Returns the contours of pcb holes of the given package:
 	function get_hole_contours (

@@ -39,7 +39,8 @@ with ada.strings.unbounded;
 with ada.exceptions;
 with ada.tags;
 
-with et_text;					use et_text;
+with et_text;						use et_text;
+with et_route_restrict.packages;
 
 package body et_pcb is
 
@@ -276,11 +277,52 @@ package body et_pcb is
 		
 		result.splice (before => pac_polygon_list.no_element, source => conductor_polygons);
 
-
 		return result;
 	end get_conductor_polygons;
 	
 
+	function get_route_restrict_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+		
+		device : type_device_non_electric renames element (device_cursor);
+
+		package_cursor : pac_package_models.cursor;
+		
+		package_displacement : constant type_distance_relative :=
+			to_distance_relative (device.position.place);
+
+		use et_route_restrict.packages;
+		restrict : et_route_restrict.packages.type_one_side;
+	begin
+		package_cursor := get_package_model (device.package_model);
+
+		if layer_category /= INNER then -- route restrict objects exist in outer layers only
+			if device.flipped = NO then
+				restrict := get_route_restrict_objects (package_cursor, layer_category);
+				--rotate_route_restrict_objects (restrict, + device.position.rotation);
+			else
+				restrict := get_route_restrict_objects (package_cursor, invert_category (layer_category));
+				mirror_route_restrict_objects (restrict);
+				--rotate_route_restrict_objects (restrict, - device.position.rotation);
+			end if;
+
+			rotate_route_restrict_objects (restrict, device.position.rotation);
+			move_route_restrict_objects (restrict, package_displacement);
+
+			-- convert restrict objects to polygons:
+			result := to_polygons (restrict, fill_tolerance);
+		end if;
+
+		return result;
+	end get_route_restrict_polygons;
+
+
+
+	
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor)
 		return pac_polygon_list.list

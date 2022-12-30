@@ -4,7 +4,7 @@
 --                                                                          --
 --                       ROUTE RESTRICT PACKAGES                            --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,52 +36,51 @@
 --
 --   to do:
 
-with et_conductor_text.packages;
-
-package et_route_restrict.packages is
-
-	use pac_polygons;
-	
-	
-	type type_one_side is record
-		lines 		: pac_route_restrict_lines.list;
-		arcs		: pac_route_restrict_arcs.list;
-		circles		: pac_route_restrict_circles.list;
-		contours	: pac_route_restrict_contours.list;
-		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on routing
-	end record;
 
 
-	-- Mirrors the given route restrict objects along the given axis:
+package body et_route_restrict.packages is
+
+
 	procedure mirror_route_restrict_objects (
 		restrict	: in out type_one_side;
-		axis		: in type_axis_2d := Y);
+		axis		: in type_axis_2d := Y)
+	is
+	begin
+		null;
+	end mirror_route_restrict_objects;
 	
-	-- Rotates the given route restrict objects by the given angle
-	-- about the origin:
+
 	procedure rotate_route_restrict_objects (
 		restrict	: in out type_one_side;
-		angle		: in type_rotation);
+		angle		: in type_rotation)
+	is
+	begin
+		null;
+	end rotate_route_restrict_objects;
 
-	-- Moves the given route restrict objects by the given offset:
+
 	procedure move_route_restrict_objects (
 		restrict	: in out type_one_side;
-		offset		: in type_distance_relative);
+		offset		: in type_distance_relative)
+	is
+	begin
+		null;
+	end move_route_restrict_objects;
 
-
-	-- Converts the given restrict objects to a list of polygons.
-	-- NOTE: Adresses circles and contours only:
+	
 	function to_polygons (
 		restrict	: in out type_one_side;
 		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+	begin
+
+		return result;
+	end to_polygons;
 	
-	
-	type type_route_restrict is record
-		top		: type_one_side;
-		bottom	: type_one_side;
-	end record;
+
+
 	
 end et_route_restrict.packages;
 

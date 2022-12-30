@@ -449,6 +449,20 @@ package et_pcb is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
+	
+	-- Returns the outlines of route restrict objects of the non-electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category:
+	function get_route_restrict_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list;
+
+	
 	-- CS likewise for electrical device
 
 	-- Returns the outlines of holes of the non-electrical device
