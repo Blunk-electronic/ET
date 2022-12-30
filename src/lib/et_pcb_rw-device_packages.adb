@@ -38,11 +38,7 @@
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.text_io;				use ada.text_io;
--- with ada.tags;
-
 with ada.exceptions;
-
-with ada.containers.ordered_maps;
 
 with et_general;					use et_general;
 with et_general_rw;					use et_general_rw;
@@ -50,7 +46,7 @@ with et_text;						use et_text;
 with et_terminals;					use et_terminals;
 
 with et_conductor_text.packages;	use et_conductor_text.packages;
-with et_fill_zones.packages;		use et_fill_zones.packages;
+
 
 package body et_pcb_rw.device_packages is
 
@@ -139,56 +135,7 @@ package body et_pcb_rw.device_packages is
 			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
 				write_circle_conductor (element (cursor));
 			end write_circle;
-
-			
-			use pac_zones_solid;
-			procedure write_polygon (cursor : in pac_zones_solid.cursor) is begin
-				fill_zone_begin;
-				write_easing (element (cursor).easing);
-
-				write_width (element (cursor).linewidth);
-				write_isolation (element (cursor).isolation);
-
-				write_fill_style (element (cursor).fill_style);
-				
-				contours_begin;
-				write_polygon_segments (element (cursor));
-				contours_end;
-				
-				fill_zone_end;
-			end write_polygon;
-
-			
-			use pac_zones_hatched;
-			procedure write_polygon (cursor : in pac_zones_hatched.cursor) is begin
-				fill_zone_begin;
-				write_easing (element (cursor).easing);
-
-				write_width (element (cursor).linewidth);
-				write_isolation (element (cursor).isolation);
-
-				write_fill_style (element (cursor).fill_style);
-				write_spacing (element (cursor).spacing);
-
-				contours_begin;
-				write_polygon_segments (element (cursor));
-				contours_end;
-				
-				fill_zone_end;
-			end write_polygon;
-
-			
-			use et_fill_zones.packages.pac_cutouts;
-			procedure write_cutout (cursor : in et_fill_zones.packages.pac_cutouts.cursor) is begin
-				cutout_zone_begin;
-
-				contours_begin;
-				write_polygon_segments (element (cursor));
-				contours_end;
-				
-				cutout_zone_end;
-			end write_cutout;
-
+	
 			
 		begin -- write_conductor
 			section_mark (section_conductor, HEADER);
@@ -198,10 +145,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.top.lines, write_line'access);
 			iterate (packge.conductors.top.arcs, write_arc'access);
 			iterate (packge.conductors.top.circles, write_circle'access);
-			-- CS
-			--iterate (packge.conductors.top.fill_zones.solid, write_polygon'access);
-			--iterate (packge.conductors.top.fill_zones.hatched, write_polygon'access);
-			--iterate (packge.conductors.top.cutouts,  write_cutout'access);			
 			iterate (packge.conductors.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
@@ -210,10 +153,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.bottom.lines, write_line'access);
 			iterate (packge.conductors.bottom.arcs, write_arc'access);
 			iterate (packge.conductors.bottom.circles, write_circle'access);
-			-- CS
-			--iterate (packge.conductors.bottom.fill_zones.solid, write_polygon'access);
-			--iterate (packge.conductors.bottom.fill_zones.hatched, write_polygon'access);
-			--iterate (packge.conductors.bottom.cutouts, write_cutout'access);
 			iterate (packge.conductors.bottom.texts, write_text'access);			
 			section_mark (section_bottom, FOOTER);
 
@@ -264,6 +203,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_silk_screen, FOOTER);			
 		end write_silk_screen;
 
+		
 		procedure write_assembly_documentation is 
 			use pac_doc_lines;
 			use pac_doc_arcs;
@@ -297,6 +237,7 @@ package body et_pcb_rw.device_packages is
 
 			section_mark (section_assembly_doc, FOOTER);
 		end write_assembly_documentation;
+
 		
 		procedure write_keepout is 
 			use pac_keepout_lines;
@@ -328,6 +269,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_keepout, FOOTER);			
 		end write_keepout;
 
+		
 		procedure write_stop_mask is 
 			use pac_stop_lines;
 			use pac_stop_arcs;
@@ -358,6 +300,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_stop_mask, FOOTER);			
 		end write_stop_mask;
 
+		
 		procedure write_stencil is 
 			use pac_stencil_lines;
 			use pac_stencil_arcs;
@@ -561,6 +504,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_pac_3d_contours, FOOTER);
 		end write_package_contour;
 
+		
 		procedure write_terminals is
 			use pac_terminals;
 			terminal_cursor : pac_terminals.cursor := packge.terminals.first;
@@ -624,6 +568,7 @@ package body et_pcb_rw.device_packages is
 				
 			end write_stop_mask_tht;
 
+			
 			procedure write_stop_mask_smt is 
 				
 				function user_specific_contours return boolean is begin
@@ -718,6 +663,7 @@ package body et_pcb_rw.device_packages is
 				end if;
 				
 			end write_stencil;
+
 			
 		begin -- write_terminals
 			section_mark (section_terminals, HEADER);
@@ -783,6 +729,7 @@ package body et_pcb_rw.device_packages is
 			
 			section_mark (section_terminals, FOOTER);
 		end write_terminals;
+
 		
 	begin -- save_package
 		log (text => et_packages.to_string (file_name), level => log_threshold);
@@ -1494,6 +1441,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_stencil_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
@@ -1516,6 +1464,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_contour;
 				end;
 
+				
 				procedure append_stop_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
@@ -1557,74 +1506,6 @@ package body et_pcb_rw.device_packages is
 										hatching	=> board_hatching));
 					end case;
 
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_conductor_polygon_top is begin
-					case board_fill_style is
-						when SOLID =>
-							-- CS
-							--pac_zones_solid.append (
-								--container	=> packge.conductors.top.fill_zones.solid, 
-								--new_item	=> (contour with
-										--fill_style	=> SOLID,
-										--easing		=> board_easing,
-										--islands		=> no_islands,
-										--linewidth 	=> polygon_width_min,
-										--isolation	=> polygon_isolation));
-
-							null;
-							
-						when HATCHED =>
-							-- CS
-							--pac_zones_hatched.append (
-								--container	=> packge.conductors.top.fill_zones.hatched, 
-								--new_item	=> (contour with
-										--fill_style	=> HATCHED,
-										--easing		=> board_easing,
-										--islands		=> no_islands,
-										--spacing		=> fill_spacing,
-										--linewidth 	=> polygon_width_min,
-										--isolation	=> polygon_isolation));
-							null;
-					end case;
-										
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_conductor_polygon_bottom is begin
-					case board_fill_style is
-						when SOLID =>
-							-- CS
-							--pac_zones_solid.append (
-								--container	=> packge.conductors.bottom.fill_zones.solid, 
-								--new_item	=> (contour with
-										--fill_style	=> SOLID,
-										--easing		=> board_easing,
-										--islands		=> no_islands,
-										--linewidth 	=> polygon_width_min,
-										--isolation	=> polygon_isolation));
-
-							null;
-							
-						when HATCHED =>
-							-- CS
-							--pac_zones_hatched.append (
-								--container	=> packge.conductors.bottom.fill_zones.hatched, 
-								--new_item	=> (contour with
-										--fill_style	=> HATCHED,
-										--easing		=> board_easing,
-										--islands		=> no_islands,
-										--spacing		=> fill_spacing,
-										--linewidth 	=> polygon_width_min,
-										--isolation	=> polygon_isolation));
-							null;
-					end case;
-										
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
@@ -1768,28 +1649,6 @@ package body et_pcb_rw.device_packages is
 						--container	=> packge.stop_mask.bottom.cutouts, 
 						--new_item	=> contour);
 
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_conductor_cutout_top is begin
-					-- CS
-					--et_fill_zones.packages.pac_cutouts.append (
-						--container	=> packge.conductors.top.cutouts, 
-						--new_item	=> contour);
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_conductor_cutout_bottom is begin
-					-- CS
-					--et_fill_zones.packages.pac_cutouts.append (
-						--container	=> packge.conductors.bottom.cutouts, 
-						--new_item	=> contour);
-										
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
@@ -2396,9 +2255,6 @@ package body et_pcb_rw.device_packages is
 									when SEC_VIA_RESTRICT =>
 										append_via_restrict_polygon_top;
 										
-									when SEC_CONDUCTOR =>
-										append_conductor_polygon_top;
-										
 									when others => invalid_section;
 								end case;
 
@@ -2424,9 +2280,6 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_VIA_RESTRICT =>
 										append_via_restrict_polygon_bottom;
-										
-									when SEC_CONDUCTOR =>
-										append_conductor_polygon_bottom;
 										
 									when others => invalid_section;
 								end case;
@@ -2458,9 +2311,6 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_VIA_RESTRICT =>
 										append_via_restrict_cutout_top;
-										
-									when SEC_CONDUCTOR =>
-										append_conductor_cutout_top;
 
 									when others => invalid_section;
 								end case;
@@ -2488,9 +2338,6 @@ package body et_pcb_rw.device_packages is
 									when SEC_VIA_RESTRICT =>
 										append_via_restrict_cutout_bottom;
 										
-									when SEC_CONDUCTOR =>
-										append_conductor_cutout_bottom;
-
 									when others => invalid_section;
 								end case;					
 								
@@ -2628,6 +2475,7 @@ package body et_pcb_rw.device_packages is
 
 			end execute_section;
 
+			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -2674,6 +2522,7 @@ package body et_pcb_rw.device_packages is
 				end if;
 			end set;
 
+			
 		begin -- process_line
 			if set (section_top, SEC_TOP) then null;			
 			elsif set (section_bottom, SEC_BOTTOM) then null;								
@@ -3157,6 +3006,7 @@ package body et_pcb_rw.device_packages is
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & affected_line (line) & to_string (line), console => true);
