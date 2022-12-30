@@ -77,6 +77,10 @@ is
 	-- Get the design rules:
 	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
+	clearance_conductor_to_edge : type_distance_positive renames 
+		design_rules.clearances.conductor_to_board_edge;
+	
+	
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := deepest_conductor_layer (module_cursor);
 
@@ -569,7 +573,7 @@ is
 			
 			-- holes:
 			polygons := get_hole_polygons (d);
-			offset_holes (polygons, half_linewidth + design_rules.clearances.conductor_to_board_edge);
+			offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
 
 			result.polygons.splice (
 				before => pac_polygon_list.no_element,
@@ -1301,7 +1305,7 @@ is
 	end connected_zones;
 
 
-	offset_scratch : type_distance;
+	--offset_scratch : type_distance;
 	
 begin -- fill_fill_zones
 
@@ -1319,21 +1323,17 @@ begin -- fill_fill_zones
 		contour		=> get_outline (module_cursor),
 		mode		=> SHRINK,										 
 		tolerance	=> fill_tolerance);
+
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
-
-	offset_scratch := - design_rules.clearances.conductor_to_board_edge;
-	
 	log (text => "offsetting by DRU parameter " -- CS use predefined string
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-		& to_string (offset_scratch),
+		& to_string (- clearance_conductor_to_edge),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_contour_master, type_float (offset_scratch));
-	-- for debuggin use:
-	--offset_polygon (board_outer_contour_master, offset_scratch, true);
-	-- CS consider half the line width !
+	offset_polygon (board_outer_contour_master, type_float (- clearance_conductor_to_edge));
+
 
 
 	
@@ -1345,18 +1345,13 @@ begin -- fill_fill_zones
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
-
-	offset_scratch := - offset_scratch;
-	
 	log (text => "offsetting by DRU parameter " -- CS use predefined string 
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-		& to_string (offset_scratch),
+		& to_string (clearance_conductor_to_edge),
 		level => log_threshold + 1);
 
-	offset_holes (board_holes_master, offset_scratch);
-	-- for debugging use:
-	--offset_holes (board_holes, offset_scratch, true);
-	-- CS consider half the line width !
+	offset_holes (board_holes_master, clearance_conductor_to_edge);
+
 
 	
 	if is_empty (nets) then
