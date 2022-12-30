@@ -428,7 +428,16 @@ package body et_packages is
 	end get_conductor_objects;
 	
 	
-
+	function get_hole_contours (
+		package_cursor	: in pac_package_models.cursor)
+		return pac_holes.list
+	is 
+		packge : type_package_model renames element (package_cursor);
+	begin
+		return packge.holes;
+	end get_hole_contours;
+	
+	
 	function to_string (flipped : in type_flipped) return string is begin
 		return to_lower (type_flipped'image (flipped));
 	end;

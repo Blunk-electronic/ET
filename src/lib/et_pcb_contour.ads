@@ -36,11 +36,12 @@
 --
 --   to do:
 
-with ada.containers; 			use ada.containers;
+with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_geometry;					use et_geometry;
+with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_contour_to_polygon;
 
 
@@ -72,6 +73,22 @@ package et_pcb_contour is
 	use pac_holes;
 
 
+	-- Mirrors a list of holes along the given axis:
+	procedure mirror_holes (
+		holes	: in out pac_holes.list;
+		axis	: in type_axis_2d := Y);
+
+
+	-- Rotates a list of holes about the origin by the given angle:
+	procedure rotate_holes (
+		holes	: in out pac_holes.list;
+		angle	: in type_rotation);
+
+
+	-- Moves a list of holes by the gvien offset:
+	procedure move_holes (
+		holes	: in out pac_holes.list;
+		offset	: in type_distance_relative);
 
 	
 	-- Converts a list of holes to a list of polygons:

@@ -224,6 +224,7 @@ is
 
 		layer_category : type_signal_layer_category;
 
+		half_linewidth : constant type_distance_positive := linewidth * 0.5;
 		
 		half_linewidth_float : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5);
@@ -568,15 +569,13 @@ is
 			
 			-- holes:
 			polygons := get_hole_polygons (d);
-			offset_polygons (polygons, half_linewidth_float 
-				+ type_float_positive (design_rules.clearances.conductor_to_board_edge));
-
+			offset_holes (polygons, half_linewidth + design_rules.clearances.conductor_to_board_edge);
 
 			result.polygons.splice (
 				before => pac_polygon_list.no_element,
 				source => polygons);
 
-			-- CS cutouts
+
 			
 			-- CS union ?
 		end query_non_electrical_device;

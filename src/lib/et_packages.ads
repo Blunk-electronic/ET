@@ -395,10 +395,11 @@ package et_packages is
 		-- CS layer_category	: in type_signal_layer_category_outer) ?
 		return type_conductor_objects;
 
-	-- CS
-	--function get_hole_contours (
-		--package_cursor	: in pac_package_models.cursor)
-		--return pac_conductor_contours.list;
+	
+	-- Returns the contours of pcb holes of the given package:
+	function get_hole_contours (
+		package_cursor	: in pac_package_models.cursor)
+		return pac_holes.list;
 
 
 	

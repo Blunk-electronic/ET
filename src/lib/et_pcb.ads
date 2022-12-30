@@ -449,6 +449,7 @@ package et_pcb is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
+	-- CS likewise for electrical device
 
 	-- Returns the outlines of holes of the non-electrical device
 	-- (according to its position and rotation in the board) as
@@ -457,7 +458,9 @@ package et_pcb is
 		device_cursor	: in pac_devices_non_electric.cursor)
 		return pac_polygon_list.list;
 	
+	-- CS likewise for electrical device
 
+	
 	
 	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

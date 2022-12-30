@@ -236,7 +236,7 @@ package body et_pcb is
 
 		use et_contour_to_polygon;
 	begin
-		package_cursor := package_models.find (device.package_model);
+		package_cursor := get_package_model (device.package_model);
 
 		-- TERMINALS:
 		if device.flipped = NO then
@@ -294,19 +294,21 @@ package body et_pcb is
 		package_displacement : constant type_distance_relative :=
 			to_distance_relative (device.position.place);
 
+		holes : pac_holes.list;
 	begin
-		package_cursor := package_models.find (device.package_model);
+		package_cursor := get_package_model (device.package_model);
 
-		--result := to_polygons (
-			--contours	=> terminals,
-			--tolerance	=> fill_tolerance,
-			--mode		=> EXPAND,
-			--debug		=> false);
-
-		--result.splice (before => pac_polygon_list.no_element, source => conductor_polygons);
-
-		-- CS
-
+		holes := get_hole_contours (package_cursor);
+		
+		rotate_holes (holes, device.position.rotation);
+		
+		if device.flipped = YES then
+			mirror_holes (holes);
+		end if;
+		
+		move_holes (holes, package_displacement);
+		
+		result := to_polygons (holes, fill_tolerance);
 		return result;
 	end get_hole_polygons;
 		

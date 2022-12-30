@@ -41,6 +41,67 @@ with ada.text_io;				use ada.text_io;
 
 package body et_pcb_contour is
 
+
+	procedure mirror_holes (
+		holes	: in out pac_holes.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_holes.list;
+
+		procedure query_hole (c : in pac_holes.cursor) is
+			hole : type_hole := element (c);
+		begin
+			mirror (hole);
+			result.append (hole);
+		end query_hole;
+		
+	begin
+		holes.iterate (query_hole'access);
+		holes := result;
+	end mirror_holes;
+
+
+	procedure rotate_holes (
+		holes	: in out pac_holes.list;
+		angle	: in type_rotation)
+	is
+		result : pac_holes.list;
+
+		procedure query_hole (c : in pac_holes.cursor) is
+			hole : type_hole := element (c);
+		begin
+			rotate_by (hole, angle);
+			result.append (hole);
+		end query_hole;
+		
+	begin
+		holes.iterate (query_hole'access);
+		holes := result;
+	end rotate_holes;
+
+
+
+	procedure move_holes (
+		holes	: in out pac_holes.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_holes.list;
+
+		procedure query_hole (c : in pac_holes.cursor) is
+			hole : type_hole := element (c);
+		begin
+			move_by (hole, offset);
+			result.append (hole);
+		end query_hole;
+		
+	begin
+		--put_line ("move holes");
+		holes.iterate (query_hole'access);
+		holes := result;
+	end move_holes;
+
+
+	
 	
 	function to_polygons (
 		holes		: in pac_holes.list;
