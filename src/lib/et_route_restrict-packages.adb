@@ -44,38 +44,57 @@ package body et_route_restrict.packages is
 	procedure mirror_route_restrict_objects (
 		restrict	: in out type_one_side;
 		axis		: in type_axis_2d := Y)
-	is
-	begin
-		null;
+	is begin
+		mirror_lines (restrict.lines);
+		mirror_arcs (restrict.arcs);
+		mirror_circles (restrict.circles);
+		-- CS zones
 	end mirror_route_restrict_objects;
 	
 
 	procedure rotate_route_restrict_objects (
 		restrict	: in out type_one_side;
 		angle		: in type_rotation)
-	is
-	begin
-		null;
+	is begin
+		rotate_lines (restrict.lines, angle);
+		rotate_arcs (restrict.arcs, angle);
+		rotate_circles (restrict.circles, angle);
+		-- CS zones
 	end rotate_route_restrict_objects;
 
 
 	procedure move_route_restrict_objects (
 		restrict	: in out type_one_side;
 		offset		: in type_distance_relative)
-	is
-	begin
-		null;
+	is begin
+		move_lines (restrict.lines, offset);
+		move_arcs (restrict.arcs, offset);
+		move_circles (restrict.circles, offset);
+		-- CS zones
 	end move_route_restrict_objects;
 
 	
 	function to_polygons (
-		restrict	: in out type_one_side;
+		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
-		result : pac_polygon_list.list;
+		scratch, result : pac_polygon_list.list;
+		
 	begin
+		-- lines:
+		result := to_polygons (restrict.lines, tolerance);
 
+		-- arcs:
+		scratch := to_polygons (restrict.arcs, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+
+		-- circles:
+		scratch := to_polygons_outside (restrict.circles, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+
+		-- zones:
+		-- CS
 		return result;
 	end to_polygons;
 	

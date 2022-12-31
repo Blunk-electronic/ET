@@ -47,9 +47,11 @@ package et_route_restrict.packages is
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
 		circles		: pac_route_restrict_circles.list;
-		contours	: pac_route_restrict_contours.list;
-		cutouts		: pac_route_restrict_cutouts.list;
+		contours	: pac_route_restrict_contours.list; -- rename to zones
+		cutouts		: pac_route_restrict_cutouts.list; -- -- CS put in comments to be implemented in the future
+		
 		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on routing
+		-- CS put in comments to be implemented in the future
 	end record;
 
 
@@ -71,9 +73,8 @@ package et_route_restrict.packages is
 
 
 	-- Converts the given restrict objects to a list of polygons.
-	-- NOTE: Adresses circles and contours only:
 	function to_polygons (
-		restrict	: in out type_one_side;
+		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 	
