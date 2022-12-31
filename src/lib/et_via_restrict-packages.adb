@@ -4,7 +4,7 @@
 --                                                                          --
 --                       VIA RESTRICT PACKAGES                              --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,51 +36,66 @@
 --
 --   to do:
 
-with et_conductor_text.packages;
 
-package et_via_restrict.packages is
+package body et_via_restrict.packages is
 	
-	type type_one_side is record
-		lines 		: pac_via_restrict_lines.list;
-		arcs		: pac_via_restrict_arcs.list;
-		circles		: pac_via_restrict_circles.list;
-		contours	: pac_via_restrict_contours.list;  -- rename to zones
-		cutouts		: pac_via_restrict_cutouts.list;  -- CS put in comments to be implemented in the future
 
-		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on via restrict
-		-- CS put in comments to be implemented in the future
-	end record;
-
-
-	-- Mirrors the given via restrict objects along the given axis:
 	procedure mirror_via_restrict_objects (
 		restrict	: in out type_one_side;
-		axis		: in type_axis_2d := Y);
+		axis		: in type_axis_2d := Y)
+	is begin
+		mirror_lines (restrict.lines);
+		mirror_arcs (restrict.arcs);
+		mirror_circles (restrict.circles);
+		-- CS zones
+	end mirror_via_restrict_objects;
 	
-	-- Rotates the given via restrict objects by the given angle
-	-- about the origin:
+
 	procedure rotate_via_restrict_objects (
 		restrict	: in out type_one_side;
-		angle		: in type_rotation);
+		angle		: in type_rotation)
+	is begin
+		rotate_lines (restrict.lines, angle);
+		rotate_arcs (restrict.arcs, angle);
+		rotate_circles (restrict.circles, angle);
+		-- CS zones
+	end rotate_via_restrict_objects;
 
-	-- Moves the given via restrict objects by the given offset:
+
 	procedure move_via_restrict_objects (
 		restrict	: in out type_one_side;
-		offset		: in type_distance_relative);
+		offset		: in type_distance_relative)
+	is begin
+		move_lines (restrict.lines, offset);
+		move_arcs (restrict.arcs, offset);
+		move_circles (restrict.circles, offset);
+		-- CS zones
+	end move_via_restrict_objects;
 
-
-	-- Converts the given restrict objects to a list of polygons.
+	
 	function to_polygons (
 		restrict	: in type_one_side;
 		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
+		return pac_polygon_list.list
+	is
+		scratch, result : pac_polygon_list.list;
+		
+	begin
+		-- lines:
+		result := to_polygons (restrict.lines, tolerance);
 
-	
-	type type_via_restrict is record
-		top		: type_one_side;
-		bottom	: type_one_side;
-	end record;
+		-- arcs:
+		scratch := to_polygons (restrict.arcs, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
 
+		-- circles:
+		scratch := to_polygons_outside (restrict.circles, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+
+		-- zones:
+		-- CS
+		return result;
+	end to_polygons;
 
 	
 end et_via_restrict.packages;
