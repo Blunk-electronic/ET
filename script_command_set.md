@@ -866,23 +866,25 @@ place text conductor 1 0.15 1 14 115 0 "SOME TEXT" # layer 1 (top), line width 0
 Route restrict is a means to define areas in signal layers in the board where routing is not allowed.
 In the examples below the term '[1,3,5-9]' addresses signal layers 1,3 and 5 through 9. 
 NOTE: Within the term do not use whitespace characters.
+
+Line:
 ```
-board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10  # line, from 10/10 to 60/10
+board led_driver draw route_restrict [1,3,5-9] 0.2 line 10 10 60 10  # width 0.2, from 10/10 to 60/10
 ```
+Arc:
 ```
-board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw # arc, center 50/50 from 50/0 to 50/100, clockwise
+board led_driver draw route_restrict [1,3,5-9] 0.2 arc 50 50 0 50 100 0 cw # width 0.2, center 50/50 from 50/0 to 50/100, clockwise
 ```
+Circle:
 ```
-board led_driver draw route_restrict [1,3,5-9] circle 50 50 40 # circle, center 50/50 radius 40
+board led_driver draw route_restrict [1,3,5-9] 0.2 circle 50 50 40 #  width 0.2, center 50/50 radius 40
 ```
-```
-board led_driver draw route_restrict [1,3,5-9] circle solid 50 50 40 # circle, solid, center 50/50 radius 40
-```
+Deleting an object:
 ```
 board led_driver delete route_restrict 40 50 1 # crossing 40/50, accuracy 1
 ```
 
-#### ROUTE RESTRICT
+#### VIA RESTRICT
 Via restrict is a means to define areas in signal layers in the board where vias are not allowed.
 The commands are similar to the route restrict commands (see above) but the keyword
 'route_restrict' is to be replaced by 'via_restrict'.
