@@ -3887,7 +3887,7 @@ is
 					pac_route_restrict_lines.append (
 						container	=> module.board.route_restrict.lines,
 						new_item	=> (type_line (board_line) with 
-										layers	=> signal_layers));
+										board_line_width, signal_layers));
 				end do_it;
 									
 			begin -- insert_line_route_restrict
@@ -3915,8 +3915,8 @@ is
 				begin
 					pac_route_restrict_arcs.append (
 						container	=> module.board.route_restrict.arcs,
-						new_item	=> (type_arc (board_arc) with 
-										layers	=> signal_layers));
+						new_item	=> (type_arc (board_arc) with
+										board_line_width, signal_layers));
 				end do_it;
 
 				
@@ -3934,6 +3934,8 @@ is
 
 			
 			procedure insert_circle_route_restrict is
+				use et_pcb_coordinates;
+				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -3944,7 +3946,8 @@ is
 				begin
 					pac_route_restrict_circles.append (
 						container	=> module.board.route_restrict.circles,
-						new_item	=> (board_make_fillable_circle_solid with signal_layers));
+						new_item	=> (type_circle (board_circle) with 
+										board_line_width, signal_layers));
 				end do_it;
 									
 			begin -- insert_circle_route_restrict

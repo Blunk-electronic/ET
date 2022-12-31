@@ -64,7 +64,7 @@ package body et_route_restrict.boards is
 	begin
 		arc := element (cursor);
 		log (text => "route restrict arc layers" & to_string (arc.layers) & space 
-			 & to_string (type_arc (arc)), level => log_threshold);
+			 & to_string (arc), level => log_threshold);
 	end arc_route_restrict_properties;
 
 

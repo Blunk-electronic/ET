@@ -343,13 +343,15 @@ package body et_pcb_rw.device_packages is
 			begin
 				line_begin;
 				write_line (element (cursor));
+				write_width (element (cursor).width);
 				line_end;
 			end write_line;
 
 			procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is 
 			begin
 				arc_begin;
-				write_arc (element (cursor));		
+				write_arc (element (cursor));
+				write_width (element (cursor).width);
 				arc_end;
 			end write_arc;
 
@@ -357,7 +359,7 @@ package body et_pcb_rw.device_packages is
 			begin
 				circle_begin;
 				write_circle (element (cursor));
-				write_fill_status (element (cursor).filled);
+				write_width (element (cursor).width);
 				circle_end;
 			end write_circle;
 			
@@ -1815,7 +1817,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
 											container	=> packge.route_restrict.top.lines,
-											new_item	=> (type_line (board_line) with null record));
+											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -1896,7 +1898,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
 											container	=> packge.route_restrict.bottom.lines,
-											new_item	=> (type_line (board_line) with null record));
+											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -1989,7 +1991,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_arcs.append (
 											container	=> packge.route_restrict.top.arcs,
-											new_item	=> (type_arc (board_arc) with null record));
+											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2066,7 +2068,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_arcs.append (
 											container	=> packge.route_restrict.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with null record));
+											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2134,7 +2136,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_circles.append (
 											container	=> packge.route_restrict.top.circles,
-											new_item	=> (board_make_fillable_circle_solid with null record));
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2203,7 +2205,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_circles.append (
 											container	=> packge.route_restrict.bottom.circles,
-											new_item	=> (board_make_fillable_circle_solid with null record));
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2628,7 +2630,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK =>
+										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT =>
 
 										if not read_board_line (line) then
 											declare
@@ -2648,7 +2650,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT => read_board_line (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_line (line);
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_line (line);
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_board_line (line);
+									when SEC_VIA_RESTRICT => read_board_line (line);
 									when others => invalid_section;
 								end case;
 
@@ -2666,7 +2668,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK =>
+										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT =>
 
 										if not read_board_arc (line) then
 											declare
@@ -2686,7 +2688,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT => read_board_arc (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_arc (line);
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_board_arc (line);
+									when SEC_VIA_RESTRICT => read_board_arc (line);
 									when others => invalid_section;
 								end case;
 
@@ -2704,7 +2706,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK =>
+										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT =>
 										
 										if not read_board_circle (line) then
 											declare
@@ -2752,7 +2754,7 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_VIA_RESTRICT =>
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);

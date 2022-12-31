@@ -66,12 +66,13 @@ is
 
 		-- Draw the line if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			draw_line (
 				area		=> in_area,
 				context		=> context,
 				line		=> to_line_fine (element (c)),
-				width		=> et_route_restrict.route_restrict_line_width,
+				width		=> element (c).width,
 				height		=> self.frame_height);
 
 		end if;
@@ -82,12 +83,13 @@ is
 
 		-- Draw the arc if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			draw_arc (
 				area		=> in_area,
 				context		=> context,
 				arc			=> to_arc_fine (element (c)),
-				width		=> et_route_restrict.route_restrict_line_width,
+				width		=> element (c).width,
 				height		=> self.frame_height);
 
 		end if;
@@ -98,29 +100,30 @@ is
 
 		-- Draw the circle if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
-		
-			case element (c).filled is
-				when NO =>
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
+			
+			--case element (c).filled is
+				--when NO =>
 					-- We draw a normal non-filled circle:
 					draw_circle (
 						area		=> in_area,
 						context		=> context,
 						circle		=> element (c),
 						filled		=> NO,
-						width		=> et_route_restrict.route_restrict_line_width,
+						width		=> element (c).width,
 						height		=> self.frame_height);
 					
-				when YES =>
-					-- We draw a solid filled circle:
-					draw_circle (
-						area		=> in_area,
-						context		=> context,
-						circle		=> element (c),
-						filled		=> YES,
-						width		=> zero,
-						height		=> self.frame_height);
+				--when YES =>
+					---- We draw a solid filled circle:
+					--draw_circle (
+						--area		=> in_area,
+						--context		=> context,
+						--circle		=> element (c),
+						--filled		=> YES,
+						--width		=> zero,
+						--height		=> self.frame_height);
 					
-			end case;
+			--end case;
 
 		end if;
 	end query_circle;

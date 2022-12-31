@@ -1796,7 +1796,8 @@ is
 						if flipped then mirror (line, Y); end if;
 						
 						move_by (line, to_distance_relative (package_position.place));
-						draw_line (in_area, context, to_line_fine (line), route_restrict_line_width, self.frame_height);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1828,7 +1829,8 @@ is
 						if flipped then mirror (arc, Y); end if;
 						
 						move_by (arc, to_distance_relative (package_position.place));
-						draw_arc (in_area, context, to_arc_fine (arc), route_restrict_line_width, self.frame_height);
+						set_line_width (context.cr, type_view_coordinate (arc.width));
+						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
 					end if;
 
 				end if;
@@ -1862,7 +1864,8 @@ is
 						if flipped then mirror (circle, Y); end if;
 						
 						move_by (circle, to_distance_relative (package_position.place));
-						draw_circle (in_area, context, circle, NO, route_restrict_line_width, self.frame_height);
+						set_line_width (context.cr, type_view_coordinate (circle.width));
+						draw_circle (in_area, context, circle, NO, circle.width, self.frame_height);
 						-- NO means circle is not filled
 					end if;
 
