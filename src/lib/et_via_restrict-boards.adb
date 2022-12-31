@@ -50,7 +50,7 @@ package body et_via_restrict.boards is
 	begin
 		line := element (cursor);
 		log (text => "via restrict line layers" & to_string (line.layers) & space
-			 & to_string (type_line (line)), level => log_threshold);
+			 & to_string (line), level => log_threshold);
 	end line_via_restrict_properties;
 
 	
@@ -64,7 +64,7 @@ package body et_via_restrict.boards is
 	begin
 		arc := element (cursor);
 		log (text => "via restrict arc layers" & to_string (arc.layers) & space 
-			 & to_string (type_arc (arc)), level => log_threshold);
+			 & to_string (arc), level => log_threshold);
 	end arc_via_restrict_properties;
 
 
