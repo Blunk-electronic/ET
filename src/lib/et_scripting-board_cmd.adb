@@ -714,102 +714,6 @@ is
 	end draw_assy_doc;
 
 	
-	procedure draw_keepout is
-		shape : type_shape := to_shape (f (6));
-	begin
-		case shape is
-			when LINE =>
-				case get_field_count is
-					when 10 =>
-						draw_keepout_line (
-							module_name 	=> module,
-							face			=> to_face (f (5)),
-							line			=> (
-										start_point	=> type_point (to_point (f (7), f (8))),
-										end_point	=> type_point (to_point (f (9), f (10)))
-										),
-
-							log_threshold	=> log_threshold + 1);
-
-					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
-						
-					when others => command_incomplete;
-				end case;
-
-				
-			when ARC =>
-				case get_field_count is
-					when 13 =>
-						draw_keepout_arc (
-							module_name 	=> module,
-							face			=> to_face (f (5)),
-							arc				=> (
-									center		=> type_point (to_point (f (7), f (8))),
-									start_point	=> type_point (to_point (f (9), f (10))),
-									end_point	=> type_point (to_point (f (11), f (12))),
-									direction	=> to_direction (f (13))),
-
-							log_threshold	=> log_threshold + 1);
-
-					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
-						
-					when others => command_incomplete;
-				end case;
-
-				
-			when CIRCLE =>
-				case get_field_count is
-					when 9 =>
-					-- board led_driver draw keepout top circle 50 50 40 -- 9 fields
-						
-						if is_number (f (7)) then
-							-- Circle is not filled.
-							
-							draw_keepout_circle (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								circle			=> 
-											(
-											filled		=> NO,
-											center	=> type_point (to_point (f (7), f (8))),
-											radius	=> to_radius (f (9))
-											),
-								log_threshold	=> log_threshold + 1);
-						else
-							expect_value_center_x (7);
-						end if;
-
-						
-					when 10 =>
-					-- board led_driver draw keepout top circle filled 50 50 40 -- 10 fields
-						
-						if f (7) = keyword_filled then
-							-- Circle is filled.
-							
-							draw_keepout_circle (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								circle			=> 
-											(
-											filled		=> YES,
-											center	=> type_point (to_point (f (8), f (9))),
-											radius	=> to_radius (f (10))
-											),
-								log_threshold	=> log_threshold + 1);
-						else
-							expect_keyword_filled (7);
-						end if;
-							
-					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
-						
-					when others => command_incomplete;
-				end case;
-
-						
-			when others => null;
-		end case;
-	end draw_keepout;
-
 	
 	procedure draw_route_restrict is
 		shape : type_shape := to_shape (f (7));
@@ -2734,25 +2638,8 @@ is
 
 					when NOUN_KEEPOUT =>
 						-- board led_driver delete keepout top 40 50 1
-						case get_field_count is
-							when 8 =>
-								-- delete a segment of keepout
-								delete_keepout (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
-								
-							when others => command_incomplete;
-						end case;
-
+						null; -- CS
+						
 					when NOUN_STENCIL =>
 						-- board led_driver delete stencil top 40 50 1
 						case get_field_count is
@@ -2919,7 +2806,7 @@ is
 						draw_assy_doc;
 
 					when NOUN_KEEPOUT =>
-						draw_keepout;
+						null; -- CS
 						
 					when NOUN_ROUTE_RESTRICT =>
 						draw_route_restrict;

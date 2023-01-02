@@ -39,20 +39,22 @@
 
 package et_keepout.boards is
 
-	type type_keepout_text is new type_text_fab_with_content with record
-		vectors	: type_vector_text;
-	end record;
-
-	package pac_keepout_texts is new doubly_linked_lists (type_keepout_text);
+	dummy : natural;
 	
-	type type_keepout is new et_keepout.type_keepout with record
-		texts : pac_keepout_texts.list; -- for notes on placement
-	end record;
+	--type type_keepout_text is new type_text_fab_with_content with record
+		--vectors	: type_vector_text;
+	--end record;
 
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
+	--package pac_keepout_texts is new doubly_linked_lists (type_keepout_text);
+	
+	--type type_keepout is new et_keepout.type_keepout with record
+		--texts : pac_keepout_texts.list; -- for notes on placement
+	--end record;
+
+	--type type_keepout_both_sides is record
+		--top 	: type_keepout;
+		--bottom	: type_keepout;
+	--end record;
 	
 end et_keepout.boards;
 

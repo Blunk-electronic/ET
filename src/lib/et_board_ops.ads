@@ -86,7 +86,6 @@ with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with et_keepout;				use et_keepout;
-with et_keepout.boards;			use et_keepout.boards;
 with et_pcb_contour;			use et_pcb_contour;
 with et_text;
 
@@ -406,37 +405,8 @@ package et_board_ops is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
--- KEEPOUT
-	procedure draw_keepout_line (
-	-- Draws a line in the keepout layer.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		line			: in type_keepout_line;
-		log_threshold	: in type_log_level);
-
-	procedure draw_keepout_arc (
-	-- Draws an arc in the keepout layer.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_keepout_arc;
-		log_threshold	: in type_log_level);
-
-	procedure draw_keepout_circle (
-	-- Draws a circle in the keepout layer.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;	
-		circle			: in type_fillable_circle_solid;
-		log_threshold	: in type_log_level);
-
-	procedure delete_keepout (
-	-- Deletes the segment in the keepout layer that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
+	
+	
 
 -- STOP MASK
 	procedure draw_stop_line (

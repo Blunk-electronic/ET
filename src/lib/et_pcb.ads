@@ -81,7 +81,7 @@ with et_stop_mask.boards;			use et_stop_mask.boards;
 with et_stencil.boards;				use et_stencil.boards;
 with et_silkscreen.boards;			use et_silkscreen.boards;
 with et_assy_doc.boards;			use et_assy_doc.boards;
-with et_keepout.boards;				use et_keepout.boards;
+with et_keepout;					use et_keepout;
 with et_pcb_contour;				use et_pcb_contour;
 with et_contour_to_polygon;
 with et_ratsnest;

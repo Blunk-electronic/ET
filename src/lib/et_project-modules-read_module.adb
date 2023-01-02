@@ -3000,7 +3000,6 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_keepout;
 
 				
 				procedure do_it (
@@ -3030,11 +3029,7 @@ is
 										container	=> module.board.stop_mask.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_lines.append (
-										container	=> module.board.keepout.top.lines,
-										new_item	=> (type_line (board_line) with null record));
-									
+								when others => null;								
 							end case;
 							
 						when BOTTOM => null;
@@ -3059,11 +3054,7 @@ is
 										container	=> module.board.stop_mask.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_lines.append (
-										container	=> module.board.keepout.bottom.lines,
-										new_item	=> (type_line (board_line) with null record));
-
+								when others => null;
 							end case;
 							
 					end case;
@@ -3100,7 +3091,6 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_keepout;
 
 				
 				procedure do_it (
@@ -3130,10 +3120,7 @@ is
 										container	=> module.board.stop_mask.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_arcs.append (
-										container	=> module.board.keepout.top.arcs,
-										new_item	=> (type_arc (board_arc) with null record));
+								when others => null;
 							end case;
 							
 						when BOTTOM => null;
@@ -3158,10 +3145,7 @@ is
 										container	=> module.board.stop_mask.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_arcs.append (
-										container	=> module.board.keepout.bottom.arcs,
-										new_item	=> (type_arc (board_arc) with null record));
+								when others => null;
 							end case;
 							
 					end case;
@@ -3193,7 +3177,7 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_keepout;
+
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -3224,10 +3208,7 @@ is
 										container	=> module.board.stop_mask.top.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_circles.append (
-										container	=> module.board.keepout.top.circles,
-										new_item	=> board_make_fillable_circle_solid);
+								when others => null;
 							end case;
 							
 						when BOTTOM =>
@@ -3252,10 +3233,7 @@ is
 										container	=> module.board.stop_mask.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when LAYER_CAT_KEEPOUT =>
-									pac_keepout_circles.append (
-										container	=> module.board.keepout.bottom.circles,
-										new_item	=> board_make_fillable_circle_solid);
+								when others => null;
 							end case;
 							
 					end case;
@@ -3379,14 +3357,14 @@ is
 					
 					procedure append_keepout_polygon_top is begin
 						pac_keepout_contours.append (
-							container	=> module.board.keepout.top.polygons, 
+							container	=> module.board.keepout.top.zones, 
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_keepout_polygon_bottom is begin
 						pac_keepout_contours.append (
-							container	=> module.board.keepout.bottom.polygons, 
+							container	=> module.board.keepout.bottom.zones, 
 							new_item	=> (contour with null record));
 					end;
 
@@ -4859,7 +4837,6 @@ is
 
 						use et_silkscreen.boards;
 						use et_assy_doc.boards;
-						use et_keepout.boards;
 						use et_stencil.boards;
 						use et_stop_mask.boards;
 						
@@ -4897,11 +4874,6 @@ is
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> (board_text with v_text));
 
-									when LAYER_CAT_KEEPOUT =>
-										pac_keepout_texts.append (
-											container	=> module.board.keepout.top.texts,
-											new_item	=> (board_text with v_text));
-
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_texts.append (
 											container	=> module.board.stencil.top.texts,
@@ -4926,11 +4898,6 @@ is
 										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
 											new_item	=> (board_text with v_text));
-										
-									when LAYER_CAT_KEEPOUT =>
-										pac_keepout_texts.append (
-											container	=> module.board.keepout.bottom.texts,
-											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_texts.append (
@@ -4947,7 +4914,7 @@ is
 								
 						end case;
 					end do_it;
-										
+					
 				begin -- insert_text
 					update_element (
 						container	=> generic_modules,
@@ -4957,6 +4924,7 @@ is
 					-- clean up for next board text
 					board_text := (others => <>);
 				end insert_text;
+
 				
 			begin -- build_non_conductor_text
 				case stack.parent (degree => 2) is
@@ -4965,9 +4933,6 @@ is
 
 					when SEC_ASSEMBLY_DOCUMENTATION =>
 						insert_text (LAYER_CAT_ASSY);
-
-					when SEC_KEEPOUT =>
-						insert_text (LAYER_CAT_KEEPOUT);
 
 					when SEC_STENCIL =>
 						insert_text (LAYER_CAT_STENCIL);

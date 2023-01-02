@@ -1658,6 +1658,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_layer_user;
 
+			
 			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
@@ -1685,28 +1686,7 @@ package body et_kicad_packages is
 					when BOT_ASSY =>
 						assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
-
-						
-					when TOP_KEEP =>
-						keepout.top.arcs.append ((
-							center 		=> arc.center,
-							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point,
-							direction	=> get_direction (arc.angle)
-							));
-						
-						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
-						
-					when BOT_KEEP =>
-						keepout.bottom.arcs.append ((
-							center 		=> arc.center,
-							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point,
-							direction	=> get_direction (arc.angle)
-							));
-
-						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);
-
+		
 						
 					when TOP_COPPER => 
 						copper.top.arcs.append ((pac_geometry_2.type_arc (arc) with arc.width));
@@ -1736,8 +1716,8 @@ package body et_kicad_packages is
 
 					when others => invalid_layer;
 				end case;
-
 			end insert_fp_arc;
+			
 
 			procedure insert_fp_circle is 
 				use et_packages;
@@ -1779,18 +1759,7 @@ package body et_kicad_packages is
 							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
-
-						
-					when TOP_KEEP =>
-						keepout.top.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO));
-
-						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
-						
-					when BOT_KEEP =>
-						keepout.bottom.circles.append ((pac_geometry_2.type_circle (circle) with filled => NO)); 
-						
-						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
-
+	
 						
 					when TOP_COPPER => 
 						copper.top.circles.append ((pac_geometry_2.type_circle (circle) with
@@ -1832,8 +1801,8 @@ package body et_kicad_packages is
 
 					when others => invalid_layer;
 				end case;
-
 			end insert_fp_circle;
+			
 
 			procedure insert_fp_line is begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
@@ -1855,16 +1824,7 @@ package body et_kicad_packages is
 					when BOT_ASSY =>
 						assy_doc.bottom.lines.append ((line.start_point, line.end_point, line.width));
 						line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
-
-						
-					when TOP_KEEP =>
-						keepout.top.lines.append ((line.start_point, line.end_point));
-						line_keepout_properties (TOP, keepout.top.lines.last, log_threshold + 1);
-
-					when BOT_KEEP =>
-						keepout.bottom.lines.append ((line.start_point, line.end_point));
-						line_keepout_properties (BOTTOM, keepout.bottom.lines.last, log_threshold + 1);
-
+		
 						
 					when TOP_COPPER => 
 						copper.top.lines.append ((line.start_point, line.end_point, line.width));

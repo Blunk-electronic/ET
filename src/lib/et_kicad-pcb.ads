@@ -80,8 +80,7 @@ with et_stencil.packages;
 with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_silkscreen.packages;
 
-with et_keepout.boards;			use et_keepout.boards;
-with et_keepout.packages;
+with et_keepout;				use et_keepout;
 
 with et_stop_mask.boards;		use et_stop_mask.boards;
 with et_stop_mask.packages;

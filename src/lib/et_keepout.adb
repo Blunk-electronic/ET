@@ -39,50 +39,9 @@
 
 with ada.strings;	 			use ada.strings;
 
-
 package body et_keepout is
 
-	procedure line_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_keepout_lines;
-		line : type_keepout_line;
-	begin
-		line := element (cursor);
-		log (text => "keepout (courtyard) line face" & to_string (face) & space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_keepout_properties;
-
-	
-	procedure arc_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_keepout_arcs;
-		arc : type_keepout_arc;
-	begin
-		arc := element (cursor);
-		log (text => "keepout (courtyard) arc face" & to_string (face) & space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-	end arc_keepout_properties;
-
-	
-	procedure circle_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_circles.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_keepout_circles;
-	begin
-		log (text => "keepout circle face" & to_string (face) & space 
-			 & to_string (element (cursor)),
-			level => log_threshold);
-	end;
-
-
+	procedure dummy is begin null; end;
 	
 end et_keepout;
 

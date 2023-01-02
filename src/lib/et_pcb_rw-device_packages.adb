@@ -240,9 +240,6 @@ package body et_pcb_rw.device_packages is
 
 		
 		procedure write_keepout is 
-			use pac_keepout_lines;
-			use pac_keepout_arcs;
-			use pac_keepout_circles;
 			use pac_keepout_contours;
 			use pac_keepout_cutouts;
 		begin
@@ -250,19 +247,13 @@ package body et_pcb_rw.device_packages is
 
 			-- top
 			section_mark (section_top, HEADER);
-			iterate (packge.keepout.top.lines, write_line'access);
-			iterate (packge.keepout.top.arcs, write_arc'access);
-			iterate (packge.keepout.top.circles, write_circle'access);
-			iterate (packge.keepout.top.polygons, write_polygon'access);
+			iterate (packge.keepout.top.zones, write_polygon'access);
 			iterate (packge.keepout.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
 			section_mark (section_bottom, HEADER);
-			iterate (packge.keepout.bottom.lines, write_line'access);
-			iterate (packge.keepout.bottom.arcs, write_arc'access);
-			iterate (packge.keepout.bottom.circles, write_circle'access);
-			iterate (packge.keepout.bottom.polygons, write_polygon'access);			
+			iterate (packge.keepout.bottom.zones, write_polygon'access);			
 			iterate (packge.keepout.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
 
@@ -1368,7 +1359,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_polygon_top is begin
 					
 					pac_keepout_contours.append (
-						container	=> packge.keepout.top.polygons, 
+						container	=> packge.keepout.top.zones, 
 						new_item	=> (contour with null record));
 						
 					-- clean up for next polygon
@@ -1379,7 +1370,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_polygon_bottom is begin
 
 					pac_keepout_contours.append (
-						container	=> packge.keepout.bottom.polygons, 
+						container	=> packge.keepout.bottom.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1772,14 +1763,6 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 										board_reset_line_width;
 
-									when SEC_KEEPOUT =>
-										pac_keepout_lines.append (
-											container	=> packge.keepout.top.lines, 
-											new_item	=> (type_line (board_line) with null record));
-
-										-- clean up for next line
-										board_reset_line;
-
 										
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
@@ -1855,15 +1838,7 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next line
 										board_reset_line;
 										board_reset_line_width;
-
-									when SEC_KEEPOUT =>
-										pac_keepout_lines.append (
-											container	=> packge.keepout.bottom.lines, 
-											new_item	=> (type_line (board_line) with null record));
-
-										-- clean up for next line
-										board_reset_line;
-
+					
 										
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
@@ -1952,14 +1927,6 @@ package body et_pcb_rw.device_packages is
 										board_reset_arc;
 										board_reset_line_width;
 
-									when SEC_KEEPOUT =>
-										pac_keepout_arcs.append (
-											container	=> packge.keepout.top.arcs,
-											new_item	=> (type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										board_reset_arc;
-
 										
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_arcs.append (
@@ -2031,14 +1998,6 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next arc
 										board_reset_arc;
 										board_reset_line_width;
-
-									when SEC_KEEPOUT =>
-										pac_keepout_arcs.append (
-											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										board_reset_arc;
 
 										
 									when SEC_ROUTE_RESTRICT =>										
@@ -2125,14 +2084,7 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle_fillable; -- clean up for next circle
 
-										
-									when SEC_KEEPOUT =>
-										pac_keepout_circles.append (
-											container	=> packge.keepout.top.circles,
-											new_item	=> board_make_fillable_circle_solid);
-
-										board_reset_circle_fillable; -- clean up for next circle
-
+								
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
 									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);									
 									when others => invalid_section;
@@ -2172,13 +2124,6 @@ package body et_pcb_rw.device_packages is
 										pac_stop_circles.append (
 											container	=> packge.stop_mask.bottom.circles, 
 											new_item	=> board_make_fillable_circle);
-
-										board_reset_circle_fillable; -- clean up for next circle
-
-									when SEC_KEEPOUT =>
-										pac_keepout_circles.append (
-											container	=> packge.keepout.bottom.circles,
-											new_item	=> board_make_fillable_circle_solid);
 
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2629,7 +2574,6 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => read_board_line (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_line (line);
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_line (line);
 									--when SEC_VIA_RESTRICT => read_board_line (line);
@@ -2667,10 +2611,8 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => read_board_arc (line);										
 									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
 									when SEC_STOP_MASK_CONTOURS_THT => read_board_arc (line);
-									--when SEC_VIA_RESTRICT => read_board_arc (line);
 									when others => invalid_section;
 								end case;
 
@@ -2721,35 +2663,6 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => 
-										if not read_board_circle (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_filled then -- filled yes/no
-													expect_field_count (line, 2);													
-													board_filled := to_filled (f (line, 2));
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
-
-									--when SEC_VIA_RESTRICT =>
-										--if not read_board_circle (line) then
-											--declare
-												--kw : string := f (line, 1);
-											--begin
-												---- CS: In the following: set a corresponding parameter-found-flag
-												--if kw = keyword_filled then -- filled yes/no
-													--expect_field_count (line, 2);													
-													--board_filled := to_filled (f (line, 2));
-												--else
-													--invalid_keyword (kw);
-												--end if;
-											--end;
-										--end if;
 										
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										if not read_board_circle (line) then

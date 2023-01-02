@@ -1220,9 +1220,6 @@ is
 		use pac_stop_polygons;
 
 		use et_keepout;
-		use pac_keepout_lines;
-		use pac_keepout_arcs;
-		use pac_keepout_circles;
 		use pac_keepout_contours;
 
 		use et_route_restrict.boards;
@@ -1688,36 +1685,18 @@ is
 
 
 		procedure write_keepout is
-			use et_keepout.boards;
-			use pac_keepout_texts;
-			
-			procedure write_text (cursor : in pac_keepout_texts.cursor) is begin
-				text_begin;
-				write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (cursor).content));
-				write_text_properties (element (cursor));
-				text_end;
-			end write_text;
-
+			use et_keepout;
 		begin
 			section_mark (section_keepout, HEADER);
 
 			section_mark (section_top, HEADER);
-			iterate (element (module_cursor).board.keepout.top.lines, write_line'access);
-			iterate (element (module_cursor).board.keepout.top.arcs, write_arc'access);
-			iterate (element (module_cursor).board.keepout.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.keepout.top.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.keepout.top.zones, write_polygon'access);
 			iterate (element (module_cursor).board.keepout.top.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.keepout.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
-			iterate (element (module_cursor).board.keepout.bottom.lines, write_line'access);
-			iterate (element (module_cursor).board.keepout.bottom.arcs, write_arc'access);
-			iterate (element (module_cursor).board.keepout.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.keepout.bottom.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.keepout.bottom.zones, write_polygon'access);
 			iterate (element (module_cursor).board.keepout.bottom.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.keepout.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_keepout, FOOTER);

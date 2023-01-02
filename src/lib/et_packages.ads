@@ -71,7 +71,7 @@ with et_stop_mask.packages;				use et_stop_mask.packages;
 with et_stencil.packages;				use et_stencil.packages;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
-with et_keepout.packages;				use et_keepout.packages;
+with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 
 with cairo;

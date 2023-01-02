@@ -1000,121 +1000,6 @@ is
 		
 		-- KEEPOUT
 		procedure draw_keepout is 
-
-			-- LINES
-			use pac_keepout_lines;
-			line : type_keepout_line;
-
-			procedure draw_line (f : in type_face) is begin
-				if keepout_enabled (f) then
-				
-					if f = face then
-						rotate_by (line, get_rotation (package_position));
-						
-						if flipped then mirror (line, Y); end if;
-						
-						move_by (line, to_distance_relative (package_position.place));
-
-						set_color_keepout (context.cr, f, brightness);
-						draw_line (in_area, context, to_line_fine (line), keepout_line_width, self.frame_height);
-					end if;
-
-				end if;
-			end draw_line;
-
-			
-			procedure query_line_top (c : in pac_keepout_lines.cursor) is begin
-				line := element (c);
-				set_destination;
-				draw_line (destination);
-			end query_line_top;
-
-			
-			procedure query_line_bottom (c : in pac_keepout_lines.cursor) is begin
-				line := element (c);
-				set_destination (INVERSE);
-				draw_line (destination);
-			end query_line_bottom;
-
-			
-			-- ARCS
-			use pac_keepout_arcs;
-			arc : type_keepout_arc;
-
-			procedure draw_arc (f : in type_face) is begin
-				if keepout_enabled (f) then
-					
-					if f = face then
-						rotate_by (arc, get_rotation (package_position));
-						
-						if flipped then mirror (arc, Y); end if;
-						
-						move_by (arc, to_distance_relative (package_position.place));
-
-						set_color_keepout (context.cr, f, brightness);
-						draw_arc (in_area, context, to_arc_fine (arc), keepout_line_width, self.frame_height);
-					end if;					
-				end if;
-			end draw_arc;
-
-			
-			procedure query_arc_top (c : in pac_keepout_arcs.cursor) is begin
-				arc := element (c);
-				set_destination;
-				draw_arc (destination);
-			end query_arc_top;
-
-			
-			procedure query_arc_bottom (c : in pac_keepout_arcs.cursor) is begin
-				arc := element (c);
-				set_destination (INVERSE);
-				draw_arc (destination);
-			end query_arc_bottom;
-
-			
-			-- CIRCLES
-			use pac_keepout_circles;
-
-			procedure draw_circle (
-				circle	: in out type_fillable_circle_solid;
-				f 		: in type_face) 
-			is begin
-				if keepout_enabled (f) then
-					
-					if f = face then
-						rotate_by (circle, get_rotation (package_position));
-						
-						if flipped then mirror (circle, Y); end if;
-						
-						move_by (circle, to_distance_relative (package_position.place));
-
-						set_color_keepout (context.cr, f, brightness);
-
-						draw_circle (in_area, context, circle, circle.filled,
-							keepout_line_width, self.frame_height);
-						
-					end if;
-				end if;
-			end draw_circle;
-
-			
-			procedure query_circle_top (c : in pac_keepout_circles.cursor) is 
-				circle : type_fillable_circle_solid := element (c);
-			begin
-				set_destination;
-				draw_circle (circle, destination);
-			end query_circle_top;
-
-			
-			procedure query_circle_bottom (c : in pac_keepout_circles.cursor) is 
-				circle : type_fillable_circle_solid := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_circle (circle, destination);
-			end query_circle_bottom;
-
-			
-			-- CONTOURS
 			use pac_keepout_contours;
 
 			procedure draw_contour (
@@ -1205,26 +1090,13 @@ is
 		begin -- draw_keepout
 			set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 			
-			-- lines
-			element (package_cursor).keepout.top.lines.iterate (query_line_top'access);
-			element (package_cursor).keepout.bottom.lines.iterate (query_line_bottom'access);
-
-			-- arcs
-			element (package_cursor).keepout.top.arcs.iterate (query_arc_top'access);
-			element (package_cursor).keepout.bottom.arcs.iterate (query_arc_bottom'access);
-
-			-- circles
-			element (package_cursor).keepout.top.circles.iterate (query_circle_top'access);
-			element (package_cursor).keepout.bottom.circles.iterate (query_circle_bottom'access);
-
-			-- polygons
-			element (package_cursor).keepout.top.polygons.iterate (query_polygon_top'access);
-			element (package_cursor).keepout.bottom.polygons.iterate (query_polygon_bottom'access);
+			-- zones
+			element (package_cursor).keepout.top.zones.iterate (query_polygon_top'access);
+			element (package_cursor).keepout.bottom.zones.iterate (query_polygon_bottom'access);
 
 			-- cutouts
 			element (package_cursor).keepout.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).keepout.bottom.cutouts.iterate (query_cutout_bottom'access);
-			
+			element (package_cursor).keepout.bottom.cutouts.iterate (query_cutout_bottom'access);			
 		end draw_keepout;
 
 		

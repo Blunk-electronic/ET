@@ -39,14 +39,15 @@
 
 package et_keepout.packages is
 
-	type type_keepout is new et_keepout.type_keepout with record
-		texts : pac_texts_fab_with_content.list; -- for notes on placement
-	end record;
+	dummy : natural;
+	--type type_keepout is new et_keepout.type_keepout with record
+		--texts : pac_texts_fab_with_content.list; -- for notes on placement
+	--end record;
 
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
+	--type type_keepout_both_sides is record
+		--top 	: type_keepout;
+		--bottom	: type_keepout;
+	--end record;
 	
 end et_keepout.packages;
 

@@ -521,7 +521,7 @@ package body et_kicad.pcb is
 		
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
-		package_keepout			: et_keepout.packages.type_keepout_both_sides;
+		package_keepout			: et_keepout.type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
@@ -3193,17 +3193,6 @@ package body et_kicad.pcb is
 					package_assy_doc.bottom.texts.clear;
 					package_assy_doc.bottom.placeholders.clear;
 
-					-- clear keepout
-					package_keepout.top.lines.clear;
-					package_keepout.top.arcs.clear;
-					package_keepout.top.circles.clear;
-					-- CS package_top_keepout.texts.clear;
-
-					package_keepout.bottom.lines.clear;
-					package_keepout.bottom.arcs.clear;
-					package_keepout.bottom.circles.clear;
-					-- CS package_bot_keepout.texts.clear;
-
 					-- clear copper
 					package_copper.top.lines.clear;
 					package_copper.top.arcs.clear;
@@ -3369,26 +3358,6 @@ package body et_kicad.pcb is
 						board.stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
-
-					when TOP_KEEP =>
-						board.keepout.top.arcs.append ((
-							center 		=> board_arc.center, 
-							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point,
-							direction	=> get_direction (board_arc.angle)
-							));
-						
-						arc_keepout_properties (TOP, board.keepout.top.arcs.last, log_threshold + 1);
-
-					when BOT_KEEP =>
-						board.keepout.bottom.arcs.append ((
-							center 		=> board_arc.center, 
-							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point,
-							direction	=> get_direction (board_arc.angle)
-							));
-
-						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
 						append (board.contours.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
@@ -3466,15 +3435,6 @@ package body et_kicad.pcb is
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
-					when TOP_KEEP =>
-						board.keepout.top.circles.append ((pac_geometry_2.type_circle (board_circle) with filled => NO));
-
-						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
-
-					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with filled => NO));
-
-						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
 						board.contours.outline.contour.circle := pac_geometry_2.type_circle (board_circle);
@@ -3533,21 +3493,6 @@ package body et_kicad.pcb is
 					when BOT_STOP =>
 						board.stop_mask.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
-
-
-					when TOP_KEEP =>
-						board.keepout.top.lines.append ((
-							start_point	=> board_line.start_point,
-							end_point	=> board_line.end_point));
-
-						line_keepout_properties (TOP, board.keepout.top.lines.last, log_threshold + 1);
-
-					when BOT_KEEP =>
-						board.keepout.bottom.lines.append ((
-							start_point	=> board_line.start_point,
-							end_point	=> board_line.end_point));
-
-						line_keepout_properties (BOTTOM, board.keepout.bottom.lines.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
@@ -3664,28 +3609,7 @@ package body et_kicad.pcb is
 					when BOT_ASSY =>
 						package_assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
-
 						
-					when TOP_KEEP =>
-						package_keepout.top.arcs.append ((
-							center 		=> package_arc.center,
-							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point,
-							direction	=> get_direction (package_arc.angle)
-							));
-
-						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
-						
-					when BOT_KEEP =>
-						package_keepout.bottom.arcs.append ((
-							center 		=> package_arc.center,
-							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point,
-							direction	=> get_direction (package_arc.angle)
-							));
-						
-						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
-
 						
 					when TOP_COPPER => 
 						package_copper.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
@@ -3764,16 +3688,6 @@ package body et_kicad.pcb is
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 
-						
-					when TOP_KEEP =>
-						package_keepout.top.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
-						
-						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
-						
-					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with filled => NO)); 
-						
-						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_COPPER => 
@@ -3846,16 +3760,7 @@ package body et_kicad.pcb is
 					when BOT_ASSY =>
 						package_assy_doc.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
-
 						
-					when TOP_KEEP =>
-						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point));
-						line_keepout_properties (TOP, package_keepout.top.lines.last, log_threshold + 1);
-
-					when BOT_KEEP =>
-						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point));
-						line_keepout_properties (BOTTOM, package_keepout.bottom.lines.last, log_threshold + 1);
-
 						
 					when TOP_COPPER => 
 						package_copper.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));

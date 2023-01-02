@@ -87,7 +87,7 @@ with et_silkscreen.boards;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;
 with et_keepout;				use et_keepout;
-with et_keepout.boards;
+
 
 package body et_kicad_to_native is
 
@@ -1608,173 +1608,24 @@ package body et_kicad_to_native is
 
 
 			procedure move_keepout is
-				use et_keepout.boards;
-				use pac_keepout_lines;
-				lines_cursor : pac_keepout_lines.cursor;
-
-				use pac_keepout_arcs;
-				arcs_cursor : pac_keepout_arcs.cursor;
-
-				use pac_keepout_circles;
-				circles_cursor : pac_keepout_circles.cursor;
-
 				use pac_keepout_contours;
 				polygons_cursor : pac_keepout_contours.cursor;
 
 				keepout : constant string := "board keepout ";
-				
-				procedure move_line (line : in out type_keepout_line) is
-					use et_pcb;
-				begin
-					log (text => keepout & "line", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
-					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
-
-					move (line.start_point);
-					move (line.end_point);
-					
-					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
-					log_indentation_down;
-				end move_line;
-
-				
-				procedure move_arc (arc : in out type_keepout_arc) is
-					use et_pcb;
-				begin
-					log (text => keepout & "arc", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
-					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
-
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
-					
-					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
-							
-					log_indentation_down;
-				end move_arc;
-
-				
-				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.pac_geometry_2;
-				begin
-					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-							
-					log_indentation_down;
-				end move_circle;
-
-				
-				procedure move_circle (circle : in out type_fillable_circle_solid) is
-					use et_pcb_coordinates.pac_geometry_2;
-				begin
-					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-							
-					log_indentation_down;
-				end move_circle;
-
-				
 				procedure move_polygon (polygon : in out type_keepout_contour) is begin
-					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
+					log (text => keepout & "zone segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 			begin -- move_keepout
 				
-				-- LINES TOP
-				lines_cursor := module.board.keepout.top.lines.first;
-				while lines_cursor /= pac_keepout_lines.no_element loop
-					pac_keepout_lines.update_element (
-						container	=> module.board.keepout.top.lines,
-						position	=> lines_cursor,
-						process		=> move_line'access);
-					
-					next (lines_cursor);
-				end loop;
-
-				
-				-- LINES BOTTOM
-				lines_cursor := module.board.keepout.bottom.lines.first;
-				while lines_cursor /= pac_keepout_lines.no_element loop
-					pac_keepout_lines.update_element (
-						container	=> module.board.keepout.bottom.lines,
-						position	=> lines_cursor,
-						process		=> move_line'access);
-					
-					next (lines_cursor);
-				end loop;
-
-				
-				-- ARCS TOP
-				arcs_cursor := module.board.keepout.top.arcs.first;
-				while arcs_cursor /= pac_keepout_arcs.no_element loop
-					pac_keepout_arcs.update_element (
-						container	=> module.board.keepout.top.arcs,
-						position	=> arcs_cursor,
-						process		=> move_arc'access);
-					
-					next (arcs_cursor);
-				end loop;
-
-				
-				-- ARCS BOTTOM
-				arcs_cursor := module.board.keepout.bottom.arcs.first;
-				while arcs_cursor /= pac_keepout_arcs.no_element loop
-					pac_keepout_arcs.update_element (
-						container	=> module.board.keepout.bottom.arcs,
-						position	=> arcs_cursor,
-						process		=> move_arc'access);
-					
-					next (arcs_cursor);
-				end loop;			
-
-				
-				-- CIRCLES TOP
-				circles_cursor := module.board.keepout.top.circles.first;
-				while circles_cursor /= pac_keepout_circles.no_element loop
-					pac_keepout_circles.update_element (
-						container	=> module.board.keepout.top.circles,
-						position	=> circles_cursor,
-						process		=> move_circle'access);
-					
-					next (circles_cursor);
-				end loop;
-
-				
-				-- CIRCLES BOTTOM
-				circles_cursor := module.board.keepout.bottom.circles.first;
-				while circles_cursor /= pac_keepout_circles.no_element loop
-					pac_keepout_circles.update_element (
-						container	=> module.board.keepout.bottom.circles,
-						position	=> circles_cursor,
-						process		=> move_circle'access);
-					
-					next (circles_cursor);
-				end loop;
-
-				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.keepout.top.polygons.first;
+				polygons_cursor := module.board.keepout.top.zones.first;
 				while polygons_cursor /= pac_keepout_contours.no_element loop
 					pac_keepout_contours.update_element (
-						container	=> module.board.keepout.top.polygons,
+						container	=> module.board.keepout.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1783,10 +1634,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.keepout.bottom.polygons.first;
+				polygons_cursor := module.board.keepout.bottom.zones.first;
 				while polygons_cursor /= pac_keepout_contours.no_element loop
 					pac_keepout_contours.update_element (
-						container	=> module.board.keepout.bottom.polygons,
+						container	=> module.board.keepout.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					

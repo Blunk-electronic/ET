@@ -61,48 +61,27 @@ package et_keepout is
 	-- GUI relevant only: The line width of keepout:
 	keepout_line_width : constant type_general_line_width := linewidth_fab_min;
 
-	type type_keepout_line is new type_line with null record;
-	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);
-
-	type type_keepout_arc is new type_arc with null record;
-	package pac_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
-	
-	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
-
 	type type_keepout_contour is new type_contour with null record;
 	package pac_keepout_contours is new doubly_linked_lists (type_keepout_contour);
-	
+
+	--type type_keepout_cutout is new type_contour with null record;
 	package pac_keepout_cutouts is new doubly_linked_lists (type_contour);	
+	-- CS not sure whether this is really required
 	
 	type type_keepout is tagged record
-		lines 		: pac_keepout_lines.list;
-		arcs		: pac_keepout_arcs.list;
-		circles		: pac_keepout_circles.list;
-		polygons	: pac_keepout_contours.list;
-		cutouts 	: pac_keepout_cutouts.list;
+		zones	: pac_keepout_contours.list;
+		cutouts : pac_keepout_cutouts.list;
 	end record;
 
 
+	type type_keepout_both_sides is record
+		top 	: type_keepout;
+		bottom	: type_keepout;
+	end record;
+	
 
-	-- Logs the properties of the given line of keepout
-	procedure line_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given arc of keepout
-	procedure arc_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_arcs.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given circle of keepout
-	procedure circle_keepout_properties (
-		face			: in type_face;
-		cursor			: in pac_keepout_circles.cursor;
-		log_threshold 	: in type_log_level);
-
-
+	procedure dummy;
+	
 	
 end et_keepout;
 

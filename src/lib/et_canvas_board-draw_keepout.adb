@@ -37,7 +37,6 @@
 
 --with ada.text_io;				use ada.text_io;
 with et_keepout;				use et_keepout;
-with et_keepout.boards;			use et_keepout.boards;
 with et_colors;					use et_colors;
 
 separate (et_canvas_board)
@@ -50,67 +49,12 @@ procedure draw_keepout (
 is
 	use pac_geometry_2;	
 
-	use pac_keepout_lines;
-	use pac_keepout_arcs;
-	use pac_keepout_circles;
 	use pac_keepout_contours;
 	use pac_keepout_cutouts;
-	use pac_keepout_texts;
 
 
 	-- CS must be overwritten according to select status:
 	brightness : type_brightness := NORMAL;
-
-	
-	procedure query_line (c : in pac_keepout_lines.cursor) is begin
-		
-		draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> to_line_fine (element (c)),
-			width		=> keepout_line_width,
-			height		=> self.frame_height);
-
-	end query_line;
-
-	
-	procedure query_arc (c : in pac_keepout_arcs.cursor) is begin
-		
-		draw_arc (
-			area		=> in_area,
-			context		=> context,
-			arc			=> to_arc_fine (element (c)),
-			width		=> keepout_line_width,
-			height		=> self.frame_height);
-
-	end query_arc;
-
-	
-	procedure query_circle (c : in pac_keepout_circles.cursor) is begin
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal not-filled circle:
-				draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					width		=> keepout_line_width,
-					height		=> self.frame_height);
-				
-			when YES =>
-				-- We draw a solid filled circle:
-				draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> YES,
-					width		=> zero,
-					height		=> self.frame_height);
-
-		end case;
-
-	end query_circle;
 
 	
 	procedure query_polygon (c : in pac_keepout_contours.cursor) is 
@@ -145,17 +89,6 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_keepout_texts.cursor) is begin
-		draw_text_origin (self, element (c).position, in_area, context);
-
-		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-		
-		-- Draw the text:
-		draw_vector_text (in_area, context, element (c).vectors,
-			element (c).line_width, self.frame_height);
-		
-	end query_text;
 
 	
 	procedure query_items (
@@ -169,20 +102,12 @@ is
 		
 		case face is
 			when TOP =>
-				iterate (module.board.keepout.top.lines, query_line'access);
-				iterate (module.board.keepout.top.arcs, query_arc'access);
-				iterate (module.board.keepout.top.circles, query_circle'access);
-				iterate (module.board.keepout.top.polygons, query_polygon'access);
+				iterate (module.board.keepout.top.zones, query_polygon'access);
 				iterate (module.board.keepout.top.cutouts, query_cutout'access);
-				iterate (module.board.keepout.top.texts, query_text'access);
 
 			when BOTTOM =>
-				iterate (module.board.keepout.bottom.lines, query_line'access);
-				iterate (module.board.keepout.bottom.arcs, query_arc'access);
-				iterate (module.board.keepout.bottom.circles, query_circle'access);
-				iterate (module.board.keepout.bottom.polygons, query_polygon'access);
+				iterate (module.board.keepout.bottom.zones, query_polygon'access);
 				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
-				iterate (module.board.keepout.bottom.texts, query_text'access);
 		end case;
 	end query_items;
 	
@@ -193,8 +118,6 @@ begin -- draw_keepout
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
 		process		=> query_items'access);
-
-	draw_text_being_placed (self, in_area, context, face, LAYER_CAT_KEEPOUT);
 	
 end draw_keepout;
 
