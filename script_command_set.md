@@ -1197,7 +1197,7 @@ board led_driver draw assy top line 2.5 0 0 160 0 # top, line, width 2.5mm, from
 ```
 
 ## KEEPOUT
-Objects in the keepout layers are drawn and deleted the like those in silkscreen (see above).
+<!--Objects in the keepout layers are drawn and deleted the like those in silkscreen (see above).
 The difference is the 4th keyword 'keepout'. An example to draw a line:
 ```
 board led_driver draw keepout top line 0 0 160 0 # top, line, from 0/0 to 160/0
@@ -1208,8 +1208,8 @@ board led_driver draw keepout top circle filled 50 50 40 # circle, filled, cente
 ```
 ```
 board led_driver draw keepout top circle 50 50 40 # circle, not filled, center 50/50 radius 40
-```
-
+```-->
+<!-- CS -->
 
 ## SOLDER STOP MASK
 The solder stop mask defines the areas where the conductor plane (mostly copper) is exposed,
