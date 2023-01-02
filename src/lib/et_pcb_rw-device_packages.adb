@@ -336,7 +336,7 @@ package body et_pcb_rw.device_packages is
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;
 			use pac_route_restrict_circles;
-			use pac_route_restrict_contours;
+			use pac_route_restrict_zones;
 			use pac_route_restrict_cutouts;
 
 			procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
@@ -363,14 +363,14 @@ package body et_pcb_rw.device_packages is
 				circle_end;
 			end write_circle;
 			
-			procedure write_polygon (cursor : in pac_route_restrict_contours.cursor) is 
+			procedure write_zone (cursor : in pac_route_restrict_zones.cursor) is 
 			begin
 				fill_zone_begin;
 				contours_begin;
 				write_polygon_segments (element (cursor));
 				contours_end;
 				fill_zone_end;
-			end write_polygon;
+			end write_zone;
 
 			procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
 			begin
@@ -389,7 +389,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.route_restrict.top.lines, write_line'access);
 			iterate (packge.route_restrict.top.arcs, write_arc'access);
 			iterate (packge.route_restrict.top.circles, write_circle'access);
-			iterate (packge.route_restrict.top.contours, write_polygon'access);
+			iterate (packge.route_restrict.top.zones, write_zone'access);
 			iterate (packge.route_restrict.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 
@@ -398,7 +398,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.route_restrict.bottom.lines, write_line'access);
 			iterate (packge.route_restrict.bottom.arcs, write_arc'access);
 			iterate (packge.route_restrict.bottom.circles, write_circle'access);
-			iterate (packge.route_restrict.bottom.contours, write_polygon'access);
+			iterate (packge.route_restrict.bottom.zones, write_zone'access);
 			iterate (packge.route_restrict.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
 			
@@ -410,7 +410,7 @@ package body et_pcb_rw.device_packages is
 			use pac_via_restrict_lines;
 			use pac_via_restrict_arcs;
 			use pac_via_restrict_circles;
-			use pac_via_restrict_contours;
+			use pac_via_restrict_zones;
 			use pac_via_restrict_cutouts;
 
 			procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
@@ -435,14 +435,14 @@ package body et_pcb_rw.device_packages is
 				circle_end;
 			end write_circle;
 			
-			procedure write_polygon (cursor : in pac_via_restrict_contours.cursor) is 
+			procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is 
 			begin
 				fill_zone_begin;
 				contours_begin;
 				write_polygon_segments (element (cursor));
 				contours_end;
 				fill_zone_end;
-			end write_polygon;
+			end write_zone;
 
 			procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
 			begin
@@ -461,7 +461,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.via_restrict.top.lines, write_line'access);
 			iterate (packge.via_restrict.top.arcs, write_arc'access);
 			iterate (packge.via_restrict.top.circles, write_circle'access);
-			iterate (packge.via_restrict.top.contours, write_polygon'access);			
+			iterate (packge.via_restrict.top.zones, write_zone'access);			
 			iterate (packge.via_restrict.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 
@@ -470,7 +470,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.via_restrict.bottom.lines, write_line'access);
 			iterate (packge.via_restrict.bottom.arcs, write_arc'access);
 			iterate (packge.via_restrict.bottom.circles, write_circle'access);
-			iterate (packge.via_restrict.bottom.contours, write_polygon'access);			
+			iterate (packge.via_restrict.bottom.zones, write_zone'access);			
 			iterate (packge.via_restrict.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
 			
@@ -1479,9 +1479,9 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				
-				procedure append_route_restrict_polygon_top is begin
-					pac_route_restrict_contours.append (
-						container	=> packge.route_restrict.top.contours, 
+				procedure append_route_restrict_zone_top is begin
+					pac_route_restrict_zones.append (
+						container	=> packge.route_restrict.top.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1489,9 +1489,9 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				
-				procedure append_route_restrict_polygon_bottom is begin
-					pac_route_restrict_contours.append (
-						container	=> packge.route_restrict.bottom.contours, 
+				procedure append_route_restrict_zone_bottom is begin
+					pac_route_restrict_zones.append (
+						container	=> packge.route_restrict.bottom.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1499,9 +1499,9 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				
-				procedure append_via_restrict_polygon_top is begin
-					pac_via_restrict_contours.append (
-						container	=> packge.via_restrict.top.contours, 
+				procedure append_via_restrict_zone_top is begin
+					pac_via_restrict_zones.append (
+						container	=> packge.via_restrict.top.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1509,9 +1509,9 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				
-				procedure append_via_restrict_polygon_bottom is begin
-					pac_via_restrict_contours.append (
-						container	=> packge.via_restrict.bottom.contours, 
+				procedure append_via_restrict_zone_bottom is begin
+					pac_via_restrict_zones.append (
+						container	=> packge.via_restrict.bottom.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -2234,10 +2234,10 @@ package body et_pcb_rw.device_packages is
 										append_keepout_polygon_top;
 
 									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_polygon_top;
+										append_route_restrict_zone_top;
 
 									when SEC_VIA_RESTRICT =>
-										append_via_restrict_polygon_top;
+										append_via_restrict_zone_top;
 										
 									when others => invalid_section;
 								end case;
@@ -2260,10 +2260,10 @@ package body et_pcb_rw.device_packages is
 										append_keepout_polygon_bottom;
 
 									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_polygon_bottom;
+										append_route_restrict_zone_bottom;
 
 									when SEC_VIA_RESTRICT =>
-										append_via_restrict_polygon_bottom;
+										append_via_restrict_zone_bottom;
 										
 									when others => invalid_section;
 								end case;

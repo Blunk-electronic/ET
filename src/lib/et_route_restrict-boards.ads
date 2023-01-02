@@ -74,7 +74,7 @@ package et_route_restrict.boards is
 
 	
 	type type_route_restrict_contour is new
-		et_route_restrict.type_route_restrict_contour with
+		et_route_restrict.type_route_restrict_zone with
 	record
 		layers 	: type_signal_layers.set;
 	end record;

@@ -204,17 +204,17 @@ package et_route_restrict is
 	
 	
 -- ZONES:
-	type type_route_restrict_contour is new type_contour with null record;
-	-- CS rename to type_route_restrict_zone
+	type type_route_restrict_zone is new type_contour with null record;
 
-	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
+	package pac_route_restrict_zones is new doubly_linked_lists (type_route_restrict_zone);
 
 	
 	type type_route_restrict_cutout is new type_contour with null record;
-	-- CS put in comments to be implemented in the future
+	-- CS not sure whether this is really required.
 		
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
-	-- CS put in comments to be implemented in the future
+	-- CS not sure whether this is really required.
+
 
 	
 

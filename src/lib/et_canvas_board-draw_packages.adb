@@ -1888,8 +1888,8 @@ is
 
 			
 			-- FILL ZONES
-			use pac_route_restrict_contours;
-			polygon : type_route_restrict_contour;
+			use pac_route_restrict_zones;
+			polygon : type_route_restrict_zone;
 
 			procedure draw_contour (f : in type_face) is 
 				drawn : boolean := false;
@@ -1911,18 +1911,18 @@ is
 			end draw_contour;
 
 			
-			procedure query_polygon_top (c : in pac_route_restrict_contours.cursor) is begin
+			procedure query_zone_top (c : in pac_route_restrict_zones.cursor) is begin
 				polygon := element (c);
 				set_destination;
 				draw_contour (destination);
-			end query_polygon_top;
+			end query_zone_top;
 
 			
-			procedure query_polygon_bottom (c : in pac_route_restrict_contours.cursor) is begin
+			procedure query_zone_bottom (c : in pac_route_restrict_zones.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
 				draw_contour (destination);
-			end query_polygon_bottom;
+			end query_zone_bottom;
 
 			
 			-- CUTOUTS
@@ -1981,9 +1981,9 @@ is
 			element (package_cursor).route_restrict.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).route_restrict.bottom.circles.iterate (query_circle_bottom'access);
 
-			-- contours
-			element (package_cursor).route_restrict.top.contours.iterate (query_polygon_top'access);
-			element (package_cursor).route_restrict.bottom.contours.iterate (query_polygon_bottom'access);
+			-- zones
+			element (package_cursor).route_restrict.top.zones.iterate (query_zone_top'access);
+			element (package_cursor).route_restrict.bottom.zones.iterate (query_zone_bottom'access);
 
 			-- cutouts
 			element (package_cursor).route_restrict.top.cutouts.iterate (query_cutout_top'access);
@@ -2101,8 +2101,8 @@ is
 
 			
 			-- FILL ZONES
-			use pac_via_restrict_contours;
-			polygon : type_via_restrict_contour;
+			use pac_via_restrict_zones;
+			polygon : type_via_restrict_zone;
 
 			procedure draw_contour (f : in type_face) is 
 				drawn : boolean := false;
@@ -2124,18 +2124,18 @@ is
 			end draw_contour;
 
 			
-			procedure query_polygon_top (c : in pac_via_restrict_contours.cursor) is begin
+			procedure query_zone_top (c : in pac_via_restrict_zones.cursor) is begin
 				polygon := element (c);
 				set_destination;
 				draw_contour (destination);
-			end query_polygon_top;
+			end query_zone_top;
 
 			
-			procedure query_polygon_bottom (c : in pac_via_restrict_contours.cursor) is begin
+			procedure query_zone_bottom (c : in pac_via_restrict_zones.cursor) is begin
 				polygon := element (c);
 				set_destination (INVERSE);
 				draw_contour (destination);
-			end query_polygon_bottom;
+			end query_zone_bottom;
 
 			
 			-- CUTOUTS
@@ -2193,9 +2193,9 @@ is
 			element (package_cursor).via_restrict.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).via_restrict.bottom.circles.iterate (query_circle_bottom'access);
 
-			-- contours
-			element (package_cursor).via_restrict.top.contours.iterate (query_polygon_top'access);
-			element (package_cursor).via_restrict.bottom.contours.iterate (query_polygon_bottom'access);
+			-- zones
+			element (package_cursor).via_restrict.top.zones.iterate (query_zone_top'access);
+			element (package_cursor).via_restrict.bottom.zones.iterate (query_zone_bottom'access);
 
 			-- cutouts
 			element (package_cursor).via_restrict.top.cutouts.iterate (query_cutout_top'access);

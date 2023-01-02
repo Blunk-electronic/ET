@@ -72,7 +72,7 @@ package et_via_restrict.boards is
 
 	
 	type type_via_restrict_contour is new
-		et_via_restrict.type_via_restrict_contour with
+		et_via_restrict.type_via_restrict_zone with
 	record
 		layers 	: type_signal_layers.set;
 	end record;

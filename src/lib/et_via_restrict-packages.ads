@@ -44,8 +44,9 @@ package et_via_restrict.packages is
 		lines 		: pac_via_restrict_lines.list;
 		arcs		: pac_via_restrict_arcs.list;
 		circles		: pac_via_restrict_circles.list;
-		contours	: pac_via_restrict_contours.list;  -- rename to zones
-		cutouts		: pac_via_restrict_cutouts.list;  -- CS put in comments to be implemented in the future
+		zones		: pac_via_restrict_zones.list;
+		cutouts		: pac_via_restrict_cutouts.list;
+		-- CS not sure whether this is really required.
 
 		-- CS texts : 
 		-- This must not be derived from from conductor text because
