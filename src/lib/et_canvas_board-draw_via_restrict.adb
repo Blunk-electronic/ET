@@ -176,23 +176,6 @@ is
 	end query_cutout;
 
 	
-	procedure query_text (c : in pac_conductor_texts.cursor) is begin
-		-- Draw the text if restrict layer is enabled:
-		if via_restrict_layer_enabled (element (c).layer) then
-
-			draw_text_origin (self, element (c).position, in_area, context);
-
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-
-			-- Draw the text:
-			draw_vector_text (in_area, context, element (c).vectors,
-				element (c).line_width, self.frame_height);
-
-		end if;
-	end query_text;
-
-	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
@@ -206,7 +189,6 @@ is
 		iterate (module.board.via_restrict.circles, query_circle'access);
 		iterate (module.board.via_restrict.contours, query_polygon'access);
 		iterate (module.board.via_restrict.cutouts, query_cutout'access);
-		iterate (module.board.via_restrict.texts, query_text'access);
 		
 		cairo.stroke (context.cr);
 	end query_items;

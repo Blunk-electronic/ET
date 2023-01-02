@@ -1166,7 +1166,6 @@ package body et_canvas_board is
 				
 				place_text_in_conductor_layer (
 					module_cursor 	=> current_active_module,
-					layer_category	=> text_place.category,
 					signal_layer	=> text_place.signal_layer,
 					text			=> text_place.text,
 					log_threshold	=> log_threshold + 1);

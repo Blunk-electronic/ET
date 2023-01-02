@@ -3138,7 +3138,6 @@ package body et_board_ops is
 	
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category_conductor;
 		signal_layer	: in type_signal_layer;
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
@@ -3156,20 +3155,12 @@ package body et_board_ops is
 			c_text : type_conductor_text;
 			
 		begin
-			-- NOTE: Texts in restrict layers are never mirrored.
-			-- Even in the deepest (bottom) signal layer such texts 
-			-- are not mirrored.
-			if layer_category in type_layer_category_restrict then
-				mirror := NO;
-				log (text => "text is in restrict layer -> no mirroring", level => log_threshold + 1);
-			else
-				mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+			mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
 
-				if mirror = YES then
-					log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
-				else
-					log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
-				end if;
+			if mirror = YES then
+				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
+			else
+				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
 			end if;
 
 			
@@ -3190,23 +3181,8 @@ package body et_board_ops is
 				vectors		=> v_text -- CS call vectorize_text here directly
 				--segments	=> make_segments (v_text, text.line_width)
 				);
-
 			
-			case layer_category is
-				when LAYER_CAT_CONDUCTOR =>
-					append (module.board.conductors.texts, c_text);
-
-				when LAYER_CAT_ROUTE_RESTRICT =>
-					-- CS Check signal layer. layer must exist and
-					-- must not be deeper than deppest used layer.
-					append (module.board.route_restrict.texts, c_text);
-					
-				when LAYER_CAT_VIA_RESTRICT =>
-					-- CS Check signal layer. layer must exist and
-					-- must not be deeper than deppest used layer.
-					append (module.board.via_restrict.texts, c_text);
-
-			end case;
+			append (module.board.conductors.texts, c_text);
 		end place_text;
 
 	begin
@@ -3214,7 +3190,6 @@ package body et_board_ops is
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " placing text in conductor layer at"
 			& to_string (text.position)
-			& " category " & to_string (layer_category)
 			& " signal layer " & to_string (signal_layer),
 			level => log_threshold);
 

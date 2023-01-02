@@ -58,6 +58,8 @@ package et_via_restrict is
 	use pac_text_board;
 	
 
+	-- GUI relevant only: The line width of via restrict:
+	via_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
 
 	
 -- LINES:

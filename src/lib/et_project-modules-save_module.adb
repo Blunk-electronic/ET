@@ -1731,7 +1731,6 @@ is
 			iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.route_restrict.contours, write_contour'access);
 			iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.route_restrict.texts, write_text'access);
 			section_mark (section_route_restrict, FOOTER);
 		end write_route_restrict;
 
@@ -1743,7 +1742,6 @@ is
 			iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.via_restrict.contours, write_contour'access);
 			iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);
 		end write_via_restrict;
 

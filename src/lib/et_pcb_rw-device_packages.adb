@@ -1187,20 +1187,6 @@ package body et_pcb_rw.device_packages is
 										make_border	=> true)));
 
 							
-						when SEC_ROUTE_RESTRICT =>
-
-							append (
-								container	=> packge.route_restrict.top.texts,
-								new_item	=> (pac_text with others => <>));
-
-							
-						when SEC_VIA_RESTRICT =>
-
-							append (
-								container	=> packge.via_restrict.top.texts,
-								new_item	=> (pac_text with others => <>));
-
-							
 						when SEC_SILK_SCREEN =>
 
 							pac_texts_fab_with_content.append (
@@ -1221,9 +1207,6 @@ package body et_pcb_rw.device_packages is
 								container	=> packge.stop_mask.top.texts,
 								new_item	=> pac_text);
 
-
-							
-						-- CS SEC_KEEPOUT
 							
 						when others => invalid_section;
 					end case;
@@ -1249,20 +1232,6 @@ package body et_pcb_rw.device_packages is
 										make_border	=> true)));
 
 
-						when SEC_ROUTE_RESTRICT =>
-
-							append (
-								container	=> packge.route_restrict.bottom.texts,
-								new_item	=> (pac_text with others => <>));
-
-
-						when SEC_VIA_RESTRICT =>
-
-							append (
-								container	=> packge.via_restrict.bottom.texts,
-								new_item	=> (pac_text with others => <>));
-
-							
 						when SEC_SILK_SCREEN =>
 
 							pac_texts_fab_with_content.append (
@@ -1284,8 +1253,6 @@ package body et_pcb_rw.device_packages is
 								new_item	=> pac_text);
 
 							
-						-- CS SEC_KEEPOUT
-							
 						when others => invalid_section;
 					end case;
 					
@@ -1294,7 +1261,6 @@ package body et_pcb_rw.device_packages is
 
 				when others => invalid_section;
 			end case;
-
 		end build_text;
 			
 		
@@ -2976,9 +2942,9 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
+									when SEC_CONDUCTOR |
 										SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STOP_MASK => -- CS SEC_KEEPOUT
+										SEC_STOP_MASK =>
 
 										read_text;
 										

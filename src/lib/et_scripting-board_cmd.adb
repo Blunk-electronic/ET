@@ -1403,7 +1403,6 @@ is
 						-- This procedure automatically cares for mirroring:
 						place_text_in_conductor_layer (
 							module_cursor 	=> module_cursor,
-							layer_category	=> layer_category,
 							signal_layer	=> signal_layer,
 							text			=> (text with content),
 							log_threshold	=> log_threshold + 1);

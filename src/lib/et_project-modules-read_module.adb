@@ -4248,10 +4248,7 @@ is
 			end insert_circle_track;
 
 			
-			procedure build_conductor_text (
-				-- This includes restrict layers.
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_conductor)
-			is
+			procedure build_conductor_text is
 				use et_board_shapes_and_text;
 				
 				procedure do_it (
@@ -4268,50 +4265,25 @@ is
 					mirror : type_vector_text_mirrored;
 					
 				begin
-					-- NOTE: Texts in restrict layers are never mirrored.
-					-- Even in the deepest (bottom) signal layer such texts are not mirrored.
-					if layer_cat in type_layer_category_restrict then
-						mirror := NO;
-					else
-						mirror := signal_layer_to_mirror (board_text_conductor.layer, deepest_conductor_layer (module_cursor));
-					end if;
+					mirror := signal_layer_to_mirror (board_text_conductor.layer, deepest_conductor_layer (module_cursor));
 
 					-- vectorize the text:
 					board_text_conductor.vectors := vectorize_text (
-							content		=> board_text_conductor.content,
-							size		=> board_text_conductor.size,
-							rotation	=> get_rotation (board_text_conductor.position),
-							position	=> board_text_conductor.position.place,
-							mirror		=> mirror,
-							line_width	=> board_text_conductor.line_width,
-							make_border	=> true -- CS should be false for restrict layers
-							-- CS alignment
-							); 
+						content		=> board_text_conductor.content,
+						size		=> board_text_conductor.size,
+						rotation	=> get_rotation (board_text_conductor.position),
+						position	=> board_text_conductor.position.place,
+						mirror		=> mirror,
+						line_width	=> board_text_conductor.line_width,
+						make_border	=> true
+						-- CS alignment
+						); 
 
-					-- make the conductor segments of the text:
-					--board_text_conductor.segments := 
-						--make_segments (board_text_conductor.vectors, board_text_conductor.line_width);
+					append (
+						container	=> module.board.conductors.texts,
+						new_item	=> board_text_conductor);
 
-					
-					case layer_cat is
-						when LAYER_CAT_CONDUCTOR =>
-							append (
-								container	=> module.board.conductors.texts,
-								new_item	=> board_text_conductor);
-
-						when LAYER_CAT_ROUTE_RESTRICT =>
-							append (
-								container	=> module.board.route_restrict.texts,
-								new_item	=> board_text_conductor);
-
-						when LAYER_CAT_VIA_RESTRICT =>
-							append (
-								container	=> module.board.via_restrict.texts,
-								new_item	=> board_text_conductor);
-
-					end case;
 				end do_it;
-
 				
 			begin -- build_conductor_text
 				update_element (
@@ -5572,14 +5544,8 @@ is
 							build_contour_text;
 							
 						when SEC_CONDUCTOR =>
-							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_CONDUCTOR);
+							build_conductor_text;
 
-						when SEC_ROUTE_RESTRICT =>
-							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_ROUTE_RESTRICT);
-
-						when SEC_VIA_RESTRICT =>
-							build_conductor_text (et_board_shapes_and_text.LAYER_CAT_VIA_RESTRICT);
-							
 						when others => invalid_section;
 					end case;
 

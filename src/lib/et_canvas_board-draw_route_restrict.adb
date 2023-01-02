@@ -171,30 +171,11 @@ is
 	end query_cutout;
 
 
-	procedure query_text (c : in pac_conductor_texts.cursor) is begin
-		-- Draw the text if restrict layer is enabled:
-		if route_restrict_layer_enabled (element (c).layer) then
-
-			draw_text_origin (self, element (c).position, in_area, context);
-
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-
-			-- Draw the text:
-			draw_vector_text (in_area, context, element (c).vectors,
-				element (c).line_width, self.frame_height);
-
-			
-		end if;
-	end query_text;
-
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) 
 	is begin
-		set_line_width (context.cr, type_view_coordinate (et_route_restrict.route_restrict_line_width));
-
 		set_color_route_restrict (context.cr, brightness);
 		
 		iterate (module.board.route_restrict.lines, query_line'access);
@@ -202,7 +183,6 @@ is
 		iterate (module.board.route_restrict.circles, query_circle'access);
 		iterate (module.board.route_restrict.contours, query_polygon'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
-		iterate (module.board.route_restrict.texts, query_text'access);
 	end query_items;
 
 
@@ -216,24 +196,7 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (current_active_module);
-
 	
-	procedure draw_text_being_placed is 
-		use et_packages;
-	begin
-		-- Iterate all conductor layers starting at the bottom layer and ending
-		-- with the top layer:
-		for ly in reverse top_layer .. bottom_layer loop
-
-			if route_restrict_layer_enabled (ly) then
-	
-				draw_text_being_placed_in_conductors (
-					self, in_area, context, LAYER_CAT_ROUTE_RESTRICT, ly);
-				
-			end if;
-			
-		end loop;
-	end draw_text_being_placed;
 
 	
 begin -- route_restrict
@@ -243,8 +206,7 @@ begin -- route_restrict
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed;
-	
+		
 end draw_route_restrict;
 
 
