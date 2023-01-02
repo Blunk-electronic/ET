@@ -4009,7 +4009,8 @@ is
 					pac_via_restrict_lines.append (
 						container	=> module.board.via_restrict.lines,
 						new_item	=> (type_line (board_line) with 
-										layers	=> signal_layers));
+										board_line_width, signal_layers));
+					
 				end do_it;
 									
 			begin -- insert_line_via_restrict
@@ -4039,7 +4040,8 @@ is
 					pac_via_restrict_arcs.append (
 						container	=> module.board.via_restrict.arcs,
 						new_item	=> (type_arc (board_arc) with 
-										layers	=> signal_layers));
+										board_line_width, signal_layers));
+					
 				end do_it;
 									
 			begin -- insert_arc_via_restrict
@@ -4056,6 +4058,8 @@ is
 
 			
 			procedure insert_circle_via_restrict is
+				use et_pcb_coordinates;
+				use pac_geometry_2;
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
@@ -4066,7 +4070,9 @@ is
 				begin
 					pac_via_restrict_circles.append (
 						container	=> module.board.via_restrict.circles,
-						new_item	=> (board_make_fillable_circle_solid with signal_layers));
+						new_item	=> (type_circle (board_circle) with 
+										board_line_width, signal_layers));
+					
 				end do_it;
 									
 			begin -- insert_circle_via_restrict

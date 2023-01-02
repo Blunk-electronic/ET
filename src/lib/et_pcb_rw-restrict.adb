@@ -129,7 +129,7 @@ package body et_pcb_rw.restrict is
 	begin
 		circle_begin;
 		write_circle (element (cursor));
-		write_fill_status (element (cursor).filled);
+		write_width (element (cursor).width);
 		write_signal_layers (element (cursor).layers);
 		circle_end;
 	end write_circle;
