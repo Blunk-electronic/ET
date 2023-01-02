@@ -36,7 +36,7 @@
 --
 --   to do:
 
-with ada.strings;			use ada.strings;
+
 
 package body et_via_restrict.boards is
 
