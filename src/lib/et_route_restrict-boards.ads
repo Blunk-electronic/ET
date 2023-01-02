@@ -36,7 +36,8 @@
 --
 --   to do:
 
-with et_conductor_text.boards;
+with et_pcb_stack;				use et_pcb_stack;
+
 
 package et_route_restrict.boards is
 
@@ -96,7 +97,11 @@ package et_route_restrict.boards is
 		circles		: pac_route_restrict_circles.list;
 		contours	: pac_route_restrict_contours.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: et_conductor_text.boards.pac_conductor_texts.list; -- for notes on routing
+
+		-- CS texts : 
+		-- This must not be derived from from conductor text because
+		-- it is not fabrication relevant.
+		-- It should contain notes of the designer exclusively.
 	end record;
 
 	

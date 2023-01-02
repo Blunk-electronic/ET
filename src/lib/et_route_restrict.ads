@@ -43,12 +43,10 @@ with ada.containers.doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
-with et_conductor_text;			use et_conductor_text;
-with et_conductor_segment;		use et_conductor_segment;
+with et_conductor_segment;
 with et_logging;				use et_logging;
 
 
@@ -60,14 +58,12 @@ package et_route_restrict is
 	use pac_polygons;
 	use pac_text_board;
 
-	
-	-- GUI relevant only: The line width of route restrict:
-	route_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
 
 	
 -- LINES:
 
-	type type_route_restrict_line is new type_conductor_line with null record;
+	type type_route_restrict_line is new 
+		et_conductor_segment.type_conductor_line with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
 
@@ -108,7 +104,8 @@ package et_route_restrict is
 	
 -- ARCS:	
 
-	type type_route_restrict_arc is new type_conductor_arc with null record;
+	type type_route_restrict_arc is new 
+		et_conductor_segment.type_conductor_arc with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
 
@@ -150,8 +147,8 @@ package et_route_restrict is
 
 -- CIRCLES:	
 	
-	--type type_route_restrict_circle is new type_fillable_circle_solid with null record;
-	type type_route_restrict_circle is new type_conductor_circle with null record;
+	type type_route_restrict_circle is new 
+		et_conductor_segment.type_conductor_circle with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
 	-- for linewidth if requried.
 

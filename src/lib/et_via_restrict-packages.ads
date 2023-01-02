@@ -47,8 +47,10 @@ package et_via_restrict.packages is
 		contours	: pac_via_restrict_contours.list;  -- rename to zones
 		cutouts		: pac_via_restrict_cutouts.list;  -- CS put in comments to be implemented in the future
 
-		texts		: et_conductor_text.packages.pac_conductor_texts.list; -- for notes on via restrict
-		-- CS put in comments to be implemented in the future
+		-- CS texts : 
+		-- This must not be derived from from conductor text because
+		-- it is not fabrication relevant.
+		-- It should contain notes of the designer exclusively.
 	end record;
 
 
