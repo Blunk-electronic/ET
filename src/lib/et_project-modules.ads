@@ -70,7 +70,7 @@ with et_stop_mask.boards;
 with et_stencil.boards;
 with et_silkscreen.boards;
 with et_assy_doc.boards;
-with et_keepout.boards;
+with et_keepout;
 with et_pcb_contour;
 
 package et_project.modules is

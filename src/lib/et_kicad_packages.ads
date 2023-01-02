@@ -61,7 +61,6 @@ with et_silkscreen.packages;	use et_silkscreen.packages;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;		use et_assy_doc.packages;
 with et_keepout;				use et_keepout;
-with et_keepout.packages;		use et_keepout.packages;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
