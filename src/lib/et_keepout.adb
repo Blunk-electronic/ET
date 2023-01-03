@@ -41,7 +41,87 @@ with ada.strings;	 			use ada.strings;
 
 package body et_keepout is
 
-	procedure dummy is begin null; end;
+	procedure mirror_zones (
+		zones	: in out pac_keepout_contours.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_keepout_contours.list;
+
+		procedure query_zone (c : in pac_keepout_contours.cursor) is
+			zone : type_keepout_contour := element (c);
+		begin
+			mirror (zone, axis);
+		end query_zone;
+		
+	begin
+		zones.iterate (query_zone'access);
+		zones := result;
+	end mirror_zones;
+
+
+	procedure rotate_zones (
+		zones	: in out pac_keepout_contours.list;
+		angle	: in type_rotation)
+	is
+		result : pac_keepout_contours.list;
+
+		procedure query_zone (c : in pac_keepout_contours.cursor) is
+			zone : type_keepout_contour := element (c);
+		begin
+			rotate_by (zone, angle);
+		end query_zone;
+		
+	begin
+		zones.iterate (query_zone'access);
+		zones := result;
+	end rotate_zones;
+
+
+
+	procedure move_zones (
+		zones	: in out pac_keepout_contours.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_keepout_contours.list;
+
+		procedure query_zone (c : in pac_keepout_contours.cursor) is
+			zone : type_keepout_contour := element (c);
+		begin
+			move_by (zone, offset);
+		end query_zone;
+		
+	begin
+		zones.iterate (query_zone'access);
+		zones := result;
+	end move_zones;
+
+	
+	
+	procedure mirror_keepout_objects (
+		keepout	: in out type_keepout;
+		axis	: in type_axis_2d := Y)
+	is begin
+		mirror_zones (keepout.zones);
+		-- CS mirror_cutouts (keepout.cutouts);
+	end mirror_keepout_objects;
+	
+
+	procedure rotate_keepout_objects (
+		keepout	: in out type_keepout;
+		angle	: in type_rotation)
+	is begin
+		rotate_zones (keepout.zones, angle);
+		-- CS rotate_cutouts (keepout.cutouts, angle);
+	end rotate_keepout_objects;
+
+
+	procedure move_keepout_objects (
+		keepout	: in out type_keepout;
+		offset	: in type_distance_relative)
+	is begin
+		move_zones (keepout.zones, offset);
+		-- CS move_cutouts (keepout.cutouts, offset);
+	end move_keepout_objects;
 	
 end et_keepout;
 

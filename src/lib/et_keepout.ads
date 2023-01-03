@@ -58,7 +58,27 @@ package et_keepout is
 	keepout_line_width : constant type_general_line_width := linewidth_fab_min;
 
 	type type_keepout_contour is new type_contour with null record;
+
 	package pac_keepout_contours is new doubly_linked_lists (type_keepout_contour);
+	use pac_keepout_contours;
+
+	
+	-- Mirrors a list of zones along the given axis:
+	procedure mirror_zones (
+		zones	: in out pac_keepout_contours.list;
+		axis	: in type_axis_2d := Y);
+	
+	-- Rotates a list of zones by the given angle about the origin:
+	procedure rotate_zones (
+		zones	: in out pac_keepout_contours.list;
+		angle	: in type_rotation);
+
+	-- Moves a list of zones by the given offset:
+	procedure move_zones (
+		zones	: in out pac_keepout_contours.list;
+		offset	: in type_distance_relative);
+
+	
 
 	--type type_keepout_cutout is new type_contour with null record;
 	package pac_keepout_cutouts is new doubly_linked_lists (type_contour);	
@@ -70,14 +90,30 @@ package et_keepout is
 	end record;
 
 
+	-- Mirrors the given objects along the given axis:
+	procedure mirror_keepout_objects (
+		keepout	: in out type_keepout;
+		axis	: in type_axis_2d := Y);
+	
+	-- Rotates the given objects by the given angle
+	-- about the origin:
+	procedure rotate_keepout_objects (
+		keepout	: in out type_keepout;
+		angle	: in type_rotation);
+
+	-- Moves the given objects by the given offset:
+	procedure move_keepout_objects (
+		keepout	: in out type_keepout;
+		offset	: in type_distance_relative);
+
+	
+
 	type type_keepout_both_sides is record
 		top 	: type_keepout;
 		bottom	: type_keepout;
 	end record;
 	
 
-	procedure dummy;
-	
 	
 end et_keepout;
 

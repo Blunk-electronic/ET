@@ -422,6 +422,13 @@ package et_packages is
 		return pac_holes.list;
 
 
+	-- Returns the contours of keepout objects of the given package.
+	-- Adresses only those objects affected by the given face:
+	function get_keepout_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_keepout;
+	
 	
 	-- To indicate whether a package has been flipped in the board:
 	type type_flipped is (NO, YES);

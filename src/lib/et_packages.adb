@@ -476,6 +476,20 @@ package body et_packages is
 	begin
 		return packge.holes;
 	end get_hole_contours;
+
+
+	function get_keepout_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_keepout
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case face is
+			when TOP	=> return packge.keepout.top;
+			when BOTTOM	=> return packge.keepout.bottom;
+		end case;
+	end get_keepout_objects;
 	
 	
 	function to_string (flipped : in type_flipped) return string is begin
