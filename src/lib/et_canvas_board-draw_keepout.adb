@@ -64,7 +64,7 @@ is
 			area	=> in_area,
 			context	=> context,
 			contour	=> element (c),
-			filled	=> YES,
+			filled	=> NO,
 			width	=> zero,
 			height	=> self.frame_height,
 			drawn	=> drawn);

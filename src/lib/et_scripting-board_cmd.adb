@@ -375,6 +375,23 @@ is
 		add_hole (module, (c with null record), log_threshold + 1);
 	end draw_hole;
 
+
+	procedure draw_keepout_zone is
+		-- Extract from the given command the zone arguments (everything after "keepout"):
+		-- example command: board demo draw keepout line 0 0 line 10 0 line 10 10 line 0 10
+		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
+
+		-- Build a basic contour from the arguments:
+		c : constant type_contour := type_contour (to_contour (arguments));
+	begin
+		-- Convert the contour to a keepout zone
+		-- and assign it to the module:
+		
+		-- CS 
+		null;
+	end draw_keepout_zone;
+
+	
 	
 	procedure delete_outline_segment is begin
 		case get_field_count is
@@ -2808,7 +2825,7 @@ is
 						draw_assy_doc;
 
 					when NOUN_KEEPOUT =>
-						null; -- CS
+						draw_keepout_zone;
 						
 					when NOUN_ROUTE_RESTRICT =>
 						draw_route_restrict;

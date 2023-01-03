@@ -1019,7 +1019,7 @@ is
 
 						set_color_keepout (context.cr, f, brightness);
 
-						draw_contour (in_area, context, polygon, YES,
+						draw_contour (in_area, context, polygon, NO, -- not filled
 							zero, self.frame_height, drawn);
 						
 					end if;
