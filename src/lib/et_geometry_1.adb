@@ -2063,9 +2063,12 @@ package body et_geometry_1 is
 		line_1 : in type_line_fine;
 		line_2 : in type_line_fine)
 		return type_intersection_of_two_lines
-	is
+	is		
 		lv_1 : constant type_line_vector := to_line_vector (line_1);
 		lv_2 : constant type_line_vector := to_line_vector (line_2);
+
+		-- Get the intersection of the two line vectors:
+		primary_intersection : constant type_intersection_of_two_lines := get_intersection (lv_1, lv_2);
 
 		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
 		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
@@ -2078,20 +2081,10 @@ package body et_geometry_1 is
 		--put_line ("line 1: " & to_string (line_1));
 		--put_line ("line 2: " & to_string (line_2));
 
-		
-		--if int_A.status = NOT_EXISTENT or int_B.status = NOT_EXISTENT then
-			--status := NOT_EXISTENT;
-
-		-- CS: Safety measure:
-		if int_A.status = OVERLAP xor int_B.status = OVERLAP then
-			raise constraint_error;
-		end if;
-
-		
-		if int_A.status = OVERLAP and int_B.status = OVERLAP then -- CS ? correct ?
-		--if int_A.status = OVERLAP or int_B.status = OVERLAP then
+		-- If the line vectors overlap each other then there is no
+		-- need for more action. The return status is just "overlap":
+		if primary_intersection.status = OVERLAP then
 			status := OVERLAP;
-
 			
 		elsif int_A.status = EXISTS and int_B.status = EXISTS then
 
