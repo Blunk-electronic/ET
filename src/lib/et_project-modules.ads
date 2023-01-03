@@ -228,7 +228,7 @@ package et_project.modules is
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
-		SEC_FILL_ZONE,
+		SEC_ZONE,
 		SEC_HOLE,
 		SEC_INIT,
 		SEC_NET_CLASSES,

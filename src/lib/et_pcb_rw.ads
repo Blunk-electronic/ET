@@ -313,7 +313,7 @@ package et_pcb_rw is
 	procedure board_reset_contour;
 
 	
-	section_fill_zone	: constant string := "[FILL_ZONE";
+	section_zone		: constant string := "[ZONE";
 	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
 	section_contours	: constant string := "[CONTOURS";
 

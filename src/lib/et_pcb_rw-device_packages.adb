@@ -2159,7 +2159,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
-					when SEC_FILL_ZONE =>
+					when SEC_ZONE =>
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
@@ -2275,7 +2275,7 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => check_outline (contour, log_threshold + 1);
+							when SEC_ZONE => check_outline (contour, log_threshold + 1);
 							when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
 							when others => invalid_section;
 						end case;
@@ -2411,7 +2411,7 @@ package body et_pcb_rw.device_packages is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [POLYGON
-				section			: in type_section) -- SEC_FILL_ZONE
+				section			: in type_section) -- SEC_ZONE
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -2478,7 +2478,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
 			elsif set (section_terminals, SEC_TERMINALS) then null;
 			elsif set (section_terminal, SEC_TERMINAL) then null;
-			elsif set (section_fill_zone, SEC_FILL_ZONE) then null;
+			elsif set (section_zone, SEC_ZONE) then null;
 			elsif set (section_contours, SEC_CONTOURS) then null;
 			elsif set (section_cutout_zone, SEC_CUTOUT_ZONE) then null;
 			else
@@ -2748,7 +2748,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_FILL_ZONE =>
+					when SEC_ZONE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
@@ -2783,26 +2783,9 @@ package body et_pcb_rw.device_packages is
 											end if;
 										end;
 
-									--when SEC_KEEPOUT =>
-										--declare
-											--kw : string := f (line, 1);
-										--begin
-											--if kw = keyword_filled then -- filled yes/no
-												--expect_field_count (line, 2);
-												--board_filled := to_filled (f (line, 2));
-											--else
-												--invalid_keyword (kw);
-											--end if;
-										--end;
 
 									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-										-- no parameters allowed here
-										declare
-											kw : string := f (line, 1);
-										begin
-											invalid_keyword (kw);
-										end;
-
+										null;
 										
 									when SEC_CONDUCTOR =>
 										declare
@@ -2846,7 +2829,7 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => null;
+							when SEC_ZONE => null;
 							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
 						end case;

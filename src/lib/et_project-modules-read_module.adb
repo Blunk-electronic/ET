@@ -4997,7 +4997,7 @@ is
 
 				when SEC_CONTOURS =>
 					case stack.parent is
-						when SEC_FILL_ZONE => check_outline (contour, log_threshold + 1);
+						when SEC_ZONE => check_outline (contour, log_threshold + 1);
 						when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
 						
 						when others => invalid_section;
@@ -5358,7 +5358,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_FILL_ZONE =>
+				when SEC_ZONE =>
 					case stack.parent is
 						when SEC_ROUTE =>
 							build_route_polygon;
@@ -5883,7 +5883,7 @@ is
 		elsif set (section_line, SEC_LINE) then null;								
 		elsif set (section_arc, SEC_ARC) then null;
 		elsif set (section_cutout_zone, SEC_CUTOUT_ZONE) then null;
-		elsif set (section_fill_zone, SEC_FILL_ZONE) then null;								
+		elsif set (section_zone, SEC_ZONE) then null;								
 		elsif set (section_contours, SEC_CONTOURS) then null;								
 		elsif set (section_via, SEC_VIA) then null;								
 		elsif set (section_submodules, SEC_SUBMODULES) then null;
@@ -5936,7 +5936,7 @@ is
 
 				when SEC_CONTOURS =>
 					case stack.parent is
-						when SEC_FILL_ZONE => null;
+						when SEC_ZONE => null;
 						when SEC_CUTOUT_ZONE => null;
 						when others => invalid_section;
 					end case;
@@ -6439,7 +6439,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_FILL_ZONE =>
+				when SEC_ZONE =>
 					case stack.parent is
 						when SEC_ROUTE => read_fill_zone_route;
 

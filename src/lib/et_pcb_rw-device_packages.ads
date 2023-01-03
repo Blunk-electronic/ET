@@ -89,7 +89,7 @@ package et_pcb_rw.device_packages is
 		SEC_MILLINGS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
-		SEC_FILL_ZONE,
+		SEC_ZONE,
 		SEC_PACKAGE_3D_CONTOURS
 		);
 
