@@ -1220,7 +1220,7 @@ is
 		use pac_stop_polygons;
 
 		use et_keepout;
-		use pac_keepout_contours;
+		use pac_keepout_zones;
 
 		use et_route_restrict.boards;
 		use pac_route_restrict_lines;

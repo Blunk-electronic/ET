@@ -1000,10 +1000,10 @@ is
 		
 		-- KEEPOUT
 		procedure draw_keepout is 
-			use pac_keepout_contours;
+			use pac_keepout_zones;
 
 			procedure draw_contour (
-				polygon	: in out type_keepout_contour;
+				polygon	: in out type_keepout_zone;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1027,16 +1027,16 @@ is
 			end draw_contour;
 
 			
-			procedure query_polygon_top (c : in pac_keepout_contours.cursor) is
-				polygon : type_keepout_contour := element (c);
+			procedure query_polygon_top (c : in pac_keepout_zones.cursor) is
+				polygon : type_keepout_zone := element (c);
 			begin
 				set_destination;
 				draw_contour (polygon, destination);
 			end query_polygon_top;
 
 			
-			procedure query_polygon_bottom (c : in pac_keepout_contours.cursor) is
-				polygon : type_keepout_contour := element (c);
+			procedure query_polygon_bottom (c : in pac_keepout_zones.cursor) is
+				polygon : type_keepout_zone := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_contour (polygon, destination);

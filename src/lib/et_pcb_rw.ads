@@ -340,7 +340,7 @@ package et_pcb_rw is
 	procedure write_cutout (cursor : in pac_doc_cutouts.cursor);
 	
 -- KEEPOUT
-	procedure write_polygon (cursor : in pac_keepout_contours.cursor);
+	procedure write_polygon (cursor : in pac_keepout_zones.cursor);
 	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor);
 
 -- STOP MASK

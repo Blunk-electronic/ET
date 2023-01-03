@@ -240,7 +240,7 @@ package body et_pcb_rw.device_packages is
 
 		
 		procedure write_keepout is 
-			use pac_keepout_contours;
+			use pac_keepout_zones;
 			use pac_keepout_cutouts;
 		begin
 			section_mark (section_keepout, HEADER);
@@ -1358,7 +1358,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_keepout_polygon_top is begin
 					
-					pac_keepout_contours.append (
+					pac_keepout_zones.append (
 						container	=> packge.keepout.top.zones, 
 						new_item	=> (contour with null record));
 						
@@ -1369,7 +1369,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_keepout_polygon_bottom is begin
 
-					pac_keepout_contours.append (
+					pac_keepout_zones.append (
 						container	=> packge.keepout.bottom.zones, 
 						new_item	=> (contour with null record));
 

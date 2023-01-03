@@ -1608,12 +1608,12 @@ package body et_kicad_to_native is
 
 
 			procedure move_keepout is
-				use pac_keepout_contours;
-				polygons_cursor : pac_keepout_contours.cursor;
+				use pac_keepout_zones;
+				polygons_cursor : pac_keepout_zones.cursor;
 
 				keepout : constant string := "board keepout ";
 							
-				procedure move_polygon (polygon : in out type_keepout_contour) is begin
+				procedure move_polygon (polygon : in out type_keepout_zone) is begin
 					log (text => keepout & "zone segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
@@ -1623,8 +1623,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.keepout.top.zones.first;
-				while polygons_cursor /= pac_keepout_contours.no_element loop
-					pac_keepout_contours.update_element (
+				while polygons_cursor /= pac_keepout_zones.no_element loop
+					pac_keepout_zones.update_element (
 						container	=> module.board.keepout.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1635,8 +1635,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.keepout.bottom.zones.first;
-				while polygons_cursor /= pac_keepout_contours.no_element loop
-					pac_keepout_contours.update_element (
+				while polygons_cursor /= pac_keepout_zones.no_element loop
+					pac_keepout_zones.update_element (
 						container	=> module.board.keepout.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

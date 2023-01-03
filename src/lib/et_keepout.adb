@@ -42,13 +42,13 @@ with ada.strings;	 			use ada.strings;
 package body et_keepout is
 
 	procedure mirror_zones (
-		zones	: in out pac_keepout_contours.list;
+		zones	: in out pac_keepout_zones.list;
 		axis	: in type_axis_2d := Y)
 	is
-		result : pac_keepout_contours.list;
+		result : pac_keepout_zones.list;
 
-		procedure query_zone (c : in pac_keepout_contours.cursor) is
-			zone : type_keepout_contour := element (c);
+		procedure query_zone (c : in pac_keepout_zones.cursor) is
+			zone : type_keepout_zone := element (c);
 		begin
 			mirror (zone, axis);
 		end query_zone;
@@ -60,14 +60,14 @@ package body et_keepout is
 
 
 	procedure rotate_zones (
-		zones	: in out pac_keepout_contours.list;
+		zones	: in out pac_keepout_zones.list;
 		angle	: in type_rotation)
 	is
-		result : pac_keepout_contours.list;
+		result : pac_keepout_zones.list;
 
-		procedure query_zone (c : in pac_keepout_contours.cursor) is
-			zone : type_keepout_contour := element (c);
-		begin
+		procedure query_zone (c : in pac_keepout_zones.cursor) is
+			zone : type_keepout_zone := element (c);
+		begin	
 			rotate_by (zone, angle);
 		end query_zone;
 		
@@ -79,13 +79,13 @@ package body et_keepout is
 
 
 	procedure move_zones (
-		zones	: in out pac_keepout_contours.list;
+		zones	: in out pac_keepout_zones.list;
 		offset	: in type_distance_relative)
 	is
-		result : pac_keepout_contours.list;
+		result : pac_keepout_zones.list;
 
-		procedure query_zone (c : in pac_keepout_contours.cursor) is
-			zone : type_keepout_contour := element (c);
+		procedure query_zone (c : in pac_keepout_zones.cursor) is
+			zone : type_keepout_zone := element (c);
 		begin
 			move_by (zone, offset);
 		end query_zone;

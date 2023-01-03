@@ -49,7 +49,7 @@ procedure draw_keepout (
 is
 	use pac_geometry_2;	
 
-	use pac_keepout_contours;
+	use pac_keepout_zones;
 	use pac_keepout_cutouts;
 
 
@@ -57,7 +57,7 @@ is
 	brightness : type_brightness := NORMAL;
 
 	
-	procedure query_polygon (c : in pac_keepout_contours.cursor) is 
+	procedure query_polygon (c : in pac_keepout_zones.cursor) is 
 		drawn : boolean := false;
 	begin
 		draw_contour (

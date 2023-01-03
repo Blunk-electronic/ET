@@ -1050,8 +1050,8 @@ package body et_pcb_rw is
 	
 -- KEEPOUT
 	
-	procedure write_polygon (cursor : in pac_keepout_contours.cursor) is 
-		use pac_keepout_contours;
+	procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 
+		use pac_keepout_zones;
 	begin
 		fill_zone_begin;
 

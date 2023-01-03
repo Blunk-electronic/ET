@@ -3356,14 +3356,14 @@ is
 
 					
 					procedure append_keepout_polygon_top is begin
-						pac_keepout_contours.append (
+						pac_keepout_zones.append (
 							container	=> module.board.keepout.top.zones, 
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_keepout_polygon_bottom is begin
-						pac_keepout_contours.append (
+						pac_keepout_zones.append (
 							container	=> module.board.keepout.bottom.zones, 
 							new_item	=> (contour with null record));
 					end;
