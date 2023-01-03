@@ -346,10 +346,11 @@ is
 	end display_restrict_layer;
 
 	
-	procedure draw_outline is
+	procedure draw_board_outline is
 		use et_pcb_contour;
 		
 		-- Extract from the given command the polygon arguments (everything after "outline"):
+		-- example command: board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
@@ -358,11 +359,12 @@ is
 		-- Convert the contour to a pcb outer edge type
 		-- and assign it to the module:
 		set_outline (module, (c with null record), log_threshold + 1);
-	end draw_outline;
+	end draw_board_outline;
 
 	
 	procedure draw_hole is
 		-- Extract from the given command the polygon arguments (everything after "hole"):
+		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
@@ -2797,7 +2799,7 @@ is
 						draw_hole;
 						
 					when NOUN_OUTLINE =>
-						draw_outline;
+						draw_board_outline;
 
 					when NOUN_SILKSCREEN =>
 						draw_silkscreen;
