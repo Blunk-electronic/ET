@@ -80,8 +80,9 @@ package et_keepout is
 
 	
 
-	--type type_keepout_cutout is new type_contour with null record;
-	package pac_keepout_cutouts is new doubly_linked_lists (type_contour);	
+	type type_keepout_cutout is new type_contour with null record;
+	package pac_keepout_cutouts is new doubly_linked_lists (type_keepout_cutout);	
+	use pac_keepout_cutouts;
 	-- CS not sure whether this is really required
 	
 	type type_keepout is tagged record

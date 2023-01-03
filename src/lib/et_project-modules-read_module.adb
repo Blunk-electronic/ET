@@ -3553,13 +3553,13 @@ is
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
-							new_item	=> contour);
+							new_item	=> (contour with null record));
 					end;
 
 					procedure append_keepout_cutout_bottom is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.bottom.cutouts, 
-							new_item	=> contour);
+							new_item	=> (contour with null record));
 					end;
 
 					procedure append_stencil_cutout_top is begin

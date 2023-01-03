@@ -1554,7 +1554,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
-						new_item	=> contour);
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1564,7 +1564,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> contour);
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;

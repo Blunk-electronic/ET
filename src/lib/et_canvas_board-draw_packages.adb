@@ -1047,7 +1047,7 @@ is
 			use pac_keepout_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_contour;
+				cutout	: in out type_keepout_cutout;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1073,14 +1073,14 @@ is
 
 			
 			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_contour := element (c);
+				cutout : type_keepout_cutout := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_contour := element (c);
+				cutout : type_keepout_cutout := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
