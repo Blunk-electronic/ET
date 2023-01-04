@@ -429,6 +429,8 @@ package et_packages is
 		face			: in type_face)
 		return type_keepout;
 	
+	-- CS likewise for stencil, stopmask, assy doc, silkscreen
+	
 	
 	-- To indicate whether a package has been flipped in the board:
 	type type_flipped is (NO, YES);

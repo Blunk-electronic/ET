@@ -449,6 +449,10 @@ package et_pcb is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
+	-- CS function get_conductor_objects (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--layer_category	: in type_signal_layer_category)
+		--return type_conductor_objects;
 	
 	-- Returns the outlines of route restrict objects of the non-electrical
 	-- device (according to its position and rotation in the board) 
@@ -462,6 +466,17 @@ package et_pcb is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
+	-- CS function get_route_restrict_objects (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--layer_category	: in type_signal_layer_category)
+		-- return et_route_restrict.packages.type_one_side;
+
+	-- CS function get_via_restrict_objects (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--layer_category	: in type_signal_layer_category)
+		-- return et_via_restrict.packages.type_one_side;
+
+	-- CS likewise for keepout, stencil, stopmask, assy dock, silkscreen
 	
 	-- CS likewise for electrical device
 
@@ -471,6 +486,10 @@ package et_pcb is
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor)
 		return pac_polygon_list.list;
+
+	-- CS function get_holes (
+		--device_cursor	: in pac_devices_non_electric.cursor)
+		--return pac_holes.list;
 	
 	-- CS likewise for electrical device
 
