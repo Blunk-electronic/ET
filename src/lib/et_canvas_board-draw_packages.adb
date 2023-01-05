@@ -396,22 +396,33 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_contour (in_area, context, polygon, YES,
-									zero, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area, 
+									context	=> context, 
+									contour	=> polygon,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height, 
+									drawn	=> drawn);
 
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 								
-								draw_contour (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area, 
+									context	=> context, 
+									contour	=> polygon,
+									filled	=> NO,
+									width	=> polygon.hatching.border_width,
+									height	=> self.frame_height, 
+									drawn	=> drawn);
+								
 								-- CS hatching ?
 						end case;
 						
 					end if;
-
-				end if;
-				
+				end if;				
 			end draw_contour;
 
 			
@@ -451,10 +462,16 @@ is
 
 						set_color_background (context.cr);
 
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
+						draw_contour (
+							area	=> in_area, 
+							context	=> context, 
+							contour	=> cutout,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height, 
+							drawn	=> drawn);
+						
 					end if;
-
 				end if;				
 			end draw_cutout;
 
@@ -778,19 +795,31 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_contour (in_area, context, polygon, YES,
-									zero, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area, 
+									context	=> context, 
+									contour	=> polygon,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height, 
+									drawn	=> drawn);
 
+								
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
-								
-								draw_contour (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height, drawn);
-								
+
+								draw_contour (
+									area	=> in_area, 
+									context	=> context, 
+									contour	=> polygon,
+									filled	=> NO,
+									width	=> polygon.hatching.border_width,
+									height	=> self.frame_height, 
+									drawn	=> drawn);
+		
 								-- CS hatching ?
 						end case;
-						
 					end if;
 
 				end if;				
@@ -833,13 +862,17 @@ is
 
 						set_color_background (context.cr);
 
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES, -- CS ?
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
 						
 					end if;
-
-				end if;
-				
+				end if;				
 			end draw_cutout;
 
 			
@@ -1015,9 +1048,15 @@ is
 				procedure query_zone (c : pac_keepout_zones.cursor) is
 					drawn : boolean := false;
 				begin
-					draw_contour (in_area, context, element (c), NO, -- not filled
-						zero, self.frame_height, drawn);
-
+					draw_contour (
+						area	=> in_area,
+						context	=> context,
+						contour	=> element (c),
+						filled	=> NO,
+						width	=> zero,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+					
 				end query_zone;
 				
 			begin
@@ -1217,21 +1256,31 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_contour (in_area, context, polygon, YES,
-									zero, self.frame_height, drawn);
-
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> polygon,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height,
+									drawn	=> drawn);
+								
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
-								
-								draw_contour (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height, drawn);
-								
+
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> polygon,
+									filled	=> NO,
+									width	=> polygon.hatching.border_width,
+									height	=> self.frame_height,
+									drawn	=> drawn);
+							
 								-- CS hatching ?
 						end case;
-						
 					end if;
-
 				end if;
 			end draw_contour;
 
@@ -1272,11 +1321,16 @@ is
 
 						set_color_background (context.cr);
 
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
-						
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+			
 					end if;
-
 				end if;				
 			end draw_cutout;
 
@@ -1513,21 +1567,32 @@ is
 
 						case polygon.fill_style is
 							when SOLID =>
-								draw_contour (in_area, context, polygon, YES,
-									zero, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> polygon,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height,
+									drawn	=> drawn);
 
+								
 							when HATCHED =>
 								set_line_width (context.cr,
 									type_view_coordinate (polygon.hatching.border_width));
 
-								draw_contour (in_area, context, polygon, NO,
-									polygon.hatching.border_width, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> polygon,
+									filled	=> NO,
+									width	=> polygon.hatching.border_width,
+									height	=> self.frame_height,
+									drawn	=> drawn);
 								
 								-- CS hatching ?
-						end case;
-						
+						end case;						
 					end if;
-
 				end if;
 			end draw_contour;
 
@@ -1568,8 +1633,15 @@ is
 
 						set_color_background (context.cr);
 
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES, -- CS ?
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+
 						
 					end if;
 				end if;				
@@ -1736,11 +1808,17 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position.place));
-						draw_contour (in_area, context, polygon, YES,
-							route_restrict_line_width, self.frame_height, drawn);
-						-- YES means polygon is filled
-					end if;
 
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> polygon,
+							filled	=> YES,
+							width	=> route_restrict_line_width,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+
+					end if;
 				end if;
 			end draw_contour;
 
@@ -1777,9 +1855,16 @@ is
 						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
-						-- YES means cutout is filled, zero means line width
+
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+
 					end if;
 				end if;
 			end draw_cutout;
@@ -1949,11 +2034,17 @@ is
 						if flipped then mirror (polygon, Y); end if;
 						
 						move_by (polygon, to_distance_relative (package_position.place));
-						draw_contour (in_area, context, polygon, YES,
-							via_restrict_line_width, self.frame_height, drawn);
-						-- YES means polygon is filled
-					end if;
 
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> polygon,
+							filled	=> YES,
+							width	=> via_restrict_line_width,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+
+					end if;
 				end if;
 			end draw_contour;
 
@@ -1989,11 +2080,17 @@ is
 						move_by (cutout, to_distance_relative (package_position.place));
 
 						set_color_background (context.cr);
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
-						-- YES means cutout is filled, zero means line width
-					end if;
 
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+					
+					end if;
 				end if;
 			end draw_cutout;
 			

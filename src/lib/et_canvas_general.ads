@@ -974,6 +974,12 @@ package pac_canvas is
 		boundaries	: in type_boundaries)
 		return type_bounding_box;
 
+
+	-- Whether a line, arc, circle or contour is drawn dashed or not:
+	type type_dash_pattern is (NONE, DASHED);
+	-- CS other pattersn like jotted, dash-point, ... ?
+
+	
 	
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y to a plane of given height. This plane
@@ -1032,6 +1038,7 @@ package pac_canvas is
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
+		dash	: in type_dash_pattern := NONE;
 		filled	: in type_filled;
 		-- CS fill style
 

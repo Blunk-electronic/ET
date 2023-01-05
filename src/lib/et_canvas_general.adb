@@ -2645,6 +2645,7 @@ package body pac_canvas is
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
+		dash	: in type_dash_pattern := NONE;
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive;
 		-- CS fill style
@@ -2845,7 +2846,8 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, YES, 0.0, height, drawn);
+		draw_contour (area, context, outer_border, NONE, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to NONE
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
@@ -2872,13 +2874,15 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, YES, 0.0, height, drawn);
-
+		draw_contour (area, context, outer_border, NONE, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to NONE
+		
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (area, context, inner_border, YES, 0.0, height, drawn);
+		draw_contour (area, context, inner_border, NONE, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to NONE
 		
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
