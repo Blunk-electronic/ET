@@ -48,6 +48,7 @@ with et_pcb_contour;
 with et_pcb_stack;				use et_pcb_stack;
 
 with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_device_query_board;		use et_device_query_board;
 
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
@@ -1047,12 +1048,12 @@ is
 				
 			else -- non-electrical device
 				if keepout_enabled (face) then
-					keepout.top    := et_pcb.get_keepout_objects (device_non_electric, TOP);
+					keepout.top    := get_keepout_objects (device_non_electric, TOP);
 				end if;
 
 				face := BOTTOM;
 				if keepout_enabled (face) then
-					keepout.bottom := et_pcb.get_keepout_objects (device_non_electric, BOTTOM);
+					keepout.bottom := get_keepout_objects (device_non_electric, BOTTOM);
 				end if;
 			end if;
 

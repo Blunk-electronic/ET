@@ -83,7 +83,7 @@ with et_silkscreen.boards;			use et_silkscreen.boards;
 with et_assy_doc.boards;			use et_assy_doc.boards;
 with et_keepout;					use et_keepout;
 with et_pcb_contour;				use et_pcb_contour;
-with et_contour_to_polygon;
+--with et_contour_to_polygon;
 with et_ratsnest;
 
 
@@ -436,74 +436,8 @@ package et_pcb is
 	use pac_devices_non_electric;
 	
 	
-	-- Returns the outlines of conductor objects of the non-electrical
-	-- device (according to its position and rotation in the board) 
-	-- as a list of polygons.
-	-- Conductor objects are: terminals, texts, lines, arcs, circles.
-	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
-	--  edge of a conductor circle is converted to a polygon.
-	-- Adresses only those objects which are affected by
-	-- the given layer category:
-	function get_conductor_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
-		return pac_polygon_list.list;
-
-	-- CS function get_conductor_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return type_conductor_objects;
-	
-	-- Returns the outlines of route restrict objects of the non-electrical
-	-- device (according to its position and rotation in the board) 
-	-- as a list of polygons.
-	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
-	--  edge of a circle is converted to a polygon.
-	-- Adresses only those objects which are affected by
-	-- the given layer category:
-	function get_route_restrict_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return pac_polygon_list.list;
-
-	-- CS function get_route_restrict_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		-- return et_route_restrict.packages.type_one_side;
-
-	-- CS function get_via_restrict_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		-- return et_via_restrict.packages.type_one_side;
-
-	-- Returns the keepout objects of the given device
-	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
-	function get_keepout_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return et_keepout.type_keepout;
 
 
-	
-	-- CS likewise for keepout, stencil, stopmask, assy dock, silkscreen
-	
-	-- CS likewise for electrical device
-
-	-- Returns the outlines of holes of the non-electrical device
-	-- (according to its position and rotation in the board) as
-	-- a list of polygon:
-	function get_hole_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_polygon_list.list;
-
-	-- CS function get_holes (
-		--device_cursor	: in pac_devices_non_electric.cursor)
-		--return pac_holes.list;
-	
-	-- CS likewise for electrical device
-
-	
 	
 	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

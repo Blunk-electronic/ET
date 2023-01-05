@@ -37,7 +37,6 @@
 
 
 with et_terminals;
-with et_keepout;
 
 
 package et_schematic.device_query_ops is
@@ -128,14 +127,6 @@ package et_schematic.device_query_ops is
 		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor;
 
-
-	-- Returns the keepout objects of the given device
-	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
-	function get_keepout_objects (
-		device_cursor	: in pac_devices_sch.cursor;
-		face			: in et_pcb_coordinates.type_face)
-		return et_keepout.type_keepout;
 
 			
 end et_schematic.device_query_ops;

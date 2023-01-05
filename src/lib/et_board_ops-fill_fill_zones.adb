@@ -48,6 +48,7 @@ with et_routing;					use et_routing;
 with et_board_ops.devices;
 with et_thermal_relief;				use et_thermal_relief;
 with et_packages;					use et_packages;
+with et_device_query_board;			use et_device_query_board;
 
 
 separate (et_board_ops)
