@@ -142,10 +142,12 @@ package et_device_query_board is
 	
 
 -- HOLES:
-	
-	-- CS function get_holes (
-		--device_cursor	: in pac_devices_non_electric.cursor)
-		--return pac_holes.list;
+
+	-- Returns the outlines of holes of the non-electrical device
+	-- (according to its position and rotation in the board):
+	function get_holes (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_holes.list;
 	
 	
 	-- Returns the outlines of holes of the non-electrical device

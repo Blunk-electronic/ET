@@ -234,38 +234,63 @@ package body et_device_query_board is
 
 
 
+	function get_holes (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_holes.list
+	is
+		holes : pac_holes.list; -- to be returned
+		
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+		rotation : type_rotation renames device.position.rotation;
+	begin
+		holes := get_hole_contours (packge);
+				
+		if device.flipped = YES then
+			mirror_holes (holes);
+			rotate_holes (holes, - rotation);
+		else
+			rotate_holes (holes, + rotation);
+		end if;
+		
+		move_holes (holes, offset);
+		return holes;
+	end get_holes;
+
+	
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
+		holes : pac_holes.list;
 		
 		device : type_device_non_electric renames element (device_cursor);
 
-		package_cursor : pac_package_models.cursor;
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		package_displacement : constant type_distance_relative :=
-			to_distance_relative (device.position.place);
+		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+		rotation : type_rotation renames device.position.rotation;
 
-		holes : pac_holes.list;
 	begin
-		package_cursor := get_package_model (device.package_model);
-
-		holes := get_hole_contours (package_cursor);
-		
-		rotate_holes (holes, device.position.rotation);
+		holes := get_hole_contours (packge);
 		
 		if device.flipped = YES then
 			mirror_holes (holes);
+			rotate_holes (holes, - rotation);
+		else
+			rotate_holes (holes, + rotation);
 		end if;
 		
-		move_holes (holes, package_displacement);
+		move_holes (holes, offset);
 		
 		result := to_polygons (holes, fill_tolerance);
 		return result;
 	end get_hole_polygons;
-		
-		
+
+	
 	
 end et_device_query_board;
 
