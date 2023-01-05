@@ -304,27 +304,28 @@ is
 				-- will be appended to the result:
 				if terminal_polygon.exists then
 					result.append (terminal_polygon.polygon);
-				end if;
 
-				-- If the terminals of this net require thermal reliefes, then
-				-- collect the necessary information:
-				if collect_terminals_with_relief then
+					-- If the terminals of this net require thermal reliefes, then
+					-- collect the necessary information:
+					if collect_terminals_with_relief then
 
-					-- Do a preselection of those terminals that are overlapping
-					-- the given zone or are inside the given zone:
-					terminal_zone_overlap := get_overlap_status (
-						polygon_A => terminal_polygon.polygon,
-						polygon_B => zone_polygon);
+						-- Do a preselection of those terminals that are overlapping
+						-- the given zone or are inside the given zone:
+						terminal_zone_overlap := get_overlap_status (
+							polygon_A => terminal_polygon.polygon,
+							polygon_B => zone_polygon);
 
-					case terminal_zone_overlap is
-						when A_INSIDE_B | A_OVERLAPS_B =>
-							conductors_to_polygons.result.terminals_with_relief.append ((
-								position => terminal_polygon.position, -- in the board
-								outline	 => terminal_polygon.polygon, -- in the board
-								terminal => terminal_cursor));  -- in the package model
+						case terminal_zone_overlap is
+							when A_INSIDE_B | A_OVERLAPS_B =>
+								conductors_to_polygons.result.terminals_with_relief.append ((
+									position => terminal_polygon.position, -- in the board
+									outline	 => terminal_polygon.polygon, -- in the board
+									terminal => terminal_cursor));  -- in the package model
 
-						when others => null;
-					end case;
+							when others => null;
+						end case;
+					end if;
+
 				end if;
 			end query_device_port;
 
