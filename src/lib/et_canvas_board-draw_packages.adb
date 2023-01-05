@@ -2037,155 +2037,38 @@ is
 		end draw_via_restrict;
 
 		
-		-- PCB HOLE
-		procedure draw_pcb_contour is 
-
-			---- LINES
-			--use et_packages.pac_pcb_contour_lines;
-			--line : et_packages.type_pcb_contour_line;
-
-			--procedure query_line (c : in et_packages.pac_pcb_contour_lines.cursor) is
-				--line : type_pcb_contour_line := element (c);
-			--begin
-				--if outline_enabled then
-					--rotate_by (line, get_rotation (package_position));
-				
-					--if flipped then mirror (line, Y); end if;
-					
-					--move_by (line, to_distance_relative (package_position.place));
-
-					--draw_line (in_area, context, line,
-						--pcb_contour_line_width, self.frame_height);
-
-				--end if;		
-				
-			--end query_line;
-
-			
-			---- ARCS
-			--use pac_pcb_contour_arcs;
-			--arc : type_pcb_contour_arc;
-			
-			--procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
-				--arc : type_pcb_contour_arc := element (c);
-			--begin
-				--if outline_enabled then
-					--rotate_by (arc, get_rotation (package_position));
-					
-					--if flipped then mirror (arc, Y); end if;
-					
-					--move_by (arc, to_distance_relative (package_position.place));
-
-					--draw_arc (in_area, context, arc, 
-						--pcb_contour_line_width, self.frame_height);
-				--end if;
-
-			--end query_arc;
-
-			
-			---- CIRCLES
-			--use pac_pcb_contour_circles;
-			
-			--procedure query_circle (c : in pac_pcb_contour_circles.cursor) is 
-				--circle : type_pcb_contour_circle := element (c);
-			--begin
-				--if outline_enabled then
-					--rotate_by (circle, get_rotation (package_position));
-					
-					--if flipped then mirror (circle, Y); end if;
-						
-					--move_by (circle, to_distance_relative (package_position.place));
-
-					--draw_circle (in_area, context, circle, NO,
-						--pcb_contour_line_width, self.frame_height);
-				--end if;
-
-			--end query_circle;
-
+		-- PCB HOLES
+		procedure draw_holes is 
 			use et_pcb_contour;
 			use pac_holes;
-			use pac_segments;
-
-			procedure draw_circle (c : in type_circle) is
-				circle : type_circle := c;
+			holes : pac_holes.list;
+			
+			procedure query_hole (c : pac_holes.cursor) is
+				drawn : boolean := false;
 			begin
-				rotate_by (circle, get_rotation (package_position));
-				
-				if flipped then mirror (circle, Y); end if;
-					
-				move_by (circle, to_distance_relative (package_position.place));
+				draw_contour (in_area, context, element (c), NO, -- not filled
+					pcb_contour_line_width, self.frame_height, drawn);
 
-				draw_circle (in_area, context, circle, NO,
-					pcb_contour_line_width, self.frame_height);
-
-			end draw_circle;
-
-			
-			procedure draw_segment (c : in pac_segments.cursor) is
-				l : pac_geometry_2.type_line;
-				a : pac_geometry_2.type_arc;
-			begin
-				case element (c).shape is
-					when LINE =>
-						l := element (c).segment_line;
-						
-						rotate_by (l, get_rotation (package_position));
-				
-						if flipped then mirror (l, Y); end if;
-						
-						move_by (l, to_distance_relative (package_position.place));
-
-						draw_line (in_area, context, to_line_fine (l),
-							pcb_contour_line_width, self.frame_height);
-
-						
-					when ARC =>
-						a := element (c).segment_arc;
-
-						rotate_by (a, get_rotation (package_position));
-						
-						if flipped then mirror (a, Y); end if;
-						
-						move_by (a, to_distance_relative (package_position.place));
-
-						draw_arc (in_area, context, to_arc_fine (a), 
-							pcb_contour_line_width, self.frame_height);
-						
-				end case;
-			end draw_segment;
-			
-			
-			procedure query_hole (c : in pac_holes.cursor) is begin
-				if element (c).contour.circular then
-					draw_circle (element (c).contour.circle);
-				else
-					iterate (element (c).contour.segments, draw_segment'access);							 
-				end if;
 			end query_hole;
-
+				
 			
-		begin -- draw_pcb_contour
-		
-			-- lines
-			--element (package_cursor).pcb_contour.lines.iterate (query_line'access);
-
-			-- arcs
-			--element (package_cursor).pcb_contour.arcs.iterate (query_arc'access);
-
-			-- circles
-			--element (package_cursor).pcb_contour.circles.iterate (query_circle'access);
-
+		begin
 			if outline_enabled then
 
 				set_color_outline (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
-				
-				if not is_empty (element (package_cursor).holes) then
-					iterate (element (package_cursor).holes, query_hole'access);
-				end if;
 
+				if electric then
+					--holes := get_holes (device_electric);
+					null; -- CS
+				else
+					holes := get_holes (device_non_electric);
+				end if;
+		
+
+				holes.iterate (query_hole'access);
 			end if;
-		end draw_pcb_contour;
+		end draw_holes;
 
 		------------------------------------------------------------------
 
@@ -3216,7 +3099,7 @@ is
 		draw_route_restrict;
 		draw_via_restrict;
 		
-		draw_pcb_contour;
+		draw_holes;
 		
 		draw_package_origin;
 	end draw_package;
