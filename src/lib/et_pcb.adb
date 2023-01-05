@@ -321,6 +321,45 @@ package body et_pcb is
 	end get_route_restrict_polygons;
 
 
+	function get_keepout_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return et_keepout.type_keepout
+	is
+		result : type_keepout;
+
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
+	begin
+		case face is
+			when TOP =>
+				if device.flipped = NO then
+					result := get_keepout_objects (packge, TOP);
+					rotate_keepout_objects (result, + rotation);
+				else
+					result := get_keepout_objects (packge, BOTTOM);
+					mirror_keepout_objects (result);
+					rotate_keepout_objects (result, - rotation);
+				end if;
+
+			when BOTTOM =>
+				if device.flipped = NO then
+					result := get_keepout_objects (packge, BOTTOM);
+					rotate_keepout_objects (result, + rotation);
+				else
+					result := get_keepout_objects (packge, TOP);
+					mirror_keepout_objects (result);
+					rotate_keepout_objects (result, - rotation);
+				end if;
+		end case;
+
+		move_keepout_objects (result, to_distance_relative (device.position.place));
+		
+		return result;
+	end get_keepout_objects;
+
 
 	
 	function get_hole_polygons (

@@ -446,7 +446,7 @@ package et_pcb is
 	-- the given layer category:
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
+		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return pac_polygon_list.list;
 
 	-- CS function get_conductor_objects (
@@ -476,6 +476,16 @@ package et_pcb is
 		--layer_category	: in type_signal_layer_category)
 		-- return et_via_restrict.packages.type_one_side;
 
+	-- Returns the keepout objects of the given device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_keepout_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return et_keepout.type_keepout;
+
+
+	
 	-- CS likewise for keepout, stencil, stopmask, assy dock, silkscreen
 	
 	-- CS likewise for electrical device

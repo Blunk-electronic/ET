@@ -85,6 +85,9 @@ is
 
 	
 	procedure draw_package (
+		electric			: in boolean;
+		device_electric		: in et_schematic.pac_devices_sch.cursor;
+		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
 		device_name		: in et_devices.type_device_name; -- IC13, C4
 		device_value	: in et_devices.pac_device_value.bounded_string; -- SN7400
 		device_purpose	: in et_devices.pac_device_purpose.bounded_string; -- brightness control
@@ -113,6 +116,7 @@ is
 			else return true;
 			end if;
 		end flipped;
+
 
 		
 		-- Destination is the face on which an object is to be drawn.
@@ -1001,103 +1005,60 @@ is
 		-- KEEPOUT
 		procedure draw_keepout is 
 			use pac_keepout_zones;
-
-			procedure draw_contour (
-				polygon	: in out type_keepout_zone;
-				f		: in type_face)
-			is 
-				drawn : boolean := false;
-			begin
-				if keepout_enabled (f) then
-					
-					if f = face then
-						rotate_by (polygon, get_rotation (package_position));
-						
-						if flipped then mirror (polygon, Y); end if;
-						
-						move_by (polygon, to_distance_relative (package_position.place));
-
-						set_color_keepout (context.cr, f, brightness);
-
-						draw_contour (in_area, context, polygon, NO, -- not filled
-							zero, self.frame_height, drawn);
-						
-					end if;
-				end if;
-			end draw_contour;
+			keepout : type_keepout_both_sides;
+			face : type_face := TOP;
 
 			
-			procedure query_polygon_top (c : in pac_keepout_zones.cursor) is
-				polygon : type_keepout_zone := element (c);
+			procedure draw is
+				
+				procedure query_zone (c : pac_keepout_zones.cursor) is
+					drawn : boolean := false;
+				begin
+					draw_contour (in_area, context, element (c), NO, -- not filled
+						zero, self.frame_height, drawn);
+
+				end query_zone;
+				
 			begin
-				set_destination;
-				draw_contour (polygon, destination);
-			end query_polygon_top;
+				-- top
+				set_color_keepout (context.cr, TOP, brightness);
+				keepout.top.zones.iterate (query_zone'access);
+				-- CS cutouts
 
-			
-			procedure query_polygon_bottom (c : in pac_keepout_zones.cursor) is
-				polygon : type_keepout_zone := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_contour (polygon, destination);
-			end query_polygon_bottom;
+				-- bottom
+				set_color_keepout (context.cr, BOTTOM, brightness);
+				keepout.bottom.zones.iterate (query_zone'access);
+				-- CS cutouts
+			end draw;
 
-
-			-- CUTOUTS
-			use pac_keepout_cutouts;
-
-			procedure draw_cutout (
-				cutout	: in out type_keepout_cutout;
-				f		: in type_face)
-			is 
-				drawn : boolean := false;
-			begin
-				if keepout_enabled (f) then
-					
-					if f = face then
-						rotate_by (cutout, get_rotation (package_position));
-						
-						if flipped then mirror (cutout, Y); end if;
-						
-						move_by (cutout, to_distance_relative (package_position.place));
-
-						set_color_background (context.cr);
-
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
-						
-					end if;
-
-				end if;				
-			end draw_cutout;
-
-			
-			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_keepout_cutout := element (c);
-			begin
-				set_destination;
-				draw_cutout (cutout, destination);
-			end query_cutout_top;
-
-			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
-				cutout : type_keepout_cutout := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_cutout (cutout, destination);
-			end query_cutout_bottom;
-			
 			
 		begin -- draw_keepout
 			set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 			
-			-- zones
-			element (package_cursor).keepout.top.zones.iterate (query_polygon_top'access);
-			element (package_cursor).keepout.bottom.zones.iterate (query_polygon_bottom'access);
+			if electric then
+				if keepout_enabled (face) then
+					keepout.top    := get_keepout_objects (device_electric, TOP);
+				end if;
 
-			-- cutouts
-			element (package_cursor).keepout.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).keepout.bottom.cutouts.iterate (query_cutout_bottom'access);			
+				face := BOTTOM;
+				if keepout_enabled (face) then
+					keepout.bottom := get_keepout_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if keepout_enabled (face) then
+					keepout.top    := et_pcb.get_keepout_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if keepout_enabled (face) then
+					keepout.bottom := et_pcb.get_keepout_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;
 		end draw_keepout;
+
 
 		
 		-- STOP MASK
@@ -3239,6 +3200,8 @@ is
 
 		
 	begin -- draw_package
+		--put_line (et_devices.to_string (device_name));
+		
 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
 		
@@ -3370,6 +3333,9 @@ is
 				end if;
 				
 				draw_package (
+					electric			=> true,
+					device_electric		=> device_cursor,
+					device_non_electric	=> pac_devices_non_electric.no_element,
 					device_name			=> key (device_cursor), -- R1, IC12
 					device_value		=> device.value, -- 7400, 100R
 					device_purpose		=> device.purpose, -- brightness control
@@ -3413,6 +3379,9 @@ is
 			end if;
 			
 			draw_package (
+				electric			=> false,
+				device_electric		=> pac_devices_sch.no_element,
+				device_non_electric	=> p,
 				device_name			=> key (p), -- H1, FD2
 				package_position	=> element (p).position, -- x/y/rotation/face
 				flip				=> element (p).flipped,

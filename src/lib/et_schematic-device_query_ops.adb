@@ -259,7 +259,53 @@ package body et_schematic.device_query_ops is
 
 	
 	
-			
+	function get_keepout_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in et_pcb_coordinates.type_face)
+		return et_keepout.type_keepout
+	is
+		use et_pcb_coordinates;
+		use et_keepout;
+		result : type_keepout;
+
+		device : type_device_sch renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device_cursor);
+
+		rotation : et_pcb_coordinates.type_rotation renames device.position.rotation;
+		offset : constant et_pcb_coordinates.pac_geometry_2.type_distance_relative
+			:= et_pcb_coordinates.pac_geometry_2.to_distance_relative (device.position.place);
+	begin
+		if device.appearance = PCB then
+			case face is
+				when TOP =>
+					if device.flipped = NO then
+						result := get_keepout_objects (packge, TOP);
+						rotate_keepout_objects (result, + rotation);
+					else
+						result := get_keepout_objects (packge, BOTTOM);
+						mirror_keepout_objects (result);
+						rotate_keepout_objects (result, - rotation);
+					end if;
+
+				when BOTTOM =>
+					if device.flipped = NO then
+						result := get_keepout_objects (packge, BOTTOM);
+						rotate_keepout_objects (result, + rotation);
+					else
+						result := get_keepout_objects (packge, TOP);
+						mirror_keepout_objects (result);
+						rotate_keepout_objects (result, - rotation);
+					end if;
+			end case;
+		end if;
+		
+		move_keepout_objects (result, offset);
+		
+		return result;
+	end get_keepout_objects;
+
+
+	
 end et_schematic.device_query_ops;
 
 -- Soli Deo Gloria

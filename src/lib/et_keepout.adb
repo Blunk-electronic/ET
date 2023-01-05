@@ -37,8 +37,6 @@
 --   to do:
 
 
-with ada.strings;	 			use ada.strings;
-
 package body et_keepout is
 
 	procedure mirror_zones (
@@ -51,6 +49,7 @@ package body et_keepout is
 			zone : type_keepout_zone := element (c);
 		begin
 			mirror (zone, axis);
+			result.append (zone);
 		end query_zone;
 		
 	begin
@@ -69,6 +68,7 @@ package body et_keepout is
 			zone : type_keepout_zone := element (c);
 		begin	
 			rotate_by (zone, angle);
+			result.append (zone);
 		end query_zone;
 		
 	begin
@@ -88,6 +88,7 @@ package body et_keepout is
 			zone : type_keepout_zone := element (c);
 		begin
 			move_by (zone, offset);
+			result.append (zone);
 		end query_zone;
 		
 	begin

@@ -220,7 +220,7 @@ package et_schematic is
 
 
 	package pac_nets is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string,
+			key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
 
 
@@ -308,7 +308,7 @@ package et_schematic is
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_sch);
 
-
+	use pac_devices_sch;
 	
 
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
