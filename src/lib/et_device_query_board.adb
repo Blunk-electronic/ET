@@ -49,11 +49,9 @@ package body et_device_query_board is
 		result : pac_polygon_list.list;
 		
 		device : type_device_non_electric renames element (device_cursor);
-
-		package_cursor : pac_package_models.cursor;
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		package_displacement : constant type_distance_relative :=
-			to_distance_relative (device.position.place);
+		offset : constant type_distance_relative := to_distance_relative (device.position.place);
 
 		terminals	: pac_contour_list.list;
 		
@@ -62,19 +60,17 @@ package body et_device_query_board is
 
 		use et_contour_to_polygon;
 	begin
-		package_cursor := get_package_model (device.package_model);
-
 		-- TERMINALS:
 		if device.flipped = NO then
-			terminals := get_terminal_contours (package_cursor, layer_category);
+			terminals := get_terminal_contours (packge, layer_category);
 			rotate_contours (terminals, device.position.rotation);
 		else
-			terminals := get_terminal_contours (package_cursor, invert_category (layer_category));
+			terminals := get_terminal_contours (packge, invert_category (layer_category));
 			mirror_contours (terminals);
 			rotate_contours (terminals, - device.position.rotation);
 		end if;
 
-		move_contours (terminals, package_displacement);
+		move_contours (terminals, offset);
 		
 		result := to_polygons (
 			contours	=> terminals,
@@ -86,15 +82,15 @@ package body et_device_query_board is
 		-- CONDUCTOR OBJECTS (lines, arcs, circles, texts)
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
 			if device.flipped = NO then
-				conductors := get_conductor_objects (package_cursor, layer_category);
+				conductors := get_conductor_objects (packge, layer_category);
 				rotate_conductor_objects (conductors, + device.position.rotation);
 			else
-				conductors := get_conductor_objects (package_cursor, invert_category (layer_category));
+				conductors := get_conductor_objects (packge, invert_category (layer_category));
 				mirror_conductor_objects (conductors);
 				rotate_conductor_objects (conductors, - device.position.rotation);
 			end if;
 
-			move_conductor_objects (conductors, package_displacement);
+			move_conductor_objects (conductors, offset);
 
 			-- convert conductor objects to polygons:
 			conductor_polygons := to_polygons (conductors, fill_tolerance);
@@ -115,29 +111,21 @@ package body et_device_query_board is
 		result : pac_polygon_list.list;
 		
 		device : type_device_non_electric renames element (device_cursor);
-
-		package_cursor : pac_package_models.cursor;
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		package_displacement : constant type_distance_relative :=
-			to_distance_relative (device.position.place);
-
-		use et_route_restrict.packages;
 		restrict : et_route_restrict.packages.type_one_side;
 	begin
-		package_cursor := get_package_model (device.package_model);
-
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			if device.flipped = NO then
-				restrict := get_route_restrict_objects (package_cursor, layer_category);
-				--rotate_route_restrict_objects (restrict, + device.position.rotation);
+				restrict := get_route_restrict_objects (packge, layer_category);
+				rotate_route_restrict_objects (restrict, + device.position.rotation);
 			else
-				restrict := get_route_restrict_objects (package_cursor, invert_category (layer_category));
+				restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 				mirror_route_restrict_objects (restrict);
-				--rotate_route_restrict_objects (restrict, - device.position.rotation);
+				rotate_route_restrict_objects (restrict, - device.position.rotation);
 			end if;
 
-			rotate_route_restrict_objects (restrict, device.position.rotation);
-			move_route_restrict_objects (restrict, package_displacement);
+			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
 
 			-- convert restrict objects to polygons:
 			result := to_polygons (restrict, fill_tolerance);
@@ -160,8 +148,6 @@ package body et_device_query_board is
 		packge : constant pac_package_models.cursor := get_package_model (device_cursor);
 
 		rotation : type_rotation renames device.position.rotation;
-		offset : constant type_distance_relative
-			:= to_distance_relative (device.position.place);
 	begin
 		if device.appearance = PCB then
 			case face is
@@ -187,8 +173,7 @@ package body et_device_query_board is
 			end case;
 		end if;
 		
-		move_keepout_objects (result, offset);
-		
+		move_keepout_objects (result, to_distance_relative (device.position.place));
 		return result;
 	end get_keepout_objects;
 
@@ -242,8 +227,7 @@ package body et_device_query_board is
 		
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+
 		rotation : type_rotation renames device.position.rotation;
 	begin
 		holes := get_hole_contours (packge);
@@ -255,7 +239,7 @@ package body et_device_query_board is
 			rotate_holes (holes, + rotation);
 		end if;
 		
-		move_holes (holes, offset);
+		move_holes (holes, to_distance_relative (device.position.place));
 		return holes;
 	end get_holes;
 
@@ -268,12 +252,9 @@ package body et_device_query_board is
 		holes : pac_holes.list;
 		
 		device : type_device_non_electric renames element (device_cursor);
-
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
 		rotation : type_rotation renames device.position.rotation;
-
 	begin
 		holes := get_hole_contours (packge);
 		
@@ -284,7 +265,7 @@ package body et_device_query_board is
 			rotate_holes (holes, + rotation);
 		end if;
 		
-		move_holes (holes, offset);
+		move_holes (holes, to_distance_relative (device.position.place));
 		
 		result := to_polygons (holes, fill_tolerance);
 		return result;
