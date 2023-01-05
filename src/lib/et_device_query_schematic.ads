@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                   SCHEMATIC DEVICE QUERY OPERATIONS                      --
+--                   DEVICE QUERY OPERATIONS IN SCHEMATIC                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,13 +35,23 @@
 --   history of changes:
 --
 
+with et_symbols;						use et_symbols;
+with et_packages;						use et_packages;
+with et_devices;						use et_devices;
+with et_schematic;						use et_schematic;
+with et_assembly_variants;				use et_assembly_variants;
+with et_coordinates;					use et_coordinates;
 
 with et_terminals;
 
 
-package et_schematic.device_query_ops is
+package et_device_query_schematic is
+
+	use pac_geometry_2;
+	use pac_devices_sch;
 
 
+	
 	-- Returns true if given device is real (means if it has a physical 
 	-- counterpart in the PCB layout):
 	function is_real (
@@ -129,7 +139,7 @@ package et_schematic.device_query_ops is
 
 
 			
-end et_schematic.device_query_ops;
+end et_device_query_schematic;
 
 -- Soli Deo Gloria
 

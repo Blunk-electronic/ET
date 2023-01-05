@@ -36,7 +36,7 @@
 --
 
 with ada.exceptions;				use ada.exceptions;
-with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_device_query_schematic;		use et_device_query_schematic;
 
 
 package body et_schematic_ops.netlists is

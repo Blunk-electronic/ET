@@ -42,7 +42,7 @@ with et_keepout;						use et_keepout;
 
 with et_symbols;						
 with et_schematic;						use et_schematic;
-with et_schematic.device_query_ops;		use et_schematic.device_query_ops;
+with et_device_query_schematic;			use et_device_query_schematic;
 with et_pcb;							use et_pcb;
 with et_pcb_stack;						use et_pcb_stack;
 with et_packages;						use et_packages;

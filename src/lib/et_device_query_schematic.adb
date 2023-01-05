@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                   SCHEMATIC DEVICE QUERY OPERATIONS                      --
+--                   DEVICE QUERY OPERATIONS IN SCHEMATIC                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-package body et_schematic.device_query_ops is
+package body et_device_query_schematic is
 
 
 	function is_real (
@@ -259,7 +259,7 @@ package body et_schematic.device_query_ops is
 	
 
 	
-end et_schematic.device_query_ops;
+end et_device_query_schematic;
 
 -- Soli Deo Gloria
 

@@ -49,7 +49,7 @@ with et_pcb;
 with et_terminals;
 with et_packages;
 with et_device_rw;
-with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_device_query_schematic;		use et_device_query_schematic;
 with et_board_ops;					use et_board_ops;
 
 

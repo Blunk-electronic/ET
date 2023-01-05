@@ -38,7 +38,7 @@
 with ada.exceptions;
 
 with et_netlists;
-with et_schematic.device_query_ops;	use et_schematic.device_query_ops;
+with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops;				use et_schematic_ops;
 
 with et_submodules;
