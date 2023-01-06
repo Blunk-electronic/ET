@@ -603,14 +603,13 @@ is
 		procedure query_electrical_device (d : in pac_devices_sch.cursor) is
 			polygons : pac_polygon_list.list;
 		begin
-			-- CS
 			-- conductors: such text, lines, arcs, circles
-			--polygons := get_conductor_polygons (d, layer_category);
-			--offset_polygons (polygons, default_offset);
+			polygons := get_conductor_polygons (d, layer_category);
+			offset_polygons (polygons, default_offset);
 
-			--result.polygons.splice (
-				--before => pac_polygon_list.no_element,
-				--source => polygons);
+			result.polygons.splice (
+				before => pac_polygon_list.no_element,
+				source => polygons);
 
 			
 			-- holes:

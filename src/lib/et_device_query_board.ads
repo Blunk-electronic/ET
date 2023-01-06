@@ -74,6 +74,21 @@ package et_device_query_board is
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return pac_polygon_list.list;
 
+	-- Returns the outlines of conductor objects of the electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- Conductor objects are: texts, lines, arcs, circles.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a conductor circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category.
+	-- If the device is virtual, then the returned list is empty:
+	function get_conductor_polygons (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
+		return pac_polygon_list.list;
+
+	
 	-- CS function get_conductor_objects (
 		--device_cursor	: in pac_devices_non_electric.cursor;
 		--layer_category	: in type_signal_layer_category)
