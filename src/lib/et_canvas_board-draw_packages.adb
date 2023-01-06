@@ -2187,234 +2187,101 @@ is
 		procedure draw_conductors is 
 			use pac_conductor_texts;
 			use et_conductor_segment;
-			
-			-- LINES
 			use pac_conductor_lines;
-			line : type_conductor_line;
-
-			procedure draw_line (f : in type_face) is
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				if conductor_enabled (ly) then
-				
-					if f = face then
-						rotate_by (line, get_rotation (package_position));
-
-						if flipped then mirror (line, Y); end if;
-						
-						move_by (line, to_distance_relative (package_position.place));
-
-						set_color_conductor (context.cr, ly, brightness);
-						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
-					end if;
-
-				end if;
-			end draw_line;
-
-			
-			procedure query_line_top (c : in pac_conductor_lines.cursor) is begin
-				line := element (c);
-				set_destination;
-				draw_line (destination);
-			end query_line_top;
-
-			
-			procedure query_line_bottom (c : in pac_conductor_lines.cursor) is begin
-				line := element (c);
-				set_destination (INVERSE);
-				draw_line (destination);
-			end query_line_bottom;
-
-			
-			-- ARCS
 			use pac_conductor_arcs;
-			arc : type_conductor_arc;
-
-			procedure draw_arc (f : in type_face) is
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				if conductor_enabled (ly) then
-					
-					if f = face then
-						rotate_by (arc, get_rotation (package_position));
-						
-						if flipped then mirror (arc, Y); end if;
-						
-						move_by (arc, to_distance_relative (package_position.place));
-
-						set_color_conductor (context.cr, ly, brightness);
-						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
-					end if;
-					
-				end if;
-			end draw_arc;
-
-			
-			procedure query_arc_top (c : in pac_conductor_arcs.cursor) is begin
-				arc := element (c);
-				set_destination;
-				draw_arc (destination);
-			end query_arc_top;
-
-			
-			procedure query_arc_bottom (c : in pac_conductor_arcs.cursor) is begin
-				arc := element (c);
-				set_destination (INVERSE);
-				draw_arc (destination);
-			end query_arc_bottom;
-
-			
-			-- CIRCLES
 			use pac_conductor_circles;
 
-			procedure draw_circle (
-				circle	: in out type_conductor_circle;
-				f 		: in type_face) is
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				if conductor_enabled (ly) then
-					
-					if f = face then
-						rotate_by (circle, get_rotation (package_position));
-						
-						if flipped then mirror (circle, Y); end if;
-						
-						move_by (circle, to_distance_relative (package_position.place));
-
-						set_color_conductor (context.cr, ly, brightness);
-
-						set_line_width (context.cr, type_view_coordinate (circle.width));
-
-						draw_circle (in_area, context, circle, NO,
-							circle.width, self.frame_height);
-
-					end if;
-
-				end if;
-			end draw_circle;
+			objects : type_conductor_objects;
+			layer : type_signal_layer;
 
 			
-			procedure query_circle_top (c : in pac_conductor_circles.cursor) is 
-				circle : type_conductor_circle := element (c);
-			begin
-				set_destination;
-				draw_circle (circle, destination);
-			end query_circle_top;
+			procedure draw is 
 
-			
-			procedure query_circle_bottom (c : in pac_conductor_circles.cursor) is 
-				circle : type_conductor_circle := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_circle (circle, destination);
-			end query_circle_bottom;
+				procedure query_line (c : in pac_conductor_lines.cursor) is
+					line : type_conductor_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
+					draw_line (
+						area	=> in_area, 
+						context	=> context, 
+						line	=> to_line_fine (line),
+						width	=> line.width, 
+						height	=> self.frame_height);
+				end query_line;
 
+				procedure query_arc (c : in pac_conductor_arcs.cursor) is
+					arc : type_conductor_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					draw_arc (
+						area	=> in_area, 
+						context	=> context, 
+						arc		=> to_arc_fine (arc),
+						width	=> arc.width, 
+						height	=> self.frame_height);
+				end query_arc;
 
-			-- TEXTS
+				procedure query_circle (c : in pac_conductor_circles.cursor) is
+					circle : type_conductor_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					draw_circle (
+						area	=> in_area, 
+						context	=> context, 
+						circle	=> circle,
+						width	=> circle.width, 
+						filled	=> NO,
+						height	=> self.frame_height);
+				end query_circle;
 
-			procedure draw_conductor_text_with_content (
-				t : in out et_conductor_text.type_conductor_text;
-				f : in type_face)
-			is
-				use et_pcb;
-				v_text : type_vector_text;
-			begin
-
-				-- Rotate the position of the text by the rotation of the package.
-				-- NOTE: This does not affect the rotation of the text itself.
-				rotate_by (t.position.place, get_rotation (package_position));
+				procedure query_text (c : in pac_conductor_texts.cursor) is
+					text : et_conductor_text.type_conductor_text renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (text.line_width));
+					draw_vector_text (
+						area	=> in_area, 
+						context	=> context, 
+						text	=> text.vectors,
+						width	=> text.line_width, 
+						height	=> self.frame_height);
+				end query_text;
 				
-				if flipped then mirror (t.position.place, Y); end if;
-
-				-- Move the text by the package position to 
-				-- its final position:
-				move_by (t.position.place, to_distance_relative (package_position.place));
-
-				draw_text_origin (t.position.place, f);
-
-				-- Set the line width of the vector text:
-				set_line_width (context.cr, type_view_coordinate (t.line_width));
-
-				-- Vectorize the content of the text on the fly:
-				v_text := vectorize_text (
-					content		=> t.content,
-					size		=> t.size,
-					rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
-					position	=> t.position.place,
-					mirror		=> face_to_mirror (f),
-					line_width	=> t.line_width,
-					alignment	=> t.alignment -- right, bottom
-					);
-
-				-- Draw the content of the placeholder:
-				draw_vector_text (in_area, context, v_text,
-					t.line_width, self.frame_height);
-				
-			end draw_conductor_text_with_content;
-
-
-			
-			use pac_texts_fab_with_content;
-			
-			procedure draw_text (
-				t	: in out et_conductor_text.type_conductor_text;
-				f	: in type_face)
-			is
-				ly : constant type_signal_layer := face_to_layer (f);
 			begin
-				if conductor_enabled (ly) then
-	
-					if f = face then
-						set_color_conductor (context.cr, ly, brightness);
-						draw_conductor_text_with_content (t, f);
-					end if;
+				set_color_conductor (context.cr, layer, brightness);
+				objects.lines.iterate (query_line'access);
+				objects.arcs.iterate (query_arc'access);
+				objects.circles.iterate (query_circle'access);
+				objects.texts.iterate (query_text'access);
+			end draw;
 
-				end if;
-			end draw_text;
-
-			
-			procedure query_text_top (c : in pac_conductor_texts.cursor) is
-				t : et_conductor_text.type_conductor_text := element (c);
-			begin
-				set_destination;
-				draw_text (t, destination);
-			end query_text_top;
-
-			
-			procedure query_text_bottom (c : in pac_conductor_texts.cursor) is
-				t : et_conductor_text.type_conductor_text := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_text (t, destination);
-			end query_text_bottom;
-			
-			--objects : type_conductor_objects;
 			
 		begin -- draw_conductors
-			--if electric then
-				--objects := get_conductor_objects (device_electric, layer_category);
-			--else
-				--objects := get_conductor_objects (device_non_electric, layer_category);
-			--end if;
-			
-			-- lines
-			element (package_cursor).conductors.top.lines.iterate (query_line_top'access);
-			element (package_cursor).conductors.bottom.lines.iterate (query_line_bottom'access);
+			if electric then
+				layer := face_to_layer (TOP);
+				if conductor_enabled (layer) then
+					objects := get_conductor_objects (device_electric, OUTER_TOP);
+					draw;
+				end if;
 
-			-- arcs
-			element (package_cursor).conductors.top.arcs.iterate (query_arc_top'access);
-			element (package_cursor).conductors.bottom.arcs.iterate (query_arc_bottom'access);
+				layer := face_to_layer (BOTTOM);
+				if conductor_enabled (layer) then
+					objects := get_conductor_objects (device_electric, OUTER_BOTTOM);
+					draw;
+				end if;
 
-			-- circles
-			element (package_cursor).conductors.top.circles.iterate (query_circle_top'access);
-			element (package_cursor).conductors.bottom.circles.iterate (query_circle_bottom'access);
+			else
+				layer := face_to_layer (TOP);
+				if conductor_enabled (layer) then
+					objects := get_conductor_objects (device_non_electric, OUTER_TOP);
+					draw;
+				end if;
 
-			-- texts
-			element (package_cursor).conductors.top.texts.iterate (query_text_top'access);
-			element (package_cursor).conductors.bottom.texts.iterate (query_text_bottom'access);
-			
+				layer := face_to_layer (BOTTOM);
+				if conductor_enabled (layer) then
+					objects := get_conductor_objects (device_non_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+			end if;		
 		end draw_conductors;
 
 
