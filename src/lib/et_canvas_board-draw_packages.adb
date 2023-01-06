@@ -2311,178 +2311,6 @@ is
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
-			
-			-- CONTOURS
-
-			-- solid
-			use pac_zones_solid;
-
-			procedure draw_contour_solid (
-				polygon	: in out type_zone_solid;
-				f		: in type_face) 
-			is
-				ly : constant type_signal_layer := face_to_layer (f);
-				drawn : boolean := false;
-			begin
-				if conductor_enabled (ly) then
-					
-					if f = face then
-						rotate_by (polygon, get_rotation (package_position));
-						
-						if flipped then mirror (polygon, Y); end if;
-						
-						move_by (polygon, to_distance_relative (package_position.place));
-
-						set_color_conductor (context.cr, ly, brightness);
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> polygon,
-							filled	=> YES,
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-						
--- CS
--- 		easing : type_easing;
--- 		width_min : type_track_width; -- the minimum width
--- 		isolation : type_track_clearance := type_track_clearance'first; 
-						
-					end if;
-
-				end if;				
-			end draw_contour_solid;
-
-			
-			procedure query_polygon_top_solid (
-				c : in pac_zones_solid.cursor) 
-			is
-				polygon : type_zone_solid := element (c);
-			begin
-				set_destination;
-				draw_contour_solid (polygon, destination);
-			end query_polygon_top_solid;
-
-			
-			procedure query_polygon_bottom_solid (
-				c : in pac_zones_solid.cursor) 
-			is
-				polygon : type_zone_solid := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_contour_solid (polygon, destination);
-			end query_polygon_bottom_solid;
-
-
-			-- hatched
-			use pac_zones_hatched;
-
-			procedure draw_contour_hatched (
-				polygon	: in out type_zone_hatched;
-				f		: in type_face) 
-			is
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				if conductor_enabled (ly) then
-					
-					if f = face then
-						rotate_by (polygon, get_rotation (package_position));
-						
-						if flipped then mirror (polygon, Y); end if;
-						
-						move_by (polygon, to_distance_relative (package_position.place));
-
-						set_color_conductor (context.cr, ly, brightness);
-
--- 						draw_contour (in_area, context, polygon, YES, self.frame_height);
--- CS
--- 		easing : type_easing;
--- 		hatching : type_hatching_copper;
--- 		width_min : type_track_width; -- the minimum width
--- 		isolation : type_track_clearance := type_track_clearance'first; 
-						
-					end if;
-
-				end if;
-				
-			end draw_contour_hatched;
-
-			
-			procedure query_polygon_top_hatched (
-				c : in pac_zones_hatched.cursor) 
-			is
-				polygon : type_zone_hatched := element (c);
-			begin
-				set_destination;
-				draw_contour_hatched (polygon, destination);
-			end query_polygon_top_hatched;
-
-			
-			procedure query_polygon_bottom_hatched (
-				c : in pac_zones_hatched.cursor) 
-			is
-				polygon : type_zone_hatched := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_contour_hatched (polygon, destination);
-			end query_polygon_bottom_hatched;
-
-			
-			-- CUTOUTS
-			use packages.pac_cutouts;
-
-			procedure draw_cutout (
-				cutout	: in out type_contour;
-				f		: in type_face) 
-			is
-				ly : constant type_signal_layer := face_to_layer (f);
-				drawn : boolean := false;
-			begin
-				if conductor_enabled (ly) then
-					
-					if f = face then
-						rotate_by (cutout, get_rotation (package_position));
-						
-						if flipped then mirror (cutout, Y); end if;
-						
-						move_by (cutout, to_distance_relative (package_position.place));
-
-						set_color_background (context.cr);
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> cutout,
-							filled	=> YES,
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-						
-					end if;
-				end if;
-			end draw_cutout;
-
-			
-			procedure query_cutout_top (
-				c : in packages.pac_cutouts.cursor) 
-			is
-				cutout : type_contour := element (c);
-			begin
-				set_destination;
-				draw_cutout (cutout, destination);
-			end query_cutout_top;
-
-			
-			procedure query_cutout_bottom (
-				c : in packages.pac_cutouts.cursor) 
-			is
-				cutout : type_contour := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_cutout (cutout, destination);
-			end query_cutout_bottom;
-
 
 			-- TEXTS
 
@@ -2562,8 +2390,15 @@ is
 				draw_text (t, destination);
 			end query_text_bottom;
 			
+			--objects : type_conductor_objects;
 			
 		begin -- draw_conductors
+			--if electric then
+				--objects := get_conductor_objects (device_electric, layer_category);
+			--else
+				--objects := get_conductor_objects (device_non_electric, layer_category);
+			--end if;
+			
 			-- lines
 			element (package_cursor).conductors.top.lines.iterate (query_line_top'access);
 			element (package_cursor).conductors.bottom.lines.iterate (query_line_bottom'access);
@@ -2575,21 +2410,6 @@ is
 			-- circles
 			element (package_cursor).conductors.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).conductors.bottom.circles.iterate (query_circle_bottom'access);
-
-			-- fill zones solid
-			-- CS
-			--element (package_cursor).conductors.top.fill_zones.solid.iterate (query_polygon_top_solid'access);
-			--element (package_cursor).conductors.bottom.fill_zones.solid.iterate (query_polygon_bottom_solid'access);
-
-			-- fill zones hatched
-			-- CS
-			--element (package_cursor).conductors.top.fill_zones.hatched.iterate (query_polygon_top_hatched'access);
-			--element (package_cursor).conductors.bottom.fill_zones.hatched.iterate (query_polygon_bottom_hatched'access);
-
-			-- cutouts
-			-- CS
-			--element (package_cursor).conductors.top.cutouts.iterate (query_cutout_top'access);
-			--element (package_cursor).conductors.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
 			element (package_cursor).conductors.top.texts.iterate (query_text_top'access);

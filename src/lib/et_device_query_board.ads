@@ -88,13 +88,22 @@ package et_device_query_board is
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return pac_polygon_list.list;
 
+	-- Returns the conductor objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects;
 	
-	-- CS function get_conductor_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		--return type_conductor_objects;
-	
-	-- CS likewise for electrical device
+	-- Returns the conductor objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects;
+
 
 	
 -- ROUTE RESTRICT:
