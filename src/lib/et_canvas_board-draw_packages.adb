@@ -2143,8 +2143,14 @@ is
 			procedure query_hole (c : pac_holes.cursor) is
 				drawn : boolean := false;
 			begin
-				draw_contour (in_area, context, element (c), NO, -- not filled
-					pcb_contour_line_width, self.frame_height, drawn);
+				draw_contour (
+					area	=> in_area,
+					context	=> context,
+					contour	=> element (c),
+					filled	=> NO,
+					width	=> pcb_contour_line_width,
+					height	=> self.frame_height,
+					drawn	=> drawn);
 
 			end query_hole;
 				
@@ -2331,8 +2337,15 @@ is
 
 						set_color_conductor (context.cr, ly, brightness);
 
-						draw_contour (in_area, context, polygon, YES,
-							zero, self.frame_height, drawn);
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> polygon,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
+						
 -- CS
 -- 		easing : type_easing;
 -- 		width_min : type_track_width; -- the minimum width
@@ -2439,11 +2452,16 @@ is
 
 						set_color_background (context.cr);
 
-						draw_contour (in_area, context, cutout, YES,
-							zero, self.frame_height, drawn);
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> cutout,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
 						
 					end if;
-
 				end if;
 			end draw_cutout;
 
@@ -2746,9 +2764,15 @@ is
 
 								set_color_conductor (context.cr, ly, brightness);
 								
-								draw_contour (in_area, context, pad_outline, YES,
-									zero, self.frame_height, drawn);
-
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> pad_outline,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height,
+									drawn	=> drawn);
+								
 								-- draw the terminal name
 								draw_name_smt (name, pad_pos);
 							end if;
@@ -2792,8 +2816,15 @@ is
 
 								set_color_stop_mask (context.cr, f, self.scale, brightness);
 
-								draw_contour (in_area, context, stop_mask_contours, YES,
-									zero, self.frame_height, drawn);
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> stop_mask_contours,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height,
+									drawn	=> drawn);
+								
 							end if;
 
 							
@@ -2842,10 +2873,16 @@ is
 								
 								set_color_stencil (context.cr, f, self.scale, brightness);
 								
-								draw_contour (in_area, context, stencil_contours, YES,
-									zero, self.frame_height, drawn);
-							end if;
+								draw_contour (
+									area	=> in_area,
+									context	=> context,
+									contour	=> stencil_contours,
+									filled	=> YES,
+									width	=> zero,
+									height	=> self.frame_height,
+									drawn	=> drawn);
 
+							end if;
 						end if;
 					end if;
 				end draw_pad_smt;

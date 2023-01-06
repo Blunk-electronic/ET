@@ -250,7 +250,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				contour	=> element (c),
-				dash	=> DASHED,
+				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
@@ -277,7 +277,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				contour	=> element (c),
-				dash	=> DASHED,
+				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
@@ -307,7 +307,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				contour	=> zone,
-				dash	=> DASHED,
+				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
@@ -340,7 +340,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				contour	=> zone,
-				dash	=> DASHED,
+				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height,
@@ -375,7 +375,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				contour	=> element (c),
-				dash	=> DASHED,
+				style	=> DASHED,
 				filled	=> NO,
 				width	=> zero,
 				height	=> self.frame_height,

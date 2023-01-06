@@ -2645,7 +2645,7 @@ package body pac_canvas is
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
-		dash	: in type_dash_pattern := NONE;
+		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive;
 		-- CS fill style
@@ -2803,14 +2803,19 @@ package body pac_canvas is
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
 
-					--dash_on := 0.2 + 1.0 / scale;
-					--dash_off := 0.1 + 1.0 / scale;
-					dash_on := 20.0 / scale;
-					dash_off := 15.0 / scale;
+					case style is
+						when CONTINUOUS => null;
+						
+						when DASHED =>
+							--dash_on := 0.2 + 1.0 / scale;
+							--dash_off := 0.1 + 1.0 / scale;
+							dash_on := 20.0 / scale;
+							dash_off := 15.0 / scale;
 
-					dash_pattern (1) := dash_on;
-					dash_pattern (2) := dash_off;
-					set_dash (context.cr, dash_pattern, 0.0);
+							dash_pattern (1) := dash_on;
+							dash_pattern (2) := dash_off;
+							set_dash (context.cr, dash_pattern, 0.0);
+					end case;
 			end case;
 
 			stroke (context.cr);
@@ -2846,8 +2851,8 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, NONE, YES, 0.0, height, drawn);
-		-- CS dash pattern ? currently set to NONE
+		draw_contour (area, context, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to CONTINUOUS
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
@@ -2874,15 +2879,15 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, NONE, YES, 0.0, height, drawn);
-		-- CS dash pattern ? currently set to NONE
+		draw_contour (area, context, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (area, context, inner_border, NONE, YES, 0.0, height, drawn);
-		-- CS dash pattern ? currently set to NONE
+		draw_contour (area, context, inner_border, CONTINUOUS, YES, 0.0, height, drawn);
+		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		

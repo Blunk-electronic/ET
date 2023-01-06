@@ -976,7 +976,7 @@ package pac_canvas is
 
 
 	-- Whether a line, arc, circle or contour is drawn dashed or not:
-	type type_dash_pattern is (NONE, DASHED);
+	type type_line_style is (CONTINUOUS, DASHED);
 	-- CS other pattersn like jotted, dash-point, ... ?
 
 	
@@ -1033,12 +1033,13 @@ package pac_canvas is
 		-- CS fill style ?
 
 
-	
+
+	-- Draws a contour:
 	procedure draw_contour (
 		area	: in type_bounding_box;
 		context	: in type_draw_context;
 		contour	: in type_contour'class;
-		dash	: in type_dash_pattern := NONE;
+		style	: in type_line_style := CONTINUOUS; -- don't care if filled is YES
 		filled	: in type_filled;
 		-- CS fill style
 
