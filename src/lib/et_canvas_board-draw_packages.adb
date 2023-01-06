@@ -2162,12 +2162,10 @@ is
 				set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 
 				if electric then
-					--holes := get_holes (device_electric);
-					null; -- CS
+					holes := get_holes (device_electric);
 				else
 					holes := get_holes (device_non_electric);
-				end if;
-		
+				end if;		
 
 				holes.iterate (query_hole'access);
 			end if;

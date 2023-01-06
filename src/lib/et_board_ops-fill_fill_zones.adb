@@ -593,6 +593,46 @@ is
 			-- CS union ?
 		end query_non_electrical_device;
 												  
+
+		-- ELECTRICAL DEVICES ----------------------------------------------
+		use pac_devices_sch;
+
+		-- This procedure takes a cursor to an electrical device,
+		-- extracts the contours of all its conducting objects and holes, 
+		-- offsets each of then and appends them to the result:
+		procedure query_electrical_device (d : in pac_devices_sch.cursor) is
+			polygons : pac_polygon_list.list;
+		begin
+			-- CS
+			-- conductors: such text, lines, arcs, circles
+			--polygons := get_conductor_polygons (d, layer_category);
+			--offset_polygons (polygons, default_offset);
+
+			--result.polygons.splice (
+				--before => pac_polygon_list.no_element,
+				--source => polygons);
+
+			
+			-- holes:
+			polygons := get_hole_polygons (d);
+			offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
+
+			result.polygons.splice (
+				before => pac_polygon_list.no_element,
+				source => polygons);
+
+			-- CS
+			-- route restrict:
+			--polygons := get_route_restrict_polygons (d, layer_category);
+			--offset_polygons (polygons, half_linewidth_float);
+
+			--result.polygons.splice (
+				--before => pac_polygon_list.no_element,
+				--source => polygons);
+
+			-- CS union ?
+		end query_electrical_device;
+
 		
 	begin -- conductors_to_polygons
 		
@@ -621,10 +661,6 @@ is
 		-- Extract unconnected terminals of devices:
 		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
 
-		-- non-electrical stuff of electrical devices
-		-- CS
-
-		
 		-- board texts:
 		element (module_cursor).board.conductors.texts.iterate (query_text'access);
 		
@@ -632,6 +668,9 @@ is
 
 		-- non-electrical devices (like fiducials):
 		element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
+
+		-- electrical devices:
+		element (module_cursor).devices.iterate (query_electrical_device'access);
 		
 		-- Now the polygons held in variable "result"
 		-- - inside the given zone or

@@ -145,11 +145,14 @@ package body et_device_query_board is
 		result : type_keepout;
 
 		device : type_device_sch renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device_cursor);
+		packge : pac_package_models.cursor;
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation;
 	begin
 		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
 			case face is
 				when TOP =>
 					if device.flipped = NO then
@@ -218,6 +221,38 @@ package body et_device_query_board is
 	end get_keepout_objects;
 
 
+	function get_holes (
+		device_cursor	: in pac_devices_sch.cursor)
+		return pac_holes.list
+	is
+		use et_symbols;
+		holes : pac_holes.list; -- to be returned
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		rotation : type_rotation;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			holes := get_hole_contours (packge);
+					
+			if device.flipped = YES then
+				mirror_holes (holes);
+				rotate_holes (holes, - rotation);
+			else
+				rotate_holes (holes, + rotation);
+			end if;
+		
+			move_holes (holes, to_distance_relative (device.position.place));
+		end if;
+		
+		return holes;		
+	end get_holes;
+
+	
 
 	function get_holes (
 		device_cursor	: in pac_devices_non_electric.cursor)
@@ -242,6 +277,41 @@ package body et_device_query_board is
 		move_holes (holes, to_distance_relative (device.position.place));
 		return holes;
 	end get_holes;
+
+
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_sch.cursor)
+		return pac_polygon_list.list
+	is
+		use et_symbols;
+		result : pac_polygon_list.list;
+		holes : pac_holes.list;
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		
+		rotation : type_rotation;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			holes := get_hole_contours (packge);
+		
+			if device.flipped = YES then
+				mirror_holes (holes);
+				rotate_holes (holes, - rotation);
+			else
+				rotate_holes (holes, + rotation);
+			end if;
+			
+			move_holes (holes, to_distance_relative (device.position.place));
+		
+			result := to_polygons (holes, fill_tolerance);
+		end if;
+		return result;
+	end get_hole_polygons;
+
 
 	
 	function get_hole_polygons (

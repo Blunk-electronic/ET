@@ -143,12 +143,29 @@ package et_device_query_board is
 
 -- HOLES:
 
+	-- Returns the outlines of holes of the electrical device
+	-- (according to its position and rotation in the board).
+	-- If the device is virtual, then the returned list is empty:
+	function get_holes (
+		device_cursor	: in pac_devices_sch.cursor)
+		return pac_holes.list;
+
+	
 	-- Returns the outlines of holes of the non-electrical device
 	-- (according to its position and rotation in the board):
 	function get_holes (
 		device_cursor	: in pac_devices_non_electric.cursor)
 		return pac_holes.list;
 	
+
+	-- Returns the outlines of holes of the electrical device
+	-- (according to its position and rotation in the board) as
+	-- a list of polygons.
+	-- If the device is virtual, then the returned list is empty:
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_sch.cursor)
+		return pac_polygon_list.list;
+
 	
 	-- Returns the outlines of holes of the non-electrical device
 	-- (according to its position and rotation in the board) as
