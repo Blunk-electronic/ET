@@ -36,18 +36,13 @@
 --
 --   to do:
 
-
 with ada.containers; 			use ada.containers;
-
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
-with et_conductor_text;			use et_conductor_text;
+with et_conductor_segment;
 with et_logging;				use et_logging;
 
 
@@ -58,34 +53,59 @@ package et_stencil is
 	use pac_text_board;
 
 
-	type type_stencil_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
+	type type_stencil_line is new
+		et_conductor_segment.type_conductor_line with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
+
 
 	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
+	use pac_stencil_lines;
+	
 
+	type type_stencil_arc is new
+		et_conductor_segment.type_conductor_arc with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
 
-	type type_stencil_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
 
 	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
+	use pac_stencil_arcs;
+	
 
-	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	type type_stencil_circle is new 
+		et_conductor_segment.type_conductor_circle with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
 
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
-	package pac_stencil_cutouts is new doubly_linked_lists (type_contour);	
+	package pac_stencil_circles is new doubly_linked_lists (type_stencil_circle);
+	use pac_stencil_circles;	
+
+
+	type type_stencil_contour is new type_contour with null record;
+	
+	package pac_stencil_polygons is new doubly_linked_lists (type_stencil_contour);
+	use pac_stencil_polygons;
+	-- CS rename to pac_stencil_contours
+
+	--package pac_stencil_cutouts is new doubly_linked_lists (type_contour);	
+	-- CS really requried ?
+
 	
 	-- This is the type for solder paste stencil objects in general:
-	type type_stencil is tagged record
+	type type_stencil is record
 		lines 		: pac_stencil_lines.list;
 		arcs		: pac_stencil_arcs.list;
 		circles		: pac_stencil_circles.list;
 		polygons	: pac_stencil_polygons.list;
-		cutouts		: pac_stencil_cutouts.list;
+		--cutouts		: pac_stencil_cutouts.list;
 	end record;
 
 
+	type type_stencil_both_sides is record
+		top		: type_stencil;
+		bottom	: type_stencil;
+	end record;
 
 
 	-- Logs the properties of the given arc of stencil

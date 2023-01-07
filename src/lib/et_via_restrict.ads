@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
 with et_conductor_segment;
 with et_logging;				use et_logging;

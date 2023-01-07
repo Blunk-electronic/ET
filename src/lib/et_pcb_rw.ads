@@ -355,7 +355,6 @@ package et_pcb_rw is
 	procedure write_arc (cursor : in pac_stencil_arcs.cursor);
 	procedure write_circle (cursor : in pac_stencil_circles.cursor);	
 	procedure write_polygon (cursor : in pac_stencil_polygons.cursor);
-	procedure write_cutout (cursor : in pac_stencil_cutouts.cursor);
 	
 	
 end et_pcb_rw;

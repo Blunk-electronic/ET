@@ -74,8 +74,7 @@ with et_conductor_text.boards;
 with et_conductor_segment;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
-with et_stencil.boards;			use et_stencil.boards;
-with et_stencil.packages;
+with et_stencil;				use et_stencil;
 
 with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_silkscreen.packages;

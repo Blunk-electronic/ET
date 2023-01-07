@@ -81,7 +81,6 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.boards;
 with et_stencil;				use et_stencil;
-with et_stencil.boards;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;
 with et_assy_doc;				use et_assy_doc;
@@ -1219,7 +1218,7 @@ package body et_kicad_to_native is
 
 			
 			procedure move_stencil is
-				use et_stencil.boards;
+				use et_stencil;
 				use pac_stencil_lines;
 				lines_cursor : pac_stencil_lines.cursor;
 
@@ -1269,7 +1268,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_circle (circle : in out type_fillable_circle) is
+				procedure move_circle (circle : in out type_stencil_circle) is
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
@@ -1285,7 +1284,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 
-				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_stencil_contour) is begin
 					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
 					move_polygon (polygon);
 				end move_polygon;

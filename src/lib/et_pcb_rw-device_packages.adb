@@ -297,7 +297,6 @@ package body et_pcb_rw.device_packages is
 			use pac_stencil_arcs;
 			use pac_stencil_circles;
 			use pac_stencil_polygons;
-			use pac_stencil_cutouts;
 		begin
 			section_mark (section_stencil, HEADER);
 
@@ -307,7 +306,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stencil.top.arcs, write_arc'access);
 			iterate (packge.stencil.top.circles, write_circle'access);
 			iterate (packge.stencil.top.polygons, write_polygon'access);
-			iterate (packge.stencil.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
@@ -316,7 +314,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stencil.bottom.arcs, write_arc'access);
 			iterate (packge.stencil.bottom.circles, write_circle'access);
 			iterate (packge.stencil.bottom.polygons, write_polygon'access);
-			iterate (packge.stencil.bottom.cutouts, write_cutout'access);			
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);			
@@ -1379,22 +1376,10 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stencil_polygon_top is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_stencil_polygons.append (
-								container	=> packge.stencil.top.polygons, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing));
 
-						when HATCHED =>
-							pac_stencil_polygons.append (
-								container	=> packge.stencil.top.polygons, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										hatching	=> board_hatching));
-					end case;
+					pac_stencil_polygons.append (
+						container	=> packge.stencil.top.polygons, 
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1402,22 +1387,9 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stencil_polygon_bottom is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_stencil_polygons.append (
-								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing));
-
-						when HATCHED =>
-							pac_stencil_polygons.append (
-								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										hatching	=> board_hatching));
-					end case;
+					pac_stencil_polygons.append (
+						container	=> packge.stencil.bottom.polygons, 
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1565,26 +1537,6 @@ package body et_pcb_rw.device_packages is
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
 						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stencil_cutout_top is begin
-					pac_stencil_cutouts.append (
-						container	=> packge.stencil.top.cutouts, 
-						new_item	=> contour);
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stencil_cutout_bottom is begin
-					pac_stencil_cutouts.append (
-						container	=> packge.stencil.top.cutouts, 
-						new_item	=> contour);
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -2058,7 +2010,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
 											container	=> packge.stencil.top.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 										
@@ -2116,7 +2068,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
 											container	=> packge.stencil.bottom.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2226,9 +2178,6 @@ package body et_pcb_rw.device_packages is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										append_assy_doc_cutout_top;
 										
-									when SEC_STENCIL =>
-										append_stencil_cutout_top;
-										
 									when SEC_STOP_MASK =>
 										append_stop_cutout_top;
 										
@@ -2251,9 +2200,6 @@ package body et_pcb_rw.device_packages is
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										append_assy_doc_cutout_bottom;
-										
-									when SEC_STENCIL =>
-										append_stencil_cutout_bottom;
 										
 									when SEC_STOP_MASK =>
 										append_stop_cutout_bottom;
