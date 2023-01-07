@@ -1354,7 +1354,6 @@ is
 
 		use pac_silk_cutouts;
 		use pac_doc_cutouts;
-		use pac_stencil_cutouts;
 		use pac_stop_cutouts;
 		use pac_keepout_cutouts;
 
@@ -1611,17 +1610,7 @@ is
 		
 
 		procedure write_stencil is
-			use et_stencil.boards;
-			use pac_stencil_texts;
-			
-			procedure write_text (cursor : in pac_stencil_texts.cursor) is begin
-				text_begin;
-				write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (cursor).content));
-				write_text_properties (element (cursor));
-				text_end;
-			end write_text;
-		
+			use et_stencil;
 		begin			
 			section_mark (section_stencil, HEADER);
 
@@ -1630,8 +1619,6 @@ is
 			iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
 			iterate (element (module_cursor).board.stencil.top.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.stencil.top.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.stencil.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
@@ -1639,8 +1626,6 @@ is
 			iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
 			iterate (element (module_cursor).board.stencil.bottom.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.stencil.bottom.cutouts, write_cutout'access);
-			iterate (element (module_cursor).board.stencil.bottom.texts, write_text'access);		
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);

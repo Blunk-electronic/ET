@@ -1789,13 +1789,13 @@ package body et_kicad_packages is
 						
 					when TOP_PASTE =>
 						stencil.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						stencil.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 

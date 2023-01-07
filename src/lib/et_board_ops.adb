@@ -2590,7 +2590,7 @@ package body et_board_ops is
 	procedure draw_stencil_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		circle			: in type_fillable_circle;
+		circle			: in type_stencil_circle;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2760,7 +2760,6 @@ package body et_board_ops is
 			use pac_assy_doc_texts;
 			use pac_silkscreen_texts;
 			use pac_stop_mask_texts;
-			use pac_stencil_texts;
 
 			v_text : type_vector_text;		
 			mirror : type_vector_text_mirrored;
@@ -2805,14 +2804,6 @@ package body et_board_ops is
 							append (module.board.stop_mask.top.texts, (text with v_text));
 						when BOTTOM =>
 							append (module.board.stop_mask.bottom.texts, (text with v_text));
-					end case;
-
-				when LAYER_CAT_STENCIL =>
-					case face is
-						when TOP =>
-							append (module.board.stencil.top.texts, (text with v_text));
-						when BOTTOM =>
-							append (module.board.stencil.bottom.texts, (text with v_text));
 					end case;
 
 				when others => null;

@@ -3173,6 +3173,9 @@ is
 			-- is now assigned to the board where it belongs to.
 
 				use et_board_shapes_and_text;
+				use et_pcb_coordinates;
+				use pac_geometry_2;
+				
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -3201,7 +3204,7 @@ is
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
 										container	=> module.board.stencil.top.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
@@ -3226,7 +3229,7 @@ is
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
 										container	=> module.board.stencil.bottom.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
@@ -3246,7 +3249,9 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next board circle
-				board_reset_circle_fillable;
+				board_reset_line_width;
+				board_reset_circle;
+				board_reset_circle_fillable; -- CS remove
 			end insert_circle;
 
 			
@@ -3370,42 +3375,16 @@ is
 
 					
 					procedure append_stencil_polygon_top is begin
-						case board_fill_style is
-							when SOLID =>
-								pac_stencil_polygons.append (
-									container	=> module.board.stencil.top.polygons,
-									new_item	=> (contour with
-													fill_style	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_stencil_polygons.append (
-									container	=> module.board.stencil.top.polygons,
-									new_item	=> (contour with
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_stencil_polygons.append (
+							container	=> module.board.stencil.top.polygons,
+							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stencil_polygon_bottom is begin
-						case board_fill_style is
-							when SOLID =>
-								pac_stencil_polygons.append (
-									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (contour with
-													fill_style	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_stencil_polygons.append (
-									container	=> module.board.stencil.bottom.polygons,
-									new_item	=> (contour with
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_stencil_polygons.append (
+							container	=> module.board.stencil.bottom.polygons,
+							new_item	=> (contour with null record));
 					end;
 
 					
@@ -3521,7 +3500,6 @@ is
 					use pac_contours;
 					
 					use et_stop_mask;
-					use et_stencil;
 					use et_silkscreen;
 					use et_assy_doc;
 					use et_keepout;
@@ -3562,18 +3540,6 @@ is
 							new_item	=> (contour with null record));
 					end;
 
-					procedure append_stencil_cutout_top is begin
-						pac_stencil_cutouts.append (
-							container	=> module.board.stencil.top.cutouts,
-							new_item	=> contour);
-					end;
-
-					procedure append_stencil_cutout_bottom is begin
-						pac_stencil_cutouts.append (
-							container	=> module.board.stencil.bottom.cutouts,
-							new_item	=> contour);
-					end;
-
 					procedure append_stop_cutout_top is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.top.cutouts,
@@ -3596,15 +3562,13 @@ is
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_top;
 
-								when LAYER_CAT_STENCIL =>
-									append_stencil_cutout_top;
-									
 								when LAYER_CAT_STOP =>
 									append_stop_cutout_top;
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_top;
-									
+
+								when others => null;
 							end case;
 							
 						when BOTTOM => null;
@@ -3615,15 +3579,13 @@ is
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_bottom;
 									
-								when LAYER_CAT_STENCIL =>
-									append_stencil_cutout_bottom;
-									
 								when LAYER_CAT_STOP =>
 									append_stop_cutout_bottom;
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_bottom;
-									
+
+								when others => null;									
 							end case;							
 					end case;
 				end do_it;
@@ -4837,7 +4799,6 @@ is
 
 						use et_silkscreen.boards;
 						use et_assy_doc.boards;
-						use et_stencil.boards;
 						use et_stop_mask.boards;
 						
 						v_text : type_vector_text;
@@ -4874,11 +4835,6 @@ is
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> (board_text with v_text));
 
-									when LAYER_CAT_STENCIL =>
-										pac_stencil_texts.append (
-											container	=> module.board.stencil.top.texts,
-											new_item	=> (board_text with v_text));
-
 									when LAYER_CAT_STOP =>
 										pac_stop_mask_texts.append (
 											container	=> module.board.stop_mask.top.texts,
@@ -4897,11 +4853,6 @@ is
 									when LAYER_CAT_ASSY =>
 										pac_assy_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
-											new_item	=> (board_text with v_text));
-
-									when LAYER_CAT_STENCIL =>
-										pac_stencil_texts.append (
-											container	=> module.board.stencil.bottom.texts,
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STOP =>

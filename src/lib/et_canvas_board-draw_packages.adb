@@ -1499,7 +1499,7 @@ is
 			use pac_stencil_circles;
 
 			procedure draw_circle (
-				circle	: in out type_fillable_circle;
+				circle	: in out type_stencil_circle;
 				f 		: in type_face) 
 			is begin
 				if stencil_enabled (f) then
@@ -1513,31 +1513,18 @@ is
 
 						set_color_stencil (context.cr, f, self.scale, brightness);
 
-						case circle.filled is
-							when NO =>
-								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+						set_line_width (context.cr, type_view_coordinate (circle.width));
 								
-								draw_circle (in_area, context, circle, circle.filled, 
-									circle.border_width, self.frame_height);
-
-							when YES =>
-								case circle.fill_style is
-									when SOLID =>
-										draw_circle (in_area, context, circle, circle.filled, 
-											zero, self.frame_height);
-
-									when HATCHED => null; -- CS
-								end case;
-						end case;
+						draw_circle (in_area, context, circle, NO,  -- not filled
+							circle.width, self.frame_height);
 
 					end if;
-
 				end if;
 			end draw_circle;
 
 			
 			procedure query_circle_top (c : in pac_stencil_circles.cursor) is 
-				circle : type_fillable_circle := element (c);
+				circle : type_stencil_circle := element (c);
 			begin
 				set_destination;
 				draw_circle (circle, destination);
@@ -1545,7 +1532,7 @@ is
 
 			
 			procedure query_circle_bottom (c : in pac_stencil_circles.cursor) is 
-				circle : type_fillable_circle := element (c);
+				circle : type_stencil_circle := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_circle (circle, destination);
@@ -1556,7 +1543,7 @@ is
 			use pac_stencil_polygons;
 
 			procedure draw_contour (
-				polygon	: in out type_contour_non_conductor;
+				polygon	: in out type_stencil_contour;
 				f		: in type_face)
 			is 
 				drawn : boolean := false;
@@ -1572,40 +1559,22 @@ is
 
 						set_color_stencil (context.cr, f, self.scale, brightness);
 
-						case polygon.fill_style is
-							when SOLID =>
-								draw_contour (
-									area	=> in_area,
-									context	=> context,
-									contour	=> polygon,
-									filled	=> YES,
-									width	=> zero,
-									height	=> self.frame_height,
-									drawn	=> drawn);
+						draw_contour (
+							area	=> in_area,
+							context	=> context,
+							contour	=> polygon,
+							filled	=> YES,
+							width	=> zero,
+							height	=> self.frame_height,
+							drawn	=> drawn);
 
-								
-							when HATCHED =>
-								set_line_width (context.cr,
-									type_view_coordinate (polygon.hatching.border_width));
-
-								draw_contour (
-									area	=> in_area,
-									context	=> context,
-									contour	=> polygon,
-									filled	=> NO,
-									width	=> polygon.hatching.border_width,
-									height	=> self.frame_height,
-									drawn	=> drawn);
-								
-								-- CS hatching ?
-						end case;						
 					end if;
 				end if;
 			end draw_contour;
 
 			
 			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
-				polygon : type_contour_non_conductor := element (c);
+				polygon : type_stencil_contour := element (c);
 			begin
 				set_destination;
 				draw_contour (polygon, destination);
@@ -1613,60 +1582,13 @@ is
 
 			
 			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
-				polygon : type_contour_non_conductor := element (c);
+				polygon : type_stencil_contour := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
 
-			-- CUTOUTS
-			use pac_stencil_cutouts;
-
-			procedure draw_cutout (
-				cutout	: in out type_contour;
-				f		: in type_face)
-			is 
-				drawn : boolean := false;
-			begin
-				if stencil_enabled (f) then
-					
-					if f = face then
-						rotate_by (cutout, get_rotation (package_position));
-						
-						if flipped then mirror (cutout, Y); end if;
-						
-						move_by (cutout, to_distance_relative (package_position.place));
-
-						set_color_background (context.cr);
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> cutout,
-							filled	=> YES, -- CS ?
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-
-						
-					end if;
-				end if;				
-			end draw_cutout;
-			
-			procedure query_cutout_top (c : in pac_stencil_cutouts.cursor) is
-				cutout : type_contour := element (c);
-			begin
-				set_destination;
-				draw_cutout (cutout, destination);
-			end query_cutout_top;
-
-			procedure query_cutout_bottom (c : in pac_stencil_cutouts.cursor) is
-				cutout : type_contour := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_cutout (cutout, destination);
-			end query_cutout_bottom;
 			
 		begin -- draw_stencil
 		
@@ -1685,10 +1607,6 @@ is
 			-- polygons
 			element (package_cursor).stencil.top.polygons.iterate (query_polygon_top'access);
 			element (package_cursor).stencil.bottom.polygons.iterate (query_polygon_bottom'access);
-
-			-- cutouts
-			element (package_cursor).stencil.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).stencil.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 		end draw_stencil;
 

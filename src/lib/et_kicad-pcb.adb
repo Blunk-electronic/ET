@@ -516,7 +516,7 @@ package body et_kicad.pcb is
 		package_stop_mask		: et_stop_mask.packages.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_stencil			: et_stencil.packages.type_stencil_both_sides;
+		package_stencil			: et_stencil.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;
@@ -3410,19 +3410,21 @@ package body et_kicad.pcb is
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_PASTE =>
 						board.stencil.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
 						board.stop_mask.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
@@ -3718,13 +3720,13 @@ package body et_kicad.pcb is
 						
 					when TOP_PASTE =>
 						package_stencil.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 
