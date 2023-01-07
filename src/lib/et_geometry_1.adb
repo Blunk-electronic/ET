@@ -2068,75 +2068,28 @@ package body et_geometry_1 is
 		lv_2 : constant type_line_vector := to_line_vector (line_2);
 
 		-- Get the intersection of the two line vectors:
-		primary_intersection : constant type_intersection_of_two_lines := get_intersection (lv_1, lv_2);
-
-		int_A : constant type_intersection_of_two_lines := get_intersection (lv_1, line_2);
-		int_B : constant type_intersection_of_two_lines := get_intersection (lv_2, line_1);
-
-		status : type_intersection_status_of_two_lines;
-		intersection : type_intersection;
-	
+		I : constant type_intersection_of_two_lines := get_intersection (lv_1, lv_2);
 	begin
 		--put_line ("get intersection");
 		--put_line ("line 1: " & to_string (line_1));
 		--put_line ("line 2: " & to_string (line_2));
 
-		-- If the line vectors overlap each other then there is no
-		-- need for more action. The return status is just "overlap":
-		if primary_intersection.status = OVERLAP then
-			status := OVERLAP;
-			
-		elsif int_A.status = EXISTS and int_B.status = EXISTS then
-
-			-- double check: location vectors must match !
-			--if int_A.intersection.vector = int_B.intersection.vector then
-				status := EXISTS;
-				--intersection.vector := int_A.intersection.vector;
-				--intersection.angle := int_A.intersection.angle;
-
-				-- CS: return the average of intersection A and B ?
-				intersection.vector := get_average (int_A.intersection.vector, int_B.intersection.vector);
-				intersection.angle := get_average (int_A.intersection.angle, int_B.intersection.angle);
-				
-				--put_line ("intersections match:");
-				--put_line ("int  A: " & to_string (int_A.intersection.vector));
-				--put_line ("int  B: " & to_string (int_B.intersection.vector));
-
-			--else
-				--put_line ("intersection mismatch:");
-				----put_line ("line 1: " & to_string (line_1));
-				----put_line ("line 2: " & to_string (line_2));
-				--put_line ("int  A: " & to_string (int_A.intersection.vector));
-				--put_line ("int  B: " & to_string (int_B.intersection.vector));
-
-				--put_line ("delta : " & to_string (
-					--subtract (int_A.intersection.vector, int_B.intersection.vector)));
-													 
-				--raise constraint_error with 
-					--"Intersection mismatch: " & to_string (int_A.intersection.vector)
-					--& to_string (int_B.intersection.vector);
-
-				
-			--end if;
-
-		else
-			status := NOT_EXISTENT;
-		end if;
-
-
-		case status is
-			when NOT_EXISTENT =>
-				return (status => NOT_EXISTENT);
-
+		case I.status is
 			when OVERLAP =>
 				return (status => OVERLAP);
-
+			
 			when EXISTS =>
-				return (
-					status			=> EXISTS,
-					intersection	=> intersection);	   
-		end case;
+				if on_line (I.intersection.vector, line_1) and
+				   on_line (I.intersection.vector, line_2) 
+				then
+					return (EXISTS, I.intersection);
+				else
+					return (status => NOT_EXISTENT);
+				end if;
 
+			when NOT_EXISTENT =>
+				return (status => NOT_EXISTENT);
+		end case;
 	end get_intersection;
 
 	
