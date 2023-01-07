@@ -428,6 +428,15 @@ package et_packages is
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
 		return type_keepout;
+
+	
+	-- Returns the contours of stencil objects of the given package.
+	-- Adresses only those objects affected by the given face:
+	function get_stencil_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return et_stencil.type_stencil;
+
 	
 	-- CS likewise for stencil, stopmask, assy doc, silkscreen
 	

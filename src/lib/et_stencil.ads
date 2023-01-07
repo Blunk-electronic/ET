@@ -50,9 +50,10 @@ package et_stencil is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_board;
 
 
+-- LINES
+	
 	type type_stencil_line is new
 		et_conductor_segment.type_conductor_line with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -63,6 +64,28 @@ package et_stencil is
 	use pac_stencil_lines;
 	
 
+	-- Mirrors a list of lines along the given axis:
+	procedure mirror_lines (
+		lines	: in out pac_stencil_lines.list;
+		axis	: in type_axis_2d := Y);
+
+	
+	-- Rotates a list of lines by the given angle about the origin:
+	procedure rotate_lines (
+		lines	: in out pac_stencil_lines.list;
+		angle	: in type_rotation);
+
+	
+	-- Moves a list of lines by the given offset:
+	procedure move_lines (
+		lines	: in out pac_stencil_lines.list;
+		offset	: in type_distance_relative);
+
+
+	
+
+-- ARCS
+	
 	type type_stencil_arc is new
 		et_conductor_segment.type_conductor_arc with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -73,6 +96,28 @@ package et_stencil is
 	use pac_stencil_arcs;
 	
 
+	-- Mirrors a list of arcs along the given axis:
+	procedure mirror_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		axis	: in type_axis_2d := Y);
+
+	
+	-- Rotates a list of arcs by the given angle about the origin:
+	procedure rotate_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		angle	: in type_rotation);
+
+	
+	-- Moves a list of arcs by the given offset:
+	procedure move_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		offset	: in type_distance_relative);
+
+
+	
+	
+-- CIRCLES
+	
 	type type_stencil_circle is new 
 		et_conductor_segment.type_conductor_circle with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -82,14 +127,47 @@ package et_stencil is
 	use pac_stencil_circles;	
 
 
+	-- Mirrors a list of circles along the given axis:
+	procedure mirror_circles (
+		circles	: in out pac_stencil_circles.list;
+		axis	: in type_axis_2d := Y);
+	
+	-- Rotates a list of circles by the given angle about the origin:
+	procedure rotate_circles (
+		circles	: in out pac_stencil_circles.list;
+		angle	: in type_rotation);
+
+	-- Moves a list of circles by the given offset:
+	procedure move_circles (
+		circles	: in out pac_stencil_circles.list;
+		offset	: in type_distance_relative);
+
+	
+
+
+-- CONTOURS
+	
 	type type_stencil_contour is new type_contour with null record;
 	
-	package pac_stencil_polygons is new doubly_linked_lists (type_stencil_contour);
-	use pac_stencil_polygons;
-	-- CS rename to pac_stencil_contours
+	package pac_stencil_contours is new doubly_linked_lists (type_stencil_contour);
+	use pac_stencil_contours;
 
-	--package pac_stencil_cutouts is new doubly_linked_lists (type_contour);	
-	-- CS really requried ?
+	
+	-- Mirrors a list of contours along the given axis:
+	procedure mirror_contours (
+		contours	: in out pac_stencil_contours.list;
+		axis		: in type_axis_2d := Y);
+	
+	-- Rotates a list of contours by the given angle about the origin:
+	procedure rotate_contours (
+		contours	: in out pac_stencil_contours.list;
+		angle		: in type_rotation);
+
+	-- Moves a list of contours by the given offset:
+	procedure move_contours (
+		contours	: in out pac_stencil_contours.list;
+		offset		: in type_distance_relative);
+
 
 	
 	-- This is the type for solder paste stencil objects in general:
@@ -97,8 +175,7 @@ package et_stencil is
 		lines 		: pac_stencil_lines.list;
 		arcs		: pac_stencil_arcs.list;
 		circles		: pac_stencil_circles.list;
-		polygons	: pac_stencil_polygons.list;
-		--cutouts		: pac_stencil_cutouts.list;
+		contours	: pac_stencil_contours.list;
 	end record;
 
 
@@ -107,6 +184,26 @@ package et_stencil is
 		bottom	: type_stencil;
 	end record;
 
+
+
+
+	-- Mirrors the given objects along the given axis:
+	procedure mirror_stencil_objects (
+		stencil	: in out type_stencil;
+		axis	: in type_axis_2d := Y);
+	
+	-- Rotates the given objects by the given angle
+	-- about the origin:
+	procedure rotate_stencil_objects (
+		stencil	: in out type_stencil;
+		angle	: in type_rotation);
+
+	-- Moves the given objects by the given offset:
+	procedure move_stencil_objects (
+		stencil	: in out type_stencil;
+		offset	: in type_distance_relative);
+
+	
 
 	-- Logs the properties of the given arc of stencil
 	procedure arc_stencil_properties (

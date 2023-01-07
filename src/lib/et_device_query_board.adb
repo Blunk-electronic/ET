@@ -488,7 +488,62 @@ package body et_device_query_board is
 	end get_keepout_objects;
 
 
+-- STENCIL
+	
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stencil
+	is
+		result : type_stencil;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			case face is
+				when TOP =>
+					if device.flipped = NO then
+						result := get_stencil_objects (packge, TOP);
+						rotate_stencil_objects (result, + rotation);
+					else
+						result := get_stencil_objects (packge, BOTTOM);
+						mirror_stencil_objects (result);
+						rotate_stencil_objects (result, - rotation);
+					end if;
 
+				when BOTTOM =>
+					if device.flipped = NO then
+						result := get_stencil_objects (packge, BOTTOM);
+						rotate_stencil_objects (result, + rotation);
+					else
+						result := get_stencil_objects (packge, TOP);
+						mirror_stencil_objects (result);
+						rotate_stencil_objects (result, - rotation);
+					end if;
+			end case;
+		end if;
+		
+		move_stencil_objects (result, to_distance_relative (device.position.place));
+		return result;
+	end get_stencil_objects;
+
+
+
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stencil
+	is
+		result : type_stencil;
+	begin
+		-- CS
+		return result;
+	end get_stencil_objects;
+	
 	
 -- HOLES
 	

@@ -40,6 +40,280 @@ with ada.strings;				use ada.strings;
 
 package body et_stencil is
 
+-- LINES
+
+	procedure mirror_lines (
+		lines	: in out pac_stencil_lines.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_stencil_lines.list;
+
+		procedure query_line (c : in pac_stencil_lines.cursor) is
+			line : type_stencil_line := element (c);
+		begin
+			mirror (line, axis);
+			result.append (line);
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end mirror_lines;
+	
+	
+	procedure rotate_lines (
+		lines	: in out pac_stencil_lines.list;
+		angle	: in type_rotation)
+	is
+		result : pac_stencil_lines.list;
+
+		procedure query_line (c : in pac_stencil_lines.cursor) is
+			line : type_stencil_line := element (c);
+		begin
+			rotate_by (line, angle);
+			result.append (line);
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end rotate_lines;
+
+	
+	procedure move_lines (
+		lines	: in out pac_stencil_lines.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_stencil_lines.list;
+
+		procedure query_line (c : in pac_stencil_lines.cursor) is
+			line : type_stencil_line := element (c);
+		begin
+			move_by (line, offset);
+			result.append (line);
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		lines := result;
+	end move_lines;	
+
+
+	
+-- ARCS
+	
+	procedure mirror_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_stencil_arcs.list;
+
+		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+			arc : type_stencil_arc := element (c);
+		begin
+			mirror (arc, axis);
+			result.append (arc);
+		end query_arc;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end mirror_arcs;
+	
+	
+	procedure rotate_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		angle	: in type_rotation)
+	is
+		result : pac_stencil_arcs.list;
+
+		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+			arc : type_stencil_arc := element (c);
+		begin
+			rotate_by (arc, angle);
+			result.append (arc);
+		end query_arc;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end rotate_arcs;
+
+	
+	procedure move_arcs (
+		arcs	: in out pac_stencil_arcs.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_stencil_arcs.list;
+
+		procedure query_arc (c : in pac_stencil_arcs.cursor) is
+			arc : type_stencil_arc := element (c);
+		begin
+			move_by (arc, offset);
+			result.append (arc);
+		end query_arc;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		arcs := result;
+	end move_arcs;
+
+
+	
+-- CIRCLES
+	
+	procedure mirror_circles (
+		circles	: in out pac_stencil_circles.list;
+		axis	: in type_axis_2d := Y)
+	is
+		result : pac_stencil_circles.list;
+
+		procedure query_circle (c : in pac_stencil_circles.cursor) is
+			circle : type_stencil_circle := element (c);
+		begin
+			mirror (circle, axis);
+			result.append (circle);
+		end query_circle;
+		
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end mirror_circles;
+	
+	
+	procedure rotate_circles (
+		circles	: in out pac_stencil_circles.list;
+		angle	: in type_rotation)
+	is
+		result : pac_stencil_circles.list;
+
+		procedure query_circle (c : in pac_stencil_circles.cursor) is
+			circle : type_stencil_circle := element (c);
+		begin
+			rotate_by (circle, angle);
+			result.append (circle);
+		end query_circle;
+
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end rotate_circles;
+
+	
+	procedure move_circles (
+		circles	: in out pac_stencil_circles.list;
+		offset	: in type_distance_relative)
+	is
+		result : pac_stencil_circles.list;
+
+		procedure query_circle (c : in pac_stencil_circles.cursor) is
+			circle : type_stencil_circle := element (c);
+		begin
+			move_by (circle, offset);
+			result.append (circle);
+		end query_circle;
+		
+	begin
+		circles.iterate (query_circle'access);
+		circles := result;
+	end move_circles;
+
+
+	
+-- CONTOURS
+	
+	procedure mirror_contours (
+		contours	: in out pac_stencil_contours.list;
+		axis		: in type_axis_2d := Y)
+	is
+		result : pac_stencil_contours.list;
+
+		procedure query_contour (c : in pac_stencil_contours.cursor) is
+			contour : type_stencil_contour := element (c);
+		begin
+			mirror (contour, axis);
+			result.append (contour);
+		end query_contour;
+		
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end mirror_contours;
+	
+
+	procedure rotate_contours (
+		contours	: in out pac_stencil_contours.list;
+		angle		: in type_rotation)
+	is
+		result : pac_stencil_contours.list;
+
+		procedure query_contour (c : in pac_stencil_contours.cursor) is
+			contour : type_stencil_contour := element (c);
+		begin
+			rotate_by (contour, angle);
+			result.append (contour);
+		end query_contour;
+
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end rotate_contours;
+
+	
+	procedure move_contours (
+		contours	: in out pac_stencil_contours.list;
+		offset		: in type_distance_relative)
+	is
+		result : pac_stencil_contours.list;
+
+		procedure query_contour (c : in pac_stencil_contours.cursor) is
+			contour : type_stencil_contour := element (c);
+		begin
+			move_by (contour, offset);
+			result.append (contour);
+		end query_contour;
+
+	begin
+		contours.iterate (query_contour'access);
+		contours := result;
+	end move_contours;
+
+
+	
+	procedure mirror_stencil_objects (
+		stencil	: in out type_stencil;
+		axis	: in type_axis_2d := Y)
+	is begin
+		mirror_lines (stencil.lines);
+		mirror_arcs (stencil.arcs);
+		mirror_circles (stencil.circles);
+		mirror_contours (stencil.contours);
+	end mirror_stencil_objects;
+	
+
+	procedure rotate_stencil_objects (
+		stencil	: in out type_stencil;
+		angle	: in type_rotation)
+	is begin
+		rotate_lines (stencil.lines, angle);
+		rotate_arcs (stencil.arcs, angle);
+		rotate_circles (stencil.circles, angle);
+		rotate_contours (stencil.contours, angle);
+	end rotate_stencil_objects;
+
+
+	procedure move_stencil_objects (
+		stencil	: in out type_stencil;
+		offset	: in type_distance_relative)
+	is begin
+		move_lines (stencil.lines, offset);
+		move_arcs (stencil.arcs, offset);
+		move_circles (stencil.circles, offset);
+		move_contours (stencil.contours, offset);
+	end move_stencil_objects;
+
+
+	
 	procedure arc_stencil_properties (
 		face			: in type_face;
 		cursor			: in pac_stencil_arcs.cursor;

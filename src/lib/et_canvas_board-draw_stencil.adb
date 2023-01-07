@@ -54,7 +54,7 @@ is
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
-	use pac_stencil_polygons;
+	use pac_stencil_contours;
 	
 
 	-- CS must be overwritten according to select status:
@@ -101,7 +101,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_stencil_polygons.cursor) is 
+	procedure query_polygon (c : in pac_stencil_contours.cursor) is 
 		drawn : boolean := false;
 	begin
 		draw_contour (
@@ -127,13 +127,13 @@ is
 				iterate (module.board.stencil.top.lines, query_line'access);
 				iterate (module.board.stencil.top.arcs, query_arc'access);
 				iterate (module.board.stencil.top.circles, query_circle'access);
-				iterate (module.board.stencil.top.polygons, query_polygon'access);
+				iterate (module.board.stencil.top.contours, query_polygon'access);
 				
 			when BOTTOM =>
 				iterate (module.board.stencil.bottom.lines, query_line'access);
 				iterate (module.board.stencil.bottom.arcs, query_arc'access);
 				iterate (module.board.stencil.bottom.circles, query_circle'access);
-				iterate (module.board.stencil.bottom.polygons, query_polygon'access);
+				iterate (module.board.stencil.bottom.contours, query_polygon'access);
 		end case;
 
 	end query_items;

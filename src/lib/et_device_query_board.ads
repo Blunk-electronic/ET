@@ -40,7 +40,7 @@
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_keepout;						use et_keepout;
-
+with et_stencil;						use et_stencil;
 with et_symbols;						
 with et_schematic;						use et_schematic;
 with et_device_query_schematic;			use et_device_query_schematic;
@@ -199,22 +199,22 @@ package et_device_query_board is
 
 -- STENCIL:
 	
-	-- Returns the stencil objects of the given device
+	-- Returns the stencil objects of the given electrical device
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
-	--function get_stencil_objects (
-		--device_cursor	: in pac_devices_sch.cursor;
-		--face			: in type_face)
-		--return type_stencil;
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stencil;
 
 
-	---- Returns the stencil objects of the given device
-	---- (according to its flip status, position and rotation in the board) 
-	---- Adresses only those objects affected by the given face:
-	--function get_stencil_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--face			: in type_face)
-		--return type_stencil;
+	-- Returns the stencil objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stencil;
 
 
 	

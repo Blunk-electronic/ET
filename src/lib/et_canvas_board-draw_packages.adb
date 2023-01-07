@@ -1540,7 +1540,7 @@ is
 
 			
 			-- CONTOURS
-			use pac_stencil_polygons;
+			use pac_stencil_contours;
 
 			procedure draw_contour (
 				polygon	: in out type_stencil_contour;
@@ -1573,7 +1573,7 @@ is
 			end draw_contour;
 
 			
-			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
+			procedure query_polygon_top (c : in pac_stencil_contours.cursor) is
 				polygon : type_stencil_contour := element (c);
 			begin
 				set_destination;
@@ -1581,7 +1581,7 @@ is
 			end query_polygon_top;
 
 			
-			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
+			procedure query_polygon_bottom (c : in pac_stencil_contours.cursor) is
 				polygon : type_stencil_contour := element (c);
 			begin
 				set_destination (INVERSE);
@@ -1605,8 +1605,8 @@ is
 			element (package_cursor).stencil.bottom.circles.iterate (query_circle_bottom'access);
 
 			-- polygons
-			element (package_cursor).stencil.top.polygons.iterate (query_polygon_top'access);
-			element (package_cursor).stencil.bottom.polygons.iterate (query_polygon_bottom'access);
+			element (package_cursor).stencil.top.contours.iterate (query_polygon_top'access);
+			element (package_cursor).stencil.bottom.contours.iterate (query_polygon_bottom'access);
 
 		end draw_stencil;
 

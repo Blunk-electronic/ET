@@ -491,6 +491,21 @@ package body et_packages is
 		end case;
 	end get_keepout_objects;
 	
+
+	function get_stencil_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return et_stencil.type_stencil
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case face is
+			when TOP	=> return packge.stencil.top;
+			when BOTTOM	=> return packge.stencil.bottom;
+		end case;
+	end get_stencil_objects;
+
+
 	
 	function to_string (flipped : in type_flipped) return string is begin
 		return to_lower (type_flipped'image (flipped));
