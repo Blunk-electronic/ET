@@ -937,7 +937,7 @@ package et_geometry_2 is
 	function get_intersection (
 		line		: in type_line;
 		line_vector	: in type_line_vector)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 
 
 	-- Tests whether the given two lines intersect or overlap
@@ -946,7 +946,7 @@ package et_geometry_2 is
 	-- long beyond their start and end points:
 	function get_intersection (
 		line_1, line_2 : in type_line)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 
 
 

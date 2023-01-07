@@ -459,7 +459,7 @@ package body et_fill_zones is
 
 			procedure query_centerline (e : in pac_edges.cursor) is
 				use pac_edges;
-				I : constant type_intersection_of_two_lines := 
+				I : constant type_line_vector_intersection := 
 					get_intersection (ray, element (e));
 			begin
 				case I.status is
@@ -477,7 +477,7 @@ package body et_fill_zones is
 			
 			procedure query_edge (e : in pac_edges.cursor) is
 				use pac_edges;
-				I : constant type_intersection_of_two_lines := 
+				I : constant type_line_vector_intersection := 
 					get_intersection (ray, element (e));
 			begin
 				case I.status is

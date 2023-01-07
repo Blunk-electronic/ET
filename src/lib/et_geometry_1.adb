@@ -1468,7 +1468,7 @@ package body et_geometry_1 is
 	
 	function get_intersection (
 		line_1, line_2	: in type_line_vector)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is 
 		-- scratch variables:
 		a, b, c, d, e, f, g : type_float;
@@ -1980,9 +1980,9 @@ package body et_geometry_1 is
 		line_vector : in type_line_vector;
 		line		: in type_line_fine;
 		debug		: in boolean := false)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is
-		i : constant type_intersection_of_two_lines := get_intersection (
+		i : constant type_line_vector_intersection := get_intersection (
 				line_1	=> line_vector,
 				line_2	=> to_line_vector (line));
 		
@@ -2017,7 +2017,7 @@ package body et_geometry_1 is
 		ray			: in type_ray;
 		line		: in type_line_fine;
 		debug		: in boolean := false)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is
 		-- In this function we must test angles for equality.
 		-- The direction of the ray must be positive in any case:
@@ -2026,7 +2026,7 @@ package body et_geometry_1 is
 		
 		line_vector : constant type_line_vector := to_line_vector (ray);
 
-		I : constant type_intersection_of_two_lines := 
+		I : constant type_line_vector_intersection := 
 			get_intersection (line_vector, line);
 		
 		dp : type_distance_polar;
@@ -2062,13 +2062,13 @@ package body et_geometry_1 is
 	function get_intersection (
 		line_1 : in type_line_fine;
 		line_2 : in type_line_fine)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is		
 		lv_1 : constant type_line_vector := to_line_vector (line_1);
 		lv_2 : constant type_line_vector := to_line_vector (line_2);
 
 		-- Get the intersection of the two line vectors:
-		I : constant type_intersection_of_two_lines := get_intersection (lv_1, lv_2);
+		I : constant type_line_vector_intersection := get_intersection (lv_1, lv_2);
 	begin
 		--put_line ("get intersection");
 		--put_line ("line 1: " & to_string (line_1));
@@ -2097,7 +2097,7 @@ package body et_geometry_1 is
 		line_1, line_2 : in type_line_fine)
 		return boolean
 	is
-		I2L : constant type_intersection_of_two_lines :=
+		I2L : constant type_line_vector_intersection :=
 			get_intersection (line_1, line_2);
 	begin
 		if I2L.status = OVERLAP then

@@ -177,7 +177,7 @@ package body et_geometry_1.et_polygons.offsetting is
 
 				
 				declare
-					I : constant type_intersection_of_two_lines := get_intersection (
+					I : constant type_line_vector_intersection := get_intersection (
 						line_1 => element (start).edge,
 						line_2 => element (c).edge);
 				begin
@@ -214,7 +214,7 @@ package body et_geometry_1.et_polygons.offsetting is
 				while c /= previous (start) loop
 					
 					declare
-						I : constant type_intersection_of_two_lines := get_intersection (
+						I : constant type_line_vector_intersection := get_intersection (
 							line_1 => element (start).edge,
 							line_2 => element (c).edge);
 					begin

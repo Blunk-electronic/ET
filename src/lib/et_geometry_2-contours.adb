@@ -1256,7 +1256,7 @@ package body et_geometry_2.contours is
 		procedure query_line (l : in type_line) is 
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate edge of the contour.
-			i : constant type_intersection_of_two_lines := 
+			i : constant type_line_vector_intersection := 
 				l.get_intersection (probe_line);
 			
 		begin

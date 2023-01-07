@@ -742,7 +742,7 @@ package et_geometry_1 is
 	
 
 	-- When finding intersections of two lines this type is required:
-	type type_intersection_of_two_lines ( -- CS rename to type_line_vector_intersection ?
+	type type_line_vector_intersection (
 		status : type_intersection_status_of_two_lines) 
 	is record
 		case status is
@@ -765,7 +765,7 @@ package et_geometry_1 is
 	-- If there is an intersection, returns the location vector.
 	function get_intersection (
 		line_1, line_2	: in type_line_vector)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 
 
 
@@ -976,7 +976,7 @@ package et_geometry_1 is
 		line_vector : in type_line_vector;
 		line		: in type_line_fine;
 		debug		: in boolean := false)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 
 	
 	-- Tests whether the given ray intersects the given candidate line.
@@ -989,7 +989,7 @@ package et_geometry_1 is
 		ray			: in type_ray;
 		line		: in type_line_fine;
 		debug		: in boolean := false)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 
 	
 	-- Tests whether the given two lines intersect or overlap each other. 
@@ -998,7 +998,7 @@ package et_geometry_1 is
 	function get_intersection (
 		line_1 : in type_line_fine;
 		line_2 : in type_line_fine)
-		return type_intersection_of_two_lines;
+		return type_line_vector_intersection;
 	
 	
 	-- Returns true if the given two lines overlap each other.

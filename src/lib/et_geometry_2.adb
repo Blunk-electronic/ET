@@ -1872,7 +1872,7 @@ package body et_geometry_2 is
 	function get_intersection (
 		line		: in type_line;
 		line_vector	: in type_line_vector)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is begin
 		return get_intersection (
 			line_vector	=> line_vector,
@@ -1883,7 +1883,7 @@ package body et_geometry_2 is
 
 	function get_intersection (
 		line_1, line_2 : in type_line)
-		return type_intersection_of_two_lines
+		return type_line_vector_intersection
 	is begin
 		return get_intersection (to_line_fine (line_1), to_line_fine (line_2));
 	end get_intersection;

@@ -265,7 +265,7 @@ package body et_geometry_1.et_polygons is
 			make_edges (p_start_outside);
 
 			declare
-				I1, I2 : type_intersection_of_two_lines (EXISTS);
+				I1, I2 : type_line_vector_intersection (EXISTS);
 				N1, N2 : type_line_vector;
 				
 				center_to_start : constant type_line_vector := 
@@ -1600,7 +1600,7 @@ package body et_geometry_1.et_polygons is
 		procedure query_edge (c : in pac_edges.cursor) is 
 			-- Find out whether there is an intersection of the probe line
 			-- and the candidate edge of the polygon.
-			i : constant type_intersection_of_two_lines := 
+			i : constant type_line_vector_intersection := 
 				get_intersection (probe_line, element (c), debug);
 			
 		begin
@@ -3614,7 +3614,7 @@ package body et_geometry_1.et_polygons is
 		
 		procedure query_edge (c : in pac_edges.cursor) is
 			edge : type_edge renames element (c);
-			I : constant type_intersection_of_two_lines := get_intersection (ray, edge);
+			I : constant type_line_vector_intersection := get_intersection (ray, edge);
 		begin
 			if I.status = EXISTS then
 				proceed := false;
