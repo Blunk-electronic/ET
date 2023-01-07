@@ -153,15 +153,27 @@ package et_device_query_board is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
+
 	
 -- VIA RESTRICT:
 	
-	-- CS function get_via_restrict_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		-- return et_via_restrict.packages.type_one_side;
+	-- Returns the via restrict objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:	
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side;
+
 	
-	-- CS likewise for electrical device
+	-- Returns the via restrict objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side;
+
 
 	
 	
@@ -184,7 +196,6 @@ package et_device_query_board is
 		face			: in type_face)
 		return type_keepout;
 
-	-- CS likewise for electrical device
 
 
 	

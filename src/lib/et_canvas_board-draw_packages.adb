@@ -63,6 +63,7 @@ with et_fill_zones.packages;		use et_fill_zones.packages;
 with et_route_restrict;				
 with et_route_restrict.packages;
 with et_via_restrict;
+with et_via_restrict.packages;
 with et_stop_mask;
 with et_stencil;
 with et_silkscreen;
@@ -1714,7 +1715,8 @@ is
 		
 			objects : type_one_side;
 			layer : type_signal_layer;			
-	
+
+			
 			procedure draw is
 
 				procedure query_line (c : in pac_route_restrict_lines.cursor) is
@@ -1829,225 +1831,126 @@ is
 		-- VIA RESTRICT
 		procedure draw_via_restrict is 
 			use et_via_restrict;
+			use et_via_restrict.packages;
 
-			-- LINES
 			use pac_via_restrict_lines;			
-			line : type_via_restrict_line;
-
-			procedure draw_line (f : in type_face) is begin
-				if via_restrict_enabled (f, bottom_layer) then
-				
-					if f = face then
-						rotate_by (line, get_rotation (package_position));
-						
-						if flipped then mirror (line, Y); end if;
-						
-						move_by (line, to_distance_relative (package_position.place));
-						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, to_line_fine (line), via_restrict_line_width, self.frame_height);
-					end if;
-
-				end if;
-			end draw_line;
-
-			
-			procedure query_line_top (c : in pac_via_restrict_lines.cursor) is begin
-				line := element (c);
-				set_destination;
-				draw_line (destination);
-			end query_line_top;
-
-			
-			procedure query_line_bottom (c : in pac_via_restrict_lines.cursor) is begin
-				line := element (c);
-				set_destination (INVERSE);
-				draw_line (destination);
-			end query_line_bottom;
-
-			
-			-- ARCS
 			use pac_via_restrict_arcs;
-			arc : type_via_restrict_arc;
-
-			procedure draw_arc (f : in type_face) is begin
-				if via_restrict_enabled (f, bottom_layer) then
-				
-					if f = face then
-						rotate_by (arc, get_rotation (package_position));
-						
-						if flipped then mirror (arc, Y); end if;
-						
-						move_by (arc, to_distance_relative (package_position.place));
-						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, to_arc_fine (arc), via_restrict_line_width, self.frame_height);
-					end if;
-
-				end if;
-			end draw_arc;
-
-			
-			procedure query_arc_top (c : in pac_via_restrict_arcs.cursor) is begin
-				arc := element (c);
-				set_destination;
-				draw_arc (destination);
-			end query_arc_top;
-
-			
-			procedure query_arc_bottom (c : in pac_via_restrict_arcs.cursor) is begin
-				arc := element (c);
-				set_destination (INVERSE);
-				draw_arc (destination);
-			end query_arc_bottom;
-
-			
-			-- CIRCLES
 			use pac_via_restrict_circles;
-			circle : type_via_restrict_circle;
-
-			procedure draw_circle (f : in type_face) is begin
-				if via_restrict_enabled (f, bottom_layer) then
-				
-					if f = face then
-						rotate_by (circle, get_rotation (package_position));
-						
-						if flipped then mirror (circle, Y); end if;
-						
-						move_by (circle, to_distance_relative (package_position.place));
-						set_line_width (context.cr, type_view_coordinate (circle.width));
-						draw_circle (in_area, context, circle, NO, via_restrict_line_width, self.frame_height);
-						-- NO means circle is not filled
-					end if;
-
-				end if;
-			end draw_circle;
-
-			
-			procedure query_circle_top (c : in pac_via_restrict_circles.cursor) is begin
-				circle := element (c);
-				set_destination;
-				draw_circle (destination);
-			end query_circle_top;
-
-			
-			procedure query_circle_bottom (c : in pac_via_restrict_circles.cursor) is begin
-				circle := element (c);
-				set_destination (INVERSE);
-				draw_circle (destination);
-			end query_circle_bottom;
-
-			
-			-- FILL ZONES
 			use pac_via_restrict_zones;
-			polygon : type_via_restrict_zone;
-
-			procedure draw_contour (f : in type_face) is 
-				drawn : boolean := false;
-			begin
-				if via_restrict_enabled (f, bottom_layer) then
-				
-					if f = face then
-						rotate_by (polygon, get_rotation (package_position));
-						
-						if flipped then mirror (polygon, Y); end if;
-						
-						move_by (polygon, to_distance_relative (package_position.place));
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> polygon,
-							filled	=> YES,
-							width	=> via_restrict_line_width,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-
-					end if;
-				end if;
-			end draw_contour;
-
-			
-			procedure query_zone_top (c : in pac_via_restrict_zones.cursor) is begin
-				polygon := element (c);
-				set_destination;
-				draw_contour (destination);
-			end query_zone_top;
-
-			
-			procedure query_zone_bottom (c : in pac_via_restrict_zones.cursor) is begin
-				polygon := element (c);
-				set_destination (INVERSE);
-				draw_contour (destination);
-			end query_zone_bottom;
-
-			
-			-- CUTOUTS
 			use pac_via_restrict_cutouts;
-			cutout : type_via_restrict_cutout;
-
-			procedure draw_cutout (f : in type_face) is 
-				drawn : boolean := false;
-			begin
-				if via_restrict_enabled (f, bottom_layer) then
-				
-					if f = face then
-						rotate_by (cutout, get_rotation (package_position));
-						
-						if flipped then mirror (cutout, Y); end if;
-						
-						move_by (cutout, to_distance_relative (package_position.place));
-
-						set_color_background (context.cr);
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> cutout,
-							filled	=> YES,
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-					
-					end if;
-				end if;
-			end draw_cutout;
 			
-			procedure query_cutout_top (c : in pac_via_restrict_cutouts.cursor) is begin
-				cutout := element (c);
-				set_destination;
-				draw_cutout (destination);
-			end query_cutout_top;
+			objects : type_one_side;
+			layer : type_signal_layer;			
 
-			procedure query_cutout_bottom (c : in pac_via_restrict_cutouts.cursor) is begin
-				cutout := element (c);
-				set_destination (INVERSE);
-				draw_cutout (destination);
-			end query_cutout_bottom;
+			
+			procedure draw is
 
+				procedure query_line (c : in pac_via_restrict_lines.cursor) is
+					line : type_via_restrict_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
+					draw_line (
+						area	=> in_area, 
+						context	=> context, 
+						line	=> to_line_fine (line),
+						width	=> line.width, 
+						height	=> self.frame_height);
+				end query_line;
 
+				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
+					arc : type_via_restrict_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					draw_arc (
+						area	=> in_area, 
+						context	=> context, 
+						arc		=> to_arc_fine (arc),
+						width	=> arc.width, 
+						height	=> self.frame_height);
+				end query_arc;
+
+				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
+					circle : type_via_restrict_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					draw_circle (
+						area	=> in_area, 
+						context	=> context, 
+						circle	=> circle,
+						width	=> circle.width, 
+						filled	=> NO,
+						height	=> self.frame_height);
+				end query_circle;
+
+				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
+					zone : type_via_restrict_zone renames element (c);
+					drawn : boolean := false;
+				begin
+					draw_contour (
+						area	=> in_area, 
+						context	=> context, 
+						contour	=> zone,
+						width	=> via_restrict_line_width, 
+						filled	=> YES,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+				end query_zone;
+
+				procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
+					cutout : type_via_restrict_cutout renames element (c);
+					drawn : boolean := false;
+				begin					
+					draw_contour (
+						area	=> in_area, 
+						context	=> context, 
+						contour	=> cutout,
+						width	=> via_restrict_line_width, 
+						filled	=> NO,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+				end query_cutout;
+				
+			begin
+				objects.lines.iterate (query_line'access);
+				objects.arcs.iterate (query_arc'access);
+				objects.circles.iterate (query_circle'access);
+
+				set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+				objects.zones.iterate (query_zone'access);
+				objects.cutouts.iterate (query_cutout'access);				
+			end draw;
+			
 			
 		begin -- draw_via_restrict
 			set_color_via_restrict (context.cr, brightness);
-			set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+			-- The color is in all restrict layers the same.
 			
-			-- lines
-			element (package_cursor).via_restrict.top.lines.iterate (query_line_top'access);
-			element (package_cursor).via_restrict.bottom.lines.iterate (query_line_bottom'access);
-			
-			-- arcs
-			element (package_cursor).via_restrict.top.arcs.iterate (query_arc_top'access);
-			element (package_cursor).via_restrict.bottom.arcs.iterate (query_arc_bottom'access);
+			if electric then
+				layer := face_to_layer (TOP);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_electric, OUTER_TOP);
+					draw;
+				end if;
 
-			-- circles
-			element (package_cursor).via_restrict.top.circles.iterate (query_circle_top'access);
-			element (package_cursor).via_restrict.bottom.circles.iterate (query_circle_bottom'access);
+				layer := face_to_layer (BOTTOM);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_electric, OUTER_BOTTOM);
+					draw;
+				end if;
 
-			-- zones
-			element (package_cursor).via_restrict.top.zones.iterate (query_zone_top'access);
-			element (package_cursor).via_restrict.bottom.zones.iterate (query_zone_bottom'access);
+			else
+				layer := face_to_layer (TOP);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_non_electric, OUTER_TOP);
+					draw;
+				end if;
 
-			-- cutouts
-			element (package_cursor).via_restrict.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).via_restrict.bottom.cutouts.iterate (query_cutout_bottom'access);
+				layer := face_to_layer (BOTTOM);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_non_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+			end if;					
 		end draw_via_restrict;
 
 		

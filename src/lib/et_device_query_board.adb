@@ -340,7 +340,69 @@ package body et_device_query_board is
 	
 
 	
+-- VIA RESTRICT
+	
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side
+	is		
+		restrict : et_via_restrict.packages.type_one_side; -- to be returned
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+				
+			if layer_category /= INNER then -- via restrict objects exist in outer layers only
+				if device.flipped = NO then
+					restrict := get_via_restrict_objects (packge, layer_category);
+					rotate_via_restrict_objects (restrict, + device.position.rotation);
+				else
+					restrict := get_via_restrict_objects (packge, invert_category (layer_category));
+					mirror_via_restrict_objects (restrict);
+					rotate_via_restrict_objects (restrict, - device.position.rotation);
+				end if;
 
+				move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
+			end if;
+		end if;
+
+		return restrict;
+	end get_via_restrict_objects;
+
+
+
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side
+	is
+		restrict : et_via_restrict.packages.type_one_side; -- to be returned
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
+	begin
+		if layer_category /= INNER then -- via restrict objects exist in outer layers only
+			if device.flipped = NO then
+				restrict := get_via_restrict_objects (packge, layer_category);
+				rotate_via_restrict_objects (restrict, + device.position.rotation);
+			else
+				restrict := get_via_restrict_objects (packge, invert_category (layer_category));
+				mirror_via_restrict_objects (restrict);
+				rotate_via_restrict_objects (restrict, - device.position.rotation);
+			end if;
+
+			move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
+		end if;
+
+		return restrict;
+	end get_via_restrict_objects;
+	
+
+
+	
 -- KEEPOUT
 	
 	function get_keepout_objects (
