@@ -40,6 +40,111 @@ with et_contour_to_polygon;
 
 package body et_device_query_board is
 
+	use et_symbols;
+	use pac_geometry_2;
+
+	
+-- CONDUCTORS
+	
+
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects
+	is
+		conductors : type_conductor_objects; -- to be returned
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+
+			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+				if device.flipped = NO then
+					conductors := get_conductor_objects (packge, layer_category);
+					rotate_conductor_objects (conductors, + device.position.rotation);
+				else
+					conductors := get_conductor_objects (packge, invert_category (layer_category));
+					mirror_conductor_objects (conductors);
+					rotate_conductor_objects (conductors, - device.position.rotation);
+				end if;
+
+				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+			end if;
+		end if;
+		
+		return conductors;
+	end get_conductor_objects;
+	
+
+	
+	function get_conductor_polygons (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
+		use et_contour_to_polygon;
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		conductors : type_conductor_objects; -- non-electrical
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+
+			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+				if device.flipped = NO then
+					conductors := get_conductor_objects (packge, layer_category);
+					rotate_conductor_objects (conductors, + device.position.rotation);
+				else
+					conductors := get_conductor_objects (packge, invert_category (layer_category));
+					mirror_conductor_objects (conductors);
+					rotate_conductor_objects (conductors, - device.position.rotation);
+				end if;
+
+				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+
+				-- convert conductor objects to polygons:
+				result := to_polygons (conductors, fill_tolerance);
+			end if;
+		end if;
+		
+		return result;
+	end get_conductor_polygons;
+
+	
+	
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects
+	is
+		conductors : type_conductor_objects; -- to be returned
+		
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+	begin
+		-- lines, arcs, circles, texts
+		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+			if device.flipped = NO then
+				conductors := get_conductor_objects (packge, layer_category);
+				rotate_conductor_objects (conductors, + device.position.rotation);
+			else
+				conductors := get_conductor_objects (packge, invert_category (layer_category));
+				mirror_conductor_objects (conductors);
+				rotate_conductor_objects (conductors, - device.position.rotation);
+			end if;
+
+			move_conductor_objects (conductors, offset);
+		end if;
+
+		return conductors;
+	end get_conductor_objects;
+
+
 
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
@@ -53,6 +158,7 @@ package body et_device_query_board is
 		
 		offset : constant type_distance_relative := to_distance_relative (device.position.place);
 
+		use pac_contours;
 		terminals	: pac_contour_list.list;
 		
 		conductors	: type_conductor_objects; -- non-electrical
@@ -102,108 +208,103 @@ package body et_device_query_board is
 	end get_conductor_polygons;
 	
 
-	function get_conductor_polygons (
+
+	
+-- ROUTE RESTRICT
+	
+	function get_route_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side
+	is		
+		restrict : et_route_restrict.packages.type_one_side; -- to be returned
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+				
+			if layer_category /= INNER then -- route restrict objects exist in outer layers only
+				if device.flipped = NO then
+					restrict := get_route_restrict_objects (packge, layer_category);
+					rotate_route_restrict_objects (restrict, + device.position.rotation);
+				else
+					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+					mirror_route_restrict_objects (restrict);
+					rotate_route_restrict_objects (restrict, - device.position.rotation);
+				end if;
+
+				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+			end if;
+		end if;
+
+		return restrict;
+	end get_route_restrict_objects;
+
+	
+
+	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
-		
-		use et_symbols;
-		use et_contour_to_polygon;
-		
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		offset : type_distance_relative;
-		conductors	: type_conductor_objects; -- non-electrical
+		
+		restrict : et_route_restrict.packages.type_one_side;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
-
-			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+				
+			if layer_category /= INNER then -- route restrict objects exist in outer layers only
 				if device.flipped = NO then
-					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, + device.position.rotation);
+					restrict := get_route_restrict_objects (packge, layer_category);
+					rotate_route_restrict_objects (restrict, + device.position.rotation);
 				else
-					conductors := get_conductor_objects (packge, invert_category (layer_category));
-					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, - device.position.rotation);
+					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+					mirror_route_restrict_objects (restrict);
+					rotate_route_restrict_objects (restrict, - device.position.rotation);
 				end if;
 
-				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
 
-				-- convert conductor objects to polygons:
-				result := to_polygons (conductors, fill_tolerance);
+				-- convert restrict objects to polygons:
+				result := to_polygons (restrict, fill_tolerance);
 			end if;
 		end if;
 		
 		return result;
-	end get_conductor_polygons;
-
+	end get_route_restrict_polygons;
 	
-	function get_conductor_objects (
-		device_cursor	: in pac_devices_sch.cursor;
-		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects
-	is
-		conductors : type_conductor_objects; -- to be returned
 
-		use et_symbols;
-		
-		device : type_device_sch renames element (device_cursor);
-		packge : pac_package_models.cursor;
-		offset : type_distance_relative;
-	begin
-		if device.appearance = PCB then
-			packge := get_package_model (device_cursor);
 
-			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
-				if device.flipped = NO then
-					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, + device.position.rotation);
-				else
-					conductors := get_conductor_objects (packge, invert_category (layer_category));
-					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, - device.position.rotation);
-				end if;
-
-				move_conductor_objects (conductors, to_distance_relative (device.position.place));
-			end if;
-		end if;
-		
-		return conductors;
-	end get_conductor_objects;
-	
-	
-	function get_conductor_objects (
+	function get_route_restrict_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects
+		return et_route_restrict.packages.type_one_side
 	is
-		conductors : type_conductor_objects; -- to be returned
-		
+		restrict : et_route_restrict.packages.type_one_side; -- to be returned
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+
+		rotation : type_rotation renames device.position.rotation;
 	begin
-		-- lines, arcs, circles, texts
-		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			if device.flipped = NO then
-				conductors := get_conductor_objects (packge, layer_category);
-				rotate_conductor_objects (conductors, + device.position.rotation);
+				restrict := get_route_restrict_objects (packge, layer_category);
+				rotate_route_restrict_objects (restrict, + device.position.rotation);
 			else
-				conductors := get_conductor_objects (packge, invert_category (layer_category));
-				mirror_conductor_objects (conductors);
-				rotate_conductor_objects (conductors, - device.position.rotation);
+				restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+				mirror_route_restrict_objects (restrict);
+				rotate_route_restrict_objects (restrict, - device.position.rotation);
 			end if;
 
-			move_conductor_objects (conductors, offset);
+			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
 		end if;
 
-		return conductors;
-	end get_conductor_objects;
-
+		return restrict;
+	end get_route_restrict_objects;
 
 	
 	function get_route_restrict_polygons (
@@ -239,17 +340,17 @@ package body et_device_query_board is
 	
 
 	
+
+-- KEEPOUT
+	
 	function get_keepout_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
 		return type_keepout
 	is
-		use et_symbols;
 		result : type_keepout;
-
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-
 		rotation : type_rotation;
 	begin
 		if device.appearance = PCB then
@@ -284,6 +385,7 @@ package body et_device_query_board is
 	end get_keepout_objects;
 
 
+	
 	function get_keepout_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
@@ -324,11 +426,14 @@ package body et_device_query_board is
 	end get_keepout_objects;
 
 
+
+	
+-- HOLES
+	
 	function get_holes (
 		device_cursor	: in pac_devices_sch.cursor)
 		return pac_holes.list
 	is
-		use et_symbols;
 		holes : pac_holes.list; -- to be returned
 		
 		device : type_device_sch renames element (device_cursor);
@@ -355,38 +460,12 @@ package body et_device_query_board is
 		return holes;		
 	end get_holes;
 
+
 	
-
-	function get_holes (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_holes.list
-	is
-		holes : pac_holes.list; -- to be returned
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation renames device.position.rotation;
-	begin
-		holes := get_hole_contours (packge);
-				
-		if device.flipped = YES then
-			mirror_holes (holes);
-			rotate_holes (holes, - rotation);
-		else
-			rotate_holes (holes, + rotation);
-		end if;
-		
-		move_holes (holes, to_distance_relative (device.position.place));
-		return holes;
-	end get_holes;
-
-
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
 		return pac_polygon_list.list
 	is
-		use et_symbols;
 		result : pac_polygon_list.list;
 		holes : pac_holes.list;
 		
@@ -414,6 +493,32 @@ package body et_device_query_board is
 		end if;
 		return result;
 	end get_hole_polygons;
+	
+
+	
+	function get_holes (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_holes.list
+	is
+		holes : pac_holes.list; -- to be returned
+		
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
+	begin
+		holes := get_hole_contours (packge);
+				
+		if device.flipped = YES then
+			mirror_holes (holes);
+			rotate_holes (holes, - rotation);
+		else
+			rotate_holes (holes, + rotation);
+		end if;
+		
+		move_holes (holes, to_distance_relative (device.position.place));
+		return holes;
+	end get_holes;
 
 
 	

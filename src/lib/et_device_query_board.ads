@@ -38,6 +38,7 @@
 
 --with et_terminals;
 with et_route_restrict.packages;		use et_route_restrict.packages;
+with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_keepout;						use et_keepout;
 
 with et_symbols;						
@@ -52,28 +53,22 @@ with et_pcb_contour;					use et_pcb_contour;
 
 package et_device_query_board is
 
-	use pac_geometry_2;
 	use pac_polygons;
-	use pac_contours;
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 
 	
--- CONDUCTOR OBJECTS:
+-- CONDUCTORS
 	
-	-- Returns the outlines of conductor objects of the non-electrical
-	-- device (according to its position and rotation in the board) 
-	-- as a list of polygons.
-	-- Conductor objects are: terminals, texts, lines, arcs, circles.
-	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
-	--  edge of a conductor circle is converted to a polygon.
-	-- Adresses only those objects which are affected by
-	-- the given layer category:
-	function get_conductor_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
-		return pac_polygon_list.list;
+	-- Returns the conductor objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects;
 
+	
 	-- Returns the outlines of conductor objects of the electrical
 	-- device (according to its position and rotation in the board) 
 	-- as a list of polygons.
@@ -88,13 +83,6 @@ package et_device_query_board is
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return pac_polygon_list.list;
 
-	-- Returns the conductor objects of the given electrical device
-	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
-	function get_conductor_objects (
-		device_cursor	: in pac_devices_sch.cursor;
-		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects;
 	
 	-- Returns the conductor objects of the given non-electrical device
 	-- (according to its flip status, position and rotation in the board) 
@@ -105,8 +93,53 @@ package et_device_query_board is
 		return type_conductor_objects;
 
 
+	-- Returns the outlines of conductor objects of the non-electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- Conductor objects are: terminals, texts, lines, arcs, circles.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a conductor circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category:
+	function get_conductor_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
+		return pac_polygon_list.list;
+
+	
 	
 -- ROUTE RESTRICT:
+
+	-- Returns the route restrict objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:	
+	function get_route_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side;
+
+	
+	-- Returns the outlines of route restrict objects of the electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category:
+	function get_route_restrict_polygons (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list;
+
+	
+	-- Returns the route restrict objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:	
+	function get_route_restrict_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side;
+
 	
 	-- Returns the outlines of route restrict objects of the non-electrical
 	-- device (according to its position and rotation in the board) 
@@ -120,13 +153,6 @@ package et_device_query_board is
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
-	-- CS function get_route_restrict_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--layer_category	: in type_signal_layer_category)
-		-- return et_route_restrict.packages.type_one_side;
-	
-	-- CS likewise for electrical device
-
 	
 -- VIA RESTRICT:
 	
@@ -137,6 +163,7 @@ package et_device_query_board is
 	
 	-- CS likewise for electrical device
 
+	
 	
 -- KEEPOUT:
 	
@@ -173,13 +200,6 @@ package et_device_query_board is
 	function get_holes (
 		device_cursor	: in pac_devices_sch.cursor)
 		return pac_holes.list;
-
-	
-	-- Returns the outlines of holes of the non-electrical device
-	-- (according to its position and rotation in the board):
-	function get_holes (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_holes.list;
 	
 
 	-- Returns the outlines of holes of the electrical device
@@ -189,6 +209,13 @@ package et_device_query_board is
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
 		return pac_polygon_list.list;
+
+
+	-- Returns the outlines of holes of the non-electrical device
+	-- (according to its position and rotation in the board):
+	function get_holes (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_holes.list;
 
 	
 	-- Returns the outlines of holes of the non-electrical device
