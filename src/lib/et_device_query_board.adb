@@ -539,10 +539,38 @@ package body et_device_query_board is
 		return type_stencil
 	is
 		result : type_stencil;
+
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
 	begin
-		-- CS
+		case face is
+			when TOP =>
+				if device.flipped = NO then
+					result := get_stencil_objects (packge, TOP);
+					rotate_stencil_objects (result, + rotation);
+				else
+					result := get_stencil_objects (packge, BOTTOM);
+					mirror_stencil_objects (result);
+					rotate_stencil_objects (result, - rotation);
+				end if;
+
+			when BOTTOM =>
+				if device.flipped = NO then
+					result := get_stencil_objects (packge, BOTTOM);
+					rotate_stencil_objects (result, + rotation);
+				else
+					result := get_stencil_objects (packge, TOP);
+					mirror_stencil_objects (result);
+					rotate_stencil_objects (result, - rotation);
+				end if;
+		end case;
+		
+		move_stencil_objects (result, to_distance_relative (device.position.place));
 		return result;
 	end get_stencil_objects;
+
 	
 	
 -- HOLES

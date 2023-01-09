@@ -1420,194 +1420,121 @@ is
 		-- STENCIL / SOLDER CREAM MASK
 		procedure draw_stencil is 
 			use et_stencil;
-			
-			-- LINES
 			use pac_stencil_lines;
-			line : type_stencil_line;
-
-			procedure draw_line (f : in type_face) is begin
-				if stencil_enabled (f) then
-				
-					if f = face then
-						rotate_by (line, get_rotation (package_position));
-						
-						if flipped then mirror (line, Y); end if;
-						
-						move_by (line, to_distance_relative (package_position.place));
-
-						set_color_stencil (context.cr, f, self.scale, brightness);
-						set_line_width (context.cr, type_view_coordinate (line.width));
-						draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
-					end if;
-
-				end if;
-			end draw_line;
-
-			
-			procedure query_line_top (c : in pac_stencil_lines.cursor) is begin
-				line := element (c);
-				set_destination;
-				draw_line (destination);
-			end query_line_top;
-
-			
-			procedure query_line_bottom (c : in pac_stencil_lines.cursor) is begin
-				line := element (c);
-				set_destination (INVERSE);
-				draw_line (destination);
-			end query_line_bottom;
-
-			
-			-- ARCS
 			use pac_stencil_arcs;
-			arc : type_stencil_arc;
-
-			procedure draw_arc (f : in type_face) is begin
-				if stencil_enabled (f) then
-					
-					if f = face then
-						rotate_by (arc, get_rotation (package_position));
-						
-						if flipped then mirror (arc, Y); end if;
-						
-						move_by (arc, to_distance_relative (package_position.place));
-
-						set_color_stencil (context.cr, f, self.scale, brightness);
-						set_line_width (context.cr, type_view_coordinate (arc.width));
-						draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
-					end if;
-					
-				end if;
-			end draw_arc;
-
-			
-			procedure query_arc_top (c : in pac_stencil_arcs.cursor) is begin
-				arc := element (c);
-				set_destination;
-				draw_arc (destination);
-			end query_arc_top;
-
-			
-			procedure query_arc_bottom (c : in pac_stencil_arcs.cursor) is begin
-				arc := element (c);
-				set_destination (INVERSE);
-				draw_arc (destination);
-			end query_arc_bottom;
-
-			
-			-- CIRCLES
 			use pac_stencil_circles;
-
-			procedure draw_circle (
-				circle	: in out type_stencil_circle;
-				f 		: in type_face) 
-			is begin
-				if stencil_enabled (f) then
-					
-					if f = face then
-						rotate_by (circle, get_rotation (package_position));
-						
-						if flipped then mirror (circle, Y); end if;
-						
-						move_by (circle, to_distance_relative (package_position.place));
-
-						set_color_stencil (context.cr, f, self.scale, brightness);
-
-						set_line_width (context.cr, type_view_coordinate (circle.width));
-								
-						draw_circle (in_area, context, circle, NO,  -- not filled
-							circle.width, self.frame_height);
-
-					end if;
-				end if;
-			end draw_circle;
-
-			
-			procedure query_circle_top (c : in pac_stencil_circles.cursor) is 
-				circle : type_stencil_circle := element (c);
-			begin
-				set_destination;
-				draw_circle (circle, destination);
-			end query_circle_top;
-
-			
-			procedure query_circle_bottom (c : in pac_stencil_circles.cursor) is 
-				circle : type_stencil_circle := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_circle (circle, destination);
-			end query_circle_bottom;
-
-			
-			-- CONTOURS
 			use pac_stencil_contours;
+			stencil : type_stencil_both_sides;
+			face : type_face := TOP;
 
-			procedure draw_contour (
-				polygon	: in out type_stencil_contour;
-				f		: in type_face)
-			is 
-				drawn : boolean := false;
-			begin
-				if stencil_enabled (f) then
+
+			procedure draw is
+
+				procedure query_line (c : in pac_stencil_lines.cursor) is
+					drawn : boolean := false;
+					line : type_stencil_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
 					
-					if f = face then
-						rotate_by (polygon, get_rotation (package_position));
-						
-						if flipped then mirror (polygon, Y); end if;
-						
-						move_by (polygon, to_distance_relative (package_position.place));
+					draw_line (
+						area	=> in_area,
+						context	=> context,
+						line	=> to_line_fine (line),
+						width	=> line.width,
+						height	=> self.frame_height);
+					
+				end query_line;
 
-						set_color_stencil (context.cr, f, self.scale, brightness);
+				
+				procedure query_arc (c : in pac_stencil_arcs.cursor) is
+					drawn : boolean := false;
+					arc : type_stencil_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					
+					draw_arc (
+						area	=> in_area,
+						context	=> context,
+						arc		=> to_arc_fine (arc),
+						width	=> arc.width,
+						height	=> self.frame_height);
+					
+				end query_arc;
 
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> polygon,
-							filled	=> YES,
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-
-					end if;
-				end if;
-			end draw_contour;
-
-			
-			procedure query_polygon_top (c : in pac_stencil_contours.cursor) is
-				polygon : type_stencil_contour := element (c);
+				
+				procedure query_circle (c : in pac_stencil_circles.cursor) is
+					drawn : boolean := false;
+					circle : type_stencil_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					
+					draw_circle (
+						area	=> in_area,
+						context	=> context,
+						circle	=> circle,
+						filled	=> NO,
+						width	=> circle.width,
+						height	=> self.frame_height);
+					
+				end query_circle;
+				
+				
+				procedure query_contour (c : pac_stencil_contours.cursor) is
+					drawn : boolean := false;
+				begin
+					draw_contour (
+						area	=> in_area,
+						context	=> context,
+						contour	=> element (c),
+						filled	=> YES,
+						width	=> zero,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+					
+				end query_contour;
+				
+				
 			begin
-				set_destination;
-				draw_contour (polygon, destination);
-			end query_polygon_top;
+				-- top
+				set_color_stencil (context.cr, TOP, self.scale, brightness);
+				stencil.top.lines.iterate (query_line'access);
+				stencil.top.arcs.iterate (query_arc'access);
+				stencil.top.circles.iterate (query_circle'access);
+				stencil.top.contours.iterate (query_contour'access);
 
-			
-			procedure query_polygon_bottom (c : in pac_stencil_contours.cursor) is
-				polygon : type_stencil_contour := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_contour (polygon, destination);
-			end query_polygon_bottom;
-
+				-- bottom
+				set_color_stencil (context.cr, BOTTOM, self.scale, brightness);
+				stencil.bottom.lines.iterate (query_line'access);
+				stencil.bottom.arcs.iterate (query_arc'access);
+				stencil.bottom.circles.iterate (query_circle'access);
+				stencil.bottom.contours.iterate (query_contour'access);
+			end draw;
 
 			
 		begin -- draw_stencil
-		
-			-- lines
-			element (package_cursor).stencil.top.lines.iterate (query_line_top'access);
-			element (package_cursor).stencil.bottom.lines.iterate (query_line_bottom'access);
+			if electric then
+				if stencil_enabled (face) then
+					stencil.top := get_stencil_objects (device_electric, TOP);
+				end if;
 
-			-- arcs
-			element (package_cursor).stencil.top.arcs.iterate (query_arc_top'access);
-			element (package_cursor).stencil.bottom.arcs.iterate (query_arc_bottom'access);
+				face := BOTTOM;
+				if stencil_enabled (face) then
+					stencil.bottom := get_stencil_objects (device_electric, BOTTOM);
+				end if;
 
-			-- circles
-			element (package_cursor).stencil.top.circles.iterate (query_circle_top'access);
-			element (package_cursor).stencil.bottom.circles.iterate (query_circle_bottom'access);
+				
+			else -- non-electrical device
+				if stencil_enabled (face) then
+					stencil.top := get_stencil_objects (device_non_electric, TOP);
+				end if;
 
-			-- polygons
-			element (package_cursor).stencil.top.contours.iterate (query_polygon_top'access);
-			element (package_cursor).stencil.bottom.contours.iterate (query_polygon_bottom'access);
+				face := BOTTOM;
+				if stencil_enabled (face) then
+					stencil.bottom := get_stencil_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
 
+			draw;			
 		end draw_stencil;
 
 
