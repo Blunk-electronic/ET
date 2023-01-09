@@ -266,7 +266,6 @@ package body et_pcb_rw.device_packages is
 			use pac_stop_arcs;
 			use pac_stop_circles;
 			use pac_stop_polygons;
-			use pac_stop_cutouts;
 		begin
 			section_mark (section_stop_mask, HEADER);
 
@@ -276,7 +275,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stop_mask.top.arcs, write_arc'access);
 			iterate (packge.stop_mask.top.circles, write_circle'access);
 			iterate (packge.stop_mask.top.polygons, write_polygon'access);
-			iterate (packge.stop_mask.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
@@ -285,7 +283,6 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stop_mask.bottom.arcs, write_arc'access);
 			iterate (packge.stop_mask.bottom.circles, write_circle'access);
 			iterate (packge.stop_mask.bottom.polygons, write_polygon'access);			
-			iterate (packge.stop_mask.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stop_mask, FOOTER);			

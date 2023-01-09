@@ -1354,7 +1354,6 @@ is
 
 		use pac_silk_cutouts;
 		use pac_doc_cutouts;
-		use pac_stop_cutouts;
 		use pac_keepout_cutouts;
 
 		use pac_route_restrict_cutouts;
@@ -1652,7 +1651,6 @@ is
 			iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
 			iterate (element (module_cursor).board.stop_mask.top.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.stop_mask.top.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.stop_mask.top.texts, write_text'access);			
 			section_mark (section_top, FOOTER);
 
@@ -1661,7 +1659,6 @@ is
 			iterate (element (module_cursor).board.stop_mask.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.circles, write_circle'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.cutouts, write_cutout'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 

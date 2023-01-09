@@ -217,6 +217,24 @@ package et_device_query_board is
 		return type_stencil;
 
 
+-- STOPMASK:
+	
+	-- Returns the stopmask objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	--function get_stopmask_objects (
+		--device_cursor	: in pac_devices_sch.cursor;
+		--face			: in type_face)
+		--return type_stopmask;
+
+
+	---- Returns the stopmask objects of the given non-electrical device
+	---- (according to its flip status, position and rotation in the board) 
+	---- Adresses only those objects affected by the given face:
+	--function get_stopmask_objects (
+		--device_cursor	: in pac_devices_non_electric.cursor;
+		--face			: in type_face)
+		--return type_stopmask;
 	
 	-- CS likewise for stopmask, assy dock, silkscreen
 

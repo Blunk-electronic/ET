@@ -1306,57 +1306,6 @@ is
 				draw_contour (polygon, destination);
 			end query_polygon_bottom;
 
-
-			-- CUTOUTS
-			use pac_stop_cutouts;
-
-			procedure draw_cutout (
-				cutout	: in out type_contour;
-				f		: in type_face)
-			is 
-				drawn : boolean := false;
-			begin
-				if stop_mask_enabled (f) then
-					
-					if f = face then
-						rotate_by (cutout, get_rotation (package_position));
-						
-						if flipped then mirror (cutout, Y); end if;
-						
-						move_by (cutout, to_distance_relative (package_position.place));
-
-						set_color_background (context.cr);
-
-						draw_contour (
-							area	=> in_area,
-							context	=> context,
-							contour	=> cutout,
-							filled	=> YES,
-							width	=> zero,
-							height	=> self.frame_height,
-							drawn	=> drawn);
-			
-					end if;
-				end if;				
-			end draw_cutout;
-
-			
-			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
-				cutout : type_contour := element (c);
-			begin
-				set_destination;
-				draw_cutout (cutout, destination);
-			end query_cutout_top;
-
-			
-			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
-				cutout : type_contour := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_cutout (cutout, destination);
-			end query_cutout_bottom;
-
-
 			-- TEXTS
 			use pac_texts_fab_with_content;
 			
@@ -1405,10 +1354,6 @@ is
 			-- polygons
 			element (package_cursor).stop_mask.top.polygons.iterate (query_polygon_top'access);
 			element (package_cursor).stop_mask.bottom.polygons.iterate (query_polygon_bottom'access);
-
-			-- cutouts
-			element (package_cursor).stop_mask.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).stop_mask.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
 			element (package_cursor).stop_mask.top.texts.iterate (query_text_top'access);

@@ -3540,17 +3540,6 @@ is
 							new_item	=> (contour with null record));
 					end;
 
-					procedure append_stop_cutout_top is begin
-						pac_stop_cutouts.append (
-							container	=> module.board.stop_mask.top.cutouts,
-							new_item	=> contour);
-					end;
-
-					procedure append_stop_cutout_bottom is begin
-						pac_stop_cutouts.append (
-							container	=> module.board.stop_mask.bottom.cutouts,
-							new_item	=> contour);
-					end;
 					
 				begin -- do_it
 					case face is
@@ -3561,9 +3550,6 @@ is
 												
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_top;
-
-								when LAYER_CAT_STOP =>
-									append_stop_cutout_top;
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_top;
@@ -3578,9 +3564,6 @@ is
 
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_bottom;
-									
-								when LAYER_CAT_STOP =>
-									append_stop_cutout_bottom;
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_bottom;

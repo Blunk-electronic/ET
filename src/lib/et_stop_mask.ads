@@ -74,7 +74,7 @@ package et_stop_mask is
 	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
-	package pac_stop_cutouts is new doubly_linked_lists (type_contour);
+
 	
 	-- This is the type for stop mask objects in general.
 	-- This has nothing to do with the stop mask of pads.
@@ -83,7 +83,6 @@ package et_stop_mask is
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
 		polygons	: pac_stop_polygons.list;
-		cutouts		: pac_stop_cutouts.list;
 	end record;
 
 	

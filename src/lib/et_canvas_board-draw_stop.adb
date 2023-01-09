@@ -54,7 +54,6 @@ is
 	use pac_stop_arcs;
 	use pac_stop_circles;
 	use pac_stop_polygons;
-	use pac_stop_cutouts;
 	use et_pcb.pac_text_placeholders;
 	use pac_stop_mask_texts;
 
@@ -153,26 +152,7 @@ is
 				-- CS hatching ?
 		end case;
 	end query_polygon;
-
 	
-	procedure query_cutout (c : in pac_stop_cutouts.cursor) is 
-		drawn : boolean := false;
-	begin
-		save (context.cr);		
-		set_color_background (context.cr);
-
-		draw_contour (
-			area	=> in_area,
-			context	=> context,
-			contour	=> element (c),
-			filled	=> YES,
-			width	=> zero,
-			height	=> self.frame_height,
-			drawn	=> drawn);
-
-		restore (context.cr);
-	end query_cutout;
-
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		v_text : type_vector_text;
@@ -229,7 +209,6 @@ is
 				iterate (module.board.stop_mask.top.arcs, query_arc'access);
 				iterate (module.board.stop_mask.top.circles, query_circle'access);
 				iterate (module.board.stop_mask.top.polygons, query_polygon'access);
-				iterate (module.board.stop_mask.top.cutouts, query_cutout'access);
 				iterate (module.board.stop_mask.top.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.top.texts, query_text'access);
 
@@ -238,7 +217,6 @@ is
 				iterate (module.board.stop_mask.bottom.arcs, query_arc'access);
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
 				iterate (module.board.stop_mask.bottom.polygons, query_polygon'access);
-				iterate (module.board.stop_mask.bottom.cutouts, query_cutout'access);
 				iterate (module.board.stop_mask.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.bottom.texts, query_text'access);
 
