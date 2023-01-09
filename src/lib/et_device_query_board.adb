@@ -581,8 +581,38 @@ package body et_device_query_board is
 		return type_stopmask
 	is
 		result : type_stopmask;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation;
 	begin
-		-- CS
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+
+			case face is
+				when TOP =>
+					if device.flipped = NO then
+						result := get_stopmask_objects (packge, TOP);
+						rotate_stopmask_objects (result, + rotation);
+					else
+						result := get_stopmask_objects (packge, BOTTOM);
+						mirror_stopmask_objects (result);
+						rotate_stopmask_objects (result, - rotation);
+					end if;
+
+				when BOTTOM =>
+					if device.flipped = NO then
+						result := get_stopmask_objects (packge, BOTTOM);
+						rotate_stopmask_objects (result, + rotation);
+					else
+						result := get_stopmask_objects (packge, TOP);
+						mirror_stopmask_objects (result);
+						rotate_stopmask_objects (result, - rotation);
+					end if;
+			end case;
+
+			move_stopmask_objects (result, to_distance_relative (device.position.place));			
+		end if;
 
 		return result;
 	end get_stopmask_objects;
@@ -594,10 +624,37 @@ package body et_device_query_board is
 		return type_stopmask
 	is
 		result : type_stopmask;
-	begin
-		-- CS
 
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
+	begin
+		case face is
+			when TOP =>
+				if device.flipped = NO then
+					result := get_stopmask_objects (packge, TOP);
+					rotate_stopmask_objects (result, + rotation);
+				else
+					result := get_stopmask_objects (packge, BOTTOM);
+					mirror_stopmask_objects (result);
+					rotate_stopmask_objects (result, - rotation);
+				end if;
+
+			when BOTTOM =>
+				if device.flipped = NO then
+					result := get_stopmask_objects (packge, BOTTOM);
+					rotate_stopmask_objects (result, + rotation);
+				else
+					result := get_stopmask_objects (packge, TOP);
+					mirror_stopmask_objects (result);
+					rotate_stopmask_objects (result, - rotation);
+				end if;
+		end case;
+		
+		move_stopmask_objects (result, to_distance_relative (device.position.place));
 		return result;
+
 	end get_stopmask_objects;
 	
 	

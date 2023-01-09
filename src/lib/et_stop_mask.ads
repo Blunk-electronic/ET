@@ -91,7 +91,7 @@ package et_stop_mask is
 
 
 	-- for texts in conductor layer to be exposed:
-	type type_stop_mask_text is new type_text_fab_with_content with record
+	type type_stop_mask_text is new type_text_fab_with_content with record -- CS rename to type_stop_text
 		vectors	: type_vector_text;
 	end record;
 
@@ -105,13 +105,28 @@ package et_stop_mask is
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
-		polygons	: pac_stop_polygons.list;
+		polygons	: pac_stop_polygons.list; -- CS rename to contours
 		texts		: pac_stop_mask_texts.list;
 	end record;
 
 	
 
+	-- Mirrors a list of stopmask objects along the given axis:
+	procedure mirror_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		axis		: in type_axis_2d := Y);
 
+	-- Rotates a list of stopmask objects by the given angle:
+	procedure rotate_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		angle		: in type_rotation);
+
+	-- Moves a list of stopmask objects by the given offset:
+	procedure move_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		offset		: in type_distance_relative);
+
+	
 	-- Logs the properties of the given arc of stop mask
 	procedure arc_stop_mask_properties (
 		face			: in type_face;

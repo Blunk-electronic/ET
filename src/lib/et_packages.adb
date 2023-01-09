@@ -506,6 +506,21 @@ package body et_packages is
 	end get_stencil_objects;
 
 
+	function get_stopmask_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return et_stop_mask.type_stopmask
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case face is
+			when TOP	=> return packge.stop_mask.top;
+			when BOTTOM	=> return packge.stop_mask.bottom;
+		end case;
+	end get_stopmask_objects;
+	
+
+
 	
 	function to_string (flipped : in type_flipped) return string is begin
 		return to_lower (type_flipped'image (flipped));

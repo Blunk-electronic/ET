@@ -64,7 +64,10 @@ with et_route_restrict;
 with et_route_restrict.packages;
 with et_via_restrict;
 with et_via_restrict.packages;
+
 with et_stop_mask;
+with et_stop_mask.packages;
+
 with et_stencil;
 with et_silkscreen;
 with et_assy_doc;
@@ -1109,238 +1112,142 @@ is
 		-- STOP MASK
 		procedure draw_stop_mask is 
 			use et_stop_mask;
+			use et_stop_mask.packages;
 			
-			-- LINES
 			use pac_stop_lines;
-			--line : type_stop_line;
-
-			--procedure draw_line (f : in type_face) is begin
-				--if stop_mask_enabled (f) then
-				
-					--if f = face then
-						--rotate_by (line, get_rotation (package_position));
-						
-						--if flipped then mirror (line, Y); end if;
-						
-						--move_by (line, to_distance_relative (package_position.place));
-
-						--set_color_stop_mask (context.cr, f, self.scale, brightness);
-						--set_line_width (context.cr, type_view_coordinate (line.width));
-						--draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
-					--end if;
-
-				--end if;
-			--end draw_line;
-
-			
-			--procedure query_line_top (c : in pac_stop_lines.cursor) is begin
-				--line := element (c);
-				--set_destination;
-				--draw_line (destination);
-			--end query_line_top;
-
-			
-			--procedure query_line_bottom (c : in pac_stop_lines.cursor) is begin
-				--line := element (c);
-				--set_destination (INVERSE);
-				--draw_line (destination);
-			--end query_line_bottom;
-
-			
-			-- ARCS
 			use pac_stop_arcs;
-			--arc : type_stop_arc;
-
-			--procedure draw_arc (f : in type_face) is begin
-				--if stop_mask_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (arc, get_rotation (package_position));
-						
-						--if flipped then mirror (arc, Y); end if;
-						
-						--move_by (arc, to_distance_relative (package_position.place));
-
-						--set_color_stop_mask (context.cr, f, self.scale, brightness);
-						--set_line_width (context.cr, type_view_coordinate (arc.width));
-						--draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
-					--end if;
-					
-				--end if;
-			--end draw_arc;
-
-			
-			--procedure query_arc_top (c : in pac_stop_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination;
-				--draw_arc (destination);
-			--end query_arc_top;
-
-			
-			--procedure query_arc_bottom (c : in pac_stop_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination (INVERSE);
-				--draw_arc (destination);
-			--end query_arc_bottom;
-
-			
-			-- CIRCLES
 			use pac_stop_circles;
-
-			--procedure draw_circle (
-				--circle	: in out type_fillable_circle;
-				--f 		: in type_face) 
-			--is begin
-				--if stop_mask_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (circle, get_rotation (package_position));
-						
-						--if flipped then mirror (circle, Y); end if;
-						
-						--move_by (circle, to_distance_relative (package_position.place));
-
-						--set_color_stop_mask (context.cr, f, self.scale, brightness);
-
-						--case circle.filled is
-							--when NO =>
-								--set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								--draw_circle (in_area, context, circle, circle.filled,
-									--circle.border_width, self.frame_height);
-
-							--when YES =>
-								--case circle.fill_style is
-									--when SOLID =>
-										--draw_circle (in_area, context, circle, circle.filled,
-											--zero, self.frame_height);
-
-									--when HATCHED => null; -- CS
-								--end case;
-						--end case;
-						
-					--end if;
-
-				--end if;
-			--end draw_circle;
-
-			
-			--procedure query_circle_top (c : in pac_stop_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination;
-				--draw_circle (circle, destination);
-			--end query_circle_top;
-
-			
-			--procedure query_circle_bottom (c : in pac_stop_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_circle (circle, destination);
-			--end query_circle_bottom;
-
-			
-			-- CONTOURS
 			use pac_stop_polygons;
+			use pac_stop_mask_texts;
 
-			--procedure draw_contour (
-				--polygon	: in out type_contour_non_conductor;
-				--f		: in type_face)
-			--is 
-				--drawn : boolean := false;
-			--begin
-				--if stop_mask_enabled (f) then
+			face : type_face := TOP;
+			stopmask : type_stopmask_both_sides;
+
+
+			procedure draw is
+
+				procedure query_line (c : in pac_stop_lines.cursor) is
+					drawn : boolean := false;
+					line : type_stop_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
 					
-					--if f = face then
-						--rotate_by (polygon, get_rotation (package_position));
-						
-						--if flipped then mirror (polygon, Y); end if;
-						
-						--move_by (polygon, to_distance_relative (package_position.place));
+					draw_line (
+						area	=> in_area,
+						context	=> context,
+						line	=> to_line_fine (line),
+						width	=> line.width,
+						height	=> self.frame_height);
+					
+				end query_line;
 
-						--set_color_stop_mask (context.cr, f, self.scale, brightness);
+				
+				procedure query_arc (c : in pac_stop_arcs.cursor) is
+					drawn : boolean := false;
+					arc : type_stop_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					
+					draw_arc (
+						area	=> in_area,
+						context	=> context,
+						arc		=> to_arc_fine (arc),
+						width	=> arc.width,
+						height	=> self.frame_height);
+					
+				end query_arc;
 
-						--case polygon.fill_style is
-							--when SOLID =>
-								--draw_contour (
-									--area	=> in_area,
-									--context	=> context,
-									--contour	=> polygon,
-									--filled	=> YES,
-									--width	=> zero,
-									--height	=> self.frame_height,
-									--drawn	=> drawn);
-								
-							--when HATCHED =>
-								--set_line_width (context.cr,
-									--type_view_coordinate (polygon.hatching.border_width));
+				
+				procedure query_circle (c : in pac_stop_circles.cursor) is
+					drawn : boolean := false;
+					circle : type_stop_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					
+					draw_circle (
+						area	=> in_area,
+						context	=> context,
+						circle	=> circle,
+						filled	=> NO,
+						width	=> circle.width,
+						height	=> self.frame_height);
+					
+				end query_circle;
+				
+				
+				procedure query_contour (c : pac_stop_polygons.cursor) is
+					drawn : boolean := false;
+				begin
+					draw_contour (
+						area	=> in_area,
+						context	=> context,
+						contour	=> element (c),
+						filled	=> YES,
+						width	=> zero,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+					
+				end query_contour;
+				
 
-								--draw_contour (
-									--area	=> in_area,
-									--context	=> context,
-									--contour	=> polygon,
-									--filled	=> NO,
-									--width	=> polygon.hatching.border_width,
-									--height	=> self.frame_height,
-									--drawn	=> drawn);
-							
-								---- CS hatching ?
-						--end case;
-					--end if;
-				--end if;
-			--end draw_contour;
+				procedure query_text (c : pac_stop_mask_texts.cursor) is
+					text : type_stop_mask_text renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (text.line_width));
+					draw_vector_text (
+						area	=> in_area, 
+						context	=> context, 
+						text	=> text.vectors,
+						width	=> text.line_width, 
+						height	=> self.frame_height);
+				end query_text;
 
+				
+			begin
+				-- top
+				set_color_stop_mask (context.cr, TOP, self.scale, brightness);
+				stopmask.top.lines.iterate (query_line'access);
+				stopmask.top.arcs.iterate (query_arc'access);
+				stopmask.top.circles.iterate (query_circle'access);
+				stopmask.top.polygons.iterate (query_contour'access);
+				stopmask.top.texts.iterate (query_text'access);
+
+				-- bottom
+				set_color_stop_mask (context.cr, BOTTOM, self.scale, brightness);
+				stopmask.bottom.lines.iterate (query_line'access);
+				stopmask.bottom.arcs.iterate (query_arc'access);
+				stopmask.bottom.circles.iterate (query_circle'access);
+				stopmask.bottom.polygons.iterate (query_contour'access);
+				stopmask.bottom.texts.iterate (query_text'access);
+			end draw;
 			
-			--procedure query_polygon_top (c : in pac_stop_polygons.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination;
-				--draw_contour (polygon, destination);
-			--end query_polygon_top;
-
-			
-			--procedure query_polygon_bottom (c : in pac_stop_polygons.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_contour (polygon, destination);
-			--end query_polygon_bottom;
-
-			-- TEXTS
-			--use pac_texts_fab_with_content;
-			
-			--procedure draw_text (
-				--t	: in out type_text_fab_with_content;
-				--f	: in type_face) is
-			--begin
-				--if stop_mask_enabled (f) then
-	
-					--if f = face then
-						--set_color_stop_mask (context.cr, f, self.scale, brightness);
-						--draw_text_with_content (t, f);
-					--end if;
-
-				--end if;
-			--end draw_text;
-
-			--procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
-				--t : type_text_fab_with_content := element (c);
-			--begin
-				--set_destination;
-				--draw_text (t, destination);
-			--end query_text_top;
-
-			--procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
-				--t : type_text_fab_with_content := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_text (t, destination);
-			--end query_text_bottom;
 			
 		begin -- draw_stop_mask
-			null;
-			-- CS
+			if electric then
+				if stop_mask_enabled (face) then
+					stopmask.top := get_stopmask_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stop_mask_enabled (face) then
+					stopmask.bottom := get_stopmask_objects (device_electric, BOTTOM);
+				end if;
+
+				
+			else -- non-electrical device
+				if stop_mask_enabled (face) then
+					stopmask.top := get_stopmask_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stop_mask_enabled (face) then
+					stopmask.bottom := get_stopmask_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;		
 		end draw_stop_mask;
+
 
 		
 		-- STENCIL / SOLDER CREAM MASK

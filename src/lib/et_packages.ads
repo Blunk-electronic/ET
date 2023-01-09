@@ -437,8 +437,16 @@ package et_packages is
 		face			: in type_face)
 		return et_stencil.type_stencil;
 
+
+	-- Returns the contours of stopmask objects of the given package.
+	-- Adresses only those objects affected by the given face:
+	function get_stopmask_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return et_stop_mask.type_stopmask;
+
 	
-	-- CS likewise for stencil, stopmask, assy doc, silkscreen
+	-- CS likewise for assy doc, silkscreen
 	
 	
 	-- To indicate whether a package has been flipped in the board:
