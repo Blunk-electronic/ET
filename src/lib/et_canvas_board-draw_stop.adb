@@ -90,34 +90,15 @@ is
 
 	
 	procedure query_circle (c : in pac_stop_circles.cursor) is begin
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal non-filled circle:
-				set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-				draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					width		=> element (c).border_width,
-					height		=> self.frame_height);
-				
-			when YES =>
-				-- We draw a filled circle with a certain fill style:
-				case element (c).fill_style is
-					when SOLID =>
-						draw_circle (
-							area		=> in_area,
-							context		=> context,
-							circle		=> element (c),
-							filled		=> YES,
-							width		=> zero,
-							height		=> self.frame_height);
-
-					when HATCHED 	=> null; -- CS
-				end case;
-		end case;
+		draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> element (c),
+			filled		=> NO,
+			width		=> element (c).width,
+			height		=> self.frame_height);
 
 	end query_circle;
 
@@ -125,31 +106,14 @@ is
 	procedure query_polygon (c : in pac_stop_polygons.cursor) is
 		drawn : boolean := false;
 	begin
-		case element (c).fill_style is
-			when SOLID =>
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> YES,
-					width	=> zero,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-			when HATCHED =>
-				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
-
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> NO,
-					width	=> element (c).hatching.line_width,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-				-- CS hatching ?
-		end case;
+		draw_contour (
+			area	=> in_area,
+			context	=> context,
+			contour	=> element (c),
+			filled	=> YES,
+			width	=> zero,
+			height	=> self.frame_height,
+			drawn	=> drawn);
 	end query_polygon;
 	
 	

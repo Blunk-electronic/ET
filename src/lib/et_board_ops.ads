@@ -406,38 +406,44 @@ package et_board_ops is
 	
 	
 
--- STOP MASK
-	procedure draw_stop_line (
+-- STOPMASK
+	
 	-- Draws a line in the stop mask layer.
+	procedure draw_stop_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
 		log_threshold	: in type_log_level);
 
-	procedure draw_stop_arc (
+	
 	-- Draws an arc in the stop mask layer.
+	procedure draw_stop_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
 		log_threshold	: in type_log_level);
 
-	procedure draw_stop_circle (
+	
 	-- Draws an circle in the stop mask layer.
+	procedure draw_stop_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		circle			: in type_fillable_circle;
+		circle			: in type_stop_circle;
 		log_threshold	: in type_log_level);
 
-	procedure delete_stop (
+	
 	-- Deletes the segment of the stop mask that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+	procedure delete_stop (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
+
+	
 -- STENCIL
 
 	-- Draws a line in the stencil layer.

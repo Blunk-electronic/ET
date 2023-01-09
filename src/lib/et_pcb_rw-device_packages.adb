@@ -1410,22 +1410,9 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_top is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_stop_polygons.append (
-								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing));
-
-						when HATCHED =>
-							pac_stop_polygons.append (
-								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										hatching	=> board_hatching));
-					end case;
+					pac_stop_polygons.append (
+						container	=> packge.stop_mask.top.polygons, 
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1433,22 +1420,9 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_bottom is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_stop_polygons.append (
-								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (contour with
-										fill_style	=> SOLID,
-										easing		=> board_easing));
-
-						when HATCHED =>
-							pac_stop_polygons.append (
-								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (contour with
-										fill_style	=> HATCHED,
-										easing		=> board_easing,
-										hatching	=> board_hatching));
-					end case;
+					pac_stop_polygons.append (
+						container	=> packge.stop_mask.bottom.polygons, 
+						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
 					board_reset_contour;
@@ -2025,14 +1999,14 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.stencil.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 										
 									when SEC_STOP_MASK =>
 										pac_stop_circles.append (
 											container	=> packge.stop_mask.top.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 										
 									when SEC_ROUTE_RESTRICT =>										
@@ -2040,14 +2014,14 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.route_restrict.top.circles,
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 									when SEC_VIA_RESTRICT =>										
 										pac_via_restrict_circles.append (
 											container	=> packge.via_restrict.top.circles,
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 								
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
@@ -2083,14 +2057,14 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.stencil.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 									when SEC_STOP_MASK =>
 										pac_stop_circles.append (
 											container	=> packge.stop_mask.bottom.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 										
 									when SEC_ROUTE_RESTRICT =>										
@@ -2098,14 +2072,14 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.route_restrict.bottom.circles,
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 									when SEC_VIA_RESTRICT =>										
 										pac_via_restrict_circles.append (
 											container	=> packge.via_restrict.bottom.circles,
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);

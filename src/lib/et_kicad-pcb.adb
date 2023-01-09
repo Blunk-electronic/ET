@@ -3427,13 +3427,13 @@ package body et_kicad.pcb is
 						
 					when TOP_STOP =>
 						board.stop_mask.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
@@ -3707,13 +3707,13 @@ package body et_kicad.pcb is
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 

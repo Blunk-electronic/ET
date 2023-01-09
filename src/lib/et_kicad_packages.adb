@@ -1776,13 +1776,13 @@ package body et_kicad_packages is
 						
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 
 						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 

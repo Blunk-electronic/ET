@@ -1442,7 +1442,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_circle (circle : in out type_fillable_circle) is
+				procedure move_circle (circle : in out type_stop_circle) is
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
@@ -1458,7 +1458,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_stop_contour) is begin
 					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;

@@ -2340,7 +2340,7 @@ package body et_board_ops is
 	procedure draw_stop_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		circle			: in type_fillable_circle;
+		circle			: in type_stop_circle;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

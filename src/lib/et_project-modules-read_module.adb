@@ -3209,7 +3209,7 @@ is
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
 										container	=> module.board.stop_mask.top.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when others => null;
 							end case;
@@ -3234,7 +3234,7 @@ is
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
 										container	=> module.board.stop_mask.bottom.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when others => null;
 							end case;
@@ -3389,42 +3389,16 @@ is
 
 					
 					procedure append_stop_polygon_top is begin
-						case board_fill_style is
-							when SOLID =>
-								pac_stop_polygons.append (
-									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (contour with
-													fill_style	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_stop_polygons.append (
-									container	=> module.board.stop_mask.top.polygons,
-									new_item	=> (contour with
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_stop_polygons.append (
+							container	=> module.board.stop_mask.top.polygons,
+							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stop_polygon_bottom is begin
-						case board_fill_style is
-							when SOLID =>
-								pac_stop_polygons.append (
-									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (contour with
-													fill_style	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_stop_polygons.append (
-									container	=> module.board.stop_mask.bottom.polygons,
-									new_item	=> (contour with
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_stop_polygons.append (
+							container	=> module.board.stop_mask.bottom.polygons,
+							new_item	=> (contour with null record));
 					end;
 
 					

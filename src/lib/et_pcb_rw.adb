@@ -1100,7 +1100,10 @@ package body et_pcb_rw is
 	procedure write_circle (cursor : in pac_stop_circles.cursor) is 
 		use pac_stop_circles;
 	begin
-		write_circle_fillable (element (cursor));
+		circle_begin;
+		write_circle (element (cursor));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		circle_end;
 	end write_circle;
 
 	
@@ -1108,23 +1111,16 @@ package body et_pcb_rw is
 		use pac_stop_polygons;
 	begin
 		fill_zone_begin;
-		write_easing (element (cursor).easing);
-		write_fill_style (element (cursor).fill_style);
-		
-		if element (cursor).fill_style = HATCHED then
-			write_hatching (element (cursor).hatching);
-		end if;
-
 		contours_begin;		
 		write_polygon_segments (element (cursor));
 		contours_end;
-		
 		fill_zone_end;
 	end write_polygon;
 
 	
 	
 -- STENCIL (OR SOLDER PASTE MASK)
+	
 	procedure write_line (cursor : in pac_stencil_lines.cursor) is 
 		use pac_stencil_lines;
 	begin

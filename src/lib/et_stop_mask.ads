@@ -45,6 +45,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_conductor_segment;
 with et_text;
 with et_conductor_text;			use et_conductor_text;
 
@@ -58,22 +59,35 @@ package et_stop_mask is
 	use pac_text_board;
 
 
-	type type_stop_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
+	type type_stop_line is new		
+		et_conductor_segment.type_conductor_line with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
 
 	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
+	use pac_stop_lines;
+	
 
-
-	type type_stop_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
+	type type_stop_arc is new
+		et_conductor_segment.type_conductor_arc with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
 
 	package pac_stop_arcs is new doubly_linked_lists (type_stop_arc);
+	use pac_stop_arcs;	
 
-	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
+	type type_stop_circle is new
+		et_conductor_segment.type_conductor_circle with null record;
+	-- CS inherits a linewidth of type_track_width. Use a dedicated type
+	-- for linewidth if requried.
+
+	package pac_stop_circles is new doubly_linked_lists (type_stop_circle);
+	use pac_stop_circles;
+
+
+	type type_stop_contour is new type_contour with null record;
+	package pac_stop_polygons is new doubly_linked_lists (type_stop_contour);
 
 
 	-- for texts in conductor layer to be exposed:

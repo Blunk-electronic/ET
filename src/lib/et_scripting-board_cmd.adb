@@ -987,95 +987,17 @@ is
 				case get_field_count is
 					when 10 =>
 
-					-- The 7th field can either be a line width like 2.5 or a 
-					-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-						if is_number (f (7)) then
-
-							-- Circle is not filled and has a circumfence line width
-							-- specified in field 7.
-							draw_stop_circle (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								circle			=> 
-										(
-										filled			=> NO,
-										fill_style		=> fill_style_default, -- don't care here
-										border_width	=> to_distance (f (7)),
-										center			=> type_point (to_point (f (8), f (9))),
-										radius			=> to_radius (f (10))
-										),
-								log_threshold	=> log_threshold + 1);
-						else
-							
-							-- Circle is filled with the fill style specified in field 7:
-							case to_fill_style (f (7)) is
--- CS
--- 										when CUTOUT =>
--- 									
--- 											draw_stop_circle (
--- 												module_name 	=> module,
--- 												face			=> to_face (f (5)),
--- 												circle			=> 
--- 															(
--- 															filled		=> YES,
--- 															fill_style	=> CUTOUT,
--- 															center	=> type_point (set (
--- 																		x => to_distance (f (8)),
--- 																		y => to_distance (f (9)))),
--- 															radius	=> to_distance (f (10))
--- 															),
--- 												log_threshold	=> log_threshold + 1);
-
-								when SOLID =>
-							
-									draw_stop_circle (
-										module_name 	=> module,
-										face			=> to_face (f (5)),
-										circle			=> 
-													(
-													filled		=> YES,
-													fill_style	=> SOLID,
-													center	=> type_point (to_point (f (8), f (9))),
-													radius	=> to_radius (f (10))
-													),
-										log_threshold	=> log_threshold + 1);
-
-								when HATCHED => command_incomplete;
-
-							end case;
-						end if;
+						draw_stop_circle (
+							module_name 	=> module,
+							face			=> to_face (f (5)),
+							circle			=> (
+								width			=> to_distance (f (7)),
+								center			=> type_point (to_point (f (8), f (9))),
+								radius			=> to_radius (f (10))),
+							log_threshold	=> log_threshold + 1);
 
 						
-					when 12 =>
-						-- This is going to be a hatched circle.
-						-- In this case the 7th field MUST be fill style HATCHED.
-						if is_number (f (7)) then
-							expect_fill_style (HATCHED, 7); -- error
-						else
-							case to_fill_style (f (7)) is
-								when HATCHED =>
-									draw_stop_circle (
-										module_name 	=> module,
-										face			=> to_face (f (5)),
-										circle			=> 
-												(
-												filled		=> YES,
-												fill_style	=> HATCHED,
-												center		=> type_point (to_point (f (8), f (9))),
-												radius		=> to_radius (f (10)),
-												hatching	=> (
-															line_width	=> to_distance (f (11)),
-															spacing		=> to_distance (f (12)),
-															others	=> <>
-															)
-												),
-										log_threshold	=> log_threshold + 1);
-
-								when others => expect_fill_style (HATCHED, 7);
-							end case;
-						end if;
-
-					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
 						
 					when others => command_incomplete;
 				end case;
