@@ -1323,19 +1323,19 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
-				t : type_text_fab_with_content := element (c);
-			begin
-				set_destination;
-				draw_text (t, destination);
-			end query_text_top;
+			--procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
+				--t : type_text_fab_with_content := element (c);
+			--begin
+				--set_destination;
+				--draw_text (t, destination);
+			--end query_text_top;
 
-			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
-				t : type_text_fab_with_content := element (c);
-			begin
-				set_destination (INVERSE);
-				draw_text (t, destination);
-			end query_text_bottom;
+			--procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
+				--t : type_text_fab_with_content := element (c);
+			--begin
+				--set_destination (INVERSE);
+				--draw_text (t, destination);
+			--end query_text_bottom;
 			
 		begin -- draw_stop_mask
 		
@@ -1356,8 +1356,8 @@ is
 			element (package_cursor).stop_mask.bottom.polygons.iterate (query_polygon_bottom'access);
 
 			-- texts
-			element (package_cursor).stop_mask.top.texts.iterate (query_text_top'access);
-			element (package_cursor).stop_mask.bottom.texts.iterate (query_text_bottom'access);
+			--element (package_cursor).stop_mask.top.texts.iterate (query_text_top'access);
+			--element (package_cursor).stop_mask.bottom.texts.iterate (query_text_bottom'access);
 			
 		end draw_stop_mask;
 

@@ -38,20 +38,20 @@
 
 package et_stop_mask.packages is
 
-	-- for texts in conductor layer to be exposed:
-	type type_stop_mask
-		is new et_stop_mask.type_stop_mask with 
-	record
-		texts		: pac_texts_fab_with_content.list;
-	end record;
+	---- for texts in conductor layer to be exposed:
+	--type type_stop_mask
+		--is new et_stop_mask.type_stop_mask with 
+	--record
+		--texts		: pac_texts_fab_with_content.list;
+	--end record;
 
-	-- Logs the properties of the given stop mask text
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level);
+	---- Logs the properties of the given stop mask text
+	--procedure text_stop_mask_properties (
+		--face			: in type_face;
+		--cursor			: in pac_texts_fab_with_content.cursor;
+		--log_threshold 	: in type_log_level);
 
-	
+	procedure dummy;
 	
 	type type_stop_mask_both_sides is record
 		top		: type_stop_mask;

@@ -4782,7 +4782,7 @@ is
 
 						use et_silkscreen.boards;
 						use et_assy_doc.boards;
-						use et_stop_mask.boards;
+						use et_stop_mask;
 						
 						v_text : type_vector_text;
 						mirror : type_vector_text_mirrored;

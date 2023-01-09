@@ -270,7 +270,7 @@ package et_pcb is
 	
 	-- Stop mask in board (may contain placeholders):
 	type type_stop_mask 
-		is new et_stop_mask.boards.type_stop_mask with 
+		is new et_stop_mask.type_stop_mask with 
 	record
 		-- for texts in conductor layers to be exposed
 		placeholders : pac_text_placeholders.list;

@@ -41,22 +41,7 @@ with et_text;					use et_text;
 
 package body et_stop_mask.boards is
 
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_mask_texts.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		text : type_stop_mask_text;
-	begin
-		text := element (cursor);
-		log (text => "stop mask text face" & to_string (face) & space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_stop_mask_properties;
-
+	procedure dummy is begin null; end;
 	
 end et_stop_mask.boards;
 

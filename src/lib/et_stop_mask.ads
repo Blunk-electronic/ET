@@ -75,6 +75,15 @@ package et_stop_mask is
 
 	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
 
+
+	-- for texts in conductor layer to be exposed:
+	type type_stop_mask_text is new type_text_fab_with_content with record
+		vectors	: type_vector_text;
+	end record;
+
+	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);
+	use pac_stop_mask_texts;
+
 	
 	-- This is the type for stop mask objects in general.
 	-- This has nothing to do with the stop mask of pads.
@@ -83,6 +92,7 @@ package et_stop_mask is
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
 		polygons	: pac_stop_polygons.list;
+		texts		: pac_stop_mask_texts.list;
 	end record;
 
 	
@@ -106,6 +116,11 @@ package et_stop_mask is
 		cursor			: in pac_stop_lines.cursor;
 		log_threshold 	: in type_log_level);
 
+	-- Logs the properties of the given stop mask text
+	procedure text_stop_mask_properties (
+		face			: in type_face;
+		cursor			: in pac_stop_mask_texts.cursor;
+		log_threshold 	: in type_log_level);
 
 	
 end et_stop_mask;

@@ -38,27 +38,15 @@
 
 package et_stop_mask.boards is
 
-	-- for texts in conductor layer to be exposed:
-	type type_stop_mask_text is new type_text_fab_with_content with record
-		vectors	: type_vector_text;
-	end record;
 
-	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);
-	use pac_stop_mask_texts;
-
-	-- Logs the properties of the given stop mask text
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_mask_texts.cursor;
-		log_threshold 	: in type_log_level);
 
 	
 	
-	type type_stop_mask 
-		is new et_stop_mask.type_stop_mask with 
-	record
-		texts		: pac_stop_mask_texts.list;
-	end record;
+	--type type_stop_mask 
+		--is new et_stop_mask.type_stop_mask with 
+	--record
+		--texts		: pac_stop_mask_texts.list;
+	--end record;
 
 
 	--type type_stop_mask_both_sides is record
@@ -66,6 +54,8 @@ package et_stop_mask.boards is
 		--bottom	: type_stop_mask;
 	--end record;
 
+
+	procedure dummy;
 	
 end et_stop_mask.boards;
 

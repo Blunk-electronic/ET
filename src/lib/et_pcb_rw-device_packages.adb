@@ -1188,9 +1188,16 @@ package body et_pcb_rw.device_packages is
 							
 						when SEC_STOP_MASK =>
 
-							pac_texts_fab_with_content.append (
+							pac_stop_mask_texts.append (
 								container	=> packge.stop_mask.top.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment,
+										make_border	=> true)));
 
 							
 						when others => invalid_section;
@@ -1233,9 +1240,18 @@ package body et_pcb_rw.device_packages is
 							
 						when SEC_STOP_MASK =>
 
-							pac_texts_fab_with_content.append (
+							pac_stop_mask_texts.append (
 								container	=> packge.stop_mask.bottom.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										mirror		=> YES,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment,
+										make_border	=> true)));
+
 
 							
 						when others => invalid_section;
