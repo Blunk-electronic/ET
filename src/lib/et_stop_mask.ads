@@ -85,9 +85,9 @@ package et_stop_mask is
 	use pac_stop_mask_texts;
 
 	
-	-- This is the type for stop mask objects in general.
+	-- This is the type for stopmask objects in general.
 	-- This has nothing to do with the stop mask of pads.
-	type type_stop_mask is tagged record
+	type type_stopmask is tagged record
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;

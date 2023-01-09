@@ -513,7 +513,7 @@ package body et_kicad.pcb is
 		package_arc			: et_kicad_packages.type_arc;
 		package_circle 		: et_kicad_packages.type_circle;
 
-		package_stop_mask		: et_stop_mask.packages.type_stop_mask_both_sides;
+		package_stop_mask		: et_stop_mask.packages.type_stopmask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_stencil			: et_stencil.type_stencil_both_sides;

@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         STOP MASK PACKAGES                               --
+--                         STOPMASK IN PACKAGES                             --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --

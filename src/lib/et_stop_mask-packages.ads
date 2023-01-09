@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         STOP MASK PACKAGES                               --
+--                         STOPMASK IN PACKAGES                             --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -39,9 +39,9 @@
 package et_stop_mask.packages is
 
 	
-	type type_stop_mask_both_sides is record
-		top		: type_stop_mask;
-		bottom	: type_stop_mask;
+	type type_stopmask_both_sides is record
+		top		: type_stopmask;
+		bottom	: type_stopmask;
 	end record;
 
 	

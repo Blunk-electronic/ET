@@ -40,6 +40,7 @@
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_keepout;						use et_keepout;
+with et_stop_mask;						use et_stop_mask;
 with et_stencil;						use et_stencil;
 with et_symbols;						
 with et_schematic;						use et_schematic;
@@ -222,21 +223,21 @@ package et_device_query_board is
 	-- Returns the stopmask objects of the given electrical device
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
-	--function get_stopmask_objects (
-		--device_cursor	: in pac_devices_sch.cursor;
-		--face			: in type_face)
-		--return type_stopmask;
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stopmask;
 
 
-	---- Returns the stopmask objects of the given non-electrical device
-	---- (according to its flip status, position and rotation in the board) 
-	---- Adresses only those objects affected by the given face:
-	--function get_stopmask_objects (
-		--device_cursor	: in pac_devices_non_electric.cursor;
-		--face			: in type_face)
-		--return type_stopmask;
+	-- Returns the stopmask objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stopmask;
 	
-	-- CS likewise for stopmask, assy dock, silkscreen
+	-- CS likewise for assy dock, silkscreen
 
 	
 

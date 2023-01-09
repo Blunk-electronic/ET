@@ -571,6 +571,35 @@ package body et_device_query_board is
 		return result;
 	end get_stencil_objects;
 
+
+
+-- STOPMASK:
+
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stopmask
+	is
+		result : type_stopmask;
+	begin
+		-- CS
+
+		return result;
+	end get_stopmask_objects;
+
+
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stopmask
+	is
+		result : type_stopmask;
+	begin
+		-- CS
+
+		return result;
+	end get_stopmask_objects;
+	
 	
 	
 -- HOLES
