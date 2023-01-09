@@ -37,30 +37,11 @@
 --   to do:
 
 with ada.strings;				use ada.strings;
-with et_text;					use et_text;
 
 
 package body et_stop_mask.packages is
 
 	procedure dummy is begin null; end;
-	
-	--procedure text_stop_mask_properties (
-		--face			: in type_face;
-		--cursor			: in pac_texts_fab_with_content.cursor;
-		--log_threshold 	: in type_log_level) 
-	--is
-		--use pac_texts_fab_with_content;
-		--text : type_text_fab_with_content;
-	--begin
-		--text := element (cursor);
-		--log (text => "stop mask text face" & to_string (face) & space
-			 --& "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		--log_indentation_up;
-		---- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		--log_indentation_down;
-	--end text_stop_mask_properties;
-
 
 	
 end et_stop_mask.packages;

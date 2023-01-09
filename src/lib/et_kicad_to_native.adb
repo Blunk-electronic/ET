@@ -49,12 +49,12 @@ with et_nets;
 with et_net_labels;
 with et_schematic;
 
-with et_geometry;				use et_geometry;
-with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
+with et_geometry;					use et_geometry;
+with et_general;					use et_general;
+with et_string_processing;			use et_string_processing;
 with et_project.modules;
 with et_vias;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_packages;
 with et_kicad_general;
 with et_kicad_libraries;
@@ -64,28 +64,27 @@ with et_kicad.schematic;
 with et_kicad_coordinates;
 with et_import;
 
-with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variants;			use et_assembly_variants;
 with et_netlists;
 with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;	--use et_pcb_rw.device_packages;
 with et_device_rw;
 with et_symbols;
-with et_devices;				use et_devices;
-with et_frames;
-with et_fill_zones;				use et_fill_zones;
-with et_fill_zones.boards;
-with et_conductor_text;			use et_conductor_text;
+with et_devices;					use et_devices;
+with et_frames;	
+with et_fill_zones;					use et_fill_zones;
+with et_fill_zones.boards;	
+with et_conductor_text;				use et_conductor_text;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.boards;
-with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
+with et_stop_mask;					use et_stop_mask;
+with et_stencil;					use et_stencil;
+with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.boards;
-with et_assy_doc;				use et_assy_doc;
+with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.boards;
-with et_keepout;				use et_keepout;
+with et_keepout;					use et_keepout;
 
 
 package body et_kicad_to_native is
@@ -1390,7 +1389,7 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
-				use et_stop_mask.boards;
+				use et_stop_mask;
 				use pac_stop_lines;
 				lines_cursor : pac_stop_lines.cursor;
 

@@ -78,7 +78,6 @@ with et_fill_zones;				use et_fill_zones;
 with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.boards;		use et_stop_mask.boards;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;		use et_silkscreen.boards;

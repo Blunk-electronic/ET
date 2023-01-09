@@ -37,7 +37,6 @@
 
 with ada.text_io;				use ada.text_io;
 with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.boards;		use et_stop_mask.boards;
 with et_colors;					use et_colors;
 
 separate (et_canvas_board)

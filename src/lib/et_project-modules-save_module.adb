@@ -1632,7 +1632,7 @@ is
 
 
 		procedure write_stop_mask is
-			use et_stop_mask.boards;
+			use et_stop_mask;
 			use pac_stop_mask_texts;
 			
 			procedure write_text (cursor : in pac_stop_mask_texts.cursor) is begin
