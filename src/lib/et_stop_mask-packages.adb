@@ -41,7 +41,31 @@ with ada.strings;				use ada.strings;
 
 package body et_stop_mask.packages is
 
-	procedure dummy is begin null; end;
+	procedure mirror_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		axis		: in type_axis_2d := Y)
+	is
+	begin
+		null;
+	end mirror_stopmask_objects;
+
+
+	procedure rotate_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		angle		: in type_rotation)
+	is
+	begin
+		null;
+	end rotate_stopmask_objects;
+
+
+	procedure move_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		offset		: in type_distance_relative)
+	is
+	begin
+		null;
+	end move_stopmask_objects;
 
 	
 end et_stop_mask.packages;

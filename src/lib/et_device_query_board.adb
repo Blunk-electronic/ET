@@ -216,8 +216,9 @@ package body et_device_query_board is
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side
-	is		
-		restrict : et_route_restrict.packages.type_one_side; -- to be returned
+	is	
+		use et_route_restrict.packages;
+		restrict : type_one_side; -- to be returned
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 	begin
@@ -251,8 +252,9 @@ package body et_device_query_board is
 		result : pac_polygon_list.list;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		
-		restrict : et_route_restrict.packages.type_one_side;
+
+		use et_route_restrict.packages;
+		restrict : type_one_side;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -284,7 +286,8 @@ package body et_device_query_board is
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side
 	is
-		restrict : et_route_restrict.packages.type_one_side; -- to be returned
+		use et_route_restrict.packages;
+		restrict : type_one_side; -- to be returned
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
@@ -317,7 +320,8 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		restrict : et_route_restrict.packages.type_one_side;
+		use et_route_restrict.packages;
+		restrict : type_one_side;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			if device.flipped = NO then
@@ -347,7 +351,9 @@ package body et_device_query_board is
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side
 	is		
-		restrict : et_via_restrict.packages.type_one_side; -- to be returned
+		use et_via_restrict.packages;
+		restrict : type_one_side; -- to be returned
+		
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 	begin
@@ -378,7 +384,9 @@ package body et_device_query_board is
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side
 	is
-		restrict : et_via_restrict.packages.type_one_side; -- to be returned
+		use et_via_restrict.packages;		
+		restrict : type_one_side; -- to be returned
+		
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
@@ -584,6 +592,8 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : type_rotation;
+
+		use et_stop_mask.packages;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -629,6 +639,8 @@ package body et_device_query_board is
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation renames device.position.rotation;
+
+		use et_stop_mask.packages;
 	begin
 		case face is
 			when TOP =>

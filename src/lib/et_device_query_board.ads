@@ -37,10 +37,11 @@
 
 
 --with et_terminals;
-with et_route_restrict.packages;		use et_route_restrict.packages;
-with et_via_restrict.packages;			use et_via_restrict.packages;
+with et_route_restrict.packages;
+with et_via_restrict.packages;
 with et_keepout;						use et_keepout;
 with et_stop_mask;						use et_stop_mask;
+with et_stop_mask.packages;
 with et_stencil;						use et_stencil;
 with et_symbols;						
 with et_schematic;						use et_schematic;

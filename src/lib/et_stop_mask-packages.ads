@@ -44,8 +44,23 @@ package et_stop_mask.packages is
 		bottom	: type_stopmask;
 	end record;
 
-	
-	procedure dummy;
+
+	-- Mirrors a list of stopmask objects along the given axis:
+	procedure mirror_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		axis		: in type_axis_2d := Y);
+
+	-- Rotates a list of stopmask objects by the given angle:
+	procedure rotate_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		angle		: in type_rotation);
+
+	-- Moves a list of stopmask objects by the given offset:
+	procedure move_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		offset		: in type_distance_relative);
+
+
 	
 end et_stop_mask.packages;
 

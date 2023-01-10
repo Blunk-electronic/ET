@@ -109,22 +109,6 @@ package et_stop_mask is
 		texts		: pac_stop_mask_texts.list;
 	end record;
 
-	
-
-	-- Mirrors a list of stopmask objects along the given axis:
-	procedure mirror_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		axis		: in type_axis_2d := Y);
-
-	-- Rotates a list of stopmask objects by the given angle:
-	procedure rotate_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		angle		: in type_rotation);
-
-	-- Moves a list of stopmask objects by the given offset:
-	procedure move_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		offset		: in type_distance_relative);
 
 	
 	-- Logs the properties of the given arc of stop mask
