@@ -1633,9 +1633,9 @@ is
 
 		procedure write_stop_mask is
 			use et_stop_mask;
-			use pac_stop_mask_texts;
+			use pac_stop_texts;
 			
-			procedure write_text (cursor : in pac_stop_mask_texts.cursor) is begin
+			procedure write_text (cursor : in pac_stop_texts.cursor) is begin
 				text_begin;
 				write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (cursor).content));
@@ -1650,7 +1650,7 @@ is
 			iterate (element (module_cursor).board.stop_mask.top.lines, write_line'access);
 			iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.stop_mask.top.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.stop_mask.top.contours, write_polygon'access);
 			iterate (element (module_cursor).board.stop_mask.top.texts, write_text'access);			
 			section_mark (section_top, FOOTER);
 
@@ -1658,7 +1658,7 @@ is
 			iterate (element (module_cursor).board.stop_mask.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.polygons, write_polygon'access);
+			iterate (element (module_cursor).board.stop_mask.bottom.contours, write_polygon'access);
 			iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 

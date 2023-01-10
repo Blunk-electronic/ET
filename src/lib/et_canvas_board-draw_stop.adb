@@ -54,7 +54,7 @@ is
 	use pac_stop_circles;
 	use pac_stop_polygons;
 	use et_pcb.pac_text_placeholders;
-	use pac_stop_mask_texts;
+	use pac_stop_texts;
 
 
 
@@ -143,7 +143,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_stop_mask_texts.cursor) is 
+	procedure query_text (c : in pac_stop_texts.cursor) is 
 		use pac_character_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
@@ -171,7 +171,7 @@ is
 				iterate (module.board.stop_mask.top.lines, query_line'access);
 				iterate (module.board.stop_mask.top.arcs, query_arc'access);
 				iterate (module.board.stop_mask.top.circles, query_circle'access);
-				iterate (module.board.stop_mask.top.polygons, query_polygon'access);
+				iterate (module.board.stop_mask.top.contours, query_polygon'access);
 				iterate (module.board.stop_mask.top.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.top.texts, query_text'access);
 
@@ -179,7 +179,7 @@ is
 				iterate (module.board.stop_mask.bottom.lines, query_line'access);
 				iterate (module.board.stop_mask.bottom.arcs, query_arc'access);
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
-				iterate (module.board.stop_mask.bottom.polygons, query_polygon'access);
+				iterate (module.board.stop_mask.bottom.contours, query_polygon'access);
 				iterate (module.board.stop_mask.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.bottom.texts, query_text'access);
 

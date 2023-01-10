@@ -274,7 +274,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stop_mask.top.lines, write_line'access);
 			iterate (packge.stop_mask.top.arcs, write_arc'access);
 			iterate (packge.stop_mask.top.circles, write_circle'access);
-			iterate (packge.stop_mask.top.polygons, write_polygon'access);
+			iterate (packge.stop_mask.top.contours, write_polygon'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
@@ -282,7 +282,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stop_mask.bottom.lines, write_line'access);
 			iterate (packge.stop_mask.bottom.arcs, write_arc'access);
 			iterate (packge.stop_mask.bottom.circles, write_circle'access);
-			iterate (packge.stop_mask.bottom.polygons, write_polygon'access);			
+			iterate (packge.stop_mask.bottom.contours, write_polygon'access);			
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stop_mask, FOOTER);			
@@ -1188,7 +1188,7 @@ package body et_pcb_rw.device_packages is
 							
 						when SEC_STOP_MASK =>
 
-							pac_stop_mask_texts.append (
+							pac_stop_texts.append (
 								container	=> packge.stop_mask.top.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
@@ -1240,7 +1240,7 @@ package body et_pcb_rw.device_packages is
 							
 						when SEC_STOP_MASK =>
 
-							pac_stop_mask_texts.append (
+							pac_stop_texts.append (
 								container	=> packge.stop_mask.bottom.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
@@ -1411,7 +1411,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_stop_polygon_top is begin
 					pac_stop_polygons.append (
-						container	=> packge.stop_mask.top.polygons, 
+						container	=> packge.stop_mask.top.contours, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1421,7 +1421,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_stop_polygon_bottom is begin
 					pac_stop_polygons.append (
-						container	=> packge.stop_mask.bottom.polygons, 
+						container	=> packge.stop_mask.bottom.contours, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon

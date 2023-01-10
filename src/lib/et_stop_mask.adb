@@ -36,8 +36,6 @@
 --
 --   to do:
 
-with ada.strings;				use ada.strings;
-
 package body et_stop_mask is
 	
 
@@ -89,11 +87,11 @@ package body et_stop_mask is
 
 	procedure text_stop_mask_properties (
 		face			: in type_face;
-		cursor			: in pac_stop_mask_texts.cursor;
+		cursor			: in pac_stop_texts.cursor;
 		log_threshold 	: in type_log_level) 
 	is
 		use et_text;
-		text : type_stop_mask_text;
+		text : type_stop_text;
 	begin
 		text := element (cursor);
 		log (text => "stop mask text face" & to_string (face) & space

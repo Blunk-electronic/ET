@@ -3390,14 +3390,14 @@ is
 					
 					procedure append_stop_polygon_top is begin
 						pac_stop_polygons.append (
-							container	=> module.board.stop_mask.top.polygons,
+							container	=> module.board.stop_mask.top.contours,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stop_polygon_bottom is begin
 						pac_stop_polygons.append (
-							container	=> module.board.stop_mask.bottom.polygons,
+							container	=> module.board.stop_mask.bottom.contours,
 							new_item	=> (contour with null record));
 					end;
 
@@ -4793,7 +4793,7 @@ is
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STOP =>
-										pac_stop_mask_texts.append (
+										pac_stop_texts.append (
 											container	=> module.board.stop_mask.top.texts,
 											new_item	=> (board_text with v_text));
 
@@ -4813,7 +4813,7 @@ is
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_STOP =>
-										pac_stop_mask_texts.append (
+										pac_stop_texts.append (
 											container	=> module.board.stop_mask.bottom.texts,
 											new_item	=> (board_text with v_text));
 

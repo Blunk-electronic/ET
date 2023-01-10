@@ -37,17 +37,14 @@
 --   to do:
 
 with ada.containers; 			use ada.containers;
-
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+with ada.strings;				use ada.strings;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_conductor_segment;
 with et_text;
-with et_conductor_text;			use et_conductor_text;
 
 with et_logging;				use et_logging;
 
@@ -91,12 +88,12 @@ package et_stop_mask is
 
 
 	-- for texts in conductor layer to be exposed:
-	type type_stop_mask_text is new type_text_fab_with_content with record -- CS rename to type_stop_text
+	type type_stop_text is new type_text_fab_with_content with record
 		vectors	: type_vector_text;
 	end record;
 
-	package pac_stop_mask_texts is new doubly_linked_lists (type_stop_mask_text);
-	use pac_stop_mask_texts;
+	package pac_stop_texts is new doubly_linked_lists (type_stop_text);
+	use pac_stop_texts;
 
 	
 	-- This is the type for stopmask objects in general.
@@ -105,8 +102,8 @@ package et_stop_mask is
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
-		polygons	: pac_stop_polygons.list; -- CS rename to contours
-		texts		: pac_stop_mask_texts.list;
+		contours	: pac_stop_polygons.list;
+		texts		: pac_stop_texts.list;
 	end record;
 
 
@@ -132,7 +129,7 @@ package et_stop_mask is
 	-- Logs the properties of the given stop mask text
 	procedure text_stop_mask_properties (
 		face			: in type_face;
-		cursor			: in pac_stop_mask_texts.cursor;
+		cursor			: in pac_stop_texts.cursor;
 		log_threshold 	: in type_log_level);
 
 	

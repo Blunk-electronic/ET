@@ -1118,7 +1118,7 @@ is
 			use pac_stop_arcs;
 			use pac_stop_circles;
 			use pac_stop_polygons;
-			use pac_stop_mask_texts;
+			use pac_stop_texts;
 
 			face : type_face := TOP;
 			stopmask : type_stopmask_both_sides;
@@ -1190,8 +1190,8 @@ is
 				end query_contour;
 				
 
-				procedure query_text (c : pac_stop_mask_texts.cursor) is
-					text : type_stop_mask_text renames element (c);
+				procedure query_text (c : pac_stop_texts.cursor) is
+					text : type_stop_text renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
@@ -1209,7 +1209,7 @@ is
 				stopmask.top.lines.iterate (query_line'access);
 				stopmask.top.arcs.iterate (query_arc'access);
 				stopmask.top.circles.iterate (query_circle'access);
-				stopmask.top.polygons.iterate (query_contour'access);
+				stopmask.top.contours.iterate (query_contour'access);
 				stopmask.top.texts.iterate (query_text'access);
 
 				-- bottom
@@ -1217,7 +1217,7 @@ is
 				stopmask.bottom.lines.iterate (query_line'access);
 				stopmask.bottom.arcs.iterate (query_arc'access);
 				stopmask.bottom.circles.iterate (query_circle'access);
-				stopmask.bottom.polygons.iterate (query_contour'access);
+				stopmask.bottom.contours.iterate (query_contour'access);
 				stopmask.bottom.texts.iterate (query_text'access);
 			end draw;
 			
