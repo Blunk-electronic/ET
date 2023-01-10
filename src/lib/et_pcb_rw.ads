@@ -347,7 +347,7 @@ package et_pcb_rw is
 	procedure write_line (cursor : in pac_stop_lines.cursor);
 	procedure write_arc (cursor : in pac_stop_arcs.cursor);
 	procedure write_circle (cursor : in pac_stop_circles.cursor);
-	procedure write_polygon (cursor : in pac_stop_polygons.cursor);
+	procedure write_polygon (cursor : in pac_stop_contours.cursor);
 
 -- STENCIL (OR SOLDER PASTE MASK)
 	procedure write_line (cursor : in pac_stencil_lines.cursor);

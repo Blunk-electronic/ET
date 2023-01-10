@@ -1217,7 +1217,7 @@ is
 		use pac_stop_lines;
 		use pac_stop_arcs;
 		use pac_stop_circles;
-		use pac_stop_polygons;
+		use pac_stop_contours;
 
 		use et_keepout;
 		use pac_keepout_zones;

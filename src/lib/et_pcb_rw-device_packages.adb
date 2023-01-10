@@ -265,7 +265,7 @@ package body et_pcb_rw.device_packages is
 			use pac_stop_lines;
 			use pac_stop_arcs;
 			use pac_stop_circles;
-			use pac_stop_polygons;
+			use pac_stop_contours;
 		begin
 			section_mark (section_stop_mask, HEADER);
 
@@ -1410,7 +1410,7 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_top is begin
-					pac_stop_polygons.append (
+					pac_stop_contours.append (
 						container	=> packge.stop_mask.top.contours, 
 						new_item	=> (contour with null record));
 
@@ -1420,7 +1420,7 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_bottom is begin
-					pac_stop_polygons.append (
+					pac_stop_contours.append (
 						container	=> packge.stop_mask.bottom.contours, 
 						new_item	=> (contour with null record));
 

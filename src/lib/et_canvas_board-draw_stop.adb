@@ -52,7 +52,7 @@ is
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;
-	use pac_stop_polygons;
+	use pac_stop_contours;
 	use et_pcb.pac_text_placeholders;
 	use pac_stop_texts;
 
@@ -103,7 +103,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_stop_polygons.cursor) is
+	procedure query_polygon (c : in pac_stop_contours.cursor) is
 		drawn : boolean := false;
 	begin
 		draw_contour (

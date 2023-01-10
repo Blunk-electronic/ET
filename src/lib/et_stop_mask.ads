@@ -56,6 +56,8 @@ package et_stop_mask is
 	use pac_text_board;
 
 
+-- LINES:
+	
 	type type_stop_line is new		
 		et_conductor_segment.type_conductor_line with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -63,8 +65,28 @@ package et_stop_mask is
 
 	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
 	use pac_stop_lines;
+
+	
+	-- Mirrors a list of lines along the given axis:
+	procedure mirror_lines (
+		lines	: in out pac_stop_lines.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of lines by the given angle:
+	procedure rotate_lines (
+		lines	: in out pac_stop_lines.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of lines by the given offset:
+	procedure move_lines (
+		lines	: in out pac_stop_lines.list;
+		offset	: in type_distance_relative);					
+
+
 	
 
+-- ARCS:
+	
 	type type_stop_arc is new
 		et_conductor_segment.type_conductor_arc with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -74,6 +96,25 @@ package et_stop_mask is
 	use pac_stop_arcs;	
 
 
+	-- Mirrors a list of arcs along the given axis:
+	procedure mirror_arcs (
+		arcs	: in out pac_stop_arcs.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of arcs by the given angle:
+	procedure rotate_arcs (
+		arcs	: in out pac_stop_arcs.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of arcs by the given offset:
+	procedure move_arcs (
+		arcs	: in out pac_stop_arcs.list;
+		offset	: in type_distance_relative);					
+
+
+
+-- CIRCLES:
+	
 	type type_stop_circle is new
 		et_conductor_segment.type_conductor_circle with null record;
 	-- CS inherits a linewidth of type_track_width. Use a dedicated type
@@ -82,18 +123,74 @@ package et_stop_mask is
 	package pac_stop_circles is new doubly_linked_lists (type_stop_circle);
 	use pac_stop_circles;
 
+	-- Mirrors a list of circles along the given axis:
+	procedure mirror_circles (
+		circles	: in out pac_stop_circles.list;
+		axis	: in type_axis_2d := Y);					
 
+	-- Rotates a list of circles by the given angle:
+	procedure rotate_circles (
+		circles	: in out pac_stop_circles.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of circles by the given offset:
+	procedure move_circles (
+		circles	: in out pac_stop_circles.list;
+		offset	: in type_distance_relative);					
+
+
+	
+-- CONTOURS:
+	
 	type type_stop_contour is new type_contour with null record;
-	package pac_stop_polygons is new doubly_linked_lists (type_stop_contour);
+	package pac_stop_contours is new doubly_linked_lists (type_stop_contour);
+	use pac_stop_contours;
+
+	-- Mirrors a list of contours along the given axis:
+	procedure mirror_contours (
+		contours	: in out pac_stop_contours.list;
+		axis		: in type_axis_2d := Y);					
+
+	-- Rotates a list of contours by the given angle:
+	procedure rotate_contours (
+		contours	: in out pac_stop_contours.list;
+		angle		: in type_rotation);					
+
+	-- Moves a list of contours by the given offset:
+	procedure move_contours (
+		contours	: in out pac_stop_contours.list;
+		offset		: in type_distance_relative);					
 
 
+
+
+
+
+-- TEXTS:
+	
 	-- for texts in conductor layer to be exposed:
 	type type_stop_text is new type_text_fab_with_content with record
 		vectors	: type_vector_text;
-	end record;
+	end record;	
 
 	package pac_stop_texts is new doubly_linked_lists (type_stop_text);
 	use pac_stop_texts;
+
+	-- Mirrors a list of texts along the given axis:
+	procedure mirror_texts (
+		texts	: in out pac_stop_texts.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of texts by the given angle:
+	procedure rotate_texts (
+		texts	: in out pac_stop_texts.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of texts by the given offset:
+	procedure move_texts (
+		texts	: in out pac_stop_texts.list;
+		offset	: in type_distance_relative);					
+
 
 	
 	-- This is the type for stopmask objects in general.
@@ -102,7 +199,7 @@ package et_stop_mask is
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
-		contours	: pac_stop_polygons.list;
+		contours	: pac_stop_contours.list;
 		texts		: pac_stop_texts.list;
 	end record;
 

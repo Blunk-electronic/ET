@@ -1399,8 +1399,8 @@ package body et_kicad_to_native is
 				use pac_stop_circles;
 				circles_cursor : pac_stop_circles.cursor;
 
-				use pac_stop_polygons;
-				polygons_cursor : pac_stop_polygons.cursor;
+				use pac_stop_contours;
+				polygons_cursor : pac_stop_contours.cursor;
 
 				use pac_stop_texts;
 				texts_cursor : pac_stop_texts.cursor;
@@ -1557,8 +1557,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stop_mask.top.contours.first;
-				while polygons_cursor /= pac_stop_polygons.no_element loop
-					pac_stop_polygons.update_element (
+				while polygons_cursor /= pac_stop_contours.no_element loop
+					pac_stop_contours.update_element (
 						container	=> module.board.stop_mask.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1569,8 +1569,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stop_mask.bottom.contours.first;
-				while polygons_cursor /= pac_stop_polygons.no_element loop
-					pac_stop_polygons.update_element (
+				while polygons_cursor /= pac_stop_contours.no_element loop
+					pac_stop_contours.update_element (
 						container	=> module.board.stop_mask.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
