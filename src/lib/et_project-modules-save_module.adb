@@ -1199,7 +1199,7 @@ is
 		use pac_silk_lines;
 		use pac_silk_arcs;
 		use pac_silk_circles;
-		use pac_silk_polygons;
+		use pac_silk_contours;
 
 		use et_assy_doc;
 		use pac_doc_lines;
@@ -1352,7 +1352,6 @@ is
 			placeholder_end;
 		end write_placeholder;
 
-		use pac_silk_cutouts;
 		use pac_doc_cutouts;
 		use pac_keepout_cutouts;
 
@@ -1549,8 +1548,7 @@ is
 			iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
 			iterate (element (module_cursor).board.silk_screen.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.silk_screen.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.top.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.silk_screen.top.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.silk_screen.top.contours, write_polygon'access);
 			iterate (element (module_cursor).board.silk_screen.top.texts, write_text'access);
 			iterate (element (module_cursor).board.silk_screen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -1559,8 +1557,7 @@ is
 			iterate (element (module_cursor).board.silk_screen.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.silk_screen.bottom.contours, write_polygon'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);

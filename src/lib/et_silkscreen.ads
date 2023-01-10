@@ -58,25 +58,47 @@ package et_silkscreen is
 	use pac_text_board;
 
 
+	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	
+
+-- LINES:
 	
-	type type_silk_line is new type_line with record
-		width	: type_general_line_width;
+	type type_silk_line is new pac_geometry_2.type_line with record
+		width	: type_linewidth;
 	end record;
 
-	package pac_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
+	package pac_silk_lines is new doubly_linked_lists (type_silk_line);
+	use pac_silk_lines;
 
 
-	type type_silk_arc is new type_arc with record
-		width	: type_general_line_width;
+
+-- ARCS:
+	
+	type type_silk_arc is new pac_geometry_2.type_arc with record
+		width	: type_linewidth;
 	end record;
 
-	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
-	
-	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
+	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc);
+	use pac_silk_arcs;
 
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
-	package pac_silk_cutouts is new doubly_linked_lists (type_contour);	
+
+-- CIRCLES:
+
+	type type_silk_circle is new pac_geometry_2.type_circle with record
+		width	: type_linewidth;
+	end record;
+	
+	package pac_silk_circles is new doubly_linked_lists (type_silk_circle);
+	use pac_silk_circles;
+	
+
+-- CONTOURS:
+	
+	type type_silk_contour is new type_contour with null record;
+	package pac_silk_contours is new indefinite_doubly_linked_lists (type_silk_contour);
+	use pac_silk_contours;
+	
+
 	
 
 	-- This is the base type for silk screen objects in general:
@@ -84,8 +106,7 @@ package et_silkscreen is
 		lines 		: pac_silk_lines.list;
 		arcs		: pac_silk_arcs.list;
 		circles		: pac_silk_circles.list;
-		polygons	: pac_silk_polygons.list;
-		cutouts 	: pac_silk_cutouts.list;
+		contours	: pac_silk_contours.list;
 	end record;
 
 

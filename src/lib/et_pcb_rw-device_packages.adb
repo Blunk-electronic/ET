@@ -173,8 +173,7 @@ package body et_pcb_rw.device_packages is
 			use pac_silk_lines;
 			use pac_silk_arcs;
 			use pac_silk_circles;
-			use pac_silk_polygons;
-			use pac_silk_cutouts;
+			use pac_silk_contours;
 		begin
 			section_mark (section_silk_screen, HEADER);
 
@@ -183,8 +182,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.silk_screen.top.lines, write_line'access);
 			iterate (packge.silk_screen.top.arcs, write_arc'access);
 			iterate (packge.silk_screen.top.circles, write_circle'access);
-			iterate (packge.silk_screen.top.polygons, write_polygon'access);
-			iterate (packge.silk_screen.top.cutouts, write_cutout'access);
+			iterate (packge.silk_screen.top.contours, write_polygon'access);
 			iterate (packge.silk_screen.top.texts, write_text'access);
 			iterate (packge.silk_screen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -194,8 +192,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.silk_screen.bottom.lines, write_line'access);
 			iterate (packge.silk_screen.bottom.arcs, write_arc'access);
 			iterate (packge.silk_screen.bottom.circles, write_circle'access);
-			iterate (packge.silk_screen.bottom.polygons, write_polygon'access);
-			iterate (packge.silk_screen.bottom.cutouts, write_cutout'access);
+			iterate (packge.silk_screen.bottom.contours, write_polygon'access);
 			iterate (packge.silk_screen.bottom.texts, write_text'access);
 			iterate (packge.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
@@ -1273,46 +1270,17 @@ package body et_pcb_rw.device_packages is
 
 				-- fill zones
 				procedure append_silk_polygon_top is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (contour with
-												fill_style 	=> SOLID,
-												easing 		=> board_easing
-											   ));
-
-						when HATCHED =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (contour with 
-												fill_style 	=> HATCHED,
-												easing 		=> board_easing,
-												hatching	=> board_hatching));
-					end case;
+					pac_silk_contours.append (
+						container	=> packge.silk_screen.top.contours, 
+						new_item	=> (contour with null record));
 					
 					board_reset_contour;
 				end;
-
 				
 				procedure append_silk_polygon_bottom is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (contour with 
-												fill_style	=> SOLID,
-												easing		=> board_easing
-											   ));
-
-						when HATCHED =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (contour with 
-												fill_style	=> HATCHED,
-												easing		=> board_easing,
-												hatching	=> board_hatching));
-					end case;
+					pac_silk_contours.append (
+						container	=> packge.silk_screen.bottom.contours, 
+						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1464,27 +1432,6 @@ package body et_pcb_rw.device_packages is
 						container	=> packge.via_restrict.bottom.zones, 
 						new_item	=> (contour with null record));
 
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				-- cutout zones
-				procedure append_silk_cutout_top is begin
-					pac_silk_cutouts.append (
-						container	=> packge.silk_screen.top.cutouts, 
-						new_item	=> contour);
-					
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_silk_cutout_bottom is begin
-					pac_silk_cutouts.append (
-						container	=> packge.silk_screen.bottom.cutouts, 
-						new_item	=> contour);
-					
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
@@ -1983,7 +1930,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silk_screen.top.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 															
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2041,7 +1988,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silk_screen.bottom.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 										
@@ -2159,9 +2106,6 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
-										append_silk_cutout_top;
-										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										append_assy_doc_cutout_top;
 										
@@ -2182,9 +2126,6 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
-										append_silk_cutout_bottom;
-										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										append_assy_doc_cutout_bottom;
 										

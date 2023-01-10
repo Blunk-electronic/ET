@@ -3389,15 +3389,16 @@ package body et_kicad.pcb is
 				case board_circle.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
@@ -3667,13 +3668,13 @@ package body et_kicad.pcb is
 				case package_circle.layer is
 					when TOP_SILK =>
 						package_silk_screen.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						package_silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 

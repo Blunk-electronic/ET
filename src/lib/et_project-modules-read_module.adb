@@ -3194,7 +3194,7 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
 										container	=> module.board.silk_screen.top.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
@@ -3219,7 +3219,7 @@ is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
 										container	=> module.board.silk_screen.bottom.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
@@ -3281,42 +3281,16 @@ is
 					use et_packages;
 					
 					procedure append_silk_polygon_top is begin
-						case board_fill_style is 
-							when SOLID =>
-								pac_silk_polygons.append (
-									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (contour with 
-													fill_style 	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_silk_polygons.append (
-									container	=> module.board.silk_screen.top.polygons,
-									new_item	=> (contour with 
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_silk_contours.append (
+							container	=> module.board.silk_screen.top.contours,
+							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_silk_polygon_bottom is begin
-						case board_fill_style is 
-							when SOLID =>
-								pac_silk_polygons.append (
-									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (contour with 
-													fill_style 	=> SOLID,
-													easing		=> board_easing));
-
-							when HATCHED =>
-								pac_silk_polygons.append (
-									container	=> module.board.silk_screen.bottom.polygons,
-									new_item	=> (contour with 
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_silk_contours.append (
+							container	=> module.board.silk_screen.bottom.contours,
+							new_item	=> (contour with null record));
 					end;
 
 					
@@ -3478,18 +3452,6 @@ is
 					use et_assy_doc;
 					use et_keepout;
 					
-					procedure append_silk_cutout_top is begin
-						pac_silk_cutouts.append (
-							container	=> module.board.silk_screen.top.cutouts,
-							new_item	=> contour); 
-					end;
-
-					procedure append_silk_cutout_bottom is begin
-						pac_silk_cutouts.append (
-							container	=> module.board.silk_screen.bottom.cutouts,
-							new_item	=> contour);
-					end;
-					
 					procedure append_assy_doc_cutout_top is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.top.cutouts,
@@ -3519,9 +3481,6 @@ is
 					case face is
 						when TOP =>
 							case layer_cat is
-								when LAYER_CAT_SILKSCREEN =>
-									append_silk_cutout_top;
-												
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_top;
 									
@@ -3533,9 +3492,6 @@ is
 							
 						when BOTTOM => null;
 							case layer_cat is
-								when LAYER_CAT_SILKSCREEN =>
-									append_silk_cutout_bottom;
-
 								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_bottom;
 									

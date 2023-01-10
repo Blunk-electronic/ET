@@ -329,8 +329,8 @@ package et_pcb_rw is
 	procedure write_line (cursor : in pac_silk_lines.cursor);
 	procedure write_arc (cursor : in pac_silk_arcs.cursor);
 	procedure write_circle (cursor : in pac_silk_circles.cursor);	
-	procedure write_polygon (cursor : in pac_silk_polygons.cursor);
-	procedure write_cutout (cursor : in pac_silk_cutouts.cursor);
+	procedure write_polygon (cursor : in pac_silk_contours.cursor);
+
 
 -- ASSEMBLY DOCUMENTATION
 	procedure write_line (cursor : in pac_doc_lines.cursor);

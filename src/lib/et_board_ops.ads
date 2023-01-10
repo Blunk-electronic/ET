@@ -339,25 +339,25 @@ package et_board_ops is
 	
 -- SILK SCREEN
 
-	procedure draw_silk_screen_line (
 	-- Draws a line in the PCB silk_screen.
+	procedure draw_silk_screen_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level);
 
-	procedure draw_silk_screen_arc (
 	-- Draws an arc in the PCB silk_screen.
+	procedure draw_silk_screen_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;
 		log_threshold	: in type_log_level);
 
-	procedure draw_silk_screen_circle (
 	-- Draws a circle in the PCB silk_screen.
+	procedure draw_silk_screen_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
-		circle			: in type_fillable_circle;
+		circle			: in type_silk_circle;
 		log_threshold	: in type_log_level);
 
 	procedure delete_silk_screen (

@@ -56,8 +56,7 @@ is
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
-	use pac_silk_polygons;
-	use pac_silk_cutouts;
+	use pac_silk_contours;
 	use pac_silkscreen_texts;
 	use et_pcb.pac_text_placeholders;
 
@@ -95,75 +94,22 @@ is
 
 	
 	procedure query_circle (c : in pac_silk_circles.cursor) is begin
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal non-filled circle:
-				set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-				draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					width		=> element (c).border_width,
-					height		=> self.frame_height);
+		draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> element (c),
+			filled		=> NO,
+			width		=> element (c).width,
+			height		=> self.frame_height);
 				
-			when YES =>
-				-- We draw a filled circle with a certain fill style:
-				case element (c).fill_style is
-					when SOLID =>
-						draw_circle (
-							area		=> in_area,
-							context		=> context,
-							circle		=> element (c),
-							filled		=> YES,
-							width		=> zero,
-							height		=> self.frame_height);
-
-					when HATCHED 	=> null; -- CS
-				end case;
-		end case;
-
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_silk_polygons.cursor) is 
+	procedure query_contour (c : in pac_silk_contours.cursor) is 
 		drawn : boolean := false;
 	begin
-		case element (c).fill_style is
-			when SOLID =>
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> YES,
-					width	=> zero,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-			when HATCHED =>
-				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
-
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> NO,
-					width	=> element (c).hatching.border_width,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-				-- CS hatching ?
-		end case;
-
-	end query_polygon;
-
-	
-	procedure query_cutout (c : in pac_silk_cutouts.cursor) is 
-		drawn : boolean := false;
-	begin
-		set_color_background (context.cr);
-		
 		draw_contour (
 			area	=> in_area,
 			context	=> context,
@@ -172,9 +118,9 @@ is
 			width	=> zero,
 			height	=> self.frame_height,
 			drawn	=> drawn);
+	end query_contour;
 
-	end query_cutout;
-
+	
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		v_text : type_vector_text;
@@ -230,8 +176,7 @@ is
 				iterate (module.board.silk_screen.top.lines, query_line'access);
 				iterate (module.board.silk_screen.top.arcs, query_arc'access);
 				iterate (module.board.silk_screen.top.circles, query_circle'access);
-				iterate (module.board.silk_screen.top.polygons, query_polygon'access);
-				iterate (module.board.silk_screen.top.cutouts, query_cutout'access);
+				iterate (module.board.silk_screen.top.contours, query_contour'access);
 				iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.top.texts, query_text'access);
 
@@ -239,8 +184,7 @@ is
 				iterate (module.board.silk_screen.bottom.lines, query_line'access);
 				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
 				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
-				iterate (module.board.silk_screen.bottom.polygons, query_polygon'access);
-				iterate (module.board.silk_screen.bottom.cutouts, query_cutout'access);
+				iterate (module.board.silk_screen.bottom.contours, query_contour'access);
 				iterate (module.board.silk_screen.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.bottom.texts, query_text'access);
 

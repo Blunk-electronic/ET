@@ -944,46 +944,25 @@ package body et_pcb_rw is
 	procedure write_circle (cursor : in pac_silk_circles.cursor) is 
 		use pac_silk_circles;
 	begin
-		write_circle_fillable (element (cursor));
+		circle_begin;
+		write_circle (element (cursor));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		circle_end;
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_silk_polygons.cursor) is 
-		use pac_silk_polygons;
+	procedure write_polygon (cursor : in pac_silk_contours.cursor) is 
+		use pac_silk_contours;
 	begin
 		fill_zone_begin;
-
-		write_easing (element (cursor).easing);
-		write_fill_style (element (cursor).fill_style);
-
-		case element (cursor).fill_style is
-			when HATCHED =>
-				write_hatching (element (cursor).hatching);
-
-			when others => null;
-		end case;
-
 		contours_begin;		
 		write_polygon_segments (type_contour (element (cursor)));
 		contours_end;
-		
 		fill_zone_end;
-
 	end write_polygon;
 
 	
-	procedure write_cutout (cursor : in pac_silk_cutouts.cursor) is 
-		use pac_silk_cutouts;
-	begin
-		cutout_zone_begin;
-
-		contours_begin;
-		write_polygon_segments (type_contour (element (cursor)));
-		contours_end;
-
-		cutout_zone_end;
-	end;
-
+	
 	
 -- ASSEMBLY DOCUMENTATION
 	procedure write_line (cursor : in pac_doc_lines.cursor) is 

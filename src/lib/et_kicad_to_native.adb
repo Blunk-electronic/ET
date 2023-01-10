@@ -801,8 +801,8 @@ package body et_kicad_to_native is
 				use pac_silk_circles;
 				circles_cursor : pac_silk_circles.cursor;
 
-				use pac_silk_polygons;
-				polygons_cursor : pac_silk_polygons.cursor;
+				use pac_silk_contours;
+				polygons_cursor : pac_silk_contours.cursor;
 
 				use pac_silkscreen_texts;
 				texts_cursor : pac_silkscreen_texts.cursor;
@@ -840,7 +840,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_circle (circle : in out type_fillable_circle) is 
+				procedure move_circle (circle : in out type_silk_circle) is 
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
@@ -856,7 +856,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_silk_contour) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
@@ -953,10 +953,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.silk_screen.top.polygons.first;
-				while polygons_cursor /= pac_silk_polygons.no_element loop
-					pac_silk_polygons.update_element (
-						container	=> module.board.silk_screen.top.polygons,
+				polygons_cursor := module.board.silk_screen.top.contours.first;
+				while polygons_cursor /= pac_silk_contours.no_element loop
+					pac_silk_contours.update_element (
+						container	=> module.board.silk_screen.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -965,10 +965,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.silk_screen.bottom.polygons.first;
-				while polygons_cursor /= pac_silk_polygons.no_element loop
-					pac_silk_polygons.update_element (
-						container	=> module.board.silk_screen.bottom.polygons,
+				polygons_cursor := module.board.silk_screen.bottom.contours.first;
+				while polygons_cursor /= pac_silk_contours.no_element loop
+					pac_silk_contours.update_element (
+						container	=> module.board.silk_screen.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					

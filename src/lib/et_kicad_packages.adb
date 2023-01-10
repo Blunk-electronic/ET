@@ -1737,13 +1737,13 @@ package body et_kicad_packages is
 				case circle.layer is
 					when TOP_SILK =>
 						silk_screen.top.circles.append ((pac_geometry_2.type_circle (circle) with 
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 						
 						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 
