@@ -1530,10 +1530,11 @@ is
 
 
 		procedure write_silkscreen is
-			use et_silkscreen.boards;
-			use pac_silkscreen_texts;
+			use et_silkscreen;
+			use pac_silk_texts;
 
-			procedure write_text (cursor : in pac_silkscreen_texts.cursor) is begin
+			-- CS move this procedure to et_pcb_rw
+			procedure write_text (cursor : in pac_silk_texts.cursor) is begin
 				text_begin;
 				write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (cursor).content));

@@ -100,13 +100,25 @@ package et_silkscreen is
 	
 
 	
+-- TEXTS:
+	
+	-- for texts in conductor layer to be exposed:
+	type type_silk_text is new type_text_fab_with_content with record
+		vectors	: type_vector_text;
+	end record;	
 
+	package pac_silk_texts is new doubly_linked_lists (type_silk_text);
+	use pac_silk_texts;
+
+	
+	
 	-- This is the base type for silk screen objects in general:
-	type type_silk_screen_base is tagged record
+	type type_silk_screen_base is tagged record -- CS rename to type_silkscreen
 		lines 		: pac_silk_lines.list;
 		arcs		: pac_silk_arcs.list;
 		circles		: pac_silk_circles.list;
 		contours	: pac_silk_contours.list;
+		texts		: pac_silk_texts.list;
 	end record;
 
 
@@ -117,16 +129,22 @@ package et_silkscreen is
 		cursor			: in pac_silk_lines.cursor;
 		log_threshold 	: in type_log_level);
 
-	-- Logs the properties of the given arc of silk screen
+	-- Logs the properties of the given arc:
 	procedure arc_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_arcs.cursor;
 		log_threshold 	: in type_log_level);
 
-	-- Logs the properties of the given circle of silk screen
+	-- Logs the properties of the given circle:
 	procedure circle_silk_screen_properties (
 		face			: in type_face;
 		cursor			: in pac_silk_circles.cursor;
+		log_threshold 	: in type_log_level);
+
+	-- Logs the properties of the given text:
+	procedure text_silk_screen_properties (
+		face			: in type_face;
+		cursor			: in pac_silk_texts.cursor;
 		log_threshold 	: in type_log_level);
 	
 end et_silkscreen;

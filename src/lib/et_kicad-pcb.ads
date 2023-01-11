@@ -75,12 +75,8 @@ with et_conductor_segment;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_stencil;				use et_stencil;
-
-with et_silkscreen.boards;		use et_silkscreen.boards;
-with et_silkscreen.packages;
-
+with et_silkscreen;				use et_silkscreen;
 with et_keepout;				use et_keepout;
-
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.packages;
 

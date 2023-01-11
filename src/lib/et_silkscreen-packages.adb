@@ -40,24 +40,9 @@ with ada.strings;				use ada.strings;
 
 package body et_silkscreen.packages is
 
-	procedure text_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_texts_fab_with_content;
-		use et_text.pac_text_content;
-		text : type_text_fab_with_content;
-	begin
-		text := element (cursor);
-		log (text => "silk screen text face" & to_string (face) & space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_silk_screen_properties;
 
+	procedure dummy is begin null; end;
 	
 end et_silkscreen.packages;
 

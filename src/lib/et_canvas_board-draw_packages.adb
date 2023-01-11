@@ -246,358 +246,217 @@ is
 		end draw_text_with_content;
 
 		
-		---- SILKSCREEN
+		-- SILKSCREEN
 		procedure draw_silkscreen is 
 			use et_silkscreen;
+
+			face : type_face := TOP;
 			
-			---- LINES
-			--use pac_silk_lines;
-			--line : type_silk_line;
-
-			--procedure draw_line (f : in type_face) is begin
-				--if silkscreen_enabled (f) then
-				
-					--if f = face then
-						--rotate_by (line, get_rotation (package_position));
-						
-						--if flipped then mirror (line, Y); end if;
-						
-						--move_by (line, to_distance_relative (package_position.place));
-
-						--set_color_silkscreen (context.cr, f, brightness);
-						--set_line_width (context.cr, type_view_coordinate (line.width));
-						--draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
-					--end if;
-
-				--end if;
-			--end draw_line;
-
-			
-			--procedure query_line_top (c : in pac_silk_lines.cursor) is begin
-				--line := element (c);
-				--set_destination;
-				--draw_line (destination);
-			--end query_line_top;
-
-			
-			--procedure query_line_bottom (c : in pac_silk_lines.cursor) is begin
-				--line := element (c);
-				--set_destination (INVERSE);
-				--draw_line (destination);
-			--end query_line_bottom;
-
-			
-			-- ARCS
+			use pac_silk_lines;
 			use pac_silk_arcs;
-			--arc : type_silk_arc;
-
-			--procedure draw_arc (f : in type_face) is begin
-				--if silkscreen_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (arc, get_rotation (package_position));
-						
-						--if flipped then mirror (arc, Y); end if;
-						
-						--move_by (arc, to_distance_relative (package_position.place));
-
-						--set_color_silkscreen (context.cr, f, brightness);
-						--set_line_width (context.cr, type_view_coordinate (arc.width));
-						--draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
-					--end if;
-					
-				--end if;
-			--end draw_arc;
-
-			
-			--procedure query_arc_top (c : in pac_silk_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination;
-				--draw_arc (destination);
-			--end query_arc_top;
-
-			
-			--procedure query_arc_bottom (c : in pac_silk_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination (INVERSE);
-				--draw_arc (destination);
-			--end query_arc_bottom;
-
-			
-			-- CIRCLES
 			use pac_silk_circles;
-
-			--procedure draw_circle (
-				--circle	: in out type_fillable_circle;
-				--f 		: in type_face) 
-			--is begin
-				--if silkscreen_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (circle, get_rotation (package_position));
-						
-						--if flipped then mirror (circle, Y); end if;
-						
-						--move_by (circle, to_distance_relative (package_position.place));
-
-						--set_color_silkscreen (context.cr, f, brightness);
-
-						--case circle.filled is
-							--when NO =>
-								--set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								--draw_circle (in_area, context, circle,
-										--circle.filled, circle.border_width, self.frame_height);
-
-							--when YES =>
-								--case circle.fill_style is
-									--when SOLID =>
-										--draw_circle (in_area, context, circle,
-											--circle.filled, zero, self.frame_height);
-
-									--when HATCHED => null; -- CS
-								--end case;
-						--end case;
-
-					--end if;
-
-				--end if;
-			--end draw_circle;
-
-			
-			--procedure query_circle_top (c : in pac_silk_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination;
-				--draw_circle (circle, destination);
-			--end query_circle_top;
-
-			
-			--procedure query_circle_bottom (c : in pac_silk_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_circle (circle, destination);
-			--end query_circle_bottom;
-
-			
-			-- CONTOURS
 			use pac_silk_contours;
-
-			--procedure draw_contour (
-				--polygon	: in out type_contour_non_conductor;
-				--f		: in type_face)
-			--is 
-				--drawn : boolean := false;
-			--begin
-				--if silkscreen_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (polygon, get_rotation (package_position));
-						
-						--if flipped then mirror (polygon, Y); end if;
-						
-						--move_by (polygon, to_distance_relative (package_position.place));
-
-						--set_color_silkscreen (context.cr, f, brightness);
-
-						--case polygon.fill_style is
-							--when SOLID =>
-								--draw_contour (
-									--area	=> in_area, 
-									--context	=> context, 
-									--contour	=> polygon,
-									--filled	=> YES,
-									--width	=> zero,
-									--height	=> self.frame_height, 
-									--drawn	=> drawn);
-
-							--when HATCHED =>
-								--set_line_width (context.cr,
-									--type_view_coordinate (polygon.hatching.border_width));
-								
-								--draw_contour (
-									--area	=> in_area, 
-									--context	=> context, 
-									--contour	=> polygon,
-									--filled	=> NO,
-									--width	=> polygon.hatching.border_width,
-									--height	=> self.frame_height, 
-									--drawn	=> drawn);
-								
-								---- CS hatching ?
-						--end case;
-						
-					--end if;
-				--end if;				
-			--end draw_contour;
-
-			
-			--procedure query_polygon_top (c : in pac_silk_contours.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination;
-				--draw_contour (polygon, destination);
-			--end query_polygon_top;
-
-			
-			--procedure query_polygon_bottom (c : in pac_silk_contours.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_contour (polygon, destination);
-			--end query_polygon_bottom;
-
-
-
-
-			-- PLACEHOLDERS
+			use pac_silk_texts;
 			use pac_text_placeholders;
 
-			procedure draw_placeholder (
-				ph	: in out type_text_placeholder;
-				f	: in type_face)
-			is
-				use et_pcb;
-				v_text : type_vector_text;
-			begin
-				if silkscreen_enabled (f) then
+			--procedure draw_placeholder (
+				--ph	: in out type_text_placeholder;
+				--f	: in type_face)
+			--is
+				--use et_pcb;
+				--v_text : type_vector_text;
+			--begin
+				--if silkscreen_enabled (f) then
 					
-					if f = face then
+					--if f = face then
 
-						-- Rotate the position of the placeholder by the rotation of the package.
-						-- NOTE: This does not affect the rotation of the placeholder text but only
-						-- the rotation about the origin of the package.
-						-- If the package has been flipped, then the rotation is counterclockwise.
-						if flipped then
-							rotate_by (ph.position.place, - get_rotation (package_position));
-						else
-							rotate_by (ph.position.place, get_rotation (package_position));
-						end if;
+						---- Rotate the position of the placeholder by the rotation of the package.
+						---- NOTE: This does not affect the rotation of the placeholder text but only
+						---- the rotation about the origin of the package.
+						---- If the package has been flipped, then the rotation is counterclockwise.
+						--if flipped then
+							--rotate_by (ph.position.place, - get_rotation (package_position));
+						--else
+							--rotate_by (ph.position.place, get_rotation (package_position));
+						--end if;
 
-						-- Move the placeholder by the package position to 
-						-- its final position:
-						move_by (ph.position.place, to_distance_relative (package_position.place));
+						---- Move the placeholder by the package position to 
+						---- its final position:
+						--move_by (ph.position.place, to_distance_relative (package_position.place));
 
-						set_color_silkscreen (context.cr, f, brightness);
+						--set_color_silkscreen (context.cr, f, brightness);
 
-						draw_text_origin (ph.position.place, f);
+						--draw_text_origin (ph.position.place, f);
+
+						---- Set the line width of the vector text:
+						--set_line_width (context.cr, type_view_coordinate (ph.line_width));
+
+						---- Vectorize the content of the placeholder on the fly:
+						--v_text := vectorize_text (
+							--content		=> to_placeholder_content (ph), -- map from meaning to content
+							--size		=> ph.size,
+							--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+							--position	=> ph.position.place,
+							--mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+							--line_width	=> ph.line_width,
+							--alignment	=> ph.alignment -- right, bottom
+							--);
+
+						---- Draw the content of the placeholder:
+						--draw_vector_text (in_area, context, v_text,
+							--ph.line_width, self.frame_height);
+						
+					--end if;
+
+				--end if;
+			--end draw_placeholder;
+
+			
+
+
+
+
+			
+			silkscreen : type_silk_screen_both_sides;
+			
+			procedure draw is
+
+				procedure query_line (c : in pac_silk_lines.cursor) is 
+					line : type_silk_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
+					draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+				end query_line;
+
+				procedure query_arc (c : in pac_silk_arcs.cursor) is 
+					arc : type_silk_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+				end query_arc;
+
+				procedure query_circle (c : in pac_silk_circles.cursor) is 
+					circle : type_silk_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					draw_circle (
+						area	=> in_area,
+						context	=> context, 
+						circle	=> circle,
+						filled	=> NO,
+						width	=> circle.width, 
+						height	=> self.frame_height);
+				end query_circle;
+
+				procedure query_contour (c : in pac_silk_contours.cursor) is 
+					contour : type_silk_contour renames element (c);
+					drawn : boolean := false;
+				begin
+					set_line_width (context.cr, type_view_coordinate (zero));
+					draw_contour (
+						area	=> in_area, 
+						context	=> context, 
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+				end query_contour;
+
+				procedure query_text (c : in pac_silk_texts.cursor) is 
+					text : type_silk_text renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (text.line_width));
+					draw_vector_text (
+						area	=> in_area, 
+						context	=> context, 
+						text	=> text.vectors,
+						width	=> text.line_width, 
+						height	=> self.frame_height);
+				end query_text;
+
+
+				face : type_face := TOP;
+				
+				procedure query_placeholder (c : in pac_text_placeholders.cursor) is
+					ph : type_text_placeholder renames element (c);
+				begin
+					-- Draw the placeholder only if it has content:
+					if not et_text.is_empty (to_placeholder_content (ph)) then
+
+						draw_text_origin (ph.position.place, face);
 
 						-- Set the line width of the vector text:
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
-						-- Vectorize the content of the placeholder on the fly:
-						v_text := vectorize_text (
-							content		=> to_placeholder_content (ph), -- map from meaning to content
-							size		=> ph.size,
-							rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							position	=> ph.position.place,
-							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-							line_width	=> ph.line_width,
-							alignment	=> ph.alignment -- right, bottom
-							);
+						-- CS
+						
+						---- Vectorize the content of the placeholder on the fly:
+						--v_text := vectorize_text (
+							--content		=> to_placeholder_content (ph), -- map from meaning to content
+							--size		=> ph.size,
+							--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+							--position	=> ph.position.place,
+							--mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+							--line_width	=> ph.line_width,
+							--alignment	=> ph.alignment -- right, bottom
+							--);
 
 						-- Draw the content of the placeholder:
-						draw_vector_text (in_area, context, v_text,
-							ph.line_width, self.frame_height);
+						--draw_vector_text (
+							--area	=> in_area, 
+							--context	=> context, 
+							--text	=> ph.v_text,
+							--width	=> ph.line_width, 
+							--height	=> self.frame_height);
 						
 					end if;
+				end query_placeholder;
 
-				end if;
-			end draw_placeholder;
-
-			
-			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
-				ph : type_text_placeholder := element (c);
+				
 			begin
-				-- Draw the placeholder only if it has content:
-				if not et_text.is_empty (to_placeholder_content (ph)) then
-					set_destination;
-					draw_placeholder (ph, destination);
-				end if;
-			end query_placeholder_top;
+				set_color_silkscreen (context.cr, face, brightness);
+				silkscreen.top.lines.iterate (query_line'access);
+				silkscreen.top.arcs.iterate (query_arc'access);
+				silkscreen.top.circles.iterate (query_circle'access);
+				silkscreen.top.contours.iterate (query_contour'access);
+				silkscreen.top.texts.iterate (query_text'access);
+				silkscreen.top.placeholders.iterate (query_placeholder'access);
 
+				face := BOTTOM;
+				set_color_silkscreen (context.cr, face, brightness);
+				silkscreen.bottom.lines.iterate (query_line'access);
+				silkscreen.bottom.arcs.iterate (query_arc'access);
+				silkscreen.bottom.circles.iterate (query_circle'access);
+				silkscreen.bottom.contours.iterate (query_contour'access);
+				silkscreen.bottom.texts.iterate (query_text'access);
+				silkscreen.bottom.placeholders.iterate (query_placeholder'access);
+			end draw;
 			
-			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
-				ph : type_text_placeholder := element (c);
-			begin
-				-- Draw the placeholder only if it has content:
-				if not et_text.is_empty (to_placeholder_content (ph)) then
-					set_destination (INVERSE);
-					draw_placeholder (ph, destination);
-				end if;
-			end query_placeholder_bottom;
-
-			
-			-- TEXTS
-			use pac_texts_fab_with_content;
-			
-			procedure draw_text (
-				t	: in out type_text_fab_with_content;
-				f	: in type_face) is
-			begin
-				if silkscreen_enabled (f) then
-	
-					if f = face then
-						set_color_silkscreen (context.cr, f, brightness);
-						draw_text_with_content (t, f);
-					end if;
-
-				end if;
-			end draw_text;
-
-			
-			procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
-				t : type_text_fab_with_content := element (c);
-			begin
-				-- Draw the text only if it has content:
-				if not et_text.is_empty (t.content) then
-					set_destination;
-					draw_text (t, destination);
-				end if;
-			end query_text_top;
-
-			
-			procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
-				t : type_text_fab_with_content := element (c);
-			begin
-				-- Draw the text only if it has content:
-				if not et_text.is_empty (t.content) then
-					set_destination (INVERSE);
-					draw_text (t, destination);
-				end if;
-			end query_text_bottom;
-
 			
 		begin -- draw_silkscreen
-			-- lines
-			--element (package_cursor).silk_screen.top.lines.iterate (query_line_top'access);
-			--element (package_cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);
+			if electric then
+				if silkscreen_enabled (face) then
+					silkscreen.top    := get_silkscreen_objects (device_electric, TOP);
+				end if;
 
-			---- arcs
-			--element (package_cursor).silk_screen.top.arcs.iterate (query_arc_top'access);
-			--element (package_cursor).silk_screen.bottom.arcs.iterate (query_arc_bottom'access);
+				face := BOTTOM;
+				if silkscreen_enabled (face) then
+					silkscreen.bottom := get_silkscreen_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if silkscreen_enabled (face) then
+					silkscreen.top    := get_silkscreen_objects (device_non_electric, TOP);
+				end if;
 
-			---- circles
-			--element (package_cursor).silk_screen.top.circles.iterate (query_circle_top'access);
-			--element (package_cursor).silk_screen.bottom.circles.iterate (query_circle_bottom'access);
+				face := BOTTOM;
+				if silkscreen_enabled (face) then
+					silkscreen.bottom := get_silkscreen_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
 
-			---- polygons
-			--element (package_cursor).silk_screen.top.polygons.iterate (query_polygon_top'access);
-			--element (package_cursor).silk_screen.bottom.polygons.iterate (query_polygon_bottom'access);
-
-			---- cutouts
-			--element (package_cursor).silk_screen.top.cutouts.iterate (query_cutout_top'access);
-			--element (package_cursor).silk_screen.bottom.cutouts.iterate (query_cutout_bottom'access);
-			
-			---- placeholders
-			--placeholders.silk_screen.top.iterate (query_placeholder_top'access);
-			--placeholders.silk_screen.bottom.iterate (query_placeholder_bottom'access);
-
-			---- texts
-			--element (package_cursor).silk_screen.top.texts.iterate (query_text_top'access);
-			--element (package_cursor).silk_screen.bottom.texts.iterate (query_text_bottom'access);
-
-			null;
+			draw;
 		end draw_silkscreen;
 
 		

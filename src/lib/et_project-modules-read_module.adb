@@ -4710,7 +4710,7 @@ is
 						use pac_geometry_2;
 						use et_pcb;
 
-						use et_silkscreen.boards;
+						use et_silkscreen;
 						use et_assy_doc.boards;
 						use et_stop_mask;
 						
@@ -4718,8 +4718,7 @@ is
 						mirror : type_vector_text_mirrored;
 					begin
 						-- compute vectors
-						-- NOTE: Texts in bottom keepout are never mirrored:
-						if face = BOTTOM and layer_cat = LAYER_CAT_KEEPOUT then
+						if face = BOTTOM then
 							mirror := NO;
 						else
 							mirror := face_to_mirror (face);
@@ -4739,7 +4738,7 @@ is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silkscreen_texts.append (
+										pac_silk_texts.append (
 											container	=> module.board.silk_screen.top.texts,
 											new_item	=> (board_text with v_text));
 
@@ -4759,7 +4758,7 @@ is
 							when BOTTOM =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silkscreen_texts.append (
+										pac_silk_texts.append (
 											container	=> module.board.silk_screen.bottom.texts,
 											new_item	=> (board_text with v_text));
 

@@ -295,9 +295,8 @@ package et_pcb is
 	
 -- SILK SCREEN
 	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen 
-		is new et_silkscreen.boards.type_silk_screen with
-	record
+	type type_silk_screen is new et_silkscreen.type_silk_screen_base with record
+		-- CS rename to type_silkscreen_board
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;

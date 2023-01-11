@@ -2142,6 +2142,7 @@ package body et_kicad_packages is
 
 			end insert_terminal;
 
+			
 			procedure insert_fp_text is 
 				use et_packages;
 				use et_text;
@@ -2192,14 +2193,13 @@ package body et_kicad_packages is
 						
 						case text.layer is
 							when TOP_SILK => 
-								--silk_screen.top.texts.append ((et_packages.type_text (text) with content => text.content));
 								silk_screen.top.texts.append ((type_text_fab (text) with 
-									content => text.content));
+									content => text.content, others => <>)); -- CS vectorize text
 								text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								silk_screen.bottom.texts.append ((type_text_fab (text) with 
-									content => text.content));
+									content => text.content, others => <>)); -- CS vectorize text
 								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 

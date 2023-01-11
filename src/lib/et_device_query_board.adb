@@ -669,7 +669,45 @@ package body et_device_query_board is
 
 	end get_stopmask_objects;
 	
+
+-- SILKSCREEN
 	
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return et_packages.type_silk_screen
+	is
+		result : et_packages.type_silk_screen;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		--rotation : type_rotation;
+
+	begin
+		--if device.appearance = PCB then
+			--packge := get_package_model (device_cursor);
+			--rotation := device.position.rotation;
+
+		return result;
+	end get_silkscreen_objects;
+	
+
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return et_packages.type_silk_screen
+	is
+		result : et_packages.type_silk_screen;
+
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		--rotation : type_rotation renames device.position.rotation;
+	begin
+
+		return result;
+	end get_silkscreen_objects;
+
+
 	
 -- HOLES
 	

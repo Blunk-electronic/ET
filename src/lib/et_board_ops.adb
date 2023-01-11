@@ -2758,7 +2758,7 @@ package body et_board_ops is
 			use et_text;
 			use pac_contour_texts;
 			use pac_assy_doc_texts;
-			use pac_silkscreen_texts;
+			use pac_silk_texts;
 			use pac_stop_texts;
 
 			v_text : type_vector_text;		

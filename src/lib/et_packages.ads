@@ -69,7 +69,7 @@ with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_stop_mask.packages;				use et_stop_mask.packages;
 with et_stencil;						use et_stencil;
-with et_silkscreen.packages;			use et_silkscreen.packages;
+with et_silkscreen;						use et_silkscreen;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
@@ -235,8 +235,8 @@ package et_packages is
 
 	
 	-- Silk screen objects include placeholders:
-	type type_silk_screen 
-		is new et_silkscreen.packages.type_silk_screen with
+	type type_silk_screen is new et_silkscreen.type_silk_screen_base with
+	-- CS rename to type_silkscreen_package
 	record
 		placeholders : pac_text_placeholders.list;
 	end record;

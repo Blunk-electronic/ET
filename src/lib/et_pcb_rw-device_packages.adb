@@ -174,6 +174,18 @@ package body et_pcb_rw.device_packages is
 			use pac_silk_arcs;
 			use pac_silk_circles;
 			use pac_silk_contours;
+			use pac_silk_texts;
+
+			-- CS move this procedure to et_pcb_rw
+			procedure write_text (cursor : in pac_silk_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+
 		begin
 			section_mark (section_silk_screen, HEADER);
 
@@ -1171,9 +1183,15 @@ package body et_pcb_rw.device_packages is
 							
 						when SEC_SILK_SCREEN =>
 
-							pac_texts_fab_with_content.append (
+							pac_silk_texts.append (
 								container	=> packge.silk_screen.top.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment)));
 
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
@@ -1193,8 +1211,7 @@ package body et_pcb_rw.device_packages is
 										rotation	=> pac_text.position.rotation,
 										position	=> pac_text.position.place,
 										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment,
-										make_border	=> true)));
+										alignment	=> pac_text.alignment)));
 
 							
 						when others => invalid_section;
@@ -1223,9 +1240,16 @@ package body et_pcb_rw.device_packages is
 
 						when SEC_SILK_SCREEN =>
 
-							pac_texts_fab_with_content.append (
+							pac_silk_texts.append (
 								container	=> packge.silk_screen.bottom.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										mirror		=> YES,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment)));
 
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
@@ -1246,9 +1270,7 @@ package body et_pcb_rw.device_packages is
 										position	=> pac_text.position.place,
 										mirror		=> YES,
 										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment,
-										make_border	=> true)));
-
+										alignment	=> pac_text.alignment)));
 
 							
 						when others => invalid_section;

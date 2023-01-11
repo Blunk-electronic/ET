@@ -237,8 +237,29 @@ package et_device_query_board is
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
 		return type_stopmask;
+
+
+-- SILKSCREEN:
 	
-	-- CS likewise for assy dock, silkscreen
+	-- Returns the silkscreen objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return et_packages.type_silk_screen;
+
+
+	-- Returns the silkscreen objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return et_packages.type_silk_screen;
+
+	
+	-- CS likewise for assy doc
 
 	
 

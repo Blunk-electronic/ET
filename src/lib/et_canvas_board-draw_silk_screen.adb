@@ -57,7 +57,7 @@ is
 	use pac_silk_arcs;
 	use pac_silk_circles;
 	use pac_silk_contours;
-	use pac_silkscreen_texts;
+	use pac_silk_texts;
 	use et_pcb.pac_text_placeholders;
 
 
@@ -148,7 +148,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_silkscreen_texts.cursor) is 
+	procedure query_text (c : in pac_silk_texts.cursor) is 
 		use pac_character_lines;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);

@@ -804,8 +804,8 @@ package body et_kicad_to_native is
 				use pac_silk_contours;
 				polygons_cursor : pac_silk_contours.cursor;
 
-				use pac_silkscreen_texts;
-				texts_cursor : pac_silkscreen_texts.cursor;
+				use pac_silk_texts;
+				texts_cursor : pac_silk_texts.cursor;
 				
 				board_silk_screen : constant string := "board silk screen ";
 				
@@ -862,7 +862,7 @@ package body et_kicad_to_native is
 				end;
 
 				
-				procedure move_text (text : in out type_silkscreen_text) is
+				procedure move_text (text : in out type_silk_text) is
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
@@ -978,8 +978,8 @@ package body et_kicad_to_native is
 				
 				-- TEXTS TOP
 				texts_cursor := module.board.silk_screen.top.texts.first;
-				while texts_cursor /= pac_silkscreen_texts.no_element loop
-					pac_silkscreen_texts.update_element (
+				while texts_cursor /= pac_silk_texts.no_element loop
+					pac_silk_texts.update_element (
 						container	=> module.board.silk_screen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -990,8 +990,8 @@ package body et_kicad_to_native is
 				
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.silk_screen.bottom.texts.first;
-				while texts_cursor /= pac_silkscreen_texts.no_element loop
-					pac_silkscreen_texts.update_element (
+				while texts_cursor /= pac_silk_texts.no_element loop
+					pac_silk_texts.update_element (
 						container	=> module.board.silk_screen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
