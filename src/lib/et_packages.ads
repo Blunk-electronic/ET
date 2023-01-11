@@ -240,6 +240,7 @@ package et_packages is
 		placeholders : pac_text_placeholders.list;
 	end record;
 
+	
 	-- Silkscreen is about two sides of the board:
 	type type_silkscreen_both_sides is record
 		top		: type_silkscreen_package;
@@ -338,9 +339,11 @@ package et_packages is
 		terminals				: pac_terminals.map;
 	end record;
 
+
+
 	
 	-- CS: this should be a hashed map:
-	package pac_package_models is new indefinite_ordered_maps (
+	package pac_package_models is new indefinite_ordered_maps ( -- CS ordered_maps ?
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
 		element_type	=> type_package_model);
 
@@ -443,6 +446,14 @@ package et_packages is
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
 		return et_stop_mask.type_stopmask;
+
+
+	-- Returns the contours of silkscreen objects of the given package.
+	-- Adresses only those objects affected by the given face:
+	--function get_silkscreen_objects (
+		--package_cursor	: in pac_package_models.cursor;
+		--face			: in type_face)
+		--return type_silkscreen_package;
 
 	
 	-- CS likewise for assy doc, silkscreen
