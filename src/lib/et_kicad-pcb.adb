@@ -519,7 +519,7 @@ package body et_kicad.pcb is
 		package_stencil			: et_stencil.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_silk_screen		: et_packages.type_silk_screen_both_sides;
+		package_silk_screen		: et_packages.type_silkscreen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
 		package_keepout			: et_keepout.type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;

@@ -247,7 +247,7 @@ package et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
-		return et_packages.type_silk_screen;
+		return type_silkscreen_package;
 
 
 	-- Returns the silkscreen objects of the given non-electrical device
@@ -256,7 +256,7 @@ package et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
-		return et_packages.type_silk_screen;
+		return type_silkscreen_package;
 
 	
 	-- CS likewise for assy doc

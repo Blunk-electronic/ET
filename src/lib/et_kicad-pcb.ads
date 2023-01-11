@@ -533,7 +533,7 @@ package et_kicad.pcb is
 	
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
-		silk_screen				: et_packages.type_silk_screen_both_sides;
+		silk_screen				: et_packages.type_silkscreen_both_sides;
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
@@ -680,7 +680,7 @@ package et_kicad.pcb is
 		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
 
-		silk_screen	: et_pcb.type_silk_screen_both_sides;
+		silk_screen	: et_pcb.type_silkscreen_both_sides;
 		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;

@@ -112,8 +112,8 @@ package et_silkscreen is
 
 	
 	
-	-- This is the base type for silk screen objects in general:
-	type type_silk_screen_base is tagged record -- CS rename to type_silkscreen
+	-- This is the base type for silkscreen objects in general:
+	type type_silkscreen is tagged record
 		lines 		: pac_silk_lines.list;
 		arcs		: pac_silk_arcs.list;
 		circles		: pac_silk_circles.list;

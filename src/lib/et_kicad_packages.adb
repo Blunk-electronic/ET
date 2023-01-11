@@ -622,8 +622,8 @@ package body et_kicad_packages is
 		stencil : type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 	
-		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		silk_screen : et_packages.type_silk_screen_both_sides;
+		-- SILKSCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
+		silk_screen : et_packages.type_silkscreen_both_sides;
 	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
 		assy_doc : et_packages.type_assembly_documentation_both_sides;

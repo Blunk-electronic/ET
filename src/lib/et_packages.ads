@@ -234,17 +234,16 @@ package et_packages is
 		
 
 	
-	-- Silk screen objects include placeholders:
-	type type_silk_screen is new et_silkscreen.type_silk_screen_base with
-	-- CS rename to type_silkscreen_package
-	record
+	-- Silkscreen objects include placeholders for device name,
+	-- value, purpose:
+	type type_silkscreen_package is new type_silkscreen with record
 		placeholders : pac_text_placeholders.list;
 	end record;
 
-	-- silk screen is about two sides of the board:
-	type type_silk_screen_both_sides is record
-		top		: type_silk_screen;
-		bottom	: type_silk_screen;
+	-- Silkscreen is about two sides of the board:
+	type type_silkscreen_both_sides is record
+		top		: type_silkscreen_package;
+		bottom	: type_silkscreen_package;
 	end record;
 
 	
@@ -334,7 +333,7 @@ package et_packages is
 	-- A package in the library extends the base package type:
 	type type_package_model is new type_package_base with record
 		-- CS default for face ?
-		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
+		silk_screen				: type_silkscreen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: pac_terminals.map;
 	end record;

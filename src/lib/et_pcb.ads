@@ -79,7 +79,7 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_stop_mask;					use et_stop_mask;
 with et_stencil;					use et_stencil;
-with et_silkscreen.boards;			use et_silkscreen.boards;
+with et_silkscreen;					use et_silkscreen;
 with et_assy_doc.boards;			use et_assy_doc.boards;
 with et_keepout;					use et_keepout;
 with et_pcb_contour;				use et_pcb_contour;
@@ -284,28 +284,23 @@ package et_pcb is
 	
 
 
-
--- STENCIL
-	-- Stencil has no extensions.
-	-- See et_packages.
-
-
 	
 	
 	
--- SILK SCREEN
-	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen is new et_silkscreen.type_silk_screen_base with record
-		-- CS rename to type_silkscreen_board
-		-- Placeholders for revision, board name, misc ... :
+-- SILKSCREEN
+
+	-- For silkscreen objects that do NOT belong to any packages use this type.
+	-- Such objects are lines, arcs, circles, contours and 
+	-- placeholders for board revision, name, misc ... :
+	type type_silkscreen_board is new type_silkscreen with record
 		placeholders : pac_text_placeholders.list;
 	end record;
 		
-
-	-- Because silk screen is about two sides of the board this composite is required:	
-	type type_silk_screen_both_sides is record
-		top 	: type_silk_screen;
-		bottom	: type_silk_screen;
+	-- Because silkscreen is about two sides of the board this 
+	-- composite is required:	
+	type type_silkscreen_both_sides is record
+		top 	: type_silkscreen_board;
+		bottom	: type_silkscreen_board;
 	end record;
 
 
@@ -453,7 +448,7 @@ package et_pcb is
 		frame			: et_frames.type_frame_pcb; -- incl. template name
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
-		silk_screen		: type_silk_screen_both_sides;
+		silk_screen		: type_silkscreen_both_sides;
 		assy_doc		: type_assembly_documentation_both_sides;
 		stencil			: type_stencil_both_sides;
 		stop_mask		: type_stop_mask_both_sides;

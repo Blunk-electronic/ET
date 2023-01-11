@@ -317,7 +317,7 @@ is
 
 
 			
-			silkscreen : type_silk_screen_both_sides;
+			silkscreen : type_silkscreen_both_sides;
 			
 			procedure draw is
 
@@ -421,7 +421,7 @@ is
 				silkscreen.top.circles.iterate (query_circle'access);
 				silkscreen.top.contours.iterate (query_contour'access);
 				silkscreen.top.texts.iterate (query_text'access);
-				silkscreen.top.placeholders.iterate (query_placeholder'access);
+				--silkscreen.top.placeholders.iterate (query_placeholder'access);
 
 				face := BOTTOM;
 				set_color_silkscreen (context.cr, face, brightness);
@@ -430,7 +430,7 @@ is
 				silkscreen.bottom.circles.iterate (query_circle'access);
 				silkscreen.bottom.contours.iterate (query_contour'access);
 				silkscreen.bottom.texts.iterate (query_text'access);
-				silkscreen.bottom.placeholders.iterate (query_placeholder'access);
+				--silkscreen.bottom.placeholders.iterate (query_placeholder'access);
 			end draw;
 			
 			

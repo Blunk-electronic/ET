@@ -675,9 +675,9 @@ package body et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
-		return et_packages.type_silk_screen
+		return type_silkscreen_package
 	is
-		result : et_packages.type_silk_screen;
+		result : type_silkscreen_package;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		--rotation : type_rotation;
@@ -694,9 +694,9 @@ package body et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
-		return et_packages.type_silk_screen
+		return type_silkscreen_package
 	is
-		result : et_packages.type_silk_screen;
+		result : type_silkscreen_package;
 
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
