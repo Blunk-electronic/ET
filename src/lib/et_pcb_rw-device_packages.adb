@@ -217,8 +217,19 @@ package body et_pcb_rw.device_packages is
 			use pac_doc_lines;
 			use pac_doc_arcs;
 			use pac_doc_circles;
-			use pac_doc_polygons;
-			use pac_doc_cutouts;
+			use pac_doc_contours;
+			use pac_doc_texts;
+
+			-- CS move this procedure to et_pcb_rw
+			procedure write_text (cursor : in pac_doc_texts.cursor) is begin
+				text_begin;
+				write (keyword => keyword_content, wrap => true,
+					parameters => to_string (element (cursor).content));
+
+				write_text_properties (element (cursor));
+				text_end;
+			end write_text;
+
 		begin
 			section_mark (section_assembly_doc, HEADER);
 
@@ -227,8 +238,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.assembly_documentation.top.lines, write_line'access);
 			iterate (packge.assembly_documentation.top.arcs, write_arc'access);
 			iterate (packge.assembly_documentation.top.circles, write_circle'access);
-			iterate (packge.assembly_documentation.top.polygons, write_polygon'access);
-			iterate (packge.assembly_documentation.top.cutouts, write_cutout'access);
+			iterate (packge.assembly_documentation.top.contours, write_polygon'access);
 			iterate (packge.assembly_documentation.top.texts, write_text'access);
 			iterate (packge.assembly_documentation.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -238,8 +248,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.assembly_documentation.bottom.lines, write_line'access);
 			iterate (packge.assembly_documentation.bottom.arcs, write_arc'access);
 			iterate (packge.assembly_documentation.bottom.circles, write_circle'access);
-			iterate (packge.assembly_documentation.bottom.polygons, write_polygon'access);
-			iterate (packge.assembly_documentation.bottom.cutouts, write_cutout'access);			
+			iterate (packge.assembly_documentation.bottom.contours, write_polygon'access);
 			iterate (packge.assembly_documentation.bottom.texts, write_text'access);
 			iterate (packge.assembly_documentation.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
@@ -1196,9 +1205,15 @@ package body et_pcb_rw.device_packages is
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
-							pac_texts_fab_with_content.append (
+							pac_doc_texts.append (
 								container	=> packge.assembly_documentation.top.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment)));
 
 							
 						when SEC_STOP_MASK =>
@@ -1254,9 +1269,15 @@ package body et_pcb_rw.device_packages is
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
-							pac_texts_fab_with_content.append (
+							pac_doc_texts.append (
 								container	=> packge.assembly_documentation.bottom.texts,
-								new_item	=> pac_text);
+								new_item	=> (pac_text with vectorize_text (
+										content		=> pac_text.content,
+										size		=> pac_text.size,
+										rotation	=> pac_text.position.rotation,
+										position	=> pac_text.position.place,
+										line_width	=> pac_text.line_width,
+										alignment	=> pac_text.alignment)));
 
 							
 						when SEC_STOP_MASK =>
@@ -1310,46 +1331,19 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_assy_doc_polygon_top is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (contour with 
-												easing		=> board_easing,
-												fill_style	=> SOLID));
+					pac_doc_contours.append (
+						container	=> packge.assembly_documentation.top.contours, 
+						new_item	=> (contour with null record));
 
-						when HATCHED =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (contour with 
-												fill_style	=> HATCHED,
-												easing		=> board_easing,
-												hatching 	=> board_hatching));
-					end case;
-					
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
 
 				
 				procedure append_assy_doc_polygon_bottom is begin
-					case board_fill_style is
-						when SOLID =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (contour with 
-												easing 		=> board_easing,
-												fill_style	=> SOLID));
-
-						when HATCHED =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (contour with 
-												fill_style	=> HATCHED,
-												easing		=> board_easing,
-												hatching	=> board_hatching));
-
-					end case;
+					pac_doc_contours.append (
+						container	=> packge.assembly_documentation.bottom.contours, 
+						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon
 					board_reset_contour;
@@ -1454,26 +1448,6 @@ package body et_pcb_rw.device_packages is
 						container	=> packge.via_restrict.bottom.zones, 
 						new_item	=> (contour with null record));
 
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_assy_doc_cutout_top is begin
-					pac_doc_cutouts.append (
-						container	=> packge.assembly_documentation.top.cutouts, 
-						new_item	=> contour);
-					
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-			
-
-				procedure append_assy_doc_cutout_bottom is begin
-					pac_doc_cutouts.append (
-						container	=> packge.assembly_documentation.bottom.cutouts, 
-						new_item	=> contour);
-					
 					-- clean up for next polygon
 					board_reset_contour;
 				end;
@@ -1959,7 +1933,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
 											container	=> packge.assembly_documentation.top.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 										
@@ -2017,7 +1991,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
 											container	=> packge.assembly_documentation.bottom.circles, 
-											new_item	=> board_make_fillable_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 
@@ -2128,9 +2102,6 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_ASSEMBLY_DOCUMENTATION =>
-										append_assy_doc_cutout_top;
-										
 									when SEC_STOP_MASK =>
 										append_stop_cutout_top;
 										
@@ -2148,9 +2119,6 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_ASSEMBLY_DOCUMENTATION =>
-										append_assy_doc_cutout_bottom;
-										
 									when SEC_STOP_MASK =>
 										append_stop_cutout_bottom;
 										

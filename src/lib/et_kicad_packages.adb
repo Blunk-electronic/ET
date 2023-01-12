@@ -626,7 +626,7 @@ package body et_kicad_packages is
 		silk_screen : et_silkscreen.packages.type_silkscreen_both_sides;
 	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		assy_doc : et_packages.type_assembly_documentation_both_sides;
+		assy_doc : et_assy_doc.packages.type_assy_doc_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		keepout : type_keepout_both_sides;
@@ -1750,13 +1750,13 @@ package body et_kicad_packages is
 						
 					when TOP_ASSY =>
 						assy_doc.top.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 
 						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
+							width => circle.width)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 	
@@ -2201,16 +2201,18 @@ package body et_kicad_packages is
 								silk_screen.bottom.texts.append ((type_text_fab (text) with 
 									content => text.content, others => <>)); -- CS vectorize text
 								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
+
 								
 							when TOP_ASSY => 
 								assy_doc.top.texts.append ((type_text_fab (text) with 
-									content => text.content));
+									content => text.content, others => <>)); -- CS vectorize text
 								text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								assy_doc.bottom.texts.append ((type_text_fab (text) with
-									content => text.content));
+									content => text.content, others => <>)); -- CS vectorize text
 								text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
+
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
 								=> invalid_layer_user;

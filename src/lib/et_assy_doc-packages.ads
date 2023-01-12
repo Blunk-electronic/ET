@@ -36,22 +36,25 @@
 --
 --   to do:
 
+with et_device_placeholders.packages;			use et_device_placeholders.packages;
+
+
 package et_assy_doc.packages is
 
-	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation 
-		is new type_assembly_documentation_base with 
-	record
-		texts		: pac_texts_fab_with_content.list;
+	-- Assembly documentation objects include placeholders for device name,
+	-- value, purpose:
+	type type_assy_doc_package is new type_assy_doc with record
+		placeholders : pac_text_placeholders.list;
 	end record;
 
+	
+	-- Assembly documentation is about two sides of the board:
+	type type_assy_doc_both_sides is record
+		top		: type_assy_doc_package;
+		bottom	: type_assy_doc_package;
+	end record;
 
-	-- Logs the properties of the given assembly documentation text
-	procedure text_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_texts_fab_with_content.cursor;
-		log_threshold 	: in type_log_level);
-
+	procedure dummy;
 	
 end et_assy_doc.packages;
 

@@ -52,14 +52,12 @@ is
 	use et_board_shapes_and_text;
 	use pac_geometry_2;	
 
-	--use et_packages;
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;
-	use pac_doc_polygons;
-	use pac_doc_cutouts;
+	use pac_doc_contours;
 	use et_pcb.pac_text_placeholders;
-	use pac_assy_doc_texts;
+	use pac_doc_texts;
 
 
 	-- CS must be overwritten according to select status:
@@ -92,87 +90,37 @@ is
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_doc_circles.cursor) is begin
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal non-filled circle:
-				set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+	procedure query_circle (c : in pac_doc_circles.cursor) is 
+		circle : type_doc_circle renames element (c);
+	begin
+		set_line_width (context.cr, type_view_coordinate (circle.width));
 
-				draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					width		=> element (c).border_width,
-					height		=> self.frame_height);
-				
-			when YES =>
-				-- We draw a filled circle with a certain fill style:
-				case element (c).fill_style is
-					when SOLID =>
-						draw_circle (
-							area		=> in_area,
-							context		=> context,
-							circle		=> element (c),
-							filled		=> YES,
-							width		=> zero,
-							height		=> self.frame_height);
-
-					when HATCHED 	=> null; -- CS
-				end case;
-		end case;
+		draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> circle,
+			filled		=> NO,
+			width		=> circle.width,
+			height		=> self.frame_height);
 
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_doc_polygons.cursor) is 
+	procedure query_polygon (c : in pac_doc_contours.cursor) is 
+		contour : type_doc_contour renames element (c);
 		drawn : boolean := false;
 	begin
-		case element (c).fill_style is
-			when SOLID =>
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> YES,
-					width	=> zero,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-			when HATCHED =>
-				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
-
-				draw_contour (
-					area	=> in_area,
-					context	=> context,
-					contour	=> element (c),
-					filled	=> NO,
-					width	=> element (c).hatching.border_width,
-					height	=> self.frame_height,
-					drawn	=> drawn);
-
-				-- CS hatching ?
-		end case;
-	end query_polygon;
-
-	
-	procedure query_cutout (c : in pac_doc_cutouts.cursor) is 
-		drawn : boolean := false;
-	begin
-		save (context.cr);
-		set_color_background (context.cr);
-		
 		draw_contour (
 			area	=> in_area,
 			context	=> context,
-			contour	=> element (c),
+			contour	=> contour,
 			filled	=> YES,
 			width	=> zero,
 			height	=> self.frame_height,
 			drawn	=> drawn);
 
-		restore (context.cr);
-	end query_cutout;
+	end query_polygon;
+
 
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
@@ -201,7 +149,7 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_assy_doc_texts.cursor) is begin
+	procedure query_text (c : in pac_doc_texts.cursor) is begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
 		-- Set the line width of the vector text:
@@ -226,8 +174,7 @@ is
 				iterate (module.board.assy_doc.top.lines, query_line'access);
 				iterate (module.board.assy_doc.top.arcs, query_arc'access);
 				iterate (module.board.assy_doc.top.circles, query_circle'access);
-				iterate (module.board.assy_doc.top.polygons, query_polygon'access);
-				iterate (module.board.assy_doc.top.cutouts, query_cutout'access);
+				iterate (module.board.assy_doc.top.contours, query_polygon'access);
 				iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.top.texts, query_text'access);
 
@@ -235,8 +182,7 @@ is
 				iterate (module.board.assy_doc.bottom.lines, query_line'access);
 				iterate (module.board.assy_doc.bottom.arcs, query_arc'access);
 				iterate (module.board.assy_doc.bottom.circles, query_circle'access);
-				iterate (module.board.assy_doc.bottom.polygons, query_polygon'access);
-				iterate (module.board.assy_doc.bottom.cutouts, query_cutout'access);
+				iterate (module.board.assy_doc.bottom.contours, query_polygon'access);
 				iterate (module.board.assy_doc.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.bottom.texts, query_text'access);
 

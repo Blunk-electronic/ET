@@ -259,17 +259,17 @@ package et_packages is
 	
 
 	-- Assembly documentation includes placeholders:
-	type type_assembly_documentation 
-		is new et_assy_doc.packages.type_assembly_documentation with 
-	record
-		placeholders: pac_text_placeholders.list;
-	end record;
+	--type type_assembly_documentation 
+		--is new et_assy_doc.packages.type_assembly_documentation with 
+	--record
+		--placeholders: pac_text_placeholders.list;
+	--end record;
 
-	-- Because assembly documentation is about two sides of the board this composite is required:
-	type type_assembly_documentation_both_sides is record
-		top		: type_assembly_documentation;
-		bottom	: type_assembly_documentation;
-	end record;
+	---- Because assembly documentation is about two sides of the board this composite is required:
+	--type type_assembly_documentation_both_sides is record
+		--top		: type_assembly_documentation;
+		--bottom	: type_assembly_documentation;
+	--end record;
 
 
 
@@ -344,7 +344,7 @@ package et_packages is
 	type type_package_model is new type_package_base with record
 		-- CS default for face ?
 		silk_screen				: type_silkscreen_both_sides; -- incl. placeholder for name and purpose
-		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
+		assembly_documentation	: type_assy_doc_both_sides; -- incl. placeholder for value
 		terminals				: pac_terminals.map;
 	end record;
 
@@ -457,15 +457,22 @@ package et_packages is
 		return et_stop_mask.type_stopmask;
 
 
-	-- Returns the contours of silkscreen objects of the given package.
+	-- Returns the contours of silkscreen objects (incl. plaaceholders) 
+	-- of the given package model.
 	-- Adresses only those objects affected by the given face:
 	function get_silkscreen_objects (
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
 		return type_silkscreen_package;
 
-	
-	-- CS likewise for assy doc, silkscreen
+
+	-- Returns the contours of assembly documentation 
+	-- objects (incl. plaaceholders) of the given package model.
+	-- Adresses only those objects affected by the given face:
+	function get_assy_doc_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_assy_doc_package;
 	
 	
 	-- To indicate whether a package has been flipped in the board:

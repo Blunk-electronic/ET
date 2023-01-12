@@ -47,7 +47,7 @@ with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
-with et_conductor_text;			use et_conductor_text;
+--with et_conductor_text;			use et_conductor_text;
 with et_logging;				use et_logging;
 
 
@@ -57,32 +57,67 @@ package et_assy_doc is
 	use pac_contours;
 	use pac_text_board;
 
+	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
+
 	
-	type type_doc_line is new type_line with record
-		width	: type_general_line_width;
+-- LINES:
+	
+	type type_doc_line is new pac_geometry_2.type_line with record
+		width	: type_linewidth;
 	end record;
 
 	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
+	use pac_doc_lines;
 
 
-	type type_doc_arc is new type_arc with record
-		width	: type_general_line_width;
+
+-- ARCS:
+	
+	type type_doc_arc is new pac_geometry_2.type_arc with record
+		width	: type_linewidth;
 	end record;
 
 	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
+	use pac_doc_arcs;
+
+
+-- CIRCLES:
+
+	type type_doc_circle is new pac_geometry_2.type_circle with record
+		width	: type_linewidth;
+	end record;
 	
-	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package pac_doc_circles is new doubly_linked_lists (type_doc_circle);
+	use pac_doc_circles;
 	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_contour_non_conductor);
-	package pac_doc_cutouts is new doubly_linked_lists (type_contour);	
+
+-- CONTOURS:
 	
-	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation_base is tagged record
+	type type_doc_contour is new type_contour with null record;
+	package pac_doc_contours is new indefinite_doubly_linked_lists (type_doc_contour);
+	use pac_doc_contours;
+	
+
+	
+-- TEXTS:
+	
+	-- for texts in conductor layer to be exposed:
+	type type_doc_text is new type_text_fab_with_content with record
+		vectors	: type_vector_text;
+	end record;	
+
+	package pac_doc_texts is new doubly_linked_lists (type_doc_text);
+	use pac_doc_texts;
+
+	
+	
+	-- This is the base type for assy doc objects in general:
+	type type_assy_doc is tagged record
 		lines 		: pac_doc_lines.list;
 		arcs		: pac_doc_arcs.list;
 		circles		: pac_doc_circles.list;
-		polygons	: pac_doc_polygons.list;
-		cutouts		: pac_doc_cutouts.list;
+		contours	: pac_doc_contours.list;
+		texts		: pac_doc_texts.list;
 	end record;
 
 
@@ -104,8 +139,12 @@ package et_assy_doc is
 		cursor			: in pac_doc_circles.cursor;
 		log_threshold 	: in type_log_level);
 
-
-
+	-- Logs the properties of the given text:
+	procedure text_assy_doc_properties (
+		face			: in type_face;
+		cursor			: in pac_doc_texts.cursor;
+		log_threshold 	: in type_log_level);
+	
 	
 end et_assy_doc;
 

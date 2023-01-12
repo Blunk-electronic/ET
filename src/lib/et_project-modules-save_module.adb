@@ -1205,7 +1205,7 @@ is
 		use pac_doc_lines;
 		use pac_doc_arcs;
 		use pac_doc_circles;
-		use pac_doc_polygons;
+		use pac_doc_contours;
 
 		use et_stencil;
 		use pac_stencil_lines;
@@ -1352,9 +1352,8 @@ is
 			placeholder_end;
 		end write_placeholder;
 
-		use pac_doc_cutouts;
-		use pac_keepout_cutouts;
 
+		use pac_keepout_cutouts;
 		use pac_route_restrict_cutouts;
 		use pac_via_restrict_cutouts;
 		use et_pcb.pac_devices_non_electric;
@@ -1571,9 +1570,9 @@ is
 
 		procedure write_assy_doc is
 			use et_assy_doc.boards;
-			use pac_assy_doc_texts;
+			use pac_doc_texts;
 
-			procedure write_text (cursor : in pac_assy_doc_texts.cursor) is begin
+			procedure write_text (cursor : in pac_doc_texts.cursor) is begin
 				text_begin;
 				write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (cursor).content));
@@ -1588,8 +1587,7 @@ is
 			iterate (element (module_cursor).board.assy_doc.top.lines, write_line'access);
 			iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.assy_doc.top.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.assy_doc.top.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.assy_doc.top.contours, write_polygon'access);
 			iterate (element (module_cursor).board.assy_doc.top.texts, write_text'access);
 			iterate (element (module_cursor).board.assy_doc.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -1598,8 +1596,7 @@ is
 			iterate (element (module_cursor).board.assy_doc.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.assy_doc.bottom.polygons, write_polygon'access);
-			iterate (element (module_cursor).board.assy_doc.bottom.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.assy_doc.bottom.contours, write_polygon'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.texts, write_text'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);

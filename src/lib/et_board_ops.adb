@@ -2088,7 +2088,7 @@ package body et_board_ops is
 	procedure draw_assy_doc_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		circle			: in type_fillable_circle;
+		circle			: in type_doc_circle;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2757,7 +2757,7 @@ package body et_board_ops is
 		is
 			use et_text;
 			use pac_contour_texts;
-			use pac_assy_doc_texts;
+			use pac_doc_texts;
 			use pac_silk_texts;
 			use pac_stop_texts;
 

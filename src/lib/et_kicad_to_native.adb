@@ -1014,11 +1014,11 @@ package body et_kicad_to_native is
 				use pac_doc_circles;
 				circles_cursor : pac_doc_circles.cursor;
 
-				use pac_doc_polygons;
-				polygons_cursor : pac_doc_polygons.cursor;
+				use pac_doc_contours;
+				polygons_cursor : pac_doc_contours.cursor;
 
-				use pac_assy_doc_texts;
-				texts_cursor : pac_assy_doc_texts.cursor;
+				use pac_doc_texts;
+				texts_cursor : pac_doc_texts.cursor;
 				
 				doc : constant string := "board assembly documentation ";
 
@@ -1054,7 +1054,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				
-				procedure move_circle (circle : in out type_fillable_circle) is 
+				procedure move_circle (circle : in out type_doc_circle) is 
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
@@ -1070,13 +1070,13 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_contour_non_conductor) is begin
+				procedure move_polygon (polygon : in out type_doc_contour) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
 				
-				procedure move_text (text : in out type_assy_doc_text) is
+				procedure move_text (text : in out type_doc_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.pac_geometry_2;
 				begin
@@ -1168,10 +1168,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.assy_doc.top.polygons.first;
-				while polygons_cursor /= pac_doc_polygons.no_element loop
-					pac_doc_polygons.update_element (
-						container	=> module.board.assy_doc.top.polygons,
+				polygons_cursor := module.board.assy_doc.top.contours.first;
+				while polygons_cursor /= pac_doc_contours.no_element loop
+					pac_doc_contours.update_element (
+						container	=> module.board.assy_doc.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1180,20 +1180,21 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.assy_doc.bottom.polygons.first;
-				while polygons_cursor /= pac_doc_polygons.no_element loop
-					pac_doc_polygons.update_element (
-						container	=> module.board.assy_doc.bottom.polygons,
+				polygons_cursor := module.board.assy_doc.bottom.contours.first;
+				while polygons_cursor /= pac_doc_contours.no_element loop
+					pac_doc_contours.update_element (
+						container	=> module.board.assy_doc.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
 					next (polygons_cursor);
 				end loop;	
 
+				
 				-- TEXTS TOP
 				texts_cursor := module.board.assy_doc.top.texts.first;
-				while texts_cursor /= pac_assy_doc_texts.no_element loop
-					pac_assy_doc_texts.update_element (
+				while texts_cursor /= pac_doc_texts.no_element loop
+					pac_doc_texts.update_element (
 						container	=> module.board.assy_doc.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1204,8 +1205,8 @@ package body et_kicad_to_native is
 				
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.assy_doc.bottom.texts.first;
-				while texts_cursor /= pac_assy_doc_texts.no_element loop
-					pac_assy_doc_texts.update_element (
+				while texts_cursor /= pac_doc_texts.no_element loop
+					pac_doc_texts.update_element (
 						container	=> module.board.assy_doc.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);

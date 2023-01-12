@@ -987,44 +987,23 @@ package body et_pcb_rw is
 	procedure write_circle (cursor : in pac_doc_circles.cursor) is
 		use pac_doc_circles;
 	begin
-		write_circle_fillable (element (cursor));
+		circle_begin;
+		write_circle (element (cursor));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		circle_end;
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_doc_polygons.cursor) is 
-		use pac_doc_polygons;
+	procedure write_polygon (cursor : in pac_doc_contours.cursor) is 
+		use pac_doc_contours;
 	begin
 		fill_zone_begin;
-
-		write_easing (element (cursor).easing);
-		write_fill_style (element (cursor).fill_style);
-
-		case element (cursor).fill_style is
-			when HATCHED =>
-				write_hatching (element (cursor).hatching);
-
-			when others => null;
-		end case;
-
 		contours_begin;		
 		write_polygon_segments (element (cursor));
 		contours_end;
-		
 		fill_zone_end;
 	end write_polygon;
 
-	
-	procedure write_cutout (cursor : in pac_doc_cutouts.cursor) is 
-		use pac_doc_cutouts;
-	begin
-		cutout_zone_begin;
-
-		contours_begin;
-		write_polygon_segments (element (cursor));
-		contours_end;
-		
-		cutout_zone_end;
-	end;
 
 	
 -- KEEPOUT
@@ -1033,11 +1012,9 @@ package body et_pcb_rw is
 		use pac_keepout_zones;
 	begin
 		fill_zone_begin;
-
 		contours_begin;
 		write_polygon_segments (element (cursor));
 		contours_end;
-
 		fill_zone_end;
 	end write_polygon;
 
@@ -1045,12 +1022,10 @@ package body et_pcb_rw is
 	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
 		use pac_keepout_cutouts;
 	begin
-		cutout_zone_begin;
-		
+		cutout_zone_begin;		
 		contours_begin;
 		write_polygon_segments (element (cursor));
 		contours_end;
-		
 		cutout_zone_end;
 	end;
 

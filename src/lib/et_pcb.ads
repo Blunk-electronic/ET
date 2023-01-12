@@ -81,7 +81,7 @@ with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_stop_mask;					use et_stop_mask;
 with et_stencil;					use et_stencil;
 with et_silkscreen;					use et_silkscreen;
-with et_assy_doc.boards;			use et_assy_doc.boards;
+with et_assy_doc;					use et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_pcb_contour;				use et_pcb_contour;
 --with et_contour_to_polygon;
@@ -309,19 +309,19 @@ package et_pcb is
 
 -- ASSEMBLY DOCUMENTATION
 
-	-- For assembly documentation objects that do not belong to any packages use this type:
-	type type_assembly_documentation 
-		is new et_assy_doc.boards.type_assembly_documentation with
-	record
+	-- For assembly documentation objects that do NOT belong to any packages use this type:
+	-- Such objects are lines, arcs, circles, contours and 
+	-- placeholders for board revision, name, misc ... :
+	type type_assy_doc_board is new type_assy_doc with record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;
 
 
 	-- Because assembly documentation is about two sides of the board this composite is required:	
-	type type_assembly_documentation_both_sides is record
-		top 	: type_assembly_documentation;
-		bottom	: type_assembly_documentation;
+	type type_assy_doc_both_sides is record
+		top 	: type_assy_doc_board;
+		bottom	: type_assy_doc_board;
 	end record;
 
 
@@ -450,7 +450,7 @@ package et_pcb is
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
 		silk_screen		: type_silkscreen_both_sides;
-		assy_doc		: type_assembly_documentation_both_sides;
+		assy_doc		: type_assy_doc_both_sides;
 		stencil			: type_stencil_both_sides;
 		stop_mask		: type_stop_mask_both_sides;
 		keepout			: type_keepout_both_sides;

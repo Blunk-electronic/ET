@@ -3201,7 +3201,7 @@ is
 								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
 										container	=> module.board.assy_doc.top.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
@@ -3226,7 +3226,7 @@ is
 								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
 										container	=> module.board.assy_doc.bottom.circles,
-										new_item	=> board_make_fillable_circle);
+										new_item	=> (type_circle (board_circle) with board_line_width));
 									
 								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
@@ -3297,42 +3297,16 @@ is
 
 					
 					procedure append_assy_doc_polygon_top is begin
-						case board_fill_style is 
-							when SOLID =>
-								pac_doc_polygons.append (
-									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (contour with 
-													easing		=> board_easing,
-													fill_style 	=> SOLID));
-
-							when HATCHED =>
-								pac_doc_polygons.append (
-									container	=> module.board.assy_doc.top.polygons,
-									new_item	=> (contour with 
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_doc_contours.append (
+							container	=> module.board.assy_doc.top.contours,
+								new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_assy_doc_polygon_bottom is begin
-						case board_fill_style is 
-							when SOLID =>
-								pac_doc_polygons.append (
-									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (contour with 
-													easing		=> board_easing,
-													fill_style 	=> SOLID));
-
-							when HATCHED =>
-								pac_doc_polygons.append (
-									container	=> module.board.assy_doc.bottom.polygons,
-									new_item	=> (contour with 
-													fill_style	=> HATCHED,
-													easing		=> board_easing,
-													hatching	=> board_hatching));
-						end case;
+						pac_doc_contours.append (
+							container	=> module.board.assy_doc.bottom.contours,
+							new_item	=> (contour with null record));
 					end;
 
 					
@@ -3434,7 +3408,7 @@ is
 
 			
 			procedure insert_cutout (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
+				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor; -- CS no need anymore ?
 				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3448,24 +3422,9 @@ is
 					use et_pcb_coordinates;
 					use et_board_shapes_and_text;
 					use pac_contours;
-					
 					use et_stop_mask;
-					use et_silkscreen;
-					use et_assy_doc;
 					use et_keepout;
 					
-					procedure append_assy_doc_cutout_top is begin
-						pac_doc_cutouts.append (
-							container	=> module.board.assy_doc.top.cutouts,
-							new_item	=> contour);
-					end;
-
-					procedure append_assy_doc_cutout_bottom is begin
-						pac_doc_cutouts.append (
-							container	=> module.board.assy_doc.bottom.cutouts,
-							new_item	=> contour);
-					end;
-
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
@@ -3483,9 +3442,6 @@ is
 					case face is
 						when TOP =>
 							case layer_cat is
-								when LAYER_CAT_ASSY =>
-									append_assy_doc_cutout_top;
-									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_top;
 
@@ -3494,9 +3450,6 @@ is
 							
 						when BOTTOM => null;
 							case layer_cat is
-								when LAYER_CAT_ASSY =>
-									append_assy_doc_cutout_bottom;
-									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_bottom;
 
@@ -4713,13 +4666,13 @@ is
 						use et_pcb;
 
 						use et_silkscreen;
-						use et_assy_doc.boards;
+						use et_assy_doc;
 						use et_stop_mask;
 						
 						v_text : type_vector_text;
 						mirror : type_vector_text_mirrored;
 					begin
-						-- compute vectors
+						-- vectorize text:
 						if face = BOTTOM then
 							mirror := NO;
 						else
@@ -4745,7 +4698,7 @@ is
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>
-										pac_assy_doc_texts.append (
+										pac_doc_texts.append (
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> (board_text with v_text));
 
@@ -4765,7 +4718,7 @@ is
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>
-										pac_assy_doc_texts.append (
+										pac_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
 											new_item	=> (board_text with v_text));
 

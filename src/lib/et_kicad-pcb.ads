@@ -78,15 +78,17 @@ with et_conductor_segment;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_stencil;				use et_stencil;
+
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.packages;
+
+with et_assy_doc;				use et_assy_doc;
+with et_assy_doc.packages;
 
 with et_keepout;				use et_keepout;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.packages;
 
-with et_assy_doc.boards;		use et_assy_doc.boards;
-with et_assy_doc.packages;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -539,7 +541,7 @@ package et_kicad.pcb is
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
 		silk_screen				: et_silkscreen.packages.type_silkscreen_both_sides;
-		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
+		assembly_documentation	: et_assy_doc.packages.type_assy_doc_both_sides;
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: pac_device_value.bounded_string;
@@ -686,7 +688,7 @@ package et_kicad.pcb is
 		packages	: type_packages_board.map;
 
 		silk_screen	: et_pcb.type_silkscreen_both_sides;
-		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
+		assy_doc	: et_pcb.type_assy_doc_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		

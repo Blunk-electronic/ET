@@ -38,26 +38,28 @@
 
 package et_assy_doc.boards is
 
-	type type_assy_doc_text is new type_text_fab_with_content with record
-		vectors	: type_vector_text;
-	end record;
+	--type type_assy_doc_text is new type_text_fab_with_content with record
+		--vectors	: type_vector_text;
+	--end record;
 
-	package pac_assy_doc_texts is new doubly_linked_lists (type_assy_doc_text);
-	use pac_assy_doc_texts;
+	--package pac_assy_doc_texts is new doubly_linked_lists (type_assy_doc_text);
+	--use pac_assy_doc_texts;
 
-	procedure text_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_assy_doc_texts.cursor;
-		log_threshold 	: in type_log_level);
+	--procedure text_assy_doc_properties (
+		--face			: in type_face;
+		--cursor			: in pac_assy_doc_texts.cursor;
+		--log_threshold 	: in type_log_level);
 
 	
-	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation 
-		is new type_assembly_documentation_base with 
-	record
-		texts		: pac_assy_doc_texts.list;
-	end record;
+	---- This is the base type for assembly documentation objects in general:
+	--type type_assembly_documentation 
+		--is new type_assembly_documentation_base with 
+	--record
+		--texts		: pac_assy_doc_texts.list;
+	--end record;
 
+
+	procedure dummy;
 	
 end et_assy_doc.boards;
 

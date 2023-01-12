@@ -520,7 +520,7 @@ package body et_kicad.pcb is
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_silk_screen		: et_silkscreen.packages.type_silkscreen_both_sides;
-		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
+		package_assy_doc		: et_assy_doc.packages.type_assy_doc_both_sides;
 		package_keepout			: et_keepout.type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;
 		
@@ -3402,13 +3402,13 @@ package body et_kicad.pcb is
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
+							width => board_circle.width));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 
@@ -3680,13 +3680,13 @@ package body et_kicad.pcb is
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						package_assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
+							width => package_circle.width)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 
@@ -4189,15 +4189,16 @@ package body et_kicad.pcb is
 								package_silk_screen.bottom.texts.append ((type_text_fab (package_text) with
 									content => package_text.content, vectors => <>));  -- CS vectorize text
 								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
+
 								
 							when TOP_ASSY => 
 								package_assy_doc.top.texts.append ((type_text_fab (package_text) with 
-									content => package_text.content));
+									content => package_text.content, vectors => <>));  -- CS vectorize text
 								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								package_assy_doc.bottom.texts.append ((type_text_fab (package_text) with
-									content => package_text.content));
+									content => package_text.content, vectors => <>));  -- CS vectorize text
 								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 

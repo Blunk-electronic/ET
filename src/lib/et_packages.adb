@@ -535,6 +535,20 @@ package body et_packages is
 	end get_silkscreen_objects;
 
 
+	function get_assy_doc_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_assy_doc_package
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case face is
+			when TOP	=> return packge.assembly_documentation.top;
+			when BOTTOM	=> return packge.assembly_documentation.bottom;
+		end case;
+	end get_assy_doc_objects;
+
+
 	
 	function to_string (flipped : in type_flipped) return string is begin
 		return to_lower (type_flipped'image (flipped));

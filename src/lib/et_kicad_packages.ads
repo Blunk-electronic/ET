@@ -55,10 +55,13 @@ use et_board_shapes_and_text.pac_text_board;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.packages;		use et_stop_mask.packages;
 with et_stencil;				use et_stencil;
+
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.packages;	use et_silkscreen.packages;
+
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;		use et_assy_doc.packages;
+
 with et_keepout;				use et_keepout;
 
 with et_device_placeholders;			use et_device_placeholders;
@@ -162,7 +165,7 @@ package et_kicad_packages is
 
 	type type_package_library is new type_package with record
 		silk_screen				: type_silkscreen_both_sides; -- incl. placeholder for reference and purpose
-		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
+		assembly_documentation	: type_assy_doc_both_sides; -- incl. placeholder for value
 		terminals				: et_terminals.pac_terminals.map;
 	end record;
 
