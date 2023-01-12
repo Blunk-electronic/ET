@@ -42,6 +42,23 @@ package body et_device_placeholders.packages is
 
 
 
+	procedure placeholder_properties (
+		face			: in type_face;
+		cursor			: in pac_placeholders.cursor;
+		log_threshold 	: in type_log_level) 
+	is
+		use pac_placeholders;
+		placeholder : type_placeholder renames element (cursor);
+	begin
+		log (text => "placeholder face" & to_string (face)
+			 & " for " & to_string (placeholder.meaning), level => log_threshold);
+		
+		log_indentation_up;
+		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
+		log_indentation_down;
+	end placeholder_properties;
+
+	
 
 	function to_string (layer : in type_placeholder_layer) return string is begin
 		return to_lower (type_placeholder_layer'image (layer));
@@ -51,6 +68,9 @@ package body et_device_placeholders.packages is
 		return type_placeholder_layer'value (layer);
 	end;
 
+
+
+	
 	
 end et_device_placeholders.packages;
 

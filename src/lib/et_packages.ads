@@ -492,27 +492,6 @@ package et_packages is
 		package_pos	: in type_package_position); -- package position
 		
 
-
-
-	-- Logs the properties of the given silk screen placeholder
-	procedure placeholder_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
-		log_threshold 	: in type_log_level);
-	-- CS still  requred ?
-
-	
-	
-
-	-- Logs the properties of the given assembly documentation placeholder
-	procedure placeholder_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
-		log_threshold 	: in type_log_level);
-	-- CS still  requred ?
-	
-	
-	
 	
 	
 

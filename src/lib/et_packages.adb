@@ -594,45 +594,6 @@ package body et_packages is
 	
 	
 
-	procedure placeholder_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_placeholders;
-		placeholder : type_placeholder;
-	begin
-		placeholder := element (cursor);
-		log (text => "silk screen placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), level => log_threshold);
-		
-		log_indentation_up;
-		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
-		log_indentation_down;
-	end placeholder_silk_screen_properties;
-	
-
-
-	
-
-
-	procedure placeholder_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_placeholders;
-		placeholder : type_placeholder;
-	begin
-		placeholder := element (cursor);
-		log (text => "assembly doc placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), level => log_threshold);
-
-		log_indentation_up;
-		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
-		log_indentation_down;
-	end placeholder_assy_doc_properties;
-
 	
 	
 	

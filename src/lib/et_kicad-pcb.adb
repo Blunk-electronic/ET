@@ -4136,12 +4136,12 @@ package body et_kicad.pcb is
 							when TOP_SILK =>
 								package_silk_screen.top.placeholders.append (
 									(type_text_fab (package_text) with meaning => NAME));
-								placeholder_silk_screen_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
+								placeholder_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								package_silk_screen.bottom.placeholders.append (
 									(type_text_fab (package_text) with meaning => NAME));
-								placeholder_silk_screen_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
+								placeholder_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
 
 							when others => -- should never happen
 								invalid_layer_reference; 
@@ -4158,12 +4158,12 @@ package body et_kicad.pcb is
 							when TOP_ASSY =>
 								package_assy_doc.top.placeholders.append (
 									(type_text_fab (package_text) with meaning => VALUE));
-								placeholder_assy_doc_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
+								placeholder_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
 								package_assy_doc.bottom.placeholders.append (
 									(type_text_fab (package_text) with meaning => VALUE));
-								placeholder_assy_doc_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
+								placeholder_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
 								invalid_layer_value;
@@ -5033,7 +5033,7 @@ package body et_kicad.pcb is
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 	
 								-- log placeholder properties
-								placeholder_silk_screen_properties (TOP, placeholders.silkscreen.top.last, log_threshold + 3);
+								placeholder_properties (TOP, placeholders.silkscreen.top.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);
@@ -5050,7 +5050,7 @@ package body et_kicad.pcb is
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 
 								-- log placeholder properties
-								placeholder_silk_screen_properties (BOTTOM, placeholders.silkscreen.bottom.last, log_threshold + 3);
+								placeholder_properties (BOTTOM, placeholders.silkscreen.bottom.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);
@@ -5068,7 +5068,7 @@ package body et_kicad.pcb is
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
-								placeholder_assy_doc_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
+								placeholder_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);
@@ -5086,7 +5086,7 @@ package body et_kicad.pcb is
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
-								placeholder_assy_doc_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);
+								placeholder_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);

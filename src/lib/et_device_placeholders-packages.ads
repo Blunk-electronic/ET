@@ -46,17 +46,11 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.maps;			use ada.strings.maps;
 
 with ada.containers; 			use ada.containers;
-
 with ada.containers.doubly_linked_lists;
---with ada.containers.indefinite_doubly_linked_lists;
 
---with et_pcb_coordinates;		use et_pcb_coordinates;
---with et_geometry;				use et_geometry;
---with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
---with et_text;
---with et_conductor_text;			use et_conductor_text;
---with et_logging;				use et_logging;
+with et_logging;				use et_logging;
 
 
 package et_device_placeholders.packages is
@@ -74,6 +68,14 @@ package et_device_placeholders.packages is
 	package pac_placeholders is new doubly_linked_lists (type_placeholder);
 
 
+	-- Logs the properties of the given placeholder:
+	procedure placeholder_properties (
+		face			: in type_face;
+		cursor			: in pac_placeholders.cursor;
+		log_threshold 	: in type_log_level);
+	
+	
+	
 
 	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
@@ -97,6 +99,9 @@ package et_device_placeholders.packages is
 		bottom	: pac_placeholders.list;
 	end record;
 
+
+	-- The final package of a device in the board uses
+	-- this for the actual placeholders in silkscreen and assy doc:
 	type type_text_placeholders is record
 		silkscreen	: type_placeholders_silkscreen;
 		assy_doc	: type_placeholders_assy_doc;

@@ -55,36 +55,35 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
+with et_string_processing;				use et_string_processing;
+with et_logging;						use et_logging;
 
-with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_pcb_coordinates;				use et_pcb_coordinates;
 with et_geometry;
-with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_text;
-with et_drills;						use et_drills;
-with et_vias;						use et_vias;
-with et_device_placeholders.packages;		use et_device_placeholders.packages;
-with et_packages;					use et_packages;
-with et_devices;					use et_devices;
-with et_pcb_stack;					use et_pcb_stack;
+with et_drills;							use et_drills;
+with et_vias;							use et_vias;
+with et_device_placeholders.packages; -- use et_device_placeholders.packages;
+with et_packages;						use et_packages;
+with et_devices;						use et_devices;
+with et_pcb_stack;						use et_pcb_stack;
 with et_frames;
-with et_design_rules;				use et_design_rules;
+with et_design_rules;					use et_design_rules;
 
-with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_fill_zones;						use et_fill_zones;
+with et_fill_zones.boards;				use et_fill_zones.boards;
 
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_conductor_text.boards;		use et_conductor_text.boards;
-with et_route_restrict.boards;		use et_route_restrict.boards;
-with et_via_restrict.boards;		use et_via_restrict.boards;
-with et_stop_mask;					use et_stop_mask;
-with et_stencil;					use et_stencil;
-with et_silkscreen;					use et_silkscreen;
-with et_assy_doc;					use et_assy_doc;
-with et_keepout;					use et_keepout;
-with et_pcb_contour;				use et_pcb_contour;
---with et_contour_to_polygon;
+with et_conductor_segment.boards;		use et_conductor_segment.boards;
+with et_conductor_text.boards;			use et_conductor_text.boards;
+with et_route_restrict.boards;			use et_route_restrict.boards;
+with et_via_restrict.boards;			use et_via_restrict.boards;
+with et_stop_mask;						use et_stop_mask;
+with et_stencil;						use et_stencil;
+with et_silkscreen;						use et_silkscreen;
+with et_assy_doc;						use et_assy_doc;
+with et_keepout;						use et_keepout;
+with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
 
 
@@ -325,21 +324,6 @@ package et_pcb is
 	end record;
 
 
--- KEEPOUT
-	-- Keepout has no extensions.
-	-- See et_packages.
-	
-	
--- ROUTE RESTRICT
-	-- route restrict has no extensions.
-	-- See et_packages.
-
-
--- VIA RESTRICT
-	-- via restrict has no extensions.
-	-- See et_packages.
-
-	
 
 
 
@@ -416,7 +400,7 @@ package et_pcb is
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: type_flipped := flipped_default;
-		text_placeholders	: type_text_placeholders;
+		text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
 	end record;

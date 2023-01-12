@@ -2159,11 +2159,11 @@ package body et_kicad_packages is
 						case text.layer is
 							when TOP_SILK =>
 								silk_screen.top.placeholders.append (placeholder);
-								placeholder_silk_screen_properties (TOP, silk_screen.top.placeholders.last, log_threshold + 1);
+								placeholder_properties (TOP, silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								silk_screen.bottom.placeholders.append (placeholder);
-								placeholder_silk_screen_properties (BOTTOM, silk_screen.bottom.placeholders.last, log_threshold + 1);
+								placeholder_properties (BOTTOM, silk_screen.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
 								invalid_layer_reference; 
@@ -2176,11 +2176,11 @@ package body et_kicad_packages is
 						case text.layer is
 							when TOP_ASSY =>
 								assy_doc.top.placeholders.append (placeholder);
-								placeholder_assy_doc_properties (TOP, assy_doc.top.placeholders.last, log_threshold + 1);
+								placeholder_properties (TOP, assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
 								assy_doc.bottom.placeholders.append (placeholder);
-								placeholder_assy_doc_properties (BOTTOM, assy_doc.bottom.placeholders.last, log_threshold + 1);
+								placeholder_properties (BOTTOM, assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
 								invalid_layer_value;
