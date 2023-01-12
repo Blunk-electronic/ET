@@ -519,7 +519,7 @@ package body et_kicad.pcb is
 		package_stencil			: et_stencil.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_silk_screen		: et_packages.type_silkscreen_both_sides;
+		package_silk_screen		: et_silkscreen.packages.type_silkscreen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
 		package_keepout			: et_keepout.type_keepout_both_sides;
 		package_copper			: et_packages.type_conductor_objects_both_sides;
@@ -4724,7 +4724,7 @@ package body et_kicad.pcb is
 				package_reference	: type_device_name;
 				package_position	: et_pcb_coordinates.type_package_position;
 
-				text_placeholders	: et_packages.type_text_placeholders;
+				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 				function to_net_id (name : in pac_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
@@ -5004,7 +5004,7 @@ package body et_kicad.pcb is
 				end update_component_in_schematic;
 
 				
-				function to_placeholders return et_packages.type_text_placeholders is 
+				function to_placeholders return type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
 					use et_packages;
@@ -5015,10 +5015,10 @@ package body et_kicad.pcb is
 						comp_reference	: in type_device_name;
 						comp_package	: in type_package_board) is
 
-						use et_packages.pac_text_placeholders;
+						use pac_text_placeholders;
 
 						-- points to a placeholder in the package
-						cursor : et_packages.pac_text_placeholders.cursor;
+						cursor : pac_text_placeholders.cursor;
 						
 					begin -- query_placeholders 
 						-- Collect placeholders for REFERENCE in TOP silk screen:

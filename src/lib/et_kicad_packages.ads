@@ -60,6 +60,10 @@ with et_silkscreen.packages;	use et_silkscreen.packages;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;		use et_assy_doc.packages;
 with et_keepout;				use et_keepout;
+
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
@@ -157,7 +161,7 @@ package et_kicad_packages is
 	end record;
 
 	type type_package_library is new type_package with record
-		silk_screen				: et_packages.type_silkscreen_both_sides; -- incl. placeholder for reference and purpose
+		silk_screen				: type_silkscreen_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: et_terminals.pac_terminals.map;
 	end record;

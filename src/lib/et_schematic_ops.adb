@@ -3247,16 +3247,18 @@ package body et_schematic_ops is
 	end next_device_name;
 
 	
-	function placeholders_of_package (
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
+	function placeholders_of_package (
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
-		return et_packages.type_text_placeholders is
+		return et_device_placeholders.packages.type_text_placeholders
+	is
 		use et_packages;
+		use et_device_placeholders.packages;
 		use pac_devices_lib;
 		use pac_variants;
-		placeholders		: et_packages.type_text_placeholders; -- to be returned
+		placeholders		: type_text_placeholders; -- to be returned
 
 		-- fetch the package variants available for the given device:
 		variants_available	: pac_variants.map := element (device).variants;

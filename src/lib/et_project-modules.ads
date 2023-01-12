@@ -56,6 +56,10 @@ with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;
+
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;
+
 with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_meta;

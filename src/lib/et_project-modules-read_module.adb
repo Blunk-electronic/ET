@@ -1125,14 +1125,16 @@ is
 	-- These two variables assist when a particular placeholder is appended to the
 	-- list of placholders in silk screen, assy doc and their top or bottom face:
 	device_text_placeholder_position: et_pcb_coordinates.type_package_position := et_pcb_coordinates.placeholder_position_default; -- incl. rotation and face
-	device_text_placeholder_layer	: et_packages.type_placeholder_package_layer := et_packages.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
+	
+	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_package_layer := 
+		et_device_placeholders.packages.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
 
 	-- a single temporarily placeholder of a package
-	device_text_placeholder		: et_packages.type_text_placeholder;
+	device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
 
 	
 	procedure read_device_text_placeholder is
-		use et_packages;
+		use et_device_placeholders.packages;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
@@ -1174,7 +1176,7 @@ is
 
 	
 	-- the temporarily collection of placeholders of packages (in the layout)
-	device_text_placeholders	: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
+	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 	-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_symbols.type_text_basic;
@@ -2611,7 +2613,7 @@ is
 
 			
 			procedure insert_package_placeholder is
-				use et_packages;
+				use et_device_placeholders.packages;
 				use et_pcb_coordinates;
 			begin
 				device_text_placeholder.position := et_pcb_coordinates.pac_geometry_2.type_position (device_text_placeholder_position);

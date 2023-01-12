@@ -65,6 +65,10 @@ with et_pcb_coordinates;
 with et_text;
 with et_symbols;				--use et_symbols;
 with et_devices;				use et_devices;
+
+with et_device_placeholders;
+with et_device_placeholders.packages;
+
 with et_frames;
 
 with et_kicad_libraries;		use et_kicad_libraries;
@@ -244,7 +248,7 @@ package et_kicad.schematic is
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
-				text_placeholders	: et_packages.type_text_placeholders;
+				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 				
 			-- If a component appears in the schematic only, it does not have any package variants.
 			-- Such components are power symbols or power flags. Later when building netlists

@@ -603,7 +603,7 @@ package body et_kicad_packages is
 		text : type_text_package;
 
 		-- Temporarily text placeholders for reference and value are required. 
-		placeholder : et_packages.type_text_placeholder;
+		placeholder : type_text_placeholder;
 
 
 		
@@ -623,7 +623,7 @@ package body et_kicad_packages is
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILKSCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		silk_screen : et_packages.type_silkscreen_both_sides;
+		silk_screen : et_silkscreen.packages.type_silkscreen_both_sides;
 	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
 		assy_doc : et_packages.type_assembly_documentation_both_sides;

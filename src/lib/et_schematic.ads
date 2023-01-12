@@ -61,6 +61,10 @@ with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+
+with et_device_placeholders;	--use et_device_placeholders;
+with et_device_placeholders.packages;
+
 with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;
@@ -207,7 +211,7 @@ package et_schematic is
 				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
 				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 				flipped				: type_flipped := flipped_default;
-				text_placeholders	: type_text_placeholders;
+				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				

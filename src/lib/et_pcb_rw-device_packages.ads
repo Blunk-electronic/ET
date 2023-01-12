@@ -37,11 +37,14 @@
 
 --   do do:
 
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_packages;						use et_packages;
 with et_fill_zones;						use et_fill_zones;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;
 with et_pcb_rw.restrict;				use et_pcb_rw.restrict;
+
 
 package et_pcb_rw.device_packages is
 

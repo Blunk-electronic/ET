@@ -71,6 +71,9 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_conventions;
 
+with et_device_placeholders.packages;	
+
+
 package et_schematic_ops is
 
 	use pac_generic_modules;

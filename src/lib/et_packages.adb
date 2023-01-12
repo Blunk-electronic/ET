@@ -153,21 +153,21 @@ package body et_packages is
 
 
 	
-	function to_string (text_meaning : in type_text_meaning_package) return string is begin
-		return to_lower (type_text_meaning_package'image (text_meaning));
-	end;
+	--function to_string (text_meaning : in type_text_meaning_package) return string is begin
+		--return to_lower (type_text_meaning_package'image (text_meaning));
+	--end;
 
-	function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
-		return type_text_meaning_package'value (text_meaning);
-	end;
+	--function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
+		--return type_text_meaning_package'value (text_meaning);
+	--end;
 
-	function to_string (layer : in type_placeholder_package_layer) return string is begin
-		return to_lower (type_placeholder_package_layer'image (layer));
-	end;
+	--function to_string (layer : in type_placeholder_package_layer) return string is begin
+		--return to_lower (type_placeholder_package_layer'image (layer));
+	--end;
 
-	function to_layer (layer : in string) return type_placeholder_package_layer is begin
-		return type_placeholder_package_layer'value (layer);
-	end;
+	--function to_layer (layer : in string) return type_placeholder_package_layer is begin
+		--return type_placeholder_package_layer'value (layer);
+	--end;
 
 
 	procedure mirror_conductor_objects (
@@ -521,18 +521,18 @@ package body et_packages is
 	
 
 
-	--function get_silkscreen_objects (
-		--package_cursor	: in pac_package_models.cursor;
-		--face			: in type_face)
-		--return type_silkscreen_package
-	--is
-		--packge : type_package_model renames element (package_cursor);
-	--begin
-		--case face is
-			--when TOP	=> return packge.silk_screen.top;
-			--when BOTTOM	=> return packge.silk_screen.bottom;
-		--end case;
-	--end get_silkscreen_objects;
+	function get_silkscreen_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_silkscreen_package
+	is
+		packge : type_package_model renames element (package_cursor);
+	begin
+		case face is
+			when TOP	=> return packge.silk_screen.top;
+			when BOTTOM	=> return packge.silk_screen.bottom;
+		end case;
+	end get_silkscreen_objects;
 
 
 	

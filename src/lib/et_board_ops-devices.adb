@@ -67,9 +67,9 @@ package body et_board_ops.devices is
 
 	function get_placeholders (
 		package_cursor : in et_packages.pac_package_models.cursor)
-		return et_packages.type_text_placeholders 
+		return et_device_placeholders.packages.type_text_placeholders 
 	is
-		use et_packages;
+		use et_device_placeholders.packages;
 		use pac_package_models;
 	begin
 		return p : type_text_placeholders do
@@ -82,7 +82,7 @@ package body et_board_ops.devices is
 			p.assy_doc.top := element (package_cursor).assembly_documentation.top.placeholders;
 		p.assy_doc.bottom := element (package_cursor).assembly_documentation.bottom.placeholders;
 		
-		end returN;
+		end return;
 	end get_placeholders;
 
 	
@@ -507,22 +507,25 @@ package body et_board_ops.devices is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
 
-			scratch : et_packages.pac_text_placeholders.list;
+			use et_device_placeholders.packages;
+			scratch : packages.pac_text_placeholders.list;
 			
 			-- Mirrors the position of a placeholder along the y-axis:
 			procedure mirror_placeholder (
-				p : in out et_packages.type_text_placeholder) 
+				p : in out packages.type_text_placeholder) 
 			is begin
 				mirror (point => p.position.place, axis => Y);
 			end mirror_placeholder;
 
 			
-			procedure mirror_placeholders (phs : in out et_packages.pac_text_placeholders.list) is 
-				use et_packages.pac_text_placeholders;
-				cursor : et_packages.pac_text_placeholders.cursor := phs.first;
+			procedure mirror_placeholders (
+				phs : in out packages.pac_text_placeholders.list) 
+			is 
+				use packages.pac_text_placeholders;
+				cursor : packages.pac_text_placeholders.cursor := phs.first;
 			begin
-				while cursor /= et_packages.pac_text_placeholders.no_element loop
-						et_packages.pac_text_placeholders.update_element (
+				while cursor /= packages.pac_text_placeholders.no_element loop
+						packages.pac_text_placeholders.update_element (
 							container	=> phs,
 							position	=> cursor,
 							process		=> mirror_placeholder'access);

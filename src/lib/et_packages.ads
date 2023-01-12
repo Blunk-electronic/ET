@@ -70,13 +70,22 @@ with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_stop_mask.packages;				use et_stop_mask.packages;
 with et_stencil;						use et_stencil;
 with et_silkscreen;						use et_silkscreen;
+with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 
+
+-- CS remove
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+
+
 with cairo;
 
+
 package et_packages is
+	
 	use pac_geometry_brd;
 
 	use pac_geometry_2;
@@ -142,43 +151,43 @@ package et_packages is
 
 	
 -- PLACEHOLDERS FOR TEXTS
-	type type_text_meaning_package is (NAME, VALUE, PURPOSE);
+	--type type_text_meaning_package is (NAME, VALUE, PURPOSE);
 
-	function to_string (text_meaning : in type_text_meaning_package) return string;
-	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
+	--function to_string (text_meaning : in type_text_meaning_package) return string;
+	--function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
-	type type_text_placeholder is new type_text_fab with record
-		meaning : type_text_meaning_package := NAME;
-	end record;
+	--type type_text_placeholder is new type_text_fab with record
+		--meaning : type_text_meaning_package := NAME;
+	--end record;
 
-	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
+	---- There can be lots of placeholders of this kind. So they are stored in a list:	
+	--package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
-	-- Placeholders for device name and value can be placed in
-	-- silk screen or assembly documentation only:
-	type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
-	function to_string (layer : in type_placeholder_package_layer) return string;
-	function to_layer (layer : in string) return type_placeholder_package_layer;
+	---- Placeholders for device name and value can be placed in
+	---- silk screen or assembly documentation only:
+	--type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
+	--function to_string (layer : in type_placeholder_package_layer) return string;
+	--function to_layer (layer : in string) return type_placeholder_package_layer;
 	
-	-- A collection of text placeholders in silk screen and assembly documentation 
-	-- modelled by this type. The user is free to change them in the 
-	-- layout (position, text size, rotation, line width ...).
-	-- Initally, when a device is added to the schematic, these placeholders are 
-	-- copies of the placeholders defined in the package model.
-	type type_text_placeholders_silk_screen is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
-	end record;
+	---- A collection of text placeholders in silk screen and assembly documentation 
+	---- modelled by this type. The user is free to change them in the 
+	---- layout (position, text size, rotation, line width ...).
+	---- Initally, when a device is added to the schematic, these placeholders are 
+	---- copies of the placeholders defined in the package model.
+	--type type_text_placeholders_silk_screen is record
+		--top		: pac_text_placeholders.list;
+		--bottom	: pac_text_placeholders.list;
+	--end record;
 
-	type type_text_placeholders_assembly_documentation is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
-	end record;
+	--type type_text_placeholders_assembly_documentation is record
+		--top		: pac_text_placeholders.list;
+		--bottom	: pac_text_placeholders.list;
+	--end record;
 
-	type type_text_placeholders is record
-		silk_screen	: type_text_placeholders_silk_screen;
-		assy_doc	: type_text_placeholders_assembly_documentation;
-	end record;
+	--type type_text_placeholders is record
+		--silk_screen	: type_text_placeholders_silk_screen;
+		--assy_doc	: type_text_placeholders_assembly_documentation;
+	--end record;
 
 	
 
@@ -234,18 +243,18 @@ package et_packages is
 		
 
 	
-	-- Silkscreen objects include placeholders for device name,
-	-- value, purpose:
-	type type_silkscreen_package is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
+	---- Silkscreen objects include placeholders for device name,
+	---- value, purpose:
+	--type type_silkscreen_package is new type_silkscreen with record
+		--placeholders : pac_text_placeholders.list;
+	--end record;
 
 	
-	-- Silkscreen is about two sides of the board:
-	type type_silkscreen_both_sides is record
-		top		: type_silkscreen_package;
-		bottom	: type_silkscreen_package;
-	end record;
+	---- Silkscreen is about two sides of the board:
+	--type type_silkscreen_both_sides is record
+		--top		: type_silkscreen_package;
+		--bottom	: type_silkscreen_package;
+	--end record;
 
 	
 
@@ -450,10 +459,10 @@ package et_packages is
 
 	-- Returns the contours of silkscreen objects of the given package.
 	-- Adresses only those objects affected by the given face:
-	--function get_silkscreen_objects (
-		--package_cursor	: in pac_package_models.cursor;
-		--face			: in type_face)
-		--return type_silkscreen_package;
+	function get_silkscreen_objects (
+		package_cursor	: in pac_package_models.cursor;
+		face			: in type_face)
+		return type_silkscreen_package;
 
 	
 	-- CS likewise for assy doc, silkscreen

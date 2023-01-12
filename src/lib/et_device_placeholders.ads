@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        SILKSCREEN PACKAGES                               --
+--                        DEVICE PLACEHOLDERS                               --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -36,28 +36,33 @@
 --
 --   to do:
 
-with et_device_placeholders.packages;			use et_device_placeholders.packages;
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
+with ada.strings;				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.maps;			use ada.strings.maps;
 
 
-package et_silkscreen.packages is
+package et_device_placeholders is
 
-	-- Silkscreen objects include placeholders for device name,
-	-- value, purpose:
-	type type_silkscreen_package is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
+
+	type type_text_meaning_package is (NAME, VALUE, PURPOSE);
+
+	function to_string (
+		text_meaning : in type_text_meaning_package) 
+		return string;
 
 	
-	-- Silkscreen is about two sides of the board:
-	type type_silkscreen_both_sides is record
-		top		: type_silkscreen_package;
-		bottom	: type_silkscreen_package;
-	end record;
-
+	function to_text_meaning (
+		text_meaning : in string) 
+		return type_text_meaning_package;
 	
-	procedure dummy;
 	
-end et_silkscreen.packages;
+	
+end et_device_placeholders;
 
 -- Soli Deo Gloria
 

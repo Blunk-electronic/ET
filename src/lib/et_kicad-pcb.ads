@@ -61,8 +61,11 @@ with et_text;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_vias;					use et_vias;
 with et_drills;					use et_drills;
+
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_packages;
-with et_devices;				use et_devices;
+with et_devices;						use et_devices;
 with et_frames;
 with et_design_rules;				use et_design_rules;
 
@@ -76,6 +79,8 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
+with et_silkscreen.packages;
+
 with et_keepout;				use et_keepout;
 with et_stop_mask;				use et_stop_mask;
 with et_stop_mask.packages;
@@ -533,7 +538,7 @@ package et_kicad.pcb is
 	
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
-		silk_screen				: et_packages.type_silkscreen_both_sides;
+		silk_screen				: et_silkscreen.packages.type_silkscreen_both_sides;
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;

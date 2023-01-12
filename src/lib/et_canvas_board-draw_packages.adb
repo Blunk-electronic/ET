@@ -41,6 +41,10 @@ with et_symbols;
 with et_devices;
 
 with et_drills;					use et_drills;
+
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+
 with et_packages;				use et_packages;
 
 with et_pcb;
@@ -69,7 +73,10 @@ with et_stop_mask;
 with et_stop_mask.packages;
 
 with et_stencil;
+
 with et_silkscreen;
+with et_silkscreen.packages;
+
 with et_assy_doc;
 with et_keepout;					
 
@@ -100,7 +107,7 @@ is
 		model			: in et_packages.pac_package_model_file_name.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_packages.type_flipped;
-		placeholders	: in et_packages.type_text_placeholders; -- specified in the board. will override default positions
+		placeholders	: in type_text_placeholders; -- specified in the board. will override default positions
 		brightness		: in type_brightness)
 	is
 		-- CS should improve performance:
@@ -249,6 +256,7 @@ is
 		-- SILKSCREEN
 		procedure draw_silkscreen is 
 			use et_silkscreen;
+			--use et_silkscreen.packages;
 
 			face : type_face := TOP;
 			
@@ -317,7 +325,8 @@ is
 
 
 			
-			silkscreen : type_silkscreen_both_sides;
+			silkscreen_top, silkscreen_bottom : type_silkscreen;
+
 			
 			procedure draw is
 
@@ -416,43 +425,43 @@ is
 				
 			begin
 				set_color_silkscreen (context.cr, face, brightness);
-				silkscreen.top.lines.iterate (query_line'access);
-				silkscreen.top.arcs.iterate (query_arc'access);
-				silkscreen.top.circles.iterate (query_circle'access);
-				silkscreen.top.contours.iterate (query_contour'access);
-				silkscreen.top.texts.iterate (query_text'access);
-				--silkscreen.top.placeholders.iterate (query_placeholder'access);
+				silkscreen_top.lines.iterate (query_line'access);
+				silkscreen_top.arcs.iterate (query_arc'access);
+				silkscreen_top.circles.iterate (query_circle'access);
+				silkscreen_top.contours.iterate (query_contour'access);
+				silkscreen_top.texts.iterate (query_text'access);
+				--silkscreen_top.placeholders.iterate (query_placeholder'access);
 
 				face := BOTTOM;
 				set_color_silkscreen (context.cr, face, brightness);
-				silkscreen.bottom.lines.iterate (query_line'access);
-				silkscreen.bottom.arcs.iterate (query_arc'access);
-				silkscreen.bottom.circles.iterate (query_circle'access);
-				silkscreen.bottom.contours.iterate (query_contour'access);
-				silkscreen.bottom.texts.iterate (query_text'access);
-				--silkscreen.bottom.placeholders.iterate (query_placeholder'access);
+				silkscreen_bottom.lines.iterate (query_line'access);
+				silkscreen_bottom.arcs.iterate (query_arc'access);
+				silkscreen_bottom.circles.iterate (query_circle'access);
+				silkscreen_bottom.contours.iterate (query_contour'access);
+				silkscreen_bottom.texts.iterate (query_text'access);
+				--silkscreen_bottom.placeholders.iterate (query_placeholder'access);
 			end draw;
 			
 			
 		begin -- draw_silkscreen
 			if electric then
 				if silkscreen_enabled (face) then
-					silkscreen.top    := get_silkscreen_objects (device_electric, TOP);
+					silkscreen_top    := get_silkscreen_objects (device_electric, TOP);
 				end if;
 
 				face := BOTTOM;
 				if silkscreen_enabled (face) then
-					silkscreen.bottom := get_silkscreen_objects (device_electric, BOTTOM);
+					silkscreen_bottom := get_silkscreen_objects (device_electric, BOTTOM);
 				end if;
 				
 			else -- non-electrical device
 				if silkscreen_enabled (face) then
-					silkscreen.top    := get_silkscreen_objects (device_non_electric, TOP);
+					silkscreen_top    := get_silkscreen_objects (device_non_electric, TOP);
 				end if;
 
 				face := BOTTOM;
 				if silkscreen_enabled (face) then
-					silkscreen.bottom := get_silkscreen_objects (device_non_electric, BOTTOM);
+					silkscreen_bottom := get_silkscreen_objects (device_non_electric, BOTTOM);
 				end if;
 			end if;
 

@@ -831,7 +831,7 @@ package body et_pcb_rw.device_packages is
 		--pac_text				: pac_text_fab.type_text_fab;
 		pac_text				: type_text_fab_with_content;
 		--content					: et_text.pac_text_content.bounded_string;
-		pac_text_placeholder	: et_packages.type_text_placeholder;
+		pac_text_placeholder	: type_text_placeholder;
 	
 		terminal_position		: type_position := origin_zero_rotation;
 
@@ -2185,13 +2185,13 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										et_packages.pac_text_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.silk_screen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										et_packages.pac_text_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -2201,17 +2201,18 @@ package body et_pcb_rw.device_packages is
 								-- clean up for next placeholder
 								pac_text_placeholder := (others => <>);
 
+								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										et_packages.pac_text_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.silk_screen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										et_packages.pac_text_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -2224,6 +2225,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TERMINAL =>
 						case stack.parent is
 							when SEC_TERMINALS => 

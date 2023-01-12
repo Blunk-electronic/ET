@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        SILKSCREEN PACKAGES                               --
+--                        DEVICE PLACEHOLDERS                               --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,28 +36,27 @@
 --
 --   to do:
 
-with et_device_placeholders.packages;			use et_device_placeholders.packages;
 
 
-package et_silkscreen.packages is
+package body et_device_placeholders is
 
-	-- Silkscreen objects include placeholders for device name,
-	-- value, purpose:
-	type type_silkscreen_package is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
-
-	
-	-- Silkscreen is about two sides of the board:
-	type type_silkscreen_both_sides is record
-		top		: type_silkscreen_package;
-		bottom	: type_silkscreen_package;
-	end record;
+	function to_string (
+		text_meaning : in type_text_meaning_package) 
+		return string 
+	is begin
+		return to_lower (type_text_meaning_package'image (text_meaning));
+	end;
 
 	
-	procedure dummy;
+	function to_text_meaning (
+		text_meaning : in string) 
+		return type_text_meaning_package 
+	is begin
+		return type_text_meaning_package'value (text_meaning);
+	end;
+
 	
-end et_silkscreen.packages;
+end et_device_placeholders;
 
 -- Soli Deo Gloria
 

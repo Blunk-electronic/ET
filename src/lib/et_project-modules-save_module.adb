@@ -792,7 +792,7 @@ is
 			device 		: in type_device_sch) 
 		is
 			use et_pcb_coordinates;
-			use et_packages;
+			use et_device_placeholders.packages;
 			use pac_text_placeholders;
 
 			face : et_pcb_coordinates.type_face;
@@ -1371,13 +1371,15 @@ is
 				device 		: in type_device_non_electric) 
 			is
 				use et_pcb_coordinates;
-				use et_packages.pac_text_placeholders;
+				use et_device_placeholders.packages;
+				use et_device_placeholders.packages.pac_text_placeholders;
 
 				face : et_pcb_coordinates.type_face;
-				layer : et_packages.type_placeholder_package_layer;
+				layer : type_placeholder_package_layer;
 				
-				procedure write_placeholder (placeholder_cursor : in et_packages.pac_text_placeholders.cursor) is 
-				begin
+				procedure write_placeholder (
+					placeholder_cursor : in et_device_placeholders.packages.pac_text_placeholders.cursor) 
+				is begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));
 					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));

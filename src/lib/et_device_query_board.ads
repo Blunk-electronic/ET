@@ -43,6 +43,7 @@ with et_keepout;						use et_keepout;
 with et_stop_mask;						use et_stop_mask;
 with et_stop_mask.packages;
 with et_stencil;						use et_stencil;
+with et_silkscreen;						use et_silkscreen;
 with et_symbols;						
 with et_schematic;						use et_schematic;
 with et_device_query_schematic;			use et_device_query_schematic;
@@ -247,7 +248,7 @@ package et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
-		return type_silkscreen_package;
+		return type_silkscreen;
 
 
 	-- Returns the silkscreen objects of the given non-electrical device
@@ -256,7 +257,7 @@ package et_device_query_board is
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
-		return type_silkscreen_package;
+		return type_silkscreen;
 
 	
 	-- CS likewise for assy doc

@@ -37,7 +37,10 @@
 --   ToDo: 
 
 
-with et_packages;				use et_packages;
+with et_packages;						use et_packages;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;
+
 
 package et_board_ops.devices is
 
