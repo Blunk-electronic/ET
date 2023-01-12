@@ -343,9 +343,9 @@ package et_packages is
 	-- A package in the library extends the base package type:
 	type type_package_model is new type_package_base with record
 		-- CS default for face ?
-		silk_screen				: type_silkscreen_both_sides; -- incl. placeholder for name and purpose
-		assembly_documentation	: type_assy_doc_both_sides; -- incl. placeholder for value
-		terminals				: pac_terminals.map;
+		silkscreen	: type_silkscreen_both_sides; -- incl. placeholder for name and purpose
+		assy_doc	: type_assy_doc_both_sides; -- incl. placeholder for value
+		terminals	: pac_terminals.map;
 	end record;
 
 

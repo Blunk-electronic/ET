@@ -3612,12 +3612,11 @@ package body et_kicad_to_native is
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
-						new_item	=> (et_packages.type_package_base (element (package_cursor_kicad))
-										with 
-										silk_screen				=> element (package_cursor_kicad).silk_screen,
-										assembly_documentation	=> element (package_cursor_kicad).assembly_documentation,
-										terminals 				=> element (package_cursor_kicad).terminals)
-										-- NOTE: The kicad timestamp is discarded here.
+						new_item	=> (et_packages.type_package_base (element (package_cursor_kicad)) with 
+							silkscreen	=> element (package_cursor_kicad).silk_screen,
+							assy_doc	=> element (package_cursor_kicad).assembly_documentation,
+							terminals 	=> element (package_cursor_kicad).terminals)
+							-- NOTE: The kicad timestamp is discarded here.
 						);
 					
 					next (package_cursor_kicad);

@@ -75,12 +75,12 @@ package body et_board_ops.devices is
 		return p : type_text_placeholders do
 		
 			-- fetch the placeholders of silk screen top and bottom
-			p.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;
-			p.silk_screen.bottom := element (package_cursor).silk_screen.bottom.placeholders;
+			p.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
+			p.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
 
 			-- fetch the placeholders of assembly documentation top and bottom
-			p.assy_doc.top := element (package_cursor).assembly_documentation.top.placeholders;
-		p.assy_doc.bottom := element (package_cursor).assembly_documentation.bottom.placeholders;
+			p.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
+		p.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
 		
 		end return;
 	end get_placeholders;
@@ -552,13 +552,13 @@ package body et_board_ops.devices is
 
 					-- SILKSCREEN
 					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.silk_screen.bottom;
-					device.text_placeholders.silk_screen.bottom := device.text_placeholders.silk_screen.top;
-					device.text_placeholders.silk_screen.top := scratch;
+					scratch := device.text_placeholders.silkscreen.bottom;
+					device.text_placeholders.silkscreen.bottom := device.text_placeholders.silkscreen.top;
+					device.text_placeholders.silkscreen.top := scratch;
 
 					-- mirror
-					mirror_placeholders (device.text_placeholders.silk_screen.top);
-					mirror_placeholders (device.text_placeholders.silk_screen.bottom);
+					mirror_placeholders (device.text_placeholders.silkscreen.top);
+					mirror_placeholders (device.text_placeholders.silkscreen.bottom);
 					
 					-- ASSEMBLY DOCUMENTATION
 					-- swap placeholders top/bottom
@@ -594,13 +594,13 @@ package body et_board_ops.devices is
 
 					-- SILKSCREEN
 					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.silk_screen.bottom;
-					device.text_placeholders.silk_screen.bottom := device.text_placeholders.silk_screen.top;
-					device.text_placeholders.silk_screen.top := scratch;
+					scratch := device.text_placeholders.silkscreen.bottom;
+					device.text_placeholders.silkscreen.bottom := device.text_placeholders.silkscreen.top;
+					device.text_placeholders.silkscreen.top := scratch;
 
 					-- mirror
-					mirror_placeholders (device.text_placeholders.silk_screen.top);
-					mirror_placeholders (device.text_placeholders.silk_screen.bottom);
+					mirror_placeholders (device.text_placeholders.silkscreen.top);
+					mirror_placeholders (device.text_placeholders.silkscreen.bottom);
 					
 					-- ASSEMBLY DOCUMENTATION
 					-- swap placeholders top/bottom

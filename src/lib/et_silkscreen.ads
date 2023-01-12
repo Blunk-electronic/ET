@@ -38,16 +38,12 @@
 
 
 with ada.containers; 			use ada.containers;
-
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
-with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
---with et_conductor_text;			use et_conductor_text;
 with et_logging;				use et_logging;
 
 
@@ -95,7 +91,7 @@ package et_silkscreen is
 -- CONTOURS:
 	
 	type type_silk_contour is new type_contour with null record;
-	package pac_silk_contours is new indefinite_doubly_linked_lists (type_silk_contour);
+	package pac_silk_contours is new doubly_linked_lists (type_silk_contour);
 	use pac_silk_contours;
 	
 

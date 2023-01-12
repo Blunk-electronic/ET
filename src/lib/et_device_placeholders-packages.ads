@@ -99,7 +99,7 @@ package et_device_placeholders.packages is
 	end record;
 
 	type type_text_placeholders is record
-		silk_screen	: type_text_placeholders_silk_screen;
+		silkscreen	: type_text_placeholders_silk_screen;
 		assy_doc	: type_text_placeholders_assembly_documentation;
 	end record;
 

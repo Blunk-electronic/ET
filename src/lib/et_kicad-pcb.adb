@@ -5029,11 +5029,11 @@ package body et_kicad.pcb is
 							if element (cursor).meaning = NAME then
 	
 								pac_text_placeholders.append (
-									container	=> placeholders.silk_screen.top,
+									container	=> placeholders.silkscreen.top,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 	
 								-- log placeholder properties
-								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
+								placeholder_silk_screen_properties (TOP, placeholders.silkscreen.top.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);
@@ -5046,11 +5046,11 @@ package body et_kicad.pcb is
 							if element (cursor).meaning = NAME then
 
 								pac_text_placeholders.append (
-									container	=> placeholders.silk_screen.bottom,
+									container	=> placeholders.silkscreen.bottom,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 
 								-- log placeholder properties
-								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
+								placeholder_silk_screen_properties (BOTTOM, placeholders.silkscreen.bottom.last, log_threshold + 3);
 							end if;
 							
 							next (cursor);

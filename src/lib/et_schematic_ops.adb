@@ -3282,12 +3282,12 @@ package body et_schematic_ops is
 		package_cursor := pac_package_models.find (package_models, package_model);
 
 		-- fetch the placeholders of silk screen top and bottom
-		placeholders.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;
-		placeholders.silk_screen.bottom := element (package_cursor).silk_screen.bottom.placeholders;
+		placeholders.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
+		placeholders.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
 
 		-- fetch the placeholders of assembly documentation top and bottom
-		placeholders.assy_doc.top := element (package_cursor).assembly_documentation.top.placeholders;
-		placeholders.assy_doc.bottom := element (package_cursor).assembly_documentation.bottom.placeholders;
+		placeholders.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
+		placeholders.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
 		
 		return placeholders;
 	end placeholders_of_package;

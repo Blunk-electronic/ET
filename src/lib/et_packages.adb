@@ -152,24 +152,6 @@ package body et_packages is
 -- 	end validate_restring_width;
 
 
-	
-	--function to_string (text_meaning : in type_text_meaning_package) return string is begin
-		--return to_lower (type_text_meaning_package'image (text_meaning));
-	--end;
-
-	--function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
-		--return type_text_meaning_package'value (text_meaning);
-	--end;
-
-	--function to_string (layer : in type_placeholder_package_layer) return string is begin
-		--return to_lower (type_placeholder_package_layer'image (layer));
-	--end;
-
-	--function to_layer (layer : in string) return type_placeholder_package_layer is begin
-		--return type_placeholder_package_layer'value (layer);
-	--end;
-
-
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
 		axis		: in type_axis_2d := Y)
@@ -529,8 +511,8 @@ package body et_packages is
 		packge : type_package_model renames element (package_cursor);
 	begin
 		case face is
-			when TOP	=> return packge.silk_screen.top;
-			when BOTTOM	=> return packge.silk_screen.bottom;
+			when TOP	=> return packge.silkscreen.top;
+			when BOTTOM	=> return packge.silkscreen.bottom;
 		end case;
 	end get_silkscreen_objects;
 
@@ -543,8 +525,8 @@ package body et_packages is
 		packge : type_package_model renames element (package_cursor);
 	begin
 		case face is
-			when TOP	=> return packge.assembly_documentation.top;
-			when BOTTOM	=> return packge.assembly_documentation.bottom;
+			when TOP	=> return packge.assy_doc.top;
+			when BOTTOM	=> return packge.assy_doc.bottom;
 		end case;
 	end get_assy_doc_objects;
 

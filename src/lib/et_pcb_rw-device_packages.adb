@@ -191,22 +191,22 @@ package body et_pcb_rw.device_packages is
 
 			-- top
 			section_mark (section_top, HEADER);
-			iterate (packge.silk_screen.top.lines, write_line'access);
-			iterate (packge.silk_screen.top.arcs, write_arc'access);
-			iterate (packge.silk_screen.top.circles, write_circle'access);
-			iterate (packge.silk_screen.top.contours, write_polygon'access);
-			iterate (packge.silk_screen.top.texts, write_text'access);
-			iterate (packge.silk_screen.top.placeholders, write_placeholder'access);
+			iterate (packge.silkscreen.top.lines, write_line'access);
+			iterate (packge.silkscreen.top.arcs, write_arc'access);
+			iterate (packge.silkscreen.top.circles, write_circle'access);
+			iterate (packge.silkscreen.top.contours, write_polygon'access);
+			iterate (packge.silkscreen.top.texts, write_text'access);
+			iterate (packge.silkscreen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
 			section_mark (section_bottom, HEADER);
-			iterate (packge.silk_screen.bottom.lines, write_line'access);
-			iterate (packge.silk_screen.bottom.arcs, write_arc'access);
-			iterate (packge.silk_screen.bottom.circles, write_circle'access);
-			iterate (packge.silk_screen.bottom.contours, write_polygon'access);
-			iterate (packge.silk_screen.bottom.texts, write_text'access);
-			iterate (packge.silk_screen.bottom.placeholders, write_placeholder'access);
+			iterate (packge.silkscreen.bottom.lines, write_line'access);
+			iterate (packge.silkscreen.bottom.arcs, write_arc'access);
+			iterate (packge.silkscreen.bottom.circles, write_circle'access);
+			iterate (packge.silkscreen.bottom.contours, write_polygon'access);
+			iterate (packge.silkscreen.bottom.texts, write_text'access);
+			iterate (packge.silkscreen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_silk_screen, FOOTER);			
@@ -235,22 +235,22 @@ package body et_pcb_rw.device_packages is
 
 			-- top
 			section_mark (section_top, HEADER);
-			iterate (packge.assembly_documentation.top.lines, write_line'access);
-			iterate (packge.assembly_documentation.top.arcs, write_arc'access);
-			iterate (packge.assembly_documentation.top.circles, write_circle'access);
-			iterate (packge.assembly_documentation.top.contours, write_polygon'access);
-			iterate (packge.assembly_documentation.top.texts, write_text'access);
-			iterate (packge.assembly_documentation.top.placeholders, write_placeholder'access);
+			iterate (packge.assy_doc.top.lines, write_line'access);
+			iterate (packge.assy_doc.top.arcs, write_arc'access);
+			iterate (packge.assy_doc.top.circles, write_circle'access);
+			iterate (packge.assy_doc.top.contours, write_polygon'access);
+			iterate (packge.assy_doc.top.texts, write_text'access);
+			iterate (packge.assy_doc.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
 			section_mark (section_bottom, HEADER);
-			iterate (packge.assembly_documentation.bottom.lines, write_line'access);
-			iterate (packge.assembly_documentation.bottom.arcs, write_arc'access);
-			iterate (packge.assembly_documentation.bottom.circles, write_circle'access);
-			iterate (packge.assembly_documentation.bottom.contours, write_polygon'access);
-			iterate (packge.assembly_documentation.bottom.texts, write_text'access);
-			iterate (packge.assembly_documentation.bottom.placeholders, write_placeholder'access);
+			iterate (packge.assy_doc.bottom.lines, write_line'access);
+			iterate (packge.assy_doc.bottom.arcs, write_arc'access);
+			iterate (packge.assy_doc.bottom.circles, write_circle'access);
+			iterate (packge.assy_doc.bottom.contours, write_polygon'access);
+			iterate (packge.assy_doc.bottom.texts, write_text'access);
+			iterate (packge.assy_doc.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_assembly_doc, FOOTER);
@@ -1193,7 +1193,7 @@ package body et_pcb_rw.device_packages is
 						when SEC_SILK_SCREEN =>
 
 							pac_silk_texts.append (
-								container	=> packge.silk_screen.top.texts,
+								container	=> packge.silkscreen.top.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
 										size		=> pac_text.size,
@@ -1206,7 +1206,7 @@ package body et_pcb_rw.device_packages is
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
 							pac_doc_texts.append (
-								container	=> packge.assembly_documentation.top.texts,
+								container	=> packge.assy_doc.top.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
 										size		=> pac_text.size,
@@ -1256,7 +1256,7 @@ package body et_pcb_rw.device_packages is
 						when SEC_SILK_SCREEN =>
 
 							pac_silk_texts.append (
-								container	=> packge.silk_screen.bottom.texts,
+								container	=> packge.silkscreen.bottom.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
 										size		=> pac_text.size,
@@ -1270,7 +1270,7 @@ package body et_pcb_rw.device_packages is
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
 							pac_doc_texts.append (
-								container	=> packge.assembly_documentation.bottom.texts,
+								container	=> packge.assy_doc.bottom.texts,
 								new_item	=> (pac_text with vectorize_text (
 										content		=> pac_text.content,
 										size		=> pac_text.size,
@@ -1314,7 +1314,7 @@ package body et_pcb_rw.device_packages is
 				-- fill zones
 				procedure append_silk_polygon_top is begin
 					pac_silk_contours.append (
-						container	=> packge.silk_screen.top.contours, 
+						container	=> packge.silkscreen.top.contours, 
 						new_item	=> (contour with null record));
 					
 					board_reset_contour;
@@ -1322,7 +1322,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_silk_polygon_bottom is begin
 					pac_silk_contours.append (
-						container	=> packge.silk_screen.bottom.contours, 
+						container	=> packge.silkscreen.bottom.contours, 
 						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon
@@ -1332,7 +1332,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_assy_doc_polygon_top is begin
 					pac_doc_contours.append (
-						container	=> packge.assembly_documentation.top.contours, 
+						container	=> packge.assy_doc.top.contours, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1342,7 +1342,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_assy_doc_polygon_bottom is begin
 					pac_doc_contours.append (
-						container	=> packge.assembly_documentation.bottom.contours, 
+						container	=> packge.assy_doc.bottom.contours, 
 						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon
@@ -1611,7 +1611,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_lines.append (
-											container	=> packge.silk_screen.top.lines, 
+											container	=> packge.silkscreen.top.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1620,7 +1620,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_lines.append (
-											container	=> packge.assembly_documentation.top.lines, 
+											container	=> packge.assy_doc.top.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1687,7 +1687,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_lines.append (
-											container	=> packge.silk_screen.bottom.lines, 
+											container	=> packge.silkscreen.bottom.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1696,7 +1696,7 @@ package body et_pcb_rw.device_packages is
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_lines.append (
-											container	=> packge.assembly_documentation.bottom.lines, 
+											container	=> packge.assy_doc.bottom.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1775,7 +1775,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_arcs.append (
-											container	=> packge.silk_screen.top.arcs, 
+											container	=> packge.silkscreen.top.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1784,7 +1784,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_arcs.append (
-											container	=> packge.assembly_documentation.top.arcs, 
+											container	=> packge.assy_doc.top.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1847,7 +1847,7 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_arcs.append (
-											container	=> packge.silk_screen.bottom.arcs, 
+											container	=> packge.silkscreen.bottom.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1856,7 +1856,7 @@ package body et_pcb_rw.device_packages is
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_arcs.append (
-											container	=> packge.assembly_documentation.bottom.arcs, 
+											container	=> packge.assy_doc.bottom.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1925,14 +1925,14 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
-											container	=> packge.silk_screen.top.circles, 
+											container	=> packge.silkscreen.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 															
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
-											container	=> packge.assembly_documentation.top.circles, 
+											container	=> packge.assy_doc.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
@@ -1983,14 +1983,14 @@ package body et_pcb_rw.device_packages is
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
-											container	=> packge.silk_screen.bottom.circles, 
+											container	=> packge.silkscreen.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
-											container	=> packge.assembly_documentation.bottom.circles, 
+											container	=> packge.assy_doc.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 										board_reset_circle_fillable; -- clean up for next circle
@@ -2154,13 +2154,13 @@ package body et_pcb_rw.device_packages is
 									when SEC_SILK_SCREEN =>
 										
 										pac_text_placeholders.append (
-											container	=> packge.silk_screen.top.placeholders,
+											container	=> packge.silkscreen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
 										pac_text_placeholders.append (
-											container	=> packge.assembly_documentation.top.placeholders,
+											container	=> packge.assy_doc.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
 									when others => invalid_section;
@@ -2175,13 +2175,13 @@ package body et_pcb_rw.device_packages is
 									when SEC_SILK_SCREEN =>
 										
 										pac_text_placeholders.append (
-											container	=> packge.silk_screen.bottom.placeholders,
+											container	=> packge.silkscreen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
 										pac_text_placeholders.append (
-											container	=> packge.assembly_documentation.bottom.placeholders,
+											container	=> packge.assy_doc.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										
 									when others => invalid_section;

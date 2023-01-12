@@ -812,10 +812,10 @@ is
 
 			layer := SILK_SCREEN;
 			face := TOP;
-			device.text_placeholders.silk_screen.top.iterate (write_placeholder'access);
+			device.text_placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 			face := BOTTOM;				
-			device.text_placeholders.silk_screen.bottom.iterate (write_placeholder'access);
+			device.text_placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
 			layer := ASSEMBLY_DOCUMENTATION;
 			face := TOP;				
@@ -1391,10 +1391,10 @@ is
 
 				layer := SILK_SCREEN;
 				face := TOP;
-				device.text_placeholders.silk_screen.top.iterate (write_placeholder'access);
+				device.text_placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;				
-				device.text_placeholders.silk_screen.bottom.iterate (write_placeholder'access);
+				device.text_placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
 				layer := ASSEMBLY_DOCUMENTATION;
 				face := TOP;				

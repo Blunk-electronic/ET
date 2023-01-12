@@ -2624,12 +2624,12 @@ is
 
 							when TOP =>
 								pac_text_placeholders.append (
-									container	=> device_text_placeholders.silk_screen.top,
+									container	=> device_text_placeholders.silkscreen.top,
 									new_item	=> device_text_placeholder);
 								
 							when BOTTOM =>
 								pac_text_placeholders.append (
-									container	=> device_text_placeholders.silk_screen.bottom,
+									container	=> device_text_placeholders.silkscreen.bottom,
 									new_item	=> device_text_placeholder);
 						end case;
 						
