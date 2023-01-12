@@ -793,12 +793,12 @@ is
 		is
 			use et_pcb_coordinates;
 			use et_device_placeholders.packages;
-			use pac_text_placeholders;
+			use pac_placeholders;
 
 			face : et_pcb_coordinates.type_face;
-			layer : type_placeholder_package_layer;
+			layer : type_placeholder_layer;
 			
-			procedure write_placeholder (placeholder_cursor : in pac_text_placeholders.cursor) is 
+			procedure write_placeholder (placeholder_cursor : in pac_placeholders.cursor) is 
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));
@@ -1371,13 +1371,13 @@ is
 			is
 				use et_pcb_coordinates;
 				use et_device_placeholders.packages;
-				use et_device_placeholders.packages.pac_text_placeholders;
+				use et_device_placeholders.packages.pac_placeholders;
 
 				face : et_pcb_coordinates.type_face;
-				layer : type_placeholder_package_layer;
+				layer : type_placeholder_layer;
 				
 				procedure write_placeholder (
-					placeholder_cursor : in et_device_placeholders.packages.pac_text_placeholders.cursor) 
+					placeholder_cursor : in et_device_placeholders.packages.pac_placeholders.cursor) 
 				is begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));

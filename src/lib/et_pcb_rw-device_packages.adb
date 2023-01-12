@@ -160,8 +160,8 @@ package body et_pcb_rw.device_packages is
 		end write_conductor;
 
 		
-		use pac_text_placeholders;		
-		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
+		use pac_placeholders;		
+		procedure write_placeholder (cursor : in pac_placeholders.cursor) is begin
 			placeholder_begin;
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 			write_text_properties (element (cursor));
@@ -840,7 +840,7 @@ package body et_pcb_rw.device_packages is
 		--pac_text				: pac_text_fab.type_text_fab;
 		pac_text				: type_text_fab_with_content;
 		--content					: et_text.pac_text_content.bounded_string;
-		pac_text_placeholder	: type_text_placeholder;
+		pac_text_placeholder	: type_placeholder;
 	
 		terminal_position		: type_position := origin_zero_rotation;
 
@@ -2153,13 +2153,13 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										pac_text_placeholders.append (
+										pac_placeholders.append (
 											container	=> packge.silkscreen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_text_placeholders.append (
+										pac_placeholders.append (
 											container	=> packge.assy_doc.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -2174,13 +2174,13 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										pac_text_placeholders.append (
+										pac_placeholders.append (
 											container	=> packge.silkscreen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_text_placeholders.append (
+										pac_placeholders.append (
 											container	=> packge.assy_doc.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										

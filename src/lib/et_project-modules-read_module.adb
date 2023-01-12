@@ -1126,11 +1126,11 @@ is
 	-- list of placholders in silk screen, assy doc and their top or bottom face:
 	device_text_placeholder_position: et_pcb_coordinates.type_package_position := et_pcb_coordinates.placeholder_position_default; -- incl. rotation and face
 	
-	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_package_layer := 
-		et_device_placeholders.packages.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
+	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer := 
+		et_device_placeholders.packages.type_placeholder_layer'first; -- silk_screen/assembly_documentation
 
 	-- a single temporarily placeholder of a package
-	device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
+	device_text_placeholder : et_device_placeholders.packages.type_placeholder;
 
 	
 	procedure read_device_text_placeholder is
@@ -2623,12 +2623,12 @@ is
 						case get_face (device_text_placeholder_position) is
 
 							when TOP =>
-								pac_text_placeholders.append (
+								pac_placeholders.append (
 									container	=> device_text_placeholders.silkscreen.top,
 									new_item	=> device_text_placeholder);
 								
 							when BOTTOM =>
-								pac_text_placeholders.append (
+								pac_placeholders.append (
 									container	=> device_text_placeholders.silkscreen.bottom,
 									new_item	=> device_text_placeholder);
 						end case;
@@ -2637,12 +2637,12 @@ is
 						case get_face (device_text_placeholder_position) is
 
 							when TOP =>
-								pac_text_placeholders.append (
+								pac_placeholders.append (
 									container	=> device_text_placeholders.assy_doc.top,
 									new_item	=> device_text_placeholder);
 
 							when BOTTOM =>
-								pac_text_placeholders.append (
+								pac_placeholders.append (
 									container	=> device_text_placeholders.assy_doc.bottom,
 									new_item	=> device_text_placeholder);
 						end case;

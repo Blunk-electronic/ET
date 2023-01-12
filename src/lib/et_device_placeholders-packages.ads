@@ -66,41 +66,40 @@ package et_device_placeholders.packages is
 	use pac_text_board;
 
 	
-	type type_text_placeholder is new type_text_fab with record
+	type type_placeholder is new type_text_fab with record
 		meaning : type_text_meaning_package := NAME;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
+	package pac_placeholders is new doubly_linked_lists (type_placeholder);
 
 
 
 	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
-	type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
-	function to_string (layer : in type_placeholder_package_layer) return string;
-	function to_layer (layer : in string) return type_placeholder_package_layer;
+	type type_placeholder_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
+	function to_string (layer : in type_placeholder_layer) return string;
+	function to_layer (layer : in string) return type_placeholder_layer;
 
 
 	
-	-- A collection of text placeholders in silk screen and assembly documentation 
-	-- modelled by this type. The user is free to change them in the 
-	-- layout (position, text size, rotation, line width ...).
-	-- Initally, when a device is added to the schematic, these placeholders are 
+	-- Initially, when a device is added to the schematic, these placeholders are 
 	-- copies of the placeholders as defined in the package model.
-	type type_text_placeholders_silk_screen is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
+	-- The user is then free to change them in the 
+	-- layout (position, text size, rotation, line width ...).
+	type type_placeholders_silkscreen is record
+		top		: pac_placeholders.list;
+		bottom	: pac_placeholders.list;
 	end record;
 
-	type type_text_placeholders_assembly_documentation is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
+	type type_placeholders_assy_doc is record
+		top		: pac_placeholders.list;
+		bottom	: pac_placeholders.list;
 	end record;
 
 	type type_text_placeholders is record
-		silkscreen	: type_text_placeholders_silk_screen;
-		assy_doc	: type_text_placeholders_assembly_documentation;
+		silkscreen	: type_placeholders_silkscreen;
+		assy_doc	: type_placeholders_assy_doc;
 	end record;
 
 	

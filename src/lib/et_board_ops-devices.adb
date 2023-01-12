@@ -508,24 +508,24 @@ package body et_board_ops.devices is
 			device_non_electric	: pac_devices_non_electric.cursor;			
 
 			use et_device_placeholders.packages;
-			scratch : packages.pac_text_placeholders.list;
+			scratch : packages.pac_placeholders.list;
 			
 			-- Mirrors the position of a placeholder along the y-axis:
 			procedure mirror_placeholder (
-				p : in out packages.type_text_placeholder) 
+				p : in out packages.type_placeholder) 
 			is begin
 				mirror (point => p.position.place, axis => Y);
 			end mirror_placeholder;
 
 			
 			procedure mirror_placeholders (
-				phs : in out packages.pac_text_placeholders.list) 
+				phs : in out packages.pac_placeholders.list) 
 			is 
-				use packages.pac_text_placeholders;
-				cursor : packages.pac_text_placeholders.cursor := phs.first;
+				use packages.pac_placeholders;
+				cursor : packages.pac_placeholders.cursor := phs.first;
 			begin
-				while cursor /= packages.pac_text_placeholders.no_element loop
-						packages.pac_text_placeholders.update_element (
+				while cursor /= packages.pac_placeholders.no_element loop
+						packages.pac_placeholders.update_element (
 							container	=> phs,
 							position	=> cursor,
 							process		=> mirror_placeholder'access);

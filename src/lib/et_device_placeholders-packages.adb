@@ -43,12 +43,12 @@ package body et_device_placeholders.packages is
 
 
 
-	function to_string (layer : in type_placeholder_package_layer) return string is begin
-		return to_lower (type_placeholder_package_layer'image (layer));
+	function to_string (layer : in type_placeholder_layer) return string is begin
+		return to_lower (type_placeholder_layer'image (layer));
 	end;
 
-	function to_layer (layer : in string) return type_placeholder_package_layer is begin
-		return type_placeholder_package_layer'value (layer);
+	function to_layer (layer : in string) return type_placeholder_layer is begin
+		return type_placeholder_layer'value (layer);
 	end;
 
 	

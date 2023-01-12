@@ -497,9 +497,9 @@ package et_packages is
 	-- Logs the properties of the given silk screen placeholder
 	procedure placeholder_silk_screen_properties (
 		face			: in type_face;
-		cursor			: in pac_text_placeholders.cursor;
+		cursor			: in pac_placeholders.cursor;
 		log_threshold 	: in type_log_level);
-	
+	-- CS still  requred ?
 
 	
 	
@@ -507,9 +507,9 @@ package et_packages is
 	-- Logs the properties of the given assembly documentation placeholder
 	procedure placeholder_assy_doc_properties (
 		face			: in type_face;
-		cursor			: in pac_text_placeholders.cursor;
+		cursor			: in pac_placeholders.cursor;
 		log_threshold 	: in type_log_level);
-
+	-- CS still  requred ?
 	
 	
 	

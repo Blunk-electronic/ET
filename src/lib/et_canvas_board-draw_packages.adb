@@ -168,7 +168,7 @@ is
 
 		
 		-- Maps from meaning of given placeholder to text content:
-		function to_placeholder_content (ph : in type_text_placeholder)
+		function to_placeholder_content (ph : in type_placeholder)
 			return et_text.pac_text_content.bounded_string 
 		is
 			use et_devices;
@@ -265,7 +265,7 @@ is
 			use pac_silk_circles;
 			use pac_silk_contours;
 			use pac_silk_texts;
-			use pac_text_placeholders;
+			use pac_placeholders;
 
 			--procedure draw_placeholder (
 				--ph	: in out type_text_placeholder;
@@ -387,8 +387,8 @@ is
 
 				face : type_face := TOP;
 				
-				procedure query_placeholder (c : in pac_text_placeholders.cursor) is
-					ph : type_text_placeholder renames element (c);
+				procedure query_placeholder (c : in pac_placeholders.cursor) is
+					ph : type_placeholder renames element (c);
 				begin
 					-- Draw the placeholder only if it has content:
 					if not et_text.is_empty (to_placeholder_content (ph)) then
@@ -673,7 +673,7 @@ is
 
 			
 			-- PLACEHOLDERS
-			--use pac_text_placeholders;
+			--use pac_placeholders;
 
 			--procedure draw_placeholder (
 				--ph	: in out type_text_placeholder;
@@ -728,7 +728,7 @@ is
 			--end draw_placeholder;
 
 			
-			--procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
+			--procedure query_placeholder_top (c : in pac_placeholders.cursor) is
 				--ph : type_text_placeholder := element (c);
 			--begin
 				---- Draw the placeholder only if it has content:
@@ -739,7 +739,7 @@ is
 			--end query_placeholder_top;
 
 			
-			--procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
+			--procedure query_placeholder_bottom (c : in pac_placeholders.cursor) is
 				--ph : type_text_placeholder := element (c);
 			--begin
 				---- Draw the placeholder only if it has content:
