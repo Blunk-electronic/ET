@@ -681,6 +681,9 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : type_rotation;
+
+		use et_silkscreen.packages;
+		silkscreen : et_silkscreen.packages.type_silkscreen_package;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -689,30 +692,29 @@ package body et_device_query_board is
 			case face is
 				when TOP =>
 					if device.flipped = NO then
-						null;
-						--result := get_silkscreen_objects (packge, TOP);
-						--rotate_silkscreen_objects (result, + rotation);
+						silkscreen := get_silkscreen_objects (packge, TOP);
+						
+						--silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+						
+						rotate_silkscreen_objects (silkscreen, + rotation);
 					else
-						null;
-						--result := get_silkscreen_objects (packge, BOTTOM);
-						--mirror_silkscreen_objects (result);
-						--rotate_silkscreen_objects (result, - rotation);
+						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						mirror_silkscreen_objects (silkscreen);
+						rotate_silkscreen_objects (silkscreen, - rotation);
 					end if;
 
 				when BOTTOM =>
 					if device.flipped = NO then
-						null;
-						--result := get_silkscreen_objects (packge, BOTTOM);
-						--rotate_silkscreen_objects (result, + rotation);
+						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						rotate_silkscreen_objects (silkscreen, + rotation);
 					else
-						null;
-						--result := get_silkscreen_objects (packge, TOP);
-						--mirror_silkscreen_objects (result);
-						--rotate_silkscreen_objects (result, - rotation);
+						silkscreen := get_silkscreen_objects (packge, TOP);
+						mirror_silkscreen_objects (silkscreen);
+						rotate_silkscreen_objects (silkscreen, - rotation);
 					end if;
 			end case;
 
-			--move_silkscreen_objects (result, to_distance_relative (device.position.place));			
+			move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));			
 		end if;
 
 		return result;
@@ -724,45 +726,136 @@ package body et_device_query_board is
 		face			: in type_face)
 		return type_silkscreen
 	is
-		result : type_silkscreen;
+		result : type_silkscreen;		
 
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation renames device.position.rotation;
+
+		use et_silkscreen.packages;
+		silkscreen : et_silkscreen.packages.type_silkscreen_package;
 	begin
 		case face is
 			when TOP =>
 				if device.flipped = NO then
-					null;
-					--result := get_silkscreen_objects (packge, TOP);
-					--rotate_silkscreen_objects (result, + rotation);
+					silkscreen := get_silkscreen_objects (packge, TOP);
+					rotate_silkscreen_objects (silkscreen, + rotation);
 				else
-					null;
-					--result := get_silkscreen_objects (packge, BOTTOM);
-					--mirror_silkscreen_objects (result);
-					--rotate_silkscreen_objects (result, - rotation);
+					silkscreen := get_silkscreen_objects (packge, BOTTOM);
+					mirror_silkscreen_objects (silkscreen);
+					rotate_silkscreen_objects (silkscreen, - rotation);
 				end if;
 
 			when BOTTOM =>
 				if device.flipped = NO then
-					null;
-					--result := get_silkscreen_objects (packge, BOTTOM);
-					--rotate_silkscreen_objects (result, + rotation);
+					silkscreen := get_silkscreen_objects (packge, BOTTOM);
+					rotate_silkscreen_objects (silkscreen, + rotation);
 				else
-					null;
-					--result := get_silkscreen_objects (packge, TOP);
-					--mirror_silkscreen_objects (result);
-					--rotate_silkscreen_objects (result, - rotation);
+					silkscreen := get_silkscreen_objects (packge, TOP);
+					mirror_silkscreen_objects (silkscreen);
+					rotate_silkscreen_objects (silkscreen, - rotation);
 				end if;
 		end case;
 		
-		--move_silkscreen_objects (result, to_distance_relative (device.position.place));
+		move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));
 
 		return result;
 	end get_silkscreen_objects;
 
 
+
+-- ASSEMBLY DOCUMENTATION:
+	
+	function get_assy_doc_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_assy_doc
+	is
+		result : type_assy_doc;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation;
+
+		use et_assy_doc.packages;
+		assy_doc : et_assy_doc.packages.type_assy_doc_package;
+	begin
+		if device.appearance = PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+
+			case face is
+				when TOP =>
+					if device.flipped = NO then
+						assy_doc := get_assy_doc_objects (packge, TOP);
+						rotate_assy_doc_objects (assy_doc, + rotation);
+					else
+						assy_doc := get_assy_doc_objects (packge, BOTTOM);
+						mirror_assy_doc_objects (assy_doc);
+						rotate_assy_doc_objects (assy_doc, - rotation);
+					end if;
+
+				when BOTTOM =>
+					if device.flipped = NO then
+						assy_doc := get_assy_doc_objects (packge, BOTTOM);
+						rotate_assy_doc_objects (assy_doc, + rotation);
+					else
+						assy_doc := get_assy_doc_objects (packge, TOP);
+						mirror_assy_doc_objects (assy_doc);
+						rotate_assy_doc_objects (assy_doc, - rotation);
+					end if;
+			end case;
+
+			move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));			
+		end if;
+
+		return result;
+	end get_assy_doc_objects;
+	
+
+	function get_assy_doc_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_assy_doc
+	is
+		result : type_assy_doc;		
+
+		device : type_device_non_electric renames element (device_cursor);
+		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+
+		rotation : type_rotation renames device.position.rotation;
+
+		use et_assy_doc.packages;
+		assy_doc : et_assy_doc.packages.type_assy_doc_package;
+	begin
+		case face is
+			when TOP =>
+				if device.flipped = NO then
+					assy_doc := get_assy_doc_objects (packge, TOP);
+					rotate_assy_doc_objects (assy_doc, + rotation);
+				else
+					assy_doc := get_assy_doc_objects (packge, BOTTOM);
+					mirror_assy_doc_objects (assy_doc);
+					rotate_assy_doc_objects (assy_doc, - rotation);
+				end if;
+
+			when BOTTOM =>
+				if device.flipped = NO then
+					assy_doc := get_assy_doc_objects (packge, BOTTOM);
+					rotate_assy_doc_objects (assy_doc, + rotation);
+				else
+					assy_doc := get_assy_doc_objects (packge, TOP);
+					mirror_assy_doc_objects (assy_doc);
+					rotate_assy_doc_objects (assy_doc, - rotation);
+				end if;
+		end case;
+		
+		move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));
+
+		return result;
+	end get_assy_doc_objects;
+
+	
 	
 -- HOLES
 	

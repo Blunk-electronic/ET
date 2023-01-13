@@ -50,6 +50,7 @@ package body et_assy_doc.packages is
 		mirror_circles (assy_doc.circles, axis);
 		mirror_texts (assy_doc.texts, axis);
 		mirror_contours (assy_doc.contours, axis);
+		mirror_placeholders (assy_doc.placeholders, axis);
 	end mirror_assy_doc_objects;
 
 
@@ -62,6 +63,7 @@ package body et_assy_doc.packages is
 		rotate_circles (assy_doc.circles, angle);
 		rotate_texts (assy_doc.texts, angle);
 		rotate_contours (assy_doc.contours, angle);
+		rotate_placeholders (assy_doc.placeholders, angle);
 	end rotate_assy_doc_objects;
 
 
@@ -75,6 +77,7 @@ package body et_assy_doc.packages is
 		move_circles (assy_doc.circles, offset);
 		move_texts (assy_doc.texts, offset);
 		move_contours (assy_doc.contours, offset);
+		move_placeholders (assy_doc.placeholders, offset);
 	end move_assy_doc_objects;
 
 	

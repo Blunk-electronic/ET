@@ -50,7 +50,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
 			ph : type_placeholder := element (c);
 		begin
-			-- CS mirror_text (ph, axis);
+			mirror_text (ph, axis);
 			result.append (ph);
 		end query_placeholder;
 		
@@ -70,7 +70,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
 			ph : type_placeholder := element (c);
 		begin
-			-- CS rotate_text (ph, angle);
+			rotate_text (ph, angle);
 			result.append (ph);
 		end query_placeholder;
 
@@ -90,7 +90,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
 			ph : type_placeholder := element (c);
 		begin
-			-- CS move_text (ph, axis);
+			move_text (ph, offset);
 			result.append (ph);
 		end query_placeholder;
 
