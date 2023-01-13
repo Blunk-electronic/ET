@@ -54,8 +54,23 @@ package et_assy_doc.packages is
 		bottom	: type_assy_doc_package;
 	end record;
 
-	procedure dummy;
-	
+
+	-- Mirrors a list of assy_doc objects along the given axis:
+	procedure mirror_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		axis		: in type_axis_2d := Y);
+
+	-- Rotates a list of assy_doc objects by the given angle:
+	procedure rotate_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		angle		: in type_rotation);
+
+	-- Moves a list of assy_doc objects by the given offset:
+	procedure move_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		offset		: in type_distance_relative);
+
+
 end et_assy_doc.packages;
 
 -- Soli Deo Gloria

@@ -41,7 +41,42 @@ with et_text;					use et_text;
 
 package body et_assy_doc.packages is
 
-	procedure dummy is begin null; end;
+	procedure mirror_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		axis		: in type_axis_2d := Y)
+	is begin
+		mirror_lines (assy_doc.lines, axis);
+		mirror_arcs (assy_doc.arcs, axis);
+		mirror_circles (assy_doc.circles, axis);
+		mirror_texts (assy_doc.texts, axis);
+		mirror_contours (assy_doc.contours, axis);
+	end mirror_assy_doc_objects;
+
+
+	procedure rotate_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		angle		: in type_rotation)
+	is begin
+		rotate_lines (assy_doc.lines, angle);
+		rotate_arcs (assy_doc.arcs, angle);
+		rotate_circles (assy_doc.circles, angle);
+		rotate_texts (assy_doc.texts, angle);
+		rotate_contours (assy_doc.contours, angle);
+	end rotate_assy_doc_objects;
+
+
+
+	procedure move_assy_doc_objects (
+		assy_doc	: in out type_assy_doc_package;
+		offset		: in type_distance_relative)
+	is begin
+		move_lines (assy_doc.lines, offset);
+		move_arcs (assy_doc.arcs, offset);
+		move_circles (assy_doc.circles, offset);
+		move_texts (assy_doc.texts, offset);
+		move_contours (assy_doc.contours, offset);
+	end move_assy_doc_objects;
+
 	
 end et_assy_doc.packages;
 

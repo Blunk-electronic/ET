@@ -65,8 +65,23 @@ package et_assy_doc is
 	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
 	use pac_doc_lines;
 
+	-- Mirrors a list of lines along the given axis:
+	procedure mirror_lines (
+		lines	: in out pac_doc_lines.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of lines by the given angle:
+	procedure rotate_lines (
+		lines	: in out pac_doc_lines.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of lines by the given offset:
+	procedure move_lines (
+		lines	: in out pac_doc_lines.list;
+		offset	: in type_distance_relative);					
 
 
+	
 -- ARCS:
 	
 	type type_doc_arc is new pac_geometry_2.type_arc with record
@@ -76,7 +91,24 @@ package et_assy_doc is
 	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
 	use pac_doc_arcs;
 
+	-- Mirrors a list of arcs along the given axis:
+	procedure mirror_arcs (
+		arcs	: in out pac_doc_arcs.list;
+		axis	: in type_axis_2d := Y);					
 
+	-- Rotates a list of arcs by the given angle:
+	procedure rotate_arcs (
+		arcs	: in out pac_doc_arcs.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of arcs by the given offset:
+	procedure move_arcs (
+		arcs	: in out pac_doc_arcs.list;
+		offset	: in type_distance_relative);					
+
+	
+
+	
 -- CIRCLES:
 
 	type type_doc_circle is new pac_geometry_2.type_circle with record
@@ -87,6 +119,23 @@ package et_assy_doc is
 	use pac_doc_circles;
 	
 
+	-- Mirrors a list of circles along the given axis:
+	procedure mirror_circles (
+		circles	: in out pac_doc_circles.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of circles by the given angle:
+	procedure rotate_circles (
+		circles	: in out pac_doc_circles.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of circles by the given offset:
+	procedure move_circles (
+		circles	: in out pac_doc_circles.list;
+		offset	: in type_distance_relative);					
+
+
+	
 -- CONTOURS:
 	
 	type type_doc_contour is new type_contour with null record;
@@ -94,6 +143,23 @@ package et_assy_doc is
 	use pac_doc_contours;
 	
 
+	-- Mirrors a list of contours along the given axis:
+	procedure mirror_contours (
+		contours	: in out pac_doc_contours.list;
+		axis		: in type_axis_2d := Y);					
+
+	-- Rotates a list of contours by the given angle:
+	procedure rotate_contours (
+		contours	: in out pac_doc_contours.list;
+		angle		: in type_rotation);					
+
+	-- Moves a list of contours by the given offset:
+	procedure move_contours (
+		contours	: in out pac_doc_contours.list;
+		offset		: in type_distance_relative);					
+
+	
+	
 	
 -- TEXTS:
 	
@@ -104,6 +170,22 @@ package et_assy_doc is
 
 	package pac_doc_texts is new doubly_linked_lists (type_doc_text);
 	use pac_doc_texts;
+
+
+	-- Mirrors a list of texts along the given axis:
+	procedure mirror_texts (
+		texts	: in out pac_doc_texts.list;
+		axis	: in type_axis_2d := Y);					
+
+	-- Rotates a list of texts by the given angle:
+	procedure rotate_texts (
+		texts	: in out pac_doc_texts.list;
+		angle	: in type_rotation);					
+
+	-- Moves a list of texts by the given offset:
+	procedure move_texts (
+		texts	: in out pac_doc_texts.list;
+		offset	: in type_distance_relative);					
 
 	
 	

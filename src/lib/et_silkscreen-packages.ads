@@ -54,8 +54,23 @@ package et_silkscreen.packages is
 		bottom	: type_silkscreen_package;
 	end record;
 
-	
-	procedure dummy;
+
+	-- Mirrors a list of silkscreen objects along the given axis:
+	procedure mirror_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		axis		: in type_axis_2d := Y);
+
+	-- Rotates a list of silkscreen objects by the given angle:
+	procedure rotate_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		angle		: in type_rotation);
+
+	-- Moves a list of silkscreen objects by the given offset:
+	procedure move_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		offset		: in type_distance_relative);
+
+
 	
 end et_silkscreen.packages;
 

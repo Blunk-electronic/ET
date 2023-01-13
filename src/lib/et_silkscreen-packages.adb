@@ -40,9 +40,42 @@ with ada.strings;				use ada.strings;
 
 package body et_silkscreen.packages is
 
+	procedure mirror_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		axis		: in type_axis_2d := Y)
+	is begin
+		mirror_lines (silkscreen.lines, axis);
+		mirror_arcs (silkscreen.arcs, axis);
+		mirror_circles (silkscreen.circles, axis);
+		mirror_texts (silkscreen.texts, axis);
+		mirror_contours (silkscreen.contours, axis);
+	end mirror_silkscreen_objects;
 
 
-	procedure dummy is begin null; end;
+	procedure rotate_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		angle		: in type_rotation)
+	is begin
+		rotate_lines (silkscreen.lines, angle);
+		rotate_arcs (silkscreen.arcs, angle);
+		rotate_circles (silkscreen.circles, angle);
+		rotate_texts (silkscreen.texts, angle);
+		rotate_contours (silkscreen.contours, angle);
+	end rotate_silkscreen_objects;
+
+
+
+	procedure move_silkscreen_objects (
+		silkscreen	: in out type_silkscreen_package;
+		offset		: in type_distance_relative)
+	is begin
+		move_lines (silkscreen.lines, offset);
+		move_arcs (silkscreen.arcs, offset);
+		move_circles (silkscreen.circles, offset);
+		move_texts (silkscreen.texts, offset);
+		move_contours (silkscreen.contours, offset);
+	end move_silkscreen_objects;
+
 	
 end et_silkscreen.packages;
 
