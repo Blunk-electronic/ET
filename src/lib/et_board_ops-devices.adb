@@ -510,28 +510,28 @@ package body et_board_ops.devices is
 			use et_device_placeholders.packages;
 			scratch : packages.pac_placeholders.list;
 			
-			-- Mirrors the position of a placeholder along the y-axis:
-			procedure mirror_placeholder (
-				p : in out packages.type_placeholder) 
-			is begin
-				mirror (point => p.position.place, axis => Y);
-			end mirror_placeholder;
+			---- Mirrors the position of a placeholder along the y-axis:
+			--procedure mirror_placeholder (
+				--p : in out packages.type_placeholder) 
+			--is begin
+				--mirror (point => p.position.place, axis => Y);
+			--end mirror_placeholder;
 
 			
-			procedure mirror_placeholders (
-				phs : in out packages.pac_placeholders.list) 
-			is 
-				use packages.pac_placeholders;
-				cursor : packages.pac_placeholders.cursor := phs.first;
-			begin
-				while cursor /= packages.pac_placeholders.no_element loop
-						packages.pac_placeholders.update_element (
-							container	=> phs,
-							position	=> cursor,
-							process		=> mirror_placeholder'access);
-					next (cursor);
-				end loop;
-			end mirror_placeholders;
+			--procedure mirror_placeholders (
+				--phs : in out packages.pac_placeholders.list) 
+			--is 
+				--use packages.pac_placeholders;
+				--cursor : packages.pac_placeholders.cursor := phs.first;
+			--begin
+				--while cursor /= packages.pac_placeholders.no_element loop
+						--packages.pac_placeholders.update_element (
+							--container	=> phs,
+							--position	=> cursor,
+							--process		=> mirror_placeholder'access);
+					--next (cursor);
+				--end loop;
+			--end mirror_placeholders;
 
 			
 			procedure flip ( -- electric device

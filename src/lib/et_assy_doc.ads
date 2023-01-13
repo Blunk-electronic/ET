@@ -163,7 +163,6 @@ package et_assy_doc is
 	
 -- TEXTS:
 	
-	-- for texts in conductor layer to be exposed:
 	type type_doc_text is new type_text_fab_with_content with record
 		vectors	: type_vector_text;
 	end record;	

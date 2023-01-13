@@ -41,6 +41,66 @@
 package body et_device_placeholders.packages is
 
 
+	procedure mirror_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		axis			: in type_axis_2d := Y)
+	is
+		result : pac_placeholders.list;
+
+		procedure query_placeholder (c : in pac_placeholders.cursor) is
+			ph : type_placeholder := element (c);
+		begin
+			-- CS mirror_text (ph, axis);
+			result.append (ph);
+		end query_placeholder;
+		
+	begin
+		placeholders.iterate (query_placeholder'access);
+		placeholders := result;
+	end mirror_placeholders;
+	
+	
+
+	procedure rotate_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		angle			: in type_rotation)
+	is
+		result : pac_placeholders.list;
+
+		procedure query_placeholder (c : in pac_placeholders.cursor) is
+			ph : type_placeholder := element (c);
+		begin
+			-- CS rotate_text (ph, angle);
+			result.append (ph);
+		end query_placeholder;
+
+	begin
+		placeholders.iterate (query_placeholder'access);
+		placeholders := result;
+	end rotate_placeholders;
+
+
+
+	procedure move_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		offset			: in type_distance_relative)
+	is
+		result : pac_placeholders.list;
+
+		procedure query_placeholder (c : in pac_placeholders.cursor) is
+			ph : type_placeholder := element (c);
+		begin
+			-- CS move_text (ph, axis);
+			result.append (ph);
+		end query_placeholder;
+
+	begin
+		placeholders.iterate (query_placeholder'access);
+		placeholders := result;
+	end move_placeholders;
+
+	
+
 
 	procedure placeholder_properties (
 		face			: in type_face;

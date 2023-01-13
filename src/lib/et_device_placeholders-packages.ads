@@ -55,8 +55,7 @@ with et_logging;				use et_logging;
 
 package et_device_placeholders.packages is
 
-	--use pac_geometry_2;
-	--use pac_contours;
+	use pac_geometry_2;
 	use pac_text_board;
 
 	
@@ -66,8 +65,26 @@ package et_device_placeholders.packages is
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
 	package pac_placeholders is new doubly_linked_lists (type_placeholder);
+	use pac_placeholders;
+	
 
+	-- Mirrors a list of placeholders along the given axis:
+	procedure mirror_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		axis			: in type_axis_2d := Y);
+	
+	-- Rotates a list of placeholders by the given angle:
+	procedure rotate_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		angle			: in type_rotation);
 
+	-- Moves a list of placeholders by the given offset:
+	procedure move_placeholders (
+		placeholders	: in out pac_placeholders.list;
+		offset			: in type_distance_relative);
+
+	
+	
 	-- Logs the properties of the given placeholder:
 	procedure placeholder_properties (
 		face			: in type_face;
