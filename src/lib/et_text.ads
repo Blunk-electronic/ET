@@ -235,6 +235,22 @@ package et_text is
 			line_width	: type_text_line_width := type_text_line_width'first;
 		end record;
 
+
+		-- Mirrors a text along the given axis:
+		procedure mirror_text (
+			text	: in out type_text_fab;
+			axis	: in type_axis_2d := Y);
+
+		-- Rotates a text by the given angle about the origin:
+		procedure rotate_text (
+			text	: in out type_text_fab;
+			angle	: in type_rotation);
+
+		-- Moves a text by the given offset:
+		procedure move_text (
+			text	: in out type_text_fab;
+			offset	: in type_distance_relative);
+
 		
 		-- Returns the properties of the given text in a long single string.	
 		function text_properties (

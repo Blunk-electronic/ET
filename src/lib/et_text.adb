@@ -296,9 +296,6 @@ package body et_text is
 		end validate_text_line_width;
 
 
-
-
-
 		
 		function text_properties (
 			text : in type_text) 
@@ -308,6 +305,32 @@ package body et_text is
 				"size" & to_string (text.size)
 				& to_string (text.alignment);
 		end text_properties;
+
+
+		procedure mirror_text (
+			text	: in out type_text_fab;
+			axis	: in type_axis_2d := Y)
+		is begin
+			mirror (text.position.place, axis);
+		end mirror_text;
+
+		
+		procedure rotate_text (
+			text	: in out type_text_fab;
+			angle	: in type_rotation)
+		is begin
+			rotate_by (text.position.place, angle);
+			text.position.rotation := text.position.rotation + angle;
+		end rotate_text;
+
+
+		procedure move_text (
+			text	: in out type_text_fab;
+			offset	: in type_distance_relative)
+		is begin
+			move_by (text.position.place, offset);
+		end move_text;
+
 
 		
 		function text_properties (
