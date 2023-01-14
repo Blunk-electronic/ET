@@ -403,6 +403,11 @@ package et_pcb is
 		text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
+
+		-- CS ?
+		--value		: pac_device_value.bounded_string; -- 470R
+		--partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		--purpose		: pac_device_purpose.bounded_string; -- brightness_control
 	end record;
 
 	
