@@ -99,14 +99,9 @@ is
 		electric			: in boolean;
 		device_electric		: in et_schematic.pac_devices_sch.cursor;
 		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
-		device_name		: in et_devices.type_device_name; -- IC13, C4
-		device_value	: in et_devices.pac_device_value.bounded_string; -- SN7400
-		device_purpose	: in et_devices.pac_device_purpose.bounded_string; -- brightness control
-		model			: in et_packages.pac_package_model_file_name.bounded_string;
-		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		flip			: in et_packages.type_flipped;
-		placeholders	: in type_text_placeholders; -- specified in the board. will override default positions
-		brightness		: in type_brightness)
+		package_position	: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		flip				: in et_packages.type_flipped;
+		brightness			: in type_brightness)
 	is
 		-- CS should improve performance:
 		-- package_offset : constant type_distance_relative := to_distance_relative (package_position.place)
@@ -159,29 +154,7 @@ is
 			
 		end set_destination;
 		
-		
-		-- locate the package model in the package library:
-		package_cursor : constant et_packages.pac_package_models.cursor := 
-			get_package_model (model);
-
-		
-		-- Maps from meaning of given placeholder to text content:
-		function to_placeholder_content (ph : in type_placeholder)
-			return et_text.pac_text_content.bounded_string 
-		is
-			use et_devices;
-			use et_text;
-			result : pac_text_content.bounded_string;
-		begin
-			case ph.meaning is
-				when NAME => result := to_content (to_string (device_name));
-				when VALUE => result := to_content (to_string (device_value));
-				when PURPOSE => result := to_content (to_string (device_purpose));
-			end case;
-			
-			return result;
-		end to_placeholder_content;
-
+	
 		
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
 			line_horizontal : constant type_line_fine := ( -- from left to right
@@ -1806,8 +1779,23 @@ is
 				
 			end query_terminal;
 
-			
+
+				
+			package_cursor : et_packages.pac_package_models.cursor;
+
+			use et_schematic;
+			use pac_devices_sch;
+
+			use et_pcb;
+			use pac_devices_non_electric;
 		begin
+			-- locate the package model in the package library:
+			if electric then
+				package_cursor := get_package_model (device_electric);
+			else
+				package_cursor := get_package_model (element (device_non_electric).package_model);
+			end if;
+			
 			element (package_cursor).terminals.iterate (query_terminal'access);
 		end draw_terminals;
 
@@ -1972,17 +1960,8 @@ is
 					electric			=> true,
 					device_electric		=> device_cursor,
 					device_non_electric	=> pac_devices_non_electric.no_element,
-					device_name			=> key (device_cursor), -- R1, IC12
-					device_value		=> device.value, -- 7400, 100R
-					device_purpose		=> device.purpose, -- brightness control
-					model				=> get_package_model (device_cursor), -- libraries/packages/smd/SOT23.pac
 					package_position	=> position, -- x/y/rotation/face
 					flip				=> device.flipped,
-
-					-- The text placeholders specified in the board override
-					-- the default placeholders of the model:
-					placeholders		=> device.text_placeholders,
-
 					brightness			=> brightness);
 
 				-- CS live update ratsnest
@@ -2018,17 +1997,8 @@ is
 				electric			=> false,
 				device_electric		=> pac_devices_sch.no_element,
 				device_non_electric	=> p,
-				device_name			=> key (p), -- H1, FD2
 				package_position	=> element (p).position, -- x/y/rotation/face
 				flip				=> element (p).flipped,
-
-				-- The text placeholders specified in the board override
-				-- the default placeholders of the model:
-				placeholders		=> element (p).text_placeholders, 
-				
-				model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
-				device_value		=> to_value (""),
-				device_purpose		=> to_purpose (""),
 				brightness 			=> brightness);
 
 		end query_device;
