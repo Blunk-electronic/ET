@@ -44,6 +44,12 @@ with et_stop_mask;						use et_stop_mask;
 with et_stop_mask.packages;
 with et_stencil;						use et_stencil;
 
+
+with et_text;							use et_text;
+with et_devices;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;
 
@@ -246,11 +252,34 @@ package et_device_query_board is
 		return type_stopmask;
 
 
+-- PLACEHOLDERS:
+	
+	-- Maps from meaning of given placeholder to a text content:
+	function to_placeholder_content (
+		device_cursor	: in pac_devices_sch.cursor; -- electrical device
+		placeholder		: in type_placeholder)
+		return et_text.pac_text_content.bounded_string;
+
+	-- Maps from meaning of given placeholder to a text content:
+	function to_placeholder_content (
+		device_cursor	: in pac_devices_non_electric.cursor; -- non-electrical device
+		placeholder		: in type_placeholder)
+		return et_text.pac_text_content.bounded_string;
+	
+	
 -- SILKSCREEN:
 	
 	-- Returns the silkscreen objects of the given electrical device
 	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in silkscreen.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
@@ -259,7 +288,15 @@ package et_device_query_board is
 
 	-- Returns the silkscreen objects of the given non-electrical device
 	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in silkscreen.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
@@ -270,7 +307,15 @@ package et_device_query_board is
 	
 	-- Returns the assy_doc objects of the given electrical device
 	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in assy_doc.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
 	function get_assy_doc_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
@@ -279,7 +324,15 @@ package et_device_query_board is
 
 	-- Returns the assy_doc objects of the given non-electrical device
 	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in assy_doc.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
 	function get_assy_doc_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
