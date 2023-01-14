@@ -66,6 +66,7 @@ with et_fill_zones.packages;		use et_fill_zones.packages;
 
 with et_route_restrict;				
 with et_route_restrict.packages;
+
 with et_via_restrict;
 with et_via_restrict.packages;
 
@@ -73,10 +74,7 @@ with et_stop_mask;
 with et_stop_mask.packages;
 
 with et_stencil;
-
 with et_silkscreen;
-with et_silkscreen.packages;
-
 with et_assy_doc;
 with et_keepout;					
 
@@ -252,79 +250,18 @@ is
 			
 		end draw_text_with_content;
 
-		
-		-- SILKSCREEN
-		procedure draw_silkscreen is 
-			use et_silkscreen;
-			--use et_silkscreen.packages;
 
-			face : type_face := TOP;
-			
+		
+	-- SILKSCREEN
+		procedure draw_silkscreen is 
+			use et_silkscreen;			
 			use pac_silk_lines;
 			use pac_silk_arcs;
 			use pac_silk_circles;
 			use pac_silk_contours;
 			use pac_silk_texts;
-			use pac_placeholders;
 
-			--procedure draw_placeholder (
-				--ph	: in out type_text_placeholder;
-				--f	: in type_face)
-			--is
-				--use et_pcb;
-				--v_text : type_vector_text;
-			--begin
-				--if silkscreen_enabled (f) then
-					
-					--if f = face then
-
-						---- Rotate the position of the placeholder by the rotation of the package.
-						---- NOTE: This does not affect the rotation of the placeholder text but only
-						---- the rotation about the origin of the package.
-						---- If the package has been flipped, then the rotation is counterclockwise.
-						--if flipped then
-							--rotate_by (ph.position.place, - get_rotation (package_position));
-						--else
-							--rotate_by (ph.position.place, get_rotation (package_position));
-						--end if;
-
-						---- Move the placeholder by the package position to 
-						---- its final position:
-						--move_by (ph.position.place, to_distance_relative (package_position.place));
-
-						--set_color_silkscreen (context.cr, f, brightness);
-
-						--draw_text_origin (ph.position.place, f);
-
-						---- Set the line width of the vector text:
-						--set_line_width (context.cr, type_view_coordinate (ph.line_width));
-
-						---- Vectorize the content of the placeholder on the fly:
-						--v_text := vectorize_text (
-							--content		=> to_placeholder_content (ph), -- map from meaning to content
-							--size		=> ph.size,
-							--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							--position	=> ph.position.place,
-							--mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-							--line_width	=> ph.line_width,
-							--alignment	=> ph.alignment -- right, bottom
-							--);
-
-						---- Draw the content of the placeholder:
-						--draw_vector_text (in_area, context, v_text,
-							--ph.line_width, self.frame_height);
-						
-					--end if;
-
-				--end if;
-			--end draw_placeholder;
-
-			
-
-
-
-
-			
+			face : type_face := TOP;			
 			silkscreen_top, silkscreen_bottom : type_silkscreen;
 
 			
@@ -386,41 +323,6 @@ is
 
 
 				face : type_face := TOP;
-				
-				procedure query_placeholder (c : in pac_placeholders.cursor) is
-					ph : type_placeholder renames element (c);
-				begin
-					-- Draw the placeholder only if it has content:
-					if not et_text.is_empty (to_placeholder_content (ph)) then
-
-						draw_text_origin (ph.position.place, face);
-
-						-- Set the line width of the vector text:
-						set_line_width (context.cr, type_view_coordinate (ph.line_width));
-
-						-- CS
-						
-						---- Vectorize the content of the placeholder on the fly:
-						--v_text := vectorize_text (
-							--content		=> to_placeholder_content (ph), -- map from meaning to content
-							--size		=> ph.size,
-							--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							--position	=> ph.position.place,
-							--mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-							--line_width	=> ph.line_width,
-							--alignment	=> ph.alignment -- right, bottom
-							--);
-
-						-- Draw the content of the placeholder:
-						--draw_vector_text (
-							--area	=> in_area, 
-							--context	=> context, 
-							--text	=> ph.v_text,
-							--width	=> ph.line_width, 
-							--height	=> self.frame_height);
-						
-					end if;
-				end query_placeholder;
 
 				
 			begin
@@ -430,7 +332,6 @@ is
 				silkscreen_top.circles.iterate (query_circle'access);
 				silkscreen_top.contours.iterate (query_contour'access);
 				silkscreen_top.texts.iterate (query_text'access);
-				--silkscreen_top.placeholders.iterate (query_placeholder'access);
 
 				face := BOTTOM;
 				set_color_silkscreen (context.cr, face, brightness);
@@ -439,7 +340,6 @@ is
 				silkscreen_bottom.circles.iterate (query_circle'access);
 				silkscreen_bottom.contours.iterate (query_contour'access);
 				silkscreen_bottom.texts.iterate (query_text'access);
-				--silkscreen_bottom.placeholders.iterate (query_placeholder'access);
 			end draw;
 			
 			
@@ -469,351 +369,125 @@ is
 		end draw_silkscreen;
 
 		
-		-- ASSY DOC
+	-- ASSY DOC
 		procedure draw_assembly_documentation is 
-			use et_assy_doc;
-			
-			-- LINES
+			use et_assy_doc;			
 			use pac_doc_lines;
-			--line : type_doc_line;
-
-			--procedure draw_line (f : in type_face) is begin
-				--if assy_doc_enabled (f) then
-				
-					--if f = face then
-						--rotate_by (line, get_rotation (package_position));
-						
-						--if flipped then mirror (line, Y); end if;
-						
-						--move_by (line, to_distance_relative (package_position.place));
-
-						--set_color_assy_doc (context.cr, f, brightness);
-						--set_line_width (context.cr, type_view_coordinate (line.width));
-						--draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
-					--end if;
-
-				--end if;
-			--end draw_line;
-			
-			--procedure query_line_top (c : in pac_doc_lines.cursor) is begin
-				--line := element (c);
-				--set_destination;
-				--draw_line (destination);
-			--end query_line_top;
-
-			--procedure query_line_bottom (c : in pac_doc_lines.cursor) is begin
-				--line := element (c);
-				--set_destination (INVERSE);
-				--draw_line (destination);
-			--end query_line_bottom;
-
-			
-			-- ARCS
 			use pac_doc_arcs;
-			--arc : type_doc_arc;
-
-			--procedure draw_arc (f : in type_face) is begin
-				--if assy_doc_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (arc, get_rotation (package_position));
-						
-						--if flipped then mirror (arc, Y); end if;
-						
-						--move_by (arc, to_distance_relative (package_position.place));
-
-						--set_color_assy_doc (context.cr, f, brightness);
-						--set_line_width (context.cr, type_view_coordinate (arc.width));
-						--draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
-					--end if;
-					
-				--end if;
-			--end draw_arc;
-
-			
-			--procedure query_arc_top (c : in pac_doc_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination;
-				--draw_arc (destination);
-			--end query_arc_top;
-
-			
-			--procedure query_arc_bottom (c : in pac_doc_arcs.cursor) is begin
-				--arc := element (c);
-				--set_destination (INVERSE);
-				--draw_arc (destination);
-			--end query_arc_bottom;
-
-			
-			---- CIRCLES
 			use pac_doc_circles;
+			use pac_doc_contours;
+			use pac_doc_texts;
 
-			--procedure draw_circle (
-				--circle	: in out type_fillable_circle;
-				--f 		: in type_face) 
-			--is begin
-				--if assy_doc_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (circle, get_rotation (package_position));
-						
-						--if flipped then mirror (circle, Y); end if;
-						
-						--move_by (circle, to_distance_relative (package_position.place));
+			face : type_face := TOP;
 
-						--set_color_assy_doc (context.cr, f, brightness);
-
-						--case circle.filled is
-							--when NO =>
-								--set_line_width (context.cr, type_view_coordinate (circle.border_width));
-								--draw_circle (in_area, context, circle, circle.filled, 
-									--circle.border_width, self.frame_height);
-
-							--when YES =>
-								--case circle.fill_style is
-									--when SOLID =>
-										--draw_circle (in_area, context, circle, circle.filled,
-											--zero, self.frame_height);
-
-									--when HATCHED => null; -- CS
-								--end case;
-						--end case;
-
-					--end if;
-
-				--end if;
-			--end draw_circle;
+			doc_top, doc_bottom : type_assy_doc;
 
 			
-			--procedure query_circle_top (c : in pac_doc_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination;
-				--draw_circle (circle, destination);
-			--end query_circle_top;
+			procedure draw is
 
-			
-			--procedure query_circle_bottom (c : in pac_doc_circles.cursor) is 
-				--circle : type_fillable_circle := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_circle (circle, destination);
-			--end query_circle_bottom;
+				procedure query_line (c : in pac_doc_lines.cursor) is 
+					line : type_doc_line renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (line.width));
+					draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+				end query_line;
 
-			
-			---- CONTOURS
-			--use pac_doc_polygons;
+				procedure query_arc (c : in pac_doc_arcs.cursor) is 
+					arc : type_doc_arc renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+				end query_arc;
 
-			--procedure draw_contour (
-				--polygon	: in out type_contour_non_conductor;
-				--f		: in type_face)
-			--is 
-				--drawn : boolean := false;
-			--begin
-				--if assy_doc_enabled (f) then
-					
-					--if f = face then
-						--rotate_by (polygon, get_rotation (package_position));
-						
-						--if flipped then mirror (polygon, Y); end if;
-						
-						--move_by (polygon, to_distance_relative (package_position.place));
+				procedure query_circle (c : in pac_doc_circles.cursor) is 
+					circle : type_doc_circle renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (circle.width));
+					draw_circle (
+						area	=> in_area,
+						context	=> context, 
+						circle	=> circle,
+						filled	=> NO,
+						width	=> circle.width, 
+						height	=> self.frame_height);
+				end query_circle;
 
-						--set_color_assy_doc (context.cr, f, brightness);
+				procedure query_contour (c : in pac_doc_contours.cursor) is 
+					contour : type_doc_contour renames element (c);
+					drawn : boolean := false;
+				begin
+					set_line_width (context.cr, type_view_coordinate (zero));
+					draw_contour (
+						area	=> in_area, 
+						context	=> context, 
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero,
+						height	=> self.frame_height,
+						drawn	=> drawn);
+				end query_contour;
 
-						--case polygon.fill_style is
-							--when SOLID =>
-								--draw_contour (
-									--area	=> in_area, 
-									--context	=> context, 
-									--contour	=> polygon,
-									--filled	=> YES,
-									--width	=> zero,
-									--height	=> self.frame_height, 
-									--drawn	=> drawn);
-
-								
-							--when HATCHED =>
-								--set_line_width (context.cr,
-									--type_view_coordinate (polygon.hatching.border_width));
-
-								--draw_contour (
-									--area	=> in_area, 
-									--context	=> context, 
-									--contour	=> polygon,
-									--filled	=> NO,
-									--width	=> polygon.hatching.border_width,
-									--height	=> self.frame_height, 
-									--drawn	=> drawn);
-		
-								---- CS hatching ?
-						--end case;
-					--end if;
-
-				--end if;				
-			--end draw_contour;
-
-			
-			--procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination;
-				--draw_contour (polygon, destination);
-			--end query_polygon_top;
-
-			
-			--procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
-				--polygon : type_contour_non_conductor := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_contour (polygon, destination);
-			--end query_polygon_bottom;
+				procedure query_text (c : in pac_doc_texts.cursor) is 
+					text : type_doc_text renames element (c);
+				begin
+					set_line_width (context.cr, type_view_coordinate (text.line_width));
+					draw_vector_text (
+						area	=> in_area, 
+						context	=> context, 
+						text	=> text.vectors,
+						width	=> text.line_width, 
+						height	=> self.frame_height);
+				end query_text;
 
 
+				face : type_face := TOP;
+				
+				
+			begin
+				set_color_assy_doc (context.cr, face, brightness);
+				doc_top.lines.iterate (query_line'access);
+				doc_top.arcs.iterate (query_arc'access);
+				doc_top.circles.iterate (query_circle'access);
+				doc_top.contours.iterate (query_contour'access);
+				doc_top.texts.iterate (query_text'access);
 
-			
-			-- PLACEHOLDERS
-			--use pac_placeholders;
-
-			--procedure draw_placeholder (
-				--ph	: in out type_text_placeholder;
-				--f	: in type_face) 
-			--is
-				--use et_pcb;
-				--v_text : type_vector_text;
-			--begin
-				--if assy_doc_enabled (f) then
-					
-					--if f = face then
-
-						---- Rotate the position of the placeholder by the rotation of the package.
-						---- NOTE: This does not affect the rotation of the placeholder text but only
-						---- the rotation about the origin of the package.
-						---- If the package has been flipped, then the rotation is counterclockwise.
-						--if flipped then
-							--rotate_by (ph.position.place, - get_rotation (package_position));
-						--else
-							--rotate_by (ph.position.place, get_rotation (package_position));
-						--end if;
-
-						---- Move the placeholder by the package position to 
-						---- its final position:
-						--move_by (ph.position.place, to_distance_relative (package_position.place));
-
-						--set_color_assy_doc (context.cr, f, brightness);
-
-						--draw_text_origin (ph.position.place, f);
-
-						---- Set the line width of the vector text:
-						--set_line_width (context.cr, type_view_coordinate (ph.line_width));
-
-						---- Vectorize the content of the placeholder:
-						--v_text := vectorize_text (
-							--content		=> to_placeholder_content (ph), -- map from meaning to content
-							--size		=> ph.size,
-							--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-							--position	=> ph.position.place,
-							--mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-							--line_width	=> ph.line_width,
-							--alignment	=> ph.alignment -- right, bottom
-							--);
-
-						---- Draw the content of the placeholder:
-						--draw_vector_text (in_area, context, v_text,
-							--ph.line_width, self.frame_height);
-						
-					--end if;
-
-				--end if;
-			--end draw_placeholder;
-
-			
-			--procedure query_placeholder_top (c : in pac_placeholders.cursor) is
-				--ph : type_text_placeholder := element (c);
-			--begin
-				---- Draw the placeholder only if it has content:
-				--if not et_text.is_empty (to_placeholder_content (ph)) then
-					--set_destination;
-					--draw_placeholder (ph, destination);
-				--end if;
-			--end query_placeholder_top;
-
-			
-			--procedure query_placeholder_bottom (c : in pac_placeholders.cursor) is
-				--ph : type_text_placeholder := element (c);
-			--begin
-				---- Draw the placeholder only if it has content:
-				--if not et_text.is_empty (to_placeholder_content (ph)) then
-					--set_destination (INVERSE);
-					--draw_placeholder (ph, destination);
-				--end if;
-			--end query_placeholder_bottom;
-
-
-			---- TEXTS
-			--use pac_texts_fab_with_content;
-			
-			--procedure draw_text (
-				--t	: in out type_text_fab_with_content;
-				--f	: in type_face) is
-			--begin
-				--if assy_doc_enabled (f) then
-	
-					--if f = face then
-						--set_color_assy_doc (context.cr, f, brightness);
-						--draw_text_with_content (t, f);
-					--end if;
-
-				--end if;
-			--end draw_text;
-
-			
-			--procedure query_text_top (c : in pac_texts_fab_with_content.cursor) is
-				--t : type_text_fab_with_content := element (c);
-			--begin
-				--set_destination;
-				--draw_text (t, destination);
-			--end query_text_top;
-
-			
-			--procedure query_text_bottom (c : in pac_texts_fab_with_content.cursor) is
-				--t : type_text_fab_with_content := element (c);
-			--begin
-				--set_destination (INVERSE);
-				--draw_text (t, destination);
-			--end query_text_bottom;
+				face := BOTTOM;
+				set_color_assy_doc (context.cr, face, brightness);
+				doc_bottom.lines.iterate (query_line'access);
+				doc_bottom.arcs.iterate (query_arc'access);
+				doc_bottom.circles.iterate (query_circle'access);
+				doc_bottom.contours.iterate (query_contour'access);
+				doc_bottom.texts.iterate (query_text'access);
+			end draw;
 
 			
 		begin -- draw_assembly_documentation
-			-- lines
-			--element (package_cursor).assembly_documentation.top.lines.iterate (query_line_top'access);
-			--element (package_cursor).assembly_documentation.bottom.lines.iterate (query_line_bottom'access);
+			if electric then
+				if assy_doc_enabled (face) then
+					doc_top    := get_assy_doc_objects (device_electric, TOP);
+				end if;
 
-			---- arcs
-			--element (package_cursor).assembly_documentation.top.arcs.iterate (query_arc_top'access);
-			--element (package_cursor).assembly_documentation.bottom.arcs.iterate (query_arc_bottom'access);
+				face := BOTTOM;
+				if assy_doc_enabled (face) then
+					doc_bottom := get_assy_doc_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if assy_doc_enabled (face) then
+					doc_top    := get_assy_doc_objects (device_non_electric, TOP);
+				end if;
 
-			---- circles
-			--element (package_cursor).assembly_documentation.top.circles.iterate (query_circle_top'access);
-			--element (package_cursor).assembly_documentation.bottom.circles.iterate (query_circle_bottom'access);
+				face := BOTTOM;
+				if assy_doc_enabled (face) then
+					doc_bottom := get_assy_doc_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
 
-			---- polygons
-			--element (package_cursor).assembly_documentation.top.polygons.iterate (query_polygon_top'access);
-			--element (package_cursor).assembly_documentation.bottom.polygons.iterate (query_polygon_bottom'access);
-
-			---- placeholders
-			--placeholders.assy_doc.top.iterate (query_placeholder_top'access);
-			--placeholders.assy_doc.bottom.iterate (query_placeholder_bottom'access);
-			
-			---- texts
-			--element (package_cursor).assembly_documentation.top.texts.iterate (query_text_top'access);
-			--element (package_cursor).assembly_documentation.bottom.texts.iterate (query_text_bottom'access);
-
-			null;
+			draw;
 		end draw_assembly_documentation;
 
 		
-		-- KEEPOUT
+	-- KEEPOUT
 		procedure draw_keepout is 
 			use et_keepout;
 			use pac_keepout_zones;
@@ -879,7 +553,7 @@ is
 
 
 		
-		-- STOP MASK
+	-- STOP MASK
 		procedure draw_stop_mask is 
 			use et_stop_mask;
 			use et_stop_mask.packages;
@@ -1020,7 +694,7 @@ is
 
 
 		
-		-- STENCIL / SOLDER CREAM MASK
+	-- STENCIL / SOLDER CREAM MASK
 		procedure draw_stencil is 
 			use et_stencil;
 			use pac_stencil_lines;
@@ -1150,7 +824,7 @@ is
 		end face_to_layer;
 
 		
-		-- ROUTE RESTRICT
+	-- ROUTE RESTRICT
 		procedure draw_route_restrict is 
 			use et_route_restrict;
 			use et_route_restrict.packages;
@@ -1276,7 +950,7 @@ is
 		end draw_route_restrict;
 
 		
-		-- VIA RESTRICT
+	-- VIA RESTRICT
 		procedure draw_via_restrict is 
 			use et_via_restrict;
 			use et_via_restrict.packages;
@@ -1402,7 +1076,7 @@ is
 		end draw_via_restrict;
 
 		
-		-- PCB HOLES
+	-- PCB HOLES
 		procedure draw_holes is 
 			use et_pcb_contour;
 			use pac_holes;
@@ -1439,9 +1113,9 @@ is
 			end if;
 		end draw_holes;
 
-		------------------------------------------------------------------
+	------------------------------------------------------------------
 		
-		-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
+	-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
 		procedure draw_conductors is 
 			use et_conductor_text.packages;
 			use pac_conductor_texts;
@@ -1545,7 +1219,7 @@ is
 
 
 		
-		-- TERMINALS
+	-- TERMINALS
 
 		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
 			use et_canvas_schematic;
