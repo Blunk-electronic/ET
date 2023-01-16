@@ -51,6 +51,8 @@ with ada.containers.ordered_sets;
 
 with cairo;
 
+with et_device_placeholders;			use et_device_placeholders;
+
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
 with et_general;
@@ -98,17 +100,17 @@ package et_symbols is
 -- 	function to_text_style (style : in string) return type_text_style;
 	
 
-	-- Text placeholders have a meaning:
-	type type_placeholder_meaning is (
-		NAME,	-- for things like R301 or X9
-		VALUE,	-- for component values like "200R"
-		PURPOSE	-- for the purpose of the component in the design.
-		);
+	---- Text placeholders have a meaning:
+	--type type_placeholder_meaning is (
+		--NAME,	-- for things like R301 or X9
+		--VALUE,	-- for component values like "200R"
+		--PURPOSE	-- for the purpose of the component in the design.
+		--);
 	
-	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
+	--placeholder_meaning_default : constant type_placeholder_meaning := NAME;
 	
-	function to_string (meaning : in type_placeholder_meaning) return string;
-	function to_meaning (meaning : in string) return type_placeholder_meaning;
+	--function to_string (meaning : in type_placeholder_meaning) return string;
+	--function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
 	-- GUI relevant only:
@@ -493,9 +495,9 @@ package et_symbols is
 			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
-				name	: type_text_placeholder (meaning => et_symbols.NAME);
-				value	: type_text_placeholder (meaning => et_symbols.VALUE);
-				purpose : type_text_placeholder (meaning => et_symbols.PURPOSE);
+				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 
 			when VIRTUAL => null;				
 		end case;
@@ -516,9 +518,9 @@ package et_symbols is
 		-- The placeholders are copies of those in the symbol (see type_symbol):
 		case appearance is
 			when PCB =>
-				name	: type_text_placeholder (meaning => et_symbols.NAME);
-				value	: type_text_placeholder (meaning => et_symbols.VALUE);
-				purpose : type_text_placeholder (meaning => et_symbols.PURPOSE);
+				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 				
 			when VIRTUAL => null;
 		end case;
@@ -577,9 +579,9 @@ package et_symbols is
 	-- changed according to the rotation of the affected unit. We basically
 	-- deal with only those placeholders:
 	type type_rotated_placeholders is record
-		name	: type_text_placeholder (meaning => et_symbols.NAME);
-		value	: type_text_placeholder (meaning => et_symbols.VALUE);
-		purpose	: type_text_placeholder (meaning => et_symbols.PURPOSE);
+		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 	end record;
 
 	

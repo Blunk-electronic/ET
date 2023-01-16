@@ -71,7 +71,8 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_conventions;
 
-with et_device_placeholders.packages;	
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;
 
 
 package et_schematic_ops is
@@ -201,26 +202,26 @@ package et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
 	
-	function default_text_positions (
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
+	function default_text_positions (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
 
 	
-	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is absolute.										  
+	procedure rotate_unit_placeholder (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
-		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
 	
@@ -544,7 +545,7 @@ package et_schematic_ops is
 	function position ( -- CS rename to get_position
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in et_schematic.pac_units.cursor;
-		category	: in et_symbols.type_placeholder_meaning)
+		category	: in type_placeholder_meaning)
 		return type_point;
 
 	

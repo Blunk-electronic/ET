@@ -41,6 +41,8 @@ with et_terminals;
 with et_devices;				use et_devices;
 with et_symbols;
 with et_pcb_stack;
+with et_device_placeholders;		use et_device_placeholders;
+
 
 package et_device_rw is
 

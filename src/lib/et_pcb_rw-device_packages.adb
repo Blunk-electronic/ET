@@ -934,7 +934,7 @@ package body et_pcb_rw.device_packages is
 				
 			elsif kw = keyword_meaning then -- meaning reference, value, purpose
 				expect_field_count (line, 2);
-				pac_text_placeholder.meaning := to_text_meaning (f (line, 2));
+				pac_text_placeholder.meaning := to_meaning (f (line, 2));
 				
 			else
 				invalid_keyword (kw);

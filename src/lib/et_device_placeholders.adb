@@ -41,18 +41,18 @@
 package body et_device_placeholders is
 
 	function to_string (
-		text_meaning : in type_text_meaning_package) 
+		text_meaning : in type_placeholder_meaning) 
 		return string 
 	is begin
-		return to_lower (type_text_meaning_package'image (text_meaning));
+		return to_lower (type_placeholder_meaning'image (text_meaning));
 	end;
 
 	
-	function to_text_meaning (
+	function to_meaning (
 		text_meaning : in string) 
-		return type_text_meaning_package 
+		return type_placeholder_meaning 
 	is begin
-		return type_text_meaning_package'value (text_meaning);
+		return type_placeholder_meaning'value (text_meaning);
 	end;
 
 	

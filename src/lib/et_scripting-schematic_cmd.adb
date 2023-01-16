@@ -1252,6 +1252,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_NAME =>
@@ -1267,7 +1268,7 @@ is
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
-									meaning			=> et_symbols.NAME,
+									meaning			=> NAME,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1288,7 +1289,7 @@ is
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
-									meaning			=> et_symbols.VALUE,
+									meaning			=> VALUE,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1328,7 +1329,7 @@ is
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
-									meaning			=> et_symbols.PURPOSE,
+									meaning			=> PURPOSE,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1741,6 +1742,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_ROTATE =>
 				case noun is
@@ -1774,7 +1776,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.NAME,
+									meaning			=> NAME,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1792,7 +1794,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.VALUE,
+									meaning			=> VALUE,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1810,7 +1812,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.PURPOSE,
+									meaning			=> PURPOSE,
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1838,6 +1840,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_SAVE =>
 				case noun is
 					when NOUN_MODULE =>

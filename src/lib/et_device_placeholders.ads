@@ -52,16 +52,27 @@ with et_geometry;				use et_geometry;
 package et_device_placeholders is
 
 
-	type type_text_meaning_package is (NAME, VALUE, PURPOSE);
+	--type type_placeholder_meaning is (NAME, VALUE, PURPOSE);
 
+	-- Text placeholders have a meaning:
+	type type_placeholder_meaning is (
+		NAME,	-- for things like R301 or X9
+		VALUE,	-- for component values like "200R"
+		PURPOSE	-- for the purpose of the component in the design.
+		);
+
+
+	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
+	
+	
 	function to_string (
-		text_meaning : in type_text_meaning_package) 
+		text_meaning : in type_placeholder_meaning) 
 		return string;
 
 	
-	function to_text_meaning (
+	function to_meaning (
 		text_meaning : in string) 
-		return type_text_meaning_package;
+		return type_placeholder_meaning;
 	
 	
 	

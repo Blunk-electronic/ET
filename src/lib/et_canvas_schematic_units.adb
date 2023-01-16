@@ -1749,7 +1749,7 @@ package body et_canvas_schematic_units is
 					use et_symbols.pac_text_schematic;
 				begin
 					case category is
-						when et_symbols.NAME =>
+						when et_device_placeholders.NAME =>
 							r := unit.name.rotation + rotation;
 							unit.name.rotation := snap (r);
 							

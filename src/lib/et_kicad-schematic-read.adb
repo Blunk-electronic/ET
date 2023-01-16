@@ -43,6 +43,7 @@
 --		2. Warning if virtual component with one power pin has pin direction differing from power_out
 --			Example: Power symbol "P3V3" must have pin direction power_out.	
 
+
 separate (et_kicad.schematic)
 
 function read (
@@ -2573,7 +2574,7 @@ is
 
 							-- placeholders:
 							reference		=> (
-									meaning		=> NAME,
+									meaning		=> et_device_placeholders.NAME,
 									position	=> field_reference.position,
 									--style		=> field_reference.style,
 									rotation	=> snap (field_reference.rotation),
@@ -2581,7 +2582,7 @@ is
 									alignment	=> field_reference.alignment),
 
 							value			=> (
-									meaning		=> VALUE,
+									meaning		=> et_device_placeholders.VALUE,
 									position	=> field_value.position,
 									--style		=> field_value.style,
 									rotation	=> snap (field_value.rotation),
@@ -2610,7 +2611,7 @@ is
 							-- The kicad placeholders are now converted to ET native placeholders:
 						
 							reference		=> (
-									meaning		=> NAME,
+									meaning		=> et_device_placeholders.NAME,
 									position	=> field_reference.position,
 									--style		=> field_reference.style,
 									rotation	=> snap (field_reference.rotation),
@@ -2618,7 +2619,7 @@ is
 									alignment	=> field_reference.alignment),
 
 							value			=> (
-									meaning		=> VALUE,
+									meaning		=> et_device_placeholders.VALUE,
 									position	=> field_value.position,
 									--style		=> field_value.style,
 									rotation	=> snap (field_value.rotation),

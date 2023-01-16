@@ -60,7 +60,7 @@ package et_device_placeholders.packages is
 
 	
 	type type_placeholder is new type_text_fab with record
-		meaning : type_text_meaning_package := NAME;
+		meaning : type_placeholder_meaning := NAME;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	

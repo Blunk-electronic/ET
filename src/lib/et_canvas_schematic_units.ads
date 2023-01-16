@@ -58,6 +58,7 @@ with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 with et_canvas_schematic_nets;
+with et_device_placeholders;		use et_device_placeholders;
 
 
 package et_canvas_schematic_units is

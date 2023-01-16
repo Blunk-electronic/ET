@@ -56,6 +56,9 @@ with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
 
+with et_device_placeholders;		use et_device_placeholders;
+
+
 package body et_canvas_schematic is
 
 	procedure set_title_bar (
@@ -1347,12 +1350,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := et_symbols.NAME;
+								placeholder_move.category := NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
-										category	=> et_symbols.NAME);
+										category	=> NAME);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -1363,7 +1366,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> cursor_main.position,
-									category		=> et_symbols.NAME,
+									category		=> NAME,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1374,12 +1377,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := et_symbols.PURPOSE;
+								placeholder_move.category := PURPOSE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
-										category	=> et_symbols.PURPOSE);
+										category	=> PURPOSE);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -1390,7 +1393,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> cursor_main.position,
-									category		=> et_symbols.PURPOSE,
+									category		=> PURPOSE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1428,12 +1431,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := et_symbols.VALUE;
+								placeholder_move.category := VALUE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
-										category	=> et_symbols.VALUE);
+										category	=> VALUE);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -1444,7 +1447,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> cursor_main.position,
-									category		=> et_symbols.VALUE,
+									category		=> VALUE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1598,18 +1601,18 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> cursor_main.position,
-									category	=> et_symbols.NAME);
+									category	=> NAME);
 							else
-								rotate_selected_placeholder (et_symbols.NAME);
+								rotate_selected_placeholder (NAME);
 							end if;
 							
 						when NOUN_PURPOSE =>
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> cursor_main.position,
-									category	=> et_symbols.PURPOSE);
+									category	=> PURPOSE);
 							else
-								rotate_selected_placeholder (et_symbols.PURPOSE);
+								rotate_selected_placeholder (PURPOSE);
 							end if;
 
 						when NOUN_UNIT =>
@@ -1623,9 +1626,9 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> cursor_main.position,
-									category	=> et_symbols.VALUE);
+									category	=> VALUE);
 							else
-								rotate_selected_placeholder (et_symbols.VALUE);
+								rotate_selected_placeholder (VALUE);
 							end if;
 							
 						when others => null;
@@ -2370,12 +2373,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := MOUSE;
-								placeholder_move.category := et_symbols.NAME;
+								placeholder_move.category := NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
-										category	=> et_symbols.NAME);
+										category	=> NAME);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -2386,7 +2389,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> snap_to_grid (self, point),
-									category		=> et_symbols.NAME,
+									category		=> NAME,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -2396,12 +2399,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := MOUSE;
-								placeholder_move.category := et_symbols.PURPOSE;
+								placeholder_move.category := PURPOSE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
-										category	=> et_symbols.PURPOSE);
+										category	=> PURPOSE);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -2412,7 +2415,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> snap_to_grid (self, point),
-									category		=> et_symbols.PURPOSE,
+									category		=> PURPOSE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -2448,12 +2451,12 @@ package body et_canvas_schematic is
 
 								-- Set the tool being used for moving the placeholder:
 								placeholder_move.tool := MOUSE;
-								placeholder_move.category := et_symbols.VALUE;
+								placeholder_move.category := VALUE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
-										category	=> et_symbols.VALUE);
+										category	=> VALUE);
 								else
 									placeholder_move.being_moved := true;
 									reset_request_clarification;
@@ -2464,7 +2467,7 @@ package body et_canvas_schematic is
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> snap_to_grid (self, point),
-									category		=> et_symbols.VALUE,
+									category		=> VALUE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -2525,18 +2528,18 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> point,
-									category	=> et_symbols.NAME);
+									category	=> NAME);
 							else
-								rotate_selected_placeholder (et_symbols.NAME);
+								rotate_selected_placeholder (NAME);
 							end if;
 							
 						when NOUN_PURPOSE =>
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> point,
-									category	=> et_symbols.PURPOSE);
+									category	=> PURPOSE);
 							else
-								rotate_selected_placeholder (et_symbols.PURPOSE);
+								rotate_selected_placeholder (PURPOSE);
 							end if;
 						
 						when NOUN_UNIT =>
@@ -2550,9 +2553,9 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								rotate_placeholder (
 									point		=> point,
-									category	=> et_symbols.VALUE);
+									category	=> VALUE);
 							else
-								rotate_selected_placeholder (et_symbols.VALUE);
+								rotate_selected_placeholder (VALUE);
 							end if;
 
 							

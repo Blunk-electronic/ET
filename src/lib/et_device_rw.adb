@@ -65,6 +65,7 @@ with et_geometry;				use et_geometry;
 with et_text;
 with et_symbols;				use et_symbols;
 with et_packages;				use et_packages;
+with et_device_placeholders;	use et_device_placeholders;
 
 package body et_device_rw is
 
@@ -794,7 +795,7 @@ package body et_device_rw is
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
-									when et_symbols.VALUE =>
+									when et_device_placeholders.VALUE =>
 										unit_symbol.value := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);

@@ -2403,7 +2403,7 @@ package body et_kicad_libraries is
 					-- The kicad placeholders are now converted to ET native placeholders:
 
 					unit.symbol.name := (
-							meaning		=> NAME,
+							meaning		=> et_device_placeholders.NAME,
 							position	=> field_reference.position,
 							--style		=> field_reference.style,
 							rotation	=> snap (field_reference.rotation),
@@ -2412,7 +2412,7 @@ package body et_kicad_libraries is
 							alignment	=> field_reference.alignment);
 
 					unit.symbol.value := (
-							meaning		=> VALUE,
+							meaning		=> et_device_placeholders.VALUE,
 							position	=> field_value.position,
 							--style		=> field_value.style,
 							rotation	=> snap (field_value.rotation),

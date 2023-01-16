@@ -1142,7 +1142,7 @@ is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_meaning then -- meaning name, value, ...
 			expect_field_count (line, 2);
-			device_text_placeholder.meaning := to_text_meaning (f (line, 2));
+			device_text_placeholder.meaning := to_meaning (f (line, 2));
 			
 		elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
 			expect_field_count (line, 2);
@@ -1181,10 +1181,10 @@ is
 	-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_symbols.type_text_basic;
 	unit_placeholder_position	: et_coordinates.pac_geometry_2.type_point;
-	unit_placeholder_meaning	: et_symbols.type_placeholder_meaning := et_symbols.placeholder_meaning_default;
-	unit_placeholder_reference	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
-	unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
-	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
+	unit_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
+	unit_placeholder_reference	: et_symbols.type_text_placeholder (meaning => NAME);
+	unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => VALUE);
+	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => PURPOSE);
 
 	
 	procedure read_unit_placeholder is
@@ -1195,7 +1195,7 @@ is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_meaning then -- meaning reference, value or purpose
 			expect_field_count (line, 2);
-			unit_placeholder_meaning := et_symbols.to_meaning (f (line, 2));
+			unit_placeholder_meaning := to_meaning (f (line, 2));
 			
 		elsif kw = keyword_position then -- position x 0.000 y 5.555
 			expect_field_count (line, 5);

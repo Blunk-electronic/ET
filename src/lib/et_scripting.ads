@@ -47,10 +47,12 @@ with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
+with et_device_placeholders;	use et_device_placeholders;
 with et_project.modules;		use et_project.modules;
 with et_canvas_schematic;
 with et_canvas_board;
 with et_modes;					use et_modes;
+
 
 package et_scripting is
 

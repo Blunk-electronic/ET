@@ -63,6 +63,8 @@ use et_canvas_schematic.pac_canvas;
 
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
+with et_device_placeholders;			use et_device_placeholders;
+
 
 package body et_scripting_interactive_schematic is
 

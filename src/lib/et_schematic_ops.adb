@@ -1166,7 +1166,7 @@ package body et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1489,38 +1489,39 @@ package body et_schematic_ops is
 -- 		rotation		: in et_coordinates.type_rotation; -- 90
 -- 		log_threshold	: in type_log_level) is separate;	
 
+	
 	procedure rotate_unit_placeholder (
-	-- Rotates the given unit placeholder around its origin.
-	-- The rotation is absolute.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
-		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
-		log_threshold	: in type_log_level) is
-
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_symbols;
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
+				device		: in out type_device_sch) 
+			is
 				use pac_units;
 				unit_cursor : pac_units.cursor;
 
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) is
-				begin
+					unit	: in out type_unit) 
+				is begin
 					case meaning is
-						when et_symbols.NAME =>
+						when et_device_placeholders.NAME =>
 							unit.name.rotation := rotation;
 							
 						when VALUE =>
@@ -3576,7 +3577,7 @@ package body et_schematic_ops is
 	function position (
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
-		category	: in et_symbols.type_placeholder_meaning)
+		category	: in type_placeholder_meaning)
 		return type_point
 	is
 		placeholder_position : type_point; -- to be returned
