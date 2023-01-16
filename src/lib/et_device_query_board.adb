@@ -723,51 +723,6 @@ package body et_device_query_board is
 	
 -- SILKSCREEN
 
-	-- Converts the placeholders of an electrical device to 
-	-- a list of regular silkscreen texts:
-	function to_silk_texts (
-		device_cursor	: in pac_devices_sch.cursor;
-		placeholders	: in pac_placeholders.list;
-		mirror			: in type_vector_text_mirrored)
-		return pac_silk_texts.list
-	is
-		result : pac_silk_texts.list;
-
-		use pac_placeholders;
-
-		-- Converts a placeholder to a regular text and
-		-- appends the text to the result:
-		procedure query_placeholder (c : in pac_placeholders.cursor) is
-			ph : type_placeholder renames element (c);
-			text : type_silk_text;
-			use pac_text_board;
-		begin
-			text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
-			text.position := ph.position;
-			text.line_width := ph.line_width;
-
-			-- Vectorize the content of the placeholder:
-			text.vectors := vectorize_text (
-				content		=> text.content,
-				size		=> ph.size,
-				--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-				rotation	=> get_rotation (ph.position),
-				position	=> ph.position.place,
-				mirror		=> mirror,
-				line_width	=> ph.line_width,
-				alignment	=> ph.alignment -- right, bottom
-				);
-
-			result.append (text);
-		end query_placeholder;
-
-		
-	begin
-		placeholders.iterate (query_placeholder'access);		
-		return result;
-	end to_silk_texts;
-		
-	
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_sch.cursor;
 		face			: in type_face)
@@ -781,9 +736,43 @@ package body et_device_query_board is
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
 
-		scratch : pac_silk_texts.list;
+
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the silkscreen.texts:
+		procedure convert_placeholders_to_texts is
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_silk_text := (type_text_fab (ph) with others => <>);
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+				
+					-- Vectorize the content of the placeholder:
+					text.vectors := vectorize_text (
+						content		=> text.content,
+						size		=> ph.size,
+						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+						rotation	=> get_rotation (ph.position),
+						position	=> ph.position.place,
+						mirror		=> NO,
+						line_width	=> ph.line_width,
+						alignment	=> ph.alignment); -- right, bottom
+
+					silkscreen.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			silkscreen.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+
 		
-	begin
+	begin -- get_silkscreen_objects
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
@@ -793,18 +782,16 @@ package body et_device_query_board is
 					if device.flipped = NO then
 						silkscreen := get_silkscreen_objects (packge, TOP);
 
-						-- The text placeholders specified in the board overwrite
-						-- the default placeholders of the model.
+						-- overwrite the default placeholders: -- CS see spec of this function
 						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
-
-						-- Convert the placeholders to regular texts and append them
-						-- to the silkscreen texts:
-						scratch := to_silk_texts (device_cursor, silkscreen.placeholders, NO);
-						silkscreen.texts.splice (before => pac_silk_texts.no_element, source => scratch);
-						
+						convert_placeholders_to_texts;
 						rotate_silkscreen_objects (silkscreen, + rotation);
 					else
 						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+						convert_placeholders_to_texts;
 						mirror_silkscreen_objects (silkscreen);
 						rotate_silkscreen_objects (silkscreen, - rotation);
 					end if;
@@ -812,9 +799,17 @@ package body et_device_query_board is
 				when BOTTOM =>
 					if device.flipped = NO then
 						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+						convert_placeholders_to_texts;
 						rotate_silkscreen_objects (silkscreen, + rotation);
 					else
 						silkscreen := get_silkscreen_objects (packge, TOP);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+						convert_placeholders_to_texts;
 						mirror_silkscreen_objects (silkscreen);
 						rotate_silkscreen_objects (silkscreen, - rotation);
 					end if;
@@ -828,6 +823,7 @@ package body et_device_query_board is
 	end get_silkscreen_objects;
 	
 
+	
 	function get_silkscreen_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		face			: in type_face)
@@ -842,14 +838,59 @@ package body et_device_query_board is
 
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
-	begin
+
+		
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the silkscreen.texts:
+		procedure convert_placeholders_to_texts is
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_silk_text := (type_text_fab (ph) with others => <>);
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+				
+					-- Vectorize the content of the placeholder:
+					text.vectors := vectorize_text (
+						content		=> text.content,
+						size		=> ph.size,
+						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+						rotation	=> get_rotation (ph.position),
+						position	=> ph.position.place,
+						mirror		=> NO,
+						line_width	=> ph.line_width,
+						alignment	=> ph.alignment); -- right, bottom
+
+					silkscreen.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			silkscreen.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+	
+		
+	begin -- get_silkscreen_objects
 		case face is
 			when TOP =>
 				if device.flipped = NO then
 					silkscreen := get_silkscreen_objects (packge, TOP);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+					convert_placeholders_to_texts;
 					rotate_silkscreen_objects (silkscreen, + rotation);
 				else
 					silkscreen := get_silkscreen_objects (packge, BOTTOM);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+					convert_placeholders_to_texts;
 					mirror_silkscreen_objects (silkscreen);
 					rotate_silkscreen_objects (silkscreen, - rotation);
 				end if;
@@ -857,9 +898,17 @@ package body et_device_query_board is
 			when BOTTOM =>
 				if device.flipped = NO then
 					silkscreen := get_silkscreen_objects (packge, BOTTOM);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+					convert_placeholders_to_texts;
 					rotate_silkscreen_objects (silkscreen, + rotation);
 				else
 					silkscreen := get_silkscreen_objects (packge, TOP);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+					convert_placeholders_to_texts;
 					mirror_silkscreen_objects (silkscreen);
 					rotate_silkscreen_objects (silkscreen, - rotation);
 				end if;
@@ -888,7 +937,44 @@ package body et_device_query_board is
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
-	begin
+
+
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the assy_doc.texts:
+		procedure convert_placeholders_to_texts is
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_doc_text := (type_text_fab (ph) with others => <>);
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+					
+					-- Vectorize the content of the placeholder:
+					text.vectors := vectorize_text (
+						content		=> text.content,
+						size		=> ph.size,
+						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+						rotation	=> get_rotation (ph.position),
+						position	=> ph.position.place,
+						mirror		=> NO,
+						line_width	=> ph.line_width,
+						alignment	=> ph.alignment); -- right, bottom
+
+					assy_doc.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			assy_doc.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+
+		
+	begin -- get_assy_doc_objects
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
@@ -897,9 +983,17 @@ package body et_device_query_board is
 				when TOP =>
 					if device.flipped = NO then
 						assy_doc := get_assy_doc_objects (packge, TOP);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+						convert_placeholders_to_texts;
 						rotate_assy_doc_objects (assy_doc, + rotation);
 					else
 						assy_doc := get_assy_doc_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+						convert_placeholders_to_texts;
 						mirror_assy_doc_objects (assy_doc);
 						rotate_assy_doc_objects (assy_doc, - rotation);
 					end if;
@@ -907,9 +1001,17 @@ package body et_device_query_board is
 				when BOTTOM =>
 					if device.flipped = NO then
 						assy_doc := get_assy_doc_objects (packge, BOTTOM);
+
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+						convert_placeholders_to_texts;
 						rotate_assy_doc_objects (assy_doc, + rotation);
 					else
 						assy_doc := get_assy_doc_objects (packge, TOP);
+
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+						convert_placeholders_to_texts;
 						mirror_assy_doc_objects (assy_doc);
 						rotate_assy_doc_objects (assy_doc, - rotation);
 					end if;
@@ -937,14 +1039,59 @@ package body et_device_query_board is
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
-	begin
+
+
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the assy_doc.texts:
+		procedure convert_placeholders_to_texts is
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_doc_text := (type_text_fab (ph) with others => <>);
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+					
+					-- Vectorize the content of the placeholder:
+					text.vectors := vectorize_text (
+						content		=> text.content,
+						size		=> ph.size,
+						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
+						rotation	=> get_rotation (ph.position),
+						position	=> ph.position.place,
+						mirror		=> NO,
+						line_width	=> ph.line_width,
+						alignment	=> ph.alignment); -- right, bottom
+
+					assy_doc.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			assy_doc.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+
+		
+	begin -- get_assy_doc_objects
 		case face is
 			when TOP =>
 				if device.flipped = NO then
 					assy_doc := get_assy_doc_objects (packge, TOP);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+					convert_placeholders_to_texts;
 					rotate_assy_doc_objects (assy_doc, + rotation);
 				else
 					assy_doc := get_assy_doc_objects (packge, BOTTOM);
+					
+					-- overwrite the default placeholders: -- CS see spec of this function
+					assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+					convert_placeholders_to_texts;
 					mirror_assy_doc_objects (assy_doc);
 					rotate_assy_doc_objects (assy_doc, - rotation);
 				end if;
@@ -952,9 +1099,17 @@ package body et_device_query_board is
 			when BOTTOM =>
 				if device.flipped = NO then
 					assy_doc := get_assy_doc_objects (packge, BOTTOM);
+
+					-- overwrite the default placeholders: -- CS see spec of this function
+					assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+					convert_placeholders_to_texts;
 					rotate_assy_doc_objects (assy_doc, + rotation);
 				else
 					assy_doc := get_assy_doc_objects (packge, TOP);
+
+					-- overwrite the default placeholders: -- CS see spec of this function
+					assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+					convert_placeholders_to_texts;
 					mirror_assy_doc_objects (assy_doc);
 					rotate_assy_doc_objects (assy_doc, - rotation);
 				end if;

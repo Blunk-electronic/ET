@@ -506,33 +506,6 @@ package body et_board_ops.devices is
 		is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
-
-			use et_device_placeholders.packages;
-			scratch : packages.pac_placeholders.list;
-			
-			---- Mirrors the position of a placeholder along the y-axis:
-			--procedure mirror_placeholder (
-				--p : in out packages.type_placeholder) 
-			--is begin
-				--mirror (point => p.position.place, axis => Y);
-			--end mirror_placeholder;
-
-			
-			--procedure mirror_placeholders (
-				--phs : in out packages.pac_placeholders.list) 
-			--is 
-				--use packages.pac_placeholders;
-				--cursor : packages.pac_placeholders.cursor := phs.first;
-			--begin
-				--while cursor /= packages.pac_placeholders.no_element loop
-						--packages.pac_placeholders.update_element (
-							--container	=> phs,
-							--position	=> cursor,
-							--process		=> mirror_placeholder'access);
-					--next (cursor);
-				--end loop;
-			--end mirror_placeholders;
-
 			
 			procedure flip ( -- electric device
 				device_name	: in type_device_name;
@@ -549,26 +522,6 @@ package body et_board_ops.devices is
 					else
 						device.flipped := NO;
 					end if;
-
-					-- SILKSCREEN
-					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.silkscreen.bottom;
-					device.text_placeholders.silkscreen.bottom := device.text_placeholders.silkscreen.top;
-					device.text_placeholders.silkscreen.top := scratch;
-
-					-- mirror
-					mirror_placeholders (device.text_placeholders.silkscreen.top);
-					mirror_placeholders (device.text_placeholders.silkscreen.bottom);
-					
-					-- ASSEMBLY DOCUMENTATION
-					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.assy_doc.bottom;
-					device.text_placeholders.assy_doc.bottom := device.text_placeholders.assy_doc.top;
-					device.text_placeholders.assy_doc.top := scratch;
-
-					-- mirror
-					mirror_placeholders (device.text_placeholders.assy_doc.top);
-					mirror_placeholders (device.text_placeholders.assy_doc.bottom);
 					
 				else
 					log (WARNING, "package already on " & to_string (face) & " !");
@@ -591,27 +544,7 @@ package body et_board_ops.devices is
 					else
 						device.flipped := NO;
 					end if;
-
-					-- SILKSCREEN
-					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.silkscreen.bottom;
-					device.text_placeholders.silkscreen.bottom := device.text_placeholders.silkscreen.top;
-					device.text_placeholders.silkscreen.top := scratch;
-
-					-- mirror
-					mirror_placeholders (device.text_placeholders.silkscreen.top);
-					mirror_placeholders (device.text_placeholders.silkscreen.bottom);
-					
-					-- ASSEMBLY DOCUMENTATION
-					-- swap placeholders top/bottom
-					scratch := device.text_placeholders.assy_doc.bottom;
-					device.text_placeholders.assy_doc.bottom := device.text_placeholders.assy_doc.top;
-					device.text_placeholders.assy_doc.top := scratch;
-
-					-- mirror
-					mirror_placeholders (device.text_placeholders.assy_doc.top);
-					mirror_placeholders (device.text_placeholders.assy_doc.bottom);
-					
+	
 				else
 					log (WARNING, "package already on " & to_string (face) & " !");
 				end if;

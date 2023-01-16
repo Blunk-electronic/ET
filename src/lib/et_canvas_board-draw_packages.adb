@@ -285,6 +285,7 @@ is
 				procedure query_text (c : in pac_silk_texts.cursor) is 
 					text : type_silk_text renames element (c);
 				begin
+					-- CS draw_text_origin (text.position.place, face);
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
