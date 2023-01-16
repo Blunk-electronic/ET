@@ -286,6 +286,7 @@ package body et_silkscreen is
 		procedure query_text (c : in pac_silk_texts.cursor) is
 			text : type_silk_text := element (c);
 		begin
+			mirror_text (text, axis);
 			mirror_vector_text (text.vectors, axis);
 			result.append (text);
 		end query_text;
@@ -305,6 +306,7 @@ package body et_silkscreen is
 		procedure query_text (c : in pac_silk_texts.cursor) is
 			text : type_silk_text := element (c);
 		begin
+			rotate_text (text, angle);
 			rotate_vector_text (text.vectors, angle);
 			result.append (text);
 		end query_text;
@@ -324,6 +326,7 @@ package body et_silkscreen is
 		procedure query_text (c : in pac_silk_texts.cursor) is
 			text : type_silk_text := element (c);
 		begin
+			move_text (text, offset);
 			move_vector_text (text.vectors, offset);
 			result.append (text);
 		end query_text;
