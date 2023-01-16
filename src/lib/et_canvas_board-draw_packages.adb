@@ -181,48 +181,7 @@ is
 				restore (context.cr);
 			end if;
 		end draw_text_origin;
-
 		
-		procedure draw_text_with_content (
-			t : in out type_text_fab_with_content;
-			f : in type_face)
-		is
-			use et_pcb;
-			v_text : type_vector_text;
-		begin
-
-			-- Rotate the position of the text by the rotation of the package.
-			-- NOTE: This does not affect the rotation of the text itself.
-			rotate_by (t.position.place, get_rotation (package_position));
-			
-			if flipped then mirror (t.position.place, Y); end if;
-
-			-- Move the text by the package position to 
-			-- its final position:
-			move_by (t.position.place, to_distance_relative (package_position.place));
-
-			draw_text_origin (t.position.place, f);
-
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (t.line_width));
-
-			-- Vectorize the content of the text:
-			v_text := vectorize_text (
-				content		=> t.content,
-				size		=> t.size,
-				rotation	=> add (get_rotation (t.position), get_rotation (package_position)),
-				position	=> t.position.place,
-				mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-				line_width	=> t.line_width,
-				alignment	=> t.alignment -- right, bottom
-				);
-
-			-- Draw the content of the placeholder:
-			draw_vector_text (in_area, context, v_text,
-				t.line_width, self.frame_height);
-			
-		end draw_text_with_content;
-
 
 		
 	-- SILKSCREEN
@@ -282,10 +241,13 @@ is
 						drawn	=> drawn);
 				end query_contour;
 
+				face : type_face := TOP;
+				
 				procedure query_text (c : in pac_silk_texts.cursor) is 
 					text : type_silk_text renames element (c);
 				begin
-					-- CS draw_text_origin (text.position.place, face);
+					draw_text_origin (text.position.place, face);
+					
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
@@ -294,9 +256,6 @@ is
 						width	=> text.line_width, 
 						height	=> self.frame_height);
 				end query_text;
-
-
-				face : type_face := TOP;
 
 				
 			begin
@@ -401,9 +360,13 @@ is
 						drawn	=> drawn);
 				end query_contour;
 
+				face : type_face := TOP;
+				
 				procedure query_text (c : in pac_doc_texts.cursor) is 
 					text : type_doc_text renames element (c);
 				begin
+					draw_text_origin (text.position.place, face);
+					
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
@@ -412,10 +375,7 @@ is
 						width	=> text.line_width, 
 						height	=> self.frame_height);
 				end query_text;
-
-
-				face : type_face := TOP;
-				
+			
 				
 			begin
 				set_color_assy_doc (context.cr, face, brightness);
