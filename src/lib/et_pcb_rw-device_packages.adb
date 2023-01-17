@@ -2514,14 +2514,6 @@ package body et_pcb_rw.device_packages is
 												elsif kw = keyword_fill_style then -- fill_style solid/hatched
 													expect_field_count (line, 2);													
 													board_fill_style := to_fill_style (f (line, 2));
-
-												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-													expect_field_count (line, 2);													
-													board_hatching.line_width := to_distance (f (line, 2));
-
-												elsif kw = keyword_spacing then -- spacing 0.3
-													expect_field_count (line, 2);													
-													board_hatching.spacing := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -2620,35 +2612,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												board_fill_style := to_fill_style (f (line, 2));
-
-											elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
-												expect_field_count (line, 2);													
-												board_easing.style := to_easing_style (f (line, 2));
-
-											elsif kw = keyword_easing_radius then -- easing_radius 0.4
-												expect_field_count (line, 2);													
-												board_easing.radius := to_distance (f (line, 2));
-												
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												board_hatching.line_width := to_distance (f (line, 2));
-
-											elsif kw = keyword_spacing then -- spacing 0.3
-												expect_field_count (line, 2);													
-												board_hatching.spacing := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
+										null;
 
 									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										null;

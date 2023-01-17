@@ -55,15 +55,6 @@ package body et_board_shapes_and_text is
 	end validate_general_line_width;
 
 
-	-- EASING
-	function to_easing_style (easing : in string) return type_easing_style is begin
-		return type_easing_style'value (easing);
-	end;
-
-	function to_string (easing : in type_easing_style) return string is begin
-		return to_lower (type_easing_style'image (easing));
-	end;
-
 	
 
 

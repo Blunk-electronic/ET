@@ -639,6 +639,20 @@ package et_kicad.pcb is
 
 	function to_string (polygon_pad_connection : in type_fill_zone_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_fill_zone_pad_connection;
+
+
+	type type_hatching is record
+		-- the width of the border line
+		border_width : type_distance_positive := 1.0;
+		
+		-- the with of the lines inside the area:
+		line_width : type_distance_positive := hatching_line_width_default;
+
+		-- the space between the lines inside the area:
+		spacing	: type_distance_positive := hatching_spacing_default;
+	end record;
+
+
 	
 	type type_polygon is record
 		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net

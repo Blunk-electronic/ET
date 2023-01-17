@@ -179,6 +179,41 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
+	-- CS separate package for this stuff:
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_hatching_border_width	: constant string := "hatching_border_width";	
+	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_spacing : constant string := "spacing";
+
+	hatching_line_width_default : constant et_pcb_coordinates.pac_geometry_2.type_distance_positive := 0.2;
+	hatching_spacing_default	: constant et_pcb_coordinates.pac_geometry_2.type_distance_positive := 1.0;
+
+
+
+	
+	-- CS separate package for this stuff:	
+	keyword_easing_style  : constant string := "easing_style";
+	keyword_easing_radius : constant string := "easing_radius";	
+
+	type type_easing_style is (NONE, CHAMFER, FILLET);
+
+	function to_easing_style (easing : in string) return type_easing_style;
+	function to_string (easing : in type_easing_style) return string;
+
+	easing_radius_max : constant et_pcb_coordinates.pac_geometry_2.type_distance_positive := 100.0;
+	subtype type_easing_radius is et_pcb_coordinates.pac_geometry_2.type_distance_positive 
+		range et_pcb_coordinates.pac_geometry_2.type_distance_positive'first .. easing_radius_max;
+
+	type type_easing is record
+		style	: type_easing_style := NONE;
+		radius	: type_easing_radius := 0.0; -- center of circle at corner point
+	end record;
+
+
+
+
+	
+
 	keyword_isolation	: constant string := "isolation"; -- CS rename
 
 

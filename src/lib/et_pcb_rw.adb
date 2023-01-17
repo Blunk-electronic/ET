@@ -171,12 +171,12 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_hatching (hatching : in type_hatching) is
-	begin
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
-		write (keyword => keyword_spacing, parameters => to_string (hatching.spacing));
-		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
-	end;
+	--procedure write_hatching (hatching : in type_hatching) is
+	--begin
+		--write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
+		--write (keyword => keyword_spacing, parameters => to_string (hatching.spacing));
+		--write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
+	--end;
 
 	
 	procedure write_easing (easing: in type_easing) is
@@ -812,7 +812,7 @@ package body et_pcb_rw is
 		fill_spacing		:= type_track_clearance'first;
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;
-		board_hatching		:= (others => <>);
+		--board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		
 		pad_connection	:= type_pad_connection'first; -- board relevant only

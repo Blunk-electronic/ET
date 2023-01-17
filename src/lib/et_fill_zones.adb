@@ -233,6 +233,21 @@ package body et_fill_zones is
 	end fill_island;
 
 
+
+-- EASING
+	function to_easing_style (easing : in string) return type_easing_style is begin
+		return type_easing_style'value (easing);
+	end;
+
+	function to_string (easing : in type_easing_style) return string is begin
+		return to_lower (type_easing_style'image (easing));
+	end;
+
+
+
+
+
+	
 	function get_half_linewidth (
 		zone	: in type_zone)
 		return type_float_positive

@@ -106,46 +106,6 @@ package et_board_shapes_and_text is
 	keyword_width 		: constant string := "width";
 	keyword_linewidth	: constant string := "linewidth";
 
--- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
-	keyword_hatching_line_width		: constant string := "hatching_line_width";
-	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
-	keyword_spacing : constant string := "spacing";
-
-	hatching_line_width_default : constant type_distance_positive := 0.2;
-	hatching_spacing_default	: constant type_distance_positive := 1.0;
-	
-	
-	type type_hatching is record
-		-- the width of the border line
-		border_width : type_distance_positive := 1.0;
-		
-		-- the with of the lines inside the area:
-		line_width : type_distance_positive := hatching_line_width_default;
-
-		-- the space between the lines inside the area:
-		spacing	: type_distance_positive := hatching_spacing_default;
-	end record;
-
-
-	
--- EASING
-	keyword_easing_style : constant string := "easing_style";
-	keyword_easing_radius : constant string := "easing_radius";	
-
-	type type_easing_style is (NONE, CHAMFER, FILLET);
-
-	function to_easing_style (easing : in string) return type_easing_style;
-	function to_string (easing : in type_easing_style) return string;
-	
-	easing_radius_max : constant type_distance_positive := 100.0;
-	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
-
-	type type_easing is record
-		style	: type_easing_style := NONE;
-		radius	: type_easing_radius := zero; -- center of circle at corner point
-	end record;
-
 
 
 -- LAYER CATEGORY

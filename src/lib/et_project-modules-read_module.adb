@@ -1353,6 +1353,7 @@ is
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_2;
 		use et_pcb_stack;
+		use et_fill_zones;
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1378,6 +1379,7 @@ is
 	procedure read_cutout_non_conductor is
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates.pac_geometry_2;
+		use et_fill_zones;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1421,6 +1423,7 @@ is
 		use et_board_shapes_and_text;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_2;
+		use et_fill_zones;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1513,29 +1516,14 @@ is
 		use et_board_shapes_and_text;
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_2;
+		use et_fill_zones;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_fill_style then -- fill_style solid/hatched
 			expect_field_count (line, 2);													
 			board_fill_style := to_fill_style (f (line, 2));
-
-		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-			expect_field_count (line, 2);													
-			board_easing.style := to_easing_style (f (line, 2));
-
-		elsif kw = keyword_easing_radius then -- easing_radius 0.4
-			expect_field_count (line, 2);													
-			board_easing.radius := to_distance (f (line, 2));
-			
-		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-			expect_field_count (line, 2);													
-			board_hatching.line_width := to_distance (f (line, 2));
-
-		elsif kw = keyword_spacing then -- spacing 0.3
-			expect_field_count (line, 2);													
-			board_hatching.spacing := to_distance (f (line, 2));
-			
+		
 		else
 			invalid_keyword (kw);
 		end if;
@@ -6134,23 +6122,6 @@ is
 											if kw = et_board_shapes_and_text.keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
 												board_line_width := to_distance (f (line, 2));
-
-											elsif kw = keyword_filled then -- filled yes/no
-												expect_field_count (line, 2);													
-												board_filled := to_filled (f (line, 2));
-
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												board_fill_style := to_fill_style (f (line, 2));
-
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												board_hatching.line_width := to_distance (f (line, 2));
-
-											elsif kw = keyword_spacing then -- spacing 0.3
-												expect_field_count (line, 2);													
-												board_hatching.spacing := to_distance (f (line, 2));
-												
 											else
 												invalid_keyword (kw);
 											end if;
