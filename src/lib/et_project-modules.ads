@@ -41,9 +41,8 @@ with ada.containers.ordered_maps;
 with ada.containers.vectors;
 
 with et_coordinates;
-with et_symbols;
 with et_schematic;
-with et_nets;					--use et_nets;
+with et_nets;
 with et_net_labels;
 with et_submodules;
 with et_netlists;
@@ -61,6 +60,7 @@ with et_schematic_shapes_and_text;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
+with et_device_placeholders.symbols;
 
 with et_frames;
 with et_design_rules;			use et_design_rules;

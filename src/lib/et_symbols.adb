@@ -56,37 +56,7 @@ package body et_symbols is
 -- 	function to_text_style (style : in string) return type_text_style is begin
 -- 		return type_text_style'value (style);
 -- 	end;
-
-
-
-	procedure write_placeholder_properties (
-		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level) 
-	is begin
-		-- meaning
-		log (text => to_string (placeholder.meaning), level => log_threshold);
-		log_indentation_up;
-		
-		-- position
-		log (text => to_string (placeholder.position), level => log_threshold);
-
-		-- size
-		log (text => to_string (placeholder.size), level => log_threshold);
-
-		-- rotation
-		log (text => to_string (placeholder.rotation), level => log_threshold); 
-
-		-- visible
-		--log (text => "visible "
-		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
-
-		-- alignment
-		log (text => et_text.to_string (placeholder.alignment),
-			level => log_threshold);
-
-		log_indentation_down;
-	end write_placeholder_properties;
-
+	
 	
 	procedure write_text_properies (
 		text 			: in type_text;

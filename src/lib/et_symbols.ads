@@ -54,6 +54,7 @@ with cairo;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
@@ -75,42 +76,8 @@ package et_symbols is
 -- 	function to_text_style (style : in string) return type_text_style;
 	
 
-	-- GUI relevant only:
-	name_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	value_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	purpose_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-	
-
-	
-	
-	-- These are basic properties a text has got:
-	type type_text_basic is new type_text with record
-		-- CS font : type_font; ?
-        rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
-	end record;
-	
-	-- This is a placeholder for a name, value or purpose.
-	-- It does not have content yet, but a meaning.
-	-- The position is just x/y relative to the symbol origin.
-	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
-		position : type_point;
-	end record;
-
-	procedure write_placeholder_properties (
-	-- Writes the properties of the given placeholder.
-		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level);
 
 	
 	-- This is a real text with content (used for things like "counter" or "decoder"

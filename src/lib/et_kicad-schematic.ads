@@ -63,13 +63,14 @@ use et_coordinates.pac_geometry_2;
 
 with et_pcb_coordinates;
 with et_text;
-with et_symbols;				--use et_symbols;
+with et_symbols;
 with et_devices;				use et_devices;
 
-with et_schematic_shapes_and_text;		--use et_schematic_shapes_and_text;
+with et_schematic_shapes_and_text;
 
-with et_device_placeholders;	--use et_device_placeholders;
+with et_device_placeholders;
 with et_device_placeholders.packages;
+with et_device_placeholders.symbols;
 
 with et_frames;
 
@@ -161,8 +162,8 @@ package et_kicad.schematic is
 
 		-- We use the native type for a text placeholder here.
 		-- Placeholders for datasheet and package have no meaning here.
-		reference	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
-		value		: et_symbols.type_text_placeholder (meaning => et_device_placeholders.value);
+		reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
+		value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.value);
 		
 		timestamp	: et_kicad_general.type_timestamp;
 		alt_repres	: type_de_morgan_representation;

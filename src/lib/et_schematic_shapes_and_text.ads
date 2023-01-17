@@ -94,7 +94,11 @@ package et_schematic_shapes_and_text is
 	use pac_text_schematic; 
 	
 
-
+	-- These are basic properties a text has got:
+	type type_text_basic is new type_text with record
+		-- CS font : type_font; ?
+        rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
+	end record;
 
 	
 		

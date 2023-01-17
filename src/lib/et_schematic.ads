@@ -66,6 +66,7 @@ with et_logging;				use et_logging;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_device_placeholders;	--use et_device_placeholders;
 with et_device_placeholders.packages;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_packages;				use et_packages;
 with et_pcb;
@@ -142,9 +143,9 @@ package et_schematic is
 		case appearance is
 			when et_symbols.VIRTUAL => null; -- CS
 			when et_symbols.PCB =>
-				name	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
-				value	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
-				purpose	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.PURPOSE); -- to be filled in schematic later by the user
+				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+				purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE); -- to be filled in schematic later by the user
 		end case;
 		-- NOTE: The placeholders are defined in et_symbols. Thus they have only
 		-- basic coordinates (x/y relative to the unit position).

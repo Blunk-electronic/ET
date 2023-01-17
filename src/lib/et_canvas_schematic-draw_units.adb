@@ -58,9 +58,9 @@ is
 	unit_name	: et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 	-- The placeholders as given by the schematic:
-	sch_placeholder_name	: et_symbols.type_text_placeholder (meaning => NAME);
-	sch_placeholder_value	: et_symbols.type_text_placeholder (meaning => VALUE);
-	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => PURPOSE);
+	sch_placeholder_name	: type_text_placeholder (meaning => NAME);
+	sch_placeholder_value	: type_text_placeholder (meaning => VALUE);
+	sch_placeholder_purpose : type_text_placeholder (meaning => PURPOSE);
 
 	unit_rotation : type_rotation;
 

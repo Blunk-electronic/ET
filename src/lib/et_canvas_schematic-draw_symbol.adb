@@ -49,9 +49,9 @@ procedure draw_symbol (
 	unit_count		: in et_devices.type_unit_count;
 	unit_position	: in type_point; -- x/y on the schematic sheet
 	unit_rotation	: in type_rotation := zero_rotation;
-	sch_placeholder_name	: in et_symbols.type_text_placeholder;
-	sch_placeholder_value	: in et_symbols.type_text_placeholder;
-	sch_placeholder_purpose : in et_symbols.type_text_placeholder;
+	sch_placeholder_name	: in type_text_placeholder;
+	sch_placeholder_value	: in type_text_placeholder;
+	sch_placeholder_purpose : in type_text_placeholder;
 	brightness		: in type_brightness := NORMAL;
 	preview			: in boolean := false)
 is
@@ -413,7 +413,7 @@ is
 				context		=> context,
 				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 				size		=> symbol.name.size,
-				font		=> et_symbols.name_font,
+				font		=> name_font,
 				position	=> p,
 				origin		=> true, -- origin required
 				
@@ -443,7 +443,7 @@ is
 					context		=> context,
 					content		=> to_content (to_string (device_value)), -- 100R
 					size		=> symbol.value.size,
-					font		=> et_symbols.value_font,
+					font		=> value_font,
 					position	=> p,
 					origin		=> true, -- origin required
 					
@@ -474,7 +474,7 @@ is
 					context		=> context,
 					content		=> to_content (to_string (device_purpose)), -- "brightness control"
 					size		=> symbol.purpose.size,
-					font		=> et_symbols.purpose_font,
+					font		=> purpose_font,
 					position	=> p,
 					origin		=> true, -- origin required
 					

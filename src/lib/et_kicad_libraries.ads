@@ -66,7 +66,8 @@ with et_text;					use et_text;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
 
-with et_device_placeholders;	--use et_device_placeholders;
+with et_device_placeholders;			--use et_device_placeholders;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
 package et_kicad_libraries is
@@ -295,8 +296,8 @@ package et_kicad_libraries is
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
 		-- We use the native type for a text placeholder here. 
 		-- For things like package or datasheet no placeholder is requried. They have no meaning here.
-		name	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
-		value	: et_symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
+		name	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
+		value	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
 	end record;
 
 	-- a component unit in the library

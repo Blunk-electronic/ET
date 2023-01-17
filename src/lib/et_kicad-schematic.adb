@@ -150,10 +150,11 @@ package body et_kicad.schematic is
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
 		unit			: in type_units_schematic.cursor;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_string_processing;
 		use et_symbols;
+		use et_device_placeholders.symbols;
 	begin
 		log_indentation_up;
 		
@@ -185,7 +186,7 @@ package body et_kicad.schematic is
 		log (text => "placeholders", level => log_threshold + 1);
 		log_indentation_up;
 
-			-- reference
+			-- name
 			write_placeholder_properties (
 				placeholder		=> type_units_schematic.element (unit).reference,
 				log_threshold	=> log_threshold + 1);

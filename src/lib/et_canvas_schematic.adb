@@ -56,7 +56,8 @@ with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
 
-with et_device_placeholders;		use et_device_placeholders;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
 package body et_canvas_schematic is
@@ -448,9 +449,9 @@ package body et_canvas_schematic is
 		unit_count		: in et_devices.type_unit_count;
 		unit_position	: in type_point; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
-		sch_placeholder_name	: in et_symbols.type_text_placeholder;
-		sch_placeholder_value	: in et_symbols.type_text_placeholder;
-		sch_placeholder_purpose : in et_symbols.type_text_placeholder;
+		sch_placeholder_name	: in type_text_placeholder;
+		sch_placeholder_value	: in type_text_placeholder;
+		sch_placeholder_purpose : in type_text_placeholder;
 		brightness		: in type_brightness := NORMAL;
 
 		-- If preview is true, then the unit will be drawn less detailled.

@@ -1178,13 +1178,13 @@ is
 	-- the temporarily collection of placeholders of packages (in the layout)
 	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
-	-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
-	unit_placeholder			: et_symbols.type_text_basic;
+	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
+	unit_placeholder			: et_schematic_shapes_and_text.type_text_basic;
 	unit_placeholder_position	: et_coordinates.pac_geometry_2.type_point;
 	unit_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
-	unit_placeholder_reference	: et_symbols.type_text_placeholder (meaning => NAME);
-	unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => VALUE);
-	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => PURPOSE);
+	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => NAME);
+	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => VALUE);
+	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => PURPOSE);
 
 	
 	procedure read_unit_placeholder is

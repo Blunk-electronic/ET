@@ -4,7 +4,7 @@
 --                                                                          --
 --                   DEVICE PLACEHOLDERS IN SYMBOLS                         --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,65 +36,36 @@
 --
 --   to do:
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.maps;			use ada.strings.maps;
+package body et_device_placeholders.symbols is
 
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-
-with et_text;						use et_text;
-with et_coordinates;				use et_coordinates;
-with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
-with et_logging;					use et_logging;
-
-with cairo;
-
-
-package et_device_placeholders.symbols is
-
-	use pac_geometry_2;
-	use pac_text_schematic;
-	
-	-- This is a placeholder for a name, value or purpose.
-	-- It does not have content yet, but a meaning.
-	-- The position is just x/y relative to the symbol origin.
-	type type_text_placeholder (
-		meaning : type_placeholder_meaning) 
-	is new type_text_basic with record
-		position : type_point;
-	end record;
-	
-	
-	-- Writes the properties of the given placeholder.
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level) 
+	is begin
+		-- meaning
+		log (text => to_string (placeholder.meaning), level => log_threshold);
+		log_indentation_up;
+		
+		-- position
+		log (text => to_string (placeholder.position), level => log_threshold);
 
+		-- size
+		log (text => to_string (placeholder.size), level => log_threshold);
 
+		-- rotation
+		log (text => to_string (placeholder.rotation), level => log_threshold); 
 
+		-- visible
+		--log (text => "visible "
+		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
 
-	-- GUI relevant only:
-	name_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+		-- alignment
+		log (text => et_text.to_string (placeholder.alignment),
+			level => log_threshold);
 
-	value_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-
-	purpose_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-	
+		log_indentation_down;
+	end write_placeholder_properties;
 
 	
 end et_device_placeholders.symbols;

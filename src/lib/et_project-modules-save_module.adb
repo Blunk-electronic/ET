@@ -732,6 +732,7 @@ is
 		use et_symbol_rw;
 		use et_schematic;
 		use et_symbols;
+		use et_device_placeholders.symbols;
 		use pac_devices_sch;
 
 		procedure query_units (
