@@ -100,19 +100,6 @@ package et_symbols is
 -- 	function to_text_style (style : in string) return type_text_style;
 	
 
-	---- Text placeholders have a meaning:
-	--type type_placeholder_meaning is (
-		--NAME,	-- for things like R301 or X9
-		--VALUE,	-- for component values like "200R"
-		--PURPOSE	-- for the purpose of the component in the design.
-		--);
-	
-	--placeholder_meaning_default : constant type_placeholder_meaning := NAME;
-	
-	--function to_string (meaning : in type_placeholder_meaning) return string;
-	--function to_meaning (meaning : in string) return type_placeholder_meaning;
-
-
 	-- GUI relevant only:
 	name_font : constant et_text.type_font := (
 		family	=> et_text.to_family ("monospace"),

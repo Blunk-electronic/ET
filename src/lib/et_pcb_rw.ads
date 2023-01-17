@@ -147,7 +147,6 @@ package et_pcb_rw is
 	procedure write_pad_connection (connection : in type_pad_connection);
 	procedure write_pad_technology (techno : in type_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
-	procedure write_circle_fillable (circle : in type_fillable_circle);
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle);
 
 	-- Writes the properties of a circle in conductor as used in a freetrack:
@@ -283,27 +282,6 @@ package et_pcb_rw is
 
 	procedure board_reset_line_width;
 
-	-- package and board relevant:	
-	procedure board_reset_circle_fillable;
-
-	-- Composes a fillable circle from the given parameters. 
-	-- Filled and fill_style are discriminants. Depending on them some parameters
-	-- matter or not. See spec for type_fillable_circle.
-	function to_fillable_circle (
-		circle				: in type_circle;
-		filled				: in type_filled;
-		fill_style			: in type_fill_style;
-		circumfence_width	: in type_general_line_width;
-		hatching			: in type_hatching)
-		return type_fillable_circle;
-
-	
-	function board_make_fillable_circle return type_fillable_circle;
-
-	function board_make_fillable_circle_solid return type_fillable_circle_solid;
-
-	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle;
-			
 
 	
 	-- This procdure resets contour properties to their defaults.

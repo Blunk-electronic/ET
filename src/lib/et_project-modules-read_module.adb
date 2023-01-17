@@ -3253,7 +3253,6 @@ is
 				-- clean up for next board circle
 				board_reset_line_width;
 				board_reset_circle;
-				board_reset_circle_fillable; -- CS remove
 			end insert_circle;
 
 			
@@ -4039,7 +4038,10 @@ is
 				begin
 					pac_conductor_circles.append (
 						container	=> module.board.conductors.circles,
-						new_item	=> (board_make_conductor_circle with signal_layer));
+						--new_item	=> (board_make_conductor_circle with signal_layer));
+						new_item	=> (et_pcb_coordinates.pac_geometry_2.type_circle (board_circle) with 
+										width	=> board_line_width, 
+										layer	=> signal_layer));
 				end;
 									
 			begin -- insert_circle_track

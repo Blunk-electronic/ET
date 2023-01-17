@@ -247,28 +247,6 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure write_circle_fillable (circle : in type_fillable_circle) is begin
-		circle_begin;
-		write_circle (circle);
-		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
-		circle_end;
-	end write_circle_fillable;
-	
 
 	-- CS unify the follwing two procedures write_circle_conductor:
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle) is begin
@@ -806,83 +784,20 @@ package body et_pcb_rw is
 		signal_layer := type_signal_layer'first;
 	end;
 
+	
 	procedure board_reset_lock_status is
 		use et_pcb;
 	begin
 		board_lock_status := NO;
 	end;
 
+	
 	procedure board_reset_line_width is 
 		use et_packages;
 	begin 
 		board_line_width := type_general_line_width'first; 
 	end;
 
-	-- package and board relevant:	
-	procedure board_reset_circle_fillable is begin 
-		board_circle		:= (others => <>);
-		board_filled		:= type_filled'first;
-		board_fill_style	:= fill_style_default;
-		board_hatching		:= (others => <>);
-		
-		board_reset_line_width;
-	end;
-
-	
-	function to_fillable_circle (
-		circle				: in type_circle;
-		filled				: in type_filled;
-		fill_style			: in type_fill_style;
-		circumfence_width	: in type_general_line_width;
-		hatching			: in type_hatching)
-		return type_fillable_circle is
-
-	begin -- to_fillable_circle
-		case filled is
-			when NO =>
-				return (circle with
-					filled			=> NO,
-					fill_style		=> fill_style,
-					border_width	=> circumfence_width);
-				
-			when YES =>
-				case fill_style is
-					when SOLID =>
-						return (circle with
-							filled		=> YES,
-							fill_style	=> SOLID);
-
-					when HATCHED =>
-						return (circle with
-							filled				=> YES,
-							fill_style			=> HATCHED,
-							hatching			=> hatching);
-
-				end case;
-		end case;
-	end to_fillable_circle;
-
-	
-	function board_make_fillable_circle return type_fillable_circle is begin
-		return to_fillable_circle (
-			circle 				=> type_circle (board_circle),
-			filled				=> board_filled,
-			fill_style			=> board_fill_style,
-			circumfence_width	=> board_line_width,
-			hatching			=> board_hatching);
-	end;
-
-	
-	function board_make_fillable_circle_solid 
-		return type_fillable_circle_solid 
-	is begin
-		return (type_circle (board_circle) with board_filled);
-	end;
-
-	
-	function board_make_conductor_circle return et_conductor_segment.type_conductor_circle is begin
-		return (type_circle (board_circle) with width => board_line_width);
-	end;
 
 	
 	procedure board_reset_contour is

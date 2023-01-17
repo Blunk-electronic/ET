@@ -66,32 +66,6 @@ package body et_board_shapes_and_text is
 
 	
 
-	function to_string (circle : in type_fillable_circle) return string is begin
-		case circle.filled is
-			when NO =>
-				return
-					pac_geometry_2.to_string (type_circle (circle)) &
-					latin_1.space & et_text.keyword_line_width & to_string (circle.border_width);
-
-			when YES =>
-				case circle.fill_style is
-					when SOLID =>
-						return 
-							pac_geometry_2.to_string (type_circle (circle)) &
-							latin_1.space & keyword_fill_style & latin_1.space & to_string (circle.fill_style);
-
-					when HATCHED =>
-						return
-							pac_geometry_2.to_string (type_circle (circle)) &
-							latin_1.space & keyword_fill_style & latin_1.space & to_string (circle.fill_style) &
-							latin_1.space & keyword_hatching_line_width & to_string (circle.hatching.line_width) &
-							latin_1.space & keyword_spacing & to_string (circle.hatching.spacing);
-				end case;
-		end case;
-	end;
-
-
-
 
 	function to_layer_category (cat : in string) return type_layer_category is begin
 		return type_layer_category'value (layer_category_prefix & cat);

@@ -59,18 +59,6 @@ package body et_symbols is
 
 
 
-	--function to_string (meaning : in type_placeholder_meaning) return string is begin
-		--return to_lower (type_placeholder_meaning'image (meaning));
-	--end;
-
-	--function to_meaning (meaning : in string) return type_placeholder_meaning is begin
-		--return type_placeholder_meaning'value (meaning);
-	--end;
-
-
-
-
-
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;
 		log_threshold	: in type_log_level) 

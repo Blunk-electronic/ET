@@ -1921,21 +1921,21 @@ package body et_pcb_rw.device_packages is
 
 										et_conductor_segment.pac_conductor_circles.append (
 											container	=> packge.conductors.top.circles, 
-											new_item	=> board_make_conductor_circle);
-
+											new_item	=> (type_circle (board_circle) with board_line_width));
+										
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silkscreen.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 															
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
 											container	=> packge.assy_doc.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 										
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
@@ -1979,21 +1979,21 @@ package body et_pcb_rw.device_packages is
 
 										et_conductor_segment.pac_conductor_circles.append (
 											container	=> packge.conductors.bottom.circles, 
-											new_item	=> board_make_conductor_circle);
+											new_item	=> (type_circle (board_circle) with board_line_width));
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silkscreen.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										pac_doc_circles.append (
 											container	=> packge.assy_doc.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-										board_reset_circle_fillable; -- clean up for next circle
+										board_reset_circle; -- clean up for next circle
 
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
