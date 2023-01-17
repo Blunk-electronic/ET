@@ -52,7 +52,6 @@ with et_geometry;				use et_geometry;
 package et_device_placeholders is
 
 
-	--type type_placeholder_meaning is (NAME, VALUE, PURPOSE);
 
 	-- Text placeholders have a meaning:
 	type type_placeholder_meaning is (

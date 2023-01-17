@@ -45,9 +45,6 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.maps;			use ada.strings.maps;
 
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-
 with et_text;						use et_text;
 with et_coordinates;				use et_coordinates;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
