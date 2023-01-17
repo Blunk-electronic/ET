@@ -669,12 +669,14 @@ package pac_canvas is
 	procedure reset_grid_density;
 
 
+	context : type_draw_context;
+	--frame_height : type_float_positive;
+	
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
 	procedure draw_internal (
 		self    : not null access type_view;
-		context : type_draw_context;
 		area    : type_bounding_box) is null;
 
 	
@@ -724,7 +726,6 @@ package pac_canvas is
 	-- area of the drawing. If the grid density in x AND y is below 
 	-- threshold_grid_density then the grid will be drawn.
 	procedure draw_grid (
-		context	: in type_draw_context;
 		area	: in type_bounding_box;  -- the area of the drawing to be displayed
 		grid	: in pac_geometry_2.type_grid;		
 		start_x	: in type_view_coordinate;
@@ -787,7 +788,6 @@ package pac_canvas is
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
 	
@@ -988,7 +988,6 @@ package pac_canvas is
 	-- If area is no_rectangle then the line would be drawn in any case.
 	procedure draw_line (
 		area	: in type_bounding_box;	
-		context	: in type_draw_context;
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 
 		-- The line width is used for calculating the boundaries.
@@ -1004,7 +1003,6 @@ package pac_canvas is
 	-- If area is no_rectangle then the arc would be drawn in any case.
 	procedure draw_arc (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
 
 		-- The line width is used for calculating the boundaries.
@@ -1022,7 +1020,6 @@ package pac_canvas is
 	-- and left with this setting.
 	procedure draw_circle (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		circle	: in pac_geometry_2.type_circle'class;
 		filled	: in type_filled;
 
@@ -1037,7 +1034,6 @@ package pac_canvas is
 	-- Draws a contour:
 	procedure draw_contour (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		contour	: in type_contour'class;
 		style	: in type_line_style := CONTINUOUS; -- don't care if filled is YES
 		filled	: in type_filled;
@@ -1057,7 +1053,6 @@ package pac_canvas is
 
 	procedure draw_contour_with_circular_cutout (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class;
 		height			: in type_float_positive);
@@ -1065,7 +1060,6 @@ package pac_canvas is
 	
 	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
 		height			: in type_float_positive);
@@ -1078,7 +1072,6 @@ package pac_canvas is
 	-- If area is no_rectangle then the rectangle would be drawn in any case.
 	procedure draw_rectangle (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		position		: in pac_geometry_2.type_point;	-- position of the rectangle (lower left corner)
 		width			: in type_float_positive; -- widht of the rectangle
 		height			: in type_float_positive; -- height of the rectangle
@@ -1104,7 +1097,6 @@ package pac_canvas is
 	-- Does not care about area and bounding box. It is assumed that the calling
 	-- unit has decided whether the text is to be drawn or not. No area check here.
 	procedure draw_text (
-		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -1116,7 +1108,7 @@ package pac_canvas is
 	
 	-- Computes for the given text content, size and font the extents.
 	function get_text_extents (
-		context		: in type_draw_context;
+		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
@@ -1129,7 +1121,6 @@ package pac_canvas is
 	-- If area is no_rectangle then the text would be drawn in any case.
 	procedure draw_text (
 		area		: in type_bounding_box; -- in model plane
-		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -1143,7 +1134,6 @@ package pac_canvas is
 	-- Draw a vectorized text:
 	procedure draw_vector_text (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		text	: in type_vector_text;
 
 		-- The line width is used for calculating the boundaries
@@ -1159,7 +1149,6 @@ package pac_canvas is
 	-- Draws the lines of the title block:
 	procedure draw_title_block_lines (
 		area		: in type_bounding_box;
-		context		: in type_draw_context;	
 		lines		: in et_frames.pac_lines.list;
 		tb_pos		: in et_frames.type_position;
 		frame_size	: in et_frames.type_frame_size);
@@ -1168,7 +1157,6 @@ package pac_canvas is
 	-- Draws the outer an inder border of the frame:
 	procedure draw_border ( -- CS rename to draw_frame_border
 		area			: in type_bounding_box;
-		context			: in type_draw_context;	
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width;
 		height			: in et_frames.type_distance); -- CS no need. already in frame_size
@@ -1179,7 +1167,6 @@ package pac_canvas is
 	-- Between the delimiters are the row and column indexes.
 	procedure draw_sector_delimiters (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;	
 		sectors			: in et_frames.type_sectors;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width);
@@ -1189,7 +1176,6 @@ package pac_canvas is
 	-- The line position is relative to the lower left corner of the title block.	
 	procedure draw_text ( -- CS rename to draw_text_title_block
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		content	: in pac_text_content.bounded_string;
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
@@ -1204,7 +1190,6 @@ package pac_canvas is
 	-- Draws other texts such as "approved" or "edited". Such texts have no placeholders:
 	procedure draw_texts ( -- CS rename to draw_title_block_texts
 		area		: in type_bounding_box;
-		context		: in type_draw_context;
 		ph_common	: in et_frames.type_placeholders_common;
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;

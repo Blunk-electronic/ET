@@ -225,7 +225,7 @@ package et_canvas_schematic is
 	-- Redraw either the whole schematic sheet or a specific part of it only.
 	overriding procedure draw_internal (
 		self    : not null access type_view;
-		context : type_draw_context;
+		--context : type_draw_context;
 		area    : type_bounding_box);
 
 
@@ -288,7 +288,6 @@ package et_canvas_schematic is
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context;
 		cursor		: in type_cursor);
 
 	overriding function get_grid (

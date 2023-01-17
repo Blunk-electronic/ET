@@ -43,7 +43,6 @@ separate (et_canvas_board)
 
 procedure draw_grid (
 	self    : not null access type_view;
-	context : type_draw_context;
 	area    : type_bounding_box)  -- the area of the drawing to be displayed
 is
 	-- IMPORTANT !
@@ -81,7 +80,7 @@ begin
 	-- CS: Currently the start point is very far below the given area.
 	-- On drawing the grid this circumstance may waste computing time.
 
-	pac_canvas.draw_grid (context, area, used_grid, start_x, start_y,
+	pac_canvas.draw_grid (area, used_grid, start_x, start_y,
 						  grid -- color
 						 );
 

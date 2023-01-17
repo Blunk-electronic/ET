@@ -47,7 +47,6 @@ separate (et_canvas_board)
 procedure draw_silk_screen (
 	self    : not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context;
 	face	: in type_face)
 is
 	use et_board_shapes_and_text;
@@ -72,7 +71,6 @@ is
 		
 		draw_line (
 			area		=> in_area,
-			context		=> context,
 			line		=> to_line_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
@@ -85,7 +83,6 @@ is
 		
 		draw_arc (
 			area		=> in_area,
-			context		=> context,
 			arc			=> to_arc_fine (element (c)),
 			width		=> element (c).width,
 			height		=> self.frame_height);
@@ -98,7 +95,6 @@ is
 
 		draw_circle (
 			area		=> in_area,
-			context		=> context,
 			circle		=> element (c),
 			filled		=> NO,
 			width		=> element (c).width,
@@ -112,7 +108,6 @@ is
 	begin
 		draw_contour (
 			area	=> in_area,
-			context	=> context,
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
@@ -125,7 +120,7 @@ is
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		v_text : type_vector_text;
 	begin
-		draw_text_origin (self, element (c).position, in_area, context);
+		draw_text_origin (self, element (c).position, in_area);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -142,7 +137,7 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, v_text,
+		draw_vector_text (in_area, v_text,
 			element (c).line_width, self.frame_height);
 
 	end query_placeholder;
@@ -151,13 +146,13 @@ is
 	procedure query_text (c : in pac_silk_texts.cursor) is 
 		use pac_character_lines;
 	begin
-		draw_text_origin (self, element (c).position, in_area, context);
+		draw_text_origin (self, element (c).position, in_area);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, element (c).vectors,
+		draw_vector_text (in_area, element (c).vectors,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -199,7 +194,7 @@ begin -- draw_silk_screen
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (self, in_area, context, face, LAYER_CAT_SILKSCREEN);
+	draw_text_being_placed (self, in_area, face, LAYER_CAT_SILKSCREEN);
 	
 end draw_silk_screen;
 

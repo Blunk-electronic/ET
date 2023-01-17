@@ -43,7 +43,6 @@ separate (et_canvas_schematic)
 
 procedure draw_grid (
 	self    : not null access type_view;
-	context : type_draw_context;
 	area    : type_bounding_box) -- the area of the drawing to be displayed
 is
 	-- The grid must be aligned with the frame.
@@ -67,7 +66,7 @@ begin
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.
 
-	pac_canvas.draw_grid (context, area, used_grid, start_x, start_y, 
+	pac_canvas.draw_grid (area, used_grid, start_x, start_y, 
 						  grid); -- color
 	
 end draw_grid;

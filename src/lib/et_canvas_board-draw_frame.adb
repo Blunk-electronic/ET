@@ -44,8 +44,7 @@ separate (et_canvas_board)
 
 procedure draw_frame (
 	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area) 
 is
 	use et_frames;
 	
@@ -73,7 +72,6 @@ is
 			if top_enabled or bottom_enabled then
 				draw_text (
 					area	=> in_area,
-					context	=> context,		  
 					content	=> to_content (to_string (cms.face.content)), -- "FACE:" or "SIDE:"
 					size	=> cms.face.size,
 					font	=> font_placeholders,
@@ -86,7 +84,6 @@ is
 				if top_enabled and bottom_enabled then
 					draw_text (
 						area	=> in_area,
-						context	=> context,		  
 						content	=> to_content (type_face'image (TOP) & " & " & type_face'image (BOTTOM)), -- "TOP & BOTTOM"
 						size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size, -- CS use renames
 						font	=> font_placeholders,
@@ -98,7 +95,6 @@ is
 				elsif top_enabled then
 						draw_text (
 							area	=> in_area,
-							context	=> context,		  
 							content	=> to_content (type_face'image (TOP)), -- "TOP"
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
@@ -110,7 +106,6 @@ is
 				elsif bottom_enabled then
 						draw_text (
 							area	=> in_area,
-							context	=> context,		  
 							content	=> to_content (type_face'image (BOTTOM)), -- "BOTTOM"
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
@@ -126,7 +121,6 @@ is
 		procedure silkscreen is begin
 			draw_text (
 				area	=> in_area,
-				context	=> context,		  
 				content	=> to_content (to_string (cms.silk_screen.content)),
 				size	=> cms.silk_screen.size,
 				font	=> font_placeholders,
@@ -139,7 +133,6 @@ is
 		procedure assy_doc is begin
 			draw_text (
 				area	=> in_area,
-				context	=> context,		  
 				content	=> to_content (to_string (cms.assy_doc.content)),
 				size	=> cms.assy_doc.size,
 				font	=> font_placeholders,
@@ -152,7 +145,6 @@ is
 		procedure keepout is begin
 			draw_text (
 				area	=> in_area,
-				context	=> context,		  
 				content	=> to_content (to_string (cms.keepout.content)),
 				size	=> cms.keepout.size,
 				font	=> font_placeholders,
@@ -165,7 +157,6 @@ is
 		procedure stop_mask is begin
 			draw_text (
 				area	=> in_area,
-				context	=> context,	
 				content	=> to_content (to_string (cms.stop_mask.content)),
 				size	=> cms.stop_mask.size,
 				font	=> font_placeholders,
@@ -178,7 +169,6 @@ is
 		procedure stencil is begin
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.stencil.content)),
 				size	=> cms.stencil.size,
 				font	=> font_placeholders,
@@ -227,7 +217,6 @@ is
 		if plated_millings_enabled then
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.plated_millings.content)),
 				size	=> cms.plated_millings.size,
 				font	=> font_placeholders,
@@ -240,7 +229,6 @@ is
 		if outline_enabled then
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.pcb_outline.content)),
 				size	=> cms.pcb_outline.size,
 				font	=> font_placeholders,
@@ -275,7 +263,6 @@ is
 		if route_restrict_enabled then
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.route_restrict.content)),
 				size	=> cms.route_restrict.size,
 				font	=> font_placeholders,
@@ -288,7 +275,6 @@ is
 		if via_restrict_enabled then
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.via_restrict.content)),
 				size	=> cms.via_restrict.size,
 				font	=> font_placeholders,
@@ -301,7 +287,6 @@ is
 		if conductors_enabled then
 			draw_text (
   				area	=> in_area,
-				context	=> context,
 				content	=> to_content (to_string (cms.signal_layer.content)), -- "SGNL_LYR:"
 				size	=> cms.signal_layer.size,
 				font	=> font_placeholders,
@@ -311,7 +296,6 @@ is
 
 			draw_text (
 				area	=> in_area,
-				context	=> context,
 				content	=> to_content (enabled_conductor_layers), -- "1,2,5..32"
 				size	=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.size,
 				font	=> font_placeholders,
@@ -345,7 +329,6 @@ begin -- draw_frame
 		-- frame border
 		draw_border (
 			area			=> in_area,
-			context			=> context,
 			frame_size		=> frame_size,
 			border_width	=> self.get_frame.border_width,
 			height			=> frame_height);
@@ -355,7 +338,6 @@ begin -- draw_frame
 
 		draw_title_block_lines (
 			area		=> in_area,
-			context		=> context,
 			lines		=> self.get_frame.title_block_pcb.lines,
 			tb_pos		=> title_block_position,
 			frame_size	=> frame_size);
@@ -363,7 +345,6 @@ begin -- draw_frame
 		-- draw the sector delimiters
 		draw_sector_delimiters (
 			area			=> in_area,
-			context			=> context,
 			sectors			=> self.get_frame.sectors,
 			frame_size		=> frame_size,
 			border_width	=> self.get_frame.border_width);
@@ -371,7 +352,6 @@ begin -- draw_frame
 		-- draw common placeholders and other texts
 		draw_texts (
 			area		=> in_area,
-			context		=> context,
 			ph_common	=> self.get_frame.title_block_pcb.placeholders,
 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders),
 			texts		=> self.get_frame.title_block_pcb.texts,

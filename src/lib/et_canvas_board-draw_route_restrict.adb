@@ -47,8 +47,8 @@ separate (et_canvas_board)
 
 procedure draw_route_restrict (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area
+	) 
 is
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
@@ -70,7 +70,6 @@ is
 			
 			draw_line (
 				area		=> in_area,
-				context		=> context,
 				line		=> to_line_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
@@ -87,7 +86,6 @@ is
 			
 			draw_arc (
 				area		=> in_area,
-				context		=> context,
 				arc			=> to_arc_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
@@ -102,28 +100,12 @@ is
 		if route_restrict_layer_enabled (element (c).layers) then
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
-			--case element (c).filled is
-				--when NO =>
-					-- We draw a normal non-filled circle:
-					draw_circle (
-						area		=> in_area,
-						context		=> context,
-						circle		=> element (c),
-						filled		=> NO,
-						width		=> element (c).width,
-						height		=> self.frame_height);
-					
-				--when YES =>
-					---- We draw a solid filled circle:
-					--draw_circle (
-						--area		=> in_area,
-						--context		=> context,
-						--circle		=> element (c),
-						--filled		=> YES,
-						--width		=> zero,
-						--height		=> self.frame_height);
-					
-			--end case;
+			draw_circle (
+				area		=> in_area,
+				circle		=> element (c),
+				filled		=> NO,
+				width		=> element (c).width,
+				height		=> self.frame_height);
 
 		end if;
 	end query_circle;
@@ -138,7 +120,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
@@ -160,7 +141,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,

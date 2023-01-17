@@ -40,7 +40,6 @@ separate (et_canvas_schematic)
 procedure draw_symbol (
 	self			: not null access type_view;
 	in_area			: in type_bounding_box := no_area;
-	context 		: in type_draw_context;
 	symbol			: in et_symbols.type_symbol;
 	device_name		: in et_devices.type_device_name := (others => <>);
 	device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
@@ -76,7 +75,7 @@ is
 		rotate_by (line, unit_rotation);
 		move_by (line, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_line (in_area, context, to_line_fine (line), element (c).width, self.frame_height);
+		draw_line (in_area, to_line_fine (line), element (c).width, self.frame_height);
 	end draw_line;
 
 	
@@ -87,7 +86,7 @@ is
 		rotate_by (arc, unit_rotation);
 		move_by (arc, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_arc (in_area, context, to_arc_fine (arc), element (c).width, self.frame_height);
+		draw_arc (in_area, to_arc_fine (arc), element (c).width, self.frame_height);
 	end draw_arc;
 
 	
@@ -99,7 +98,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
-		draw_circle (in_area, context, circle, NO, element (c).width, self.frame_height);
+		draw_circle (in_area, circle, NO, element (c).width, self.frame_height);
 	end draw_circle;
 
 	procedure draw_port (c : in pac_ports.cursor) is
@@ -146,7 +145,6 @@ is
 
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> to_content (to_string (key (c))),
 				size		=> element (c).port_name_size,
 				font		=> et_symbols.text_font,
@@ -216,7 +214,6 @@ is
 
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
 				size		=> element (c).terminal_name_size,
 				font		=> et_symbols.text_font,
@@ -309,7 +306,7 @@ is
 		move_by (line, to_distance_relative (unit_position));
 		
 		-- Draw the line of the port:
-		draw_line (in_area, context, to_line_fine (line), port_line_width, self.frame_height);
+		draw_line (in_area, to_line_fine (line), port_line_width, self.frame_height);
 
 
 		-- Draw the circle around a port if the layer is enabled:
@@ -324,7 +321,7 @@ is
 			circle.radius := type_float_positive (port_circle_radius);
 
 			-- the circle is not filled -> argument "filled" is NO
-			draw_circle (in_area, context, circle, NO, port_circle_line_width, self.frame_height);
+			draw_circle (in_area, circle, NO, port_circle_line_width, self.frame_height);
 
 			-- CS draw port direction, weakness, power level ?
 			-- probably better in draw_terminal_name or draw_port_name ?
@@ -372,7 +369,6 @@ is
 		draw_text 
 			(
 			area		=> in_area,
-			context		=> context,
 			content		=> element (c).content,
 			size		=> element (c).size,
 			font		=> et_symbols.text_font,
@@ -410,7 +406,6 @@ is
 			
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 				size		=> symbol.name.size,
 				font		=> name_font,
@@ -440,7 +435,6 @@ is
 				
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (device_value)), -- 100R
 					size		=> symbol.value.size,
 					font		=> value_font,
@@ -471,7 +465,6 @@ is
 				
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (device_purpose)), -- "brightness control"
 					size		=> symbol.purpose.size,
 					font		=> purpose_font,
@@ -520,8 +513,8 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		draw_line (in_area, context, to_line_fine (line_horizontal), et_symbols.origin_line_width, self.frame_height);
-		draw_line (in_area, context, to_line_fine (line_vertical), et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, to_line_fine (line_horizontal), et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, to_line_fine (line_vertical), et_symbols.origin_line_width, self.frame_height);
 	end draw_origin;
 
 	

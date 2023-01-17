@@ -44,7 +44,6 @@ separate (et_canvas_board)
 procedure draw_keepout (
 	self    : not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context;
 	face	: in type_face) 
 is
 	use pac_geometry_2;	
@@ -62,7 +61,6 @@ is
 	begin
 		draw_contour (
 			area	=> in_area,
-			context	=> context,
 			contour	=> element (c),
 			filled	=> NO,
 			width	=> zero,
@@ -79,7 +77,6 @@ is
 		
 		draw_contour (
 			area	=> in_area,
-			context	=> context,
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,

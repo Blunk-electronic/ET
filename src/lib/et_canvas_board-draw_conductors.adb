@@ -55,8 +55,8 @@ separate (et_canvas_board)
 
 procedure draw_conductors (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area
+	) 
 is
 	use et_schematic;
 	use et_schematic.pac_nets;
@@ -129,7 +129,6 @@ is
 			
 			draw_line (
 				area		=> in_area,
-				context		=> context,
 				line		=> to_line_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
@@ -147,7 +146,6 @@ is
 
 			draw_arc (
 				area		=> in_area,
-				context		=> context,
 				arc			=> to_arc_fine (element (c)),
 				width		=> element (c).width,
 				height		=> self.frame_height);
@@ -165,7 +163,6 @@ is
 
 		draw_circle (
 			area		=> in_area,
-			context		=> context,
 			circle		=> element (c),
 			filled		=> NO,
 			width		=> element (c).width,
@@ -194,7 +191,6 @@ is
 		procedure draw_edge (e : in pac_edges.cursor) is begin
 			draw_line (
 				area	=> in_area,
-				context	=> context,
 				line	=> type_line_fine (element (e)),
 				width	=> fill_line_width,
 				height	=> self.frame_height);
@@ -207,7 +203,6 @@ is
 		procedure draw_stripe (s : in pac_stripes.cursor) is begin
 			draw_line (
 				area	=> in_area,
-				context	=> context,
 				line	=> element (s),
 				width	=> fill_line_width,
 				height	=> self.frame_height);
@@ -229,7 +224,6 @@ is
 		procedure query_spoke (s : in pac_spokes.cursor) is begin
 			draw_line (
 				area	=> in_area,
-				context	=> context,
 				line	=> element (s),
 				width	=> relief.width,
 				height	=> self.frame_height);
@@ -248,7 +242,6 @@ is
 
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -275,7 +268,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -305,7 +297,6 @@ is
 	
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -338,7 +329,6 @@ is
 
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -373,7 +363,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO,
@@ -395,7 +384,7 @@ is
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (self, element (c).position, in_area, context);
+			draw_text_origin (self, element (c).position, in_area);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -415,7 +404,7 @@ is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, context, v_text,
+			draw_vector_text (in_area, v_text,
 				element (c).line_width, self.frame_height);
 
 		end if;
@@ -426,13 +415,13 @@ is
 		-- Draw the text if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (self, element (c).position, in_area, context);
+			draw_text_origin (self, element (c).position, in_area);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 			
 			-- Draw the text:
-			draw_vector_text (in_area, context, element (c).vectors,
+			draw_vector_text (in_area, element (c).vectors,
 				element (c).line_width, self.frame_height);
 
 		end if;
@@ -475,7 +464,6 @@ is
 			
 			draw_circle (
 				area		=> in_area,
-				context		=> context,
 				circle		=> circle,
 				filled		=> NO,
 				width		=> zero, -- CS ?
@@ -504,7 +492,6 @@ is
 
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (net_name)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
@@ -534,7 +521,6 @@ is
 
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> to_content (from & "-" & to),
 				size		=> radius_base * text_size_factor,
 				font		=> via_text_font,
@@ -566,7 +552,6 @@ is
 
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (element (v).diameter)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
@@ -781,7 +766,6 @@ is
 					
 					draw_line (
 						area		=> in_area,
-						context		=> context,
 						line		=> type_line_fine (element (c)),
 						width		=> type_distance (airwire_line_width),
 						height		=> self.frame_height);
@@ -844,7 +828,7 @@ is
 
 				
 				draw_text_being_placed_in_conductors (
-					self, in_area, context, LAYER_CAT_CONDUCTOR, ly);
+					self, in_area, LAYER_CAT_CONDUCTOR, ly);
 				
 			end if;
 		end loop;

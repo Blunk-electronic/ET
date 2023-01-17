@@ -46,8 +46,7 @@ separate (et_canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area)
 is
 	use et_schematic;
 	use et_nets;
@@ -69,7 +68,6 @@ is
 		procedure draw is begin
 			draw_circle (
 				area		=> in_area,
-				context		=> context,
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero,
@@ -101,7 +99,6 @@ is
 		procedure draw is begin
 			draw_circle (
 				area		=> in_area,
-				context		=> context,
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero,
@@ -169,7 +166,6 @@ is
 			when SIMPLE =>
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (net)),
 					size		=> element (label).size,
 					font		=> net_label_font,
@@ -185,7 +181,7 @@ is
 					);
 
 			when TAG =>
-				draw_tag_label (self, in_area, context, net, element (label));
+				draw_tag_label (self, in_area, net, element (label));
 
 		end case;
 	end draw_label;
@@ -200,7 +196,6 @@ is
 			--when SIMPLE =>
 				draw_text (
 					area		=> in_area,
-					context		=> context,
 					content		=> to_content (to_string (net)),
 					size		=> label.size,
 					font		=> net_label_font,
@@ -260,7 +255,6 @@ is
 							
 							draw_text (
 								area		=> in_area,
-								context		=> context,
 								content		=> to_content (to_string (selected_net)),
 								size		=> l.size,
 								font		=> net_label_font,
@@ -304,7 +298,7 @@ is
 									label.finalizing_granted := false;
 								end if;
 
-								draw_tag_label (self, in_area, context, selected_net, l);
+								draw_tag_label (self, in_area, selected_net, l);
 							end;
 							
 					end case;
@@ -417,7 +411,6 @@ is
 			
 			draw_line (
 				area		=> in_area,
-				context		=> context,
 				line		=> to_line_fine (element (s)),
 				width		=> net_line_width,
 				height		=> self.frame_height);
@@ -438,7 +431,6 @@ is
 	is begin
 		draw_line (
 			area		=> in_area,
-			context		=> context,
 			line		=> to_line_fine (segment),
 			width		=> net_line_width,
 			height		=> self.frame_height);
@@ -720,7 +712,6 @@ is
 
 				draw_line (
 					area		=> in_area,
-					context		=> context,
 					line		=> to_line_fine (copy_of_original_segment),
 					width		=> net_line_width,
 					height		=> self.frame_height);

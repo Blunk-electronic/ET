@@ -86,7 +86,6 @@ separate (et_canvas_board)
 procedure draw_packages (
 	self    : not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context;
 	face	: in type_face) -- the side of the board to be drawn
 is
 
@@ -174,8 +173,8 @@ is
 				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text_board.origin_line_width));
-				draw_line (in_area, context, line_horizontal, pac_text_board.origin_line_width, self.frame_height);
-				draw_line (in_area, context, line_vertical, pac_text_board.origin_line_width, self.frame_height);
+				draw_line (in_area, line_horizontal, pac_text_board.origin_line_width, self.frame_height);
+				draw_line (in_area, line_vertical, pac_text_board.origin_line_width, self.frame_height);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
@@ -203,14 +202,14 @@ is
 					line : type_silk_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+					draw_line (in_area, to_line_fine (line), line.width, self.frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_silk_arcs.cursor) is 
 					arc : type_silk_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width, self.frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_silk_circles.cursor) is 
@@ -219,7 +218,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
 						area	=> in_area,
-						context	=> context, 
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width, 
@@ -233,7 +231,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (zero));
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
@@ -251,7 +248,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
-						context	=> context, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
 						height	=> self.frame_height);
@@ -322,14 +318,14 @@ is
 					line : type_doc_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, context, to_line_fine (line), line.width, self.frame_height);
+					draw_line (in_area, to_line_fine (line), line.width, self.frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_doc_arcs.cursor) is 
 					arc : type_doc_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, context, to_arc_fine (arc), arc.width, self.frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width, self.frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_doc_circles.cursor) is 
@@ -338,7 +334,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
 						area	=> in_area,
-						context	=> context, 
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width, 
@@ -352,7 +347,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (zero));
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
@@ -370,7 +364,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
-						context	=> context, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
 						height	=> self.frame_height);
@@ -436,7 +429,6 @@ is
 				begin
 					draw_contour (
 						area	=> in_area,
-						context	=> context,
 						contour	=> element (c),
 						filled	=> NO,
 						width	=> zero,
@@ -512,7 +504,6 @@ is
 					
 					draw_line (
 						area	=> in_area,
-						context	=> context,
 						line	=> to_line_fine (line),
 						width	=> line.width,
 						height	=> self.frame_height);
@@ -528,7 +519,6 @@ is
 					
 					draw_arc (
 						area	=> in_area,
-						context	=> context,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width,
 						height	=> self.frame_height);
@@ -544,7 +534,6 @@ is
 					
 					draw_circle (
 						area	=> in_area,
-						context	=> context,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width,
@@ -558,7 +547,6 @@ is
 				begin
 					draw_contour (
 						area	=> in_area,
-						context	=> context,
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
@@ -574,7 +562,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
-						context	=> context, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
 						height	=> self.frame_height);
@@ -649,7 +636,6 @@ is
 					
 					draw_line (
 						area	=> in_area,
-						context	=> context,
 						line	=> to_line_fine (line),
 						width	=> line.width,
 						height	=> self.frame_height);
@@ -665,7 +651,6 @@ is
 					
 					draw_arc (
 						area	=> in_area,
-						context	=> context,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width,
 						height	=> self.frame_height);
@@ -681,7 +666,6 @@ is
 					
 					draw_circle (
 						area	=> in_area,
-						context	=> context,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width,
@@ -695,7 +679,6 @@ is
 				begin
 					draw_contour (
 						area	=> in_area,
-						context	=> context,
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
@@ -781,7 +764,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
 						area	=> in_area, 
-						context	=> context, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
 						height	=> self.frame_height);
@@ -793,7 +775,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
 						area	=> in_area, 
-						context	=> context, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
 						height	=> self.frame_height);
@@ -805,7 +786,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
 						area	=> in_area, 
-						context	=> context, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
@@ -818,7 +798,6 @@ is
 				begin
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> zone,
 						width	=> route_restrict_line_width, 
 						filled	=> YES,
@@ -832,7 +811,6 @@ is
 				begin					
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> cutout,
 						width	=> route_restrict_line_width, 
 						filled	=> NO,
@@ -907,7 +885,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
 						area	=> in_area, 
-						context	=> context, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
 						height	=> self.frame_height);
@@ -919,7 +896,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
 						area	=> in_area, 
-						context	=> context, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
 						height	=> self.frame_height);
@@ -931,7 +907,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
 						area	=> in_area, 
-						context	=> context, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
@@ -944,7 +919,6 @@ is
 				begin
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> zone,
 						width	=> via_restrict_line_width, 
 						filled	=> YES,
@@ -958,7 +932,6 @@ is
 				begin					
 					draw_contour (
 						area	=> in_area, 
-						context	=> context, 
 						contour	=> cutout,
 						width	=> via_restrict_line_width, 
 						filled	=> NO,
@@ -1021,7 +994,6 @@ is
 			begin
 				draw_contour (
 					area	=> in_area,
-					context	=> context,
 					contour	=> element (c),
 					filled	=> NO,
 					width	=> pcb_contour_line_width,
@@ -1070,7 +1042,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
 						area	=> in_area, 
-						context	=> context, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
 						height	=> self.frame_height);
@@ -1082,7 +1053,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
 						area	=> in_area, 
-						context	=> context, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
 						height	=> self.frame_height);
@@ -1094,7 +1064,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
 						area	=> in_area, 
-						context	=> context, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
@@ -1107,7 +1076,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
 						area	=> in_area, 
-						context	=> context, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
 						height	=> self.frame_height);
@@ -1178,7 +1146,6 @@ is
 
 				draw_contour_with_circular_cutout (
 					area			=> in_area,
-					context			=> context,
 					outer_border	=> outer_border,
 					inner_border	=> ib,
 					height			=> self.frame_height);
@@ -1194,7 +1161,6 @@ is
 
 				draw_contour_with_arbitrary_cutout (
 					area			=> in_area,
-					context			=> context,
 					outer_border	=> outer_border,
 					inner_border	=> inner_border,
 					height			=> self.frame_height);
@@ -1217,7 +1183,6 @@ is
 					
 					draw_text (
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (name),
 						size		=> terminal_name_size,
 						font		=> terminal_name_font,
@@ -1262,7 +1227,6 @@ is
 							
 							draw_text (
 								area		=> in_area,
-								context		=> context,
 								content		=> to_content (name),
 								size		=> terminal_name_size,
 								font		=> terminal_name_font,
@@ -1318,7 +1282,6 @@ is
 								
 								draw_contour (
 									area	=> in_area,
-									context	=> context,
 									contour	=> pad_outline,
 									filled	=> YES,
 									width	=> zero,
@@ -1370,7 +1333,6 @@ is
 
 								draw_contour (
 									area	=> in_area,
-									context	=> context,
 									contour	=> stop_mask_contours,
 									filled	=> YES,
 									width	=> zero,
@@ -1427,7 +1389,6 @@ is
 								
 								draw_contour (
 									area	=> in_area,
-									context	=> context,
 									contour	=> stencil_contours,
 									filled	=> YES,
 									width	=> zero,
@@ -1539,7 +1500,6 @@ is
 								-- draw the outer contour of the stop mask opening
 								draw_contour (
 									area		=> in_area,
-									context		=> context,
 									contour		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,
@@ -1641,14 +1601,14 @@ is
 										 + type_float_positive (restring);
 						
 						--draw_circle (in_area, context, circle, NO, self.frame_height);
-						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						draw_circle (in_area, circle, YES, zero, self.frame_height);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := type_float_positive (drill_size) * 0.5;
-						draw_circle (in_area, context, circle, YES, zero, self.frame_height);
+						draw_circle (in_area, circle, YES, zero, self.frame_height);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -1776,8 +1736,8 @@ is
 
 					set_color_origin (context.cr, brightness);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
-					draw_line (in_area, context, line_horizontal, et_packages.origin_line_width, self.frame_height);
-					draw_line (in_area, context, line_vertical, et_packages.origin_line_width, self.frame_height);
+					draw_line (in_area, line_horizontal, et_packages.origin_line_width, self.frame_height);
+					draw_line (in_area, line_vertical, et_packages.origin_line_width, self.frame_height);
 
 				end if;
 			end if;

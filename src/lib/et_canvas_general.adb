@@ -769,7 +769,6 @@ package body pac_canvas is
 		area : type_bounding_box := no_area)
 	is
 		a : type_bounding_box;
-		c : type_draw_context;
 	begin
 		if area = no_area then
 			a := self.get_visible_area;
@@ -780,14 +779,14 @@ package body pac_canvas is
 		--  gdk already clears the exposed area to the background color, so
 		--  we do not need to clear ourselves.
 
-		c := (
+		context := (
 			cr		=> cr,
 			layout	=> self.layout,
 			view	=> type_view_ptr (self));
-
+	
 		save (cr);
 		self.set_transform (cr);
-		self.draw_internal (c, a);
+		self.draw_internal (a);
 		restore (cr);
 	end refresh;
 
@@ -1786,7 +1785,6 @@ package body pac_canvas is
 
 	
 	procedure draw_grid (
-		context	: in type_draw_context;
 		area	: in type_bounding_box; -- the area of the drawing to be displayed
 		grid	: in pac_geometry_2.type_grid;
 		start_x	: in type_view_coordinate;
@@ -2308,7 +2306,6 @@ package body pac_canvas is
 	
 	procedure draw_line (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive;
 		height	: in type_float_positive)
@@ -2514,7 +2511,6 @@ package body pac_canvas is
 	
 	procedure draw_arc (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
 		width	: in pac_geometry_2.type_distance_positive;
 		--		height	: in pac_shapes.pac_geometry_1.type_distance)
@@ -2575,7 +2571,6 @@ package body pac_canvas is
 	
 	procedure draw_circle (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		circle	: in pac_geometry_2.type_circle'class;
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive;
@@ -2643,7 +2638,6 @@ package body pac_canvas is
 	
 	procedure draw_contour (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		contour	: in type_contour'class;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
@@ -2839,7 +2833,6 @@ package body pac_canvas is
 
 	procedure draw_contour_with_circular_cutout (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class;
 		--height			: in pac_shapes.pac_geometry_1.type_distance)
@@ -2851,14 +2844,14 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner area to be taken out:
-		draw_circle (area, context, inner_border, YES, 0.0, height);
+		draw_circle (area, inner_border, YES, 0.0, height);
 
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -2867,7 +2860,6 @@ package body pac_canvas is
 
 	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
 		--height			: in pac_shapes.pac_geometry_1.type_distance)
@@ -2879,14 +2871,14 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, context, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (area, context, inner_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, inner_border, CONTINUOUS, YES, 0.0, height, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- restore default compositing operator:
@@ -2896,7 +2888,6 @@ package body pac_canvas is
 	
 	procedure draw_rectangle (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;
 		position		: in pac_geometry_2.type_point; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
 		width			: in type_float_positive;
@@ -3013,9 +3004,8 @@ package body pac_canvas is
 
 	
 	procedure draw_origin (
-		context		: in type_draw_context;
-		position	: in type_view_point) is
-
+		position	: in type_view_point) 
+	is
 		use cairo;
 	begin
 	-- The text origin (or anchor point) is drawn directly on the context,
@@ -3092,7 +3082,6 @@ package body pac_canvas is
 
 	
 	procedure draw_text (
-		context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -3118,7 +3107,7 @@ package body pac_canvas is
 		save (context.cr);
 
 		if origin then
-			draw_origin (context, (x, y));
+			draw_origin ((x, y));
 		end if;
 
 		select_font_face (
@@ -3156,7 +3145,7 @@ package body pac_canvas is
 
 	
 	function get_text_extents (
-		context		: in type_draw_context;
+		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
@@ -3179,7 +3168,7 @@ package body pac_canvas is
 	
 	procedure draw_text (
 		area		: in type_bounding_box;
-		context		: in type_draw_context;
+		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -3214,7 +3203,6 @@ package body pac_canvas is
 		set_font_size (context.cr, (to_points (size)));
 
 		text_area := get_text_extents (
-			context		=> context,
 			content		=> content,
 			size		=> size,
 			font		=> font);
@@ -3257,7 +3245,7 @@ package body pac_canvas is
 	-- 			end if;
 
 			if origin then 
-				draw_origin (context, (ox, oy));
+				draw_origin ((ox, oy));
 			end if;
 
 			-- In cairo all angles increase in clockwise direction.
@@ -3280,7 +3268,6 @@ package body pac_canvas is
 	
 	procedure draw_vector_text (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		text	: in type_vector_text;
 		width	: in pac_geometry_2.type_distance_positive;
 		height	: in type_float_positive)
@@ -3355,7 +3342,6 @@ package body pac_canvas is
 
 	procedure draw_title_block_lines (
 		area		: in type_bounding_box;
-		context		: in type_draw_context;	
 		lines		: in et_frames.pac_lines.list;
 		tb_pos		: in et_frames.type_position;
 		frame_size	: in et_frames.type_frame_size)
@@ -3378,7 +3364,7 @@ package body pac_canvas is
 				x => type_distance_positive (element (cursor).end_point.x + tb_pos.x),
 				y => type_distance_positive (element (cursor).end_point.y + tb_pos.y)));
 
-			draw_line (area, context, to_line_fine (line),
+			draw_line (area, to_line_fine (line),
 						type_distance_positive (line_width_thin),
 						type_float_positive (frame_size.y));
 		end query_line;
@@ -3390,7 +3376,6 @@ package body pac_canvas is
 
 	procedure draw_border (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;	
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width;
 		height			: in et_frames.type_distance)
@@ -3402,7 +3387,7 @@ package body pac_canvas is
 		-- for better performance
 
 		procedure draw_line is begin
-			draw_line (area, context, to_line_fine (line),
+			draw_line (area, to_line_fine (line),
 					   type_distance_positive (line_width_thin),
 					   type_float_positive (height));
 		end draw_line;
@@ -3502,7 +3487,6 @@ package body pac_canvas is
 
 	procedure draw_sector_delimiters (
 		area			: in type_bounding_box;
-		context			: in type_draw_context;	
 		sectors			: in et_frames.type_sectors;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width)
@@ -3524,7 +3508,6 @@ package body pac_canvas is
 		is begin
 			draw_text (
 				area		=> area,
-				context		=> context,
 				content		=> content,
 				size		=> type_distance_positive (font_indexes_size),
 				font		=> font_indexes,
@@ -3544,7 +3527,7 @@ package body pac_canvas is
 		-- for better performance
 
 		procedure draw_line is begin
-			draw_line (area, context, to_line_fine (line),
+			draw_line (area, to_line_fine (line),
 					   type_distance_positive (line_width_thin),
 					   type_float_positive (frame_size.y));
 		end draw_line;
@@ -3686,7 +3669,6 @@ package body pac_canvas is
 	
 	procedure draw_text (
 		area	: in type_bounding_box;
-		context	: in type_draw_context;
 		content	: in pac_text_content.bounded_string;
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
@@ -3706,7 +3688,6 @@ package body pac_canvas is
 	begin
 		draw_text (
 			area		=> area,
-			context		=> context,
 			content		=> content,
 			size		=> type_distance_positive (size),
 			font		=> font,
@@ -3721,7 +3702,6 @@ package body pac_canvas is
 
 	procedure draw_texts (
 		area		: in type_bounding_box;
-		context		: in type_draw_context;
 		ph_common	: in et_frames.type_placeholders_common;
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;
@@ -3740,7 +3720,6 @@ package body pac_canvas is
 			procedure query_text (cursor : in pac_texts.cursor) is begin
 				draw_text (
 					area	=> area,
-					context => context,
 					content	=> element (cursor).content,
 					size	=> element (cursor).size,
 					font	=> font_texts,
@@ -3768,7 +3747,6 @@ package body pac_canvas is
 		-- project name:
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
 			size	=> ph_common.project_name.size,
 			font	=> font_placeholders,
@@ -3780,7 +3758,6 @@ package body pac_canvas is
 		-- module file name:
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
 			size	=> ph_common.module_file_name.size,
 			font	=> font_placeholders,
@@ -3792,7 +3769,6 @@ package body pac_canvas is
 		-- active assembly variant:
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
 			size	=> ph_common.active_assembly_variant.size,
 			font	=> font_placeholders,
@@ -3807,7 +3783,6 @@ package body pac_canvas is
 		-- company
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.company)), -- BEL
 			size	=> ph_basic.company.size,
 			font	=> font_placeholders,
@@ -3819,7 +3794,6 @@ package body pac_canvas is
 		-- customer
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.customer)), -- medlab
 			size	=> ph_basic.customer.size,
 			font	=> font_placeholders,
@@ -3831,7 +3805,6 @@ package body pac_canvas is
 		-- partcode
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.partcode)), -- TR4452
 			size	=> ph_basic.partcode.size,
 			font	=> font_placeholders,
@@ -3843,7 +3816,6 @@ package body pac_canvas is
 		-- drawing number
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.drawing_number)), -- NCC1701
 			size	=> ph_basic.drawing_number.size,
 			font	=> font_placeholders,
@@ -3855,7 +3827,6 @@ package body pac_canvas is
 		-- revision
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.revision)), -- V2.0
 			size	=> ph_basic.revision.size,
 			font	=> font_placeholders,
@@ -3867,7 +3838,6 @@ package body pac_canvas is
 		-- drawn by
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.drawn_by)), -- Dieter Krause
 			size	=> ph_basic.drawn_by.size,
 			font	=> font_placeholders,
@@ -3879,7 +3849,6 @@ package body pac_canvas is
 		-- checked by
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.checked_by)), -- John Carpenter
 			size	=> ph_basic.checked_by.size,
 			font	=> font_placeholders,
@@ -3891,7 +3860,6 @@ package body pac_canvas is
 		-- approved by
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.approved_by)), -- Wasily Mishin
 			size	=> ph_basic.approved_by.size,
 			font	=> font_placeholders,
@@ -3903,7 +3871,6 @@ package body pac_canvas is
 		-- drawn date
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.drawn_date)), -- 2010-04-23
 			size	=> ph_basic.drawn_date.size,
 			font	=> font_placeholders,
@@ -3915,7 +3882,6 @@ package body pac_canvas is
 		-- checked date
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.checked_date)), -- 2010-04-23
 			size	=> ph_basic.checked_date.size,
 			font	=> font_placeholders,
@@ -3927,7 +3893,6 @@ package body pac_canvas is
 		-- approved date
 		draw_text (
 			area	=> area,
-			context => context,
 			content	=> to_content (to_string (meta.approved_date)), -- 2010-04-23
 			size	=> ph_basic.approved_date.size,
 			font	=> font_placeholders,

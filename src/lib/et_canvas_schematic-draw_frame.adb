@@ -43,8 +43,7 @@ separate (et_canvas_schematic)
 
 procedure draw_frame (
 	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area)
 is
 	use et_frames;
 	
@@ -73,7 +72,6 @@ is
 			-- category (development, product, routing)
 			draw_text (
 				area	=> in_area,
-				context	=> context,		  
 				content	=> to_content (to_string (des.category)),
 				size	=> phs.category.size,
 				font	=> font_placeholders,
@@ -85,7 +83,6 @@ is
 			-- description
 			draw_text (
 				area	=> in_area,
-				context	=> context,		  
 				content	=> to_content (to_string (des.content)),
 				size	=> phs.description.size,
 				font	=> font_placeholders,
@@ -102,7 +99,6 @@ is
 		-- sheet number n of m
 		draw_text (
 			area	=> in_area,
-			context	=> context,		  
 			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,
@@ -135,7 +131,6 @@ begin -- draw_frame
 		-- FRAME BORDER
 		draw_border (
 			area			=> in_area,
-			context			=> context,
 			frame_size		=> frame_size,
 			border_width	=> self.get_frame.border_width,
 			height			=> frame_height);
@@ -148,7 +143,6 @@ begin -- draw_frame
 
 		draw_title_block_lines (
 			area		=> in_area,
-			context		=> context,
 			lines		=> self.get_frame.title_block_schematic.lines,
 			tb_pos		=> title_block_position,
 			frame_size	=> frame_size);
@@ -157,7 +151,6 @@ begin -- draw_frame
 		-- draw common placeholders and other texts
 		draw_texts (
 			area		=> in_area,
-			context		=> context,
 			ph_common	=> self.get_frame.title_block_schematic.placeholders,
 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
 			texts		=> self.get_frame.title_block_schematic.texts,
@@ -171,7 +164,6 @@ begin -- draw_frame
 		-- draw the sector delimiters
 		draw_sector_delimiters (
 			area			=> in_area,
-			context			=> context,
 			sectors			=> self.get_frame.sectors,
 			frame_size		=> frame_size,
 			border_width	=> self.get_frame.border_width);

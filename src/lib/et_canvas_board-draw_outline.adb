@@ -43,8 +43,7 @@ separate (et_canvas_board)
 
 procedure draw_outline (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area) 
 is	
 	use pac_geometry_2;
 	use pac_contours;
@@ -58,7 +57,7 @@ is
 			when LINE =>
 				draw_line (
 					area		=> in_area,
-					context		=> context,
+					--context		=> context,
 					line		=> to_line_fine (element (c).segment_line),
 					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
@@ -66,7 +65,6 @@ is
 			when ARC =>
 				draw_arc (
 					area		=> in_area,
-					context		=> context,
 					arc			=> to_arc_fine (element (c).segment_arc),
 					width		=> pcb_contour_line_width,
 					height		=> self.frame_height);
@@ -75,13 +73,13 @@ is
 
 	
 	procedure query_text (c : in pac_contour_texts.cursor) is begin
-		draw_text_origin (self, element (c).position, in_area, context);
+		draw_text_origin (self, element (c).position, in_area);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, element (c).vectors,
+		draw_vector_text (in_area, element (c).vectors,
 			element (c).line_width, self.frame_height);
 		
 	end query_text;
@@ -95,7 +93,6 @@ is
 
 			draw_circle (
 				area		=> in_area,
-				context		=> context,
 				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
 				width		=> pcb_contour_line_width,
@@ -121,7 +118,6 @@ is
 
 				draw_circle (
 					area		=> in_area,
-					context		=> context,
 					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
 					width		=> pcb_contour_line_width,
@@ -155,7 +151,7 @@ begin -- draw_outline
 		position	=> current_active_module,
 		process		=> query_outline_segments'access);
 
-	draw_text_being_placed_in_outline (self, in_area, context);
+	draw_text_being_placed_in_outline (self, in_area);
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,

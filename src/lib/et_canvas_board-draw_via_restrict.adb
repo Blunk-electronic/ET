@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 with et_conductor_text.boards;	use et_conductor_text.boards;
@@ -48,8 +47,8 @@ separate (et_canvas_board)
 
 procedure draw_via_restrict (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area
+	) 
 is
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;
@@ -72,7 +71,6 @@ is
 		
 			draw_line (
 				area		=> in_area,
-				context		=> context,
 				line		=> to_line_fine (element (c)),
 				width		=> et_via_restrict.via_restrict_line_width,
 				height		=> self.frame_height);
@@ -89,7 +87,6 @@ is
 			
 			draw_arc (
 				area		=> in_area,
-				context		=> context,
 				arc			=> to_arc_fine (element (c)),
 				width		=> et_via_restrict.via_restrict_line_width,
 				height		=> self.frame_height);
@@ -106,32 +103,13 @@ is
 		if via_restrict_layer_enabled (element (c).layers) then
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
-			--case element (c).filled is
-				--when NO =>
-					-- We draw a normal non-filled circle:
-					draw_circle (
-						area		=> in_area,
-						context		=> context,
-						circle		=> element (c),
-						filled		=> NO,
-						width		=> element (c).width,
-						height		=> self.frame_height);
+			draw_circle (
+				area		=> in_area,
+				circle		=> element (c),
+				filled		=> NO,
+				width		=> element (c).width,
+				height		=> self.frame_height);
 					
-				--when YES =>
-					---- We draw a solid filled circle:
-					--draw_circle (
-						--area		=> in_area,
-						--context		=> context,
-						--circle		=> element (c),
-						--filled		=> YES,
-						--width		=> zero,
-						--height		=> self.frame_height);
-
-					---- restore line width (draw_circle has set it to zero)
-					--set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
-					
-			--end case;
-
 		end if;
 	end query_circle;
 
@@ -144,7 +122,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
@@ -165,7 +142,6 @@ is
 			
 			draw_contour (
 				area	=> in_area,
-				context	=> context,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
@@ -215,7 +191,7 @@ is
 			if via_restrict_layer_enabled (ly) then
 	
 				draw_text_being_placed_in_conductors (
-					self, in_area, context, LAYER_CAT_VIA_RESTRICT, ly);
+					self, in_area, LAYER_CAT_VIA_RESTRICT, ly);
 				
 			end if;
 			

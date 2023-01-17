@@ -40,7 +40,6 @@ separate (et_canvas_schematic)
 procedure draw_tag_label (
 	self	: not null access type_view;
 	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context;
 	net		: in pac_net_name.bounded_string;
 	label	: in type_net_label)
 is
@@ -76,13 +75,13 @@ begin
 	-- CS paint box outline depending on label signal direction
 
 	-- Calculate the box width according to text content, size and font:
-	box_width := type_float_positive (get_text_extents (context, content, label.size, net_label_font).width)
+	box_width := type_float_positive (get_text_extents (content, label.size, net_label_font).width)
 					+ 2.0 * tag_label_text_offset;
 
 	
 	if label.rotation_tag = zero_rotation then
 		box_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-		draw_rectangle (in_area, context, box_position, box_width, box_height, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.frame_height));
 
 		text_rotation := zero_rotation;
 		text_position := type_point (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
@@ -92,7 +91,7 @@ begin
 	
 	if label.rotation_tag = 90.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
-		draw_rectangle (in_area, context, box_position, box_height, box_width, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.frame_height));
 
 		text_rotation := 90.0;
 		text_position := type_point (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
@@ -102,7 +101,7 @@ begin
 	
 	if label.rotation_tag = 180.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-		draw_rectangle (in_area, context, box_position, box_width, box_height, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.frame_height));
 
 		text_rotation := zero_rotation;
 		text_position := type_point (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
@@ -112,7 +111,7 @@ begin
 	
 	if label.rotation_tag = -90.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
-		draw_rectangle (in_area, context, box_position, box_height, box_width, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.frame_height));
 
 		text_rotation := 90.0;
 		text_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
@@ -122,7 +121,6 @@ begin
 		
 	draw_text (
 		area		=> in_area,
-		context		=> context,
 		content		=> content,
 		size		=> label.size,
 		font		=> net_label_font,

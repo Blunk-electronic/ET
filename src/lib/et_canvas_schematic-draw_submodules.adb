@@ -47,8 +47,7 @@ separate (et_canvas_schematic)
 
 procedure draw_submodules (
 	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area) 
 is
 	use pac_submodules;
 	
@@ -63,7 +62,6 @@ is
 
 			draw_rectangle (
 				area			=> in_area,
-				context			=> context,
 				position		=> submod_position,
 				width			=> type_float_positive (element (cursor).size.x),
 				height			=> type_float_positive (element (cursor).size.y),
@@ -84,7 +82,6 @@ is
 			
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> et_text.to_content ("instance: " & to_string (key (cursor))),
 				size		=> instance_font_size,
 				font		=> instance_font,
@@ -108,7 +105,6 @@ is
 			
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> et_text.to_content ("file: " & to_string (element (cursor).file)),
 				size		=> file_font_size,
 				font		=> file_font,
@@ -142,7 +138,6 @@ is
 			
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> et_text.to_content (text),
 				size		=> position_board_font_size,
 				font		=> position_board_font,
@@ -167,7 +162,6 @@ is
 					-- Draw the port horizontal:
 					draw_rectangle (
 						area			=> in_area,
-						context			=> context,
 						position		=> pos,
 						width			=> port_symbol_width,
 						height			=> port_symbol_height,
@@ -179,7 +173,6 @@ is
 					-- Draw the port vertical:					
 					draw_rectangle (
 						area			=> in_area,
-						context			=> context,
 						position		=> pos,
 						width			=> port_symbol_height,
 						height			=> port_symbol_width,
@@ -206,7 +199,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -220,7 +212,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -243,7 +234,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -257,7 +247,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -280,7 +269,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -294,7 +282,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -317,7 +304,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -331,7 +317,6 @@ is
 					draw_text 
 						(
 						area		=> in_area,
-						context		=> context,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,

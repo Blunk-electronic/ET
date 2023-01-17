@@ -456,8 +456,7 @@ package body et_canvas_board is
 	procedure draw_text_origin (
 		self    : not null access type_view;
 		p		: in type_position; -- the position of the origin
-		in_area	: in type_bounding_box;
-		context	: in type_draw_context) 
+		in_area	: in type_bounding_box) 
 	is		
 		use pac_text_board;
 
@@ -474,10 +473,10 @@ package body et_canvas_board is
 		
 			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
-			draw_line (in_area, context, line_horizontal, origin_line_width, 
+			draw_line (in_area, line_horizontal, origin_line_width, 
 				type_float_positive (self.frame_height));
 			
-			draw_line (in_area, context, line_vertical, origin_line_width,
+			draw_line (in_area, line_vertical, origin_line_width,
 				type_float_positive (self.frame_height));
 
 		--end if;
@@ -519,14 +518,13 @@ package body et_canvas_board is
 	
 	procedure draw_grid (
 		self    : not null access type_view;
-		context : type_draw_context;
 		area    : type_bounding_box) is separate;
 
 	
 	procedure draw_frame (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context) is separate;
+		in_area	: in type_bounding_box := no_area) 
+		is separate;
 
 	
 	-- This procedure draws the text that is being placed in a
@@ -537,7 +535,6 @@ package body et_canvas_board is
 	procedure draw_text_being_placed (
 		self    	: not null access type_view;
 		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context;
 		face		: in type_face;
 		category	: in type_layer_category_non_conductor)
 	is 
@@ -558,7 +555,7 @@ package body et_canvas_board is
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin, in_area, context);
+				draw_text_origin (self, origin, in_area);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -575,7 +572,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				draw_vector_text (in_area, context, v_text,
+				draw_vector_text (in_area, v_text,
 					text_place.text.line_width, type_float_positive (self.frame_height));
 
 			end if;
@@ -590,8 +587,7 @@ package body et_canvas_board is
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_outline (
 		self    	: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context)
+		in_area		: in type_bounding_box := no_area)
 	is 
 		use et_text;
 		
@@ -611,7 +607,7 @@ package body et_canvas_board is
 
 			-- Draw the origin of the text:
 			origin := type_position (to_position (point, zero_rotation));
-			draw_text_origin (self, origin, in_area, context);
+			draw_text_origin (self, origin, in_area);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -628,7 +624,7 @@ package body et_canvas_board is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, context, v_text,
+			draw_vector_text (in_area, v_text,
 				text_place.text.line_width, type_float_positive (self.frame_height));
 		end if;
 	end draw_text_being_placed_in_outline;
@@ -642,7 +638,6 @@ package body et_canvas_board is
 	procedure draw_text_being_placed_in_conductors (
 		self    	: not null access type_view;
 		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context;
 		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
 	is 
@@ -668,7 +663,7 @@ package body et_canvas_board is
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin, in_area, context);
+				draw_text_origin (self, origin, in_area);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -695,7 +690,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				draw_vector_text (in_area, context, v_text,
+				draw_vector_text (in_area, v_text,
 					text_place.text.line_width, type_float_positive (self.frame_height));
 			end if;
 		end if;
@@ -704,74 +699,67 @@ package body et_canvas_board is
 	
 	procedure draw_outline (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context) is separate;
+		in_area	: in type_bounding_box := no_area)
+		is separate;
 
 	
 	procedure draw_silk_screen (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_assy_doc (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stop (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stencil (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_keepout (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_route_restrict (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context) is separate;
+		in_area	: in type_bounding_box := no_area)
+		is separate;
 
 	
 	procedure draw_via_restrict (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context) is separate;
+		in_area	: in type_bounding_box := no_area) 
+		is separate;
 
 	
 	-- Draws objects in conductor layers (incl. vias):
 	procedure draw_conductors (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context) is separate;
+		in_area	: in type_bounding_box := no_area)
+		is separate;
 
 	
 	procedure draw_packages (
 		self    : not null access type_view;
 		in_area	: in type_bounding_box := no_area;
-		context : in type_draw_context;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_internal (
 		self    : not null access type_view;
-		context : type_draw_context;
 		area    : type_bounding_box) 
 	is
 		-- The given area must be shifted (left and up) by the position
@@ -789,78 +777,78 @@ package body et_canvas_board is
 
 		
 		procedure draw_packages is begin
-			draw_packages (self, area_shifted, context, BOTTOM);
-			draw_packages (self, area_shifted, context, TOP);
+			draw_packages (self, area_shifted, BOTTOM);
+			draw_packages (self, area_shifted, TOP);
 		end draw_packages;
 
 		
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
-				draw_silk_screen (self, area_shifted, context, BOTTOM);
+				draw_silk_screen (self, area_shifted, BOTTOM);
 			end if;
 
 			if silkscreen_enabled (TOP) then
-				draw_silk_screen (self, area_shifted, context, TOP);
+				draw_silk_screen (self, area_shifted, TOP);
 			end if;
 		end draw_silkscreen;
 
 		
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
-				draw_assy_doc (self, area_shifted, context, BOTTOM);
+				draw_assy_doc (self, area_shifted, BOTTOM);
 			end if;
 
 			if assy_doc_enabled (TOP) then
-				draw_assy_doc (self, area_shifted, context, TOP);
+				draw_assy_doc (self, area_shifted, TOP);
 			end if;
 		end draw_assy_doc;
 
 		
 		procedure draw_keepout is begin
 			if keepout_enabled (BOTTOM) then
-				draw_keepout (self, area_shifted, context, BOTTOM);
+				draw_keepout (self, area_shifted, BOTTOM);
 			end if;
 
 			if keepout_enabled (TOP) then
-				draw_keepout (self, area_shifted, context, TOP);
+				draw_keepout (self, area_shifted, TOP);
 			end if;
 		end draw_keepout;
 
 		
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
-				draw_stop (self, area_shifted, context, BOTTOM);
+				draw_stop (self, area_shifted, BOTTOM);
 			end if;
 
 			if stop_mask_enabled (TOP) then
-				draw_stop (self, area_shifted, context, TOP);
+				draw_stop (self, area_shifted, TOP);
 			end if;
 		end draw_stop_mask;
 
 		
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
-				draw_stencil (self, area_shifted, context, BOTTOM);
+				draw_stencil (self, area_shifted, BOTTOM);
 			end if;
 
 			if stencil_enabled (TOP) then
-				draw_stencil (self, area_shifted, context, TOP);
+				draw_stencil (self, area_shifted, TOP);
 			end if;
 		end draw_stencil;
 
 		
 		procedure draw_pcb_outline is begin
 			if outline_enabled then		
-				draw_outline (self, area_shifted, context);
+				draw_outline (self, area_shifted);
 			end if;
 		end draw_pcb_outline;
 
 		
 		procedure draw_conductor_layers is begin
-			draw_route_restrict (self, area_shifted, context);
-			draw_via_restrict (self, area_shifted, context);
+			draw_route_restrict (self, area_shifted);
+			draw_via_restrict (self, area_shifted);
 			
-			draw_conductors (self, area_shifted, context);
+			draw_conductors (self, area_shifted);
 
 			-- CS unrouted
 		end draw_conductor_layers;
@@ -904,7 +892,7 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x),
 			convert_y (self.frame_bounding_box.y));
 
-		draw_frame (self, area_shifted, context);
+		draw_frame (self, area_shifted);
 		restore (context.cr);
 
 		
@@ -933,14 +921,14 @@ package body et_canvas_board is
 		-- are visible regardless of areas drawn with the 
 		-- cairo CLEAR operator:
 		
-		draw_cursor (self, area_shifted, context, cursor_main);
+		draw_cursor (self, area_shifted, cursor_main);
 		restore (context.cr);
 
 		-- Restore context to draw the grid:
 		restore (context.cr);
 
 		if grid_enabled then
-			draw_grid (self, context, area);
+			draw_grid (self, area);
 		end if;
 		
 	end draw_internal;
@@ -1002,7 +990,6 @@ package body et_canvas_board is
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_bounding_box := no_area;
-		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is
 		lh : type_cursor_line; -- the horizontal line
@@ -1041,14 +1028,12 @@ package body et_canvas_board is
 
 		draw_line (
 			area		=> in_area,
-			context		=> context,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
 			height		=> self.frame_height);
 
 		draw_line (
 			area		=> in_area,
-			context		=> context,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
 			height		=> self.frame_height);

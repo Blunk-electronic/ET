@@ -42,8 +42,7 @@ separate (et_canvas_schematic)
 
 procedure draw_texts (
 	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area;
-	context : in type_draw_context) 
+	in_area	: in type_bounding_box := no_area)
 is
 
 	procedure query_text (cursor : in pac_texts.cursor) is begin
@@ -53,7 +52,6 @@ is
 
 			draw_text (
 				area		=> in_area,
-				context		=> context,
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
 				font		=> text_font,
