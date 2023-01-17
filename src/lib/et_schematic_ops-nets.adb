@@ -42,11 +42,13 @@ with ada.exceptions;
 with et_board_ops;					use et_board_ops;
 with et_exceptions;					use et_exceptions;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 package body et_schematic_ops.nets is
 
 	use pac_geometry_sch;
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 	use pac_net_segments;
 	use pac_strands;
 	use pac_nets;

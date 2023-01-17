@@ -44,7 +44,7 @@ with et_symbols;
 with et_schematic_ops.netlists;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
-
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 separate (et_scripting)
 	
@@ -62,7 +62,7 @@ is
 	use et_coordinates;
 	use pac_geometry_2;
 
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 	use et_devices;
 	use et_canvas_schematic;
 	use et_canvas_schematic.pac_canvas;

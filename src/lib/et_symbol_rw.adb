@@ -129,7 +129,6 @@ package body et_symbol_rw is
 
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
-		use pac_text_schematic;
 		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));

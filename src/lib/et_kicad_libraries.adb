@@ -52,7 +52,9 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
+
 
 package body et_kicad_libraries is
 
@@ -1838,16 +1840,16 @@ package body et_kicad_libraries is
 				port.rotation := to_rotation (f (line,7));
 
 				-- port and termnal name text size (set to lower limit if too small)
-				if mil_to_distance (mil => f (line,8)) < et_symbols.pac_text_schematic.type_text_size'first then
-					port.terminal_name_size := et_symbols.pac_text_schematic.type_text_size'first;
+				if mil_to_distance (mil => f (line,8)) < pac_text_schematic.type_text_size'first then
+					port.terminal_name_size := pac_text_schematic.type_text_size'first;
 				else
 					port.terminal_name_size := mil_to_distance (mil => f (line,8));
 				end if;
 				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
 
 				
-				if mil_to_distance (mil => f (line,9)) < et_symbols.pac_text_schematic.type_text_size'first then
-					port.port_name_size	:= et_symbols.pac_text_schematic.type_text_size'first;
+				if mil_to_distance (mil => f (line,9)) < pac_text_schematic.type_text_size'first then
+					port.port_name_size	:= pac_text_schematic.type_text_size'first;
 				else
 					port.port_name_size	:= mil_to_distance (mil => f (line,9));
 				end if;

@@ -73,6 +73,8 @@ with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 use et_coordinates.pac_geometry_2;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 with et_project.modules;			use et_project.modules;
 with et_symbols;
 with et_schematic;
@@ -93,7 +95,7 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package et_canvas_schematic is
 
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 	
 	use et_project.modules.pac_generic_modules;
 	
@@ -112,7 +114,7 @@ package et_canvas_schematic is
 		pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
 		pac_polygons	=> et_coordinates.pac_polygons,
 		pac_contours	=> et_coordinates.pac_contours,
-		pac_text		=> et_symbols.pac_text_schematic);
+		pac_text		=> pac_text_schematic);
 	
 	use pac_canvas;
 

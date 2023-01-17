@@ -51,6 +51,8 @@ with ada.containers.ordered_sets;
 
 with cairo;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 with et_device_placeholders;			use et_device_placeholders;
 
 with et_coordinates;			use et_coordinates;
@@ -65,34 +67,7 @@ package et_symbols is
 	--use pac_geometry_sch;
 	use pac_geometry_2;
 
-
-	
--- TEXT
-
-	text_size_min : constant type_distance_positive := 1.0;
-	text_size_max : constant type_distance_positive := 50.0;
-	text_size_default : constant type_distance_positive := 1.3;
-	
-	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-	text_line_width_min : constant type_distance_positive := 0.1;
-	text_line_width_max : constant type_distance_positive := 5.0;
-	text_line_width_default : constant type_distance_positive := 0.3; 
-
-	
-	-- Instantiation of the text package:
-	package pac_text_schematic is new et_text.generic_pac_text (
-		pac_geometry_2		=> pac_geometry_2,
-		pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
-		pac_offsetting		=> pac_polygon_offsetting,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> text_line_width_min,
-		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
-		);
-
-	use pac_text_schematic; 
+	use pac_text_schematic;
 	
 -- CS: if required some day, move to package et_text:
 -- 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);

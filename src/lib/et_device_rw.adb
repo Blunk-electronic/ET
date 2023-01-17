@@ -66,6 +66,8 @@ with et_text;
 with et_symbols;				use et_symbols;
 with et_packages;				use et_packages;
 with et_device_placeholders;	use et_device_placeholders;
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 package body et_device_rw is
 
@@ -1252,7 +1254,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_symbols.pac_text_schematic.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 										
 -- 									elsif kw = keyword_style then -- style italic
 -- 										expect_field_count (line, 2);
@@ -1303,7 +1305,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_symbols.pac_text_schematic.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);

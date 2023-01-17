@@ -57,6 +57,8 @@ with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;
 
+with et_schematic_shapes_and_text;
+
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 

@@ -54,6 +54,7 @@ with ada.containers.ordered_sets;
 
 with cairo;						--use cairo;
 
+
 with et_general;				use et_general;
 with et_nets;					use et_nets;
 with et_net_names;				use et_net_names;
@@ -62,6 +63,7 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_device_placeholders;	--use et_device_placeholders;
 with et_device_placeholders.packages;
 

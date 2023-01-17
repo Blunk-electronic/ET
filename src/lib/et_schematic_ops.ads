@@ -74,11 +74,13 @@ with et_conventions;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 package et_schematic_ops is
 
 	use pac_generic_modules;
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 
 	use pac_net_name;
 

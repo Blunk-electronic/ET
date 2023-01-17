@@ -45,8 +45,10 @@ with ada.strings.maps.constants;
 -- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
+
 with ada.exceptions;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_general;
 
 with et_project;
@@ -2559,9 +2561,9 @@ package body et_conventions is
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
 		put_line (to_string (NET_LABEL)	& to_string (net_label_text_size_default));
-		put_line (to_string (PORT_NAME) & to_string (et_symbols.text_size_default));
-		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
-		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
+		put_line (to_string (PORT_NAME) & to_string (et_schematic_shapes_and_text.text_size_default));
+		put_line (to_string (TERMINAL_NAME) & to_string (et_schematic_shapes_and_text.text_size_default));
+		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_schematic_shapes_and_text.text_size_default));
 -- 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default)); -- CS no longer required ?
 -- 		put_line (to_string (FILE_NAME) & to_string (et_project.modules.file_name_text_size_default));
 		
@@ -2652,7 +2654,6 @@ package body et_conventions is
 			subtype type_column is positive range 1..8;
 		
 			use et_devices;
-			use et_symbols;
 			use et_coordinates;
 			use pac_geometry_2;
 
@@ -2674,7 +2675,7 @@ package body et_conventions is
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
-			size		: et_symbols.pac_text_schematic.type_text_size;
+			size		: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
 
 			partcode_keyword	: type_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;

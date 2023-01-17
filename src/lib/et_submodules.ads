@@ -61,11 +61,13 @@ with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
 with et_symbols;
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 package et_submodules is
 
 	use pac_geometry_2;
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 

@@ -77,6 +77,8 @@ with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
 
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 
 package body et_canvas_schematic_units is
@@ -651,7 +653,7 @@ package body et_canvas_schematic_units is
 					preamble : constant string := " placeholder now at";
 
 					procedure rotate_placeholders_relative (rot : in type_rotation) is 
-						use et_symbols.pac_text_schematic;
+						use pac_text_schematic;
 					begin
 						-- Rotate position of placeholders around the unit origin. 
 					
@@ -1746,7 +1748,7 @@ package body et_canvas_schematic_units is
 					unit	: in out type_unit) 
 				is
 					r : type_rotation;
-					use et_symbols.pac_text_schematic;
+					use pac_text_schematic;
 				begin
 					case category is
 						when et_device_placeholders.NAME =>

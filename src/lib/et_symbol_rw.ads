@@ -41,8 +41,12 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_coordinates;			use et_coordinates;
 with et_symbols;				use et_symbols;
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+
 
 package et_symbol_rw is
+
+	use pac_text_schematic;
 	
 	use pac_geometry_2;
 	

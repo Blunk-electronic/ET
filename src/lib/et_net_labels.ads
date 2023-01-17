@@ -35,28 +35,20 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
-with ada.characters.handling;	use ada.characters.handling;
---with ada.strings; 				use ada.strings;
---with ada.strings.maps;			use ada.strings.maps;
---with ada.strings.fixed; 		use ada.strings.fixed;
---with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
---with ada.containers.vectors;
---with ada.containers.doubly_linked_lists;
+with ada.characters.handling;			use ada.characters.handling;
+with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
-with cairo;						--use cairo;
+with cairo;
 
-with et_coordinates;			use et_coordinates;
-with et_text;					use et_text;
-with et_symbols;				use et_symbols;
---with et_string_processing;		use et_string_processing;
+with et_coordinates;					use et_coordinates;
+with et_text;							use et_text;
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 
 package et_net_labels is
 
 	use pac_geometry_2;
-	use et_symbols.pac_text_schematic;
+	use pac_text_schematic;
 	
 	
 	type type_net_label_appearance is (
@@ -85,7 +77,7 @@ package et_net_labels is
 		position	: type_point;
 		
         size		: type_text_size := text_size_default;
-		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
+		width		: et_schematic_shapes_and_text.type_text_line_width := et_schematic_shapes_and_text.type_text_line_width'first;
 	end record;
 
 	

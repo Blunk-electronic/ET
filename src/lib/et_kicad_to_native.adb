@@ -54,7 +54,7 @@ with et_general;					use et_general;
 with et_string_processing;			use et_string_processing;
 with et_project.modules;
 with et_vias;
-with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_board_shapes_and_text;
 with et_packages;
 with et_kicad_general;
 with et_kicad_libraries;
@@ -68,7 +68,7 @@ with et_assembly_variants;			use et_assembly_variants;
 with et_netlists;
 with et_text;
 with et_pcb_rw;
-with et_pcb_rw.device_packages;	--use et_pcb_rw.device_packages;
+with et_pcb_rw.device_packages;
 with et_device_rw;
 with et_symbols;
 with et_devices;					use et_devices;
@@ -86,6 +86,7 @@ with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.boards;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
+with et_schematic_shapes_and_text;
 
 
 package body et_kicad_to_native is
@@ -1650,8 +1651,8 @@ package body et_kicad_to_native is
 			procedure move_contour is
 				use et_pcb_coordinates;
 				use pac_geometry_brd;
-				--use et_board_shapes_and_text;
 				use pac_geometry_2;
+				use et_board_shapes_and_text;
 				use pac_contours;
 				use pac_segments;
 				
@@ -2355,7 +2356,8 @@ package body et_kicad_to_native is
 		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
 			return et_schematic.pac_texts.list 
 		is
-			use et_symbols.pac_text_schematic;
+			use et_schematic_shapes_and_text;
+			use pac_text_schematic;
 			texts_out : et_schematic.pac_texts.list;
 
 			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
@@ -2681,7 +2683,8 @@ package body et_kicad_to_native is
 				-- cause the labels to shift to the right or up.
 					return et_net_labels.pac_net_labels.list 
 				is
-					use et_symbols.pac_text_schematic;
+					use et_schematic_shapes_and_text;
+					use pac_text_schematic;
 					
 					labels : et_net_labels.pac_net_labels.list; -- to be returned
 
