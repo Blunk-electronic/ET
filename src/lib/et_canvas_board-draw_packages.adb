@@ -1805,27 +1805,28 @@ is
 		d : in et_pcb.pac_devices_non_electric.cursor)
 		return boolean
 	is
-		-- CS
-		--use pac_proposed_electrical_devices;
+		use et_devices;
+		use et_pcb;
+		use pac_devices_non_electric;
+		use pac_proposed_non_electrical_devices;
 	begin
-		---- If there are no selected devices at all, then there is nothing to do:
-		--if is_empty (proposed_devices_electrical) then
-			--return false;
-		--else
-			--if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+		-- If there are no selected devices at all, then there is nothing to do:
+		if is_empty (proposed_non_electrical_devices) then
+			return false;
+		else
+			if selected_non_electrical_device /= pac_proposed_non_electrical_devices.no_element then
 				
-				---- Compare given device and device name of "selected_device_electrical":
-				--if key (d) = key (element (selected_device_electrical).device) then
+				-- Compare given device and device name of "selected_non_electrical_device":
+				if key (d) = key (element (selected_non_electrical_device).device) then
 				---- CS compare cursors directly ?
-					--return true;
-				--else 
-					--return false;
-				--end if;
-			--else
-				--return false;
-			--end if;
-		--end if;
-		return false;
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
 	end non_electrical_device_is_selected;
 
 	

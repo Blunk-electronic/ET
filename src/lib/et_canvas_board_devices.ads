@@ -51,6 +51,7 @@ use et_pcb_coordinates.pac_geometry_2;
 --with et_packages;
 with et_project.modules;			use et_project.modules;
 with et_schematic;
+with et_pcb;						use et_pcb;
 with et_devices;					use et_devices;
 
 with et_string_processing;			use et_string_processing;
@@ -63,13 +64,23 @@ package et_canvas_board_devices is
 	
 
 	type type_electrical_device_being_moved is record
-		being_moved			: boolean := false;
-		tool				: type_tool := MOUSE;
-		device				: type_device_name := (others => <>); -- IC45
+		being_moved	: boolean := false;
+		tool		: type_tool := MOUSE;
+		device		: type_device_name := (others => <>); -- IC45 -- CS: use cursor instead ?
 	end record;
 
 	electrical_device_move : type_electrical_device_being_moved;
 
+
+	type type_non_electrical_device_being_moved is record
+		being_moved	: boolean := false;
+		tool		: type_tool := MOUSE;
+		device		: type_device_name := (others => <>); -- FD1 -- CS: use cursor instead ?
+	end record;
+
+	non_electrical_device_move : type_non_electrical_device_being_moved;
+
+	
 	
 	-- to be output in the status bar:
 	status_flip : constant string := 
@@ -102,7 +113,7 @@ package et_canvas_board_devices is
 	type type_selected_electrical_device is record
 		device	: et_schematic.pac_devices_sch.cursor;
 	end record;
-
+	
 	package pac_proposed_electrical_devices is new 
 		doubly_linked_lists (type_selected_electrical_device);
 	use pac_proposed_electrical_devices;
@@ -111,10 +122,26 @@ package et_canvas_board_devices is
 	selected_device_electrical	: pac_proposed_electrical_devices.cursor;
 
 
+	type type_selected_non_electrical_device is record
+		device	: pac_devices_non_electric.cursor;
+	end record;
+	
+	package pac_proposed_non_electrical_devices is new 
+		doubly_linked_lists (type_selected_non_electrical_device);
+	use pac_proposed_non_electrical_devices;
+	
+	proposed_non_electrical_devices	: pac_proposed_non_electrical_devices.list;
+	selected_non_electrical_device	: pac_proposed_non_electrical_devices.cursor;
+
+
+	
 	-- Clears the list proposed_devices_electrical.
 	-- Resets selected_device_electrical to no_element.
 	procedure clear_proposed_electrical_devices;
+
+	procedure clear_proposed_non_electrical_devices;
 	
+
 	
 	-- Collects all units in the vicinity of the given point:	
 	function collect_devices (
@@ -128,6 +155,8 @@ package et_canvas_board_devices is
 	-- Advances cursor selected_device_electrical to next device
 	-- in list proposed_devices_electrical:
 	procedure clarify_electrical_device;
+
+	procedure clarify_non_electrical_device;
 	
 	
 	-- This procedure:
@@ -135,6 +164,8 @@ package et_canvas_board_devices is
 	-- - Sets global variable selected_device_electrical to no_element.
 	-- - resets global variable electrical_device_move to its default values
 	procedure reset_electrical_device_move;
+
+	procedure reset_non_electrical_device_move;
 	
 	
 	-- Locates all devices in the vicinity of given point.
@@ -144,7 +175,11 @@ package et_canvas_board_devices is
 	procedure find_electrical_devices_for_move (
 		point : in type_point);
 
+	procedure find_non_electrical_devices_for_move (
+		point : in type_point);
 
+
+	
 	-- Assigns the final position after the move to the selected 
 	-- electrical device.
 	-- Resets global variable electrical_device_move:
@@ -152,7 +187,12 @@ package et_canvas_board_devices is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+	procedure finalize_move_non_electrical (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
 
+
+	
 	
 	default_rotation : constant type_rotation := 90.0;
 	
@@ -162,11 +202,20 @@ package et_canvas_board_devices is
 		rotation		: in type_rotation := default_rotation;
 		log_threshold	: in type_log_level);
 
+	procedure finalize_rotate_non_electrical (
+		rotation		: in type_rotation := default_rotation;
+		log_threshold	: in type_log_level);
 
+
+	
 	-- Flips the selected electrical device.
 	-- Resets global variable electrical_device_move:
 	procedure finalize_flip_electrical (
 		log_threshold	: in type_log_level);
+
+	procedure finalize_flip_non_electrical (
+		log_threshold	: in type_log_level);
+
 
 	
 end et_canvas_board_devices;

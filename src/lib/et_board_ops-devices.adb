@@ -615,6 +615,16 @@ package body et_board_ops.devices is
 	end get_face;
 
 
+	function get_face (
+		device_cursor	: in et_pcb.pac_devices_non_electric.cursor)
+		return type_face
+	is 
+		position : type_package_position;
+	begin
+		position := element (device_cursor).position;
+		return get_face (position);
+	end get_face;
+
 
 	
 	-- Returns the position (x/y/rotation) of a submodule instance.

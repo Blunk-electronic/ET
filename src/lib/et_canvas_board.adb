@@ -1219,8 +1219,13 @@ package body et_canvas_board is
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
+					set_status (status_click_left & "delete electrical device."
+						& status_hint_for_abort); -- CS use status_delete ?
+
+				when GDK_LC_n =>
+					noun := NOUN_NON_ELECTRICAL_DEVICE;
 					set_status (status_click_left & "delete non-electrical device."
-						& status_hint_for_abort);
+						& status_hint_for_abort); -- CS use status_delete ?
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1244,10 +1249,15 @@ package body et_canvas_board is
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
-					set_status (status_click_left & "flip device."
-						& status_hint_for_abort);
+					set_status (status_click_left & "flip electrical device."
+						& status_hint_for_abort); -- CS use status_flip ?
 
+				when GDK_LC_N =>
+					noun := NOUN_NON_ELECTRICAL_DEVICE;
+					set_status (status_click_left & "flip non-electrical device."
+						& status_hint_for_abort); -- CS use status_flip ?
 
+					
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
 				when GDK_Space =>
@@ -1273,6 +1283,27 @@ package body et_canvas_board is
 
 							end if;
 
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+
+								-- Set the tool being used for moving the unit:
+								non_electrical_device_move.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (cursor_main.position);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally rotate the selected device:
+								et_canvas_board_devices.finalize_flip_non_electrical (
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+							
 						when others => null;
 					end case;		
 
@@ -1283,6 +1314,11 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>
 							if clarification_pending then
 								clarify_electrical_device;
+							end if;
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
 							end if;
 
 						when others => null;							
@@ -1482,7 +1518,7 @@ package body et_canvas_board is
 				reset_text_place; -- after placing a text
 				reset_via_place; -- after placing a via
 				reset_electrical_device_move; -- after moving, rotating, flipping a device
-
+				reset_non_electrical_device_move;
 				
 			when GDK_F11 =>
 				et_canvas_schematic.previous_module;
@@ -1680,6 +1716,25 @@ package body et_canvas_board is
 									log_threshold	=> log_threshold + 1);
 							end if;
 
+							
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+								-- Set the tool being used for moving the device:
+								non_electrical_device_move.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (point);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+
+							else
+								-- Finally flip the currently selected device:
+								et_canvas_board_devices.finalize_flip_non_electrical (
+									log_threshold	=> log_threshold + 1);
+							end if;
+							
 						when others => null;
 					end case;
 
@@ -1791,6 +1846,11 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>
 							if clarification_pending then
 								clarify_electrical_device;
+							end if;
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
 							end if;
 							
 						when others => null;							
