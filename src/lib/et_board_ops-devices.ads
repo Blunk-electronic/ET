@@ -115,12 +115,6 @@ package et_board_ops.devices is
 		--face			: in type_face; -- top/bottom
 		--log_threshold	: in type_log_level);
 
-
-	
-
-	
-
-
 	
 	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
@@ -129,23 +123,6 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor)
 		return pac_geometry_brd.pac_vectors.list;
-
-
-	-- Returns ALL terminals of the given device.
-	-- This query assumes the default assembly
-	-- variant, means the device of interest exists in any case:
-	function get_all_terminals (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return pac_terminals.map;
-
-
-	-- Returns the unconnected terminals of the given device
-	-- in the given module. This query assumes the default assembly
-	-- variant, means the device of interest exists in any case:
-	function get_unconnected_terminals (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return pac_terminals.map;
 
 
 

@@ -36,7 +36,7 @@
 --
 
 
-with et_terminals;
+with et_terminals;						use et_terminals;
 with et_route_restrict.packages;
 with et_via_restrict.packages;
 with et_keepout;						use et_keepout;
@@ -56,7 +56,7 @@ with et_silkscreen.packages;
 with et_assy_doc;						use et_assy_doc;
 with et_assy_doc.packages;
 
-with et_symbols;						
+with et_symbols;	
 with et_schematic;						use et_schematic;
 with et_device_query_schematic;			use et_device_query_schematic;
 with et_pcb;							use et_pcb;
@@ -65,6 +65,8 @@ with et_packages;						use et_packages;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_pcb_contour;					use et_pcb_contour;
+
+with et_nets;
 
 with et_project.modules;				use et_project.modules;
 
@@ -100,8 +102,8 @@ package et_device_query_board is
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
-		terminal_name	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 14
-		return et_terminals.type_terminal_position_fine;
+		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
+		return type_terminal_position_fine;
 
 	
 	-- CS ?
@@ -113,6 +115,24 @@ package et_device_query_board is
 		--return type_terminal_position_fine;
 
 
+	-- Returns ALL terminals of the given device.
+	-- This query assumes the default assembly
+	-- variant, means the device of interest exists in any case:
+	function get_all_terminals (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return pac_terminals.map;
+
+
+
+	-- Returns the unconnected terminals of the given device
+	-- in the given module. This query assumes the default assembly
+	-- variant, means the device of interest exists in any case:
+	function get_unconnected_terminals (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return pac_terminals.map;
+
+	
 	
 -- CONDUCTORS
 	
