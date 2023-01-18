@@ -868,7 +868,7 @@ package body et_pcb_rw.device_packages is
 
 		-- NOTE: Solder paste is applied to SMT pads only.
 		smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-		smt_stencil_shape		: type_stencil_shape := stencil_shape_default;
+		smt_stencil_shape		: type_stencil_modification := stencil_modification_default;
 		smt_stencil_contours	: type_stencil_contours;
 		--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
 		smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
@@ -996,7 +996,7 @@ package body et_pcb_rw.device_packages is
 
 			elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
 				expect_field_count (line, 2);
-				smt_stencil_shape := to_shape (f (line,2));
+				smt_stencil_shape := to_modification (f (line,2));
 
 			elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
 				expect_field_count (line, 2);
@@ -1066,8 +1066,8 @@ package body et_pcb_rw.device_packages is
 
 			
 			-- Builds the stencil of the SMT pad (there is no stencil for THT pads):
-			function make_stencil return et_terminals.type_stencil is begin
-				return r : et_terminals.type_stencil do
+			function make_stencil return type_stencil_shape is begin
+				return r : type_stencil_shape do
 					case smt_stencil_shape is
 						when AS_PAD =>
 							r := (shape => AS_PAD);
@@ -1154,7 +1154,7 @@ package body et_pcb_rw.device_packages is
 		 			delete_segments (smt_pad_shape);
 					smt_stop_mask_status	:= stop_mask_status_default;
 					smt_solder_paste_status	:= solder_paste_status_default;
-					smt_stencil_shape		:= stencil_shape_default;
+					smt_stencil_shape		:= stencil_modification_default;
 					delete_segments (smt_stencil_contours);
 					smt_stencil_shrink		:= stencil_shrink_default;
 			end case;

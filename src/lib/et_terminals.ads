@@ -188,8 +188,11 @@ package et_terminals is
 
 	
 	
--- SOLDER CREAM / STENCIL
-	type type_stencil_shape is (
+	-- SOLDER CREAM / STENCIL
+
+	-- The contour of the stencil is at first taken from the pad geometry
+	-- and then modified:
+	type type_stencil_modification is (
 		AS_PAD,			-- opening in stencil has the same size as the conductor pad underneath
 		SHRINK_PAD,		-- opening sligtly smaller than conductor pad. defined by shrink_factor
 		USER_SPECIFIC);	-- opening has a user defined outline
@@ -200,15 +203,15 @@ package et_terminals is
 	stencil_shrink_default : constant type_distance_positive := 0.7; -- CS adjust to a useful value
 	-- CS subtype for shrink value ?
 	
-	stencil_shape_default : constant type_stencil_shape := AS_PAD;
+	stencil_modification_default : constant type_stencil_modification := AS_PAD;
 
-	function to_string (shape : in type_stencil_shape) return string;
-	function to_shape (shape : in string) return type_stencil_shape;
+	function to_string (shape : in type_stencil_modification) return string;
+	function to_modification (shape : in string) return type_stencil_modification;
 
 	type type_stencil_contours is new type_contour with null record;
 	-- CS other properties stencil contours ?
 	
-	type type_stencil (shape : type_stencil_shape := stencil_shape_default) is record
+	type type_stencil_shape (shape : type_stencil_modification := stencil_modification_default) is record
 		case shape is
 			when USER_SPECIFIC 	=> contours : type_stencil_contours;
 			when SHRINK_PAD		=> shrink_factor : type_distance_positive := stencil_shrink_default;
@@ -304,7 +307,7 @@ package et_terminals is
 				stop_mask_shape_smt 	: type_stop_mask_smt;
 				
 				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
-				stencil_shape			: type_stencil;
+				stencil_shape			: type_stencil_shape;
 
 		end case;
 

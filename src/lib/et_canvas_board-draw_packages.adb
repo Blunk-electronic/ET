@@ -1250,7 +1250,7 @@ is
 					name			: in string;  -- H5, 5, 3
 					pad_outline_in	: in type_contour; -- the outline of the solder pad (copper)
 					stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
-					stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
+					stencil_in		: in type_stencil_shape; -- the solder cream mask of the pad
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face) 
 				is
