@@ -77,6 +77,8 @@ package et_device_query_board is
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 
+	use pac_geometry_2;
+	
 
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:
@@ -131,6 +133,32 @@ package et_device_query_board is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map;
+
+	
+
+	-- This controlled type is used by the functon to_polygon below:
+	type type_terminal_polygon (exists : boolean) is record
+		case exists is
+			when TRUE	=> 
+				polygon		: pac_polygons.type_polygon;
+				position	: type_terminal_position_fine;
+				
+			when FALSE	=> null;
+		end case;
+	end record;
+
+	
+	-- Returns the position of a terminal and its contour as a polygon.
+	-- If the terminal does not affect the given layer category,
+	-- then nothing happens here -> returns just a "false".
+	-- See specification of type_terminal_polygon above.
+	function to_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
+		terminal_cursor	: in pac_terminals.cursor;
+		layer_category	: in type_signal_layer_category;
+		tolerance		: in type_distance_positive)
+		return type_terminal_polygon;
 
 	
 	
