@@ -1770,7 +1770,7 @@ is
 
 
 	-- Returns true if the given electrical device matches the device indicated by 
-	-- cursor "selected_device_electrical":
+	-- cursor "selected_electrical_device":
 	function electrical_device_is_selected (
 		d : in pac_devices_sch.cursor)
 		return boolean
@@ -1780,13 +1780,13 @@ is
 		use pac_proposed_electrical_devices;
 	begin
 		-- If there are no selected devices at all, then there is nothing to do:
-		if is_empty (proposed_devices_electrical) then
+		if is_empty (proposed_electrical_device) then
 			return false;
 		else
-			if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+			if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
 				
-				-- Compare given device and device name of "selected_device_electrical":
-				if key (d) = key (element (selected_device_electrical).device) then
+				-- Compare given device and device name of "selected_electrical_device":
+				if key (d) = key (element (selected_electrical_device).device) then
 				-- CS compare cursors directly ?
 					return true;
 				else 

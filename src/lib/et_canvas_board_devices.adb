@@ -50,8 +50,8 @@ package body et_canvas_board_devices is
 	
 
 	procedure clear_proposed_electrical_devices is begin
-		clear (proposed_devices_electrical);
-		selected_device_electrical := pac_proposed_electrical_devices.no_element;
+		clear (proposed_electrical_device);
+		selected_electrical_device := pac_proposed_electrical_devices.no_element;
 	end clear_proposed_electrical_devices;
 
 	procedure clear_proposed_non_electrical_devices is begin
@@ -191,16 +191,16 @@ package body et_canvas_board_devices is
 	begin
 		-- On every call of this procedure we must advance from one
 		-- device to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_device_electrical
+		-- of the list is reached, then the cursor selected_electrical_device
 		-- moves back to the start of the devices list.
-		if next (selected_device_electrical) /= pac_proposed_electrical_devices.no_element then
-			next (selected_device_electrical);
+		if next (selected_electrical_device) /= pac_proposed_electrical_devices.no_element then
+			next (selected_electrical_device);
 		else
-			selected_device_electrical := proposed_devices_electrical.first;
+			selected_electrical_device := proposed_electrical_device.first;
 		end if;
 
 		-- show the selected device in the status bar
-		d := element (selected_device_electrical).device;
+		d := element (selected_electrical_device).device;
 	
 		set_status ("selected device " & to_string (key (d)) 
 			& ". " & status_next_object_clarification);
@@ -215,7 +215,7 @@ package body et_canvas_board_devices is
 	begin
 		-- On every call of this procedure we must advance from one
 		-- device to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_device_electrical
+		-- of the list is reached, then the cursor selected_electrical_device
 		-- moves back to the start of the devices list.
 		if next (selected_non_electrical_device) /= pac_proposed_non_electrical_devices.no_element then
 			next (selected_non_electrical_device);
@@ -252,7 +252,7 @@ package body et_canvas_board_devices is
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
-		proposed_devices_electrical := collect_devices (
+		proposed_electrical_device := collect_devices (
 			module			=> current_active_module,
 			place			=> point,
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
@@ -260,14 +260,14 @@ package body et_canvas_board_devices is
 
 		
 		-- evaluate the number of devices found here:
-		case length (proposed_devices_electrical) is
+		case length (proposed_electrical_device) is
 			when 0 =>
 				reset_request_clarification;
 				reset_electrical_device_move;
 				
 			when 1 =>
 				electrical_device_move.being_moved := true;
-				selected_device_electrical := proposed_devices_electrical.first;
+				selected_electrical_device := proposed_electrical_device.first;
 
 				case verb is
 					when VERB_FLIP => 
@@ -289,7 +289,7 @@ package body et_canvas_board_devices is
 				set_request_clarification;
 
 				-- preselect the first device
-				selected_device_electrical := proposed_devices_electrical.first;
+				selected_electrical_device := proposed_electrical_device.first;
 		end case;
 		
 	end find_electrical_devices_for_move;
@@ -358,9 +358,9 @@ package body et_canvas_board_devices is
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+		if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
 
-			sd := element (selected_device_electrical);
+			sd := element (selected_electrical_device);
 			
 			move_device (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
@@ -431,9 +431,9 @@ package body et_canvas_board_devices is
 		log (text => "finalizing rotation ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+		if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
 
-			sd := element (selected_device_electrical);
+			sd := element (selected_electrical_device);
 			
 			rotate_device (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
@@ -502,9 +502,9 @@ package body et_canvas_board_devices is
 		log (text => "finalizing flipping ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_device_electrical /= pac_proposed_electrical_devices.no_element then
+		if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
 
-			sd := element (selected_device_electrical);
+			sd := element (selected_electrical_device);
 			face := get_face (sd.device);
 			toggle (face);
 			

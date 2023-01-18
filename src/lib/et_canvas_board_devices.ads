@@ -118,8 +118,8 @@ package et_canvas_board_devices is
 		doubly_linked_lists (type_selected_electrical_device);
 	use pac_proposed_electrical_devices;
 	
-	proposed_devices_electrical	: pac_proposed_electrical_devices.list;
-	selected_device_electrical	: pac_proposed_electrical_devices.cursor;
+	proposed_electrical_device	: pac_proposed_electrical_devices.list;
+	selected_electrical_device	: pac_proposed_electrical_devices.cursor;
 
 
 	type type_selected_non_electrical_device is record
@@ -135,8 +135,8 @@ package et_canvas_board_devices is
 
 
 	
-	-- Clears the list proposed_devices_electrical.
-	-- Resets selected_device_electrical to no_element.
+	-- Clears the list proposed_electrical_device.
+	-- Resets selected_electrical_device to no_element.
 	procedure clear_proposed_electrical_devices;
 
 	procedure clear_proposed_non_electrical_devices;
@@ -152,8 +152,8 @@ package et_canvas_board_devices is
 		return pac_proposed_electrical_devices.list;
 
 
-	-- Advances cursor selected_device_electrical to next device
-	-- in list proposed_devices_electrical:
+	-- Advances cursor selected_electrical_device to next device
+	-- in list proposed_electrical_device:
 	procedure clarify_electrical_device;
 
 	procedure clarify_non_electrical_device;
@@ -161,7 +161,7 @@ package et_canvas_board_devices is
 	
 	-- This procedure:
 	-- - Clears list of proposed electrical devices.
-	-- - Sets global variable selected_device_electrical to no_element.
+	-- - Sets global variable selected_electrical_device to no_element.
 	-- - resets global variable electrical_device_move to its default values
 	procedure reset_electrical_device_move;
 
@@ -170,7 +170,7 @@ package et_canvas_board_devices is
 	
 	-- Locates all devices in the vicinity of given point.
 	-- If more than one device near point found, then it sets the
-	-- cursor selected_device_electrical to the device and requests
+	-- cursor selected_electrical_device to the device and requests
 	-- for clarification.
 	procedure find_electrical_devices_for_move (
 		point : in type_point);
