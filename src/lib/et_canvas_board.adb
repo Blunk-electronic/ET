@@ -1287,13 +1287,12 @@ package body et_canvas_board is
 					noun := NOUN_DEVICE;
 					set_status (status_flip);
 
-				when GDK_LC_N =>
+				when GDK_LC_n =>
 					noun := NOUN_NON_ELECTRICAL_DEVICE;
 					set_status (status_flip);
 
 					
-				-- If space pressed then the operator wishes to operate
-				-- by keyboard:
+				-- If space pressed then the operator wishes to operate by keyboard:
 				when GDK_Space =>		
 					case noun is
 						when NOUN_DEVICE =>							
@@ -1368,16 +1367,17 @@ package body et_canvas_board is
 					noun := NOUN_DEVICE;
 					set_status (status_move);
 
+				when GDK_LC_n =>
+					noun := NOUN_NON_ELECTRICAL_DEVICE;
+					set_status (status_move);
 
-				-- If space pressed then the operator wishes to operate
-				-- by keyboard:
+				-- If space pressed then the operator wishes to operate by keyboard:
 				when GDK_Space =>		
 					case noun is
-						when NOUN_DEVICE =>
-							
+						when NOUN_DEVICE =>							
 							if not electrical_device_move.being_moved then
 
-								-- Set the tool being used for moving the unit:
+								-- Set the tool being used:
 								electrical_device_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
@@ -1389,13 +1389,36 @@ package body et_canvas_board is
 								
 							else
 								-- Finally assign the cursor position to the
-								-- currently selected unit:
-								et_canvas_board_devices.finalize_move_electrical (
+								-- currently selected device:
+								finalize_move_electrical (
 									destination		=> cursor_main.position,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
 
+							
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+
+								-- Set the tool being used:
+								non_electrical_device_move.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (cursor_main.position);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally move the selected device:
+								finalize_move_non_electrical (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+							
 						when others => null;
 					end case;		
 
@@ -1417,6 +1440,11 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>
 							if clarification_pending then
 								clarify_electrical_device;
+							end if;
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
 							end if;
 							
 						--when NOUN_VALUE => 
@@ -1687,6 +1715,11 @@ package body et_canvas_board is
 							redraw_board;
 						end if;
 
+					when NOUN_NON_ELECTRICAL_DEVICE =>
+						if non_electrical_device_move.being_moved then
+							redraw_board;
+						end if;
+						
 					when others => null;
 				end case;
 				
@@ -1730,7 +1763,7 @@ package body et_canvas_board is
 					case noun is
 						when NOUN_DEVICE =>
 							if not electrical_device_move.being_moved then
-								-- Set the tool being used for moving the device:
+								-- Set the tool being used:
 								electrical_device_move.tool := MOUSE;
 								
 								if not clarification_pending then
@@ -1749,7 +1782,7 @@ package body et_canvas_board is
 							
 						when NOUN_NON_ELECTRICAL_DEVICE =>
 							if not non_electrical_device_move.being_moved then
-								-- Set the tool being used for moving the device:
+								-- Set the tool being used:
 								non_electrical_device_move.tool := MOUSE;
 								
 								if not clarification_pending then
@@ -1773,7 +1806,7 @@ package body et_canvas_board is
 					case noun is
 						when NOUN_DEVICE =>
 							if not electrical_device_move.being_moved then
-								-- Set the tool being used for moving the device:
+								-- Set the tool being used:
 								electrical_device_move.tool := MOUSE;
 								
 								if not clarification_pending then
@@ -1786,11 +1819,32 @@ package body et_canvas_board is
 							else
 								-- Finally assign the pointer position to the
 								-- currently selected device:
-								et_canvas_board_devices.finalize_move_electrical (
+								finalize_move_electrical (
 									destination		=> snap_point,
 									log_threshold	=> log_threshold + 1);
 							end if;
 
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+								-- Set the tool being used:
+								non_electrical_device_move.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (point);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+
+							else
+								-- Finally flip the currently selected device:
+								finalize_move_non_electrical (
+									destination		=> snap_point,
+									log_threshold	=> log_threshold + 1);
+							end if;
+
+							
 						when others => null;
 					end case;
 					
@@ -1882,6 +1936,12 @@ package body et_canvas_board is
 							if clarification_pending then
 								clarify_electrical_device;
 							end if;
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
+							end if;
+
 							
 						--when NOUN_VALUE => 
 							--if clarification_pending then

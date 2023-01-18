@@ -1855,7 +1855,6 @@ is
 				-- draw it highlighted:
 				if electrical_device_is_selected (device_cursor) then
 					brightness := BRIGHT;
-					--put_line ("device selected");
 
 					case verb is
 						-- If a move operation is in progress, then the mouse
@@ -1867,7 +1866,7 @@ is
 											
 									when MOUSE =>
 										position.place := self.snap_to_grid (self.mouse_position);
-										--put_line ("mouse " & to_string (position.place));								
+
 									when KEYBOARD =>
 										position.place := cursor_main.position;
 								end case;	
@@ -1904,23 +1903,48 @@ is
 		use pac_devices_non_electric;
 
 		-- non-electrical devices:
-		procedure query_device (p : in pac_devices_non_electric.cursor) is 
-			-- CS use rename
+		procedure query_device (device_cursor : in pac_devices_non_electric.cursor) is 
+			device : type_device_non_electric renames element (device_cursor);
 			use et_devices;
 			brightness : type_brightness := NORMAL;
+
+			-- If the device is selected and being moved, then the x/y position
+			-- will be overwritten by the position of the mouse or the cursor.
+			position : type_package_position := device.position; -- incl. rotation and face
 		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
-			if non_electrical_device_is_selected (p) then
+			if non_electrical_device_is_selected (device_cursor) then
 				brightness := BRIGHT;
+
+				case verb is
+					-- If a move operation is in progress, then the mouse
+					-- or cursor position overwrites the device position:
+					when VERB_MOVE =>
+						
+						if non_electrical_device_move.being_moved then
+							case non_electrical_device_move.tool is
+										
+								when MOUSE =>
+									position.place := self.snap_to_grid (self.mouse_position);
+
+								when KEYBOARD =>
+									position.place := cursor_main.position;
+							end case;	
+						end if;
+
+					-- Other operations leave the device position as it is:
+					when others => null;
+				end case;
+				
 			end if;
 			
 			draw_package (
 				electric			=> false,
 				device_electric		=> pac_devices_sch.no_element,
-				device_non_electric	=> p,
-				package_position	=> element (p).position, -- x/y/rotation/face
-				flip				=> element (p).flipped,
+				device_non_electric	=> device_cursor,
+				package_position	=> position, -- x/y/rotation/face
+				flip				=> device.flipped,
 				brightness 			=> brightness);
 
 		end query_device;
