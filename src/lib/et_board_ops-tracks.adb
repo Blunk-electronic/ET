@@ -44,6 +44,8 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_exceptions;					use et_exceptions;
 with et_board_ops.devices;
 
+with et_device_query_board;			use et_device_query_board;
+
 
 package body et_board_ops.tracks is
 
@@ -329,7 +331,7 @@ package body et_board_ops.tracks is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (et_board_ops.devices.get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 
@@ -399,7 +401,7 @@ package body et_board_ops.tracks is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (et_board_ops.devices.get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 
@@ -462,7 +464,7 @@ package body et_board_ops.tracks is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (et_board_ops.devices.get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 
@@ -528,7 +530,7 @@ package body et_board_ops.tracks is
 		-- make sure the desired layer is available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (et_board_ops.devices.get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
 

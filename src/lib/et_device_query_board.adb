@@ -36,6 +36,9 @@
 --
 
 with et_contour_to_polygon;
+with et_geometry;						use et_geometry;
+with et_logging;						use et_logging;
+with et_string_processing;				use et_string_processing;
 
 
 package body et_device_query_board is
@@ -43,6 +46,14 @@ package body et_device_query_board is
 	use et_symbols;
 	use pac_geometry_2;
 
+
+	function get_position (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_package_position
+	is begin
+		return element (device_cursor).position;
+	end get_position;
+	
 
 	function get_face (
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
@@ -65,6 +76,121 @@ package body et_device_query_board is
 		return get_face (position);
 	end get_face;
 	
+
+
+	procedure terminal_not_found (
+		terminal_name : in et_terminals.pac_terminal_name.bounded_string) 
+	is 
+		use et_terminals;
+	begin
+		log (ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
+			 console => true);
+		raise constraint_error;
+	end terminal_not_found;
+
+	
+
+	function get_terminal_position (
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_sch.cursor; -- IC45
+		terminal_name	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 14
+		return et_terminals.type_terminal_position_fine
+	is
+		-- This is the position of the package as it is in the layout:
+		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
+
+		use pac_geometry_brd;
+		terminal_position : type_vector; -- x/y
+		terminal_rotation : type_angle;
+		terminal_position_face : type_face := TOP; -- top/bottom
+
+		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model_cursor : pac_package_models.cursor;
+
+		use et_terminals;
+		use pac_terminals;
+		-- This cursor points to the terminal in the package model:
+		terminal_cursor : pac_terminals.cursor;
+		
+		terminal_technology : type_assembly_technology;
+		
+	begin
+		-- Get the package model of the given device:
+		model := get_package_model (device_cursor);
+
+		-- Get the position of the package as it is in the layout:
+		package_position := pac_devices_sch.element (device_cursor).position;
+		
+		-- Set the cursor to package model:
+		package_model_cursor := get_package_model (model);
+
+		-- Locate the desired terminal in the package model:
+		terminal_cursor := get_terminal (package_model_cursor, terminal_name);
+		if terminal_cursor = pac_terminals.no_element then
+			terminal_not_found (terminal_name);
+		end if;
+
+		-- Get the assembly technology of the terminal (SMT or THT):
+		terminal_technology := element (terminal_cursor).technology;
+
+		-- Get x/y of the terminal as given by the package model.
+		-- This position is relative to the origin of the package model:
+		terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
+		
+		-- Get the rotation of the terminal (about its center) as given by the package model:
+		terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
+
+		-- Add to the terminal rotation the rotation of the package:
+		terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));
+
+		
+		-- In the board: If the package has been flipped (to any side) by the operator
+		-- then the terminal must be flipped also.
+		-- If the package has not been flipped, then we assume the face of the terminal 
+		-- is the same as the face of the package.
+		if element (device_cursor).flipped = YES then
+
+			case terminal_technology is
+				when SMT =>
+					if element (terminal_cursor).face = TOP then
+						terminal_position_face := BOTTOM;
+					else
+						terminal_position_face := TOP;
+					end if;
+
+				when THT => 
+					-- If package flipped, then the face of the THT
+					-- terminal is bottom. If package not flipped, then default TOP applies:
+					terminal_position_face := BOTTOM;
+			end case;
+
+			
+			-- mirror terminal position alog Y axis (swap right x with left x)
+			mirror (terminal_position, Y);
+
+			-- Rotate the terminal position (x/y) by the rotation of the package:
+			rotate_by (terminal_position, - terminal_rotation);
+			
+		else -- not flipped
+			terminal_position_face := get_face (package_position);
+
+			-- Rotate the terminal position (x/y) by the rotation of the package:
+			rotate_by (terminal_position, terminal_rotation);
+		end if;
+
+
+		-- Move the terminal position by the position of the package:
+		move_by (terminal_position, to_offset (package_position.place));
+
+		return (
+			technology	=> terminal_technology,
+			place		=> terminal_position,
+			rotation	=> terminal_rotation,	   
+			face		=> terminal_position_face);
+		
+	end get_terminal_position;
+
+
 	
 -- CONDUCTORS
 	

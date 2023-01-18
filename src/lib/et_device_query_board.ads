@@ -36,7 +36,7 @@
 --
 
 
---with et_terminals;
+with et_terminals;
 with et_route_restrict.packages;
 with et_via_restrict.packages;
 with et_keepout;						use et_keepout;
@@ -66,6 +66,9 @@ with et_pcb_coordinates;				use et_pcb_coordinates;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_pcb_contour;					use et_pcb_contour;
 
+with et_project.modules;				use et_project.modules;
+
+
 package et_device_query_board is
 
 	use pac_polygons;
@@ -73,6 +76,13 @@ package et_device_query_board is
 	use pac_devices_non_electric;
 
 
+	-- Returns the current position (x/y/rotation/face) of the 
+	-- given electrical device:
+	function get_position (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_package_position;
+
+	
 	-- Returns the current face of the given electrical device:
 	function get_face (
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
@@ -83,6 +93,24 @@ package et_device_query_board is
 	function get_face (
 		device_cursor	: in et_pcb.pac_devices_non_electric.cursor) -- FD1
 		return type_face; -- top/bottom
+
+
+	-- Returns the position of a terminal of the given device in the board.
+	-- The device must be real (appearance SCH_PCB).
+	function get_terminal_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
+		terminal_name	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 14
+		return et_terminals.type_terminal_position_fine;
+
+	
+	-- CS ?
+	-- Same as above function but takes a terminal cursor instead of a terminal name
+	--function get_terminal_position (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
+		--terminal_cursor	: in pac_terminals.cursor) -- H7, 14
+		--return type_terminal_position_fine;
 
 
 	

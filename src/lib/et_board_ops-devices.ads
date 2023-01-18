@@ -60,13 +60,6 @@ package et_board_ops.devices is
 	-- CS procedure copy_device
 
 	
-	-- Returns the current position (x/y/rotation/face) of the 
-	-- given electrical device:
-	function get_position (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return type_package_position;
-
-	
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_device (
@@ -124,22 +117,8 @@ package et_board_ops.devices is
 
 
 	
-	-- Returns the position of a terminal of the given device in the board.
-	-- The device must be real (appearance SCH_PCB).
-	function get_terminal_position (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
-		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
-		return type_terminal_position_fine;
 
 	
-	-- CS ?
-	-- Same as above function but takes a terminal cursor instead of a terminal name
-	--function get_terminal_position (
-		--module_cursor	: in pac_generic_modules.cursor;
-		--device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
-		--terminal_cursor	: in pac_terminals.cursor) -- H7, 14
-		--return type_terminal_position_fine;
 
 
 	
