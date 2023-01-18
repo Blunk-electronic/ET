@@ -122,18 +122,6 @@ package et_board_ops.devices is
 		--face			: in type_face; -- top/bottom
 		--log_threshold	: in type_log_level);
 
-	
-	-- Returns the current face of the given electrical device:
-	function get_face (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return type_face; -- top/bottom
-	-- CS move to et_device_query_board
-
-	-- Returns the current face of the given non-electrical device:
-	function get_face (
-		device_cursor	: in et_pcb.pac_devices_non_electric.cursor) -- FD1
-		return type_face; -- top/bottom
-	-- CS move to et_device_query_board
 
 	
 	-- Returns the position of a terminal of the given device in the board.

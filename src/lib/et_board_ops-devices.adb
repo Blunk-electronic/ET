@@ -39,6 +39,7 @@ with ada.exceptions;
 
 with et_netlists;
 with et_device_query_schematic;		use et_device_query_schematic;
+with et_device_query_board;			use et_device_query_board;
 with et_schematic_ops;				use et_schematic_ops;
 
 with et_submodules;
@@ -602,28 +603,6 @@ package body et_board_ops.devices is
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
 	end flip_device;
-
-
-	function get_face (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return type_face
-	is 
-		position : type_package_position;
-	begin
-		position := element (device_cursor).position;
-		return get_face (position);
-	end get_face;
-
-
-	function get_face (
-		device_cursor	: in et_pcb.pac_devices_non_electric.cursor)
-		return type_face
-	is 
-		position : type_package_position;
-	begin
-		position := element (device_cursor).position;
-		return get_face (position);
-	end get_face;
 
 
 	

@@ -72,6 +72,19 @@ package et_device_query_board is
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 
+
+	-- Returns the current face of the given electrical device:
+	function get_face (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_face; -- top/bottom
+
+
+	-- Returns the current face of the given non-electrical device:
+	function get_face (
+		device_cursor	: in et_pcb.pac_devices_non_electric.cursor) -- FD1
+		return type_face; -- top/bottom
+
+
 	
 -- CONDUCTORS
 	

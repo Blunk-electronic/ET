@@ -43,6 +43,28 @@ package body et_device_query_board is
 	use et_symbols;
 	use pac_geometry_2;
 
+
+	function get_face (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_face
+	is 
+		position : type_package_position;
+	begin
+		position := element (device_cursor).position;
+		return get_face (position);
+	end get_face;
+
+
+	function get_face (
+		device_cursor	: in et_pcb.pac_devices_non_electric.cursor)
+		return type_face
+	is 
+		position : type_package_position;
+	begin
+		position := element (device_cursor).position;
+		return get_face (position);
+	end get_face;
+	
 	
 -- CONDUCTORS
 	

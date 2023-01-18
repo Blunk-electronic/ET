@@ -41,6 +41,7 @@
 with et_modes.board;				use et_modes.board;
 with et_canvas_board;				use et_canvas_board;
 with et_board_ops.devices;			use et_board_ops.devices;
+with et_device_query_board;			use et_device_query_board;
 
 
 package body et_canvas_board_devices is
