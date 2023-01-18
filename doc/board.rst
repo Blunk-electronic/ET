@@ -14,7 +14,10 @@ Devices
 Commands and Verb-Noun key sequences
 ------------------------------------
 
-#. Move device
+There are electrical devices (having a counterpart in the schematic) and
+non-electrical devices (without a representation in the schematic).
+
+#. Move electrical device
 
 	.. code-block::
 
@@ -23,26 +26,68 @@ Commands and Verb-Noun key sequences
 
 	|VNS| m d
 
-	
-#. Rotate device
+
+#. Move non-electrical device
 
 	.. code-block::
 
-		rotate device
+		move device FD1 absolute -14 24
+		move device MH1 relative 1 0
+
+	|VNS| m n
+
+
+	
+#. Rotate electrical device
+
+	.. code-block::
+
+		rotate device R1 absolute 10
+		rotate device R1 relative -45
 
 	|VNS| r d
 
-	
-#. Flip/mirror device
+#. Rotate non-electrical device
 
 	.. code-block::
 
-		flip device
+		rotate device FD1 absolute 10
+		rotate device MH1 relative -45
+
+	|VNS| r n
+
+
+	
+	
+#. Flip/mirror electrical device
+
+	.. code-block::
+
+		flip device C1 bottom
+		flip device C1 top
 
 	|VNS| l d
 
-	
 
+#. Flip/mirror non-electrical device
+
+	.. code-block::
+
+		flip device FD1 bottom
+
+	|VNS| l n
+
+	
+#. Delete non-electrical device
+
+	.. code-block::
+
+		delete device FD1
+
+	|VNS| del n
+
+	Note: Electrical devices can only be deleted in the schematic !
+	
 +++++++++++++++++++++
 Ratsnest and Airwires
 +++++++++++++++++++++

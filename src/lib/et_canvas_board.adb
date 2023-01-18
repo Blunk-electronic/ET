@@ -1217,15 +1217,51 @@ package body et_canvas_board is
 
 		procedure delete is begin
 			case key is
-				when GDK_LC_d =>
-					noun := NOUN_DEVICE;
-					set_status (status_click_left & "delete electrical device."
-						& status_hint_for_abort); -- CS use status_delete ?
-
 				when GDK_LC_n =>
 					noun := NOUN_NON_ELECTRICAL_DEVICE;
-					set_status (status_click_left & "delete non-electrical device."
-						& status_hint_for_abort); -- CS use status_delete ?
+					set_status (status_delete);
+
+				-- NOTE: Electrical devices can be deleted in
+				-- schematic only !
+
+				-- If space pressed then the operator wishes to operate by keyboard:
+				when GDK_Space =>		
+					case noun is
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+
+								-- Set the tool being used for moving the unit:
+								non_electrical_device_move.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (cursor_main.position);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally delete the selected device:
+								et_canvas_board_devices.finalize_delete_non_electrical (
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+							
+						when others => null;
+					end case;		
+
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
+							end if;
+
+						when others => null;							
+					end case;
+
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1249,19 +1285,16 @@ package body et_canvas_board is
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
-					set_status (status_click_left & "flip electrical device."
-						& status_hint_for_abort); -- CS use status_flip ?
+					set_status (status_flip);
 
 				when GDK_LC_N =>
 					noun := NOUN_NON_ELECTRICAL_DEVICE;
-					set_status (status_click_left & "flip non-electrical device."
-						& status_hint_for_abort); -- CS use status_flip ?
+					set_status (status_flip);
 
 					
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
-				when GDK_Space =>
-		
+				when GDK_Space =>		
 					case noun is
 						when NOUN_DEVICE =>							
 							if not electrical_device_move.being_moved then
@@ -1333,14 +1366,12 @@ package body et_canvas_board is
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
-					set_status (status_click_left & "move device."
-						& status_hint_for_abort);
+					set_status (status_move);
 
 
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
-				when GDK_Space =>
-		
+				when GDK_Space =>		
 					case noun is
 						when NOUN_DEVICE =>
 							
@@ -1435,8 +1466,7 @@ package body et_canvas_board is
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
-					set_status (status_click_left & "rotate device."
-						& status_hint_for_abort);
+					set_status (status_rotate);
 
 
 				-- If space pressed then the operator wishes to operate
@@ -1803,15 +1833,37 @@ package body et_canvas_board is
 						when others => null;
 					end case;
 				
-	
+
+				when VERB_DELETE =>
+					case noun is
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+								-- Set the tool being used for moving the device:
+								non_electrical_device_move.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (point);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+
+							else
+								-- Finally delete the currently selected device:
+								et_canvas_board_devices.finalize_delete_non_electrical (
+									log_threshold	=> log_threshold + 1);
+							end if;
+							
+						when others => null;
+					end case;
+					
 				when others => null;
 
 			end case;			
 		end left_button;
 
 		
-		procedure right_button is
-		begin
+		procedure right_button is begin
 			case verb is
 				when VERB_MOVE | VERB_ROTATE =>
 					case noun is
@@ -1848,6 +1900,17 @@ package body et_canvas_board is
 								clarify_electrical_device;
 							end if;
 
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
+							end if;
+							
+						when others => null;							
+					end case;
+
+
+				when VERB_DELETE =>
+					case noun is
 						when NOUN_NON_ELECTRICAL_DEVICE =>
 							if clarification_pending then
 								clarify_non_electrical_device;

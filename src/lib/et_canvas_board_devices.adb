@@ -562,6 +562,39 @@ package body et_canvas_board_devices is
 	end finalize_flip_non_electrical;
 
 
+
+	procedure finalize_delete_non_electrical (
+		log_threshold	: in type_log_level)
+	is
+		sd : type_selected_non_electrical_device;
+
+		use et_schematic;
+		use pac_devices_non_electric;
+	begin
+		log (text => "finalizing deletion ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_non_electrical_device /= pac_proposed_non_electrical_devices.no_element then
+
+			sd := element (selected_non_electrical_device);
+			
+			delete_device (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (sd.device),
+				log_threshold	=> log_threshold);
+
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+		
+		set_status (status_delete);
+		
+		reset_non_electrical_device_move;
+	end finalize_delete_non_electrical;
+
+	
 	
 end et_canvas_board_devices;
 

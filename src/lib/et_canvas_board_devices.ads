@@ -104,7 +104,14 @@ package et_canvas_board_devices is
 		& "to rotate device." 
 		& status_hint_for_abort;
 
+	status_delete : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete device." 
+		& status_hint_for_abort;
 
+	
 	-- Whenever a device is selected via the GUI, 
 	-- we store its cursor via this type.
 	-- This type is to be used for a device that
@@ -216,6 +223,10 @@ package et_canvas_board_devices is
 	procedure finalize_flip_non_electrical (
 		log_threshold	: in type_log_level);
 
+
+	-- Deletes the selected non-electrical device.
+	procedure finalize_delete_non_electrical (
+		log_threshold	: in type_log_level);
 
 	
 end et_canvas_board_devices;

@@ -84,7 +84,7 @@ package et_board_ops.devices is
 	-- Electric devices must be deleted in the schematic domain !
 	procedure delete_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- FD1
+		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?
 		log_threshold	: in type_log_level);
 
 	
