@@ -320,7 +320,7 @@ package body et_text is
 			angle	: in type_rotation)
 		is begin
 			rotate_by (text.position.place, angle);
-			text.position.rotation := text.position.rotation + angle;
+			text.position.rotation := add (text.position.rotation, angle);
 		end rotate_text;
 
 
