@@ -98,15 +98,11 @@ is
 		electric			: in boolean;
 		device_electric		: in et_schematic.pac_devices_sch.cursor;
 		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
-		--package_position	: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip				: in et_packages.type_flipped;
 		brightness			: in type_brightness)
 	is
 		package_position : type_package_position;  -- incl. rotation and face
-		
-		-- CS should improve performance:
-		-- package_offset : constant type_distance_relative := to_distance_relative (package_position.place)
-		-- use package_offset instead of many calls of to_distance_relative (package_position.place)
+
 		
 		use pac_geometry_2;	
 		use pac_contours;
@@ -1773,69 +1769,10 @@ is
 		draw_package_origin;
 	end draw_package;
 
+
+
 	
 	use et_schematic;
-
-
-	-- Returns true if the given electrical device matches the device indicated by 
-	-- cursor "selected_electrical_device":
-	function electrical_device_is_selected (
-		d : in pac_devices_sch.cursor)
-		return boolean
-	is
-		use et_devices;
-		use pac_devices_sch;
-		use pac_proposed_electrical_devices;
-	begin
-		-- If there are no selected devices at all, then there is nothing to do:
-		if is_empty (proposed_electrical_device) then
-			return false;
-		else
-			if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
-				
-				-- Compare given device and device name of "selected_electrical_device":
-				if key (d) = key (element (selected_electrical_device).device) then
-				-- CS compare cursors directly ?
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end electrical_device_is_selected;
-
-	
-	-- Returns true if the given non-electrical device matches the device indicated by 
-	-- cursor "selected_non_electrical_device":
-	function non_electrical_device_is_selected (
-		d : in et_pcb.pac_devices_non_electric.cursor)
-		return boolean
-	is
-		use et_devices;
-		use et_pcb;
-		use pac_devices_non_electric;
-		use pac_proposed_non_electrical_devices;
-	begin
-		-- If there are no selected devices at all, then there is nothing to do:
-		if is_empty (proposed_non_electrical_devices) then
-			return false;
-		else
-			if selected_non_electrical_device /= pac_proposed_non_electrical_devices.no_element then
-				
-				-- Compare given device and device name of "selected_non_electrical_device":
-				if key (d) = key (element (selected_non_electrical_device).device) then
-				---- CS compare cursors directly ?
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end non_electrical_device_is_selected;
 
 
 	-- Draws the packages of electrical devices:
@@ -1843,7 +1780,6 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
-		use et_schematic;
 		use pac_devices_sch;
 
 		

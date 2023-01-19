@@ -49,6 +49,65 @@ package body et_canvas_board_devices is
 	use et_canvas_board.pac_canvas;
 	
 
+	function electrical_device_is_selected (
+		d : in pac_devices_sch.cursor)
+		return boolean
+	is
+		use et_devices;
+		use pac_devices_sch;
+		use pac_proposed_electrical_devices;
+	begin
+		-- If there are no selected devices at all, then there is nothing to do:
+		if is_empty (proposed_electrical_device) then
+			return false;
+		else
+			if selected_electrical_device /= pac_proposed_electrical_devices.no_element then
+				
+				-- Compare given device and device name of "selected_electrical_device":
+				if key (d) = key (element (selected_electrical_device).device) then
+				-- CS compare cursors directly ?
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end electrical_device_is_selected;
+
+
+	function non_electrical_device_is_selected (
+		d : in et_pcb.pac_devices_non_electric.cursor)
+		return boolean
+	is
+		use et_devices;
+		use et_pcb;
+		use pac_devices_non_electric;
+		use pac_proposed_non_electrical_devices;
+	begin
+		-- If there are no selected devices at all, then there is nothing to do:
+		if is_empty (proposed_non_electrical_devices) then
+			return false;
+		else
+			if selected_non_electrical_device /= pac_proposed_non_electrical_devices.no_element then
+				
+				-- Compare given device and device name of "selected_non_electrical_device":
+				if key (d) = key (element (selected_non_electrical_device).device) then
+				---- CS compare cursors directly ?
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end non_electrical_device_is_selected;
+
+
+	
+	
 	procedure clear_proposed_electrical_devices is begin
 		clear (proposed_electrical_device);
 		selected_electrical_device := pac_proposed_electrical_devices.no_element;

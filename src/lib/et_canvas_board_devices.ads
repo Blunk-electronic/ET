@@ -50,7 +50,7 @@ use et_pcb_coordinates.pac_geometry_2;
 --with et_terminals;				use et_terminals;
 --with et_packages;
 with et_project.modules;			use et_project.modules;
-with et_schematic;
+with et_schematic;					use et_schematic;
 with et_pcb;						use et_pcb;
 with et_devices;					use et_devices;
 
@@ -129,6 +129,15 @@ package et_canvas_board_devices is
 	selected_electrical_device	: pac_proposed_electrical_devices.cursor;
 
 
+	-- Returns true if the given electrical device matches the device 
+	-- indicated by cursor "selected_electrical_device":
+	function electrical_device_is_selected (
+		d : in pac_devices_sch.cursor)
+		return boolean;
+
+
+	
+
 	type type_selected_non_electrical_device is record
 		device	: pac_devices_non_electric.cursor;
 	end record;
@@ -140,6 +149,14 @@ package et_canvas_board_devices is
 	proposed_non_electrical_devices	: pac_proposed_non_electrical_devices.list;
 	selected_non_electrical_device	: pac_proposed_non_electrical_devices.cursor;
 
+
+	-- Returns true if the given non-electrical device matches the device 
+	-- indicated by cursor "selected_non_electrical_device":
+	function non_electrical_device_is_selected (
+		d : in et_pcb.pac_devices_non_electric.cursor)
+		return boolean;
+
+	
 
 	
 	-- Clears the list proposed_electrical_device.
