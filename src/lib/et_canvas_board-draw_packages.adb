@@ -98,10 +98,12 @@ is
 		electric			: in boolean;
 		device_electric		: in et_schematic.pac_devices_sch.cursor;
 		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
-		package_position	: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		--package_position	: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip				: in et_packages.type_flipped;
 		brightness			: in type_brightness)
 	is
+		package_position : type_package_position;  -- incl. rotation and face
+		
 		-- CS should improve performance:
 		-- package_offset : constant type_distance_relative := to_distance_relative (package_position.place)
 		-- use package_offset instead of many calls of to_distance_relative (package_position.place)
@@ -1746,6 +1748,12 @@ is
 		
 	begin -- draw_package
 		--put_line (et_devices.to_string (device_name));
+
+		if electric then
+			package_position := get_position (device_electric);
+		else
+			package_position := get_position (device_non_electric);
+		end if;
 		
 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
@@ -1829,8 +1837,9 @@ is
 		end if;
 	end non_electrical_device_is_selected;
 
-	
-	procedure query_devices (
+
+	-- Draws the packages of electrical devices:
+	procedure query_electrical_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
@@ -1838,16 +1847,64 @@ is
 		use pac_devices_sch;
 
 		
-		-- electrical devices:
 		procedure query_device (device_cursor : in pac_devices_sch.cursor) is
 			device : type_device_sch renames element (device_cursor);
 			use et_pcb;
 
 			brightness : type_brightness := NORMAL;
+			
+			-- Draws the device package at the position as it is in the board:
+			procedure draw_fixed is begin
+				draw_package (
+					electric			=> true,
+					device_electric		=> device_cursor,
+					device_non_electric	=> pac_devices_non_electric.no_element,
+					flip				=> device.flipped,
+					brightness			=> brightness);
+			end draw_fixed;
 
-			-- If the device is selected and being moved, then the x/y position
-			-- will be overwritten by the position of the mouse or the cursor.
-			position : type_package_position := device.position; -- incl. rotation and face
+
+			-- Draws the device packae at the position given by the pointer or the cursor:
+			procedure draw_being_moved is 
+				-- If the device is being moved, then the x/y position
+				-- will be overwritten by the position of the mouse or the cursor.
+
+				use et_devices;
+				procedure set_position (
+					name	: in type_device_name;
+					device	: in out type_device_sch)
+				is begin
+					case electrical_device_move.tool is
+						when MOUSE =>
+							device.position.place := self.snap_to_grid (self.mouse_position);
+
+						when KEYBOARD =>
+							device.position.place := cursor_main.position;
+					end case;
+				end set_position;
+
+				-- Create a temporary map of devices. This map will contain just a single device:
+				m_tmp : pac_devices_sch.map;
+				dev_copy : pac_devices_sch.cursor;
+			begin
+				-- Insert a copy of the candidate device in the temporary map:
+				m_tmp.insert (key (device_cursor), element (device_cursor));
+				dev_copy := m_tmp.last;
+
+				-- Assign the new position to the copy:
+				m_tmp.update_element (dev_copy, set_position'access);
+
+				-- Draw the copy of the candidate device:
+				draw_package (
+					electric			=> true,
+					device_electric		=> dev_copy,
+					device_non_electric	=> pac_devices_non_electric.no_element,
+					flip				=> device.flipped,
+					brightness			=> brightness);
+
+			end draw_being_moved;
+			
+			
 		begin
 			if is_real (device_cursor) then
 
@@ -1857,101 +1914,135 @@ is
 					brightness := BRIGHT;
 
 					case verb is
-						-- If a move operation is in progress, then the mouse
-						-- or cursor position overwrites the device position:
 						when VERB_MOVE =>
 
+							-- If a move operation is in progress, then the mouse
+							-- or cursor position overwrites the device position:
 							if electrical_device_move.being_moved then
-								case electrical_device_move.tool is
-											
-									when MOUSE =>
-										position.place := self.snap_to_grid (self.mouse_position);
-
-									when KEYBOARD =>
-										position.place := cursor_main.position;
-								end case;	
+								draw_being_moved;
+							else
+								draw_fixed;						
 							end if;
 
 						-- Other operations leave the device position as it is:
-						when others => null;
+						when others =>
+							draw_fixed;
+						
 					end case;
+
+				else
+					draw_fixed;
 				end if;
 				
-				draw_package (
-					electric			=> true,
-					device_electric		=> device_cursor,
-					device_non_electric	=> pac_devices_non_electric.no_element,
-					package_position	=> position, -- x/y/rotation/face
-					flip				=> device.flipped,
-					brightness			=> brightness);
-
 				-- CS live update ratsnest
 				
 			end if;
 		end query_device;
 		
-	begin -- query_devices
+	begin
 		module.devices.iterate (query_device'access);
-	end query_devices;
+	end query_electrical_devices;
 
-	
-	procedure query_devices_non_electric (
+
+	-- Draws the packages of non-electrical devices:
+	procedure query_non_electrical_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
 		use et_pcb;
 		use pac_devices_non_electric;
 
-		-- non-electrical devices:
+
 		procedure query_device (device_cursor : in pac_devices_non_electric.cursor) is 
 			device : type_device_non_electric renames element (device_cursor);
 			use et_devices;
+			
 			brightness : type_brightness := NORMAL;
 
-			-- If the device is selected and being moved, then the x/y position
-			-- will be overwritten by the position of the mouse or the cursor.
-			position : type_package_position := device.position; -- incl. rotation and face
+			-- Draws the device package at the position as it is in the board:
+			procedure draw_fixed is begin
+				draw_package (
+					electric			=> false,
+					device_electric		=> pac_devices_sch.no_element,
+					device_non_electric	=> device_cursor,
+					flip				=> device.flipped,
+					brightness 			=> brightness);
+			end draw_fixed;
+
+			
+			-- Draws the device packae at the position given by the pointer or the cursor:
+			procedure draw_being_moved is 
+				-- If the device is being moved, then the x/y position
+				-- will be overwritten by the position of the mouse or the cursor.
+
+				use et_devices;
+				procedure set_position (
+					name	: in type_device_name;
+					device	: in out type_device_non_electric)
+				is begin
+					case non_electrical_device_move.tool is
+						when MOUSE =>
+							device.position.place := self.snap_to_grid (self.mouse_position);
+
+						when KEYBOARD =>
+							device.position.place := cursor_main.position;
+					end case;
+				end set_position;
+
+				-- Create a temporary map of devices. This map will contain just a single device:
+				m_tmp : pac_devices_non_electric.map;
+				dev_copy : pac_devices_non_electric.cursor;
+			begin
+				-- Insert a copy of the candidate device in the temporary map:
+				m_tmp.insert (key (device_cursor), element (device_cursor));
+				dev_copy := m_tmp.last;
+
+				-- Assign the new position to the copy:
+				m_tmp.update_element (dev_copy, set_position'access);
+
+				-- Draw the copy of the candidate device:
+				draw_package (
+					electric			=> false,
+					device_electric		=> pac_devices_sch.no_element,
+					device_non_electric	=> dev_copy,
+					flip				=> device.flipped,
+					brightness			=> brightness);
+
+			end draw_being_moved;
+
+			
 		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
 			if non_electrical_device_is_selected (device_cursor) then
 				brightness := BRIGHT;
 
+				-- If a move operation is in progress, then the mouse
 				case verb is
-					-- If a move operation is in progress, then the mouse
-					-- or cursor position overwrites the device position:
 					when VERB_MOVE =>
-						
-						if non_electrical_device_move.being_moved then
-							case non_electrical_device_move.tool is
-										
-								when MOUSE =>
-									position.place := self.snap_to_grid (self.mouse_position);
 
-								when KEYBOARD =>
-									position.place := cursor_main.position;
-							end case;	
+						-- If a move operation is in progress, then the mouse
+						-- or cursor position overwrites the device position:
+						if non_electrical_device_move.being_moved then
+							draw_being_moved;
+						else
+							draw_fixed;						
 						end if;
 
 					-- Other operations leave the device position as it is:
-					when others => null;
+					when others =>
+						draw_fixed;
+					
 				end case;
-				
-			end if;
-			
-			draw_package (
-				electric			=> false,
-				device_electric		=> pac_devices_sch.no_element,
-				device_non_electric	=> device_cursor,
-				package_position	=> position, -- x/y/rotation/face
-				flip				=> device.flipped,
-				brightness 			=> brightness);
 
+			else
+				draw_fixed;
+			end if;		
 		end query_device;
 		
 	begin
 		module.devices_non_electric.iterate (query_device'access);
-	end query_devices_non_electric;
+	end query_non_electrical_devices;
 
 	
 begin -- draw_packages
@@ -1960,13 +2051,13 @@ begin -- draw_packages
 	-- draw electric devices
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
-		process		=> query_devices'access);
+		process		=> query_electrical_devices'access);
 
 	
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
-		process		=> query_devices_non_electric'access);
+		process		=> query_non_electrical_devices'access);
 			
 end draw_packages;
 

@@ -86,6 +86,13 @@ package et_device_query_board is
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
 		return type_package_position;
 
+
+	-- Returns the current position (x/y/rotation/face) of the 
+	-- given non-electrical device:
+	function get_position (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return type_package_position;
+
 	
 	-- Returns the current face of the given electrical device:
 	function get_face (
