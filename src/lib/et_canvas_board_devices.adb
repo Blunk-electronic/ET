@@ -350,7 +350,8 @@ package body et_canvas_board_devices is
 				-- preselect the first device
 				selected_electrical_device := proposed_electrical_device.first;
 		end case;
-		
+
+		log_indentation_down;
 	end find_electrical_devices_for_move;
 	
 
@@ -400,7 +401,8 @@ package body et_canvas_board_devices is
 				-- preselect the first device
 				selected_non_electrical_device := proposed_non_electrical_devices.first;
 		end case;
-		
+
+		log_indentation_down;
 	end find_non_electrical_devices_for_move;
 
 
