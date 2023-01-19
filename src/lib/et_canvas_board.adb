@@ -1298,7 +1298,7 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>							
 							if not electrical_device_move.being_moved then
 
-								-- Set the tool being used for moving the unit:
+								-- Set the tool being used:
 								electrical_device_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
@@ -1310,7 +1310,7 @@ package body et_canvas_board is
 								
 							else
 								-- Finally rotate the selected device:
-								et_canvas_board_devices.finalize_flip_electrical (
+								finalize_flip_electrical (
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1319,7 +1319,7 @@ package body et_canvas_board is
 						when NOUN_NON_ELECTRICAL_DEVICE =>
 							if not non_electrical_device_move.being_moved then
 
-								-- Set the tool being used for moving the unit:
+								-- Set the tool being used:
 								non_electrical_device_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
@@ -1331,7 +1331,7 @@ package body et_canvas_board is
 								
 							else
 								-- Finally rotate the selected device:
-								et_canvas_board_devices.finalize_flip_non_electrical (
+								finalize_flip_non_electrical (
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1496,7 +1496,11 @@ package body et_canvas_board is
 					noun := NOUN_DEVICE;
 					set_status (status_rotate);
 
+				when GDK_LC_n =>
+					noun := NOUN_NON_ELECTRICAL_DEVICE;
+					set_status (status_rotate);
 
+					
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
 				when GDK_Space =>		
@@ -1504,7 +1508,7 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>							
 							if not electrical_device_move.being_moved then
 
-								-- Set the tool being used for moving the unit:
+								-- Set the tool being used:
 								electrical_device_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
@@ -1516,12 +1520,35 @@ package body et_canvas_board is
 								
 							else
 								-- Finally rotate the selected device:
-								et_canvas_board_devices.finalize_rotate_electrical (
+								finalize_rotate_electrical (
 									-- uses default rotation of 90 CCW
 									log_threshold	=> log_threshold + 1);
 
 							end if;
 
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>							
+							if not non_electrical_device_move.being_moved then
+
+								-- Set the tool being used:
+								non_electrical_device_move.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (cursor_main.position);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally rotate the selected device:
+								finalize_rotate_non_electrical (
+									-- uses default rotation of 90 CCW
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+							
 						when others => null;
 					end case;		
 
@@ -1529,12 +1556,16 @@ package body et_canvas_board is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
-
 						when NOUN_DEVICE =>
 							if clarification_pending then
 								clarify_electrical_device;
 							end if;
 
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if clarification_pending then
+								clarify_non_electrical_device;
+							end if;
+							
 						when others => null;							
 					end case;
 					
@@ -1866,7 +1897,7 @@ package body et_canvas_board is
 						when NOUN_DEVICE =>
 							if not electrical_device_move.being_moved then
 
-								-- Set the tool being used for moving the unit:
+								-- Set the tool being used:
 								electrical_device_move.tool := MOUSE;
 								
 								if not clarification_pending then
@@ -1878,11 +1909,34 @@ package body et_canvas_board is
 								
 							else
 								-- Finally rotate the selected device:
-								et_canvas_board_devices.finalize_rotate_electrical (
+								finalize_rotate_electrical (
 									-- uses default rotation of 90 CCW
 									log_threshold	=> log_threshold + 1);
 
 							end if;
+
+
+						when NOUN_NON_ELECTRICAL_DEVICE =>
+							if not non_electrical_device_move.being_moved then
+
+								-- Set the tool being used:
+								non_electrical_device_move.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_non_electrical_devices_for_move (point);
+								else
+									non_electrical_device_move.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally rotate the selected device:
+								finalize_rotate_non_electrical (
+									-- uses default rotation of 90 CCW
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
 							
 						when others => null;
 					end case;
