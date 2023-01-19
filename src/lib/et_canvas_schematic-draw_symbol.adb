@@ -75,7 +75,7 @@ is
 		rotate_by (line, unit_rotation);
 		move_by (line, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_line (in_area, to_line_fine (line), element (c).width, self.frame_height);
+		draw_line (in_area, to_line_fine (line), element (c).width, self.get_frame_height);
 	end draw_line;
 
 	
@@ -86,7 +86,7 @@ is
 		rotate_by (arc, unit_rotation);
 		move_by (arc, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_arc (in_area, to_arc_fine (arc), element (c).width, self.frame_height);
+		draw_arc (in_area, to_arc_fine (arc), element (c).width, self.get_frame_height);
 	end draw_arc;
 
 	
@@ -98,7 +98,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
-		draw_circle (in_area, circle, NO, element (c).width, self.frame_height);
+		draw_circle (in_area, circle, NO, element (c).width, self.get_frame_height);
 	end draw_circle;
 
 	procedure draw_port (c : in pac_ports.cursor) is
@@ -157,7 +157,7 @@ is
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (rotation_total)),
 				alignment	=> alignment,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end draw_port_name;
 
@@ -226,7 +226,7 @@ is
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (rotation_total)),
 				alignment	=> alignment,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end draw_terminal_name;
 
@@ -306,7 +306,7 @@ is
 		move_by (line, to_distance_relative (unit_position));
 		
 		-- Draw the line of the port:
-		draw_line (in_area, to_line_fine (line), port_line_width, self.frame_height);
+		draw_line (in_area, to_line_fine (line), port_line_width, self.get_frame_height);
 
 
 		-- Draw the circle around a port if the layer is enabled:
@@ -321,7 +321,7 @@ is
 			circle.radius := type_float_positive (port_circle_radius);
 
 			-- the circle is not filled -> argument "filled" is NO
-			draw_circle (in_area, circle, NO, port_circle_line_width, self.frame_height);
+			draw_circle (in_area, circle, NO, port_circle_line_width, self.get_frame_height);
 
 			-- CS draw port direction, weakness, power level ?
 			-- probably better in draw_terminal_name or draw_port_name ?
@@ -382,7 +382,7 @@ is
 			rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
 
 			alignment	=> element (c).alignment,
-			height		=> self.frame_height
+			height		=> self.get_frame_height
 			);
 	end draw_text;
 
@@ -418,7 +418,7 @@ is
 				rotation	=> to_rotation (sch_placeholder_name.rotation),
 				
 				alignment	=> sch_placeholder_name.alignment,
-				height		=> self.frame_height
+				height		=> self.get_frame_height
 				);
 		end if;
 		
@@ -447,7 +447,7 @@ is
 					rotation	=> to_rotation (sch_placeholder_value.rotation),
 
 					alignment	=> sch_placeholder_value.alignment,
-					height		=> self.frame_height
+					height		=> self.get_frame_height
 					);
 			end if;
 		end if;
@@ -477,7 +477,7 @@ is
 					rotation	=> to_rotation (sch_placeholder_purpose.rotation),
 
 					alignment	=> sch_placeholder_purpose.alignment,
-					height		=> self.frame_height
+					height		=> self.get_frame_height
 					);
 			end if;
 		end if;
@@ -513,8 +513,8 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		draw_line (in_area, to_line_fine (line_horizontal), et_symbols.origin_line_width, self.frame_height);
-		draw_line (in_area, to_line_fine (line_vertical), et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, to_line_fine (line_horizontal), et_symbols.origin_line_width, self.get_frame_height);
+		draw_line (in_area, to_line_fine (line_vertical), et_symbols.origin_line_width, self.get_frame_height);
 	end draw_origin;
 
 	

@@ -171,8 +171,8 @@ is
 				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text_board.origin_line_width));
-				draw_line (in_area, line_horizontal, pac_text_board.origin_line_width, self.frame_height);
-				draw_line (in_area, line_vertical, pac_text_board.origin_line_width, self.frame_height);
+				draw_line (in_area, line_horizontal, pac_text_board.origin_line_width, self.get_frame_height);
+				draw_line (in_area, line_vertical, pac_text_board.origin_line_width, self.get_frame_height);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
@@ -200,14 +200,14 @@ is
 					line : type_silk_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, to_line_fine (line), line.width, self.frame_height);
+					draw_line (in_area, to_line_fine (line), line.width, self.get_frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_silk_arcs.cursor) is 
 					arc : type_silk_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width, self.frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width, self.get_frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_silk_circles.cursor) is 
@@ -219,7 +219,7 @@ is
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_circle;
 
 				procedure query_contour (c : in pac_silk_contours.cursor) is 
@@ -232,7 +232,7 @@ is
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_contour;
 
@@ -248,7 +248,7 @@ is
 						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_text;
 
 				
@@ -316,14 +316,14 @@ is
 					line : type_doc_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, to_line_fine (line), line.width, self.frame_height);
+					draw_line (in_area, to_line_fine (line), line.width, self.get_frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_doc_arcs.cursor) is 
 					arc : type_doc_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width, self.frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width, self.get_frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_doc_circles.cursor) is 
@@ -335,7 +335,7 @@ is
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_circle;
 
 				procedure query_contour (c : in pac_doc_contours.cursor) is 
@@ -348,7 +348,7 @@ is
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_contour;
 
@@ -364,7 +364,7 @@ is
 						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_text;
 			
 				
@@ -430,7 +430,7 @@ is
 						contour	=> element (c),
 						filled	=> NO,
 						width	=> zero,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_zone;
@@ -504,7 +504,7 @@ is
 						area	=> in_area,
 						line	=> to_line_fine (line),
 						width	=> line.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_line;
 
@@ -519,7 +519,7 @@ is
 						area	=> in_area,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_arc;
 
@@ -535,7 +535,7 @@ is
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_circle;
 				
@@ -548,7 +548,7 @@ is
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_contour;
@@ -562,7 +562,7 @@ is
 						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_text;
 
 				
@@ -636,7 +636,7 @@ is
 						area	=> in_area,
 						line	=> to_line_fine (line),
 						width	=> line.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_line;
 
@@ -651,7 +651,7 @@ is
 						area	=> in_area,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_arc;
 
@@ -667,7 +667,7 @@ is
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 					
 				end query_circle;
 				
@@ -680,7 +680,7 @@ is
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_contour;
@@ -764,7 +764,7 @@ is
 						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
@@ -775,7 +775,7 @@ is
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
@@ -787,7 +787,7 @@ is
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_circle;
 
 				procedure query_zone (c : in pac_route_restrict_zones.cursor) is
@@ -799,7 +799,7 @@ is
 						contour	=> zone,
 						width	=> route_restrict_line_width, 
 						filled	=> YES,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_zone;
 
@@ -812,7 +812,7 @@ is
 						contour	=> cutout,
 						width	=> route_restrict_line_width, 
 						filled	=> NO,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_cutout;
 				
@@ -885,7 +885,7 @@ is
 						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
@@ -896,7 +896,7 @@ is
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
@@ -908,7 +908,7 @@ is
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_circle;
 
 				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
@@ -920,7 +920,7 @@ is
 						contour	=> zone,
 						width	=> via_restrict_line_width, 
 						filled	=> YES,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_zone;
 
@@ -933,7 +933,7 @@ is
 						contour	=> cutout,
 						width	=> via_restrict_line_width, 
 						filled	=> NO,
-						height	=> self.frame_height,
+						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_cutout;
 				
@@ -995,7 +995,7 @@ is
 					contour	=> element (c),
 					filled	=> NO,
 					width	=> pcb_contour_line_width,
-					height	=> self.frame_height,
+					height	=> self.get_frame_height,
 					drawn	=> drawn);
 
 			end query_hole;
@@ -1042,7 +1042,7 @@ is
 						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_line;
 
 				procedure query_arc (c : in pac_conductor_arcs.cursor) is
@@ -1053,7 +1053,7 @@ is
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_arc;
 
 				procedure query_circle (c : in pac_conductor_circles.cursor) is
@@ -1065,7 +1065,7 @@ is
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO,
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_circle;
 
 				procedure query_text (c : in pac_conductor_texts.cursor) is
@@ -1076,7 +1076,7 @@ is
 						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width, 
-						height	=> self.frame_height);
+						height	=> self.get_frame_height);
 				end query_text;
 				
 			begin
@@ -1146,7 +1146,7 @@ is
 					area			=> in_area,
 					outer_border	=> outer_border,
 					inner_border	=> ib,
-					height			=> self.frame_height);
+					height			=> self.get_frame_height);
 
 			end draw_tht_pad_with_circular_cutout;
 
@@ -1161,7 +1161,7 @@ is
 					area			=> in_area,
 					outer_border	=> outer_border,
 					inner_border	=> inner_border,
-					height			=> self.frame_height);
+					height			=> self.get_frame_height);
 				
 			end draw_tht_pad_with_arbitrary_cutout;
 
@@ -1188,7 +1188,7 @@ is
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (center, center),
-						height		=> self.frame_height);
+						height		=> self.get_frame_height);
 
 				end draw_name_smt;
 
@@ -1232,7 +1232,7 @@ is
 								origin		=> false, -- no origin required
 								rotation	=> zero_rotation,
 								alignment	=> (center, center),
-								height		=> self.frame_height);
+								height		=> self.get_frame_height);
 
 							name_drawn := true;
 						end if;
@@ -1283,7 +1283,7 @@ is
 									contour	=> pad_outline,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.frame_height,
+									height	=> self.get_frame_height,
 									drawn	=> drawn);
 								
 								-- draw the terminal name
@@ -1334,7 +1334,7 @@ is
 									contour	=> stop_mask_contours,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.frame_height,
+									height	=> self.get_frame_height,
 									drawn	=> drawn);
 								
 							end if;
@@ -1390,7 +1390,7 @@ is
 									contour	=> stencil_contours,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.frame_height,
+									height	=> self.get_frame_height,
 									drawn	=> drawn);
 
 							end if;
@@ -1501,7 +1501,7 @@ is
 									contour		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,
-									height		=> self.frame_height,
+									height		=> self.get_frame_height,
 									drawn		=> drawn);
 
 							end if;
@@ -1598,15 +1598,15 @@ is
 						circle.radius := type_float_positive (drill_size) * 0.5 
 										 + type_float_positive (restring);
 						
-						--draw_circle (in_area, context, circle, NO, self.frame_height);
-						draw_circle (in_area, circle, YES, zero, self.frame_height);
+						--draw_circle (in_area, context, circle, NO, self.get_frame_height);
+						draw_circle (in_area, circle, YES, zero, self.get_frame_height);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := type_float_positive (drill_size) * 0.5;
-						draw_circle (in_area, circle, YES, zero, self.frame_height);
+						draw_circle (in_area, circle, YES, zero, self.get_frame_height);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -1734,8 +1734,8 @@ is
 
 					set_color_origin (context.cr, brightness);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
-					draw_line (in_area, line_horizontal, et_packages.origin_line_width, self.frame_height);
-					draw_line (in_area, line_vertical, et_packages.origin_line_width, self.frame_height);
+					draw_line (in_area, line_horizontal, et_packages.origin_line_width, self.get_frame_height);
+					draw_line (in_area, line_vertical, et_packages.origin_line_width, self.get_frame_height);
 
 				end if;
 			end if;

@@ -72,7 +72,7 @@ begin
 	-- (bounding box.y + frame height)
 	-- and shifted up by the board origin y position.
 	start_y := type_view_coordinate (self.frame_bounding_box.y) 
-			   + type_view_coordinate (self.frame_height)
+			   + type_view_coordinate (self.get_frame_height)
 			   + lower_grid_coordinate (type_distance_positive (area.height), used_grid.y)
 			   -- - type_view_coordinate (get_y (self.board_origin));
 			   - type_view_coordinate (self.board_origin.y);

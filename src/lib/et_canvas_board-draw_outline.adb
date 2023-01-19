@@ -60,14 +60,14 @@ is
 					--context		=> context,
 					line		=> to_line_fine (element (c).segment_line),
 					width		=> pcb_contour_line_width,
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 
 			when ARC =>
 				draw_arc (
 					area		=> in_area,
 					arc			=> to_arc_fine (element (c).segment_arc),
 					width		=> pcb_contour_line_width,
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 		end case;
 	end query_segment;
 
@@ -80,7 +80,7 @@ is
 
 		-- Draw the text:
 		draw_vector_text (in_area, element (c).vectors,
-			element (c).line_width, self.frame_height);
+			element (c).line_width, self.get_frame_height);
 		
 	end query_text;
 
@@ -96,7 +96,7 @@ is
 				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
 				width		=> pcb_contour_line_width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 			
 		else
 			iterate (module.board.contours.outline.contour.segments, query_segment'access);
@@ -121,7 +121,7 @@ is
 					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
 					width		=> pcb_contour_line_width,
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 				
 			else
 				iterate (element (c).contour.segments, query_segment'access);

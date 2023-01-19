@@ -236,7 +236,7 @@ package et_canvas_board is
 		return et_frames.type_frame;
 
 		
-	overriding function frame_height (
+	overriding function get_frame_height (
 		self : not null access type_view)
 		return type_float_positive;
 

@@ -61,7 +61,7 @@ begin
 
 	-- The start point on the y-axis is aligned with the lower frame border (bounding box.y + frame height).
 	start_y := type_view_coordinate (self.frame_bounding_box.y) 
-			   + type_view_coordinate (self.frame_height)
+			   + type_view_coordinate (self.get_frame_height)
 			   + lower_grid_coordinate (type_distance_positive (area.height), used_grid.y);
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.

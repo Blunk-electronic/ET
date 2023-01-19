@@ -64,7 +64,7 @@ is
 			contour	=> element (c),
 			filled	=> NO,
 			width	=> zero,
-			height	=> self.frame_height,
+			height	=> self.get_frame_height,
 			drawn	=> drawn);
 
 	end query_polygon;
@@ -80,7 +80,7 @@ is
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.frame_height,
+			height	=> self.get_frame_height,
 			drawn	=> drawn);
 
 	end query_cutout;

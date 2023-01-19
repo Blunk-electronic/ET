@@ -71,7 +71,7 @@ is
 			--context		=> context,
 			line		=> to_line_fine (element (c)),
 			width		=> element (c).width,
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 	end query_line;
 
@@ -84,7 +84,7 @@ is
 			--context		=> context,
 			arc			=> to_arc_fine (element (c)),
 			width		=> element (c).width,
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 	end query_arc;
 
@@ -100,7 +100,7 @@ is
 			circle		=> circle,
 			filled		=> NO,
 			width		=> circle.width,
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 	end query_circle;
 
@@ -115,7 +115,7 @@ is
 			contour	=> contour,
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.frame_height,
+			height	=> self.get_frame_height,
 			drawn	=> drawn);
 
 	end query_polygon;
@@ -143,7 +143,7 @@ is
 
 		-- Draw the text:
 		draw_vector_text (in_area, v_text,
-			element (c).line_width, self.frame_height);
+			element (c).line_width, self.get_frame_height);
 
 	end query_placeholder;
 
@@ -156,7 +156,7 @@ is
 
 		-- Draw the text:
 		draw_vector_text (in_area, element (c).vectors,
-			element (c).line_width, self.frame_height);
+			element (c).line_width, self.get_frame_height);
 		
 	end query_text;
 

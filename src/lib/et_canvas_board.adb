@@ -201,7 +201,7 @@ package body et_canvas_board is
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (
-						self.frame_height
+						self.get_frame_height
 						- model_point.y 
 						+ self.frame_bounding_box.y
 						- self.board_origin.y)  -- because board origin is not the same as drawing origin
@@ -222,7 +222,7 @@ package body et_canvas_board is
 				+ self.frame_bounding_box.x
 				+ type_float (self.board_origin.x);
 
-		p.y := self.frame_height
+		p.y := self.get_frame_height
 				- type_float (get_y (drawing_point))
 			   + self.frame_bounding_box.y
 			   - self.board_origin.y;
@@ -474,10 +474,10 @@ package body et_canvas_board is
 			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
 			draw_line (in_area, line_horizontal, origin_line_width, 
-				type_float_positive (self.frame_height));
+				type_float_positive (self.get_frame_height));
 			
 			draw_line (in_area, line_vertical, origin_line_width,
-				type_float_positive (self.frame_height));
+				type_float_positive (self.get_frame_height));
 
 		--end if;
 	end draw_text_origin;
@@ -573,7 +573,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				draw_vector_text (in_area, v_text,
-					text_place.text.line_width, type_float_positive (self.frame_height));
+					text_place.text.line_width, type_float_positive (self.get_frame_height));
 
 			end if;
 		end if;
@@ -625,7 +625,7 @@ package body et_canvas_board is
 
 			-- Draw the text:
 			draw_vector_text (in_area, v_text,
-				text_place.text.line_width, type_float_positive (self.frame_height));
+				text_place.text.line_width, type_float_positive (self.get_frame_height));
 		end if;
 	end draw_text_being_placed_in_outline;
 
@@ -691,7 +691,7 @@ package body et_canvas_board is
 
 				-- Draw the text:
 				draw_vector_text (in_area, v_text,
-					text_place.text.line_width, type_float_positive (self.frame_height));
+					text_place.text.line_width, type_float_positive (self.get_frame_height));
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;
@@ -867,8 +867,10 @@ package body et_canvas_board is
 			-- CS draw_submodules
 			
 		end draw_board;
+
 		
 	begin -- draw_internal
+		--frame_height := self.get_frame_height;
 		
 -- 		put_line ("draw internal ...");
 		
@@ -1030,13 +1032,13 @@ package body et_canvas_board is
 			area		=> in_area,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 		draw_line (
 			area		=> in_area,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 		
 		cairo.stroke (context.cr);		
 
@@ -1074,13 +1076,13 @@ package body et_canvas_board is
 	end get_frame;
 
 	
-	function frame_height (
+	function get_frame_height (
 		self : not null access type_view)
 		return type_float_positive 
 	is begin
 		return type_float_positive (
 			element (current_active_module).board.frame.frame.size.y);
-	end frame_height;
+	end get_frame_height;
 
 	
 	function frame_width (

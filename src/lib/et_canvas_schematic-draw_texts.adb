@@ -62,7 +62,7 @@ is
 				rotation	=> to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment,
-				height		=> type_float_positive (self.frame_height));
+				height		=> type_float_positive (self.get_frame_height));
 
 		end if;
 	end query_text;

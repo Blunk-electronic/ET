@@ -72,7 +72,7 @@ is
 				area		=> in_area,
 				line		=> to_line_fine (element (c)),
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_line;
@@ -88,7 +88,7 @@ is
 				area		=> in_area,
 				arc			=> to_arc_fine (element (c)),
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_arc;
@@ -105,7 +105,7 @@ is
 				circle		=> element (c),
 				filled		=> NO,
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_circle;
@@ -123,7 +123,7 @@ is
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 		end if;
@@ -144,7 +144,7 @@ is
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 		end if;

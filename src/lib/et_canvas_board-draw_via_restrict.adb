@@ -73,7 +73,7 @@ is
 				area		=> in_area,
 				line		=> to_line_fine (element (c)),
 				width		=> et_via_restrict.via_restrict_line_width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_line;
@@ -89,7 +89,7 @@ is
 				area		=> in_area,
 				arc			=> to_arc_fine (element (c)),
 				width		=> et_via_restrict.via_restrict_line_width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 			-- CS For some reason the arc is drawn filled. Should not be filled instead.
 
@@ -108,7 +108,7 @@ is
 				circle		=> element (c),
 				filled		=> NO,
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 					
 		end if;
 	end query_circle;
@@ -125,7 +125,7 @@ is
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 		end if;
@@ -145,7 +145,7 @@ is
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 		end if;

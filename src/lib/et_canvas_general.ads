@@ -806,7 +806,7 @@ package pac_canvas is
 
 	
 	-- Returns the height of the drawing frame:
-	function frame_height (
+	function get_frame_height (
 		self : not null access type_view)
 		return type_float_positive is abstract;
 

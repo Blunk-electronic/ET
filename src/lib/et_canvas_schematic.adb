@@ -188,7 +188,7 @@ package body et_canvas_schematic is
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> clip_distance (type_distance (
-						self.frame_height
+						self.get_frame_height
 						- model_point.y
 						+ self.frame_bounding_box.y)));
 		 
@@ -207,7 +207,7 @@ package body et_canvas_schematic is
 		p.x := type_float (get_x (drawing_point)) 
 			+ self.frame_bounding_box.x;
 		
-		p.y := self.frame_height 
+		p.y := self.get_frame_height 
 			- type_float (get_y (drawing_point))
 			+ self.frame_bounding_box.y;
 			
@@ -481,7 +481,7 @@ package body et_canvas_schematic is
 					area		=> in_area,
 					line		=> to_line_fine (line),
 					width		=> net_line_width,
-					height		=> type_float_positive (self.frame_height));
+					height		=> type_float_positive (self.get_frame_height));
 			end draw;
 			
 		begin -- compute_route
@@ -818,14 +818,14 @@ package body et_canvas_schematic is
 			--context		=> context,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width),
-			height		=> type_float_positive (self.frame_height));
+			height		=> type_float_positive (self.get_frame_height));
 
 		draw_line (
 			area		=> in_area,
 			--context		=> context,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width),
-			height		=> type_float_positive (self.frame_height));
+			height		=> type_float_positive (self.get_frame_height));
 		
 		cairo.stroke (context.cr);		
 
@@ -865,7 +865,7 @@ package body et_canvas_schematic is
 	end get_frame;
 
 	
-	function frame_height (
+	function get_frame_height (
 		self : not null access type_view)
 		return type_float_positive 
 	is 
@@ -873,7 +873,7 @@ package body et_canvas_schematic is
 	begin
 		return type_float_positive (
 			element (current_active_module).frames.frame.size.y);
-	end frame_height;
+	end get_frame_height;
 
 	
 	function frame_width (

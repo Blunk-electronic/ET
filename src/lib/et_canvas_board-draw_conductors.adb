@@ -131,7 +131,7 @@ is
 				area		=> in_area,
 				line		=> to_line_fine (element (c)),
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_line;
@@ -148,7 +148,7 @@ is
 				area		=> in_area,
 				arc			=> to_arc_fine (element (c)),
 				width		=> element (c).width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 		end if;
 	end query_arc;
@@ -166,7 +166,7 @@ is
 			circle		=> element (c),
 			filled		=> NO,
 			width		=> element (c).width,
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 		end if;
 	end query_circle;
@@ -193,7 +193,7 @@ is
 				area	=> in_area,
 				line	=> type_line_fine (element (e)),
 				width	=> fill_line_width,
-				height	=> self.frame_height);
+				height	=> self.get_frame_height);
 		end draw_edge;
 
 		procedure query_lake (l : in pac_lakes.cursor) is begin
@@ -205,7 +205,7 @@ is
 				area	=> in_area,
 				line	=> element (s),
 				width	=> fill_line_width,
-				height	=> self.frame_height);
+				height	=> self.get_frame_height);
 		end draw_stripe;
 		
 	begin
@@ -226,7 +226,7 @@ is
 				area	=> in_area,
 				line	=> element (s),
 				width	=> relief.width,
-				height	=> self.frame_height);
+				height	=> self.get_frame_height);
 		end query_spoke;
 		
 	begin
@@ -246,7 +246,7 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
@@ -272,7 +272,7 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
@@ -301,7 +301,7 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
@@ -333,7 +333,7 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
@@ -367,7 +367,7 @@ is
 				style	=> DASHED,
 				filled	=> NO,
 				width	=> zero,
-				height	=> self.frame_height,
+				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			--restore (context.cr);
@@ -405,7 +405,7 @@ is
 
 			-- Draw the text:
 			draw_vector_text (in_area, v_text,
-				element (c).line_width, self.frame_height);
+				element (c).line_width, self.get_frame_height);
 
 		end if;
 	end query_placeholder;
@@ -422,7 +422,7 @@ is
 			
 			-- Draw the text:
 			draw_vector_text (in_area, element (c).vectors,
-				element (c).line_width, self.frame_height);
+				element (c).line_width, self.get_frame_height);
 
 		end if;
 	end query_text;
@@ -467,7 +467,7 @@ is
 				circle		=> circle,
 				filled		=> NO,
 				width		=> zero, -- CS ?
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 		end draw_restring;
 
 		
@@ -499,7 +499,7 @@ is
 					origin		=> false,
 					rotation	=> zero_rotation,
 					alignment	=> (center, center),
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 
 				net_name_drawn := true;
 			end if;
@@ -528,7 +528,7 @@ is
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (center, center),
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 			
 		end draw_numbers;
 
@@ -559,7 +559,7 @@ is
 					origin		=> false,
 					rotation	=> zero_rotation,
 					alignment	=> (center, center),
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 
 				drill_size_drawn := true;
 			end if;
@@ -768,7 +768,7 @@ is
 						area		=> in_area,
 						line		=> type_line_fine (element (c)),
 						width		=> type_distance (airwire_line_width),
-						height		=> self.frame_height);
+						height		=> self.get_frame_height);
 					
 				end query_airwire;
 

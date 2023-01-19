@@ -71,7 +71,7 @@ is
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 		end draw;
 		
 	begin
@@ -102,7 +102,7 @@ is
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 		end draw;
 		
 	begin
@@ -177,7 +177,7 @@ is
 					-- It is readable from the front or the right.
 					rotation	=> to_rotation (element (label).rotation_simple),
 					alignment	=> net_label_alignment,
-					height		=> self.frame_height
+					height		=> self.get_frame_height
 					);
 
 			when TAG =>
@@ -207,7 +207,7 @@ is
 					-- It is readable from the front or the right.
 					rotation	=> to_rotation (label.rotation_simple),
 					alignment	=> net_label_alignment,
-					height		=> self.frame_height
+					height		=> self.get_frame_height
 					);
 
 			--when TAG =>
@@ -266,7 +266,7 @@ is
 								-- It is readable from the front or the right.
 								rotation	=> to_rotation (label.rotation_simple),
 								alignment	=> net_label_alignment,
-								height		=> self.frame_height);
+								height		=> self.get_frame_height);
 							
 
 						when TAG =>
@@ -413,7 +413,7 @@ is
 				area		=> in_area,
 				line		=> to_line_fine (element (s)),
 				width		=> net_line_width,
-				height		=> self.frame_height);
+				height		=> self.get_frame_height);
 
 			draw_junctions (s);
 			
@@ -433,7 +433,7 @@ is
 			area		=> in_area,
 			line		=> to_line_fine (segment),
 			width		=> net_line_width,
-			height		=> self.frame_height);
+			height		=> self.get_frame_height);
 
 		draw_junctions (segment);
 
@@ -714,7 +714,7 @@ is
 					area		=> in_area,
 					line		=> to_line_fine (copy_of_original_segment),
 					width		=> net_line_width,
-					height		=> self.frame_height);
+					height		=> self.get_frame_height);
 
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (s));

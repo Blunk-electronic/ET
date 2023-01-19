@@ -81,7 +81,7 @@ begin
 	
 	if label.rotation_tag = zero_rotation then
 		box_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.get_frame_height));
 
 		text_rotation := zero_rotation;
 		text_position := type_point (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
@@ -91,7 +91,7 @@ begin
 	
 	if label.rotation_tag = 90.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
-		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.get_frame_height));
 
 		text_rotation := 90.0;
 		text_position := type_point (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
@@ -101,7 +101,7 @@ begin
 	
 	if label.rotation_tag = 180.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_width, box_height, type_float_positive (self.get_frame_height));
 
 		text_rotation := zero_rotation;
 		text_position := type_point (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
@@ -111,7 +111,7 @@ begin
 	
 	if label.rotation_tag = -90.0 then
 		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
-		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.frame_height));
+		draw_rectangle (in_area, box_position, box_height, box_width, type_float_positive (self.get_frame_height));
 
 		text_rotation := 90.0;
 		text_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
@@ -132,7 +132,7 @@ begin
 		rotation	=> text_rotation,
 
 		alignment	=> text_alignment,
-		height		=> type_float_positive (self.frame_height)
+		height		=> type_float_positive (self.get_frame_height)
 		);
 
 end draw_tag_label;
