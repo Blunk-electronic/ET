@@ -76,9 +76,7 @@ is
 					size	=> cms.face.size,
 					font	=> font_placeholders,
 					pos		=> cms.face.position,
-					tb_pos	=> title_block_position,
-					height	=> frame_height
-					);
+					tb_pos	=> title_block_position);
 
 				-- Draw the face like "TOP" or "BOTTOM":
 				if top_enabled and bottom_enabled then
@@ -88,8 +86,7 @@ is
 						size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size, -- CS use renames
 						font	=> font_placeholders,
 						pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
-						tb_pos	=> title_block_position,
-						height	=> frame_height);
+						tb_pos	=> title_block_position);
 
 					
 				elsif top_enabled then
@@ -99,8 +96,7 @@ is
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
 							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
-							tb_pos	=> title_block_position,
-							height	=> frame_height);
+							tb_pos	=> title_block_position);
 							
 
 				elsif bottom_enabled then
@@ -110,8 +106,7 @@ is
 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
 							font	=> font_placeholders,
 							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
-							tb_pos	=> title_block_position,
-							height	=> frame_height);
+							tb_pos	=> title_block_position);
 							
 				end if;
 			end if;
@@ -125,8 +120,7 @@ is
 				size	=> cms.silk_screen.size,
 				font	=> font_placeholders,
 				pos		=> cms.silk_screen.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end silkscreen;
 			
 
@@ -137,8 +131,7 @@ is
 				size	=> cms.assy_doc.size,
 				font	=> font_placeholders,
 				pos		=> cms.assy_doc.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end assy_doc;
 
 		
@@ -149,8 +142,7 @@ is
 				size	=> cms.keepout.size,
 				font	=> font_placeholders,
 				pos		=> cms.keepout.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end keepout;
 
 		
@@ -161,8 +153,7 @@ is
 				size	=> cms.stop_mask.size,
 				font	=> font_placeholders,
 				pos		=> cms.stop_mask.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end stop_mask;
 
 		
@@ -173,8 +164,7 @@ is
 				size	=> cms.stencil.size,
 				font	=> font_placeholders,
 				pos		=> cms.stencil.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);
+				tb_pos	=> title_block_position);
 		end stencil;
 
 		
@@ -221,8 +211,7 @@ is
 				size	=> cms.plated_millings.size,
 				font	=> font_placeholders,
 				pos		=> cms.plated_millings.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);	
+				tb_pos	=> title_block_position);	
 		end if;
 
 		-- outline
@@ -233,8 +222,7 @@ is
 				size	=> cms.pcb_outline.size,
 				font	=> font_placeholders,
 				pos		=> cms.pcb_outline.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);
+				tb_pos	=> title_block_position);
 		end if;
 
 		-- stop mask
@@ -267,8 +255,7 @@ is
 				size	=> cms.route_restrict.size,
 				font	=> font_placeholders,
 				pos		=> cms.route_restrict.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);	
+				tb_pos	=> title_block_position);	
 		end if;
 
 		-- via restrict
@@ -279,8 +266,7 @@ is
 				size	=> cms.via_restrict.size,
 				font	=> font_placeholders,
 				pos		=> cms.via_restrict.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end if;
 
 		-- conductor layers
@@ -291,8 +277,7 @@ is
 				size	=> cms.signal_layer.size,
 				font	=> font_placeholders,
 				pos		=> cms.signal_layer.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 
 			draw_text (
 				area	=> in_area,
@@ -300,8 +285,7 @@ is
 				size	=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.size,
 				font	=> font_placeholders,
 				pos		=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height);				
+				tb_pos	=> title_block_position);				
 		end if;
 
 		evaluate_face;
@@ -330,8 +314,7 @@ begin -- draw_frame
 		draw_border (
 			area			=> in_area,
 			frame_size		=> frame_size,
-			border_width	=> self.get_frame.border_width,
-			height			=> frame_height);
+			border_width	=> self.get_frame.border_width);
 
 		-- title block lines
 		--pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
@@ -339,8 +322,7 @@ begin -- draw_frame
 		draw_title_block_lines (
 			area		=> in_area,
 			lines		=> self.get_frame.title_block_pcb.lines,
-			tb_pos		=> title_block_position,
-			frame_size	=> frame_size);
+			tb_pos		=> title_block_position);
 		
 		-- draw the sector delimiters
 		draw_sector_delimiters (
@@ -356,8 +338,7 @@ begin -- draw_frame
 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders),
 			texts		=> self.get_frame.title_block_pcb.texts,
 			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
-			tb_pos		=> title_block_position,
-			height		=> frame_height);
+			tb_pos		=> title_block_position);
 
 		draw_cam_markers;
 		

@@ -3313,8 +3313,7 @@ package body pac_canvas is
 	procedure draw_title_block_lines (
 		area		: in type_bounding_box;
 		lines		: in et_frames.pac_lines.list;
-		tb_pos		: in et_frames.type_position;
-		frame_size	: in et_frames.type_frame_size)
+		tb_pos		: in et_frames.type_position)
 	is
 		use pac_geometry_2;
 		line : pac_geometry_2.type_line;
@@ -3347,8 +3346,7 @@ package body pac_canvas is
 	procedure draw_border (
 		area			: in type_bounding_box;
 		frame_size		: in et_frames.type_frame_size;
-		border_width	: in et_frames.type_border_width;
-		height			: in et_frames.type_distance)
+		border_width	: in et_frames.type_border_width)
 	is 
 		use et_frames;
 		use pac_geometry_2;
@@ -3357,9 +3355,7 @@ package body pac_canvas is
 		-- for better performance
 
 		procedure draw_line is begin
-			draw_line (area, to_line_fine (line),
-					   type_distance_positive (line_width_thin));
-					   --type_float_positive (height));
+			draw_line (area, to_line_fine (line), type_distance_positive (line_width_thin));
 		end draw_line;
 
 	begin
@@ -3642,8 +3638,7 @@ package body pac_canvas is
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
 		pos		: in et_frames.type_position;
-		tb_pos	: in et_frames.type_position;
-		height	: in et_frames.type_distance)
+		tb_pos	: in et_frames.type_position)
 	is
 		use pac_geometry_2;
 		use et_frames;
@@ -3674,10 +3669,8 @@ package body pac_canvas is
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;
 		meta		: in et_meta.type_basic;
-		tb_pos		: in et_frames.type_position;
-		height		: in et_frames.type_distance)
+		tb_pos		: in et_frames.type_position)
 	is
-
 		use et_general;
 		use et_assembly_variants;
 		use et_frames;
@@ -3692,8 +3685,7 @@ package body pac_canvas is
 					size	=> element (cursor).size,
 					font	=> font_texts,
 					pos		=> element (cursor).position,
-					tb_pos	=> tb_pos,
-					height	=> height);
+					tb_pos	=> tb_pos);
 	
 			end query_text;
 		
@@ -3719,8 +3711,7 @@ package body pac_canvas is
 			size	=> ph_common.project_name.size,
 			font	=> font_placeholders,
 			pos		=> ph_common.project_name.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 		
 		
 		-- module file name:
@@ -3730,8 +3721,7 @@ package body pac_canvas is
 			size	=> ph_common.module_file_name.size,
 			font	=> font_placeholders,
 			pos		=> ph_common.module_file_name.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 			
 
 		-- active assembly variant:
@@ -3741,8 +3731,7 @@ package body pac_canvas is
 			size	=> ph_common.active_assembly_variant.size,
 			font	=> font_placeholders,
 			pos		=> ph_common.active_assembly_variant.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 		
 		
@@ -3755,8 +3744,7 @@ package body pac_canvas is
 			size	=> ph_basic.company.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.company.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- customer
@@ -3766,8 +3754,7 @@ package body pac_canvas is
 			size	=> ph_basic.customer.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.customer.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- partcode
@@ -3777,8 +3764,7 @@ package body pac_canvas is
 			size	=> ph_basic.partcode.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.partcode.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 		
 		-- drawing number
@@ -3788,8 +3774,7 @@ package body pac_canvas is
 			size	=> ph_basic.drawing_number.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.drawing_number.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- revision
@@ -3799,8 +3784,7 @@ package body pac_canvas is
 			size	=> ph_basic.revision.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.revision.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 		
 		-- drawn by
@@ -3810,8 +3794,7 @@ package body pac_canvas is
 			size	=> ph_basic.drawn_by.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.drawn_by.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- checked by
@@ -3821,8 +3804,7 @@ package body pac_canvas is
 			size	=> ph_basic.checked_by.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.checked_by.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- approved by
@@ -3832,8 +3814,7 @@ package body pac_canvas is
 			size	=> ph_basic.approved_by.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.approved_by.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- drawn date
@@ -3843,8 +3824,7 @@ package body pac_canvas is
 			size	=> ph_basic.drawn_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.drawn_date.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- checked date
@@ -3854,8 +3834,7 @@ package body pac_canvas is
 			size	=> ph_basic.checked_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.checked_date.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 
 
 		-- approved date
@@ -3865,8 +3844,7 @@ package body pac_canvas is
 			size	=> ph_basic.approved_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.approved_date.position,
-			tb_pos	=> tb_pos,
-			height	=> height);
+			tb_pos	=> tb_pos);
 		
 			
 	-- OTHER TEXTS

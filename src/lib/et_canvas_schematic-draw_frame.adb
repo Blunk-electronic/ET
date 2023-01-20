@@ -76,9 +76,7 @@ is
 				size	=> phs.category.size,
 				font	=> font_placeholders,
 				pos		=> phs.category.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height
-				);
+				tb_pos	=> title_block_position);
 
 			-- description
 			draw_text (
@@ -87,9 +85,7 @@ is
 				size	=> phs.description.size,
 				font	=> font_placeholders,
 				pos		=> phs.description.position,
-				tb_pos	=> title_block_position,
-				height	=> frame_height
-				);
+				tb_pos	=> title_block_position);
 						
 		end draw_sheet_description;
 
@@ -103,8 +99,7 @@ is
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,
 			pos		=> phs.sheet_number.position,
-			tb_pos	=> title_block_position,
-			height	=> frame_height);
+			tb_pos	=> title_block_position);
 
 
 		draw_sheet_description;
@@ -132,8 +127,7 @@ begin -- draw_frame
 		draw_border (
 			area			=> in_area,
 			frame_size		=> frame_size,
-			border_width	=> self.get_frame.border_width,
-			height			=> frame_height);
+			border_width	=> self.get_frame.border_width);
 
 		
 		-- TITLE BLOCK
@@ -144,8 +138,7 @@ begin -- draw_frame
 		draw_title_block_lines (
 			area		=> in_area,
 			lines		=> self.get_frame.title_block_schematic.lines,
-			tb_pos		=> title_block_position,
-			frame_size	=> frame_size);
+			tb_pos		=> title_block_position);
 
 		
 		-- draw common placeholders and other texts
@@ -155,8 +148,7 @@ begin -- draw_frame
 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
 			texts		=> self.get_frame.title_block_schematic.texts,
 			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
-			tb_pos		=> title_block_position,
-			height		=> frame_height);
+			tb_pos		=> title_block_position);
 
 
 		draw_additional_placeholders;

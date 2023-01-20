@@ -1138,16 +1138,14 @@ package pac_canvas is
 	procedure draw_title_block_lines (
 		area		: in type_bounding_box;
 		lines		: in et_frames.pac_lines.list;
-		tb_pos		: in et_frames.type_position;
-		frame_size	: in et_frames.type_frame_size);
+		tb_pos		: in et_frames.type_position);
 
 	
 	-- Draws the outer an inder border of the frame:
 	procedure draw_border ( -- CS rename to draw_frame_border
 		area			: in type_bounding_box;
 		frame_size		: in et_frames.type_frame_size;
-		border_width	: in et_frames.type_border_width;
-		height			: in et_frames.type_distance); -- CS no need. already in frame_size
+		border_width	: in et_frames.type_border_width);
 
 
 	-- The sector delimiters are short lines between outer an 
@@ -1160,7 +1158,7 @@ package pac_canvas is
 		border_width	: in et_frames.type_border_width);
 
 	
-		-- Draws a single text of the title block.
+	-- Draws a single text of the title block.
 	-- The line position is relative to the lower left corner of the title block.	
 	procedure draw_text ( -- CS rename to draw_text_title_block
 		area	: in type_bounding_box;
@@ -1168,8 +1166,7 @@ package pac_canvas is
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
 		pos		: in et_frames.type_position;
-		tb_pos	: in et_frames.type_position;
-		height	: in et_frames.type_distance);
+		tb_pos	: in et_frames.type_position);
 
 	
 
@@ -1182,8 +1179,7 @@ package pac_canvas is
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;
 		meta		: in et_meta.type_basic;
-		tb_pos		: in et_frames.type_position;
-		height		: in et_frames.type_distance);
+		tb_pos		: in et_frames.type_position);
 	
 	
 private
