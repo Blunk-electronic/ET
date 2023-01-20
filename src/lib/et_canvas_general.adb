@@ -2164,7 +2164,6 @@ package body pac_canvas is
 
 	
 	function make_bounding_box (
-		height		: in type_float;
 		boundaries	: in type_boundaries)
 		return type_bounding_box 
 	is begin
@@ -2177,7 +2176,7 @@ package body pac_canvas is
 			-- Since the bounding box is something required in the model plane,
 			-- the box position in y is afterwards converted to y axis going downwards.
 			x		=> boundaries.smallest_x,
-			y		=> shift_y (boundaries.greatest_y, height),
+			y		=> shift_y (boundaries.greatest_y, frame_height),
 
 			-- The box width is the difference between greatest x and smallest x.
 			-- The box height is the difference between greatest y and smallest y.
@@ -2296,11 +2295,10 @@ package body pac_canvas is
 	-- Returns the bounding box of a line that has the given width:
 	function get_bounding_box_line (
 		line	: in type_line_fine;
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive)
+		width	: in pac_geometry_2.type_distance_positive)
 		return type_bounding_box
 	is begin
-		return make_bounding_box (height, get_boundaries (line, width));
+		return make_bounding_box (get_boundaries (line, width));
 	end get_bounding_box_line;
 	
 	
@@ -2311,7 +2309,7 @@ package body pac_canvas is
 	is
 		-- compute the bounding box of the given line
 		bounding_box : constant type_bounding_box := 
-			get_bounding_box_line (line, width, frame_height);
+			get_bounding_box_line (line, width);
 	begin
 		-- We draw the segment if:
 		--  - no area given or
@@ -2519,7 +2517,7 @@ package body pac_canvas is
 		boundaries : type_boundaries := get_boundaries (arc, width);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (boundaries);
 
 		-- Convert the given arc so that it is expressed by start and end arc:
 		arc_temp : type_arc_angles := to_arc_angles (arc);
@@ -2583,7 +2581,7 @@ package body pac_canvas is
 		boundaries : type_boundaries := get_boundaries (circle, width);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_bounding_box := make_bounding_box (height, boundaries);
+		bounding_box : type_bounding_box := make_bounding_box (boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -2651,7 +2649,7 @@ package body pac_canvas is
 		boundaries : constant type_boundaries := get_boundaries (contour, width);
 
 		-- compute the bounding box of the given contour
-		bounding_box : constant type_bounding_box := make_bounding_box (height, boundaries);
+		bounding_box : constant type_bounding_box := make_bounding_box (boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -2908,7 +2906,7 @@ package body pac_canvas is
 			others		=> <>);
 
 		-- compute the bounding box of the given arc
-		bounding_box : type_bounding_box := make_bounding_box (frame_height, boundaries);
+		bounding_box : constant type_bounding_box := make_bounding_box (boundaries);
 
 	begin
 		if extend_boundaries then
@@ -3274,7 +3272,7 @@ package body pac_canvas is
 		use pac_text;
 		
 		bounding_box_text : constant type_bounding_box := 
-			make_bounding_box (height, get_boundaries (text));
+			make_bounding_box (get_boundaries (text));
 		
 		use pac_character_lines;
 		
@@ -3285,8 +3283,7 @@ package body pac_canvas is
 				get_boundaries (type_line_fine (element (c)), width);
 
 			-- compute the bounding box of the given line
-			bounding_box : constant type_bounding_box := 
-				make_bounding_box (height, b);
+			bounding_box : constant type_bounding_box := make_bounding_box (b);
 
 		begin
 			-- We draw the segment if:

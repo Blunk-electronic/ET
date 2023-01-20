@@ -970,7 +970,6 @@ package pac_canvas is
 --PRIMITIVE DRAW OPERATIONS------------------
 
 	function make_bounding_box (
-		height		: in type_float;
 		boundaries	: in type_boundaries)
 		return type_bounding_box;
 
