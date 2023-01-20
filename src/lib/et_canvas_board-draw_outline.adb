@@ -92,9 +92,7 @@ is
 				area		=> in_area,
 				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
-				width		=> pcb_contour_line_width,
-				height		=> self.get_frame_height);
-			
+				width		=> pcb_contour_line_width);			
 		else
 			iterate (module.board.contours.outline.contour.segments, query_segment'access);
 		end if;
@@ -117,8 +115,7 @@ is
 					area		=> in_area,
 					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
-					width		=> pcb_contour_line_width,
-					height		=> self.get_frame_height);
+					width		=> pcb_contour_line_width);
 				
 			else
 				iterate (element (c).contour.segments, query_segment'access);

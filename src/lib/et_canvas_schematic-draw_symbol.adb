@@ -98,7 +98,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
-		draw_circle (in_area, circle, NO, element (c).width, self.get_frame_height);
+		draw_circle (in_area, circle, NO, element (c).width);
 	end draw_circle;
 
 	procedure draw_port (c : in pac_ports.cursor) is
@@ -321,7 +321,7 @@ is
 			circle.radius := type_float_positive (port_circle_radius);
 
 			-- the circle is not filled -> argument "filled" is NO
-			draw_circle (in_area, circle, NO, port_circle_line_width, self.get_frame_height);
+			draw_circle (in_area, circle, NO, port_circle_line_width);
 
 			-- CS draw port direction, weakness, power level ?
 			-- probably better in draw_terminal_name or draw_port_name ?

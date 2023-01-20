@@ -70,8 +70,7 @@ is
 				area		=> in_area,
 				circle		=> j,
 				filled		=> YES,
-				width		=> zero,
-				height		=> self.get_frame_height);
+				width		=> zero);
 		end draw;
 		
 	begin
@@ -101,8 +100,7 @@ is
 				area		=> in_area,
 				circle		=> j,
 				filled		=> YES,
-				width		=> zero,
-				height		=> self.get_frame_height);
+				width		=> zero);
 		end draw;
 		
 	begin

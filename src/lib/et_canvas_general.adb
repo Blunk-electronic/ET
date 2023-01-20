@@ -2564,9 +2564,7 @@ package body pac_canvas is
 		area	: in type_bounding_box;
 		circle	: in pac_geometry_2.type_circle'class;
 		filled	: in type_filled;
-		width	: in pac_geometry_2.type_distance_positive;
-		--height	: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_positive)
+		width	: in pac_geometry_2.type_distance_positive)
 	is
 		use pac_geometry_2;
 		use ada.numerics;
@@ -2598,7 +2596,7 @@ package body pac_canvas is
 			cairo.arc (
 				context.cr,
 				xc		=> convert_x (get_x (circle.center)),
-				yc		=> shift_y (get_y (circle.center), height),
+				yc		=> shift_y (get_y (circle.center), frame_height),
 				radius	=> type_view_coordinate (circle.radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -2842,7 +2840,7 @@ package body pac_canvas is
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner area to be taken out:
-		draw_circle (area, inner_border, YES, 0.0, height);
+		draw_circle (area, inner_border, YES, 0.0);
 
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		

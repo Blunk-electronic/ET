@@ -92,11 +92,9 @@ is
 
 		draw_circle (
 			area		=> in_area,
-			--context		=> context,
 			circle		=> circle,
 			filled		=> NO,
-			width		=> circle.width,
-			height		=> self.get_frame_height);
+			width		=> circle.width);
 
 	end query_circle;
 

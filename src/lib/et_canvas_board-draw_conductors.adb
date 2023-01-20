@@ -160,11 +160,10 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		draw_circle (
-			area		=> in_area,
-			circle		=> element (c),
-			filled		=> NO,
-			width		=> element (c).width,
-			height		=> self.get_frame_height);
+			area	=> in_area,
+			circle	=> element (c),
+			filled	=> NO,
+			width	=> element (c).width);
 
 		end if;
 	end query_circle;
@@ -461,8 +460,9 @@ is
 				area		=> in_area,
 				circle		=> circle,
 				filled		=> NO,
-				width		=> zero, -- CS ?
-				height		=> self.get_frame_height);
+				width		=> zero -- CS ?
+				);
+			
 		end draw_restring;
 
 		

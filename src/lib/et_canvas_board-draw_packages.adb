@@ -218,8 +218,7 @@ is
 						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
-						width	=> circle.width, 
-						height	=> self.get_frame_height);
+						width	=> circle.width);
 				end query_circle;
 
 				procedure query_contour (c : in pac_silk_contours.cursor) is 
@@ -334,8 +333,7 @@ is
 						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
-						width	=> circle.width, 
-						height	=> self.get_frame_height);
+						width	=> circle.width);
 				end query_circle;
 
 				procedure query_contour (c : in pac_doc_contours.cursor) is 
@@ -532,8 +530,7 @@ is
 						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
-						width	=> circle.width,
-						height	=> self.get_frame_height);
+						width	=> circle.width);
 					
 				end query_circle;
 				
@@ -662,8 +659,7 @@ is
 						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
-						width	=> circle.width,
-						height	=> self.get_frame_height);
+						width	=> circle.width);
 					
 				end query_circle;
 				
@@ -780,8 +776,7 @@ is
 						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
-						filled	=> NO,
-						height	=> self.get_frame_height);
+						filled	=> NO);
 				end query_circle;
 
 				procedure query_zone (c : in pac_route_restrict_zones.cursor) is
@@ -899,8 +894,7 @@ is
 						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
-						filled	=> NO,
-						height	=> self.get_frame_height);
+						filled	=> NO);
 				end query_circle;
 
 				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
@@ -1054,8 +1048,7 @@ is
 						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
-						filled	=> NO,
-						height	=> self.get_frame_height);
+						filled	=> NO);
 				end query_circle;
 
 				procedure query_text (c : in pac_conductor_texts.cursor) is
@@ -1589,14 +1582,14 @@ is
 										 + type_float_positive (restring);
 						
 						--draw_circle (in_area, context, circle, NO, self.get_frame_height);
-						draw_circle (in_area, circle, YES, zero, self.get_frame_height);
+						draw_circle (in_area, circle, YES, zero);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := type_float_positive (drill_size) * 0.5;
-						draw_circle (in_area, circle, YES, zero, self.get_frame_height);
+						draw_circle (in_area, circle, YES, zero);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		

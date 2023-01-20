@@ -103,8 +103,7 @@ is
 				area		=> in_area,
 				circle		=> element (c),
 				filled		=> NO,
-				width		=> element (c).width,
-				height		=> self.get_frame_height);
+				width		=> element (c).width);
 					
 		end if;
 	end query_circle;
