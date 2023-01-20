@@ -174,9 +174,7 @@ is
 					-- This is documentational text.
 					-- It is readable from the front or the right.
 					rotation	=> to_rotation (element (label).rotation_simple),
-					alignment	=> net_label_alignment,
-					height		=> self.get_frame_height
-					);
+					alignment	=> net_label_alignment);
 
 			when TAG =>
 				draw_tag_label (self, in_area, net, element (label));
@@ -204,9 +202,7 @@ is
 					-- This is documentational text.
 					-- It is readable from the front or the right.
 					rotation	=> to_rotation (label.rotation_simple),
-					alignment	=> net_label_alignment,
-					height		=> self.get_frame_height
-					);
+					alignment	=> net_label_alignment);
 
 			--when TAG =>
 				--draw_tag_label (self, in_area, context, net, element (label));
@@ -263,8 +259,7 @@ is
 								-- This is documentational text.
 								-- It is readable from the front or the right.
 								rotation	=> to_rotation (label.rotation_simple),
-								alignment	=> net_label_alignment,
-								height		=> self.get_frame_height);
+								alignment	=> net_label_alignment);
 							
 
 						when TAG =>

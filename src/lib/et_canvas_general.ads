@@ -1099,7 +1099,6 @@ package pac_canvas is
 	
 	-- Computes for the given text content, size and font the extents.
 	function get_text_extents (
-		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
@@ -1118,8 +1117,7 @@ package pac_canvas is
 		position	: in pac_geometry_2.type_point; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in pac_geometry_2.type_rotation;
-		alignment	: in type_text_alignment;
-		height		: in type_float_positive); -- the height of the drawing frame
+		alignment	: in type_text_alignment); -- the height of the drawing frame
 
 	
 	-- Draw a vectorized text:
@@ -1129,8 +1127,7 @@ package pac_canvas is
 
 		-- The line width is used for calculating the boundaries
 		-- of the line segments:
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive);
+		width	: in pac_geometry_2.type_distance_positive);
 
 
 

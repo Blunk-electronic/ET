@@ -131,9 +131,7 @@ begin
 		-- It is readable from the front or the right.
 		rotation	=> text_rotation,
 
-		alignment	=> text_alignment,
-		height		=> type_float_positive (self.get_frame_height)
-		);
+		alignment	=> text_alignment);
 
 end draw_tag_label;
 

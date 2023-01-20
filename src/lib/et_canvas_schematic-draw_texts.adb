@@ -61,8 +61,7 @@ is
 				-- This is documentational text. It is readable from the front or the right.
 				rotation	=> to_rotation (element (cursor).rotation),
 				
-				alignment	=> element (cursor).alignment,
-				height		=> type_float_positive (self.get_frame_height));
+				alignment	=> element (cursor).alignment);
 
 		end if;
 	end query_text;

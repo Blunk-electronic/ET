@@ -245,8 +245,7 @@ is
 					draw_vector_text (
 						area	=> in_area, 
 						text	=> text.vectors,
-						width	=> text.line_width, 
-						height	=> self.get_frame_height);
+						width	=> text.line_width);
 				end query_text;
 
 				
@@ -359,8 +358,7 @@ is
 					draw_vector_text (
 						area	=> in_area, 
 						text	=> text.vectors,
-						width	=> text.line_width, 
-						height	=> self.get_frame_height);
+						width	=> text.line_width);
 				end query_text;
 			
 				
@@ -552,8 +550,7 @@ is
 					draw_vector_text (
 						area	=> in_area, 
 						text	=> text.vectors,
-						width	=> text.line_width, 
-						height	=> self.get_frame_height);
+						width	=> text.line_width);
 				end query_text;
 
 				
@@ -1048,8 +1045,7 @@ is
 					draw_vector_text (
 						area	=> in_area, 
 						text	=> text.vectors,
-						width	=> text.line_width, 
-						height	=> self.get_frame_height);
+						width	=> text.line_width);
 				end query_text;
 				
 			begin
@@ -1158,8 +1154,7 @@ is
 						position	=> pad_pos_in.place,
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (center, center),
-						height		=> self.get_frame_height);
+						alignment	=> (center, center));
 
 				end draw_name_smt;
 
@@ -1202,8 +1197,7 @@ is
 								position	=> pad_pos,
 								origin		=> false, -- no origin required
 								rotation	=> zero_rotation,
-								alignment	=> (center, center),
-								height		=> self.get_frame_height);
+								alignment	=> (center, center));
 
 							name_drawn := true;
 						end if;

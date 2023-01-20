@@ -156,8 +156,7 @@ is
 				-- be snapped to either HORIZONAL or VERTICAL so that
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (rotation_total)),
-				alignment	=> alignment,
-				height		=> self.get_frame_height);
+				alignment	=> alignment);
 
 		end draw_port_name;
 
@@ -225,8 +224,7 @@ is
 				-- be snapped to either HORIZONAL or VERTICAL so that
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (rotation_total)),
-				alignment	=> alignment,
-				height		=> self.get_frame_height);
+				alignment	=> alignment);
 
 		end draw_terminal_name;
 
@@ -366,8 +364,7 @@ is
 		-- Move text by unit position
 		move_by (p, to_distance_relative (unit_position));
 		
-		draw_text 
-			(
+		draw_text (
 			area		=> in_area,
 			content		=> element (c).content,
 			size		=> element (c).size,
@@ -381,9 +378,7 @@ is
 			-- it is readable from the front or the right.
 			rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
 
-			alignment	=> element (c).alignment,
-			height		=> self.get_frame_height
-			);
+			alignment	=> element (c).alignment);
 	end draw_text;
 
 	
@@ -417,9 +412,7 @@ is
 				-- This has been done in schematic_ops.rotate_unit already.
 				rotation	=> to_rotation (sch_placeholder_name.rotation),
 				
-				alignment	=> sch_placeholder_name.alignment,
-				height		=> self.get_frame_height
-				);
+				alignment	=> sch_placeholder_name.alignment);
 		end if;
 		
 		-- VALUE
@@ -446,9 +439,7 @@ is
 					-- This has been done in schematic_ops.rotate_unit already.
 					rotation	=> to_rotation (sch_placeholder_value.rotation),
 
-					alignment	=> sch_placeholder_value.alignment,
-					height		=> self.get_frame_height
-					);
+					alignment	=> sch_placeholder_value.alignment);
 			end if;
 		end if;
 		
@@ -476,9 +467,7 @@ is
 					-- This has been done in schematic_ops.rotate_unit already.
 					rotation	=> to_rotation (sch_placeholder_purpose.rotation),
 
-					alignment	=> sch_placeholder_purpose.alignment,
-					height		=> self.get_frame_height
-					);
+					alignment	=> sch_placeholder_purpose.alignment);
 			end if;
 		end if;
 		

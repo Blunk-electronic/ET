@@ -3151,9 +3151,7 @@ package body pac_canvas is
 		position	: in pac_geometry_2.type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
 		rotation	: in pac_geometry_2.type_rotation;
-		alignment	: in type_text_alignment;
-		--height		: in pac_shapes.pac_geometry_1.type_distance)  -- the height of the drawing frame
-		height		: in type_float_positive)
+		alignment	: in type_text_alignment)
 	is
 		text_area : cairo_text_extents;
 
@@ -3245,8 +3243,7 @@ package body pac_canvas is
 	procedure draw_vector_text (
 		area	: in type_bounding_box;
 		text	: in type_vector_text;
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive)
+		width	: in pac_geometry_2.type_distance_positive)
 	is
 		use pac_text;
 		
@@ -3487,8 +3484,7 @@ package body pac_canvas is
 				position	=> pos,
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (CENTER, CENTER),
-				height		=> type_float_positive (frame_size.y));
+				alignment	=> (CENTER, CENTER));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
@@ -3667,8 +3663,7 @@ package body pac_canvas is
 			position	=> ps,
 			origin		=> true,
 			rotation	=> zero_rotation,
-			alignment	=> (LEFT, BOTTOM),
-			height		=> type_float_positive (height));
+			alignment	=> (LEFT, BOTTOM));
 	end draw_text;
 
 

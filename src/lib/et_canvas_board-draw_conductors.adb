@@ -393,8 +393,7 @@ is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, v_text,
-				element (c).line_width, self.get_frame_height);
+			draw_vector_text (in_area, v_text, element (c).line_width);
 
 		end if;
 	end query_placeholder;
@@ -410,8 +409,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 			
 			-- Draw the text:
-			draw_vector_text (in_area, element (c).vectors,
-				element (c).line_width, self.get_frame_height);
+			draw_vector_text (in_area, element (c).vectors, element (c).line_width);
 
 		end if;
 	end query_text;
@@ -488,8 +486,7 @@ is
 					position	=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
-					alignment	=> (center, center),
-					height		=> self.get_frame_height);
+					alignment	=> (center, center));
 
 				net_name_drawn := true;
 			end if;
@@ -517,8 +514,7 @@ is
 				position	=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
-				alignment	=> (center, center),
-				height		=> self.get_frame_height);
+				alignment	=> (center, center));
 			
 		end draw_numbers;
 
@@ -548,8 +544,7 @@ is
 					position	=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
-					alignment	=> (center, center),
-					height		=> self.get_frame_height);
+					alignment	=> (center, center));
 
 				drill_size_drawn := true;
 			end if;
