@@ -756,93 +756,82 @@ package body et_canvas_board is
 		self    : not null access type_view;
 		area_in	: type_bounding_box) 
 	is		
-		-- The given area must be shifted (left and up) by the position
-		-- of the drawing frame. This is required for all objects in the 
-		-- drawing frame.
-		-- Take a copy of the given area:
-		area_shifted : type_bounding_box := area_in;
-
-		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : constant type_offset := to_offset (
-			x => - self.frame_bounding_box.x,
-			y => - self.frame_bounding_box.y);
-		
 		use et_display.board;
 
 		
 		procedure draw_packages is begin
-			draw_packages (self, area_shifted, BOTTOM);
-			draw_packages (self, area_shifted, TOP);
+			draw_packages (self, area, BOTTOM);
+			draw_packages (self, area, TOP);
 		end draw_packages;
 
 		
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
-				draw_silk_screen (self, area_shifted, BOTTOM);
+				draw_silk_screen (self, area, BOTTOM);
 			end if;
 
 			if silkscreen_enabled (TOP) then
-				draw_silk_screen (self, area_shifted, TOP);
+				draw_silk_screen (self, area, TOP);
 			end if;
 		end draw_silkscreen;
 
 		
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
-				draw_assy_doc (self, area_shifted, BOTTOM);
+				draw_assy_doc (self, area, BOTTOM);
 			end if;
 
 			if assy_doc_enabled (TOP) then
-				draw_assy_doc (self, area_shifted, TOP);
+				draw_assy_doc (self, area, TOP);
 			end if;
 		end draw_assy_doc;
 
 		
 		procedure draw_keepout is begin
 			if keepout_enabled (BOTTOM) then
-				draw_keepout (self, area_shifted, BOTTOM);
+				draw_keepout (self, area, BOTTOM);
 			end if;
 
 			if keepout_enabled (TOP) then
-				draw_keepout (self, area_shifted, TOP);
+				draw_keepout (self, area, TOP);
 			end if;
 		end draw_keepout;
 
 		
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
-				draw_stop (self, area_shifted, BOTTOM);
+				draw_stop (self, area, BOTTOM);
 			end if;
 
 			if stop_mask_enabled (TOP) then
-				draw_stop (self, area_shifted, TOP);
+				draw_stop (self, area, TOP);
 			end if;
 		end draw_stop_mask;
 
 		
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
-				draw_stencil (self, area_shifted, BOTTOM);
+				draw_stencil (self, area, BOTTOM);
 			end if;
 
 			if stencil_enabled (TOP) then
-				draw_stencil (self, area_shifted, TOP);
+				draw_stencil (self, area, TOP);
 			end if;
 		end draw_stencil;
 
 		
 		procedure draw_pcb_outline is begin
 			if outline_enabled then		
-				draw_outline (self, area_shifted);
+				draw_outline (self, area);
 			end if;
 		end draw_pcb_outline;
 
 		
 		procedure draw_conductor_layers is begin
-			draw_route_restrict (self, area_shifted);
-			draw_via_restrict (self, area_shifted);
+			draw_route_restrict (self, area);
+			draw_via_restrict (self, area);
 			
-			draw_conductors (self, area_shifted);
+			draw_conductors (self, area);
 
 			-- CS unrouted
 		end draw_conductor_layers;
@@ -862,9 +851,26 @@ package body et_canvas_board is
 			
 		end draw_board;
 
+
+		offset : type_offset;
+
 		
 	begin -- draw_internal
 		frame_height := self.get_frame_height;
+
+		-- The given area must be shifted (left and up) by the position
+		-- of the drawing frame. This is required for all objects in the 
+		-- drawing frame.
+		
+		-- Set the global area:
+		area := area_in;
+
+		-- Calculate the new position of the global area:
+		offset := to_offset (
+			x => - self.frame_bounding_box.x,
+			y => - self.frame_bounding_box.y);
+
+
 		
 -- 		put_line ("draw internal ...");
 		
@@ -874,8 +880,8 @@ package body et_canvas_board is
 		-- Backup context for drawing the grid at the end of this procedure.
 		save (context.cr);
 		
-		-- move area_shifted according to frame position:
-		move_by (area_shifted, area_shifted_new_position);
+		-- move area according to frame position:
+		move_by (area, offset);
 
 		
 		-- draw the frame:
@@ -888,13 +894,13 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x),
 			convert_y (self.frame_bounding_box.y));
 
-		draw_frame (self, area_shifted);
+		draw_frame (self, area);
 		restore (context.cr);
 
 		
-		-- move area_shifted according to board position:
-		--move_by (area_shifted, to_distance_relative (invert (self.board_origin, X)));
-		move_by (area_shifted, to_offset (invert (self.board_origin, X)));
+		-- move area according to board position:
+		--move_by (area, to_distance_relative (invert (self.board_origin, X)));
+		move_by (area, to_offset (invert (self.board_origin, X)));
 		
 		save (context.cr);
 		-- Prepare the current transformation matrix (CTM) so that
@@ -917,7 +923,7 @@ package body et_canvas_board is
 		-- are visible regardless of areas drawn with the 
 		-- cairo CLEAR operator:
 		
-		draw_cursor (self, area_shifted, cursor_main);
+		draw_cursor (self, area, cursor_main);
 		restore (context.cr);
 
 		-- Restore context to draw the grid:

@@ -560,24 +560,29 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		area_in	: type_bounding_box) 
 	is
-		-- The given area must be shifted (left and up) by the position
-		-- of the drawing frame. This is required for all objects in the 
-		-- drawing frame.
-		-- Take a copy of the given area:
-		area_shifted : type_bounding_box := area_in;
-
-		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : constant type_offset := to_offset (
-			x => - self.frame_bounding_box.x,
-			y => - self.frame_bounding_box.y);
+		offset : type_offset;
 		
 		use et_display.schematic;
 	begin
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
--- 		shift_area (self, area_shifted_new_position, cursor_main);
+-- 		shift_area (self, offset, cursor_main);
 
 		frame_height := self.get_frame_height;
+
+		-- The given area must be shifted (left and up) by the position
+		-- of the drawing frame. This is required for all objects in the 
+		-- drawing frame.
+		
+		-- Set the global area:
+		area := area_in;
+
+		-- Calculate the new position of the global area:
+		offset := to_offset (
+			x => - self.frame_bounding_box.x,
+			y => - self.frame_bounding_box.y);
+
+		
 		
 		set_color_background (context.cr);
 		paint (context.cr);
@@ -586,9 +591,10 @@ package body et_canvas_schematic is
 			draw_grid (self, area_in);
 		end if;
 		
-		-- move area_shifted
-		move_by (area_shifted, area_shifted_new_position);
+		-- move area according to frame position:
+		move_by (area, offset);
 
+		
 		save (context.cr);
 			
 		-- Prepare the current transformation matrix (CTM) so that
@@ -599,25 +605,25 @@ package body et_canvas_schematic is
 			convert_y (self.frame_bounding_box.y));
 
 		
-		draw_units (self, area_shifted);
+		draw_units (self, area);
 		
-		draw_frame (self, area_shifted);
+		draw_frame (self, area);
 		
 		-- Draw nets if layer is enabled:
 		if nets_enabled then
-			draw_nets (self, area_shifted);
+			draw_nets (self, area);
 		end if;
 
 		-- Draw texts if layer is enabled:
 		if texts_enabled then
-			draw_texts (self, area_shifted);
+			draw_texts (self, area);
 		end if;
 		
-		draw_submodules (self, area_shifted);
+		draw_submodules (self, area);
 
-		draw_net_route_being_drawn (self, area_shifted);
+		draw_net_route_being_drawn (self, area);
 		
-		draw_cursor (self, area_shifted, cursor_main);
+		draw_cursor (self, area, cursor_main);
 		
 		restore (context.cr);
 		
