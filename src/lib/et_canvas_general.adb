@@ -2131,32 +2131,6 @@ package body pac_canvas is
 	end;
 
 
-	
-	--function shift_y (
-		--y		: in pac_shapes.pac_geometry_1.type_distance;
-		--height	: in pac_shapes.pac_geometry_1.type_distance)
-		--return pac_shapes.pac_geometry_1.type_distance is
-	--begin
-		--return (height - y);
-	--end;
-
-	function shift_y (
-		y		: in type_float;
-		height	: in type_float)
-		return type_float 
-	is begin
-		return (height - y);
-	end;
-
-	
-	--function shift_y (
-		--y		: in type_distance;
-		--height	: in type_float)
-		--return type_float is
-	--begin
-		--return (height - type_float (y));
-	--end;
-
 
 	
 	function make_bounding_box (
@@ -2172,7 +2146,7 @@ package body pac_canvas is
 			-- Since the bounding box is something required in the model plane,
 			-- the box position in y is afterwards converted to y axis going downwards.
 			x		=> boundaries.smallest_x,
-			y		=> shift_y (boundaries.greatest_y, frame_height),
+			y		=> frame_height - boundaries.greatest_y,
 
 			-- The box width is the difference between greatest x and smallest x.
 			-- The box height is the difference between greatest y and smallest y.
