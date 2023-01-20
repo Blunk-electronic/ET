@@ -2117,12 +2117,10 @@ package body pac_canvas is
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	function shift_y (
 		--y		: in pac_shapes.pac_geometry_1.type_distance;
-		--height	: in pac_shapes.pac_geometry_1.type_distance)
-		y		: in type_float;
-		height	: in type_float)
+		y		: in type_float)
 		return type_view_coordinate 
 	is begin
-		return type_view_coordinate (height - y);
+		return type_view_coordinate (frame_height - y);
 	end;
 
 	
@@ -2333,15 +2331,13 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (line.start_point)),
-				shift_y (get_y (line.start_point), frame_height)
-				);
+				shift_y (get_y (line.start_point)));
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (line.end_point)),
-				shift_y (get_y (line.end_point), frame_height)
-				);
+				shift_y (get_y (line.end_point)));
 
 			stroke (context.cr);
 		end if;
@@ -2543,7 +2539,7 @@ package body pac_canvas is
 				cairo.arc (
 					context.cr,
 					xc		=> convert_x (get_x (arc_temp.center)),
-					yc		=> shift_y (get_y (arc_temp.center), height),
+					yc		=> shift_y (get_y (arc_temp.center)),
 					radius	=> type_view_coordinate (arc_temp.radius),
 					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -2554,7 +2550,7 @@ package body pac_canvas is
 				cairo.arc_negative (
 					context.cr,
 					xc		=> convert_x (get_x (arc_temp.center)),
-					yc		=> shift_y (get_y (arc_temp.center), height),
+					yc		=> shift_y (get_y (arc_temp.center)),
 					radius	=> type_view_coordinate (arc_temp.radius),
 					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -2705,7 +2701,7 @@ package body pac_canvas is
 						cairo.arc (
 							context.cr,
 							xc		=> convert_x (get_x (arc_temp.center)),
-							yc		=> shift_y (get_y (arc_temp.center), height),
+							yc		=> shift_y (get_y (arc_temp.center)),
 							radius	=> type_view_coordinate (arc_temp.radius),
 							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -2721,7 +2717,7 @@ package body pac_canvas is
 						cairo.arc_negative (
 							context.cr,
 							xc		=> convert_x (get_x (arc_temp.center)),
-							yc		=> shift_y (get_y (arc_temp.center), height),
+							yc		=> shift_y (get_y (arc_temp.center)),
 							radius	=> type_view_coordinate (arc_temp.radius),
 							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -3142,7 +3138,6 @@ package body pac_canvas is
 
 	
 	function get_text_extents (
-		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
@@ -3165,7 +3160,6 @@ package body pac_canvas is
 	
 	procedure draw_text (
 		area		: in type_bounding_box;
-		--context		: in type_draw_context;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -3301,15 +3295,13 @@ package body pac_canvas is
 				move_to (
 					context.cr,
 					convert_x (get_x (element (c).start_point)),
-					shift_y (get_y (element (c).start_point), height)
-					);
+					shift_y (get_y (element (c).start_point)));
 
 				-- end point
 				line_to (
 					context.cr,
 					convert_x (get_x (element (c).end_point)),
-					shift_y (get_y (element (c).end_point), height)
-					);
+					shift_y (get_y (element (c).end_point)));
 
 			end if;
 			
