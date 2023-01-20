@@ -61,7 +61,6 @@ is
 
 			when ARC =>
 				draw_arc (
-					area		=> in_area,
 					arc			=> to_arc_fine (element (c).segment_arc),
 					width		=> pcb_contour_line_width);
 		end case;

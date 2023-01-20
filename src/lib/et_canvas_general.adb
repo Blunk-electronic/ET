@@ -2474,7 +2474,6 @@ package body pac_canvas is
 	
 	
 	procedure draw_arc (
-		area	: in type_bounding_box;
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
 		width	: in pac_geometry_2.type_distance_positive)
 	is

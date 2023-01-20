@@ -74,7 +74,6 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		draw_arc (
-			area		=> in_area,
 			arc			=> to_arc_fine (element (c)),
 			width		=> element (c).width);
 

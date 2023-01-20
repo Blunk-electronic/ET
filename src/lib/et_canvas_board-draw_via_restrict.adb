@@ -70,8 +70,8 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 			draw_line (
-				line		=> to_line_fine (element (c)),
-				width		=> et_via_restrict.via_restrict_line_width);
+				line	=> to_line_fine (element (c)),
+				width	=> et_via_restrict.via_restrict_line_width);
 
 		end if;
 	end query_line;
@@ -84,9 +84,8 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			draw_arc (
-				area		=> in_area,
-				arc			=> to_arc_fine (element (c)),
-				width		=> et_via_restrict.via_restrict_line_width);
+				arc		=> to_arc_fine (element (c)),
+				width	=> et_via_restrict.via_restrict_line_width);
 
 		end if;
 	end query_arc;
@@ -99,10 +98,10 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			draw_circle (
-				area		=> in_area,
-				circle		=> element (c),
-				filled		=> NO,
-				width		=> element (c).width);
+				area	=> in_area,
+				circle	=> element (c),
+				filled	=> NO,
+				width	=> element (c).width);
 					
 		end if;
 	end query_circle;

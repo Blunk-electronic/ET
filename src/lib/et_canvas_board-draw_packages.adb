@@ -207,7 +207,7 @@ is
 					arc : type_silk_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width);
+					draw_arc (to_arc_fine (arc), arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_silk_circles.cursor) is 
@@ -320,7 +320,7 @@ is
 					arc : type_doc_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width);
+					draw_arc (to_arc_fine (arc), arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_doc_circles.cursor) is 
@@ -507,7 +507,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					
 					draw_arc (
-						area	=> in_area,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width);
 					
@@ -633,7 +632,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					
 					draw_arc (
-						area	=> in_area,
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width);
 					
@@ -752,7 +750,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
-						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width);
 				end query_arc;
@@ -867,7 +864,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
-						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width);
 				end query_arc;
@@ -1017,7 +1013,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
 					draw_arc (
-						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
 						width	=> arc.width);
 				end query_arc;

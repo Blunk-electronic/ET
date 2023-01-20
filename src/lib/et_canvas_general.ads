@@ -997,10 +997,9 @@ package pac_canvas is
 	-- This procedure draws the given arc on the given context.
 	-- The arc is shifted in y to a plane with frame height. This plane
 	-- has y-axis going downwards.
-	-- The arc will be drawn if its bounding box intersects the given area.
+	-- The arc will be drawn if its bounding box intersects global area.
 	-- If area is no_rectangle then the arc would be drawn in any case.
 	procedure draw_arc (
-		area	: in type_bounding_box;
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
 
 		-- The line width is used for calculating the boundaries.
