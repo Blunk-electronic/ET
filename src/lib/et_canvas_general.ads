@@ -670,7 +670,7 @@ package pac_canvas is
 
 
 	context : type_draw_context;
-	--frame_height : type_float_positive;
+	frame_height : type_float_positive;
 	
 	
 	-- Redraw either the whole view, or a specific part of it only.
@@ -992,8 +992,7 @@ package pac_canvas is
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive);
+		width	: in pac_geometry_2.type_distance_positive);
 		
 
 	-- This procedure draws the given arc on the given context.

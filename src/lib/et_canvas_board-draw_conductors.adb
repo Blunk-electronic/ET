@@ -130,8 +130,7 @@ is
 			draw_line (
 				area		=> in_area,
 				line		=> to_line_fine (element (c)),
-				width		=> element (c).width,
-				height		=> self.get_frame_height);
+				width		=> element (c).width);
 
 		end if;
 	end query_line;
@@ -192,8 +191,7 @@ is
 			draw_line (
 				area	=> in_area,
 				line	=> type_line_fine (element (e)),
-				width	=> fill_line_width,
-				height	=> self.get_frame_height);
+				width	=> fill_line_width);
 		end draw_edge;
 
 		procedure query_lake (l : in pac_lakes.cursor) is begin
@@ -204,8 +202,7 @@ is
 			draw_line (
 				area	=> in_area,
 				line	=> element (s),
-				width	=> fill_line_width,
-				height	=> self.get_frame_height);
+				width	=> fill_line_width);
 		end draw_stripe;
 		
 	begin
@@ -225,8 +222,7 @@ is
 			draw_line (
 				area	=> in_area,
 				line	=> element (s),
-				width	=> relief.width,
-				height	=> self.get_frame_height);
+				width	=> relief.width);
 		end query_spoke;
 		
 	begin
@@ -767,8 +763,7 @@ is
 					draw_line (
 						area		=> in_area,
 						line		=> type_line_fine (element (c)),
-						width		=> type_distance (airwire_line_width),
-						height		=> self.get_frame_height);
+						width		=> type_distance (airwire_line_width));
 					
 				end query_airwire;
 

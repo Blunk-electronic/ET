@@ -68,10 +68,8 @@ is
 		
 		draw_line (
 			area		=> in_area,
-			--context		=> context,
 			line		=> to_line_fine (element (c)),
-			width		=> element (c).width,
-			height		=> self.get_frame_height);
+			width		=> element (c).width);
 
 	end query_line;
 

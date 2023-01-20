@@ -412,8 +412,7 @@ is
 			draw_line (
 				area		=> in_area,
 				line		=> to_line_fine (element (s)),
-				width		=> net_line_width,
-				height		=> self.get_frame_height);
+				width		=> net_line_width);
 
 			draw_junctions (s);
 			
@@ -432,8 +431,7 @@ is
 		draw_line (
 			area		=> in_area,
 			line		=> to_line_fine (segment),
-			width		=> net_line_width,
-			height		=> self.get_frame_height);
+			width		=> net_line_width);
 
 		draw_junctions (segment);
 
@@ -713,8 +711,7 @@ is
 				draw_line (
 					area		=> in_area,
 					line		=> to_line_fine (copy_of_original_segment),
-					width		=> net_line_width,
-					height		=> self.get_frame_height);
+					width		=> net_line_width);
 
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (s));

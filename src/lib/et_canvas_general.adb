@@ -2307,12 +2307,11 @@ package body pac_canvas is
 	procedure draw_line (
 		area	: in type_bounding_box;
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive)
+		width	: in pac_geometry_2.type_distance_positive)
 	is
 		-- compute the bounding box of the given line
 		bounding_box : constant type_bounding_box := 
-			get_bounding_box_line (line, width, height);
+			get_bounding_box_line (line, width, frame_height);
 	begin
 		-- We draw the segment if:
 		--  - no area given or
@@ -2336,14 +2335,14 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (line.start_point)),
-				shift_y (get_y (line.start_point), height)
+				shift_y (get_y (line.start_point), frame_height)
 				);
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (line.end_point)),
-				shift_y (get_y (line.end_point), height)
+				shift_y (get_y (line.end_point), frame_height)
 				);
 
 			stroke (context.cr);
@@ -3365,8 +3364,8 @@ package body pac_canvas is
 				y => type_distance_positive (element (cursor).end_point.y + tb_pos.y)));
 
 			draw_line (area, to_line_fine (line),
-						type_distance_positive (line_width_thin),
-						type_float_positive (frame_size.y));
+						type_distance_positive (line_width_thin));
+
 		end query_line;
 		
 	begin		
@@ -3388,8 +3387,8 @@ package body pac_canvas is
 
 		procedure draw_line is begin
 			draw_line (area, to_line_fine (line),
-					   type_distance_positive (line_width_thin),
-					   type_float_positive (height));
+					   type_distance_positive (line_width_thin));
+					   --type_float_positive (height));
 		end draw_line;
 
 	begin
@@ -3528,8 +3527,8 @@ package body pac_canvas is
 
 		procedure draw_line is begin
 			draw_line (area, to_line_fine (line),
-					   type_distance_positive (line_width_thin),
-					   type_float_positive (frame_size.y));
+					   type_distance_positive (line_width_thin));
+					   --type_float_positive (frame_size.y));
 		end draw_line;
 		
 		

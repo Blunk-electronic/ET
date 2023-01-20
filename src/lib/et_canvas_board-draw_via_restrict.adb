@@ -72,8 +72,7 @@ is
 			draw_line (
 				area		=> in_area,
 				line		=> to_line_fine (element (c)),
-				width		=> et_via_restrict.via_restrict_line_width,
-				height		=> self.get_frame_height);
+				width		=> et_via_restrict.via_restrict_line_width);
 
 		end if;
 	end query_line;

@@ -57,10 +57,8 @@ is
 			when LINE =>
 				draw_line (
 					area		=> in_area,
-					--context		=> context,
 					line		=> to_line_fine (element (c).segment_line),
-					width		=> pcb_contour_line_width,
-					height		=> self.get_frame_height);
+					width		=> pcb_contour_line_width);
 
 			when ARC =>
 				draw_arc (

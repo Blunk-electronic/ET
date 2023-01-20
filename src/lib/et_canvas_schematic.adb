@@ -480,8 +480,8 @@ package body et_canvas_schematic is
 				draw_line (
 					area		=> in_area,
 					line		=> to_line_fine (line),
-					width		=> net_line_width,
-					height		=> type_float_positive (self.get_frame_height));
+					width		=> net_line_width);
+					--height		=> type_float_positive (self.get_frame_height));
 			end draw;
 			
 		begin -- compute_route
@@ -576,6 +576,8 @@ package body et_canvas_schematic is
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
 -- 		shift_area (self, area_shifted_new_position, cursor_main);
+
+		frame_height := self.get_frame_height;
 		
 		set_color_background (context.cr);
 		paint (context.cr);
@@ -815,17 +817,13 @@ package body et_canvas_schematic is
 
 		draw_line (
 			area		=> in_area,
-			--context		=> context,
 			line		=> to_line_fine (lh),
-			width		=> type_distance_positive (width),
-			height		=> type_float_positive (self.get_frame_height));
+			width		=> type_distance_positive (width));
 
 		draw_line (
 			area		=> in_area,
-			--context		=> context,
 			line		=> to_line_fine (lv),
-			width		=> type_distance_positive (width),
-			height		=> type_float_positive (self.get_frame_height));
+			width		=> type_distance_positive (width));
 		
 		cairo.stroke (context.cr);		
 

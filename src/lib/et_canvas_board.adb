@@ -473,11 +473,8 @@ package body et_canvas_board is
 		
 			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
-			draw_line (in_area, line_horizontal, origin_line_width, 
-				type_float_positive (self.get_frame_height));
-			
-			draw_line (in_area, line_vertical, origin_line_width,
-				type_float_positive (self.get_frame_height));
+			draw_line (in_area, line_horizontal, origin_line_width);			
+			draw_line (in_area, line_vertical, origin_line_width);
 
 		--end if;
 	end draw_text_origin;
@@ -870,7 +867,7 @@ package body et_canvas_board is
 
 		
 	begin -- draw_internal
-		--frame_height := self.get_frame_height;
+		frame_height := self.get_frame_height;
 		
 -- 		put_line ("draw internal ...");
 		
@@ -1031,14 +1028,12 @@ package body et_canvas_board is
 		draw_line (
 			area		=> in_area,
 			line		=> to_line_fine (lh),
-			width		=> type_distance_positive (width),
-			height		=> self.get_frame_height);
+			width		=> type_distance_positive (width));
 
 		draw_line (
 			area		=> in_area,
 			line		=> to_line_fine (lv),
-			width		=> type_distance_positive (width),
-			height		=> self.get_frame_height);
+			width		=> type_distance_positive (width));
 		
 		cairo.stroke (context.cr);		
 
