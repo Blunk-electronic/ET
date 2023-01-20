@@ -240,7 +240,6 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
@@ -266,7 +265,6 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
@@ -295,7 +293,6 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
@@ -327,7 +324,6 @@ is
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
 				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
@@ -361,7 +357,6 @@ is
 				style	=> DASHED,
 				filled	=> NO,
 				width	=> zero,
-				height	=> self.get_frame_height,
 				drawn	=> drawn);
 
 			--restore (context.cr);

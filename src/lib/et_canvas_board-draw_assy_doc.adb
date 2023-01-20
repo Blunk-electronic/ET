@@ -105,11 +105,9 @@ is
 	begin
 		draw_contour (
 			area	=> in_area,
-			--context	=> context,
 			contour	=> contour,
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.get_frame_height,
 			drawn	=> drawn);
 
 	end query_polygon;

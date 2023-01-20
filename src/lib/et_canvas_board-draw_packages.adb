@@ -231,7 +231,6 @@ is
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_contour;
 
@@ -346,7 +345,6 @@ is
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_contour;
 
@@ -428,7 +426,6 @@ is
 						contour	=> element (c),
 						filled	=> NO,
 						width	=> zero,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_zone;
@@ -543,7 +540,6 @@ is
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_contour;
@@ -672,7 +668,6 @@ is
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 					
 				end query_contour;
@@ -788,7 +783,6 @@ is
 						contour	=> zone,
 						width	=> route_restrict_line_width, 
 						filled	=> YES,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_zone;
 
@@ -801,7 +795,6 @@ is
 						contour	=> cutout,
 						width	=> route_restrict_line_width, 
 						filled	=> NO,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_cutout;
 				
@@ -906,7 +899,6 @@ is
 						contour	=> zone,
 						width	=> via_restrict_line_width, 
 						filled	=> YES,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_zone;
 
@@ -919,7 +911,6 @@ is
 						contour	=> cutout,
 						width	=> via_restrict_line_width, 
 						filled	=> NO,
-						height	=> self.get_frame_height,
 						drawn	=> drawn);
 				end query_cutout;
 				
@@ -981,7 +972,6 @@ is
 					contour	=> element (c),
 					filled	=> NO,
 					width	=> pcb_contour_line_width,
-					height	=> self.get_frame_height,
 					drawn	=> drawn);
 
 			end query_hole;
@@ -1128,8 +1118,7 @@ is
 				draw_contour_with_circular_cutout (
 					area			=> in_area,
 					outer_border	=> outer_border,
-					inner_border	=> ib,
-					height			=> self.get_frame_height);
+					inner_border	=> ib);
 
 			end draw_tht_pad_with_circular_cutout;
 
@@ -1143,8 +1132,7 @@ is
 				draw_contour_with_arbitrary_cutout (
 					area			=> in_area,
 					outer_border	=> outer_border,
-					inner_border	=> inner_border,
-					height			=> self.get_frame_height);
+					inner_border	=> inner_border);
 				
 			end draw_tht_pad_with_arbitrary_cutout;
 
@@ -1266,7 +1254,6 @@ is
 									contour	=> pad_outline,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.get_frame_height,
 									drawn	=> drawn);
 								
 								-- draw the terminal name
@@ -1317,7 +1304,6 @@ is
 									contour	=> stop_mask_contours,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.get_frame_height,
 									drawn	=> drawn);
 								
 							end if;
@@ -1373,7 +1359,6 @@ is
 									contour	=> stencil_contours,
 									filled	=> YES,
 									width	=> zero,
-									height	=> self.get_frame_height,
 									drawn	=> drawn);
 
 							end if;
@@ -1484,7 +1469,6 @@ is
 									contour		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,
-									height		=> self.get_frame_height,
 									drawn		=> drawn);
 
 							end if;

@@ -2630,9 +2630,6 @@ package body pac_canvas is
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive;
 		-- CS fill style
-
-		--height	: in pac_shapes.pac_geometry_1.type_distance;
-		height	: in type_float_positive;
 		drawn	: in out boolean)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given contour:
@@ -2821,9 +2818,7 @@ package body pac_canvas is
 	procedure draw_contour_with_circular_cutout (
 		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
-		inner_border	: in pac_geometry_2.type_circle'class;
-		--height			: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_positive)
+		inner_border	: in pac_geometry_2.type_circle'class)
 	is 
 		drawn : boolean := false;
 	begin
@@ -2831,7 +2826,7 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 
 		-- the cutout area must clear out the outer area:
@@ -2848,9 +2843,7 @@ package body pac_canvas is
 	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
-		inner_border	: in type_contour'class;
-		--height			: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_positive)
+		inner_border	: in type_contour'class)
 	is 
 		drawn : boolean := false;
 	begin
@@ -2858,14 +2851,14 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (area, inner_border, CONTINUOUS, YES, 0.0, height, drawn);
+		draw_contour (area, inner_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- restore default compositing operator:

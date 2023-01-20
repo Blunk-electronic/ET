@@ -108,7 +108,6 @@ is
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,
-			height	=> self.get_frame_height,
 			drawn	=> drawn);
 	end query_contour;
 

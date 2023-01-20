@@ -1039,8 +1039,6 @@ package pac_canvas is
 		-- of the segments. 
 		-- The width for the actual drawing must be set by the caller.
 		width	: in pac_geometry_2.type_distance_positive;
-		
-		height	: in type_float_positive;
 
 		-- This flag is set if the contour has been drawn
 		-- because it is inside the given area:
@@ -1050,15 +1048,13 @@ package pac_canvas is
 	procedure draw_contour_with_circular_cutout (
 		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
-		inner_border	: in pac_geometry_2.type_circle'class;
-		height			: in type_float_positive);
+		inner_border	: in pac_geometry_2.type_circle'class);
 
 	
 	procedure draw_contour_with_arbitrary_cutout (
 		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
-		inner_border	: in type_contour'class;
-		height			: in type_float_positive);
+		inner_border	: in type_contour'class);
 	
 	
 	-- This procedure draws the a rectangle on the given context.
