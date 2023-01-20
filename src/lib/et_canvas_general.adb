@@ -2116,7 +2116,6 @@ package body pac_canvas is
 	
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	function shift_y (
-		--y		: in pac_shapes.pac_geometry_1.type_distance;
 		y		: in type_float)
 		return type_view_coordinate 
 	is begin
@@ -2125,11 +2124,10 @@ package body pac_canvas is
 
 	
 	function shift_y (
-		y		: in pac_geometry_2.type_distance;
-		height	: in type_float)
+		y		: in pac_geometry_2.type_distance)
 		return type_view_coordinate 
 	is begin
-		return type_view_coordinate (height - type_float (y));
+		return type_view_coordinate (frame_height - type_float (y));
 	end;
 
 
@@ -2596,7 +2594,7 @@ package body pac_canvas is
 			cairo.arc (
 				context.cr,
 				xc		=> convert_x (get_x (circle.center)),
-				yc		=> shift_y (get_y (circle.center), frame_height),
+				yc		=> shift_y (get_y (circle.center)),
 				radius	=> type_view_coordinate (circle.radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -2675,14 +2673,14 @@ package body pac_canvas is
 					line_to (
 						context.cr,
 						convert_x (get_x (element (c).segment_line.start_point)),
-						shift_y (get_y (element (c).segment_line.start_point), height)
+						shift_y (get_y (element (c).segment_line.start_point))
 						);
 						
 					-- end point
 					line_to (
 						context.cr,
 						convert_x (get_x (element (c).segment_line.end_point)),
-						shift_y (get_y (element (c).segment_line.end_point), height)
+						shift_y (get_y (element (c).segment_line.end_point))
 						);
 
 					
@@ -2757,7 +2755,7 @@ package body pac_canvas is
 				cairo.arc (
 					context.cr,
 					xc		=> convert_x (get_x (contour.contour.circle.center)),
-					yc		=> shift_y (get_y (contour.contour.circle.center), height),
+					yc		=> shift_y (get_y (contour.contour.circle.center)),
 					radius	=> type_view_coordinate (contour.contour.circle.radius),
 
 					-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -2926,13 +2924,13 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (position)),
-				shift_y (get_y (position), frame_height));
+				shift_y (get_y (position)));
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (position) + type_distance (width)),
-				shift_y (get_y (position), frame_height));
+				shift_y (get_y (position)));
 
 			-- LINE 2:
 			
@@ -2940,13 +2938,13 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (position) + type_distance (width)),
-				shift_y (get_y (position), frame_height));
+				shift_y (get_y (position)));
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (position) + type_distance (width)),
-				shift_y (get_y (position) + type_distance (height), frame_height));
+				shift_y (get_y (position) + type_distance (height)));
 
 			-- LINE 3:
 			
@@ -2954,13 +2952,13 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (position) + type_distance (width)),
-				shift_y (get_y (position) + type_distance (height), frame_height));
+				shift_y (get_y (position) + type_distance (height)));
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (position)),
-				shift_y (get_y (position) + type_distance (height), frame_height));
+				shift_y (get_y (position) + type_distance (height)));
 
 			-- LINE 4:
 			
@@ -2968,13 +2966,13 @@ package body pac_canvas is
 			move_to (
 				context.cr,
 				convert_x (get_x (position)),
-				shift_y (get_y (position) + type_distance (height), frame_height));
+				shift_y (get_y (position) + type_distance (height)));
 
 			-- end point
 			line_to (
 				context.cr,
 				convert_x (get_x (position)),
-				shift_y (get_y (position), frame_height));
+				shift_y (get_y (position)));
 
 			stroke (context.cr);
 			
@@ -3178,7 +3176,7 @@ package body pac_canvas is
 		
 		-- The position of the origin:
 		ox : constant type_view_coordinate := convert_x (get_x (position));
-		oy : constant type_view_coordinate := shift_y (get_y (position), height);
+		oy : constant type_view_coordinate := shift_y (get_y (position));
 
 	begin
 		select_font_face (
