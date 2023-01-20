@@ -2531,7 +2531,6 @@ package body pac_canvas is
 
 	
 	procedure draw_circle (
-		area	: in type_bounding_box;
 		circle	: in pac_geometry_2.type_circle'class;
 		filled	: in type_filled;
 		width	: in pac_geometry_2.type_distance_positive)
@@ -2805,7 +2804,7 @@ package body pac_canvas is
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner area to be taken out:
-		draw_circle (area, inner_border, YES, 0.0);
+		draw_circle (inner_border, YES, 0.0);
 
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		

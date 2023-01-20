@@ -67,7 +67,6 @@ is
 
 		procedure draw is begin
 			draw_circle (
-				area		=> in_area,
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero);
@@ -97,7 +96,6 @@ is
 
 		procedure draw is begin
 			draw_circle (
-				area		=> in_area,
 				circle		=> j,
 				filled		=> YES,
 				width		=> zero);

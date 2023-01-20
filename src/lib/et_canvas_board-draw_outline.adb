@@ -86,7 +86,6 @@ is
 		if module.board.contours.outline.contour.circular then
 
 			draw_circle (
-				area		=> in_area,
 				circle		=> module.board.contours.outline.contour.circle,
 				filled		=> NO, -- circles in outline are never filled
 				width		=> pcb_contour_line_width);			
@@ -109,7 +108,6 @@ is
 			if element (c).contour.circular then
 
 				draw_circle (
-					area		=> in_area,
 					circle		=> element (c).contour.circle,
 					filled		=> NO, -- holes are never filled
 					width		=> pcb_contour_line_width);

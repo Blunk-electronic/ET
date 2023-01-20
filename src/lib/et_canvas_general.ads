@@ -1010,12 +1010,11 @@ package pac_canvas is
 	-- This procedure draws the given circle on the given context.
 	-- The circle is shifted in y to a plane with frame height. This plane
 	-- has y-axis going downwards.
-	-- The circle will be drawn if its bounding box intersects the given area.
+	-- The circle will be drawn if its bounding box intersects the global area.
 	-- If area is no_rectangle then the circle would be drawn in any case.
 	-- If the circle is filled, the line width will be set to zero
 	-- and left with this setting.
 	procedure draw_circle (
-		area	: in type_bounding_box;
 		circle	: in pac_geometry_2.type_circle'class;
 		filled	: in type_filled;
 

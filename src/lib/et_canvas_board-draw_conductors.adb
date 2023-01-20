@@ -156,7 +156,6 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		draw_circle (
-			area	=> area,
 			circle	=> element (c),
 			filled	=> NO,
 			width	=> element (c).width);
@@ -443,7 +442,6 @@ is
 			set_color_vias (context.cr);
 			
 			draw_circle (
-				area		=> area,
 				circle		=> circle,
 				filled		=> NO,
 				width		=> zero -- CS ?

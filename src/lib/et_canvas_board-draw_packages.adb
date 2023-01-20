@@ -215,7 +215,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
-						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width);
@@ -328,7 +327,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
-						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width);
@@ -520,7 +518,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					
 					draw_circle (
-						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width);
@@ -645,7 +642,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					
 					draw_circle (
-						area	=> in_area,
 						circle	=> circle,
 						filled	=> NO,
 						width	=> circle.width);
@@ -759,7 +755,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
-						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO);
@@ -873,7 +868,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
-						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO);
@@ -1022,7 +1016,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (circle.width));
 					draw_circle (
-						area	=> in_area, 
 						circle	=> circle,
 						width	=> circle.width, 
 						filled	=> NO);
@@ -1550,14 +1543,14 @@ is
 										 + type_float_positive (restring);
 						
 						--draw_circle (in_area, context, circle, NO, self.get_frame_height);
-						draw_circle (in_area, circle, YES, zero);
+						draw_circle (circle, YES, zero);
 
 						
 						-- the cutout area must clear out the outer area:
 						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 
 						circle.radius := type_float_positive (drill_size) * 0.5;
-						draw_circle (in_area, circle, YES, zero);
+						draw_circle (circle, YES, zero);
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		

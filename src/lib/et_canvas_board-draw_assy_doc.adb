@@ -89,7 +89,6 @@ is
 		set_line_width (context.cr, type_view_coordinate (circle.width));
 
 		draw_circle (
-			area		=> in_area,
 			circle		=> circle,
 			filled		=> NO,
 			width		=> circle.width);
