@@ -2873,8 +2873,6 @@ package body pac_canvas is
 		width			: in type_float_positive;
 		--height			: in pac_shapes.pac_geometry_1.type_distance;
 		height			: in type_float_positive;
-		--frame_height	: in pac_shapes.pac_geometry_1.type_distance;
-		frame_height	: in type_float_positive;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default) 
 	is

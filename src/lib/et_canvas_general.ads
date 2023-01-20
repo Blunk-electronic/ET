@@ -1067,7 +1067,6 @@ package pac_canvas is
 		position		: in pac_geometry_2.type_point;	-- position of the rectangle (lower left corner)
 		width			: in type_float_positive; -- widht of the rectangle
 		height			: in type_float_positive; -- height of the rectangle
-		frame_height	: in type_float_positive;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default);
 		-- CS fill style ?

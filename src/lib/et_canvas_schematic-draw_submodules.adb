@@ -64,8 +64,7 @@ is
 				area			=> in_area,
 				position		=> submod_position,
 				width			=> type_float_positive (element (cursor).size.x),
-				height			=> type_float_positive (element (cursor).size.y),
-				frame_height	=> type_float_positive (self.get_frame_height));
+				height			=> type_float_positive (element (cursor).size.y));
 								
 			cairo.stroke (context.cr);
 		end draw_box;
@@ -164,8 +163,7 @@ is
 						area			=> in_area,
 						position		=> pos,
 						width			=> port_symbol_width,
-						height			=> port_symbol_height,
-						frame_height	=> type_float_positive (self.get_frame_height));
+						height			=> port_symbol_height);
 					
 				end draw_horizontal;
 
@@ -175,8 +173,7 @@ is
 						area			=> in_area,
 						position		=> pos,
 						width			=> port_symbol_height,
-						height			=> port_symbol_width,
-						frame_height	=> type_float_positive (self.get_frame_height));
+						height			=> port_symbol_width);
 
 				end draw_vertical;
 				
