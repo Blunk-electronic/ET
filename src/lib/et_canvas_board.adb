@@ -569,7 +569,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				draw_vector_text (in_area, v_text, text_place.text.line_width);
+				draw_vector_text (v_text, text_place.text.line_width);
 
 			end if;
 		end if;
@@ -620,7 +620,7 @@ package body et_canvas_board is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, v_text, text_place.text.line_width);
+			draw_vector_text (v_text, text_place.text.line_width);
 		end if;
 	end draw_text_being_placed_in_outline;
 
@@ -685,7 +685,7 @@ package body et_canvas_board is
 					);
 
 				-- Draw the text:
-				draw_vector_text (in_area, v_text, text_place.text.line_width);
+				draw_vector_text (v_text, text_place.text.line_width);
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;

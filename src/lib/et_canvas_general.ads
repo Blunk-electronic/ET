@@ -1114,7 +1114,6 @@ package pac_canvas is
 	
 	-- Draw a vectorized text:
 	procedure draw_vector_text (
-		area	: in type_bounding_box;
 		text	: in type_vector_text;
 
 		-- The line width is used for calculating the boundaries

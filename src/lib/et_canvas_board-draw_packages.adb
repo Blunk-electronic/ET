@@ -241,7 +241,6 @@ is
 					
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
-						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width);
 				end query_text;
@@ -352,7 +351,6 @@ is
 					
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
-						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width);
 				end query_text;
@@ -539,7 +537,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
-						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width);
 				end query_text;
@@ -1016,7 +1013,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (text.line_width));
 					draw_vector_text (
-						area	=> in_area, 
 						text	=> text.vectors,
 						width	=> text.line_width);
 				end query_text;

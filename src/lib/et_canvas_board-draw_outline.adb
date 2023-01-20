@@ -74,7 +74,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		draw_vector_text (in_area, element (c).vectors, element (c).line_width);
+		draw_vector_text (element (c).vectors, element (c).line_width);
 		
 	end query_text;
 

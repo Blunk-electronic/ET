@@ -3207,7 +3207,6 @@ package body pac_canvas is
 
 	
 	procedure draw_vector_text (
-		area	: in type_bounding_box;
 		text	: in type_vector_text;
 		width	: in pac_geometry_2.type_distance_positive)
 	is
