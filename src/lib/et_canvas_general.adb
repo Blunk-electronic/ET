@@ -2595,7 +2595,6 @@ package body pac_canvas is
 
 	
 	procedure draw_contour (
-		area	: in type_bounding_box;
 		contour	: in type_contour'class;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
@@ -2787,7 +2786,6 @@ package body pac_canvas is
 
 
 	procedure draw_contour_with_circular_cutout (
-		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class)
 	is 
@@ -2797,7 +2795,7 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, drawn);
+		draw_contour (outer_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 
 		-- the cutout area must clear out the outer area:
@@ -2812,7 +2810,6 @@ package body pac_canvas is
 
 
 	procedure draw_contour_with_arbitrary_cutout (
-		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class)
 	is 
@@ -2822,14 +2819,14 @@ package body pac_canvas is
 		set_line_width (context.cr, type_view_coordinate (0.0));
 		
 		-- draw outer contour with outer border
-		draw_contour (area, outer_border, CONTINUOUS, YES, 0.0, drawn);
+		draw_contour (outer_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (area, inner_border, CONTINUOUS, YES, 0.0, drawn);
+		draw_contour (inner_border, CONTINUOUS, YES, 0.0, drawn);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- restore default compositing operator:

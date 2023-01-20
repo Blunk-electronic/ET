@@ -95,7 +95,6 @@ is
 		drawn : boolean := false;
 	begin
 		draw_contour (
-			area	=> in_area,
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero,

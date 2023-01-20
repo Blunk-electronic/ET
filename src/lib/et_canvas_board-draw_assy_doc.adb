@@ -101,7 +101,6 @@ is
 		drawn : boolean := false;
 	begin
 		draw_contour (
-			area	=> in_area,
 			contour	=> contour,
 			filled	=> YES,
 			width	=> zero,

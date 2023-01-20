@@ -226,7 +226,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (zero));
 					draw_contour (
-						area	=> in_area, 
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
@@ -338,7 +337,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (zero));
 					draw_contour (
-						area	=> in_area, 
 						contour	=> contour,
 						filled	=> YES,
 						width	=> zero,
@@ -418,7 +416,6 @@ is
 					drawn : boolean := false;
 				begin
 					draw_contour (
-						area	=> in_area,
 						contour	=> element (c),
 						filled	=> NO,
 						width	=> zero,
@@ -529,7 +526,6 @@ is
 					drawn : boolean := false;
 				begin
 					draw_contour (
-						area	=> in_area,
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
@@ -653,7 +649,6 @@ is
 					drawn : boolean := false;
 				begin
 					draw_contour (
-						area	=> in_area,
 						contour	=> element (c),
 						filled	=> YES,
 						width	=> zero,
@@ -765,7 +760,6 @@ is
 					drawn : boolean := false;
 				begin
 					draw_contour (
-						area	=> in_area, 
 						contour	=> zone,
 						width	=> route_restrict_line_width, 
 						filled	=> YES,
@@ -777,7 +771,6 @@ is
 					drawn : boolean := false;
 				begin					
 					draw_contour (
-						area	=> in_area, 
 						contour	=> cutout,
 						width	=> route_restrict_line_width, 
 						filled	=> NO,
@@ -878,7 +871,6 @@ is
 					drawn : boolean := false;
 				begin
 					draw_contour (
-						area	=> in_area, 
 						contour	=> zone,
 						width	=> via_restrict_line_width, 
 						filled	=> YES,
@@ -890,7 +882,6 @@ is
 					drawn : boolean := false;
 				begin					
 					draw_contour (
-						area	=> in_area, 
 						contour	=> cutout,
 						width	=> via_restrict_line_width, 
 						filled	=> NO,
@@ -951,7 +942,6 @@ is
 				drawn : boolean := false;
 			begin
 				draw_contour (
-					area	=> in_area,
 					contour	=> element (c),
 					filled	=> NO,
 					width	=> pcb_contour_line_width,
@@ -1095,7 +1085,6 @@ is
 				set_color_tht_pad (context.cr, brightness);
 
 				draw_contour_with_circular_cutout (
-					area			=> in_area,
 					outer_border	=> outer_border,
 					inner_border	=> ib);
 
@@ -1109,7 +1098,6 @@ is
 				set_color_tht_pad (context.cr, brightness);
 
 				draw_contour_with_arbitrary_cutout (
-					area			=> in_area,
 					outer_border	=> outer_border,
 					inner_border	=> inner_border);
 				
@@ -1227,7 +1215,6 @@ is
 								set_color_conductor (context.cr, ly, brightness);
 								
 								draw_contour (
-									area	=> in_area,
 									contour	=> pad_outline,
 									filled	=> YES,
 									width	=> zero,
@@ -1277,7 +1264,6 @@ is
 								set_color_stop_mask (context.cr, f, self.scale, brightness);
 
 								draw_contour (
-									area	=> in_area,
 									contour	=> stop_mask_contours,
 									filled	=> YES,
 									width	=> zero,
@@ -1332,7 +1318,6 @@ is
 								set_color_stencil (context.cr, f, self.scale, brightness);
 								
 								draw_contour (
-									area	=> in_area,
 									contour	=> stencil_contours,
 									filled	=> YES,
 									width	=> zero,
@@ -1442,7 +1427,6 @@ is
 								
 								-- draw the outer contour of the stop mask opening
 								draw_contour (
-									area		=> in_area,
 									contour		=> stop_mask_contours,
 									filled		=> YES,
 									width		=> zero,

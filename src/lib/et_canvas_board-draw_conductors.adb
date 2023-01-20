@@ -227,7 +227,6 @@ is
 		if element (c).properties.layer = current_layer then
 
 			draw_contour (
-				area	=> area,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -252,7 +251,6 @@ is
 		if element (c).properties.layer = current_layer then
 			
 			draw_contour (
-				area	=> area,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -280,7 +278,6 @@ is
 		if zone.properties.layer = current_layer then
 	
 			draw_contour (
-				area	=> area,
 				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -311,7 +308,6 @@ is
 		if zone.properties.layer = current_layer then
 
 			draw_contour (
-				area	=> area,
 				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, -- because this is merely the contour of the zone !
@@ -344,7 +340,6 @@ is
 			--set_color_background (context.cr);
 			
 			draw_contour (
-				area	=> area,
 				contour	=> element (c),
 				style	=> DASHED,
 				filled	=> NO,

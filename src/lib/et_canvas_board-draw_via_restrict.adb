@@ -113,7 +113,6 @@ is
 		if via_restrict_layer_enabled (element (c).layers) then
 			
 			draw_contour (
-				area	=> in_area,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,
@@ -132,7 +131,6 @@ is
 			set_color_background (context.cr);
 			
 			draw_contour (
-				area	=> in_area,
 				contour	=> element (c),
 				filled	=> YES,
 				width	=> zero,

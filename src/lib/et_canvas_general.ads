@@ -1027,7 +1027,6 @@ package pac_canvas is
 
 	-- Draws a contour:
 	procedure draw_contour (
-		area	: in type_bounding_box;
 		contour	: in type_contour'class;
 		style	: in type_line_style := CONTINUOUS; -- don't care if filled is YES
 		filled	: in type_filled;
@@ -1044,13 +1043,11 @@ package pac_canvas is
 
 
 	procedure draw_contour_with_circular_cutout (
-		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
 		inner_border	: in pac_geometry_2.type_circle'class);
 
 	
 	procedure draw_contour_with_arbitrary_cutout (
-		area			: in type_bounding_box;
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class);
 	
