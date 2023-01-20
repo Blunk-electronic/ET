@@ -981,7 +981,7 @@ package pac_canvas is
 	
 	
 	-- This procedure draws the given line on the given context.
-	-- The line is shifted in y to a plane of given height. This plane
+	-- The line is shifted in y by a plane with frame height. This plane
 	-- has y-axis going downwards.
 	-- The line will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the line would be drawn in any case.
@@ -995,7 +995,7 @@ package pac_canvas is
 		
 
 	-- This procedure draws the given arc on the given context.
-	-- The arc is shifted in y to a plane of given height. This plane
+	-- The arc is shifted in y to a plane with frame height. This plane
 	-- has y-axis going downwards.
 	-- The arc will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the arc would be drawn in any case.
@@ -1005,8 +1005,7 @@ package pac_canvas is
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.
-		width	: in pac_geometry_2.type_distance_positive;
-		height	: in type_float_positive);
+		width	: in pac_geometry_2.type_distance_positive);
 
 	
 	-- This procedure draws the given circle on the given context.

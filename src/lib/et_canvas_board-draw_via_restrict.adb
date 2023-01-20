@@ -87,10 +87,7 @@ is
 			draw_arc (
 				area		=> in_area,
 				arc			=> to_arc_fine (element (c)),
-				width		=> et_via_restrict.via_restrict_line_width,
-				height		=> self.get_frame_height);
-
-			-- CS For some reason the arc is drawn filled. Should not be filled instead.
+				width		=> et_via_restrict.via_restrict_line_width);
 
 		end if;
 	end query_arc;

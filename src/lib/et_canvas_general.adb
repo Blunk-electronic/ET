@@ -2505,9 +2505,7 @@ package body pac_canvas is
 	procedure draw_arc (
 		area	: in type_bounding_box;
 		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
-		width	: in pac_geometry_2.type_distance_positive;
-		--		height	: in pac_shapes.pac_geometry_1.type_distance)
-		height	: in type_float_positive)
+		width	: in pac_geometry_2.type_distance_positive)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := get_boundaries (arc, width);

@@ -86,7 +86,7 @@ is
 		rotate_by (arc, unit_rotation);
 		move_by (arc, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_arc (in_area, to_arc_fine (arc), element (c).width, self.get_frame_height);
+		draw_arc (in_area, to_arc_fine (arc), element (c).width);
 	end draw_arc;
 
 	

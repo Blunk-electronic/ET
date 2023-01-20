@@ -77,8 +77,7 @@ is
 		draw_arc (
 			area		=> in_area,
 			arc			=> to_arc_fine (element (c)),
-			width		=> element (c).width,
-			height		=> self.get_frame_height);
+			width		=> element (c).width);
 
 	end query_arc;
 

@@ -207,7 +207,7 @@ is
 					arc : type_silk_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width, self.get_frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_silk_circles.cursor) is 
@@ -323,7 +323,7 @@ is
 					arc : type_doc_arc renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (arc.width));
-					draw_arc (in_area, to_arc_fine (arc), arc.width, self.get_frame_height);
+					draw_arc (in_area, to_arc_fine (arc), arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_doc_circles.cursor) is 
@@ -517,8 +517,7 @@ is
 					draw_arc (
 						area	=> in_area,
 						arc		=> to_arc_fine (arc),
-						width	=> arc.width,
-						height	=> self.get_frame_height);
+						width	=> arc.width);
 					
 				end query_arc;
 
@@ -648,8 +647,7 @@ is
 					draw_arc (
 						area	=> in_area,
 						arc		=> to_arc_fine (arc),
-						width	=> arc.width,
-						height	=> self.get_frame_height);
+						width	=> arc.width);
 					
 				end query_arc;
 
@@ -771,8 +769,7 @@ is
 					draw_arc (
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
-						width	=> arc.width, 
-						height	=> self.get_frame_height);
+						width	=> arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
@@ -891,8 +888,7 @@ is
 					draw_arc (
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
-						width	=> arc.width, 
-						height	=> self.get_frame_height);
+						width	=> arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
@@ -1047,8 +1043,7 @@ is
 					draw_arc (
 						area	=> in_area, 
 						arc		=> to_arc_fine (arc),
-						width	=> arc.width, 
-						height	=> self.get_frame_height);
+						width	=> arc.width);
 				end query_arc;
 
 				procedure query_circle (c : in pac_conductor_circles.cursor) is
