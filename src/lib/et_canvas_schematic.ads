@@ -224,9 +224,8 @@ package et_canvas_schematic is
 	
 	-- Redraw either the whole schematic sheet or a specific part of it only.
 	overriding procedure draw_internal (
-		self    : not null access type_view;
-		--context : type_draw_context;
-		area    : type_bounding_box);
+		self	: not null access type_view;
+		area_in	: type_bounding_box);
 
 
 	-- Sets the active module to be displayed in the canvas.

@@ -671,13 +671,14 @@ package pac_canvas is
 
 	context : type_draw_context;
 	frame_height : type_float_positive;
+	area : type_bounding_box;
 	
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
 	procedure draw_internal (
-		self    : not null access type_view;
-		area    : type_bounding_box) is null;
+		self	: not null access type_view;
+		area_in	: type_bounding_box) is null;
 
 	
 	procedure scale_to_fit (

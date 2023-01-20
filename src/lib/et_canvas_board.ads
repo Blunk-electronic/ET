@@ -197,8 +197,8 @@ package et_canvas_board is
 	
 	-- Redraws either the whole board view, or a specific part of it only:
 	overriding procedure draw_internal (
-		self    : not null access type_view;
-		area    : type_bounding_box);
+		self	: not null access type_view;
+		area_in	: type_bounding_box);
 
 
 	overriding procedure move_cursor (

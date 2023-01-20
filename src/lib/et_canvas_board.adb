@@ -754,13 +754,13 @@ package body et_canvas_board is
 	
 	procedure draw_internal (
 		self    : not null access type_view;
-		area    : type_bounding_box) 
-	is
+		area_in	: type_bounding_box) 
+	is		
 		-- The given area must be shifted (left and up) by the position
 		-- of the drawing frame. This is required for all objects in the 
 		-- drawing frame.
 		-- Take a copy of the given area:
-		area_shifted : type_bounding_box := area;
+		area_shifted : type_bounding_box := area_in;
 
 		-- Calculate the new position of area_shifted:
 		area_shifted_new_position : constant type_offset := to_offset (
@@ -924,7 +924,7 @@ package body et_canvas_board is
 		restore (context.cr);
 
 		if grid_enabled then
-			draw_grid (self, area);
+			draw_grid (self, area_in);
 		end if;
 		
 	end draw_internal;
