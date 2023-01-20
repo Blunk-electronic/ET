@@ -1058,7 +1058,6 @@ package pac_canvas is
 	-- The rectangle will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the rectangle would be drawn in any case.
 	procedure draw_rectangle (
-		area			: in type_bounding_box;
 		position		: in pac_geometry_2.type_point;	-- position of the rectangle (lower left corner)
 		width			: in type_float_positive; -- widht of the rectangle
 		height			: in type_float_positive; -- height of the rectangle

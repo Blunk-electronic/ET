@@ -2835,7 +2835,6 @@ package body pac_canvas is
 
 	
 	procedure draw_rectangle (
-		area			: in type_bounding_box;
 		position		: in pac_geometry_2.type_point; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
 		width			: in type_float_positive;

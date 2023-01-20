@@ -61,10 +61,9 @@ is
 			set_color_submodules (context.cr);
 
 			draw_rectangle (
-				area			=> in_area,
-				position		=> submod_position,
-				width			=> type_float_positive (element (cursor).size.x),
-				height			=> type_float_positive (element (cursor).size.y));
+				position	=> submod_position,
+				width		=> type_float_positive (element (cursor).size.x),
+				height		=> type_float_positive (element (cursor).size.y));
 								
 			cairo.stroke (context.cr);
 		end draw_box;
@@ -157,7 +156,6 @@ is
 				procedure draw_horizontal is begin
 					-- Draw the port horizontal:
 					draw_rectangle (
-						area			=> in_area,
 						position		=> pos,
 						width			=> port_symbol_width,
 						height			=> port_symbol_height);
@@ -167,7 +165,6 @@ is
 				procedure draw_vertical is begin
 					-- Draw the port vertical:					
 					draw_rectangle (
-						area			=> in_area,
 						position		=> pos,
 						width			=> port_symbol_height,
 						height			=> port_symbol_width);
