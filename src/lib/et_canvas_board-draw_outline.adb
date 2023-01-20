@@ -56,7 +56,6 @@ is
 		case element (c).shape is
 			when LINE =>
 				draw_line (
-					area		=> in_area,
 					line		=> to_line_fine (element (c).segment_line),
 					width		=> pcb_contour_line_width);
 

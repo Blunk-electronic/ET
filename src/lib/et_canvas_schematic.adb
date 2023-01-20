@@ -478,7 +478,6 @@ package body et_canvas_schematic is
 			procedure draw is begin
 				-- draw the net segment:
 				draw_line (
-					area		=> in_area,
 					line		=> to_line_fine (line),
 					width		=> net_line_width);
 					--height		=> type_float_positive (self.get_frame_height));
@@ -822,12 +821,10 @@ package body et_canvas_schematic is
 		set_color_cursor (context.cr);
 
 		draw_line (
-			area		=> in_area,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width));
 
 		draw_line (
-			area		=> in_area,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width));
 		

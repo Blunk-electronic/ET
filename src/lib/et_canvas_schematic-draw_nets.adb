@@ -403,7 +403,6 @@ is
 		if not contains (already_drawn_segments, element (s)) then
 			
 			draw_line (
-				area		=> in_area,
 				line		=> to_line_fine (element (s)),
 				width		=> net_line_width);
 
@@ -422,7 +421,6 @@ is
 		segment : in type_net_segment) 
 	is begin
 		draw_line (
-			area		=> in_area,
 			line		=> to_line_fine (segment),
 			width		=> net_line_width);
 
@@ -702,7 +700,6 @@ is
 				end case;
 
 				draw_line (
-					area		=> in_area,
 					line		=> to_line_fine (copy_of_original_segment),
 					width		=> net_line_width);
 

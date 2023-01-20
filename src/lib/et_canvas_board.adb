@@ -473,8 +473,8 @@ package body et_canvas_board is
 		
 			set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
-			draw_line (in_area, line_horizontal, origin_line_width);			
-			draw_line (in_area, line_vertical, origin_line_width);
+			draw_line (line_horizontal, origin_line_width);			
+			draw_line (line_vertical, origin_line_width);
 
 		--end if;
 	end draw_text_origin;
@@ -741,8 +741,7 @@ package body et_canvas_board is
 	
 	-- Draws objects in conductor layers (incl. vias):
 	procedure draw_conductors (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
@@ -831,7 +830,7 @@ package body et_canvas_board is
 			draw_route_restrict (self, area);
 			draw_via_restrict (self, area);
 			
-			draw_conductors (self, area);
+			draw_conductors (self);
 
 			-- CS unrouted
 		end draw_conductor_layers;
@@ -1029,12 +1028,10 @@ package body et_canvas_board is
 		set_color_cursor (context.cr);
 
 		draw_line (
-			area		=> in_area,
 			line		=> to_line_fine (lh),
 			width		=> type_distance_positive (width));
 
 		draw_line (
-			area		=> in_area,
 			line		=> to_line_fine (lv),
 			width		=> type_distance_positive (width));
 		

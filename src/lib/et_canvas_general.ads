@@ -984,10 +984,9 @@ package pac_canvas is
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y by a plane with frame height. This plane
 	-- has y-axis going downwards.
-	-- The line will be drawn if its bounding box intersects the given area.
+	-- The line will be drawn if its bounding box intersects the global area.
 	-- If area is no_rectangle then the line would be drawn in any case.
 	procedure draw_line (
-		area	: in type_bounding_box;	
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 
 		-- The line width is used for calculating the boundaries.

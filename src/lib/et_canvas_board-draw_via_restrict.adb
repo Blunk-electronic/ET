@@ -70,7 +70,6 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 			draw_line (
-				area		=> in_area,
 				line		=> to_line_fine (element (c)),
 				width		=> et_via_restrict.via_restrict_line_width);
 

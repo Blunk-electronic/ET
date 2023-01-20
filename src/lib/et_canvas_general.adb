@@ -2273,7 +2273,6 @@ package body pac_canvas is
 	
 	
 	procedure draw_line (
-		area	: in type_bounding_box;
 		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
 		width	: in pac_geometry_2.type_distance_positive)
 	is
@@ -3307,8 +3306,7 @@ package body pac_canvas is
 				x => type_distance_positive (element (cursor).end_point.x + tb_pos.x),
 				y => type_distance_positive (element (cursor).end_point.y + tb_pos.y)));
 
-			draw_line (area, to_line_fine (line),
-						type_distance_positive (line_width_thin));
+			draw_line (to_line_fine (line), type_distance_positive (line_width_thin));
 
 		end query_line;
 		
@@ -3329,7 +3327,7 @@ package body pac_canvas is
 		-- for better performance
 
 		procedure draw_line is begin
-			draw_line (area, to_line_fine (line), type_distance_positive (line_width_thin));
+			draw_line (to_line_fine (line), type_distance_positive (line_width_thin));
 		end draw_line;
 
 	begin
@@ -3466,9 +3464,7 @@ package body pac_canvas is
 		-- for better performance
 
 		procedure draw_line is begin
-			draw_line (area, to_line_fine (line),
-					   type_distance_positive (line_width_thin));
-					   --type_float_positive (frame_size.y));
+			draw_line (to_line_fine (line), type_distance_positive (line_width_thin));
 		end draw_line;
 		
 		

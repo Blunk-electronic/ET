@@ -75,7 +75,7 @@ is
 		rotate_by (line, unit_rotation);
 		move_by (line, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_line (in_area, to_line_fine (line), element (c).width);
+		draw_line (to_line_fine (line), element (c).width);
 	end draw_line;
 
 	
@@ -304,7 +304,7 @@ is
 		move_by (line, to_distance_relative (unit_position));
 		
 		-- Draw the line of the port:
-		draw_line (in_area, to_line_fine (line), port_line_width);
+		draw_line (to_line_fine (line), port_line_width);
 
 
 		-- Draw the circle around a port if the layer is enabled:
@@ -502,8 +502,8 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		draw_line (in_area, to_line_fine (line_horizontal), et_symbols.origin_line_width);
-		draw_line (in_area, to_line_fine (line_vertical), et_symbols.origin_line_width);
+		draw_line (to_line_fine (line_horizontal), et_symbols.origin_line_width);
+		draw_line (to_line_fine (line_vertical), et_symbols.origin_line_width);
 	end draw_origin;
 
 	

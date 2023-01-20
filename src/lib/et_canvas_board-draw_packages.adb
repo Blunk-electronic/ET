@@ -171,8 +171,8 @@ is
 				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text_board.origin_line_width));
-				draw_line (in_area, line_horizontal, pac_text_board.origin_line_width);
-				draw_line (in_area, line_vertical, pac_text_board.origin_line_width);
+				draw_line (line_horizontal, pac_text_board.origin_line_width);
+				draw_line (line_vertical, pac_text_board.origin_line_width);
 
 				-- Restore context setting of caller. See comment above.
 				restore (context.cr);
@@ -200,7 +200,7 @@ is
 					line : type_silk_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, to_line_fine (line), line.width);
+					draw_line (to_line_fine (line), line.width);
 				end query_line;
 
 				procedure query_arc (c : in pac_silk_arcs.cursor) is 
@@ -313,7 +313,7 @@ is
 					line : type_doc_line renames element (c);
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
-					draw_line (in_area, to_line_fine (line), line.width);
+					draw_line (to_line_fine (line), line.width);
 				end query_line;
 
 				procedure query_arc (c : in pac_doc_arcs.cursor) is 
@@ -494,7 +494,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					
 					draw_line (
-						area	=> in_area,
 						line	=> to_line_fine (line),
 						width	=> line.width);
 					
@@ -621,7 +620,6 @@ is
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					
 					draw_line (
-						area	=> in_area,
 						line	=> to_line_fine (line),
 						width	=> line.width);
 					
@@ -745,7 +743,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
-						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width);
 				end query_line;
@@ -861,7 +858,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
-						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width);
 				end query_line;
@@ -1012,7 +1008,6 @@ is
 				begin
 					set_line_width (context.cr, type_view_coordinate (line.width));
 					draw_line (
-						area	=> in_area, 
 						line	=> to_line_fine (line),
 						width	=> line.width);
 				end query_line;
@@ -1695,8 +1690,8 @@ is
 
 					set_color_origin (context.cr, brightness);
 					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
-					draw_line (in_area, line_horizontal, et_packages.origin_line_width);
-					draw_line (in_area, line_vertical, et_packages.origin_line_width);
+					draw_line (line_horizontal, et_packages.origin_line_width);
+					draw_line (line_vertical, et_packages.origin_line_width);
 
 				end if;
 			end if;
