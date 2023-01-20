@@ -161,7 +161,6 @@ is
 		case element (label).appearance is
 			when SIMPLE =>
 				draw_text (
-					area		=> in_area,
 					content		=> to_content (to_string (net)),
 					size		=> element (label).size,
 					font		=> net_label_font,
@@ -189,7 +188,6 @@ is
 		--case element (label).appearance is
 			--when SIMPLE =>
 				draw_text (
-					area		=> in_area,
 					content		=> to_content (to_string (net)),
 					size		=> label.size,
 					font		=> net_label_font,
@@ -246,7 +244,6 @@ is
 							--l.rotation_simple := label.rotation_simple;
 							
 							draw_text (
-								area		=> in_area,
 								content		=> to_content (to_string (selected_net)),
 								size		=> l.size,
 								font		=> net_label_font,

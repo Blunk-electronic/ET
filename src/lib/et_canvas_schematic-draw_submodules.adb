@@ -79,7 +79,6 @@ is
 			move_by (position, offset);
 			
 			draw_text (
-				area		=> in_area,
 				content		=> et_text.to_content ("instance: " & to_string (key (cursor))),
 				size		=> instance_font_size,
 				font		=> instance_font,
@@ -101,7 +100,6 @@ is
 			move_by (position, offset);
 			
 			draw_text (
-				area		=> in_area,
 				content		=> et_text.to_content ("file: " & to_string (element (cursor).file)),
 				size		=> file_font_size,
 				font		=> file_font,
@@ -133,7 +131,6 @@ is
 			move_by (position, offset);
 			
 			draw_text (
-				area		=> in_area,
 				content		=> et_text.to_content (text),
 				size		=> position_board_font_size,
 				font		=> position_board_font,
@@ -188,7 +185,6 @@ is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -199,7 +195,6 @@ is
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -219,7 +214,6 @@ is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -230,7 +224,6 @@ is
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -250,7 +243,6 @@ is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -261,7 +253,6 @@ is
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
@@ -281,7 +272,6 @@ is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
@@ -292,7 +282,6 @@ is
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,

@@ -1118,7 +1118,6 @@ is
 					set_color_terminal_name (context.cr, brightness);
 					
 					draw_text (
-						area		=> in_area,
 						content		=> to_content (name),
 						size		=> terminal_name_size,
 						font		=> terminal_name_font,
@@ -1161,7 +1160,6 @@ is
 							set_color_terminal_name (context.cr, brightness);
 							
 							draw_text (
-								area		=> in_area,
 								content		=> to_content (name),
 								size		=> terminal_name_size,
 								font		=> terminal_name_font,

@@ -1100,11 +1100,9 @@ package pac_canvas is
 
 	
 	-- Draws a text in the drawing plane.
-	-- Draws the text in case it is inside the given area or if the
-	-- text intersects the given area.
-	-- If area is no_rectangle then the text would be drawn in any case.
+	-- Draws the text in case it is inside the global area or if the
+	-- text intersects the global area.
 	procedure draw_text (
-		area		: in type_bounding_box; -- in model plane
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;

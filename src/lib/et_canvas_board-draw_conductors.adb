@@ -465,7 +465,6 @@ is
 				set_color_via_net_name (context.cr);
 
 				draw_text (
-					area		=> area,
 					content		=> to_content (to_string (net_name)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
@@ -493,7 +492,6 @@ is
 			set_color_via_layers (context.cr);
 
 			draw_text (
-				area		=> area,
 				content		=> to_content (from & "-" & to),
 				size		=> radius_base * text_size_factor,
 				font		=> via_text_font,
@@ -523,7 +521,6 @@ is
 				set_color_via_drill_size (context.cr); -- CS
 
 				draw_text (
-					area		=> area,
 					content		=> to_content (to_string (element (v).diameter)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,

@@ -51,7 +51,6 @@ is
 		if element (cursor).sheet = current_active_sheet then
 
 			draw_text (
-				area		=> in_area,
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
 				font		=> text_font,

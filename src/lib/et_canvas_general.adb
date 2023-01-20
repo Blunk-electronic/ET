@@ -3111,7 +3111,6 @@ package body pac_canvas is
 
 	
 	procedure draw_text (
-		area		: in type_bounding_box;
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
@@ -3439,7 +3438,6 @@ package body pac_canvas is
 			pos		: in pac_geometry_2.type_point) 
 		is begin
 			draw_text (
-				area		=> area,
 				content		=> content,
 				size		=> type_distance_positive (font_indexes_size),
 				font		=> font_indexes,
@@ -3615,7 +3613,6 @@ package body pac_canvas is
 
 	begin
 		draw_text (
-			area		=> area,
 			content		=> content,
 			size		=> type_distance_positive (size),
 			font		=> font,

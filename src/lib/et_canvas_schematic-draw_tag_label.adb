@@ -120,7 +120,6 @@ begin
 	
 		
 	draw_text (
-		area		=> in_area,
 		content		=> content,
 		size		=> label.size,
 		font		=> net_label_font,

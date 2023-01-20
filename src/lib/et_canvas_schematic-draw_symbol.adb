@@ -144,7 +144,6 @@ is
 			set_color_symbols (context.cr, brightness);
 
 			draw_text (
-				area		=> in_area,
 				content		=> to_content (to_string (key (c))),
 				size		=> element (c).port_name_size,
 				font		=> et_symbols.text_font,
@@ -212,7 +211,6 @@ is
 				port_name		=> key (c));
 
 			draw_text (
-				area		=> in_area,
 				content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
 				size		=> element (c).terminal_name_size,
 				font		=> et_symbols.text_font,
@@ -365,7 +363,6 @@ is
 		move_by (p, to_distance_relative (unit_position));
 		
 		draw_text (
-			area		=> in_area,
 			content		=> element (c).content,
 			size		=> element (c).size,
 			font		=> et_symbols.text_font,
@@ -400,7 +397,6 @@ is
 			move_by (p, to_distance_relative (unit_position));
 			
 			draw_text (
-				area		=> in_area,
 				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 				size		=> symbol.name.size,
 				font		=> name_font,
@@ -427,7 +423,6 @@ is
 				move_by (p, to_distance_relative (unit_position));
 				
 				draw_text (
-					area		=> in_area,
 					content		=> to_content (to_string (device_value)), -- 100R
 					size		=> symbol.value.size,
 					font		=> value_font,
@@ -455,7 +450,6 @@ is
 				move_by (p, to_distance_relative (unit_position));
 				
 				draw_text (
-					area		=> in_area,
 					content		=> to_content (to_string (device_purpose)), -- "brightness control"
 					size		=> symbol.purpose.size,
 					font		=> purpose_font,
