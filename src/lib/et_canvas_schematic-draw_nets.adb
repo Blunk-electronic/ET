@@ -45,8 +45,7 @@ with ada.containers.doubly_linked_lists;
 separate (et_canvas_schematic)
 
 procedure draw_nets (
-	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area)
+	self    : not null access type_view)
 is
 	use et_schematic;
 	use et_nets;
@@ -174,7 +173,7 @@ is
 					alignment	=> net_label_alignment);
 
 			when TAG =>
-				draw_tag_label (self, in_area, net, element (label));
+				draw_tag_label (self, net, element (label));
 
 		end case;
 	end draw_label;
@@ -286,7 +285,7 @@ is
 									label.finalizing_granted := false;
 								end if;
 
-								draw_tag_label (self, in_area, selected_net, l);
+								draw_tag_label (self, selected_net, l);
 							end;
 							
 					end case;

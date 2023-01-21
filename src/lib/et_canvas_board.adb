@@ -909,7 +909,7 @@ package body et_canvas_board is
 		-- are visible regardless of areas drawn with the 
 		-- cairo CLEAR operator:
 		
-		draw_cursor (self, area, cursor_main);
+		draw_cursor (self, cursor_main);
 		restore (context.cr);
 
 		-- Restore context to draw the grid:
@@ -977,7 +977,6 @@ package body et_canvas_board is
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
 		cursor		: in type_cursor)
 	is
 		lh : type_cursor_line; -- the horizontal line

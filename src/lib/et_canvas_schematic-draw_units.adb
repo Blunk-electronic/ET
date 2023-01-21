@@ -38,8 +38,7 @@
 separate (et_canvas_schematic)
 
 procedure draw_units (
-	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area)
+	self	: not null access type_view)
 is
 	use et_schematic;
 	use pac_devices_sch;
@@ -212,7 +211,6 @@ is
 					symbol_cursor := locate (symbol_model);
 					draw_symbol (
 						self		=> self,
-						in_area		=> in_area,
 						
 						symbol		=> pac_symbols.element (symbol_cursor),
 
@@ -239,7 +237,6 @@ is
 					-- directly from the unit:
 					draw_symbol (
 						self		=> self,
-						in_area		=> in_area,
 						
 						symbol		=> element (unit_cursor.internal).symbol,
 
@@ -569,7 +566,6 @@ is
 						
 					draw_symbol (
 						self		=> self,
-						in_area		=> in_area,
 						
 						symbol		=> pac_symbols.element (symbol_cursor),
 
@@ -597,7 +593,6 @@ is
 					
 					draw_symbol (
 						self		=> self,
-						in_area		=> in_area,
 						
 						symbol		=> element (unit_cursor.internal).symbol,
 

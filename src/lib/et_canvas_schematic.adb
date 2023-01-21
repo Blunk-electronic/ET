@@ -417,27 +417,23 @@ package body et_canvas_schematic is
 	
 	procedure draw_tag_label (
 		self	: not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label) is separate;
 
 	
 	procedure draw_nets (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
 	procedure draw_texts (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
 	-- Draws a single symbol of the given device:
 	procedure draw_symbol (
 		self			: not null access type_view;
-		in_area			: in type_bounding_box := no_area;
 		symbol			: in et_symbols.type_symbol;
 		device_name		: in et_devices.type_device_name := (others => <>);
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
@@ -458,14 +454,12 @@ package body et_canvas_schematic is
 		
 	-- Draws all units:
 	procedure draw_units (
-		self	: not null access type_view;
-		in_area	: in type_bounding_box := no_area) 
+		self	: not null access type_view) 
 		is separate;
 
 
 	procedure draw_net_route_being_drawn (
-		self	: not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self	: not null access type_view)
 	is
 		use et_nets;
 		line : pac_geometry_2.type_line;
@@ -550,8 +544,7 @@ package body et_canvas_schematic is
 	
 	
 	procedure draw_submodules (
-		self	: not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self	: not null access type_view)
 		is separate;
 
 	
@@ -604,25 +597,25 @@ package body et_canvas_schematic is
 			convert_y (self.frame_bounding_box.y));
 
 		
-		draw_units (self, area);
+		draw_units (self);
 		
 		draw_frame (self, area);
 		
 		-- Draw nets if layer is enabled:
 		if nets_enabled then
-			draw_nets (self, area);
+			draw_nets (self);
 		end if;
 
 		-- Draw texts if layer is enabled:
 		if texts_enabled then
-			draw_texts (self, area);
+			draw_texts (self);
 		end if;
 		
-		draw_submodules (self, area);
+		draw_submodules (self);
 
-		draw_net_route_being_drawn (self, area);
+		draw_net_route_being_drawn (self);
 		
-		draw_cursor (self, area, cursor_main);
+		draw_cursor (self, cursor_main);
 		
 		restore (context.cr);
 		
@@ -782,8 +775,6 @@ package body et_canvas_schematic is
 	
 	procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
-		--context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is
 		lh : type_cursor_line; -- the horizontal line

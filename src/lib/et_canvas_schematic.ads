@@ -286,7 +286,6 @@ package et_canvas_schematic is
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
 		cursor		: in type_cursor);
 
 	overriding function get_grid (

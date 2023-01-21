@@ -39,7 +39,6 @@ separate (et_canvas_schematic)
 
 procedure draw_symbol (
 	self			: not null access type_view;
-	in_area			: in type_bounding_box := no_area;
 	symbol			: in et_symbols.type_symbol;
 	device_name		: in et_devices.type_device_name := (others => <>);
 	device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084

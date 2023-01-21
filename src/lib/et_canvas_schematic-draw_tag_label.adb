@@ -39,7 +39,6 @@ separate (et_canvas_schematic)
 
 procedure draw_tag_label (
 	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area;
 	net		: in pac_net_name.bounded_string;
 	label	: in type_net_label)
 is

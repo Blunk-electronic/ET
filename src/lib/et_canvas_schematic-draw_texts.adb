@@ -41,8 +41,7 @@ use et_schematic.pac_texts;
 separate (et_canvas_schematic)
 
 procedure draw_texts (
-	self	: not null access type_view;
-	in_area	: in type_bounding_box := no_area)
+	self	: not null access type_view)
 is
 
 	procedure query_text (cursor : in pac_texts.cursor) is begin
