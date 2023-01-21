@@ -204,6 +204,8 @@ package et_canvas_board_devices is
 
 
 	
+-- MOVE:	
+	
 	-- Assigns the final position after the move to the selected 
 	-- electrical device.
 	-- Resets global variable electrical_device_move:
@@ -215,8 +217,18 @@ package et_canvas_board_devices is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+	
+	procedure move_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+	
+	procedure move_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+
 
 	
+-- ROTATION:
 	
 	default_rotation : constant type_rotation := 90.0;
 	
@@ -231,6 +243,18 @@ package et_canvas_board_devices is
 		log_threshold	: in type_log_level);
 
 
+	procedure rotate_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+	
+	procedure rotate_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+
+	
+
+
+-- FLIP / MIRROR:
 	
 	-- Flips the selected electrical device.
 	-- Resets global variable electrical_device_move:
@@ -240,11 +264,30 @@ package et_canvas_board_devices is
 	procedure finalize_flip_non_electrical (
 		log_threshold	: in type_log_level);
 
+	procedure flip_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+	
+	procedure flip_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
 
+
+
+-- DELETE:
+	
 	-- Deletes the selected non-electrical device.
 	procedure finalize_delete_non_electrical (
 		log_threshold	: in type_log_level);
 
+
+	procedure delete_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point);
+
+	
+
+	
 	
 end et_canvas_board_devices;
 

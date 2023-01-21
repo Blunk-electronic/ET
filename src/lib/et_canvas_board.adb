@@ -1210,24 +1210,7 @@ package body et_canvas_board is
 				when GDK_Space =>		
 					case noun is
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-
-								-- Set the tool being used for moving the unit:
-								non_electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (cursor_main.position);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally delete the selected device:
-								et_canvas_board_devices.finalize_delete_non_electrical (
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							delete_non_electrical_device (KEYBOARD, cursor_main.position);
 							
 						when others => null;
 					end case;		
@@ -1277,46 +1260,11 @@ package body et_canvas_board is
 				-- If space pressed then the operator wishes to operate by keyboard:
 				when GDK_Space =>		
 					case noun is
-						when NOUN_DEVICE =>							
-							if not electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (cursor_main.position);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_flip_electrical (
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+						when NOUN_DEVICE =>				
+							flip_electrical_device (KEYBOARD, cursor_main.position);
 
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								non_electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (cursor_main.position);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_flip_non_electrical (
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							flip_non_electrical_device (KEYBOARD, cursor_main.position);
 							
 						when others => null;
 					end case;		
@@ -1356,50 +1304,11 @@ package body et_canvas_board is
 				-- If space pressed then the operator wishes to operate by keyboard:
 				when GDK_Space =>		
 					case noun is
-						when NOUN_DEVICE =>							
-							if not electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (cursor_main.position);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected device:
-								finalize_move_electrical (
-									destination		=> cursor_main.position,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+						when NOUN_DEVICE =>		
+							move_electrical_device (KEYBOARD, cursor_main.position);
 							
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								non_electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (cursor_main.position);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally move the selected device:
-								finalize_move_non_electrical (
-									destination		=> cursor_main.position,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+							move_non_electrical_device (KEYBOARD, cursor_main.position);
 							
 						when others => null;
 					end case;		
@@ -1487,49 +1396,11 @@ package body et_canvas_board is
 				-- by keyboard:
 				when GDK_Space =>		
 					case noun is
-						when NOUN_DEVICE =>							
-							if not electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (cursor_main.position);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_rotate_electrical (
-									-- uses default rotation of 90 CCW
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+						when NOUN_DEVICE =>
+							rotate_electrical_device (KEYBOARD, cursor_main.position);
 
 						when NOUN_NON_ELECTRICAL_DEVICE =>							
-							if not non_electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								non_electrical_device_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (cursor_main.position);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_rotate_non_electrical (
-									-- uses default rotation of 90 CCW
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+							rotate_non_electrical_device (KEYBOARD, cursor_main.position);
 							
 						when others => null;
 					end case;		
@@ -1715,6 +1586,8 @@ package body et_canvas_board is
 		
 	end evaluate_key;
 
+
+	
 	
 	procedure evaluate_mouse_position (
 		self	: not null access type_view;
@@ -1757,6 +1630,8 @@ package body et_canvas_board is
 		
 	end evaluate_mouse_position;
 
+
+	
 	
 	procedure button_pressed (
 		self	: not null access type_view;
@@ -1775,41 +1650,10 @@ package body et_canvas_board is
 				when VERB_FLIP =>
 					case noun is
 						when NOUN_DEVICE =>
-							if not electrical_device_move.being_moved then
-								-- Set the tool being used:
-								electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (point);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally flip the currently selected device:
-								et_canvas_board_devices.finalize_flip_electrical (
-									log_threshold	=> log_threshold + 1);
-							end if;
-
+							flip_electrical_device (MOUSE, point);
 							
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-								-- Set the tool being used:
-								non_electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (point);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally flip the currently selected device:
-								et_canvas_board_devices.finalize_flip_non_electrical (
-									log_threshold	=> log_threshold + 1);
-							end if;
+							flip_non_electrical_device (MOUSE, point);
 							
 						when others => null;
 					end case;
@@ -1818,45 +1662,10 @@ package body et_canvas_board is
 				when VERB_MOVE =>
 					case noun is
 						when NOUN_DEVICE =>
-							if not electrical_device_move.being_moved then
-								-- Set the tool being used:
-								electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (point);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally assign the pointer position to the
-								-- currently selected device:
-								finalize_move_electrical (
-									destination		=> snap_point,
-									log_threshold	=> log_threshold + 1);
-							end if;
-
+							move_electrical_device (MOUSE, point);
 
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-								-- Set the tool being used:
-								non_electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (point);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally flip the currently selected device:
-								finalize_move_non_electrical (
-									destination		=> snap_point,
-									log_threshold	=> log_threshold + 1);
-							end if;
-
+							move_non_electrical_device (MOUSE, point);
 							
 						when others => null;
 					end case;
@@ -1877,48 +1686,10 @@ package body et_canvas_board is
 				when VERB_ROTATE =>
 					case noun is
 						when NOUN_DEVICE =>
-							if not electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_electrical_devices_for_move (point);
-								else
-									electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_rotate_electrical (
-									-- uses default rotation of 90 CCW
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+							rotate_electrical_device (MOUSE, point);
 
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-
-								-- Set the tool being used:
-								non_electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (point);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally rotate the selected device:
-								finalize_rotate_non_electrical (
-									-- uses default rotation of 90 CCW
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
+							rotate_non_electrical_device (MOUSE, point);
 							
 						when others => null;
 					end case;
@@ -1927,22 +1698,7 @@ package body et_canvas_board is
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_NON_ELECTRICAL_DEVICE =>
-							if not non_electrical_device_move.being_moved then
-								-- Set the tool being used for moving the device:
-								non_electrical_device_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_non_electrical_devices_for_move (point);
-								else
-									non_electrical_device_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally delete the currently selected device:
-								et_canvas_board_devices.finalize_delete_non_electrical (
-									log_threshold	=> log_threshold + 1);
-							end if;
+							delete_non_electrical_device (MOUSE, point);
 							
 						when others => null;
 					end case;

@@ -406,6 +406,9 @@ package body et_canvas_board_devices is
 	end find_non_electrical_devices_for_move;
 
 
+
+	
+-- MOVE:
 	
 	procedure finalize_move_electrical (
 		destination		: in type_point;
@@ -477,8 +480,64 @@ package body et_canvas_board_devices is
 	end finalize_move_non_electrical;
 
 
+
+	procedure move_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_electrical_devices_for_move (position);
+			else
+				electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected device:
+			finalize_move_electrical (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_electrical_device;
+
+
+	
+	procedure move_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not non_electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			non_electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_non_electrical_devices_for_move (position);
+			else
+				non_electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected device:
+			finalize_move_non_electrical (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_non_electrical_device;
+
+
+
 	
 	
+-- ROTATE:
 
 	procedure finalize_rotate_electrical (
 		rotation		: in type_rotation := default_rotation;
@@ -550,6 +609,64 @@ package body et_canvas_board_devices is
 	end finalize_rotate_non_electrical;
 
 
+
+
+	procedure rotate_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_electrical_devices_for_move (position);
+			else
+				electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally rotate the selected device:
+			finalize_rotate_electrical (
+				-- uses default rotation of 90 CCW
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+
+	end rotate_electrical_device;
+
+
+	
+	procedure rotate_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not non_electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			non_electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_non_electrical_devices_for_move (position);
+			else
+				non_electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally rotate the selected device:
+			finalize_rotate_non_electrical (
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end rotate_non_electrical_device;
+
+
+	
+
+-- FLIP / MIRROR:
 	
 	procedure finalize_flip_electrical (
 		log_threshold	: in type_log_level)
@@ -624,6 +741,61 @@ package body et_canvas_board_devices is
 
 
 
+	procedure flip_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_electrical_devices_for_move (position);
+			else
+				electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally rotate the selected device:
+			finalize_flip_electrical (
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+
+	end flip_electrical_device;
+
+
+	
+	procedure flip_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not non_electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			non_electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_non_electrical_devices_for_move (position);
+			else
+				non_electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally rotate the selected device:
+			finalize_flip_non_electrical (
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end flip_non_electrical_device;
+
+	
+
+-- DELETE:	
+
 	procedure finalize_delete_non_electrical (
 		log_threshold	: in type_log_level)
 	is
@@ -656,6 +828,30 @@ package body et_canvas_board_devices is
 	end finalize_delete_non_electrical;
 
 	
+	procedure delete_non_electrical_device (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not non_electrical_device_move.being_moved then
+
+			-- Set the tool being used:
+			non_electrical_device_move.tool := tool;
+			
+			if not clarification_pending then
+				find_non_electrical_devices_for_move (position);
+			else
+				non_electrical_device_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally delete the selected device:
+			finalize_delete_non_electrical (
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end delete_non_electrical_device;
+
 	
 end et_canvas_board_devices;
 
