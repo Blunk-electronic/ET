@@ -76,6 +76,7 @@ package et_canvas_schematic_nets is
 		segment	: pac_net_segments.cursor;
 	end record;
 
+	
 	-- Deletes a selected segment of a net.
 	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -90,16 +91,20 @@ package et_canvas_schematic_nets is
 	proposed_segments	: pac_proposed_segments.list;
 	selected_segment	: pac_proposed_segments.cursor;
 
+	
 	-- Returns the name of the net of the selected_segment:
 	function selected_net return pac_net_name.bounded_string;
 	-- CS rename to get_selected_net
 
+	
 	-- Returns the position of the strand of the selected segment:
 	function get_strand_position return et_coordinates.type_position;
 
+	
 	-- Clears the list of proposed segments.
 	-- Resets selected_segment to no_element.
 	procedure clear_proposed_segments;
+
 	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
@@ -107,34 +112,40 @@ package et_canvas_schematic_nets is
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string; -- N$3
+
 	
 	-- Returns the net name of the first segment in 
 	-- given list of net segments.
 	-- If the given list is empty then an empty net name will be returned.
 	function first_net (segments : in pac_proposed_segments.list) 
 		return pac_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
+
 	
 	-- Returns true if segments contains more than one segment:
 	function more_than_one (segments : in pac_proposed_segments.list) return boolean;
 
+	
 	-- Tests if all given segments belong to the same net. 
 	-- Returns false if net names differ.
 	function all_belong_to_same_net (
 		segments	: in pac_proposed_segments.list)
 		return boolean;
 
+	
 	-- Tests if point sits between start and end point of any of the given segments.
 	-- Returns true in that case.
 	function between_start_and_end_point_of_sloping_segment (
 		point		: in type_point;
 		segments	: in pac_proposed_segments.list)
 		return boolean;
+
 	
 -- 	-- Deletes a selected segment of a net.
 -- 	procedure delete_selected_segment (
 -- 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 -- 		segment			: in type_selected_segment; -- net/strand/segment
 -- 		log_threshold	: in type_log_level);
+
 	
 	-- Collects all net segments in the vicinity of the given point:
 	function collect_segments (
@@ -167,6 +178,7 @@ package et_canvas_schematic_nets is
 	procedure delete_selected_net_segment;
 
 
+	
 -- DRAW NET SEGMENT
 
 	status_draw_net : constant string := 
@@ -226,6 +238,7 @@ package et_canvas_schematic_nets is
 		log_threshold	: in type_log_level)
 		return boolean;
 
+	
 
 -- DRAG/MOVE NET SEGMENT
 
@@ -243,6 +256,14 @@ package et_canvas_schematic_nets is
 
 	segment : type_segment;
 
+
+	-- This procedure:
+	-- - Clears list of proposed segments.
+	-- - Sets global variable selected_segment.
+	-- - resets global variable "segment" to its default values
+	procedure reset_segment;
+
+	
 	
 	status_drag : constant string := 
 		status_click_left 
@@ -298,11 +319,6 @@ package et_canvas_schematic_nets is
 
 	
 	
-	-- This procedure:
-	-- - Clears list of proposed segments.
-	-- - Sets global variable selected_segment.
-	-- - resets global variable "segment" to its default values
-	procedure reset_segment;
 
 	-- Assigns the given destination after the drag to the selected segment.
 	-- Resets the global variable "segment".
@@ -316,7 +332,11 @@ package et_canvas_schematic_nets is
 	-- for clarification.
 	procedure find_segments (point : in type_point);
 
+	procedure drag_segment (
+		tool		: in type_tool;
+		position	: in type_point);
 
+	
 -- NET LABELS
 
 	-- Global information for the GUI when a label is being

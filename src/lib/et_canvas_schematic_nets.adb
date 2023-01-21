@@ -663,6 +663,13 @@ package body et_canvas_schematic_nets is
 	end valid_for_net_segment;
 
 
+	procedure reset_segment is begin
+		segment := (others => <>);
+		clear_proposed_segments;
+	end reset_segment;
+
+	
+
 	-- Called when the operator presses ENTER after typing a property in
 	-- the properties window.
 	-- The properties window will remain open until the operator enters 
@@ -781,10 +788,6 @@ package body et_canvas_schematic_nets is
 	
 -- DRAG/MOVE NET SEGMENT
 
-	procedure reset_segment is begin
-		segment := (others => <>);
-		clear_proposed_segments;
-	end reset_segment;
 
 	
 	procedure finalize_drag (
@@ -966,6 +969,33 @@ package body et_canvas_schematic_nets is
 	end find_segments;
 
 
+	procedure drag_segment (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not segment.being_moved then
+			
+			-- Set the tool being used for dragging the net segment:
+			segment.tool := tool;
+			
+			if not clarification_pending then
+				find_segments (position);
+				segment.point_of_attack := position;
+			else
+				segment.being_moved := true;
+				reset_request_clarification;
+			end if;
+
+		else
+			-- Finally assign the cursor position to the
+			-- currently selected segment:
+			finalize_drag (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+		end if;		
+	end drag_segment;
+
+	
 	
 -- NET LABLES
 

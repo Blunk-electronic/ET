@@ -1028,6 +1028,7 @@ package body et_canvas_schematic is
 
 		use et_modes;
 
+		
 		procedure delete is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1097,6 +1098,7 @@ package body et_canvas_schematic is
 			end case;
 		end delete;
 
+		
 		procedure drag is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1122,31 +1124,11 @@ package body et_canvas_schematic is
 		
 					case noun is
 						when NOUN_NET =>
-							if not segment.being_moved then
-
-								-- When dragging net segments, we enforce the default grid
-								-- and snap the cursor position to the default grid:
-								self.reset_grid_and_cursor;
-								
-								-- Set the tool being used for moving the segment:
-								segment.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_segments (cursor_main.position);
-									segment.point_of_attack := cursor_main.position;
-								else
-									segment.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected segment:
-								et_canvas_schematic_nets.finalize_drag (
-									destination		=> cursor_main.position,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							-- When dragging net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							drag_segment (KEYBOARD, cursor_main.position);
+						
 
 						when NOUN_UNIT =>
 							if not unit_move.being_moved then
@@ -1198,8 +1180,8 @@ package body et_canvas_schematic is
 					
 				when others => status_noun_invalid;
 			end case;
-
 		end drag;
+
 		
 		procedure draw is begin
 			case key is
@@ -1244,6 +1226,7 @@ package body et_canvas_schematic is
 			end case;
 		end draw;
 
+		
 		procedure move is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1482,6 +1465,7 @@ package body et_canvas_schematic is
 			end case;
 		end move;
 
+		
 		procedure place is 
 			use et_schematic;
 		begin
@@ -1558,6 +1542,7 @@ package body et_canvas_schematic is
 				when others => status_noun_invalid;
 			end case;
 		end place;
+
 		
 		procedure rotate is begin
 			case key is
@@ -1641,6 +1626,7 @@ package body et_canvas_schematic is
 			end case;
 		end rotate;
 
+		
 		procedure add is 
 			use pac_devices_lib;
 		begin
@@ -1704,6 +1690,7 @@ package body et_canvas_schematic is
 			end case;
 		end add;
 
+		
 		procedure invoke is 
 			use pac_devices_lib;
 		begin
@@ -1755,6 +1742,7 @@ package body et_canvas_schematic is
 			end case;
 		end invoke;
 
+		
 		procedure set is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1804,6 +1792,7 @@ package body et_canvas_schematic is
 			
 		end set;
 
+		
 		procedure show is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1855,6 +1844,7 @@ package body et_canvas_schematic is
 				when others => status_noun_invalid;
 			end case;
 		end show;
+
 		
 		procedure rename is 
 			use et_schematic_ops.nets;
@@ -1920,6 +1910,7 @@ package body et_canvas_schematic is
 			end case;
 
 		end rename;
+
 		
 	begin -- evaluate_key
 		
@@ -2085,6 +2076,8 @@ package body et_canvas_schematic is
 		
 	end evaluate_key;
 
+
+	
 	
 	overriding procedure evaluate_mouse_position (
 		self	: not null access type_view;
@@ -2153,12 +2146,16 @@ package body et_canvas_schematic is
 		end case;
 	end evaluate_mouse_position;
 
+
+
 	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
+		snap_point : constant type_point := snap_to_grid (self, point);
+	
 		procedure left_button is 
 			use pac_devices_lib;
 		begin
@@ -2263,31 +2260,11 @@ package body et_canvas_schematic is
 							end if;
 							
 						when NOUN_NET => 
-							if not segment.being_moved then
-
-								-- When dragging net segments, we enforce the default grid
-								-- and snap the cursor position to the default grid:
-								self.reset_grid_and_cursor;
-								
-								-- Set the tool being used for dragging the net segment:
-								segment.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_segments (point);
-									segment.point_of_attack := snap_to_grid (self, point);
-								else
-									segment.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected segment:
-								et_canvas_schematic_nets.finalize_drag (
-									destination		=> snap_to_grid (self, point),
-									log_threshold	=> log_threshold + 1);
-							end if;
-							
+							-- When dragging net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							drag_segment (MOUSE, snap_point);
+			
 						when others => null;
 					end case;
 					
