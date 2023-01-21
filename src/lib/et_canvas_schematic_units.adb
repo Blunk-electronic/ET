@@ -470,6 +470,34 @@ package body et_canvas_schematic_units is
 		reset_unit_move;
 	end finalize_drag;
 	
+
+	procedure drag_unit (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not unit_move.being_moved then
+			
+			-- Set the tool being used:
+			unit_move.tool := tool;
+			
+			if not clarification_pending then
+				find_units_for_move (position);
+			else
+				find_attached_segments;
+				unit_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+
+		else
+			-- Finally assign the pointer position to the
+			-- currently selected unit:
+			finalize_drag (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end drag_unit;
+
 	
 	procedure find_units_for_move (point : in type_point) is 
 		use et_modes.schematic;
@@ -895,15 +923,18 @@ package body et_canvas_schematic_units is
 		return expand (to_string (top_lib_dir));
 	end get_top_most_important_library;
 
+	
 	function device_selection_is_open return boolean is begin
 		return device_selection.open;
 	end device_selection_is_open;
+
 	
 	procedure close_device_selection is begin
 		device_selection.window.destroy;
 		device_selection.open := false;
 	end close_device_selection;	
 
+	
 	function extract_variant_name (menu_item : in string) 
 		return pac_package_variant_name.bounded_string 
 	is
@@ -935,9 +966,11 @@ package body et_canvas_schematic_units is
 		return "package variant: " & variant_name & " model: " & package_model;
 	end to_package_variant_item;
 
+	
 	procedure reset_unit_add is begin
 		unit_add := (others => <>);
 	end reset_unit_add;
+
 	
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
 	begin
@@ -1077,11 +1110,13 @@ package body et_canvas_schematic_units is
 		return result;
 	end device_model_selection_key_event;
 
+	
 	procedure device_model_selection_close (
 		self	: access gtk_widget_record'class) 
 	is begin
 		device_selection.open := false;
 	end device_model_selection_close;
+
 	
 	procedure add_device is
 		use gtk.window;
@@ -1200,6 +1235,7 @@ package body et_canvas_schematic_units is
 		--status_enter_verb;
 	end finalize_add_device;
 
+	
 	procedure finalize_invoke (
 		position		: in type_point;
 		log_threshold	: in type_log_level)
@@ -1264,6 +1300,7 @@ package body et_canvas_schematic_units is
 		--put_line ("deselected");
 	end unit_selection_cancelled;
 
+	
 	-- CS
 	procedure set_position ( -- of a menu
 		menu : not null access gtk.menu.gtk_menu_record'class;
@@ -1298,6 +1335,7 @@ package body et_canvas_schematic_units is
 		
 		push_in := true;
 	end set_position;
+
 	
 	procedure show_units is
 		use pac_devices_sch;
@@ -1465,6 +1503,7 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end invoke_unit;
+
 	
 	
 -- PLACEHOLDERS
@@ -1496,16 +1535,19 @@ package body et_canvas_schematic_units is
 			& ". " & status_next_object_clarification);
 		
 	end clarify_placeholder;
+
 	
 	procedure clear_proposed_placeholders is begin
 		clear (proposed_placeholders);
 		selected_placeholder := pac_proposed_placeholders.no_element;
 	end clear_proposed_placeholders;
+
 	
 	procedure reset_placeholder is begin
 		placeholder_move := (others => <>);
 		clear_proposed_placeholders;
 	end reset_placeholder;
+
 	
 	procedure finalize_move_placeholder (
 		destination		: in type_point;
@@ -1806,6 +1848,7 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;				
 	end rotate_placeholder;
+
 	
 	procedure rotate_selected_placeholder (
 		category	: in type_placeholder_meaning)
@@ -1817,6 +1860,7 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end rotate_selected_placeholder;
+
 	
 	procedure rotate_placeholder (
 		point 		: in type_point;
@@ -2079,6 +2123,7 @@ package body et_canvas_schematic_units is
 		end if;
 	end set_property;
 
+	
 	procedure set_property_selected_unit is
 		use et_schematic_ops.units;
 	begin
@@ -2128,6 +2173,7 @@ package body et_canvas_schematic_units is
 			& further_properties); -- variant, partcode, ...	
 		
 	end show_properties_of_selected_device;
+
 	
 	procedure find_units_for_show (point : in type_point) is 
 		use et_modes.schematic;

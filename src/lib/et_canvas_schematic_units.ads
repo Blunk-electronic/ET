@@ -198,6 +198,9 @@ package et_canvas_schematic_units is
 		log_threshold	: in type_log_level);
 
 
+
+-- DRAG:
+	
 	-- While dragging a unit, the attached segments must be dragged along.
 	-- So we need a list of selected segments.
 	-- There must also be information about the zone of the segment being dragged at:
@@ -222,6 +225,14 @@ package et_canvas_schematic_units is
 	procedure finalize_drag (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
+
+	procedure drag_unit (
+		tool		: in type_tool;
+		position	: in type_point);
+
+	
+
+-- MOVE:
 	
 	-- Locates all units in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the

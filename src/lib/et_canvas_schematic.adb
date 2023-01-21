@@ -1127,35 +1127,13 @@ package body et_canvas_schematic is
 							-- When dragging net segments, we enforce the default grid
 							-- and snap the cursor position to the default grid:
 							self.reset_grid_and_cursor;
-							drag_segment (KEYBOARD, cursor_main.position);
-						
+							drag_segment (KEYBOARD, cursor_main.position);						
 
 						when NOUN_UNIT =>
-							if not unit_move.being_moved then
-
-								-- When dragging units, we enforce the default grid
-								-- and snap the cursor position to the default grid:
-								self.reset_grid_and_cursor;
-								
-								-- Set the tool being used for moving the unit:
-								unit_move.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_units_for_move (cursor_main.position);
-								else
-									find_attached_segments;
-									unit_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected unit:
-								et_canvas_schematic_units.finalize_drag (
-									destination		=> cursor_main.position,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							-- When dragging units, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							drag_unit (KEYBOARD, cursor_main.position);
 
 						when others => null;
 							
@@ -2233,31 +2211,10 @@ package body et_canvas_schematic is
 				when VERB_DRAG =>
 					case noun is
 						when NOUN_UNIT =>
-							if not unit_move.being_moved then
-
-								-- When dragging units, we enforce the default grid
-								-- and snap the cursor position to the default grid:
-								self.reset_grid_and_cursor;
-								
-								-- Set the tool being used for moving the unit:
-								unit_move.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_units_for_move (point);
-								else
-									find_attached_segments;
-									unit_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-
-							else
-								-- Finally assign the pointer position to the
-								-- currently selected unit:
-								et_canvas_schematic_units.finalize_drag (
-									destination		=> snap_to_grid (self, point),
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							-- When dragging units, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							drag_unit (MOUSE, snap_point);
 							
 						when NOUN_NET => 
 							-- When dragging net segments, we enforce the default grid
