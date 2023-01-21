@@ -1287,37 +1287,39 @@ package body et_schematic_ops.nets is
 						next (segment_cursor);
 					end loop;
 
-					if not segment_found then no_segment; end if;
-
-					-- MOVE SEGMENTS CONNECTED WITH THE TARGETED SEGMENT. 
-					-- Iterate in segments. skip targeted segment because it has been dragged
-					-- already (see above).
-					segment_cursor := strand.segments.first; -- reset segment cursor
-					while segment_cursor /= pac_net_segments.no_element loop
-						if segment_cursor /= segment_cursor_target then
-
-							pac_net_segments.update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> move_connected_segment'access);
-
-						end if;
-
-						next (segment_cursor);
-					end loop;
-
-					-- update strand position
-					set_strand_position (strand);
-
-					-- Look for ports at the start/end points of the segment. The segment
-					-- is now at the new position (either start point or end point or both).
-					-- If any port (of a device, netchanger or submodule) sits there, it must be
-					-- connected with the segment. That means adding these ports to the segment.
-					update_element (
-						container	=> strand.segments,
-						position	=> segment_cursor_target,
-						process		=> connect_ports'access);
 					
+					if segment_found then
+
+						-- MOVE SEGMENTS CONNECTED WITH THE TARGETED SEGMENT. 
+						-- Iterate in segments. skip targeted segment because it has been dragged
+						-- already (see above).
+						segment_cursor := strand.segments.first; -- reset segment cursor
+						while segment_cursor /= pac_net_segments.no_element loop
+							if segment_cursor /= segment_cursor_target then
+
+								pac_net_segments.update_element (
+									container	=> strand.segments,
+									position	=> segment_cursor,
+									process		=> move_connected_segment'access);
+
+							end if;
+
+							next (segment_cursor);
+						end loop;
+
+						-- update strand position
+						set_strand_position (strand);
+
+						-- Look for ports at the start/end points of the segment. The segment
+						-- is now at the new position (either start point or end point or both).
+						-- If any port (of a device, netchanger or submodule) sits there, it must be
+						-- connected with the segment. That means adding these ports to the segment.
+						update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor_target,
+							process		=> connect_ports'access);
+
+					end if;
 				end query_segments;
 
 				
@@ -1328,7 +1330,10 @@ package body et_schematic_ops.nets is
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					if get_sheet (element (strand_cursor).position) = get_sheet (point_of_attack) then
-
+						log (text => "searching strand at" 
+							 & to_string (element (strand_cursor).position),
+							level => log_threshold + 1);
+						
 						-- signal the calling unit that a strand has been found:
 						strand_found := true;
 
@@ -1342,8 +1347,8 @@ package body et_schematic_ops.nets is
 					next (strand_cursor);
 				end loop;
 
-				-- Issue warning if no strand has been found.
-				if not strand_found then
+				-- Issue warning if no strand or no net segment has been found.
+				if not strand_found or not segment_found then
 					no_segment;
 				end if;
 				
