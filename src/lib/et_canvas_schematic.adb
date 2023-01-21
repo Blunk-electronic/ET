@@ -410,8 +410,7 @@ package body et_canvas_schematic is
 
 	
 	procedure draw_frame (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
@@ -599,7 +598,7 @@ package body et_canvas_schematic is
 		
 		draw_units (self);
 		
-		draw_frame (self, area);
+		draw_frame (self);
 		
 		-- Draw nets if layer is enabled:
 		if nets_enabled then

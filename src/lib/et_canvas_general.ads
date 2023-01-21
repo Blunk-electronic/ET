@@ -1126,14 +1126,12 @@ package pac_canvas is
 
 	-- Draws the lines of the title block:
 	procedure draw_title_block_lines (
-		area		: in type_bounding_box;
 		lines		: in et_frames.pac_lines.list;
 		tb_pos		: in et_frames.type_position);
 
 	
 	-- Draws the outer an inder border of the frame:
 	procedure draw_border ( -- CS rename to draw_frame_border
-		area			: in type_bounding_box;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width);
 
@@ -1142,7 +1140,6 @@ package pac_canvas is
 	-- inner border of the frame.
 	-- Between the delimiters are the row and column indexes.
 	procedure draw_sector_delimiters (
-		area			: in type_bounding_box;
 		sectors			: in et_frames.type_sectors;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width);
@@ -1151,7 +1148,6 @@ package pac_canvas is
 	-- Draws a single text of the title block.
 	-- The line position is relative to the lower left corner of the title block.	
 	procedure draw_text ( -- CS rename to draw_text_title_block
-		area	: in type_bounding_box;
 		content	: in pac_text_content.bounded_string;
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
@@ -1164,7 +1160,6 @@ package pac_canvas is
 	-- Common placeholders are project name, module file name and assembly variant.
 	-- Draws other texts such as "approved" or "edited". Such texts have no placeholders:
 	procedure draw_texts ( -- CS rename to draw_title_block_texts
-		area		: in type_bounding_box;
 		ph_common	: in et_frames.type_placeholders_common;
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;

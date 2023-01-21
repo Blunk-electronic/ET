@@ -3276,7 +3276,6 @@ package body pac_canvas is
 
 
 	procedure draw_title_block_lines (
-		area		: in type_bounding_box;
 		lines		: in et_frames.pac_lines.list;
 		tb_pos		: in et_frames.type_position)
 	is
@@ -3308,7 +3307,6 @@ package body pac_canvas is
 	
 
 	procedure draw_border (
-		area			: in type_bounding_box;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width)
 	is 
@@ -3416,7 +3414,6 @@ package body pac_canvas is
 
 
 	procedure draw_sector_delimiters (
-		area			: in type_bounding_box;
 		sectors			: in et_frames.type_sectors;
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width)
@@ -3594,7 +3591,6 @@ package body pac_canvas is
 
 	
 	procedure draw_text (
-		area	: in type_bounding_box;
 		content	: in pac_text_content.bounded_string;
 		size	: in et_frames.type_text_size;
 		font	: in type_font;
@@ -3624,7 +3620,6 @@ package body pac_canvas is
 
 
 	procedure draw_texts (
-		area		: in type_bounding_box;
 		ph_common	: in et_frames.type_placeholders_common;
 		ph_basic	: in et_frames.type_placeholders_basic;
 		texts		: in et_frames.pac_texts.list;
@@ -3640,7 +3635,6 @@ package body pac_canvas is
 
 			procedure query_text (cursor : in pac_texts.cursor) is begin
 				draw_text (
-					area	=> area,
 					content	=> element (cursor).content,
 					size	=> element (cursor).size,
 					font	=> font_texts,
@@ -3666,7 +3660,6 @@ package body pac_canvas is
 		
 		-- project name:
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
 			size	=> ph_common.project_name.size,
 			font	=> font_placeholders,
@@ -3676,7 +3669,6 @@ package body pac_canvas is
 		
 		-- module file name:
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
 			size	=> ph_common.module_file_name.size,
 			font	=> font_placeholders,
@@ -3686,7 +3678,6 @@ package body pac_canvas is
 
 		-- active assembly variant:
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
 			size	=> ph_common.active_assembly_variant.size,
 			font	=> font_placeholders,
@@ -3699,7 +3690,6 @@ package body pac_canvas is
 		
 		-- company
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.company)), -- BEL
 			size	=> ph_basic.company.size,
 			font	=> font_placeholders,
@@ -3709,7 +3699,6 @@ package body pac_canvas is
 
 		-- customer
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.customer)), -- medlab
 			size	=> ph_basic.customer.size,
 			font	=> font_placeholders,
@@ -3719,7 +3708,6 @@ package body pac_canvas is
 
 		-- partcode
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.partcode)), -- TR4452
 			size	=> ph_basic.partcode.size,
 			font	=> font_placeholders,
@@ -3729,7 +3717,6 @@ package body pac_canvas is
 		
 		-- drawing number
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.drawing_number)), -- NCC1701
 			size	=> ph_basic.drawing_number.size,
 			font	=> font_placeholders,
@@ -3739,7 +3726,6 @@ package body pac_canvas is
 
 		-- revision
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.revision)), -- V2.0
 			size	=> ph_basic.revision.size,
 			font	=> font_placeholders,
@@ -3749,7 +3735,6 @@ package body pac_canvas is
 		
 		-- drawn by
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.drawn_by)), -- Dieter Krause
 			size	=> ph_basic.drawn_by.size,
 			font	=> font_placeholders,
@@ -3759,7 +3744,6 @@ package body pac_canvas is
 
 		-- checked by
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.checked_by)), -- John Carpenter
 			size	=> ph_basic.checked_by.size,
 			font	=> font_placeholders,
@@ -3769,7 +3753,6 @@ package body pac_canvas is
 
 		-- approved by
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.approved_by)), -- Wasily Mishin
 			size	=> ph_basic.approved_by.size,
 			font	=> font_placeholders,
@@ -3779,7 +3762,6 @@ package body pac_canvas is
 
 		-- drawn date
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.drawn_date)), -- 2010-04-23
 			size	=> ph_basic.drawn_date.size,
 			font	=> font_placeholders,
@@ -3789,7 +3771,6 @@ package body pac_canvas is
 
 		-- checked date
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.checked_date)), -- 2010-04-23
 			size	=> ph_basic.checked_date.size,
 			font	=> font_placeholders,
@@ -3799,7 +3780,6 @@ package body pac_canvas is
 
 		-- approved date
 		draw_text (
-			area	=> area,
 			content	=> to_content (to_string (meta.approved_date)), -- 2010-04-23
 			size	=> ph_basic.approved_date.size,
 			font	=> font_placeholders,

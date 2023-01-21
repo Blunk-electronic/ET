@@ -518,8 +518,7 @@ package body et_canvas_board is
 
 	
 	procedure draw_frame (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area) 
+		self    : not null access type_view)
 		is separate;
 
 	
@@ -880,7 +879,7 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x),
 			convert_y (self.frame_bounding_box.y));
 
-		draw_frame (self, area);
+		draw_frame (self);
 		restore (context.cr);
 
 		
