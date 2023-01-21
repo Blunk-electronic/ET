@@ -46,9 +46,7 @@ separate (et_canvas_board)
 
 
 procedure draw_route_restrict (
-	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area
-	) 
+	self    : not null access type_view) 
 is
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;

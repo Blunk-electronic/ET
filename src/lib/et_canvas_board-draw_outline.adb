@@ -42,8 +42,7 @@ with et_pcb_contour;			use et_pcb_contour;
 separate (et_canvas_board)
 
 procedure draw_outline (
-	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area) 
+	self    : not null access type_view)
 is	
 	use pac_geometry_2;
 	use pac_contours;
@@ -68,14 +67,13 @@ is
 
 	
 	procedure query_text (c : in pac_contour_texts.cursor) is begin
-		draw_text_origin (self, element (c).position, in_area);
+		draw_text_origin (self, element (c).position);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		draw_vector_text (element (c).vectors, element (c).line_width);
-		
+		draw_vector_text (element (c).vectors, element (c).line_width);		
 	end query_text;
 
 	
@@ -140,7 +138,7 @@ begin -- draw_outline
 		position	=> current_active_module,
 		process		=> query_outline_segments'access);
 
-	draw_text_being_placed_in_outline (self, in_area);
+	draw_text_being_placed_in_outline (self);
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,

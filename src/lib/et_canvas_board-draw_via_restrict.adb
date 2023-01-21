@@ -46,9 +46,7 @@ separate (et_canvas_board)
 
 
 procedure draw_via_restrict (
-	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area
-	) 
+	self    : not null access type_view) 
 is
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;
@@ -176,11 +174,8 @@ is
 		-- with the top layer:
 		for ly in reverse top_layer .. bottom_layer loop
 
-			if via_restrict_layer_enabled (ly) then
-	
-				draw_text_being_placed_in_conductors (
-					self, in_area, LAYER_CAT_VIA_RESTRICT, ly);
-				
+			if via_restrict_layer_enabled (ly) then	
+				draw_text_being_placed_in_conductors (self, LAYER_CAT_VIA_RESTRICT, ly);
 			end if;
 			
 		end loop;

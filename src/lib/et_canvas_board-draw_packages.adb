@@ -85,7 +85,6 @@ separate (et_canvas_board)
 
 procedure draw_packages (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
 	face	: in type_face) -- the side of the board to be drawn
 is
 

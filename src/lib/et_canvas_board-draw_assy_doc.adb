@@ -45,7 +45,6 @@ separate (et_canvas_board)
 
 procedure draw_assy_doc (
 	self    : not null access type_view;
-	in_area	: in type_bounding_box := no_area;
 	face	: in type_face)
 is
 	use et_board_shapes_and_text;
@@ -113,7 +112,7 @@ is
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		v_text : type_vector_text;
 	begin
-		draw_text_origin (self, element (c).position, in_area);
+		draw_text_origin (self, element (c).position);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -136,14 +135,13 @@ is
 
 	
 	procedure query_text (c : in pac_doc_texts.cursor) is begin
-		draw_text_origin (self, element (c).position, in_area);
+		draw_text_origin (self, element (c).position);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Draw the text:
-		draw_vector_text (element (c).vectors, element (c).line_width);
-		
+		draw_vector_text (element (c).vectors, element (c).line_width);		
 	end query_text;
 
 	
@@ -182,7 +180,7 @@ begin -- draw_assy_doc
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (self, in_area, face, LAYER_CAT_ASSY);
+	draw_text_being_placed (self, face, LAYER_CAT_ASSY);
 	
 end draw_assy_doc;
 

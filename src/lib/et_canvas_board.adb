@@ -455,8 +455,7 @@ package body et_canvas_board is
 	-- It is a general text like "L2", "TOP", "BOTTOM", "REV 123", "ABC-Systems", ...
 	procedure draw_text_origin (
 		self    : not null access type_view;
-		p		: in type_position; -- the position of the origin
-		in_area	: in type_bounding_box) 
+		p		: in type_position) -- the position of the origin
 	is		
 		use pac_text_board;
 
@@ -531,7 +530,6 @@ package body et_canvas_board is
 	-- nothing happens here:
 	procedure draw_text_being_placed (
 		self    	: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
 		face		: in type_face;
 		category	: in type_layer_category_non_conductor)
 	is 
@@ -552,7 +550,7 @@ package body et_canvas_board is
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin, in_area);
+				draw_text_origin (self, origin);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -582,8 +580,7 @@ package body et_canvas_board is
 	-- The layer category of text_place must be LAYER_CAT_OUTLINE.
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_outline (
-		self    	: not null access type_view;
-		in_area		: in type_bounding_box := no_area)
+		self    	: not null access type_view)
 	is 
 		use et_text;
 		
@@ -603,7 +600,7 @@ package body et_canvas_board is
 
 			-- Draw the origin of the text:
 			origin := type_position (to_position (point, zero_rotation));
-			draw_text_origin (self, origin, in_area);
+			draw_text_origin (self, origin);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -632,7 +629,6 @@ package body et_canvas_board is
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_conductors (
 		self    	: not null access type_view;
-		in_area		: in type_bounding_box := no_area;
 		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
 	is 
@@ -658,7 +654,7 @@ package body et_canvas_board is
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin, in_area);
+				draw_text_origin (self, origin);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
@@ -692,50 +688,42 @@ package body et_canvas_board is
 
 	
 	procedure draw_outline (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
 	procedure draw_silk_screen (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_assy_doc (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stop (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_stencil (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_keepout (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
 	procedure draw_route_restrict (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area)
+		self    : not null access type_view)
 		is separate;
 
 	
 	procedure draw_via_restrict (
-		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area) 
+		self    : not null access type_view)
 		is separate;
 
 	
@@ -747,7 +735,6 @@ package body et_canvas_board is
 	
 	procedure draw_packages (
 		self    : not null access type_view;
-		in_area	: in type_bounding_box := no_area;
 		face	: in type_face) is separate;
 
 	
@@ -759,76 +746,76 @@ package body et_canvas_board is
 
 		
 		procedure draw_packages is begin
-			draw_packages (self, area, BOTTOM);
-			draw_packages (self, area, TOP);
+			draw_packages (self, BOTTOM);
+			draw_packages (self, TOP);
 		end draw_packages;
 
 		
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
-				draw_silk_screen (self, area, BOTTOM);
+				draw_silk_screen (self, BOTTOM);
 			end if;
 
 			if silkscreen_enabled (TOP) then
-				draw_silk_screen (self, area, TOP);
+				draw_silk_screen (self, TOP);
 			end if;
 		end draw_silkscreen;
 
 		
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
-				draw_assy_doc (self, area, BOTTOM);
+				draw_assy_doc (self, BOTTOM);
 			end if;
 
 			if assy_doc_enabled (TOP) then
-				draw_assy_doc (self, area, TOP);
+				draw_assy_doc (self, TOP);
 			end if;
 		end draw_assy_doc;
 
 		
 		procedure draw_keepout is begin
 			if keepout_enabled (BOTTOM) then
-				draw_keepout (self, area, BOTTOM);
+				draw_keepout (self, BOTTOM);
 			end if;
 
 			if keepout_enabled (TOP) then
-				draw_keepout (self, area, TOP);
+				draw_keepout (self, TOP);
 			end if;
 		end draw_keepout;
 
 		
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
-				draw_stop (self, area, BOTTOM);
+				draw_stop (self, BOTTOM);
 			end if;
 
 			if stop_mask_enabled (TOP) then
-				draw_stop (self, area, TOP);
+				draw_stop (self, TOP);
 			end if;
 		end draw_stop_mask;
 
 		
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
-				draw_stencil (self, area, BOTTOM);
+				draw_stencil (self, BOTTOM);
 			end if;
 
 			if stencil_enabled (TOP) then
-				draw_stencil (self, area, TOP);
+				draw_stencil (self, TOP);
 			end if;
 		end draw_stencil;
 
 		
 		procedure draw_pcb_outline is begin
 			if outline_enabled then		
-				draw_outline (self, area);
+				draw_outline (self);
 			end if;
 		end draw_pcb_outline;
 
 		
 		procedure draw_conductor_layers is begin
-			draw_route_restrict (self, area);
-			draw_via_restrict (self, area);
+			draw_route_restrict (self);
+			draw_via_restrict (self);
 			
 			draw_conductors (self);
 

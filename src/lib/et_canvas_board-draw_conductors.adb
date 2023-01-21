@@ -360,7 +360,7 @@ is
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (self, element (c).position, area);
+			draw_text_origin (self, element (c).position);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -390,7 +390,7 @@ is
 		-- Draw the text if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (self, element (c).position, area);
+			draw_text_origin (self, element (c).position);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -791,11 +791,8 @@ is
 
 				-- tracks:
 				iterate (module.nets, query_net_track'access);
-
 				
-				draw_text_being_placed_in_conductors (
-					self, area, LAYER_CAT_CONDUCTOR, ly);
-				
+				draw_text_being_placed_in_conductors (self, LAYER_CAT_CONDUCTOR, ly);				
 			end if;
 		end loop;
 
