@@ -948,6 +948,7 @@ package body et_canvas_schematic_units is
 	begin
 		return to_variant_name (var_name);
 	end extract_variant_name;
+
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function:
@@ -1588,6 +1589,40 @@ package body et_canvas_schematic_units is
 		reset_placeholder;
 	end finalize_move_placeholder;
 
+
+	procedure move_placeholder (
+		tool		: in type_tool;
+		position	: in type_point;
+		category	: in type_placeholder_meaning)
+	is begin
+		if not placeholder_move.being_moved then
+
+			-- Set the tool being used:
+			placeholder_move.tool := tool;
+			placeholder_move.category := category;
+
+			if not clarification_pending then
+				find_placeholders (
+					point		=> position,
+					category	=> category);
+			else
+				placeholder_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally assign the position to the
+			-- currently selected placeholder:
+			finalize_move_placeholder (
+				destination		=> position,
+				category		=> category,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_placeholder;
+
+
+	
 	
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;

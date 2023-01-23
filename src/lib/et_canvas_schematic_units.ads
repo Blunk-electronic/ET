@@ -435,6 +435,12 @@ package et_canvas_schematic_units is
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level);
 
+	procedure move_placeholder (
+		tool		: in type_tool;
+		position	: in type_point;
+		category	: in type_placeholder_meaning);
+
+	
 	-- Locates all placeholders in the vicinity of given point.
 	-- If more than one placeholder near point found, then it sets the
 	-- cursor selected_placeholder to the first placeholder and requests

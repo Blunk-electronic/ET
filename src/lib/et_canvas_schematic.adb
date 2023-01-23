@@ -1269,61 +1269,18 @@ package body et_canvas_schematic is
 
 						when NOUN_LABEL =>
 							move_label (KEYBOARD, cursor_main.position);
-						
-						when NOUN_NAME =>
-							if not placeholder_move.being_moved then
-
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := NAME;
-
-								if not clarification_pending then
-									find_placeholders (
-										point		=> cursor_main.position,
-										category	=> NAME);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> cursor_main.position,
-									category		=> NAME,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
 
 							
+						when NOUN_NAME =>
+							move_placeholder (KEYBOARD, cursor_main.position, NAME);
+							
 						when NOUN_PURPOSE =>
-							if not placeholder_move.being_moved then
+							move_placeholder (KEYBOARD, cursor_main.position, PURPOSE);
 
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := PURPOSE;
-
-								if not clarification_pending then
-									find_placeholders (
-										point		=> cursor_main.position,
-										category	=> PURPOSE);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> cursor_main.position,
-									category		=> PURPOSE,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
-								
+						when NOUN_VALUE =>
+							move_placeholder (KEYBOARD, cursor_main.position, VALUE);
+							
+							
 						when NOUN_UNIT =>
 							if not unit_move.being_moved then
 
@@ -1351,33 +1308,6 @@ package body et_canvas_schematic is
 							end if;
 
 
-						when NOUN_VALUE =>
-							if not placeholder_move.being_moved then
-
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := KEYBOARD;
-								placeholder_move.category := VALUE;
-
-								if not clarification_pending then
-									find_placeholders (
-										point		=> cursor_main.position,
-										category	=> VALUE);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> cursor_main.position,
-									category		=> VALUE,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
-							
 						when others => null;
 							
 					end case;
@@ -2243,59 +2173,18 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_LABEL =>
 							move_label (MOUSE, point);
+
 							
 						when NOUN_NAME =>
-							if not placeholder_move.being_moved then
-
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := MOUSE;
-								placeholder_move.category := NAME;
-
-								if not clarification_pending then
-									find_placeholders (
-										point		=> point,
-										category	=> NAME);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the mouse position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> snap_to_grid (self, point),
-									category		=> NAME,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
+							move_placeholder (MOUSE, snap_point, NAME);
 
 						when NOUN_PURPOSE =>
-							if not placeholder_move.being_moved then
+							move_placeholder (MOUSE, snap_point, PURPOSE);
 
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := MOUSE;
-								placeholder_move.category := PURPOSE;
+						when NOUN_VALUE =>
+							move_placeholder (MOUSE, snap_point, VALUE);
 
-								if not clarification_pending then
-									find_placeholders (
-										point		=> point,
-										category	=> PURPOSE);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> snap_to_grid (self, point),
-									category		=> PURPOSE,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-						
+							
 						when NOUN_UNIT =>
 							if not unit_move.being_moved then
 
@@ -2322,32 +2211,6 @@ package body et_canvas_schematic is
 
 							end if;
 							
-						when NOUN_VALUE =>
-							if not placeholder_move.being_moved then
-
-								-- Set the tool being used for moving the placeholder:
-								placeholder_move.tool := MOUSE;
-								placeholder_move.category := VALUE;
-
-								if not clarification_pending then
-									find_placeholders (
-										point		=> point,
-										category	=> VALUE);
-								else
-									placeholder_move.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally assign the cursor position to the
-								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_placeholder (
-									destination		=> snap_to_grid (self, point),
-									category		=> VALUE,
-									log_threshold	=> log_threshold + 1);
-
-							end if;
-
 							
 						when others => null;							
 					end case;
