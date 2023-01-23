@@ -1352,30 +1352,10 @@ package body et_canvas_schematic is
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
-
 						when NOUN_LABEL =>
-							if not label.being_moved then
-								
-								-- Set the tool being used for placing the label:
-								label.tool := KEYBOARD;
-								
-								if not clarification_pending then
-									find_segments (cursor_main.position);
-								else
-									label.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally place the label at the current
-								-- cursor position:
-								et_canvas_schematic_nets.finalize_place_label (
-									destination		=> cursor_main.position,
-									log_threshold	=> log_threshold + 1);
-							end if;
+							place_label (KEYBOARD, cursor_main.position);
 							
-						when others => null;
-							
+						when others => null;							
 					end case;
 
 				-- If page down pressed, then the operator is clarifying:
@@ -2175,27 +2155,8 @@ package body et_canvas_schematic is
 
 				when VERB_PLACE =>
 					case noun is
-
 						when NOUN_LABEL =>
-							if not label.being_moved then
-								
-								-- Set the tool being used for placing the label:
-								label.tool := MOUSE;
-								
-								if not clarification_pending then
-									find_segments (point);
-								else
-									label.being_moved := true;
-									reset_request_clarification;
-								end if;
-								
-							else
-								-- Finally place the label at the current 
-								-- pointer position:
-								et_canvas_schematic_nets.finalize_place_label (
-									destination		=> snap_to_grid (self, point),
-									log_threshold	=> log_threshold + 1);
-							end if;
+							place_label (MOUSE, snap_point);
 							
 						when others => null;
 					end case;

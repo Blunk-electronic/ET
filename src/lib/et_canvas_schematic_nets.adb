@@ -1477,6 +1477,32 @@ package body et_canvas_schematic_nets is
 
 	end finalize_place_label;
 
+
+	procedure place_label (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not label.being_moved then
+			
+			-- Set the tool being used:
+			label.tool := tool;
+			
+			if not clarification_pending then
+				find_segments (position);
+			else
+				label.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally place the label at the current
+			-- cursor position:
+			finalize_place_label (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+		end if;
+	end place_label;
+
 	
 	procedure find_labels (
 		point		: in type_point;

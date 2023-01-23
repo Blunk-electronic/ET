@@ -424,6 +424,12 @@ package et_canvas_schematic_nets is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+	procedure place_label (
+		tool		: in type_tool;
+		position	: in type_point);
+
+
+	
 	procedure find_labels (
 		point		: in type_point;
 		category	: in type_label_category);
