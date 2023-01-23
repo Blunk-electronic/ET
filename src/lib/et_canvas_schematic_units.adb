@@ -427,6 +427,35 @@ package body et_canvas_schematic_units is
 		reset_unit_move;
 	end finalize_move;
 
+
+	procedure move_unit (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not unit_move.being_moved then
+
+			-- Set the tool being used::
+			unit_move.tool := tool;
+			
+			if not clarification_pending then
+				find_units_for_move (position);
+			else
+				unit_move.being_moved := true;
+				reset_request_clarification;
+			end if;
+
+		else
+			-- Finally assign the pointer position to the
+			-- currently selected unit:
+			finalize_move (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_unit;
+
+
+
 	
 	procedure reset_segments_being_dragged is begin
 		segments_being_dragged.clear;

@@ -198,6 +198,11 @@ package et_canvas_schematic_units is
 		log_threshold	: in type_log_level);
 
 
+	procedure move_unit (
+		tool		: in type_tool;
+		position	: in type_point);
+
+	
 
 -- DRAG:
 	
@@ -258,6 +263,9 @@ package et_canvas_schematic_units is
 	-- Call this procedure after a clarification.
 	procedure rotate_selected_unit;
 
+
+
+	
 
 -- ADD UNIT/DEVICE
 
@@ -341,6 +349,9 @@ package et_canvas_schematic_units is
 	procedure finalize_add_device (
 		position	: in type_point);
 
+
+
+	
 
 -- INVOKE UNIT
 	
