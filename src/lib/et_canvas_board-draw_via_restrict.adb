@@ -53,7 +53,6 @@ is
 	use pac_via_restrict_circles;
 	use pac_via_restrict_contours;
 	use pac_via_restrict_cutouts;
-	use pac_conductor_texts;
 
 
 	-- CS must be overwritten according to select status:
@@ -167,19 +166,6 @@ is
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (current_active_module);
 	
-	procedure draw_text_being_placed is 
-		use et_packages;
-	begin
-		-- Iterate all conductor layers starting at the bottom layer and ending
-		-- with the top layer:
-		for ly in reverse top_layer .. bottom_layer loop
-
-			if via_restrict_layer_enabled (ly) then	
-				draw_text_being_placed_in_conductors (self, LAYER_CAT_VIA_RESTRICT, ly);
-			end if;
-			
-		end loop;
-	end draw_text_being_placed;
 
 	
 begin -- draw_via_restrict
@@ -188,8 +174,6 @@ begin -- draw_via_restrict
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
 		process		=> query_items'access);
-
-	draw_text_being_placed;
 	
 end draw_via_restrict;
 

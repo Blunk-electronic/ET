@@ -621,70 +621,7 @@ package body et_canvas_board is
 	end draw_text_being_placed_in_outline;
 
 	
-	-- This procedure draws the text that is being placed in a
-	-- conductor layer.
-	-- The properties are taken from variable et_canvas_board_texts.text_place.
-	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
-	-- Otherwise nothing happens here:
-	procedure draw_text_being_placed_in_conductors (
-		self    	: not null access type_view;
-		category	: in type_layer_category_conductor;
-		layer		: in et_pcb_stack.type_signal_layer)
-	is 
-		use et_pcb;
-		use et_pcb_stack;
-		use et_text;
-		v_text : type_vector_text;
-
-		mirror : type_vector_text_mirrored;
-		
-		-- The place where the text shall be placed:
-		point : type_point;
-
-		-- The place where the text origin will be drawn:
-		origin : type_position;
-	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved then
-			
-			if text_place.category = category and text_place.signal_layer = layer then
-
-				-- Set the point where the text is to be drawn:
-				point := self.tool_position;
-
-				-- Draw the origin of the text:
-				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin);
-
-				-- Set the line width of the vector text:
-				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
-
-
-				-- NOTE: Texts in restrict layers are never mirrored.
-				-- Even in the deepest (bottom) signal layer such texts 
-				-- are not mirrored.
-				if category in type_layer_category_restrict then
-					mirror := NO;
-				else
-					mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
-				end if;
-				
-				-- Vectorize the text on the fly:
-				v_text := vectorize_text (
-					content		=> text_place.text.content,
-					size		=> text_place.text.size,
-					rotation	=> get_rotation (text_place.text.position),
-					position	=> point,
-					mirror		=> mirror,
-					line_width	=> text_place.text.line_width,
-					alignment	=> text_place.text.alignment -- right, bottom
-					);
-
-				-- Draw the text:
-				draw_vector_text (v_text, text_place.text.line_width);
-			end if;
-		end if;
-	end draw_text_being_placed_in_conductors;
-
+	
 	
 	procedure draw_outline (
 		self    : not null access type_view)
@@ -832,11 +769,9 @@ package body et_canvas_board is
 			draw_stencil;
 			draw_pcb_outline;
 			
-			-- CS draw_submodules
-			
+			-- CS draw_submodules			
 		end draw_board;
-
-
+		
 		offset : type_offset;
 
 		
