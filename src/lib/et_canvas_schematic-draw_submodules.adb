@@ -48,7 +48,9 @@ separate (et_canvas_schematic)
 procedure draw_submodules (
 	self	: not null access type_view)
 is
+	use pac_net_name;
 	use pac_submodules;
+
 	
 	procedure query_submods (cursor : in pac_submodules.cursor) is
 

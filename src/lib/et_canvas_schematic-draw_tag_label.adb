@@ -42,7 +42,7 @@ procedure draw_tag_label (
 	net		: in pac_net_name.bounded_string;
 	label	: in type_net_label)
 is
-	--use et_schematic;
+	use pac_net_name;
 	
 	content : pac_text_content.bounded_string := to_content (to_string (net));
 	-- CS append to content the position of the net on the next sheet (strand position)

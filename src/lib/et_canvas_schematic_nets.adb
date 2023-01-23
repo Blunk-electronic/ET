@@ -47,6 +47,7 @@ with gtk.gentry;
 
 with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
+
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;
 with et_netlists;
@@ -422,6 +423,89 @@ package body et_canvas_schematic_nets is
 	end delete_selected_net_segment;
 
 
+	procedure make_net_route (
+		tool	: in type_tool;
+		point	: in type_point)
+	is begin
+		-- Set the tool being used for this net so that procedure
+		-- draw_net_segment_being_drawn knows where to get the end point from.
+		route.path.tool := tool;
+
+		if not route.path.being_drawn then
+
+			route.path.start_point := point;
+					
+			-- Before processing the start point further, it must be validated:
+			if valid_for_net_segment (route.path.start_point, log_threshold + 3) then
+
+				route.path.being_drawn := true;
+				
+				set_status (status_start_point & to_string (route.path.start_point) & ". " &
+					status_press_space & status_set_end_point & status_hint_for_abort);
+			end if;
+
+		else
+			-- set end point
+			if route.path.bended = NO then
+				
+				route.path.end_point := point;
+
+				-- Before processing the end point further, it must be validated:
+				if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
+
+					insert_net_segment (
+						module			=> current_active_module,
+						sheet			=> current_active_sheet,
+						net_name_given	=> route.name, -- RESET_N, or empty
+						segment			=> (
+								start_point	=> route.path.start_point,
+								end_point	=> route.path.end_point,
+								others		=> <>), -- no labels and no ports, just a bare segment
+						log_threshold	=>	log_threshold + 1);
+
+					reset_net_route;
+				end if;
+
+			else
+				-- Before processing the BEND point further, it must be validated:
+				if valid_for_net_segment (route.path.bend_point, log_threshold + 3) then
+
+					insert_net_segment (
+						module			=> current_active_module,
+						sheet			=> current_active_sheet,
+						net_name_given	=> route.name, -- RESET_N, or empty
+						segment			=> (
+								start_point	=> route.path.start_point,
+								end_point	=> route.path.bend_point,
+								others		=> <>), -- no labels and no ports, just a bare segment
+						log_threshold	=>	log_threshold + 1);
+
+					-- END POINT:
+					route.path.end_point := point;
+
+					-- Before processing the END point further, it must be validated:
+					if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
+					
+						insert_net_segment (
+							module			=> current_active_module,
+							sheet			=> current_active_sheet,
+							net_name_given	=> route.name, -- RESET_N, or empty
+							segment			=> (
+									start_point	=> route.path.bend_point,
+									end_point	=> route.path.end_point,
+									others		=> <>), -- no labels and no ports, just a bare segment
+							log_threshold	=>	log_threshold + 1);
+					
+						reset_net_route;
+					end if;
+				end if;
+
+			end if;
+		end if;
+	end make_net_route;
+	
+
+	
 	procedure reset_net_route is begin
 		route.path := (
 			bend_style	=> route.path.bend_style, -- no change

@@ -42,11 +42,15 @@ with ada.exceptions;
 with ada.containers;						use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_nets;								use et_nets;
+with et_net_labels;							use et_net_labels;
+
 separate (et_canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view)
 is
+	use pac_net_name;
 	use et_schematic;
 	use et_nets;
 	use pac_nets;
@@ -947,6 +951,86 @@ is
 		end loop;
 
 	end query_nets;
+
+
+	procedure draw_net_route_being_drawn is
+		line : pac_geometry_2.type_line;
+
+		procedure compute_route (s, e : in type_point) is 
+
+			-- Do the actual route calculation.
+			r : type_path := to_path (s, e, route.path.bend_style);
+
+			procedure draw is begin
+				-- draw the net segment:
+				draw_line (
+					line		=> to_line_fine (line),
+					width		=> net_line_width);
+			end draw;
+			
+		begin -- compute_route
+
+			-- The calculated route may required a bend point.
+			-- Set/clear the "bended" flag of the net_segment being drawn.
+			route.path.bended := r.bended;
+
+			-- set color and line width for net segments:
+			set_color_nets (context.cr);
+			set_line_width (context.cr, type_view_coordinate (net_line_width));
+
+			-- If the route does not require a bend point, draw a single line
+			-- from start to end point:
+			if r.bended = NO then
+				
+				line.start_point := r.start_point;
+				line.end_point := r.end_point;
+
+				draw;
+
+			-- If the route DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				route.path.bend_point := r.bend_point;
+
+				line.start_point := r.start_point;
+				line.end_point := r.bend_point;
+				
+				draw;
+
+				line.start_point := r.bend_point;
+				line.end_point := r.end_point;
+				
+				draw;
+				
+			end if;
+		end compute_route;
+
+		
+	begin -- draw_net_route_being_drawn
+		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
+
+			-- The route start point has been set eariler by procedures
+			-- key_pressed or button_pressed.
+			-- For drawing here, the route end point is to be taken from
+			-- either the mouse pointer or the cursor position:
+
+			case route.path.tool is				
+				when MOUSE => 
+					compute_route (
+						s	=> route.path.start_point,	-- start of route
+						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+					
+				when KEYBOARD =>
+					compute_route (
+						s	=> route.path.start_point,	-- start of route
+						e	=> cursor_main.position);	-- end of route
+					
+			end case;			
+		end if;
+	end draw_net_route_being_drawn;
+
+	
 	
 begin
 -- 	put_line ("draw nets ...");
@@ -956,6 +1040,12 @@ begin
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
 		process		=> query_nets'access);
+
+
+	-- Draw a net that is being drawn. If no net is being drawn,
+	-- then nothing happens here:
+	draw_net_route_being_drawn;
+
 	
 end draw_nets;
 

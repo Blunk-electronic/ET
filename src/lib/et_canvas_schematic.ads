@@ -63,9 +63,9 @@ with gtk.combo_box_text;			use gtk.combo_box_text;
 with glib;							use glib;
 with cairo;							use cairo;
 
-with et_nets;						--use et_nets;
-with et_net_labels;					use et_net_labels;
-with et_net_names;					use et_net_names;
+
+
+
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 
@@ -88,12 +88,6 @@ with et_canvas_general;				use et_canvas_general;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
-with et_schematic_ops;
-with et_canvas_schematic_nets;			use et_canvas_schematic_nets;
-with et_canvas_schematic_units;			use et_canvas_schematic_units;
-
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
-
 
 package et_canvas_schematic is
 
@@ -101,7 +95,7 @@ package et_canvas_schematic is
 	
 	use et_project.modules.pac_generic_modules;
 	
-	use pac_net_name;
+
 	
 	title : constant string := system_name & " SCHEMATIC ";
 

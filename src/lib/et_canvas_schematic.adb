@@ -56,6 +56,12 @@ with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
 
+with et_net_names;					use et_net_names;
+with et_net_labels;					use et_net_labels;
+
+with et_canvas_schematic_nets;			use et_canvas_schematic_nets;
+with et_canvas_schematic_units;			use et_canvas_schematic_units;
+
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
@@ -457,89 +463,6 @@ package body et_canvas_schematic is
 		is separate;
 
 
-	procedure draw_net_route_being_drawn (
-		self	: not null access type_view)
-	is
-		use et_nets;
-		line : pac_geometry_2.type_line;
-
-		procedure compute_route (s, e : in type_point) is 
-
-			-- Do the actual route calculation.
-			r : type_path := to_path (s, e, route.path.bend_style);
-
-			procedure draw is begin
-				-- draw the net segment:
-				draw_line (
-					line		=> to_line_fine (line),
-					width		=> net_line_width);
-			end draw;
-			
-		begin -- compute_route
-
-			-- The calculated route may required a bend point.
-			-- Set/clear the "bended" flag of the net_segment being drawn.
-			route.path.bended := r.bended;
-
-			-- set color and line width for net segments:
-			set_color_nets (context.cr);
-			set_line_width (context.cr, type_view_coordinate (net_line_width));
-
-			-- If the route does not require a bend point, draw a single line
-			-- from start to end point:
-			if r.bended = NO then
-				
-				line.start_point := r.start_point;
-				line.end_point := r.end_point;
-
-				draw;
-
-			-- If the route DOES require a bend point, then draw first a line
-			-- from start point to bend point. Then draw a second line from
-			-- bend point end point:
-			else
-				route.path.bend_point := r.bend_point;
-
-				line.start_point := r.start_point;
-				line.end_point := r.bend_point;
-				
-				draw;
-
-				line.start_point := r.bend_point;
-				line.end_point := r.end_point;
-				
-				draw;
-				
-			end if;
-		end compute_route;
-
-		
-	begin -- draw_net_route_being_drawn
-		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
-
-			-- The route start point has been set eariler by procedures
-			-- key_pressed or button_pressed.
-			-- For drawing here, the route end point is to be taken from
-			-- either the mouse pointer or the cursor position:
-			case route.path.tool is
-				
-				when MOUSE => 
-					
-					compute_route (
-						s	=> route.path.start_point,				-- start of route
-						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
-
-				when KEYBOARD =>
-
-					compute_route (
-						s	=> route.path.start_point,	-- start of route
-						e	=> cursor_main.position);	-- end of route
-
-			end case;
-			
-		end if;
-	end draw_net_route_being_drawn;
-	
 	
 	procedure draw_submodules (
 		self	: not null access type_view)
@@ -610,8 +533,6 @@ package body et_canvas_schematic is
 		end if;
 		
 		draw_submodules (self);
-
-		draw_net_route_being_drawn (self);
 		
 		draw_cursor (self, cursor_main);
 		
@@ -899,98 +820,10 @@ package body et_canvas_schematic is
 	begin
 		return to_string (noun);
 	end get_noun;
-	
 
-	-- Builds a live net route. This procedure requires to be called twice:
-	-- first time for the start and the second time for the end point of the route.
-	-- The current bend style in global variable "net_route" is taken into account.
-	-- The route may be started and finished with different tools. For example start
-	-- with MOUSE and finish with KEYBOARD or vice versa.
-	procedure make_net_route (
-		--self	: not null access type_view;
-		tool	: in type_tool;
-		point	: in type_point)
-	is begin
-		-- Set the tool being used for this net so that procedure
-		-- draw_net_segment_being_drawn knows where to get the end point from.
-		route.path.tool := tool;
-
-		if not route.path.being_drawn then
-
-			route.path.start_point := point;
-					
-			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (route.path.start_point, log_threshold + 3) then
-
-				route.path.being_drawn := true;
-				
-				set_status (status_start_point & to_string (route.path.start_point) & ". " &
-					status_press_space & status_set_end_point & status_hint_for_abort);
-			end if;
-
-		else
-			-- set end point
-			if route.path.bended = NO then
-				
-				route.path.end_point := point;
-
-				-- Before processing the end point further, it must be validated:
-				if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
-
-					insert_net_segment (
-						module			=> current_active_module,
-						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N, or empty
-						segment			=> (
-								start_point	=> route.path.start_point,
-								end_point	=> route.path.end_point,
-								others		=> <>), -- no labels and no ports, just a bare segment
-						log_threshold	=>	log_threshold + 1);
-
-					reset_net_route;
-				end if;
-
-			else
-				-- Before processing the BEND point further, it must be validated:
-				if valid_for_net_segment (route.path.bend_point, log_threshold + 3) then
-
-					insert_net_segment (
-						module			=> current_active_module,
-						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N, or empty
-						segment			=> (
-								start_point	=> route.path.start_point,
-								end_point	=> route.path.bend_point,
-								others		=> <>), -- no labels and no ports, just a bare segment
-						log_threshold	=>	log_threshold + 1);
-
-					-- END POINT:
-					route.path.end_point := point;
-
-					-- Before processing the END point further, it must be validated:
-					if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
-					
-						insert_net_segment (
-							module			=> current_active_module,
-							sheet			=> current_active_sheet,
-							net_name_given	=> route.name, -- RESET_N, or empty
-							segment			=> (
-									start_point	=> route.path.bend_point,
-									end_point	=> route.path.end_point,
-									others		=> <>), -- no labels and no ports, just a bare segment
-							log_threshold	=>	log_threshold + 1);
-					
-						reset_net_route;
-					end if;
-				end if;
-
-			end if;
-		end if;
-	end make_net_route;
 
 	
 	procedure reset_selections is begin
-
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
 		

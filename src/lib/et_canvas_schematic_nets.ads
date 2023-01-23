@@ -201,7 +201,17 @@ package et_canvas_schematic_nets is
 	end record;
 
 	route : type_net_route;
-	
+
+	-- Builds a live net route. This procedure requires to be called twice:
+	-- first time for the start and the second time for the end point of the route.
+	-- The current bend style in global variable "net_route" is taken into account.
+	-- The route may be started and finished with different tools. For example start
+	-- with MOUSE and finish with KEYBOARD or vice versa.
+	procedure make_net_route (
+		tool	: in type_tool;
+		point	: in type_point);
+
+
 	
 	-- Resets the components of the net route.
 	-- Exception: Leaves the bend style as it is.
