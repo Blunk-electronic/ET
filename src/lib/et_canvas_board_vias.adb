@@ -68,8 +68,12 @@ with gtk.text_iter;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
+with et_logging;					use et_logging;
+
 with et_modes.board;
+with et_board_ops;					use et_board_ops;
 with et_exceptions;					use et_exceptions;
+
 
 package body et_canvas_board_vias is
 
@@ -315,6 +319,48 @@ package body et_canvas_board_vias is
 		
 		-- CS display layer ?
 	end net_name_changed;
+
+
+
+	procedure place_via (
+		destination : in type_point) 
+	is
+		via : type_via (category => via_place.category);
+	begin
+		if via_place.being_moved then
+			
+			via.position := via_place.drill.position;
+			via.diameter := via_place.drill.diameter;
+			
+			via.restring_inner := via_place.restring_inner;
+			
+			move_to (via.position, destination);
+
+			case via_place.category is
+				when THROUGH =>
+					via.restring_outer := via_place.restring_outer;
+								  
+				when BURIED =>
+					via.layers := via_place.layers_buried;
+										  
+				when BLIND_DRILLED_FROM_TOP =>
+					via.restring_top := via_place.restring_outer;
+					via.lower := via_place.destination_blind;
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					via.restring_bottom := via_place.restring_outer;
+					via.upper := via_place.destination_blind;
+
+			end case;
+
+			place_via (
+				module_cursor	=> current_active_module,
+				net_name		=> get_name (via_place.net),
+				via				=> via,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end place_via;
 
 
 	
