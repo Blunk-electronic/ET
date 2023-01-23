@@ -1619,6 +1619,34 @@ package body et_canvas_schematic_nets is
 	end finalize_move_label;
 
 
+	procedure move_label (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not label.being_moved then
+
+			-- Set the tool being used:
+			label.tool := tool;
+
+			if not clarification_pending then
+				find_labels (position, SIMPLE);
+			else
+				label.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally assign the cursor position to the
+			-- currently selected net label:
+			finalize_move_label (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_label;
+
+
+	
 	procedure show_properties_of_selected_net is
 		ss	: constant type_selected_segment := element (selected_segment);
 		use et_pcb;

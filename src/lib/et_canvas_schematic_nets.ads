@@ -432,7 +432,17 @@ package et_canvas_schematic_nets is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+	
+	-- NOTE: Only simple labels can be moved.
+	-- Tag labels are always attached to a stub
+	-- and are moved along when the stub is moved.
+	-- This is about simple labels:
+	procedure move_label (
+		tool		: in type_tool;
+		position	: in type_point);
 
+
+	
 	status_show_net : constant string := 
 		status_click_left 
 		& "or "
