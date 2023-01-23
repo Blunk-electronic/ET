@@ -266,7 +266,7 @@ package et_canvas_board is
 		return string;
 
 	
-	overriding procedure evaluate_key (
+	overriding procedure key_pressed (
 		self	: not null access type_view;
 		key		: in gdk_key_type);
 

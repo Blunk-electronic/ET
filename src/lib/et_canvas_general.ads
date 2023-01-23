@@ -833,7 +833,7 @@ package pac_canvas is
 		return et_frames.type_position is abstract;
 
 	-- Evaluates the given keyboard key and sets the operation mode:
-	procedure evaluate_key (
+	procedure key_pressed (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is null;
 

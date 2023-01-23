@@ -330,7 +330,7 @@ package et_canvas_schematic is
 	-- Clears list of proposed objects such as net segments, units, ...
 	procedure clear_proposed_objects;
 	
-	overriding procedure evaluate_key (
+	overriding procedure key_pressed (
 		self	: not null access type_view;
 		key		: in gdk_key_type);
 

@@ -519,7 +519,7 @@ package body et_canvas_schematic is
 		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
 
 			-- The route start point has been set eariler by procedures
-			-- evaluate_key or button_pressed.
+			-- key_pressed or button_pressed.
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
 			case route.path.tool is
@@ -1019,7 +1019,7 @@ package body et_canvas_schematic is
 	end clear_proposed_objects;
 
 	
-	procedure evaluate_key (
+	procedure key_pressed (
 		self	: not null access type_view;
 		key		: in gdk_key_type) 
 	is
@@ -1757,7 +1757,7 @@ package body et_canvas_schematic is
 		end rename;
 
 		
-	begin -- evaluate_key
+	begin -- key_pressed
 		
 -- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
@@ -1919,7 +1919,7 @@ package body et_canvas_schematic is
 			redraw;
 			update_mode_display (canvas);
 		
-	end evaluate_key;
+	end key_pressed;
 
 
 	

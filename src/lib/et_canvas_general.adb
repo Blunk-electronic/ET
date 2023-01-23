@@ -1496,7 +1496,7 @@ package body pac_canvas is
 					
 				when others =>
 					-- put_line ("other key pressed");
-					canvas.evaluate_key (key);
+					canvas.key_pressed (key);
 
 					-- CS: test the TAB key explicitely in order to return false ?
 					event_handled := true;

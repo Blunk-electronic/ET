@@ -1188,7 +1188,7 @@ package body et_canvas_board is
 	end place_via;
 
 	
-	procedure evaluate_key (
+	procedure key_pressed (
 		self	: not null access type_view;
 		key		: in gdk_key_type) 
 	is
@@ -1442,7 +1442,7 @@ package body et_canvas_board is
 		end update;
 
 		
-	begin -- evaluate_key
+	begin -- key_pressed
 		
 		--put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
@@ -1584,7 +1584,7 @@ package body et_canvas_board is
 			redraw;
 			update_mode_display (canvas);
 		
-	end evaluate_key;
+	end key_pressed;
 
 
 	
