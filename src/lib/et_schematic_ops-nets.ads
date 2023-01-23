@@ -44,6 +44,14 @@ with et_pcb;
 package et_schematic_ops.nets is
 
 
+	-- Searches the module for an anonymous net with the lowest index available.
+	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
+	-- the lowest available name would be N$3.
+	function lowest_available_anonymous_net (
+		module		: in pac_generic_modules.cursor)
+		return pac_net_name.bounded_string; -- N$3
+
+
 	function net_exists (
 		net_cursor : in pac_nets.cursor) 
 		return boolean;

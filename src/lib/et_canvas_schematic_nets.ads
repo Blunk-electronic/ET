@@ -106,23 +106,20 @@ package et_canvas_schematic_nets is
 	procedure clear_proposed_segments;
 
 	
-	-- Searches the module for an anonymous net with the lowest index available.
-	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
-	-- the lowest available name would be N$3.
-	function lowest_available_anonymous_net (
-		module		: in pac_generic_modules.cursor)
-		return pac_net_name.bounded_string; -- N$3
 
 	
 	-- Returns the net name of the first segment in 
 	-- given list of net segments.
 	-- If the given list is empty then an empty net name will be returned.
-	function first_net (segments : in pac_proposed_segments.list) 
+	function first_net (
+		segments : in pac_proposed_segments.list) 
 		return pac_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
 
 	
 	-- Returns true if segments contains more than one segment:
-	function more_than_one (segments : in pac_proposed_segments.list) return boolean;
+	function more_than_one (
+		segments : in pac_proposed_segments.list)
+		return boolean;
 
 	
 	-- Tests if all given segments belong to the same net. 
@@ -156,7 +153,10 @@ package et_canvas_schematic_nets is
 		return pac_proposed_segments.list;
 
 
--- DELETE NET SEGMENT
+
+	
+-- DELETE SEGMENT
+
 	
 	status_delete : constant string := 
 		status_click_left 
@@ -164,16 +164,20 @@ package et_canvas_schematic_nets is
 		& status_press_space
 		& "to delete net segment." 
 		& status_hint_for_abort;
+
 	
 	-- Deletes a net segment in the vicinity of given point.
 	-- If more than one segment near point found, then it sets the
 	-- cursor selected_segment to the first segment and requests
 	-- for clarification.
-	procedure delete_net_segment (point : in type_point);
+	procedure delete_net_segment (
+		point : in type_point);
 
+	
 	-- Advances cursor selected_segment to next segment in list proposed_segments.
 	procedure clarify_net_segment;
 
+	
 	-- Deletes the net segment being pointed at by cursor selected_segment.
 	procedure delete_selected_net_segment;
 
