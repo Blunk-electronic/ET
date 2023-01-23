@@ -907,7 +907,7 @@ package body et_canvas_schematic is
 	-- The route may be started and finished with different tools. For example start
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_net_route (
-		self	: not null access type_view;
+		--self	: not null access type_view;
 		tool	: in type_tool;
 		point	: in type_point)
 	is begin
