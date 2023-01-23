@@ -74,7 +74,11 @@ with gtk.text_iter;
 with et_canvas_board;				--use et_canvas_board;
 use et_canvas_board.pac_canvas;
 
+with et_board_ops;					use et_board_ops;
 with et_modes.board;
+with et_logging;					use et_logging;
+with et_exceptions;					use et_exceptions;
+
 
 package body et_canvas_board_texts is
 
@@ -100,6 +104,7 @@ package body et_canvas_board_texts is
 		-- CS display layer ?
 	end layer_category_changed;
 
+	
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -122,6 +127,7 @@ package body et_canvas_board_texts is
 		-- CS display layer ?
 	end face_changed;
 
+	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -144,6 +150,7 @@ package body et_canvas_board_texts is
 		-- CS display layer ?
 	end signal_layer_changed;
 
+	
 	procedure apply_size (text : in string) is
 		size : type_text_size;
 	begin
@@ -154,6 +161,7 @@ package body et_canvas_board_texts is
 
 		et_canvas_board.redraw_board;
 	end apply_size;
+
 	
 	function size_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -181,6 +189,7 @@ package body et_canvas_board_texts is
 		
 		return event_handled;
 	end size_key_pressed;
+
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -189,6 +198,7 @@ package body et_canvas_board_texts is
 		apply_size (text);
 	end size_entered;
 
+	
 	procedure apply_line_width (text : in string) is
 		width : type_text_line_width;
 	begin
@@ -199,6 +209,7 @@ package body et_canvas_board_texts is
 
 		et_canvas_board.redraw_board;
 	end apply_line_width;
+
 	
 	function line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -226,6 +237,7 @@ package body et_canvas_board_texts is
 		
 		return event_handled;
 	end line_width_key_pressed;
+
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -234,6 +246,7 @@ package body et_canvas_board_texts is
 		apply_line_width (text);
 	end line_width_entered;
 
+	
 	procedure apply_rotation (text : in string) is
 		rotation : type_rotation;
 	begin
@@ -245,7 +258,8 @@ package body et_canvas_board_texts is
 		--put_line (to_string (text_place.text.position));
 		et_canvas_board.redraw_board;
 	end apply_rotation;
-		
+
+	
 	function rotation_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
@@ -272,6 +286,7 @@ package body et_canvas_board_texts is
 		
 		return event_handled;
 	end rotation_key_pressed;
+
 	
 	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -279,6 +294,7 @@ package body et_canvas_board_texts is
 		--put_line ("rotation " & text);
 		apply_rotation (text);
 	end rotation_entered;
+
 	
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
 		use gtk.text_view;
@@ -304,6 +320,49 @@ package body et_canvas_board_texts is
 		
 	end button_apply_clicked;
 
+
+	procedure place_text (
+		destination : in type_point) 
+	is begin
+		if text_place.being_moved then
+			move_to (text_place.text.position.place, destination);
+			
+			if text_place.category in type_layer_category_non_conductor then
+
+				place_text_in_non_conductor_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> text_place.category,
+					face			=> text_place.face,
+					text			=> text_place.text,
+					log_threshold	=> log_threshold + 1);
+
+			elsif text_place.category in type_layer_category_outline then
+
+				place_text_in_outline_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> text_place.category,
+					text			=> text_place.text,
+					log_threshold	=> log_threshold + 1);
+
+				
+			elsif text_place.category in type_layer_category_conductor then
+				
+				place_text_in_conductor_layer (
+					module_cursor 	=> current_active_module,
+					signal_layer	=> text_place.signal_layer,
+					text			=> text_place.text,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				raise semantic_error_1 with
+					"ERROR: Text not allowed in this layer category !";
+				-- CS should never happen
+			end if;
+		end if;	
+	end place_text;
+
+
+	
 	procedure reset_text_place is begin
 		text_place.being_moved := false;
 
@@ -314,6 +373,7 @@ package body et_canvas_board_texts is
 		end if;
 	end reset_text_place;
 
+	
 	procedure remove_text_properties is 
 		use et_modes.board;
 	begin
@@ -321,6 +381,7 @@ package body et_canvas_board_texts is
 			reset_text_place;
 		end if;
 	end remove_text_properties;		
+
 	
 	procedure show_text_properties is
 		use glib;

@@ -1105,47 +1105,6 @@ package body et_canvas_board is
 		return to_string (noun);
 	end get_noun;
 
-
-	procedure place_text (destination : in type_point) is
-	begin
-		if text_place.being_moved then
-			move_to (text_place.text.position.place, destination);
-			
-			if text_place.category in type_layer_category_non_conductor then
-
-				place_text_in_non_conductor_layer (
-					module_cursor 	=> current_active_module,
-					layer_category	=> text_place.category,
-					face			=> text_place.face,
-					text			=> text_place.text,
-					log_threshold	=> log_threshold + 1);
-
-			elsif text_place.category in type_layer_category_outline then
-
-				place_text_in_outline_layer (
-					module_cursor 	=> current_active_module,
-					layer_category	=> text_place.category,
-					text			=> text_place.text,
-					log_threshold	=> log_threshold + 1);
-
-				
-			elsif text_place.category in type_layer_category_conductor then
-				
-				place_text_in_conductor_layer (
-					module_cursor 	=> current_active_module,
-					signal_layer	=> text_place.signal_layer,
-					text			=> text_place.text,
-					log_threshold	=> log_threshold + 1);
-
-			else
-				raise semantic_error_1 with
-					"ERROR: Text not allowed in this layer category !";
-				-- CS should never happen
-			end if;
-		end if;	
-	end place_text;
-
-
 	
 	procedure key_pressed (
 		self	: not null access type_view;

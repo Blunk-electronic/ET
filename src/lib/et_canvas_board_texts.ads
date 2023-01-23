@@ -106,6 +106,11 @@ package et_canvas_board_texts is
 
 	text_place : type_text_place;
 
+
+	procedure place_text (
+		destination : in type_point);
+
+	
 	-- Clears text_place.being_moved and box_properties.displayed.
 	-- Removes the text properties bar.
 	procedure reset_text_place;
