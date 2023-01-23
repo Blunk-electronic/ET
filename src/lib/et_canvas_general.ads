@@ -846,7 +846,7 @@ package pac_canvas is
 	-- Returns something like "right button" or "left button":
 	function to_string (b : in type_mouse_button) return string;
 
-	procedure evaluate_mouse_position (
+	procedure mouse_moved (
 		self	: not null access type_view;
 		point	: in pac_geometry_2.type_point) is null;
 	

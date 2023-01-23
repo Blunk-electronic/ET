@@ -1197,7 +1197,7 @@ package body et_canvas_board is
 
 	
 	
-	procedure evaluate_mouse_position (
+	procedure mouse_moved (
 		self	: not null access type_view;
 		point	: in type_point) 
 	is begin
@@ -1236,7 +1236,7 @@ package body et_canvas_board is
 			when others => null;
 		end case;
 		
-	end evaluate_mouse_position;
+	end mouse_moved;
 
 
 	

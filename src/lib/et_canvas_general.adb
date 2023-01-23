@@ -1223,7 +1223,7 @@ package body pac_canvas is
 		
 		canvas.update_coordinates_display;
 
-		canvas.evaluate_mouse_position (drawing_point);
+		canvas.mouse_moved (drawing_point);
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
