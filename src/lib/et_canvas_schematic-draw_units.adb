@@ -40,6 +40,501 @@ separate (et_canvas_schematic)
 procedure draw_units (
 	self	: not null access type_view)
 is
+
+	procedure draw_symbol (
+		self			: not null access type_view;
+		symbol			: in et_symbols.type_symbol;
+		device_name		: in et_devices.type_device_name := (others => <>);
+		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
+		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
+		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+		unit_count		: in et_devices.type_unit_count;
+		unit_position	: in type_point; -- x/y on the schematic sheet
+		unit_rotation	: in type_rotation := zero_rotation;
+		sch_placeholder_name	: in type_text_placeholder;
+		sch_placeholder_value	: in type_text_placeholder;
+		sch_placeholder_purpose : in type_text_placeholder;
+		brightness		: in type_brightness := NORMAL;
+		preview			: in boolean := false)
+	is
+		use et_symbols;
+		use pac_text_schematic;
+		use pac_geometry_2;
+		
+		use pac_lines;
+		use pac_arcs;
+		use pac_circles;
+		use pac_ports;
+		use pac_texts;
+		
+		type type_line is new pac_geometry_2.type_line with null record;
+		type type_arc is new pac_geometry_2.type_arc with null record;		
+		type type_circle is new pac_geometry_2.type_circle with null record;
+		
+		procedure draw_line (c : in pac_lines.cursor) is 
+			-- Take a copy of the given line:
+			line : type_line := (pac_geometry_2.type_line (element (c)) with null record);
+		begin
+			rotate_by (line, unit_rotation);
+			move_by (line, to_distance_relative (unit_position));
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
+			draw_line (to_line_fine (line), element (c).width);
+		end draw_line;
+
+		
+		procedure draw_arc (c : in pac_arcs.cursor) is 
+			-- Take a copy of the given arc:
+			arc : type_arc := (pac_geometry_2.type_arc (element (c)) with null record);
+		begin
+			rotate_by (arc, unit_rotation);
+			move_by (arc, to_distance_relative (unit_position));
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
+			draw_arc (to_arc_fine (arc), element (c).width);
+		end draw_arc;
+
+		
+		procedure draw_circle (c : in pac_circles.cursor) is 
+			circle : type_circle := (pac_geometry_2.type_circle (element (c)) with null record);
+		begin
+			rotate_by (circle, unit_rotation);
+			move_by (circle, to_distance_relative (unit_position));
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
+
+			-- the circle is not filled -> actual "filled" is NO
+			draw_circle (circle, NO, element (c).width);
+		end draw_circle;
+
+		procedure draw_port (c : in pac_ports.cursor) is
+			start_point			: type_point := element (c).position;
+			end_point			: type_point := element (c).position;
+
+			line : type_line;
+			circle : type_circle;
+			
+			pos_port_name		: type_point;
+			pos_terminal_name	: type_point;
+			
+			procedure draw_port_name is
+				use et_text;
+				-- The vertical alignment is untouched and is always CENTER.
+				-- The horizontal alignment depends on the total rotation
+				-- which is a sum of port rotation and unit rotation.
+				alignment : type_text_alignment := (horizontal => center, vertical => center);
+				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+			begin
+				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
+					alignment.horizontal := RIGHT;
+
+				elsif rotation_total = 90.0 or rotation_total = -270.0 then
+					alignment.horizontal := RIGHT;
+					
+				elsif rotation_total = 180.0 or rotation_total = -180.0 then
+					alignment.horizontal := LEFT;
+					
+				elsif rotation_total = -90.0 or rotation_total = 270.0 then
+					alignment.horizontal := LEFT;
+					
+				else
+					raise constraint_error; -- CS should never happen
+				end if;
+
+				-- Rotate the position of the port name by the unit rotation:
+				rotate_by (pos_port_name, unit_rotation);
+
+				-- Move the name by the unit position:
+				move_by (pos_port_name, to_distance_relative (unit_position));
+				
+				set_color_symbols (context.cr, brightness);
+
+				draw_text (
+					content		=> to_content (to_string (key (c))),
+					size		=> element (c).port_name_size,
+					font		=> et_symbols.text_font,
+					position	=> pos_port_name,
+					origin		=> false,  -- no origin required
+
+					-- Text rotation about its anchor point.
+					-- This is documentational text. Its rotation must
+					-- be snapped to either HORIZONAL or VERTICAL so that
+					-- it is readable from the front or the right.
+					rotation	=> to_rotation (snap (rotation_total)),
+					alignment	=> alignment);
+
+			end draw_port_name;
+
+			
+			procedure draw_terminal_name is
+				use et_text;
+				-- The vertical alignment is untouched and is always BOTTOM.
+				-- The horizontal alignment depends on the total rotation
+				-- which is a sum of port rotation and unit rotation.
+				alignment : type_text_alignment := (horizontal => CENTER, vertical => BOTTOM);
+				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+
+				use et_terminals;
+				use et_devices;
+				properties : type_port_properties_access;
+			begin
+				-- Rotate the position of the terminal name by the unit rotation:
+				rotate_by (pos_terminal_name, unit_rotation);
+				
+				-- Compute the position of the origin of the terminal name regarding 
+				-- its distance from the line of the port:
+				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
+					set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := RIGHT;
+
+				elsif rotation_total = 90.0 or rotation_total = -270.0 then
+					set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := RIGHT;
+					
+				elsif rotation_total = 180.0 or rotation_total = -180.0 then
+					set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := LEFT;
+					
+				elsif rotation_total = -90.0 or rotation_total = 270.0 then
+					set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := LEFT;
+					
+				else
+					raise constraint_error; -- CS should never happen
+				end if;
+
+				-- Move the name by the unit position:
+				move_by (pos_terminal_name, to_distance_relative (unit_position));
+				
+				set_color_symbols (context.cr, brightness);
+
+				-- Get the properties of the port. Properties is a record that provides
+				-- the terminal name. Other things of properties are not relevant here:
+				properties := et_schematic_ops.get_port_properties (
+					module_cursor	=> current_active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					port_name		=> key (c));
+
+				draw_text (
+					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
+					size		=> element (c).terminal_name_size,
+					font		=> et_symbols.text_font,
+					position	=> pos_terminal_name,
+					origin		=> false,  -- no origin required
+
+					-- Text rotation about its anchor point.
+					-- This is documentational text. Its rotation must
+					-- be snapped to either HORIZONAL or VERTICAL so that
+					-- it is readable from the front or the right.
+					rotation	=> to_rotation (snap (rotation_total)),
+					alignment	=> alignment);
+
+			end draw_terminal_name;
+
+			
+		begin -- draw_port
+			set_color_symbols (context.cr, brightness);
+			set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
+			
+			-- Compute following positions according to port rotation and length:
+			-- - end point of port
+			-- - position of port name
+			-- - position of terminal name (Distance from start point only.
+			--   distance from line of port will be computed later 
+			--   by procedure draw_terminal_name.)
+			--
+			-- NOTE: These computations leave the rotation of the unit outside. For the moment we
+			-- assume the unit is not rotated. We look at the default rotation of the ports.
+			-- The the final port positions will be computed later.
+			if element (c).rotation = 0.0 then -- end point points to the left
+				set (axis => X, value => get_x (start_point) - element (c).length, point => end_point);
+
+				-- compute the position of the port name:
+				pos_port_name := end_point;
+				set (axis => X, value => get_x (end_point) - port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => X, value => get_x (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+				
+			elsif element (c).rotation = 90.0 then -- end point points downwards
+				set (axis => Y, value => get_y (start_point) - element (c).length, point => end_point);
+
+				-- compute the position of the port name:
+				pos_port_name := end_point;
+				set (axis => Y, value => get_y (end_point) - port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => Y, value => get_y (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+				
+			elsif element (c).rotation = 180.0 then  -- end point points to the left
+				set (axis => X, value => get_x (start_point) + element (c).length, point => end_point);
+
+				-- compute the position of the port name:
+				pos_port_name := end_point;
+				set (axis => X, value => get_x (end_point) + port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => X, value => get_x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+				
+			elsif element (c).rotation = 270.0 or element (c).rotation = -90.0 then -- end point points upwards
+				set (axis => Y, value => get_y (start_point) + element (c).length, point => end_point);
+
+				-- compute the position of the port name:
+				pos_port_name := end_point;
+				set (axis => Y, value => get_y (end_point) + port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;
+				set (axis => Y, value => get_y (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+				
+			else
+				raise constraint_error; -- CS do something helpful. should never happen
+			end if;
+
+			-- Rotate the start and end point by rotation of unit:
+			rotate_by (start_point, unit_rotation);
+			rotate_by (end_point, unit_rotation);
+
+			line.start_point := start_point;
+			line.end_point := end_point;
+			move_by (line, to_distance_relative (unit_position));
+			
+			-- Draw the line of the port:
+			draw_line (to_line_fine (line), port_line_width);
+
+
+			-- Draw the circle around a port if the layer is enabled:
+			if ports_enabled then
+			
+				-- The start point of the port must have a small green circle around it.
+				-- set color and line width
+				set_color_ports (context.cr, brightness);
+				set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
+
+				circle.center := line.start_point;
+				circle.radius := type_float_positive (port_circle_radius);
+
+				-- the circle is not filled -> argument "filled" is NO
+				draw_circle (circle, NO, port_circle_line_width);
+
+				-- CS draw port direction, weakness, power level ?
+				-- probably better in draw_terminal_name or draw_port_name ?
+
+	-- 				use properties := schematic_ops.port_properties (
+	-- 					module_cursor	=> current_active_module,
+	-- 					device_name		=> device_name,
+	-- 					unit_name		=> unit_name,
+	-- 					port_name		=> key (c));
+				
+			end if;
+			
+			-- draw port name
+			if element (c).port_name_visible = YES then
+				draw_port_name;
+			end if;
+
+			-- If this is a preview, then no terminal name is to be drawn.
+			-- Otherwise, draw terminal name:
+			-- Draw terminal name if this is the symbol of a real device. 
+			-- Virtual symbols do not have terminal names.
+			if not preview then
+				if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
+					draw_terminal_name;
+				end if;
+			end if;
+			
+		end draw_port;
+
+		
+		-- This procedure draws fixed documentational texts like "MUX" or "CT16" as they 
+		-- are frequently placed inside symbols.
+		-- Call this procedure after drawing the symbol body because it
+		-- does not change the color to symbol color.
+		procedure draw_text (c : in pac_texts.cursor) is 
+			p : type_point := element (c).position;
+		begin
+			-- Rotate the position of the text.
+			-- This adds the unit_rotation to the given rotation.
+			rotate_by (p, unit_rotation);
+
+			-- Move text by unit position
+			move_by (p, to_distance_relative (unit_position));
+			
+			draw_text (
+				content		=> element (c).content,
+				size		=> element (c).size,
+				font		=> et_symbols.text_font,
+				position	=> p,
+				origin		=> false, -- no origin required
+				
+				-- Text rotation around its anchor point.
+				-- This is documentational text. Its rotation must
+				-- be snapped to either HORIZONAL or VERTICAL so that
+				-- it is readable from the front or the right.
+				rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
+
+				alignment	=> element (c).alignment);
+		end draw_text;
+
+		
+		-- This procedure draws text placeholders for device name, value and purpose:
+		procedure draw_placeholders is 
+			use et_devices;
+			p : type_point;
+		begin
+			set_color_placeholders (context.cr, brightness);
+			
+			-- DEVICE NAME:
+			p := sch_placeholder_name.position;
+
+			--put_line (to_string (device_name) & " " & to_string (unit_name) & " " & to_string (unit_count));
+
+			if device_names_enabled then
+
+				-- Move placeholder by unit position
+				move_by (p, to_distance_relative (unit_position));
+				
+				draw_text (
+					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
+					size		=> symbol.name.size,
+					font		=> name_font,
+					position	=> p,
+					origin		=> true, -- origin required
+					
+					-- Text rotation around its anchor point.
+					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+					-- This has been done in schematic_ops.rotate_unit already.
+					rotation	=> to_rotation (sch_placeholder_name.rotation),
+					
+					alignment	=> sch_placeholder_name.alignment);
+			end if;
+			
+			-- VALUE
+			if device_values_enabled then
+				
+				-- The value may be empty. We do not draw it in this case:
+				if not is_empty (device_value) then
+
+					p := sch_placeholder_value.position;
+
+					-- Move text by unit position
+					move_by (p, to_distance_relative (unit_position));
+					
+					draw_text (
+						content		=> to_content (to_string (device_value)), -- 100R
+						size		=> symbol.value.size,
+						font		=> value_font,
+						position	=> p,
+						origin		=> true, -- origin required
+						
+						-- Text rotation around its anchor point.
+						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+						-- This has been done in schematic_ops.rotate_unit already.
+						rotation	=> to_rotation (sch_placeholder_value.rotation),
+
+						alignment	=> sch_placeholder_value.alignment);
+				end if;
+			end if;
+			
+			-- PURPOSE
+			if device_purposes_enabled then
+			
+				-- The purpose may be empty. We do not draw it in this case:
+				if not is_empty (device_purpose) then
+
+					p := sch_placeholder_purpose.position;
+
+					-- Move text by unit position
+					move_by (p, to_distance_relative (unit_position));
+					
+					draw_text (
+						content		=> to_content (to_string (device_purpose)), -- "brightness control"
+						size		=> symbol.purpose.size,
+						font		=> purpose_font,
+						position	=> p,
+						origin		=> true, -- origin required
+						
+						-- Text rotation around its anchor point.
+						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+						-- This has been done in schematic_ops.rotate_unit already.
+						rotation	=> to_rotation (sch_placeholder_purpose.rotation),
+
+						alignment	=> sch_placeholder_purpose.alignment);
+				end if;
+			end if;
+			
+		end draw_placeholders;
+
+		
+		procedure draw_origin is
+			ohz : constant type_distance_positive := et_symbols.origin_half_size;
+			
+			line_horizontal : constant type_line := ( -- from left to right
+				start_point		=> type_point (set (
+									x => get_x (unit_position) - ohz,
+									y => get_y (unit_position))),
+				
+				end_point		=> type_point (set (
+									x => get_x (unit_position) + ohz,
+									y => get_y (unit_position))));
+
+			line_vertical : constant type_line := ( -- from bottom to top
+				start_point		=> type_point (set (
+									x => get_x (unit_position),
+									y => get_y (unit_position) - ohz)),
+				
+				end_point		=> type_point (set (
+									x => get_x (unit_position),
+									y => get_y (unit_position) + ohz)));
+
+		begin
+		-- NOTE: This is about the origin of the symbol !
+			set_color_origin (context.cr, brightness);
+			set_line_width (context.cr, type_view_coordinate (et_symbols.origin_line_width));
+			
+			-- NOTE: The origin is never rotated.
+
+			draw_line (to_line_fine (line_horizontal), et_symbols.origin_line_width);
+			draw_line (to_line_fine (line_vertical), et_symbols.origin_line_width);
+		end draw_origin;
+
+		
+	begin -- draw_symbol
+		
+		-- SYMBOL BODY
+		set_color_symbols (context.cr, brightness);
+
+		iterate (symbol.shapes.lines, draw_line'access);
+		iterate (symbol.shapes.arcs, draw_arc'access);
+		iterate (symbol.shapes.circles, draw_circle'access);
+
+		
+		-- SYMBOL PORTS
+		iterate (symbol.ports, draw_port'access); -- has internal color settings
+
+		-- SYMBOL TEXTS
+		set_color_symbols (context.cr, brightness);
+		iterate (symbol.texts, draw_text'access);
+		
+		-- Draw placeholders if this is the symbol of a real device. 
+		-- Virtual symbols do not have placeholders.
+		if symbol.appearance = PCB then
+			draw_placeholders;
+		end if;
+
+		-- draw origin (the crosshair) at the center of the symbol
+		draw_origin;
+
+	end draw_symbol;
+
+
+
+
 	use et_schematic;
 	use pac_devices_sch;
 	use et_schematic.pac_units;
@@ -180,6 +675,8 @@ is
 			end if;
 		end if;
 	end placeholder_is_selected;
+
+
 
 	
 	procedure query_devices (device_cursor : in pac_devices_sch.cursor) is

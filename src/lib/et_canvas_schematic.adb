@@ -435,28 +435,7 @@ package body et_canvas_schematic is
 		self    : not null access type_view)
 		is separate;
 
-	
-	-- Draws a single symbol of the given device:
-	procedure draw_symbol (
-		self			: not null access type_view;
-		symbol			: in et_symbols.type_symbol;
-		device_name		: in et_devices.type_device_name := (others => <>);
-		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
-		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
-		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
-		unit_count		: in et_devices.type_unit_count;
-		unit_position	: in type_point; -- x/y on the schematic sheet
-		unit_rotation	: in type_rotation := zero_rotation;
-		sch_placeholder_name	: in type_text_placeholder;
-		sch_placeholder_value	: in type_text_placeholder;
-		sch_placeholder_purpose : in type_text_placeholder;
-		brightness		: in type_brightness := NORMAL;
-
-		-- If preview is true, then the unit will be drawn less detailled.
-		preview			: in boolean := false)
-		is separate;
-
-		
+			
 	-- Draws all units:
 	procedure draw_units (
 		self	: not null access type_view) 
