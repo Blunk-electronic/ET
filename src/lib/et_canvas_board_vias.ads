@@ -106,6 +106,13 @@ package et_canvas_board_vias is
 
 	via_place : type_via_place;
 
+	
+	-- This procedure initializes the variable et_canvas_board_vias.via_place
+	-- so that the via properties bar shows the user specific settings
+	-- or the values as defined in the DRU data set.
+	procedure init_via_place;
+
+	
 	-- Builds the final via-to-be-placed from the information
 	-- provided by temporarily variable via_place.
 	-- Inserts the via in the module.
