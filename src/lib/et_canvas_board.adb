@@ -1192,54 +1192,13 @@ package body et_canvas_board is
 		self	: not null access type_view;
 		key		: in gdk_key_type) 
 	is separate;
-	
 
-
-	
 	
 	procedure mouse_moved (
 		self	: not null access type_view;
 		point	: in type_point) 
-	is begin
-		case verb is
-			when VERB_MOVE =>
-				case noun is
-					when NOUN_DEVICE =>
-						if electrical_device_move.being_moved then
-							redraw_board;
-						end if;
+	is separate;	
 
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if non_electrical_device_move.being_moved then
-							redraw_board;
-						end if;
-						
-					when others => null;
-				end case;
-				
-
-			when VERB_PLACE =>
-				case noun is
-					when NOUN_TEXT =>
-						if text_place.being_moved then
-							redraw_board;
-						end if;
-
-					when NOUN_VIA =>
-						if via_place.being_moved then
-							redraw_board;
-						end if;
-						
-					when others => null;
-				end case;
-			
-			when others => null;
-		end case;
-		
-	end mouse_moved;
-
-
-	
 	
 	procedure button_pressed (
 		self	: not null access type_view;

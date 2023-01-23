@@ -1024,75 +1024,10 @@ package body et_canvas_schematic is
 	is separate;
 
 	
-	
 	overriding procedure mouse_moved (
 		self	: not null access type_view;
 		point	: in type_point) 
-	is
-		use pac_devices_lib;
-	begin
-		case verb is
-			when VERB_ADD =>
-				case noun is
-					when NOUN_DEVICE =>
-						if unit_add.device /= pac_devices_lib.no_element then
-							redraw;
-						end if;
-
-					when others => null;
-				end case;
-			
-			when VERB_DRAW =>
-				case noun is
-					when NOUN_NET =>
-						if route.path.being_drawn then
-							redraw;
-						end if;
-
-
-					when others => null;
-				end case;
-				
-			when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
-				case noun is
-					when NOUN_LABEL =>
-						if label.being_moved then
-							redraw_schematic;
-						end if;
-						
-					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-						if placeholder_move.being_moved then
-							redraw_schematic;
-						end if;
-
-					when NOUN_NET =>
-						if segment.being_moved then
-							redraw_schematic;
-						end if;
-
-					when NOUN_UNIT =>
-						if unit_move.being_moved then
-							redraw_schematic;
-						end if;
-
-					when others => null;
-				end case;
-
-			when VERB_INVOKE =>
-				case noun is
-					when NOUN_UNIT =>
-						if unit_add.device /= pac_devices_lib.no_element then
-							redraw;
-						end if;
-
-					when others => null;
-				end case;
-				
-			when others => null;
-		end case;
-	end mouse_moved;
-
-
+	is separate;
 
 	
 	overriding procedure button_pressed (
