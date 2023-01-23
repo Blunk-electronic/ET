@@ -571,56 +571,6 @@ package body et_canvas_board is
 			end if;
 		end if;
 	end draw_text_being_placed;
-
-	
-	-- This procedure draws the text that is being placed in outline/contours.
-	-- The properties are taken from variable et_canvas_board_texts.text_place.
-	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
-	-- The layer category of text_place must be LAYER_CAT_OUTLINE.
-	-- Otherwise nothing happens here:
-	procedure draw_text_being_placed_in_outline (
-		self    	: not null access type_view)
-	is 
-		use et_text;
-		
-		v_text : type_vector_text;
-
-		-- The place where the text shall be placed:
-		point : type_point;
-
-		-- The place where the text origin will be drawn:
-		origin : type_position;
-	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved 
-		and text_place.category = LAYER_CAT_OUTLINE then
-
-			-- Set the point where the text is to be drawn:
-			point := self.tool_position;
-
-			-- Draw the origin of the text:
-			origin := type_position (to_position (point, zero_rotation));
-			draw_text_origin (self, origin);
-
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
-
-			-- Vectorize the text on the fly:
-			v_text := vectorize_text (
-				content		=> text_place.text.content,
-				size		=> text_place.text.size,
-				rotation	=> get_rotation (text_place.text.position),
-				position	=> point,
-				mirror		=> NO,
-				line_width	=> text_place.text.line_width,
-				alignment	=> text_place.text.alignment -- right, bottom
-				);
-
-			-- Draw the text:
-			draw_vector_text (v_text, text_place.text.line_width);
-		end if;
-	end draw_text_being_placed_in_outline;
-
-	
 	
 	
 	procedure draw_outline (

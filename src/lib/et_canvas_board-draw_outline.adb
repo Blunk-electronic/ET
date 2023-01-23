@@ -138,7 +138,6 @@ begin -- draw_outline
 		position	=> current_active_module,
 		process		=> query_outline_segments'access);
 
-	draw_text_being_placed_in_outline (self);
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
