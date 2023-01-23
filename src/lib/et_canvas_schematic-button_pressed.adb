@@ -35,26 +35,7 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.directories;
-with ada.exceptions;				use ada.exceptions;
-
-with et_devices;					use et_devices;
-
-with et_modes;
-with et_project;
-
-with et_modes.schematic;			use et_modes.schematic;
-
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
-
-
 separate (et_canvas_schematic)
-
 
 procedure button_pressed (
 	self	: not null access type_view;
