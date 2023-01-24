@@ -479,7 +479,15 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
--- TEXT
+-- TEXT / PLACEHOLDERS
+
+	-- Maps from the meaning of a text placeholder
+	-- to its actutal content:
+	function to_placeholder_content (
+		module_cursor	: in pac_generic_modules.cursor;
+		meaning 		: in et_pcb.type_text_meaning)										
+		return et_text.pac_text_content.bounded_string;
+
 	
 	-- Places a text in a non conductor layer like
 	-- silkscreen or assembly doc:

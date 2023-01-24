@@ -94,7 +94,7 @@ package body et_pcb is
 	end to_meaning;
 
 
-		
+	
 
 	function to_string (locked : in type_locked) return string is begin
 		return to_lower (type_locked'image (locked));

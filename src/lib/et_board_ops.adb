@@ -35,8 +35,8 @@
 --   history of changes:
 --
 
-
-
+with et_assembly_variants;
+with et_meta;
 with et_netlists;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
@@ -2743,6 +2743,44 @@ package body et_board_ops is
 	end delete_stencil;
 
 
+
+	-- Maps from the meaning of a text to its actutal content.
+	function to_placeholder_content (
+		module_cursor	: in pac_generic_modules.cursor;
+		meaning 		: in et_pcb.type_text_meaning)
+		return et_text.pac_text_content.bounded_string 
+	is
+		m : et_schematic.type_module renames element (module_cursor);
+		
+		use et_text;
+
+		use et_meta;
+		meta : constant et_meta.type_board := m.meta.board;
+
+		use et_assembly_variants;
+		use pac_assembly_variant_name;
+		variant : constant pac_assembly_variant_name.bounded_string := m.active_variant;
+
+		result : pac_text_content.bounded_string;
+
+		use et_pcb;
+	begin
+		case meaning is
+			when COMPANY			=> result := to_content (to_string (meta.company));
+			when CUSTOMER			=> result := to_content (to_string (meta.customer));
+			when PARTCODE			=> result := to_content (to_string (meta.partcode));
+			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
+			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
+			when PROJECT			=> null; -- CS
+			when MODULE				=> result := to_content (to_string (key (module_cursor)));
+			when REVISION			=> result := to_content (to_string (meta.revision));
+		end case;
+		
+		return result;
+	end to_placeholder_content;
+
+	
+	
 	procedure place_text_in_non_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_non_conductor;

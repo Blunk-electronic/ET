@@ -414,38 +414,6 @@ package body et_canvas_board is
 
 
 	
-	-- Maps from the meaning of a text to its actutal content.
-	function to_placeholder_content (
-		meaning : in et_pcb.type_text_meaning)
-		return et_text.pac_text_content.bounded_string 
-	is
-		use et_text;
-		use et_meta;
-	
-		meta : constant type_board := element (current_active_module).meta.board;
-
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := element (current_active_module).active_variant;
-
-		result : pac_text_content.bounded_string;
-
-		use et_pcb;
-	begin
-		case meaning is
-			when COMPANY			=> result := to_content (to_string (meta.company));
-			when CUSTOMER			=> result := to_content (to_string (meta.customer));
-			when PARTCODE			=> result := to_content (to_string (meta.partcode));
-			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
-			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> null; -- CS
-			when MODULE				=> result := to_content (to_string (key (current_active_module)));
-			when REVISION			=> result := to_content (to_string (meta.revision));
-		end case;
-		
-		return result;
-	end to_placeholder_content;
-
-	
 	procedure draw_grid (
 		self    : not null access type_view;
 		area    : type_bounding_box) is separate;

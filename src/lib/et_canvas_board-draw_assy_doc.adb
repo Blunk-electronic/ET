@@ -119,7 +119,7 @@ is
 
 		-- Vectorize the text:
 		v_text := vectorize_text (
-			content		=> to_placeholder_content (element (c).meaning),
+			content		=> to_placeholder_content (current_active_module, element (c).meaning),
 			size		=> element (c).size,
 			rotation	=> get_rotation (element (c).position),
 			position	=> element (c).position.place,

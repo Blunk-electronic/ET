@@ -149,9 +149,9 @@ package et_pcb is
 		PARTCODE,
 		DRAWING_NUMBER,
 		ASSEMBLY_VARIANT,
-		PROJECT,
-		MODULE,
-		REVISION,
+		PROJECT, -- CS rename to PROJECT_NAME
+		MODULE, -- CS rename to MODULE_NAME
+		REVISION, -- CS rename to REVISION_NUMBER
 		SIGNAL_LAYER_ID,
 		SIGNAL_NAME
 		);
@@ -177,6 +177,7 @@ package et_pcb is
 	
 	
 -- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS
+		
 	subtype type_text_meaning is type_text_meaning_conductor 
 		range COMPANY .. REVISION;
 
