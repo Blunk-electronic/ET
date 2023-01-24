@@ -65,6 +65,7 @@ with gtk.container;					use gtk.container;
 with gtk.text_buffer;
 with gtk.text_iter;
 
+with et_modes.board;				use et_modes.board;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
@@ -321,6 +322,146 @@ package body et_canvas_board_vias is
 	end net_name_changed;
 
 
+
+	procedure clear_proposed_vias is begin
+		proposed_vias.clear;
+		selected_via := pac_proposed_vias.no_element;
+	end;
+
+
+	function collect_vias (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point; -- x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_proposed_vias.list
+	is
+		result : pac_proposed_vias.list;
+
+		--use et_schematic;
+		
+		--procedure query_vias (
+			--module_name	: in pac_module_name.bounded_string;
+			--module		: in type_module) 
+		--is
+			--device_cursor : pac_devices_sch.cursor := module.devices.first;			
+		--begin
+			--while device_cursor /= pac_devices_sch.no_element loop
+
+				--log (text => "probing device " & to_string (key (device_cursor)),
+					 --level => log_threshold + 1);
+				--log_indentation_up;
+					 
+				--if in_catch_zone (
+					--point_1		=> place, 
+					--catch_zone	=> catch_zone, 
+					--point_2		=> element (device_cursor).position.place) 
+				--then
+					--log_indentation_up;
+
+					--log (text => "in catch zone", level => log_threshold + 1);
+					--result.append ((device => device_cursor));
+							
+					--log_indentation_down;
+				--end if;
+				
+				--next (device_cursor);
+
+				--log_indentation_down;
+			--end loop;
+			--null;
+		--end query_vias;
+
+		
+	begin
+		log (text => "looking up vias at" & to_string (place) 
+			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		--query_element (
+			--position	=> module,
+			--process		=> query_vias'access);
+
+		log_indentation_down;
+
+		return result;
+	end collect_vias;
+
+	
+	procedure clarify_via is
+		use pac_vias;
+		v : pac_vias.cursor;
+	begin
+		-- On every call of this procedure we must advance from one
+		-- via to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_via
+		-- moves back to the start of the via list.
+		if next (selected_via) /= pac_proposed_vias.no_element then
+			next (selected_via);
+		else
+			selected_via := proposed_vias.first;
+		end if;
+
+		-- show the via in the status bar
+		v := element (selected_via).via;
+	
+		set_status ("selected via " & to_string (element (v).position) 
+			& ". " & status_next_object_clarification);
+		
+	end clarify_via;
+
+
+	procedure find_vias (
+		point : in type_point)
+	is begin
+		log (text => "locating vias for move/delete ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all vias in the vicinity of the given point:
+		proposed_vias := collect_vias (
+			module			=> current_active_module,
+			place			=> point,
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		
+		-- evaluate the number of vias found here:
+		case length (proposed_vias) is
+			when 0 =>
+				reset_request_clarification;
+				reset_via_place;
+				
+			when 1 =>
+				via_place.being_moved := true;
+				selected_via := proposed_vias.first;
+
+				case verb is
+					-- CS
+					--when VERB_DELETE => 
+						--set_status (status_flip);
+
+					when VERB_MOVE => 
+						set_status (status_move_via);
+
+					when others => null;
+				end case;
+
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the first via
+				selected_via := proposed_vias.first;
+		end case;
+
+		log_indentation_down;
+	end find_vias;
+
+	
+	
 	procedure init_via_place is
 		use et_pcb;
 
@@ -384,6 +525,7 @@ package body et_canvas_board_vias is
 
 
 	
+-- PLACE:
 
 	procedure place_via (
 		destination : in type_point) 
@@ -424,6 +566,71 @@ package body et_canvas_board_vias is
 
 		end if;
 	end place_via;
+
+	
+
+-- MOVE:
+	
+	procedure finalize_move (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		sv : type_selected_via;
+
+		--use et_schematic;
+		--use pac_devices_sch;
+	begin
+		log (text => "finalizing move ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_via /= pac_proposed_vias.no_element then
+
+			sv := element (selected_via);
+			
+			--move_via (
+				--module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				--device_name		=> key (sd.device),
+				--coordinates		=> ABSOLUTE,
+				--point			=> destination,
+				--log_threshold	=> log_threshold);
+			
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+		
+		set_status (status_move_via);
+		
+		reset_via_place;
+	end finalize_move;
+
+
+	
+	procedure move_via (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not via_place.being_moved then
+
+			-- Set the tool being used:
+			via_place.tool := tool;
+			
+			if not clarification_pending then
+				find_vias (position);
+			else
+				via_place.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected via:
+			finalize_move (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end move_via;
 
 
 	

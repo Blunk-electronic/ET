@@ -125,7 +125,7 @@ package et_canvas_board_devices is
 		doubly_linked_lists (type_selected_electrical_device);
 	use pac_proposed_electrical_devices;
 	
-	proposed_electrical_device	: pac_proposed_electrical_devices.list;
+	proposed_electrical_device	: pac_proposed_electrical_devices.list; -- rename to proposed_electrical_devices
 	selected_electrical_device	: pac_proposed_electrical_devices.cursor;
 
 

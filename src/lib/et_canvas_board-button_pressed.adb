@@ -70,6 +70,9 @@ is
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						move_non_electrical_device (MOUSE, point);
+
+					when NOUN_VIA =>
+						move_via (MOUSE, snap_point);
 						
 					when others => null;
 				end case;
@@ -138,6 +141,10 @@ is
 							clarify_non_electrical_device;
 						end if;
 
+					when NOUN_VIA =>
+						if clarification_pending then
+							clarify_via;
+						end if;
 						
 					--when NOUN_VALUE => 
 						--if clarification_pending then

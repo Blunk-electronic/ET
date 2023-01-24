@@ -150,6 +150,11 @@ is
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (status_move);
 
+			when GDK_LC_v =>
+				noun := NOUN_VIA;
+				set_status (status_move_via);
+		
+				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
 				case noun is
@@ -158,6 +163,10 @@ is
 						
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						move_non_electrical_device (KEYBOARD, cursor_main.position);
+
+
+					when NOUN_VIA =>
+						move_via (KEYBOARD, cursor_main.position);
 						
 					when others => null;
 				end case;		
@@ -186,6 +195,12 @@ is
 						if clarification_pending then
 							clarify_non_electrical_device;
 						end if;
+
+					when NOUN_VIA =>
+						if clarification_pending then
+							clarify_via;
+						end if;
+
 						
 					--when NOUN_VALUE => 
 						--if clarification_pending then
