@@ -72,7 +72,7 @@ use et_canvas_board.pac_canvas;
 with et_logging;					use et_logging;
 
 with et_modes.board;
-with et_board_ops;					use et_board_ops;
+with et_board_ops.vias;				use et_board_ops.vias;
 with et_exceptions;					use et_exceptions;
 
 

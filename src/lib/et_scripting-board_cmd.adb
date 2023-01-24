@@ -39,6 +39,7 @@
 
 with et_board_shapes_and_text;
 with et_board_ops.tracks;
+with et_board_ops.vias;
 with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
@@ -66,6 +67,7 @@ procedure board_cmd (
 is
 	use et_board_ops;
 	use et_board_ops.tracks;
+	use et_board_ops.vias;
 	use et_packages;
 	use et_board_shapes_and_text;
 	use pac_contours;
@@ -1200,7 +1202,7 @@ is
 				restring_inner	=> restring_inner,
 				restring_outer	=> restring_outer);
 					
-			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end through;
 
 		procedure blind_top is
@@ -1212,7 +1214,7 @@ is
 				restring_top	=> restring_top,
 				lower			=> lower_layer);
 					
-			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end blind_top;
 
 		procedure blind_bottom is
@@ -1224,7 +1226,7 @@ is
 				restring_bottom	=> restring_bottom,
 				upper			=> upper_layer);
 					
-			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end blind_bottom;
 
 		procedure buried is
@@ -1235,7 +1237,7 @@ is
 				restring_inner	=> restring_inner,
 				layers			=> buried_layers);
 					
-			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end buried;
 
 		use et_design_rules;

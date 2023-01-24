@@ -58,7 +58,6 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_project.modules;		use et_project.modules;
 with et_schematic;				use et_schematic;
-with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
@@ -153,13 +152,6 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Returns the positions (x/y) of all vias of the given net.
-	-- The list of returned points uses fixed point coordinates
-	-- as the vias are placed by the operator (their positions are man-made):
-	function get_via_positions (
-		net_cursor : in et_schematic.pac_nets.cursor)
-		return pac_points.list;
-
 
 	-- Returns the start and end positions (x/y) of all track 
 	-- segments (lines and arcs) of the given net:
@@ -193,13 +185,6 @@ package et_board_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		lth				: in type_log_level);
 
-	
-	-- Places a via in the given net:
-	procedure place_via (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
-		via				: in type_via;
-		log_threshold	: in type_log_level);
 
 	
 	

@@ -40,6 +40,7 @@ with ada.exceptions;
 with et_exceptions;					use et_exceptions;
 with et_ratsnest;					use et_ratsnest;
 with et_board_ops.devices;			use et_board_ops.devices;
+with et_board_ops.vias;				use et_board_ops.vias;
 
 
 separate (et_board_ops)
