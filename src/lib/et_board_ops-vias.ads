@@ -51,6 +51,15 @@ package et_board_ops.vias is
 		return pac_points.list;
 
 
+	-- Returns all vias in the vicinity of the given point:
+	function get_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_vias.list;
+
+	
 	
 	-- Places a via in the given net:
 	procedure place_via (
@@ -59,7 +68,17 @@ package et_board_ops.vias is
 		via				: in type_via;
 		log_threshold	: in type_log_level);
 
-											
+
+	-- Moves a via:
+	procedure move_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via_cursor		: in pac_vias.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in type_point; -- x/y
+		log_threshold	: in type_log_level);
+
+
+	
 end et_board_ops.vias;
 
 -- Soli Deo Gloria

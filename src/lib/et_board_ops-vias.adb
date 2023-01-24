@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_nets;						use et_nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 
@@ -65,8 +66,41 @@ package body et_board_ops.vias is
 	end get_via_positions;
 	
 
-	
 
+	function get_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_vias.list
+	is
+		result : pac_vias.list;
+
+		module : type_module renames element (module_cursor);
+
+
+		procedure query_net (c : in pac_nets.cursor) is
+		begin
+			null;
+		end query_net;
+
+
+	begin
+		log (text => "looking up vias at" & to_string (point) 
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		module.nets.iterate (query_net'access);
+
+		log_indentation_down;
+
+		
+		return result;
+	end get_vias;
+
+	
 	
 	procedure place_via (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -186,6 +220,19 @@ package body et_board_ops.vias is
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end place_via;
+
+
+
+	procedure move_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via_cursor		: in pac_vias.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in type_point; -- x/y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end move_via;
 
 	
 	

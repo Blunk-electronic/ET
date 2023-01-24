@@ -338,53 +338,24 @@ package body et_canvas_board_vias is
 	is
 		result : pac_proposed_vias.list;
 
-		--use et_schematic;
-		
-		--procedure query_vias (
-			--module_name	: in pac_module_name.bounded_string;
-			--module		: in type_module) 
-		--is
-			--device_cursor : pac_devices_sch.cursor := module.devices.first;			
-		--begin
-			--while device_cursor /= pac_devices_sch.no_element loop
+		vias : pac_vias.list;
 
-				--log (text => "probing device " & to_string (key (device_cursor)),
-					 --level => log_threshold + 1);
-				--log_indentation_up;
-					 
-				--if in_catch_zone (
-					--point_1		=> place, 
-					--catch_zone	=> catch_zone, 
-					--point_2		=> element (device_cursor).position.place) 
-				--then
-					--log_indentation_up;
-
-					--log (text => "in catch zone", level => log_threshold + 1);
-					--result.append ((device => device_cursor));
-							
-					--log_indentation_down;
-				--end if;
-				
-				--next (device_cursor);
-
-				--log_indentation_down;
-			--end loop;
-			--null;
-		--end query_vias;
-
-		
+		procedure query_via (c : in pac_vias.cursor) is begin
+			result.append ((via => c));
+		end query_via;
+			
 	begin
-		log (text => "looking up vias at" & to_string (place) 
-			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
+		--log (text => "looking up vias at" & to_string (place) 
+			 --& " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
 
-		log_indentation_up;
+		--log_indentation_up;
 		
-		--query_element (
-			--position	=> module,
-			--process		=> query_vias'access);
+		vias := get_vias (module, place, catch_zone, log_threshold + 1);
 
-		log_indentation_down;
-
+		-- convert the via list to a list of proposed vias:
+		vias.iterate (query_via'access);
+		
+		--log_indentation_down;
 		return result;
 	end collect_vias;
 
@@ -576,9 +547,6 @@ package body et_canvas_board_vias is
 		log_threshold	: in type_log_level)
 	is
 		sv : type_selected_via;
-
-		--use et_schematic;
-		--use pac_devices_sch;
 	begin
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
@@ -587,12 +555,12 @@ package body et_canvas_board_vias is
 
 			sv := element (selected_via);
 			
-			--move_via (
-				--module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				--device_name		=> key (sd.device),
-				--coordinates		=> ABSOLUTE,
-				--point			=> destination,
-				--log_threshold	=> log_threshold);
+			move_via (
+				module_cursor	=> current_active_module,
+				via_cursor		=> sv.via,
+				coordinates		=> ABSOLUTE,
+				point			=> destination,
+				log_threshold	=> log_threshold);
 			
 		else
 			log (text => "nothing to do", level => log_threshold);
