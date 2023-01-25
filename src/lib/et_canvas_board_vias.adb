@@ -329,43 +329,6 @@ package body et_canvas_board_vias is
 	end;
 
 	
-	function collect_vias (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_point; -- x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_vias.list
-	is
-		result : pac_proposed_vias.list;
-
-		vias : pac_vias.list;
-
-		procedure query_via (c : in pac_vias.cursor) is begin
-			log (text => "convert 1" & get_position (c), level => log_threshold);
-			result.append ((via => c));
-			log (text => "convert 2" & get_position (result.last_element.via), level => log_threshold);
-		end query_via;
-			
-	begin
-		log (text => "collecting vias at" & to_string (place) 
-			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
-
-		log_indentation_up;
-		
-		vias := get_vias (module, place, catch_zone, log_threshold + 1);
-
-		-- convert the via list to a list of proposed vias:
-		vias.iterate (query_via'access);
-		
-		log_indentation_down;
-
-		log (text => "collected vias last" & get_position (result.last_element.via), level => log_threshold);
-		--log (text => "collected vias last" & get_position (pv1.last_element.via), level => log_threshold);
-		--log (text => "collected vias total" & count_type'image (pv1.length), level => log_threshold);
-		
-		return result;
-	end collect_vias;
-
 	
 	procedure clarify_via is
 		use pac_vias;
@@ -390,22 +353,30 @@ package body et_canvas_board_vias is
 	end clarify_via;
 
 
+	VI : pac_vias.cursor;
+	
+	
 	procedure find_vias (
 		point : in type_point)
 	is 
+		vias : pac_vias.list;
+
+		procedure query_via (c : in pac_vias.cursor) is begin
+			--log (text => "convert 1" & get_position (c), level => log_threshold);
+			proposed_vias.append ((via => c));
+			--log (text => "convert 2" & get_position (result.last_element.via), level => log_threshold);
+		end query_via;
+
 	begin
 		log (text => "locating vias for move/delete ...", level => log_threshold);
 		log_indentation_up;
-		
-		-- Collect all vias in the vicinity of the given point:
-		proposed_vias := collect_vias (
-			module			=> current_active_module,
-			place			=> point,
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
-			log_threshold	=> log_threshold + 1);
 
-		--log (text => "proposed vias last " & get_position (pv.last_element.via), level => log_threshold);
-		--log (text => "proposed vias first" & get_position (pv.first_element.via), level => log_threshold);
+		-- Collect all vias in the vicinity of the given point:
+		vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
+
+		-- convert the via list to a list of proposed vias:
+		vias.iterate (query_via'access);
+
 		
 		-- evaluate the number of vias found here:
 		case length (proposed_vias) is
@@ -423,7 +394,9 @@ package body et_canvas_board_vias is
 						--set_status (status_flip);
 
 					when VERB_MOVE =>
-						log (text => "move via" & get_position (element (selected_via).via));
+						--log (text => "move selected via" & get_position (element (selected_via).via));
+						VI := element (selected_via).via;
+						log (text => "move selected via" & get_position (VI));
 						set_status (status_move_via);
 
 					when others => null;
@@ -439,6 +412,11 @@ package body et_canvas_board_vias is
 				selected_via := proposed_vias.first;
 		end case;
 
+		--log (text => "selected via 1" & 
+			 --get_position (element (et_canvas_board_vias.selected_via).via));
+		log (text => "selected via 1" & get_position (VI));
+
+		
 		log_indentation_down;
 	end find_vias;
 
@@ -564,7 +542,9 @@ package body et_canvas_board_vias is
 
 		if selected_via /= pac_proposed_vias.no_element then
 
-			put_line ("pos 1");			
+			log (text => "selected via 3" & 
+				get_position (element (et_canvas_board_vias.selected_via).via));
+
 			sv := element (selected_via);
 			put_line ("pos 2");
 
@@ -605,6 +585,10 @@ package body et_canvas_board_vias is
 			
 			if not clarification_pending then
 				find_vias (position);
+				--log (text => "selected via 2" & 
+					 --get_position (element (et_canvas_board_vias.selected_via).via));
+
+				log (text => "selected via 2" & get_position (VI));
 			else
 				via_place.being_moved := true;
 				reset_request_clarification;

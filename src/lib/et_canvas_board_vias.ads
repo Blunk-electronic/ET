@@ -123,7 +123,7 @@ package et_canvas_board_vias is
 
 
 	type type_selected_via is record
-		via	: pac_vias.cursor;
+		via	: et_vias.pac_vias.cursor;
 	end record;
 
 	package pac_proposed_vias is new doubly_linked_lists (type_selected_via);
@@ -139,12 +139,12 @@ package et_canvas_board_vias is
 	
 
 	-- Collects all vias in the vicinity of the given point:	
-	function collect_vias (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_point; -- x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_vias.list;
+	--function collect_vias (
+		--module			: in pac_generic_modules.cursor;
+		--place			: in type_point; -- x/y
+		--catch_zone		: in type_catch_zone; -- the circular area around the place
+		--log_threshold	: in type_log_level)
+		--return pac_proposed_vias.list;
 
 
 	-- Advances cursor selected_via to next device

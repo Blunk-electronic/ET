@@ -949,7 +949,7 @@ begin -- draw_conductors
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_via_being_placed;
+	--draw_via_being_placed;
 	
 end draw_conductors;
 
