@@ -197,8 +197,11 @@ package et_vias is
 	
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
+	use pac_vias;
 
+	function get_position (via : in pac_vias.cursor) return string;
 
+	
 	-- Iterates the vias. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		vias	: in pac_vias.list;

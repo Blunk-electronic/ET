@@ -47,7 +47,7 @@ package et_board_ops.vias is
 	-- The list of returned points uses fixed point coordinates
 	-- as the vias are placed by the operator (their positions are man-made):
 	function get_via_positions (
-		net_cursor : in et_schematic.pac_nets.cursor)
+		net_cursor : in pac_nets.cursor)
 		return pac_points.list;
 
 
@@ -69,6 +69,14 @@ package et_board_ops.vias is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the cursor of the net that is connected
+	-- with the given via:
+	function get_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		via_cursor		: in pac_vias.cursor)
+		return pac_nets.cursor;
+	
+	
 	-- Moves a via:
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;

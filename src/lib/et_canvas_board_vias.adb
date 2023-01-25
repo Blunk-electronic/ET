@@ -328,7 +328,7 @@ package body et_canvas_board_vias is
 		selected_via := pac_proposed_vias.no_element;
 	end;
 
-
+	
 	function collect_vias (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_point; -- x/y
@@ -341,21 +341,28 @@ package body et_canvas_board_vias is
 		vias : pac_vias.list;
 
 		procedure query_via (c : in pac_vias.cursor) is begin
+			log (text => "convert 1" & get_position (c), level => log_threshold);
 			result.append ((via => c));
+			log (text => "convert 2" & get_position (result.last_element.via), level => log_threshold);
 		end query_via;
 			
 	begin
-		--log (text => "looking up vias at" & to_string (place) 
-			 --& " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
+		log (text => "collecting vias at" & to_string (place) 
+			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
 
-		--log_indentation_up;
+		log_indentation_up;
 		
 		vias := get_vias (module, place, catch_zone, log_threshold + 1);
 
 		-- convert the via list to a list of proposed vias:
 		vias.iterate (query_via'access);
 		
-		--log_indentation_down;
+		log_indentation_down;
+
+		log (text => "collected vias last" & get_position (result.last_element.via), level => log_threshold);
+		--log (text => "collected vias last" & get_position (pv1.last_element.via), level => log_threshold);
+		--log (text => "collected vias total" & count_type'image (pv1.length), level => log_threshold);
+		
 		return result;
 	end collect_vias;
 
@@ -385,7 +392,8 @@ package body et_canvas_board_vias is
 
 	procedure find_vias (
 		point : in type_point)
-	is begin
+	is 
+	begin
 		log (text => "locating vias for move/delete ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -396,6 +404,8 @@ package body et_canvas_board_vias is
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
 			log_threshold	=> log_threshold + 1);
 
+		--log (text => "proposed vias last " & get_position (pv.last_element.via), level => log_threshold);
+		--log (text => "proposed vias first" & get_position (pv.first_element.via), level => log_threshold);
 		
 		-- evaluate the number of vias found here:
 		case length (proposed_vias) is
@@ -412,7 +422,8 @@ package body et_canvas_board_vias is
 					--when VERB_DELETE => 
 						--set_status (status_flip);
 
-					when VERB_MOVE => 
+					when VERB_MOVE =>
+						log (text => "move via" & get_position (element (selected_via).via));
 						set_status (status_move_via);
 
 					when others => null;
@@ -553,7 +564,15 @@ package body et_canvas_board_vias is
 
 		if selected_via /= pac_proposed_vias.no_element then
 
+			put_line ("pos 1");			
 			sv := element (selected_via);
+			put_line ("pos 2");
+
+			put_line (get_position (sv.via));
+			
+			log (text => "pos" & get_position (sv.via), level => log_threshold);
+
+			put_line ("pos 3");
 			
 			move_via (
 				module_cursor	=> current_active_module,

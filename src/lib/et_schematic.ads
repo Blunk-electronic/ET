@@ -227,7 +227,7 @@ package et_schematic is
 
 
 	package pac_nets is new ordered_maps (
-			key_type		=> pac_net_name.bounded_string,
+		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
 
 

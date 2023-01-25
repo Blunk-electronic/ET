@@ -80,8 +80,24 @@ package body et_board_ops.vias is
 
 
 		procedure query_net (c : in pac_nets.cursor) is
+			net : type_net renames element (c);
+
+			procedure query_via (v : in pac_vias.cursor) is
+				use pac_vias;
+				via : type_via renames element (v);
+			begin
+				if in_catch_zone (
+					point_1		=> point, 
+					catch_zone	=> catch_zone,
+					point_2		=> via.position)
+				then
+					log (text => get_position (v), level => log_threshold + 1);
+					result.append (via);
+				end if;
+			end query_via;
+			
 		begin
-			null;
+			net.route.vias.iterate (query_via'access);
 		end query_net;
 
 
@@ -94,9 +110,10 @@ package body et_board_ops.vias is
 		
 		module.nets.iterate (query_net'access);
 
-		log_indentation_down;
-
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
 		
+		log_indentation_down;		
 		return result;
 	end get_vias;
 
@@ -222,6 +239,38 @@ package body et_board_ops.vias is
 	end place_via;
 
 
+	function get_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		via_cursor		: in pac_vias.cursor)
+		return pac_nets.cursor
+	is
+		result : pac_nets.cursor;
+
+		module : type_module renames element (module_cursor);
+
+		proceed : aliased boolean := true;
+
+		procedure query_net (n : in pac_nets.cursor) is
+			net : type_net renames element (n);
+
+			use pac_vias;
+			procedure query_via (v : in pac_vias.cursor) is begin
+				if v = via_cursor then
+					proceed := false;
+					result := n;
+				end if;
+			end query_via;
+			
+		begin
+			iterate (net.route.vias, query_via'access, proceed'access);
+		end query_net;
+		
+	begin
+		iterate (module.nets, query_net'access, proceed'access);
+		return result;
+	end get_net;	
+
+	
 
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -230,8 +279,57 @@ package body et_board_ops.vias is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level)
 	is
+		use pac_vias;
+		via : type_via renames element (via_cursor);
+
+		net_cursor : constant pac_nets.cursor := get_net (module_cursor, via_cursor);
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+			
+				use pac_vias;
+				procedure query_via (
+					v : in out type_via)
+				is begin
+					case coordinates is
+						when ABSOLUTE =>
+							v.position := point;
+
+						when RELATIVE =>
+							move_by (v.position, to_distance_relative (point));
+					end case;
+
+					log (text => "to" & to_string (v.position), level => log_threshold);
+				end query_via;
+				
+			begin
+				net.route.vias.update_element (via_cursor, query_via'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+
 	begin
-		null;
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " moving via from" & to_string (via.position),
+			level => log_threshold);
+
+		--update_element (
+			--container	=> generic_modules,
+			--position	=> module_cursor,
+			--process		=> query_module'access);
+
+		--update_ratsnest (module_cursor, log_threshold + 1);		
 	end move_via;
 
 	
