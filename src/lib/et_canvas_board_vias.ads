@@ -121,9 +121,9 @@ package et_canvas_board_vias is
 	via_place : type_via_place;
 
 
-
+	use pac_vias;
 	type type_selected_via is record
-		via	: et_vias.pac_vias.cursor;
+		via	: pac_vias.cursor;
 	end record;
 
 	package pac_proposed_vias is new doubly_linked_lists (type_selected_via);

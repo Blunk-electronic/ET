@@ -353,11 +353,14 @@ package body et_canvas_board_vias is
 	end clarify_via;
 
 
-	
+	VC : pac_vias.cursor;
+	V : type_via (THROUGH);
+
 	
 	procedure find_vias (
 		point : in type_point)
 	is 
+		use pac_vias;
 		vias : pac_vias.list;
 
 		procedure query_via (c : in pac_vias.cursor) is begin
@@ -376,6 +379,7 @@ package body et_canvas_board_vias is
 		-- convert the via list to a list of proposed vias:
 		vias.iterate (query_via'access);
 
+		put_line (count_type'image (proposed_vias.length));
 		
 		-- evaluate the number of vias found here:
 		case length (proposed_vias) is
@@ -393,16 +397,17 @@ package body et_canvas_board_vias is
 						--set_status (status_flip);
 
 					when VERB_MOVE =>
-						--log (text => "move selected via" & get_position (element (selected_via).via));
-						--VI := element (selected_via).via;
-						--log (text => "move selected via" & get_position (VI));
-						--VX := VI;
+						VC := element (selected_via).via;
+						v := element (VC);
+						
+						put_line ("selected via 1" & get_position (element (selected_via).via));
 						set_status (status_move_via);
 
 					when others => null;
 				end case;
 
 				reset_request_clarification;
+
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -411,12 +416,6 @@ package body et_canvas_board_vias is
 				-- preselect the first via
 				selected_via := proposed_vias.first;
 		end case;
-
-		--log (text => "selected via 1" & 
-			 --get_position (element (et_canvas_board_vias.selected_via).via));
-		--log (text => "selected via 1 " & get_position (VI));
-		--log (text => "selected via 1x" & get_position (VX));
-
 		
 		log_indentation_down;
 	end find_vias;
@@ -543,10 +542,11 @@ package body et_canvas_board_vias is
 
 		if selected_via /= pac_proposed_vias.no_element then
 
+			null;
 			--log (text => "selected via 3" & 
 				--get_position (element (et_canvas_board_vias.selected_via).via));
 
-			sv := element (selected_via);
+			--sv := element (selected_via);
 			--put_line ("pos 2");
 
 			--put_line (get_position (sv.via));
@@ -555,12 +555,12 @@ package body et_canvas_board_vias is
 
 			--put_line ("pos 3");
 			
-			move_via (
-				module_cursor	=> current_active_module,
-				via_cursor		=> sv.via,
-				coordinates		=> ABSOLUTE,
-				point			=> destination,
-				log_threshold	=> log_threshold);
+			--move_via (
+				--module_cursor	=> current_active_module,
+				--via_cursor		=> sv.via,
+				--coordinates		=> ABSOLUTE,
+				--point			=> destination,
+				--log_threshold	=> log_threshold);
 			
 		else
 			log (text => "nothing to do", level => log_threshold);
@@ -579,24 +579,36 @@ package body et_canvas_board_vias is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
+		put_line ("MOVE VIA");
+		
 		if not via_place.being_moved then
+			put_line ("not being moved");
 
 			-- Set the tool being used:
 			via_place.tool := tool;
 			
 			if not clarification_pending then
+				put_line ("find vias");
 				find_vias (position);
-				put_line ("selected via" & 
-					 get_position (element (selected_via).via));
-
-				--log (text => "selected via 2 " & get_position (VI));
-				--log (text => "selected via 2x" & get_position (VX));
 			else
+				put_line ("reset clarify");
 				via_place.being_moved := true;
 				reset_request_clarification;
 			end if;
 			
 		else
+			put_line ("being moved");
+			--put_line ("selected via 2" & get_position (element (selected_via).via));
+			--put_line ("VC" & get_position (VC));
+
+			if element (selected_via).via = VC then
+				put_line ("equal");
+			else
+				put_line ("not equal");
+			end if;
+			put_line ("VC" & to_string (element (VC).position));
+			put_line ("V" & to_string (V.position));
+			
 			-- Finally move the selected via:
 			finalize_move (
 				destination		=> position,
@@ -609,6 +621,8 @@ package body et_canvas_board_vias is
 	
 	procedure reset_via_place is begin
 		via_place.being_moved := false;
+		via_place.tool := MOUSE;
+		clear_proposed_vias;
 
 		-- Remove the via properties bar from the window:
 		if box_properties.displayed then
