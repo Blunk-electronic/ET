@@ -586,8 +586,8 @@ package body et_canvas_board_vias is
 			
 			if not clarification_pending then
 				find_vias (position);
-				--log (text => "selected via 2" & 
-					 --get_position (element (et_canvas_board_vias.selected_via).via));
+				put_line ("selected via" & 
+					 get_position (element (selected_via).via));
 
 				--log (text => "selected via 2 " & get_position (VI));
 				--log (text => "selected via 2x" & get_position (VX));

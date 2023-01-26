@@ -44,7 +44,7 @@ package body et_board_ops.vias is
 
 	use pac_generic_modules;
 	use pac_nets;
-	
+	use pac_vias;	
 
 
 	
@@ -76,29 +76,45 @@ package body et_board_ops.vias is
 	is
 		result : pac_vias.list;
 
-		module : type_module renames element (module_cursor);
 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
 
-		procedure query_net (c : in pac_nets.cursor) is
-			net : type_net renames element (c);
+			
+			procedure query_net (
+				name	: in pac_net_name.bounded_string;
+				net		: in type_net) 
+			is
+				via_cursor : pac_vias.cursor := net.route.vias.first;
+				
+				procedure query_via (via : in type_via) is begin
+					if in_catch_zone (
+						point_1		=> point, 
+						catch_zone	=> catch_zone,
+						point_2		=> via.position)
+					then
+						log (text => to_string (via.position), level => log_threshold + 2);
+						result.append (via);
+					end if;
+				end query_via;
 
-			procedure query_via (v : in pac_vias.cursor) is
-				use pac_vias;
-				via : type_via renames element (v);
 			begin
-				if in_catch_zone (
-					point_1		=> point, 
-					catch_zone	=> catch_zone,
-					point_2		=> via.position)
-				then
-					log (text => get_position (v), level => log_threshold + 1);
-					result.append (via);
-				end if;
-			end query_via;
+				while via_cursor /= pac_vias.no_element loop
+					query_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+			end query_net;
+
 			
 		begin
-			net.route.vias.iterate (query_via'access);
-		end query_net;
+			while net_cursor /= pac_nets.no_element loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
 
 
 	begin
@@ -108,7 +124,10 @@ package body et_board_ops.vias is
 
 		log_indentation_up;
 		
-		module.nets.iterate (query_net'access);
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
 
 		log (text => "found" & count_type'image (result.length),
 			 level => log_threshold + 1);
