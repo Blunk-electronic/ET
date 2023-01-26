@@ -324,12 +324,12 @@ package body et_board_ops.vias is
 			& " moving via from" & to_string (via.position),
 			level => log_threshold);
 
-		--update_element (
-			--container	=> generic_modules,
-			--position	=> module_cursor,
-			--process		=> query_module'access);
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
-		--update_ratsnest (module_cursor, log_threshold + 1);		
+		update_ratsnest (module_cursor, log_threshold + 1);		
 	end move_via;
 
 	

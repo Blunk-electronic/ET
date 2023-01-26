@@ -194,7 +194,7 @@ package et_canvas_board_devices is
 	
 	-- Locates all devices in the vicinity of given point.
 	-- If more than one device near point found, then it sets the
-	-- cursor selected_electrical_device to the device and requests
+	-- cursor selected_electrical_device to the first device and requests
 	-- for clarification.
 	procedure find_electrical_devices_for_move (
 		point : in type_point);

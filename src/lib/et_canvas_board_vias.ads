@@ -138,15 +138,6 @@ package et_canvas_board_vias is
 	procedure clear_proposed_vias;
 	
 
-	-- Collects all vias in the vicinity of the given point:	
-	--function collect_vias (
-		--module			: in pac_generic_modules.cursor;
-		--place			: in type_point; -- x/y
-		--catch_zone		: in type_catch_zone; -- the circular area around the place
-		--log_threshold	: in type_log_level)
-		--return pac_proposed_vias.list;
-
-
 	-- Advances cursor selected_via to next device
 	-- in list proposed_vias:
 	procedure clarify_via;
@@ -154,7 +145,7 @@ package et_canvas_board_vias is
 	
 	-- Locates all vias in the vicinity of given point.
 	-- If more than one via near point found, then it sets the
-	-- cursor selected_via to the via and requests
+	-- cursor selected_via to the first via and requests
 	-- for clarification.
 	procedure find_vias (
 		point : in type_point);

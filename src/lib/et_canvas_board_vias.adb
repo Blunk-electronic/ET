@@ -353,7 +353,6 @@ package body et_canvas_board_vias is
 	end clarify_via;
 
 
-	VI : pac_vias.cursor;
 	
 	
 	procedure find_vias (
@@ -395,8 +394,9 @@ package body et_canvas_board_vias is
 
 					when VERB_MOVE =>
 						--log (text => "move selected via" & get_position (element (selected_via).via));
-						VI := element (selected_via).via;
-						log (text => "move selected via" & get_position (VI));
+						--VI := element (selected_via).via;
+						--log (text => "move selected via" & get_position (VI));
+						--VX := VI;
 						set_status (status_move_via);
 
 					when others => null;
@@ -414,7 +414,8 @@ package body et_canvas_board_vias is
 
 		--log (text => "selected via 1" & 
 			 --get_position (element (et_canvas_board_vias.selected_via).via));
-		log (text => "selected via 1" & get_position (VI));
+		--log (text => "selected via 1 " & get_position (VI));
+		--log (text => "selected via 1x" & get_position (VX));
 
 		
 		log_indentation_down;
@@ -542,17 +543,17 @@ package body et_canvas_board_vias is
 
 		if selected_via /= pac_proposed_vias.no_element then
 
-			log (text => "selected via 3" & 
-				get_position (element (et_canvas_board_vias.selected_via).via));
+			--log (text => "selected via 3" & 
+				--get_position (element (et_canvas_board_vias.selected_via).via));
 
 			sv := element (selected_via);
-			put_line ("pos 2");
+			--put_line ("pos 2");
 
-			put_line (get_position (sv.via));
+			--put_line (get_position (sv.via));
 			
-			log (text => "pos" & get_position (sv.via), level => log_threshold);
+			--log (text => "pos" & get_position (sv.via), level => log_threshold);
 
-			put_line ("pos 3");
+			--put_line ("pos 3");
 			
 			move_via (
 				module_cursor	=> current_active_module,
@@ -588,7 +589,8 @@ package body et_canvas_board_vias is
 				--log (text => "selected via 2" & 
 					 --get_position (element (et_canvas_board_vias.selected_via).via));
 
-				log (text => "selected via 2" & get_position (VI));
+				--log (text => "selected via 2 " & get_position (VI));
+				--log (text => "selected via 2x" & get_position (VX));
 			else
 				via_place.being_moved := true;
 				reset_request_clarification;
