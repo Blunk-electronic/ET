@@ -524,7 +524,7 @@ package body et_canvas_board_vias is
 			
 			move_via (
 				module_cursor	=> current_active_module,
-				via_cursor		=> selected_via,
+				via				=> element (selected_via),
 				coordinates		=> ABSOLUTE,
 				point			=> destination,
 				log_threshold	=> log_threshold);

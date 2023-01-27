@@ -293,59 +293,55 @@ package body et_board_ops.vias is
 
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		via_cursor		: in pac_vias.cursor;
+		via				: in type_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level)
 	is
-		via_in : type_via := element (via_cursor);
+		new_position : type_point := via.position;
 
-		net_name : constant pac_net_name.bounded_string := get_net (module_cursor, via_in);
+		net_name : constant pac_net_name.bounded_string := get_net (module_cursor, via);
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			net_cursor : pac_nets.cursor;
+			net_cursor : pac_nets.cursor := module.nets.find (net_name);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				vc : pac_vias.cursor := find (net.route.vias, via_in);
+				via_cursor : pac_vias.cursor := find (net.route.vias, via);
 				
-				use pac_vias;
-				procedure query_via (
-					v : in out type_via)
-				is begin
-					case coordinates is
-						when ABSOLUTE =>
-							v.position := point;
-
-						when RELATIVE =>
-							move_by (v.position, to_distance_relative (point));
-					end case;
-
-					log (text => "to" & to_string (v.position), level => log_threshold);
+				procedure query_via (v : in out type_via) is begin
+					v.position := new_position;
 				end query_via;
 				
 			begin
-				null;
-				--put_line (to_string (net_name));
-				net.route.vias.update_element (vc, query_via'access);
+				net.route.vias.update_element (via_cursor, query_via'access);
 			end query_net;
 			
 		begin
-			net_cursor := module.nets.find (net_name);
 			module.nets.update_element (net_cursor, query_net'access);
 		end query_module;
 
 
-	begin
+	begin -- move_via
+
+		case coordinates is
+			when ABSOLUTE =>
+				new_position := point;
+
+			when RELATIVE =>
+				move_by (new_position, to_distance_relative (point));
+		end case;
+		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " net " & to_string (net_name)
-			& " moving via from" & get_position (via_cursor),
+			& " moving via from" & to_string (via.position)
+			& " to" & to_string (new_position),
 			level => log_threshold);
 
 		update_element (

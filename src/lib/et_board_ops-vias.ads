@@ -80,7 +80,7 @@ package et_board_ops.vias is
 	-- Moves a via:
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		via_cursor		: in pac_vias.cursor;
+		via				: in type_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
