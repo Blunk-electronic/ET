@@ -941,6 +941,27 @@ is
 		end if;
 	end draw_via_being_placed;
 
+
+	procedure draw_via_being_moved is
+		use pac_proposed_vias;
+	begin
+		if via_place.being_moved then
+
+			declare
+				vc : pac_vias.cursor := element (selected_via).via;
+				--via : type_via := element (vc);
+			begin
+				null;
+				-- Set the point where the via is to be drawn:
+				--via.position := self.tool_position;
+
+				--vias_being_placed.append (via);
+				--put_line (to_string (via));
+				--vias_being_placed.iterate (query_via'access); 
+			end;
+		end if;
+	end draw_via_being_moved;
+	
 	
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
@@ -949,7 +970,15 @@ begin -- draw_conductors
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	--draw_via_being_placed;
+	case verb is
+		when VERB_PLACE =>
+			draw_via_being_placed;
+
+		when VERB_MOVE =>
+			draw_via_being_moved;
+
+		when others => null;
+	end case;
 	
 end draw_conductors;
 

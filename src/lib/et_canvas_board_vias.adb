@@ -353,8 +353,8 @@ package body et_canvas_board_vias is
 	end clarify_via;
 
 
-	VC : pac_vias.cursor;
-	V : type_via (THROUGH);
+	--VC : pac_vias.cursor;
+	--V : type_via (THROUGH);
 
 	
 	procedure find_vias (
@@ -397,10 +397,10 @@ package body et_canvas_board_vias is
 						--set_status (status_flip);
 
 					when VERB_MOVE =>
-						VC := element (selected_via).via;
-						v := element (VC);
+						--VC := element (selected_via).via;
+						--v := element (VC);
 						
-						put_line ("selected via 1" & get_position (element (selected_via).via));
+						--put_line ("selected via 1" & get_position (element (selected_via).via));
 						set_status (status_move_via);
 
 					when others => null;
@@ -598,16 +598,19 @@ package body et_canvas_board_vias is
 			
 		else
 			put_line ("being moved");
-			--put_line ("selected via 2" & get_position (element (selected_via).via));
-			--put_line ("VC" & get_position (VC));
 
-			if element (selected_via).via = VC then
-				put_line ("equal");
-			else
-				put_line ("not equal");
-			end if;
-			put_line ("VC" & to_string (element (VC).position));
-			put_line ("V" & to_string (V.position));
+			--if element (selected_via).via = VC then
+				--put_line ("equal");
+			--else
+				--put_line ("not equal");
+			--end if;
+
+			put_line ("selected via 2" & get_position (element (selected_via).via));
+
+			--put_line ("VC" & get_position (VC));
+			--put_line ("VC" & to_string (element (VC).position));
+			
+			--put_line ("V" & to_string (V.position));
 			
 			-- Finally move the selected via:
 			finalize_move (
