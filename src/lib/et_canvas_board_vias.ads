@@ -126,6 +126,12 @@ package et_canvas_board_vias is
 	proposed_vias : pac_vias.list;
 	selected_via : pac_vias.cursor;
 
+
+	-- Returns true if the given via matches the via indicated
+	-- by selected_via:
+	function via_is_selected (
+		v : in pac_vias.cursor)
+		return boolean;
 	
 
 	-- Clears the list proposed_vias.

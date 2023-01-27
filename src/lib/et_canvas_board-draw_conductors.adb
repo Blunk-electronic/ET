@@ -948,7 +948,6 @@ is
 		if via_place.being_moved then
 			
 			declare
-				--vc : pac_vias.cursor := element (selected_via).via;
 				via : type_via := element (selected_via);
 			begin
 				-- Set the point where the via is to be drawn:
@@ -960,12 +959,10 @@ is
 						via.position := cursor_main.position;
 				end case;
 
-				--put_line ("via position" & to_string (via.position));
+				-- put_line ("via position" & to_string (via.position));
 
-				--l.append (via);
-				--vias_being_placed.append (via);
-				--put_line (to_string (via));
-				--l.iterate (query_via'access); 
+				l.append (via);
+				l.iterate (query_via'access); 
 			end;
 		end if;
 	end draw_via_being_moved;

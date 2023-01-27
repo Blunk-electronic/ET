@@ -323,6 +323,32 @@ package body et_canvas_board_vias is
 
 
 
+
+	function via_is_selected (
+		v : in pac_vias.cursor)
+		return boolean
+	is begin
+		-- If there are no selected vias at all, then there is nothing to do:
+		if is_empty (proposed_vias) then
+			return false;
+		else
+			if selected_via /= pac_vias.no_element then
+				
+				-- Compare given via and selected via:
+				if element (v) = element (selected_via) then
+					-- CS compare cursors directly ?
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end via_is_selected;
+
+	
+
 	procedure clear_proposed_vias is begin
 		proposed_vias.clear;
 		selected_via := pac_vias.no_element;
