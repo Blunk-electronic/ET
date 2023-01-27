@@ -260,10 +260,10 @@ package body et_board_ops.vias is
 
 	function get_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		via_cursor		: in pac_vias.cursor)
-		return pac_nets.cursor
+		via				: in type_via)
+		return pac_net_name.bounded_string
 	is
-		result : pac_nets.cursor;
+		result : pac_net_name.bounded_string;
 
 		module : type_module renames element (module_cursor);
 
@@ -272,15 +272,15 @@ package body et_board_ops.vias is
 		procedure query_net (n : in pac_nets.cursor) is
 			net : type_net renames element (n);
 
-			use pac_vias;
 			procedure query_via (v : in pac_vias.cursor) is begin
-				if v = via_cursor then
+				if element (v) = via then
 					proceed := false;
-					result := n;
+					result := key (n);
 				end if;
 			end query_via;
 			
 		begin
+			--put_line ("net " & to_string (key (n)));
 			iterate (net.route.vias, query_via'access, proceed'access);
 		end query_net;
 		
@@ -298,21 +298,22 @@ package body et_board_ops.vias is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level)
 	is
-		use pac_vias;
-		via : type_via renames element (via_cursor);
+		via_in : type_via := element (via_cursor);
 
-		net_cursor : constant pac_nets.cursor := get_net (module_cursor, via_cursor);
+		net_name : constant pac_net_name.bounded_string := get_net (module_cursor, via_in);
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
+			net_cursor : pac_nets.cursor;
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-			
+				vc : pac_vias.cursor := find (net.route.vias, via_in);
+				
 				use pac_vias;
 				procedure query_via (
 					v : in out type_via)
@@ -329,10 +330,13 @@ package body et_board_ops.vias is
 				end query_via;
 				
 			begin
-				net.route.vias.update_element (via_cursor, query_via'access);
+				null;
+				--put_line (to_string (net_name));
+				net.route.vias.update_element (vc, query_via'access);
 			end query_net;
 			
 		begin
+			net_cursor := module.nets.find (net_name);
 			module.nets.update_element (net_cursor, query_net'access);
 		end query_module;
 
@@ -340,7 +344,8 @@ package body et_board_ops.vias is
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " moving via from" & to_string (via.position),
+			& " net " & to_string (net_name)
+			& " moving via from" & get_position (via_cursor),
 			level => log_threshold);
 
 		update_element (

@@ -943,21 +943,29 @@ is
 
 
 	procedure draw_via_being_moved is
-		use pac_proposed_vias;
+		l : pac_vias.list;
 	begin
 		if via_place.being_moved then
-
+			
 			declare
-				vc : pac_vias.cursor := element (selected_via).via;
-				--via : type_via := element (vc);
+				--vc : pac_vias.cursor := element (selected_via).via;
+				via : type_via := element (selected_via);
 			begin
-				null;
 				-- Set the point where the via is to be drawn:
-				--via.position := self.tool_position;
+				case via_place.tool is
+					when MOUSE =>
+						via.position := self.snap_to_grid (self.mouse_position);
 
+					when KEYBOARD =>
+						via.position := cursor_main.position;
+				end case;
+
+				--put_line ("via position" & to_string (via.position));
+
+				--l.append (via);
 				--vias_being_placed.append (via);
 				--put_line (to_string (via));
-				--vias_being_placed.iterate (query_via'access); 
+				--l.iterate (query_via'access); 
 			end;
 		end if;
 	end draw_via_being_moved;

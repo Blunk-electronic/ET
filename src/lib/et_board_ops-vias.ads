@@ -69,12 +69,12 @@ package et_board_ops.vias is
 		log_threshold	: in type_log_level);
 
 
-	-- Returns the cursor of the net that is connected
+	-- Returns the name of the net that is connected
 	-- with the given via:
 	function get_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		via_cursor		: in pac_vias.cursor)
-		return pac_nets.cursor;
+		via				: in type_via)
+		return pac_net_name.bounded_string;
 	
 	
 	-- Moves a via:

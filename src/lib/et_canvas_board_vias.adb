@@ -325,61 +325,44 @@ package body et_canvas_board_vias is
 
 	procedure clear_proposed_vias is begin
 		proposed_vias.clear;
-		selected_via := pac_proposed_vias.no_element;
+		selected_via := pac_vias.no_element;
 	end;
 
 	
 	
 	procedure clarify_via is
-		use pac_vias;
-		v : pac_vias.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- via to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_via
-		-- moves back to the start of the via list.
-		if next (selected_via) /= pac_proposed_vias.no_element then
+		-- moves back to the start of the list of proposed vias:
+		if next (selected_via) /= pac_vias.no_element then
 			next (selected_via);
 		else
 			selected_via := proposed_vias.first;
 		end if;
 
 		-- show the via in the status bar
-		v := element (selected_via).via;
-	
-		set_status ("selected via " & to_string (element (v).position) 
+		set_status ("selected via " & get_position (selected_via) 
 			& ". " & status_next_object_clarification);
 		
 	end clarify_via;
 
 
-	--VC : pac_vias.cursor;
-	--V : type_via (THROUGH);
 
 	
 	procedure find_vias (
 		point : in type_point)
 	is 
-		use pac_vias;
 		vias : pac_vias.list;
-
-		procedure query_via (c : in pac_vias.cursor) is begin
-			--log (text => "convert 1" & get_position (c), level => log_threshold);
-			proposed_vias.append ((via => c));
-			--log (text => "convert 2" & get_position (result.last_element.via), level => log_threshold);
-		end query_via;
-
 	begin
 		log (text => "locating vias for move/delete ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Collect all vias in the vicinity of the given point:
-		vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
+		proposed_vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
 
-		-- convert the via list to a list of proposed vias:
-		vias.iterate (query_via'access);
-
-		put_line (count_type'image (proposed_vias.length));
+		--put_line (count_type'image (proposed_vias.length));
 		
 		-- evaluate the number of vias found here:
 		case length (proposed_vias) is
@@ -397,10 +380,6 @@ package body et_canvas_board_vias is
 						--set_status (status_flip);
 
 					when VERB_MOVE =>
-						--VC := element (selected_via).via;
-						--v := element (VC);
-						
-						--put_line ("selected via 1" & get_position (element (selected_via).via));
 						set_status (status_move_via);
 
 					when others => null;
@@ -534,33 +513,21 @@ package body et_canvas_board_vias is
 	procedure finalize_move (
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
-	is
-		sv : type_selected_via;
-	begin
+	is begin
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_via /= pac_proposed_vias.no_element then
+		if selected_via /= pac_vias.no_element then
 
 			null;
-			--log (text => "selected via 3" & 
-				--get_position (element (et_canvas_board_vias.selected_via).via));
-
-			--sv := element (selected_via);
-			--put_line ("pos 2");
-
-			--put_line (get_position (sv.via));
+			--put_line (get_position (selected_via));
 			
-			--log (text => "pos" & get_position (sv.via), level => log_threshold);
-
-			--put_line ("pos 3");
-			
-			--move_via (
-				--module_cursor	=> current_active_module,
-				--via_cursor		=> sv.via,
-				--coordinates		=> ABSOLUTE,
-				--point			=> destination,
-				--log_threshold	=> log_threshold);
+			move_via (
+				module_cursor	=> current_active_module,
+				via_cursor		=> selected_via,
+				coordinates		=> ABSOLUTE,
+				point			=> destination,
+				log_threshold	=> log_threshold);
 			
 		else
 			log (text => "nothing to do", level => log_threshold);
@@ -579,38 +546,25 @@ package body et_canvas_board_vias is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		put_line ("MOVE VIA");
+		--put_line ("MOVE VIA");
 		
 		if not via_place.being_moved then
-			put_line ("not being moved");
+			--put_line ("not being moved");
 
 			-- Set the tool being used:
 			via_place.tool := tool;
 			
 			if not clarification_pending then
-				put_line ("find vias");
+				--put_line ("find vias");
 				find_vias (position);
 			else
-				put_line ("reset clarify");
+				--put_line ("reset clarify");
 				via_place.being_moved := true;
 				reset_request_clarification;
 			end if;
 			
 		else
-			put_line ("being moved");
-
-			--if element (selected_via).via = VC then
-				--put_line ("equal");
-			--else
-				--put_line ("not equal");
-			--end if;
-
-			put_line ("selected via 2" & get_position (element (selected_via).via));
-
-			--put_line ("VC" & get_position (VC));
-			--put_line ("VC" & to_string (element (VC).position));
-			
-			--put_line ("V" & to_string (V.position));
+			--put_line ("being moved");
 			
 			-- Finally move the selected via:
 			finalize_move (
