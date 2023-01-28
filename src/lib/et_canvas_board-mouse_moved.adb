@@ -53,6 +53,11 @@ is begin
 					if non_electrical_device_move.being_moved then
 						redraw_board;
 					end if;
+
+				when NOUN_VIA =>
+					if via_place.being_moved then
+						redraw_board;
+					end if;
 					
 				when others => null;
 			end case;

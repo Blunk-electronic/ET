@@ -490,7 +490,11 @@ is
 	
 -- VIAS
 	
-	procedure query_via (v : in pac_vias.cursor) is 
+	procedure query_via (via_cursor : in pac_vias.cursor) is 
+		via : type_via renames element (via_cursor);
+
+		brightness : type_brightness := NORMAL;
+		
 		circle : type_circle;
 
 		radius_base : type_distance_positive;
@@ -588,7 +592,7 @@ is
 				set_color_via_drill_size (context.cr); -- CS
 
 				draw_text (
-					content		=> to_content (to_string (element (v).diameter)),
+					content		=> to_content (to_string (via.diameter)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
 					position	=> position,
@@ -608,7 +612,7 @@ is
 				if not numbers_drawn then
 					draw_numbers (
 						from	=> "T",
-						to		=> to_string (element (v).lower));
+						to		=> to_string (via.lower));
 
 					numbers_drawn := true;
 				end if;
@@ -620,7 +624,7 @@ is
 				if not numbers_drawn then
 					draw_numbers (
 						from	=> "B",
-						to		=> to_string (element (v).upper));
+						to		=> to_string (via.upper));
 
 					numbers_drawn := true;
 				end if;
@@ -628,16 +632,16 @@ is
 
 			
 		begin -- query_category	
-			case element (v).category is
+			case via.category is
 				when THROUGH =>
 					if is_inner_layer (current_layer) then
 						-- current_layer is an inner layer
-						set_width_and_radius (element (v).restring_inner);
+						set_width_and_radius (via.restring_inner);
 
 						inner_restring_drawn := true;
 					else
 						-- current_layer is an outer layer
-						set_width_and_radius (element (v).restring_outer);
+						set_width_and_radius (via.restring_outer);
 
 						outer_restring_drawn := true;
 					end if;
@@ -666,9 +670,9 @@ is
 					-- NOTE: For a through via, no layer numbers are displayed.
 					
 				when BURIED =>
-					if element (v).layers.upper = current_layer 
-					or element (v).layers.lower = current_layer then
-						set_width_and_radius (element (v).restring_inner);
+					if via.layers.upper = current_layer 
+					or via.layers.lower = current_layer then
+						set_width_and_radius (via.restring_inner);
 					
 						draw_restring;
 
@@ -679,8 +683,8 @@ is
 					
 						-- Draw the layer numbers only once (cancel flag already set)
 						draw_numbers (
-							from	=> to_string (element (v).layers.upper),
-							to		=> to_string (element (v).layers.lower));
+							from	=> to_string (via.layers.upper),
+							to		=> to_string (via.layers.lower));
 					
 						draw_net_name;
 						draw_drill_size;
@@ -688,7 +692,7 @@ is
 					
 				when BLIND_DRILLED_FROM_TOP =>
 					if current_layer = top_layer then
-						set_width_and_radius (element (v).restring_top);
+						set_width_and_radius (via.restring_top);
 						outer_restring_drawn := true;
 						draw_restring;
 						draw_numbers_blind_top;
@@ -696,8 +700,8 @@ is
 						draw_drill_size;
 					end if;
 
-					if current_layer = element (v).lower then
-						set_width_and_radius (element (v).restring_inner);
+					if current_layer = via.lower then
+						set_width_and_radius (via.restring_inner);
 						inner_restring_drawn := true;
 						draw_restring;
 						draw_numbers_blind_top;
@@ -714,7 +718,7 @@ is
 
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					if current_layer = bottom_layer then
-						set_width_and_radius (element (v).restring_bottom);
+						set_width_and_radius (via.restring_bottom);
 						outer_restring_drawn := true;
 						draw_restring;
 						draw_numbers_blind_bottom;
@@ -722,8 +726,8 @@ is
 						draw_drill_size;
 					end if;
 
-					if current_layer = element (v).upper then
-						set_width_and_radius (element (v).restring_inner);
+					if current_layer = via.upper then
+						set_width_and_radius (via.restring_inner);
 						inner_restring_drawn := true;
 						draw_restring;
 						draw_numbers_blind_bottom;
@@ -743,8 +747,36 @@ is
 
 		
 	begin -- query_via
-		circle.center := element (v).position;
-		radius_base := element (v).diameter / 2.0;
+
+		radius_base := via.diameter / 2.0;
+		circle.center := via.position;
+
+
+		-- Overwrite the via position (circle.center) if the
+		-- via is selected and being moved:
+		if via_is_selected (via_cursor) then
+
+			-- A selected via must be highlighted:
+			brightness := BRIGHT;
+
+			case verb is
+				when VERB_MOVE =>
+					if via_place.being_moved then
+
+						case via_place.tool is
+							when MOUSE =>
+								circle.center := self.snap_to_grid (self.mouse_position);
+
+							when KEYBOARD =>
+								circle.center := cursor_main.position;
+						end case;
+
+					end if;
+
+				when others => null;
+			end case;
+		end if;
+
 		
 		if vias_enabled then
 
@@ -941,31 +973,6 @@ is
 		end if;
 	end draw_via_being_placed;
 
-
-	procedure draw_via_being_moved is
-		l : pac_vias.list;
-	begin
-		if via_place.being_moved then
-			
-			declare
-				via : type_via := element (selected_via);
-			begin
-				-- Set the point where the via is to be drawn:
-				case via_place.tool is
-					when MOUSE =>
-						via.position := self.snap_to_grid (self.mouse_position);
-
-					when KEYBOARD =>
-						via.position := cursor_main.position;
-				end case;
-
-				-- put_line ("via position" & to_string (via.position));
-
-				l.append (via);
-				l.iterate (query_via'access); 
-			end;
-		end if;
-	end draw_via_being_moved;
 	
 	
 begin -- draw_conductors
@@ -978,9 +985,6 @@ begin -- draw_conductors
 	case verb is
 		when VERB_PLACE =>
 			draw_via_being_placed;
-
-		when VERB_MOVE =>
-			draw_via_being_moved;
 
 		when others => null;
 	end case;
