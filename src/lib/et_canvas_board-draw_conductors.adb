@@ -505,7 +505,7 @@ is
 		end set_width_and_radius;
 
 		procedure draw_restring is begin
-			set_color_vias (context.cr);
+			set_color_vias (context.cr, brightness);
 			
 			draw_circle (
 				circle		=> circle,

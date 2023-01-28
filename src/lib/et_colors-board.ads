@@ -130,8 +130,9 @@ package et_colors.board is
 
 -- VIAS
 	procedure set_color_vias (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity);
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default;
+		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_via_layers (

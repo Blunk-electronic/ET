@@ -105,16 +105,13 @@ package body et_colors.board is
 
 	
 -- VIAS
+
 	procedure set_color_vias (
-		context : in cairo_context;
-		opacity : in type_opacity := default_opacity)
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default;
+		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_source_rgba (
-			context, 
-			via.red,
-			via.green,
-			via.blue,
-			color_range (opacity));
+		set_color (context, via, brightness, opacity);
 	end set_color_vias;
 
 	
