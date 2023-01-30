@@ -39,6 +39,7 @@
 
 with ada.containers;   	         use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.window;					use gtk.window;
 with gtk.box;						use gtk.box;
@@ -58,6 +59,7 @@ with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
 with et_project.modules;			use et_project.modules;
 with et_pcb;
+with et_board_ops.vias;				use et_board_ops.vias;
 with et_logging;					use et_logging;
 
 
@@ -121,16 +123,17 @@ package et_canvas_board_vias is
 	via_place : type_via_place;
 
 
-	use pac_vias;
-
-	proposed_vias : pac_vias.list;
-	selected_via : pac_vias.cursor;
+	
+	use pac_proposed_vias;
+	proposed_vias : pac_proposed_vias.list;
+	selected_via : pac_proposed_vias.cursor;
 
 
 	-- Returns true if the given via matches the via indicated
 	-- by selected_via:
 	function via_is_selected (
-		v : in pac_vias.cursor)
+		via_cursor	: in pac_vias.cursor;
+		net_name	: in pac_net_name.bounded_string)
 		return boolean;
 	
 

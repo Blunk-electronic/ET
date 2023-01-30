@@ -52,7 +52,7 @@ package body et_vias is
 
 
 	function to_string (category : in type_via_category) return string is begin
-		return to_lower (type_via_category'image (category));
+		return type_via_category'image (category);
 	end to_string;
 
 	function to_via_category (category : in string) return type_via_category is begin

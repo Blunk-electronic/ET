@@ -72,13 +72,13 @@ use et_canvas_board.pac_canvas;
 with et_logging;					use et_logging;
 
 with et_modes.board;
-with et_board_ops.vias;				use et_board_ops.vias;
 with et_exceptions;					use et_exceptions;
 
 
 package body et_canvas_board_vias is
 
 -- CATEGORY
+	
 	procedure category_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -99,6 +99,7 @@ package body et_canvas_board_vias is
 
 
 -- DESTINATION LAYER (FOR BLIND VIAS ONLY)
+
 	procedure destination_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -119,6 +120,7 @@ package body et_canvas_board_vias is
 
 
 -- BURIED VIA
+
 	procedure upper_layer_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -159,6 +161,7 @@ package body et_canvas_board_vias is
 	
 	
 -- DRILL SIZE
+
 	procedure apply_drill_size (text : in string) is
 		size : type_drill_size;
 	begin
@@ -203,8 +206,10 @@ package body et_canvas_board_vias is
 		apply_drill_size (text);
 	end drill_entered;
 
+
 	
 -- RESTRING INNER
+
 	procedure apply_restring_inner (text : in string) is
 		width : type_restring_width;
 	begin
@@ -249,8 +254,10 @@ package body et_canvas_board_vias is
 		apply_restring_inner (text);
 	end restring_inner_entered;
 
+
 	
 -- RESTRING OUTER
+
 	procedure apply_restring_outer (text : in string) is
 		width : type_restring_width;
 	begin
@@ -295,8 +302,10 @@ package body et_canvas_board_vias is
 		apply_restring_outer (text);
 	end restring_outer_entered;
 
+
 	
 -- NET NAME
+
 	procedure net_name_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -325,18 +334,20 @@ package body et_canvas_board_vias is
 
 
 	function via_is_selected (
-		v : in pac_vias.cursor)
+		via_cursor	: in pac_vias.cursor;
+		net_name	: in pac_net_name.bounded_string)
 		return boolean
-	is begin
-		-- If there are no selected vias at all, then there is nothing to do:
+	is 
+		use pac_vias;
+		via : type_via renames element (via_cursor);
+	begin
+		-- If there are no proposed vias at all, then there is nothing to do:
 		if is_empty (proposed_vias) then
 			return false;
 		else
-			if selected_via /= pac_vias.no_element then
-				
-				-- Compare given via and selected via:
-				if element (v) = element (selected_via) then
-					-- CS compare cursors directly ?
+			-- If there is no selected via, then there is nothing to do:
+			if selected_via /= pac_proposed_vias.no_element then
+				if element (selected_via).net = net_name and element (selected_via).via = via then
 					return true;
 				else 
 					return false;
@@ -351,25 +362,25 @@ package body et_canvas_board_vias is
 
 	procedure clear_proposed_vias is begin
 		proposed_vias.clear;
-		selected_via := pac_vias.no_element;
+		selected_via := pac_proposed_vias.no_element;
 	end;
 
 	
 	
-	procedure clarify_via is
-	begin
+	procedure clarify_via is begin
 		-- On every call of this procedure we must advance from one
 		-- via to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_via
 		-- moves back to the start of the list of proposed vias:
-		if next (selected_via) /= pac_vias.no_element then
+		--if next (selected_via) /= pac_vias.no_element then
+		if next (selected_via) /= pac_proposed_vias.no_element then
 			next (selected_via);
 		else
 			selected_via := proposed_vias.first;
 		end if;
 
 		-- show the via in the status bar
-		set_status ("selected via " & get_position (selected_via) 
+		set_status ("selected via " & to_string (selected_via) 
 			& ". " & status_next_object_clarification);
 		
 	end clarify_via;
@@ -539,11 +550,13 @@ package body et_canvas_board_vias is
 	procedure finalize_move (
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
-	is begin
+	is 
+		use pac_proposed_vias;
+	begin
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_via /= pac_vias.no_element then
+		if selected_via /= pac_proposed_vias.no_element then
 
 			null;
 			--put_line (get_position (selected_via));
@@ -572,26 +585,19 @@ package body et_canvas_board_vias is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		--put_line ("MOVE VIA");
-		
 		if not via_place.being_moved then
-			--put_line ("not being moved");
 
 			-- Set the tool being used:
 			via_place.tool := tool;
 			
 			if not clarification_pending then
-				--put_line ("find vias");
 				find_vias (position);
 			else
-				--put_line ("reset clarify");
 				via_place.being_moved := true;
 				reset_request_clarification;
 			end if;
 			
 		else
-			--put_line ("being moved");
-			
 			-- Finally move the selected via:
 			finalize_move (
 				destination		=> position,

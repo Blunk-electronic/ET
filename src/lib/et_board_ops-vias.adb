@@ -67,14 +67,28 @@ package body et_board_ops.vias is
 	
 
 
+	function to_string (
+		via	: in pac_proposed_vias.cursor)
+		return string
+	is
+		use pac_proposed_vias;
+		v : type_via renames element (via).via;
+		n : pac_net_name.bounded_string renames element (via).net;
+	begin
+		return to_string (v.position) & ". Cat " 
+			& to_string (v.category) & ". Net " & to_string (n);
+	end to_string;
+	
+
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_vias.list
+		return pac_proposed_vias.list
 	is
-		result : pac_vias.list;
+		use pac_proposed_vias;
+		result : pac_proposed_vias.list;
 
 
 		procedure query_module (
@@ -96,8 +110,12 @@ package body et_board_ops.vias is
 						catch_zone	=> catch_zone,
 						point_2		=> via.position)
 					then
-						log (text => to_string (via.position), level => log_threshold + 2);
-						result.append (via);
+						log (text => to_string (via.position) 
+							& " cat " & to_string (via.category)
+							& " net " & to_string (name), 
+							level => log_threshold + 2);
+						
+						result.append ((via.category, via, name));
 					end if;
 				end query_via;
 
@@ -258,6 +276,7 @@ package body et_board_ops.vias is
 	end place_via;
 
 
+	
 	function get_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_via)
@@ -293,26 +312,25 @@ package body et_board_ops.vias is
 
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_via;
+		via				: in type_proposed_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level)
 	is
-		new_position : type_point := via.position;
+		new_position : type_point := via.via.position;
 
-		net_name : constant pac_net_name.bounded_string := get_net (module_cursor, via);
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			net_cursor : pac_nets.cursor := module.nets.find (net_name);
+			net_cursor : pac_nets.cursor := module.nets.find (via.net);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				via_cursor : pac_vias.cursor := find (net.route.vias, via);
+				via_cursor : pac_vias.cursor := net.route.vias.find (via.via);
 				
 				procedure query_via (v : in out type_via) is begin
 					v.position := new_position;
@@ -339,8 +357,8 @@ package body et_board_ops.vias is
 		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " net " & to_string (net_name)
-			& " moving via from" & to_string (via.position)
+			& " net " & to_string (via.net)
+			& " moving via from" & to_string (via.via.position)
 			& " to" & to_string (new_position),
 			level => log_threshold);
 

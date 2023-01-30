@@ -754,7 +754,7 @@ is
 
 		-- Overwrite the via position (circle.center) if the
 		-- via is selected and being moved:
-		if via_is_selected (via_cursor) then
+		if via_is_selected (via_cursor, net_name) then
 
 			-- A selected via must be highlighted:
 			brightness := BRIGHT;

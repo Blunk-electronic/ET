@@ -37,6 +37,9 @@
 --   ToDo: 
 
 
+with ada.containers;   	         use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
 with et_vias;					use et_vias;
 
 
@@ -51,13 +54,35 @@ package et_board_ops.vias is
 		return pac_points.list;
 
 
+
+	
+	-- When a via is to be modified or deleted in the board, then
+	-- it must be clearly identified. Since vias have no name a useful
+	-- means to identify a via is the associated net:
+	type type_proposed_via (category : type_via_category := THROUGH) is record
+		via	: type_via (category);
+		net	: pac_net_name.bounded_string := no_name; -- GND, CLK
+	end record;
+
+
+	-- When vias are selected among others then we collect them in 
+	-- a list:
+	package pac_proposed_vias is new indefinite_doubly_linked_lists (type_proposed_via);
+
+	
+	-- Returns the position and net name of a proposed via:
+	function to_string (
+		via	: in pac_proposed_vias.cursor)
+		return string;
+	
+	
 	-- Returns all vias in the vicinity of the given point:
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_vias.list;
+		return pac_proposed_vias.list;
 
 	
 	
@@ -80,7 +105,7 @@ package et_board_ops.vias is
 	-- Moves a via:
 	procedure move_via (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_via;
+		via				: in type_proposed_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
