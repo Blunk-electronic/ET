@@ -46,6 +46,9 @@ is
 
 	use et_modes;
 
+	point : type_point renames cursor_main.position;
+	
+
 	procedure delete is begin
 		case key is
 			when GDK_LC_n =>
@@ -59,7 +62,7 @@ is
 			when GDK_Space =>		
 				case noun is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
-						delete_non_electrical_device (KEYBOARD, cursor_main.position);
+						delete_non_electrical_device (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
@@ -110,10 +113,10 @@ is
 			when GDK_Space =>		
 				case noun is
 					when NOUN_DEVICE =>				
-						flip_electrical_device (KEYBOARD, cursor_main.position);
+						flip_electrical_device (KEYBOARD, point);
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
-						flip_non_electrical_device (KEYBOARD, cursor_main.position);
+						flip_non_electrical_device (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
@@ -159,14 +162,14 @@ is
 			when GDK_Space =>		
 				case noun is
 					when NOUN_DEVICE =>		
-						move_electrical_device (KEYBOARD, cursor_main.position);
+						move_electrical_device (KEYBOARD, point);
 						
 					when NOUN_NON_ELECTRICAL_DEVICE =>
-						move_non_electrical_device (KEYBOARD, cursor_main.position);
+						move_non_electrical_device (KEYBOARD, point);
 
 
 					when NOUN_VIA =>
-						move_via (KEYBOARD, cursor_main.position);
+						move_via (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
@@ -232,10 +235,10 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_TEXT =>
-						place_text (cursor_main.position);
+						place_text (point);
 
 					when NOUN_VIA =>
-						place_via (cursor_main.position);
+						place_via (point);
 						
 					when others => null;
 				end case;
@@ -261,10 +264,10 @@ is
 			when GDK_Space =>		
 				case noun is
 					when NOUN_DEVICE =>
-						rotate_electrical_device (KEYBOARD, cursor_main.position);
+						rotate_electrical_device (KEYBOARD, point);
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>							
-						rotate_non_electrical_device (KEYBOARD, cursor_main.position);
+						rotate_non_electrical_device (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
