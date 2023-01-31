@@ -761,9 +761,9 @@ is
 
 			case verb is
 				when VERB_MOVE =>
-					if via_place.being_moved then
+					if preliminary_via.ready then
 
-						case via_place.tool is
+						case preliminary_via.tool is
 							when MOUSE =>
 								circle.center := self.snap_to_grid (self.mouse_position);
 
@@ -915,56 +915,56 @@ is
 		-- The place where the via shall be placed:
 		position : type_point;
 	begin
-		if via_place.being_moved then
+		if preliminary_via.ready then
 
 			-- Set the point where the via is to be drawn:
 			position := self.tool_position;
 
 			-- Get the name of the targeted net:
-			net_name := get_name (via_place.net);
+			net_name := get_name (preliminary_via.net);
 			
-			case via_place.category is
+			case preliminary_via.category is
 				when THROUGH =>
 					append (
 						container	=> vias_being_placed,
 						new_item	=> (
 							category		=> THROUGH,
-							diameter		=> via_place.drill.diameter,
+							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
-							restring_inner	=> via_place.restring_inner,
-							restring_outer	=> via_place.restring_outer));
+							restring_inner	=> preliminary_via.restring_inner,
+							restring_outer	=> preliminary_via.restring_outer));
 
 				when BLIND_DRILLED_FROM_TOP =>
 					append (
 						container	=> vias_being_placed,
 						new_item	=> (
 							category		=> BLIND_DRILLED_FROM_TOP,
-							diameter		=> via_place.drill.diameter,
+							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
-							restring_inner	=> via_place.restring_inner,
-							restring_top	=> via_place.restring_outer,
-							lower			=> via_place.destination_blind));
+							restring_inner	=> preliminary_via.restring_inner,
+							restring_top	=> preliminary_via.restring_outer,
+							lower			=> preliminary_via.destination_blind));
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					append (
 						container	=> vias_being_placed,
 						new_item	=> (
 							category		=> BLIND_DRILLED_FROM_BOTTOM,
-							diameter		=> via_place.drill.diameter,
+							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
-							restring_inner	=> via_place.restring_inner,
-							restring_bottom	=> via_place.restring_outer,
-							upper			=> via_place.destination_blind));
+							restring_inner	=> preliminary_via.restring_inner,
+							restring_bottom	=> preliminary_via.restring_outer,
+							upper			=> preliminary_via.destination_blind));
 					
 				when BURIED =>
 					append (
 						container	=> vias_being_placed,
 						new_item	=> (
 							category		=> BURIED,
-							diameter		=> via_place.drill.diameter,
+							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
-							layers			=> via_place.layers_buried,
-							restring_inner	=> via_place.restring_inner));
+							layers			=> preliminary_via.layers_buried,
+							restring_inner	=> preliminary_via.restring_inner));
 					
 			end case;
 

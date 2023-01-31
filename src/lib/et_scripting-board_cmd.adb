@@ -2922,15 +2922,15 @@ is
 								
 								-- Preset the net name so that it is visible
 								-- in the via properties bar. This requires
-								-- to set up an indexed net stored in via_place.net:
+								-- to set up an indexed net stored in preliminary_via.net:
 								set (
-									net		=> via_place.net, 
+									net		=> preliminary_via.net, 
 									name	=> to_net_name (f (5)));
 
 								-- Update the index of the net
 								-- and the current active module:
 								set_index (
-									net		=> via_place.net,
+									net		=> preliminary_via.net,
 									module	=> module_cursor);
 								
 								show_via_properties;

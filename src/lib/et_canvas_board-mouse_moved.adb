@@ -55,7 +55,7 @@ is begin
 					end if;
 
 				when NOUN_VIA =>
-					if via_place.being_moved then
+					if preliminary_via.ready then
 						redraw_board;
 					end if;
 					
@@ -71,7 +71,7 @@ is begin
 					end if;
 
 				when NOUN_VIA =>
-					if via_place.being_moved then
+					if preliminary_via.ready then
 						redraw_board;
 					end if;
 					

@@ -89,7 +89,7 @@ package body et_canvas_board_vias is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		via_place.category := to_via_category (glib.values.get_string (item_text));
+		preliminary_via.category := to_via_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (text_place.category));
 
 		et_canvas_board.redraw_board;
@@ -110,8 +110,8 @@ package body et_canvas_board_vias is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		via_place.destination_blind := to_signal_layer (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (via_place.destination_blind));
+		preliminary_via.destination_blind := to_signal_layer (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
 		et_canvas_board.redraw_board;
 		
@@ -131,8 +131,8 @@ package body et_canvas_board_vias is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		via_place.layers_buried.upper := to_signal_layer (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (via_place.destination_blind));
+		preliminary_via.layers_buried.upper := to_signal_layer (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
 		et_canvas_board.redraw_board;
 		
@@ -150,8 +150,8 @@ package body et_canvas_board_vias is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		via_place.layers_buried.lower := to_signal_layer (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (via_place.destination_blind));
+		preliminary_via.layers_buried.lower := to_signal_layer (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
 		et_canvas_board.redraw_board;
 		
@@ -168,7 +168,7 @@ package body et_canvas_board_vias is
 		size := to_distance (text);
 
 		-- CS validate. output error in status bar
-		via_place.drill.diameter := size;
+		preliminary_via.drill.diameter := size;
 
 		et_canvas_board.redraw_board;
 	end apply_drill_size;
@@ -216,7 +216,7 @@ package body et_canvas_board_vias is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		via_place.restring_inner := width;
+		preliminary_via.restring_inner := width;
 
 		et_canvas_board.redraw_board;
 	end apply_restring_inner;
@@ -264,7 +264,7 @@ package body et_canvas_board_vias is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		via_place.restring_outer := width;
+		preliminary_via.restring_outer := width;
 
 		et_canvas_board.redraw_board;
 	end apply_restring_outer;
@@ -321,7 +321,7 @@ package body et_canvas_board_vias is
 		gtk.tree_model.get_value (model, iter, 1, index);
 		
 		set (
-			net		=> via_place.net,
+			net		=> preliminary_via.net,
 			name	=> to_net_name (glib.values.get_string (name)),
 			idx 	=> positive'value (glib.values.get_string (index)));
 		
@@ -379,7 +379,7 @@ package body et_canvas_board_vias is
 			selected_via := proposed_vias.first;
 		end if;
 
-		-- show the via in the status bar
+		-- show the selected via in the status bar
 		set_status ("selected via " & to_string (selected_via) 
 			& ". " & status_next_object_clarification);
 		
@@ -408,7 +408,7 @@ package body et_canvas_board_vias is
 				reset_via_place;
 				
 			when 1 =>
-				via_place.being_moved := true;
+				preliminary_via.ready := true;
 				selected_via := proposed_vias.first;
 
 				case verb is
@@ -456,25 +456,25 @@ package body et_canvas_board_vias is
 
 		-- set drill size:
 		if settings.vias.drill.active then
-			via_place.drill.diameter	:= settings.vias.drill.size;
+			preliminary_via.drill.diameter	:= settings.vias.drill.size;
 		else
-			via_place.drill.diameter	:= rules.sizes.drills;
+			preliminary_via.drill.diameter	:= rules.sizes.drills;
 		end if;
 
 		-- set outer restring:
 		if settings.vias.restring_outer.active then
-			via_place.restring_outer	:= settings.vias.restring_outer.width;
+			preliminary_via.restring_outer	:= settings.vias.restring_outer.width;
 		else
-			via_place.restring_outer	:= auto_set_restring (
-				OUTER, via_place.drill.diameter);
+			preliminary_via.restring_outer	:= auto_set_restring (
+				OUTER, preliminary_via.drill.diameter);
 		end if;
 		
 		-- set inner restring:
 		if settings.vias.restring_inner.active then
-			via_place.restring_inner	:= settings.vias.restring_inner.width;
+			preliminary_via.restring_inner	:= settings.vias.restring_inner.width;
 		else
-			via_place.restring_inner	:= auto_set_restring (
-				INNER, via_place.drill.diameter, rules.sizes.restring.delta_size);
+			preliminary_via.restring_inner	:= auto_set_restring (
+				INNER, preliminary_via.drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 
 		--put_line ("length " & ada.containers.count_type'image (length (net_names)));
@@ -483,15 +483,15 @@ package body et_canvas_board_vias is
 				  --& " idx " & natural'image (to_index (net_names.first)));
 
 		-- If the module contains nets, then set the topmost net in the alphabet.
-		-- If there are no nets in the module, then via_place.net
+		-- If there are no nets in the module, then preliminary_via.net
 		-- remains un-initalized:
 		if is_empty (net_names) then
 			set (
-				net		=> via_place.net,
+				net		=> preliminary_via.net,
 				name	=> to_net_name ("")); -- no name
 		else
 			set (
-				net		=> via_place.net,
+				net		=> preliminary_via.net,
 				name	=> element (net_names.first), -- AGND
 				idx		=> to_index (net_names.first)); -- 1
 		end if;
@@ -505,37 +505,37 @@ package body et_canvas_board_vias is
 	procedure place_via (
 		destination : in type_point) 
 	is
-		via : type_via (category => via_place.category);
+		via : type_via (category => preliminary_via.category);
 	begin
-		if via_place.being_moved then
+		if preliminary_via.ready then
 			
-			via.position := via_place.drill.position;
-			via.diameter := via_place.drill.diameter;
+			via.position := preliminary_via.drill.position;
+			via.diameter := preliminary_via.drill.diameter;
 			
-			via.restring_inner := via_place.restring_inner;
+			via.restring_inner := preliminary_via.restring_inner;
 			
 			move_to (via.position, destination);
 
-			case via_place.category is
+			case preliminary_via.category is
 				when THROUGH =>
-					via.restring_outer := via_place.restring_outer;
+					via.restring_outer := preliminary_via.restring_outer;
 								  
 				when BURIED =>
-					via.layers := via_place.layers_buried;
+					via.layers := preliminary_via.layers_buried;
 										  
 				when BLIND_DRILLED_FROM_TOP =>
-					via.restring_top := via_place.restring_outer;
-					via.lower := via_place.destination_blind;
+					via.restring_top := preliminary_via.restring_outer;
+					via.lower := preliminary_via.destination_blind;
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
-					via.restring_bottom := via_place.restring_outer;
-					via.upper := via_place.destination_blind;
+					via.restring_bottom := preliminary_via.restring_outer;
+					via.upper := preliminary_via.destination_blind;
 
 			end case;
 
 			place_via (
 				module_cursor	=> current_active_module,
-				net_name		=> get_name (via_place.net),
+				net_name		=> get_name (preliminary_via.net),
 				via				=> via,
 				log_threshold	=> log_threshold + 1);
 
@@ -581,15 +581,15 @@ package body et_canvas_board_vias is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not via_place.being_moved then
+		if not preliminary_via.ready then
 
 			-- Set the tool being used:
-			via_place.tool := tool;
+			preliminary_via.tool := tool;
 			
 			if not clarification_pending then
 				find_vias (position);
 			else
-				via_place.being_moved := true;
+				preliminary_via.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -643,15 +643,15 @@ package body et_canvas_board_vias is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not via_place.being_moved then
+		if not preliminary_via.ready then
 
 			-- Set the tool being used:
-			via_place.tool := tool;
+			preliminary_via.tool := tool;
 			
 			if not clarification_pending then
 				find_vias (position);
 			else
-				via_place.being_moved := true;
+				preliminary_via.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -668,8 +668,8 @@ package body et_canvas_board_vias is
 
 	
 	procedure reset_via_place is begin
-		via_place.being_moved := false;
-		via_place.tool := MOUSE;
+		preliminary_via.ready := false;
+		preliminary_via.tool := MOUSE;
 		clear_proposed_vias;
 
 		-- Remove the via properties bar from the window:
@@ -782,7 +782,7 @@ package body et_canvas_board_vias is
 				model		=> +storage_model); -- ?
 
 			-- Preset the net used last:
-			cbox_net_name.set_active (gint (get_index (via_place.net)) - 1);
+			cbox_net_name.set_active (gint (get_index (preliminary_via.net)) - 1);
 
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
@@ -832,7 +832,7 @@ package body et_canvas_board_vias is
 				model		=> +storage_model); -- ?
 
 			-- Set the category used last:
-			cbox_category.set_active (type_via_category'pos (via_place.category));
+			cbox_category.set_active (type_via_category'pos (preliminary_via.category));
 
 
 			pack_start (box_category, cbox_category, padding => guint (spacing));
@@ -889,7 +889,7 @@ package body et_canvas_board_vias is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_destination_blind.set_active (gint (via_place.destination_blind) - 2);
+			cbox_destination_blind.set_active (gint (preliminary_via.destination_blind) - 2);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -948,7 +948,7 @@ package body et_canvas_board_vias is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_buried_upper.set_active (gint (via_place.layers_buried.upper) - 2);
+			cbox_buried_upper.set_active (gint (preliminary_via.layers_buried.upper) - 2);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -1007,7 +1007,7 @@ package body et_canvas_board_vias is
 
 			
 			-- Set the signal layer used last:
-			cbox_buried_lower.set_active (gint (via_place.layers_buried.lower) - 2);
+			cbox_buried_lower.set_active (gint (preliminary_via.layers_buried.lower) - 2);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -1037,7 +1037,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_drill.get_child).set_width_chars (drill_size_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_drill.get_child).set_text (trim (to_string (via_place.drill.diameter), left));
+			gtk_entry (cbox_drill.get_child).set_text (trim (to_string (preliminary_via.drill.diameter), left));
 			
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_drill.get_child).on_key_press_event (drill_key_pressed'access);
@@ -1057,7 +1057,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_restring_inner.get_child).set_width_chars (restring_size_length_min);
 
 			-- Set the restring width according to the value used last:
-			gtk_entry (cbox_restring_inner.get_child).set_text (trim (to_string (via_place.restring_inner), left));
+			gtk_entry (cbox_restring_inner.get_child).set_text (trim (to_string (preliminary_via.restring_inner), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_restring_inner.get_child).on_key_press_event (restring_inner_key_pressed'access);
@@ -1077,7 +1077,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_restring_outer.get_child).set_width_chars (restring_size_length_min);
 
 			-- Set the restring width according to the value used last:
-			gtk_entry (cbox_restring_outer.get_child).set_text (trim (to_string (via_place.restring_outer), left));
+			gtk_entry (cbox_restring_outer.get_child).set_text (trim (to_string (preliminary_via.restring_outer), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_restring_outer.get_child).on_key_press_event (restring_outer_key_pressed'access);
@@ -1087,11 +1087,11 @@ package body et_canvas_board_vias is
 			
 	begin -- show_via_properties
 
-		-- If via_place.net is initialized then the property
+		-- If preliminary_via.net is initialized then the property
 		-- bar is allowed to be shown. This should usually be the case.
-		-- If the module has no nets, then via_place.net is not
+		-- If the module has no nets, then preliminary_via.net is not
 		-- initialized which forbids placing vias.
-		if is_initialized (via_place.net) then
+		if is_initialized (preliminary_via.net) then
 			
 			-- If the box is already shown, do nothing.
 			-- Otherwise build it:
@@ -1117,7 +1117,7 @@ package body et_canvas_board_vias is
 				make_combo_restring_outer;
 
 				-- Signal the GUI to draw the via:
-				via_place.being_moved := true;
+				preliminary_via.ready := true;
 				
 				-- Redraw the right box of the window:
 				box_right.show_all;

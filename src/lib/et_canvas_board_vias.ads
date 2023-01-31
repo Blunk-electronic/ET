@@ -106,10 +106,16 @@ package et_canvas_board_vias is
 
 
 	
-	
-	-- The properties of the via being placed:
-	type type_via_place is record
-		being_moved			: boolean := false;
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information using this type:
+
+	type type_preliminary_via is record
+		-- This flag indicates that the vias has been
+		-- clarified among the proposed vias.
+		ready				: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the via:
 		tool				: type_tool := MOUSE;
 		
 		net					: type_net_indexed; -- net name and index
@@ -127,7 +133,9 @@ package et_canvas_board_vias is
 		layers_buried		: type_buried_layers;
 	end record;
 
-	via_place : type_via_place;
+
+	-- The place where preliminary information is stored:
+	preliminary_via : type_preliminary_via;
 
 
 	
