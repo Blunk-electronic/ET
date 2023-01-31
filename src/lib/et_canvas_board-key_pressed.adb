@@ -340,7 +340,7 @@ begin -- key_pressed
 			status_enter_verb;
 
 			reset_text_place; -- after placing a text
-			reset_via_place; -- after placing a via
+			reset_preliminary_via; -- after placing a via
 			reset_electrical_device_move; -- after moving, rotating, flipping a device
 			reset_non_electrical_device_move;
 			

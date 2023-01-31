@@ -75,8 +75,8 @@ package body et_canvas_board is
 	-- calls other procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
 	procedure init_property_bars is begin
-		reset_via_place;
-		init_via_place;
+		reset_preliminary_via;
+		init_preliminary_via;
 
 		--  CS init route
 		-- CS init text

@@ -186,7 +186,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_via_place;
+				reset_preliminary_via;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -234,7 +234,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_via_place;
+				reset_preliminary_via;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -282,7 +282,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_via_place;
+				reset_preliminary_via;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -332,112 +332,7 @@ package body et_canvas_board_vias is
 
 
 
-
-	function via_is_selected (
-		via_cursor	: in pac_vias.cursor;
-		net_name	: in pac_net_name.bounded_string)
-		return boolean
-	is 
-		use pac_vias;
-		via : type_via renames element (via_cursor);
-	begin
-		-- If there are no proposed vias at all, then there is nothing to do:
-		if is_empty (proposed_vias) then
-			return false;
-		else
-			-- If there is no selected via, then there is nothing to do:
-			if selected_via /= pac_proposed_vias.no_element then
-				if element (selected_via).net = net_name and element (selected_via).via = via then
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end via_is_selected;
-
-	
-
-	procedure clear_proposed_vias is begin
-		proposed_vias.clear;
-		selected_via := pac_proposed_vias.no_element;
-	end;
-
-	
-	
-	procedure clarify_via is begin
-		-- On every call of this procedure we must advance from one
-		-- via to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_via
-		-- moves back to the start of the list of proposed vias:
-		--if next (selected_via) /= pac_vias.no_element then
-		if next (selected_via) /= pac_proposed_vias.no_element then
-			next (selected_via);
-		else
-			selected_via := proposed_vias.first;
-		end if;
-
-		-- show the selected via in the status bar
-		set_status ("selected via " & to_string (selected_via) 
-			& ". " & status_next_object_clarification);
-		
-	end clarify_via;
-
-
-
-	
-	procedure find_vias (
-		point : in type_point)
-	is 
-		vias : pac_vias.list;
-	begin
-		log (text => "locating vias for move/delete ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Collect all vias in the vicinity of the given point:
-		proposed_vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
-
-		--put_line (count_type'image (proposed_vias.length));
-		
-		-- evaluate the number of vias found here:
-		case length (proposed_vias) is
-			when 0 =>
-				reset_request_clarification;
-				reset_via_place;
-				
-			when 1 =>
-				preliminary_via.ready := true;
-				selected_via := proposed_vias.first;
-
-				case verb is
-					when VERB_DELETE => 
-						set_status (status_delete_via);
-
-					when VERB_MOVE =>
-						set_status (status_move_via);
-
-					when others => null;
-				end case;
-
-				reset_request_clarification;
-
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the first via
-				selected_via := proposed_vias.first;
-		end case;
-		
-		log_indentation_down;
-	end find_vias;
-
-	
-	
-	procedure init_via_place is
+	procedure init_preliminary_via is
 		use et_pcb;
 
 		rules : constant type_design_rules := get_pcb_design_rules (current_active_module);
@@ -496,191 +391,10 @@ package body et_canvas_board_vias is
 				idx		=> to_index (net_names.first)); -- 1
 		end if;
 		
-	end init_via_place;
-
-
-	
--- PLACE:
-
-	procedure place_via (
-		destination : in type_point) 
-	is
-		via : type_via (category => preliminary_via.category);
-	begin
-		if preliminary_via.ready then
-			
-			via.position := preliminary_via.drill.position;
-			via.diameter := preliminary_via.drill.diameter;
-			
-			via.restring_inner := preliminary_via.restring_inner;
-			
-			move_to (via.position, destination);
-
-			case preliminary_via.category is
-				when THROUGH =>
-					via.restring_outer := preliminary_via.restring_outer;
-								  
-				when BURIED =>
-					via.layers := preliminary_via.layers_buried;
-										  
-				when BLIND_DRILLED_FROM_TOP =>
-					via.restring_top := preliminary_via.restring_outer;
-					via.lower := preliminary_via.destination_blind;
-					
-				when BLIND_DRILLED_FROM_BOTTOM =>
-					via.restring_bottom := preliminary_via.restring_outer;
-					via.upper := preliminary_via.destination_blind;
-
-			end case;
-
-			place_via (
-				module_cursor	=> current_active_module,
-				net_name		=> get_name (preliminary_via.net),
-				via				=> via,
-				log_threshold	=> log_threshold + 1);
-
-		end if;
-	end place_via;
+	end init_preliminary_via;
 
 	
 
--- MOVE:
-	
-	procedure finalize_move (
-		destination		: in type_point;
-		log_threshold	: in type_log_level)
-	is 
-		use pac_proposed_vias;
-	begin
-		log (text => "finalizing move ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_via /= pac_proposed_vias.no_element then
-
-			move_via (
-				module_cursor	=> current_active_module,
-				via				=> element (selected_via),
-				coordinates		=> ABSOLUTE,
-				point			=> destination,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_move_via);
-		
-		reset_via_place;
-	end finalize_move;
-
-
-
-	procedure move_via (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_via.ready then
-
-			-- Set the tool being used:
-			preliminary_via.tool := tool;
-			
-			if not clarification_pending then
-				find_vias (position);
-			else
-				preliminary_via.ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally move the selected via:
-			finalize_move (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-
-		end if;
-	end move_via;
-
-
-	
-
--- DELETE:
-	
-	procedure finalize_delete (
-		destination		: in type_point;
-		log_threshold	: in type_log_level)
-	is 
-		use pac_proposed_vias;
-	begin
-		log (text => "finalizing deletion ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_via /= pac_proposed_vias.no_element then
-
-			delete_via (
-				module_cursor	=> current_active_module,
-				via				=> element (selected_via),
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_delete_via);
-		
-		reset_via_place;
-	end finalize_delete;
-
-
-	
-
-
-
-	procedure delete_via (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_via.ready then
-
-			-- Set the tool being used:
-			preliminary_via.tool := tool;
-			
-			if not clarification_pending then
-				find_vias (position);
-			else
-				preliminary_via.ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally delete the selected via:
-			finalize_delete (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-
-		end if;
-	end delete_via;
-
-
-
-	
-	procedure reset_via_place is begin
-		preliminary_via.ready := false;
-		preliminary_via.tool := MOUSE;
-		clear_proposed_vias;
-
-		-- Remove the via properties bar from the window:
-		if box_properties.displayed then
-			remove (box_right, box_properties.box_main);
-			box_properties.displayed := false;
-		end if;
-	end reset_via_place;
-
-	
-	
 	procedure show_via_properties is
 		use gtk.window;
 		use gtk.box;
@@ -845,6 +559,7 @@ package body et_canvas_board_vias is
 			add_attribute (cbox_category, render, "markup", column_0);
 		end make_combo_category;
 
+		
 		-- BLIND
 		procedure make_combo_destination is -- for BLIND vias !
 			storage_model : gtk_list_store;
@@ -904,6 +619,7 @@ package body et_canvas_board_vias is
 
 		end make_combo_destination;
 
+		
 		-- BURIED
 		procedure make_combo_buried_upper is
 			storage_model : gtk_list_store;
@@ -963,6 +679,7 @@ package body et_canvas_board_vias is
 
 		end make_combo_buried_upper;
 
+		
 		procedure make_combo_buried_lower is
 			storage_model : gtk_list_store;
 
@@ -1044,6 +761,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_drill.get_child).on_activate (drill_entered'access);
 		end make_combo_drill;
 
+		
 		procedure make_combo_restring_inner is begin
 			gtk_new_vbox (box_restring_inner, homogeneous => false);
 			pack_start (box_properties.box_main, box_restring_inner, padding => guint (spacing));
@@ -1064,6 +782,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_restring_inner.get_child).on_activate (restring_inner_entered'access);
 		end make_combo_restring_inner;
 
+		
 		procedure make_combo_restring_outer is begin
 			gtk_new_vbox (box_restring_outer, homogeneous => false);
 			pack_start (box_properties.box_main, box_restring_outer, padding => guint (spacing));
@@ -1128,6 +847,286 @@ package body et_canvas_board_vias is
 			"ERROR: The module has no nets. So no vias can be placed !";
 		end if;
 	end show_via_properties;
+
+
+	
+	
+	procedure reset_preliminary_via is begin
+		preliminary_via.ready := false;
+		preliminary_via.tool := MOUSE;
+		clear_proposed_vias;
+
+		-- Remove the via properties bar from the window:
+		if box_properties.displayed then
+			remove (box_right, box_properties.box_main);
+			box_properties.displayed := false;
+		end if;
+	end reset_preliminary_via;
+
+	
+
+	function via_is_selected (
+		via_cursor	: in pac_vias.cursor;
+		net_name	: in pac_net_name.bounded_string)
+		return boolean
+	is 
+		use pac_vias;
+		via : type_via renames element (via_cursor);
+	begin
+		-- If there are no proposed vias at all, then there is nothing to do:
+		if is_empty (proposed_vias) then
+			return false;
+		else
+			-- If there is no selected via, then there is nothing to do:
+			if selected_via /= pac_proposed_vias.no_element then
+				if element (selected_via).net = net_name and element (selected_via).via = via then
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end via_is_selected;
+
+	
+
+	procedure clear_proposed_vias is begin
+		proposed_vias.clear;
+		selected_via := pac_proposed_vias.no_element;
+	end;
+
+	
+	
+	procedure clarify_via is begin
+		-- On every call of this procedure we must advance from one
+		-- via to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_via
+		-- moves back to the start of the list of proposed vias:
+		--if next (selected_via) /= pac_vias.no_element then
+		if next (selected_via) /= pac_proposed_vias.no_element then
+			next (selected_via);
+		else
+			selected_via := proposed_vias.first;
+		end if;
+
+		-- show the selected via in the status bar
+		set_status ("selected via " & to_string (selected_via) 
+			& ". " & status_next_object_clarification);
+		
+	end clarify_via;
+
+
+
+	
+	procedure find_vias (
+		point : in type_point)
+	is 
+		vias : pac_vias.list;
+	begin
+		log (text => "locating vias for move/delete ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Collect all vias in the vicinity of the given point:
+		proposed_vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
+
+		--put_line (count_type'image (proposed_vias.length));
+		
+		-- evaluate the number of vias found here:
+		case length (proposed_vias) is
+			when 0 =>
+				reset_request_clarification;
+				reset_preliminary_via;
+				
+			when 1 =>
+				preliminary_via.ready := true;
+				selected_via := proposed_vias.first;
+
+				case verb is
+					when VERB_DELETE => 
+						set_status (status_delete_via);
+
+					when VERB_MOVE =>
+						set_status (status_move_via);
+
+					when others => null;
+				end case;
+
+				reset_request_clarification;
+
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the first via
+				selected_via := proposed_vias.first;
+		end case;
+		
+		log_indentation_down;
+	end find_vias;
+
+	
+	
+
+
+	
+-- PLACE:
+
+	procedure place_via (
+		destination : in type_point) 
+	is
+		via : type_via (category => preliminary_via.category);
+	begin
+		if preliminary_via.ready then
+			
+			via.position := preliminary_via.drill.position;
+			via.diameter := preliminary_via.drill.diameter;
+			
+			via.restring_inner := preliminary_via.restring_inner;
+			
+			move_to (via.position, destination);
+
+			case preliminary_via.category is
+				when THROUGH =>
+					via.restring_outer := preliminary_via.restring_outer;
+								  
+				when BURIED =>
+					via.layers := preliminary_via.layers_buried;
+										  
+				when BLIND_DRILLED_FROM_TOP =>
+					via.restring_top := preliminary_via.restring_outer;
+					via.lower := preliminary_via.destination_blind;
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					via.restring_bottom := preliminary_via.restring_outer;
+					via.upper := preliminary_via.destination_blind;
+
+			end case;
+
+			place_via (
+				module_cursor	=> current_active_module,
+				net_name		=> get_name (preliminary_via.net),
+				via				=> via,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end place_via;
+
+	
+
+-- MOVE:
+	
+
+
+	procedure move_via (
+		tool		: in type_tool;
+		position	: in type_point)
+	is 
+
+		-- Assigns the final position after the move to the selected via.
+		-- Resets variable preliminary_via:
+		procedure finalize is 
+			use pac_proposed_vias;
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_via /= pac_proposed_vias.no_element then
+
+				move_via (
+					module_cursor	=> current_active_module,
+					via				=> element (selected_via),
+					coordinates		=> ABSOLUTE,
+					point			=> position,
+					log_threshold	=> log_threshold);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_move_via);			
+			reset_preliminary_via;
+		end finalize;
+
+
+	begin
+		if not preliminary_via.ready then
+
+			-- Set the tool being used:
+			preliminary_via.tool := tool;
+			
+			if not clarification_pending then
+				find_vias (position);
+			else
+				preliminary_via.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected via:
+			finalize;
+		end if;
+	end move_via;
+
+
+	
+
+-- DELETE:
+
+
+	procedure delete_via (
+		tool			: in type_tool;
+		position		: in type_point)
+	is 
+
+		procedure finalize is 
+			use pac_proposed_vias;
+		begin
+			log (text => "finalizing deletion ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_via /= pac_proposed_vias.no_element then
+
+				delete_via (
+					module_cursor	=> current_active_module,
+					via				=> element (selected_via),
+					log_threshold	=> log_threshold + 1);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_delete_via);			
+			reset_preliminary_via;
+		end finalize;
+		
+
+	begin
+		if not preliminary_via.ready then
+
+			-- Set the tool being used:
+			preliminary_via.tool := tool;
+			
+			if not clarification_pending then
+				find_vias (position);
+			else
+				preliminary_via.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally delete the selected via:
+			finalize;
+		end if;
+	end delete_via;
+
+
+	
+	
 	
 end et_canvas_board_vias;
 

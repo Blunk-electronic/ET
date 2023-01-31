@@ -81,28 +81,6 @@ package et_canvas_board_vias is
 
 	box_properties : type_box_properties;
 
-	
-	-- to be output in the status bar:
-	status_place_via : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to place via." 
-		& status_hint_for_abort;
-
-	status_move_via : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move via." 
-		& status_hint_for_abort;
-
-	status_delete_via : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to delete via." 
-		& status_hint_for_abort;
 
 
 	
@@ -137,6 +115,25 @@ package et_canvas_board_vias is
 	-- The place where preliminary information is stored:
 	preliminary_via : type_preliminary_via;
 
+	
+
+	-- This procedure initializes the preliminary_via
+	-- so that the via properties bar shows the user specific settings
+	-- or the values as defined in the DRU data set.
+	procedure init_preliminary_via;
+
+
+	-- Builds the box for the via properties and
+	-- inserts it below the console.
+	-- If the box is already on display, nothing happens.
+	procedure show_via_properties;
+	
+
+	-- Clears preliminary_via.being_moved and box_properties.displayed.
+	-- Removes the via properties bar.
+	procedure reset_preliminary_via;
+
+	
 
 	
 	use pac_proposed_vias;
@@ -170,12 +167,18 @@ package et_canvas_board_vias is
 		point : in type_point);
 
 	
-	-- This procedure initializes the variable et_canvas_board_vias.via_place
-	-- so that the via properties bar shows the user specific settings
-	-- or the values as defined in the DRU data set.
-	procedure init_via_place;
 
 
+
+-- PLACE:
+
+	-- to be output in the status bar:
+	status_place_via : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to place via." 
+		& status_hint_for_abort;
 
 	
 	-- Builds the final via-to-be-placed from the information
@@ -185,39 +188,38 @@ package et_canvas_board_vias is
 		destination : in type_point);
 
 
--- MOVE:
 	
-	-- Assigns the final position after the move to the selected via.
-	-- Resets global variable via_place:
-	procedure finalize_move (
-		destination		: in type_point;
-		log_threshold	: in type_log_level);
+-- MOVE:
+
+	status_move_via : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move via." 
+		& status_hint_for_abort;
+
 	
 	procedure move_via (
 		tool		: in type_tool;
 		position	: in type_point);				   
 
 
--- DELETE:
 	
-	procedure finalize_delete (
-		destination		: in type_point;
-		log_threshold	: in type_log_level);
+-- DELETE:
+
+	status_delete_via : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete via." 
+		& status_hint_for_abort;
+
 	
 	procedure delete_via (
 		tool		: in type_tool;
 		position	: in type_point);				   
-	
-	
-	-- Clears via_place.being_moved and box_properties.displayed.
-	-- Removes the via properties bar.
-	procedure reset_via_place;
 
 	
-	-- Builds the box for the via properties and
-	-- inserts it below the console.
-	-- If the box is already on display, nothing happens.
-	procedure show_via_properties;
 	
 end et_canvas_board_vias;
 
