@@ -412,9 +412,8 @@ package body et_canvas_board_vias is
 				selected_via := proposed_vias.first;
 
 				case verb is
-					-- CS
-					--when VERB_DELETE => 
-						--set_status (status_flip);
+					when VERB_DELETE => 
+						set_status (status_delete_via);
 
 					when VERB_MOVE =>
 						set_status (status_move_via);
@@ -558,9 +557,6 @@ package body et_canvas_board_vias is
 
 		if selected_via /= pac_proposed_vias.no_element then
 
-			null;
-			--put_line (get_position (selected_via));
-			
 			move_via (
 				module_cursor	=> current_active_module,
 				via				=> element (selected_via),
@@ -580,7 +576,7 @@ package body et_canvas_board_vias is
 	end finalize_move;
 
 
-	
+
 	procedure move_via (
 		tool		: in type_tool;
 		position	: in type_point)
@@ -605,6 +601,69 @@ package body et_canvas_board_vias is
 
 		end if;
 	end move_via;
+
+
+	
+
+-- DELETE:
+	
+	procedure finalize_delete (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_proposed_vias;
+	begin
+		log (text => "finalizing deletion ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_via /= pac_proposed_vias.no_element then
+
+			delete_via (
+				module_cursor	=> current_active_module,
+				via				=> element (selected_via),
+				log_threshold	=> log_threshold);
+			
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+		
+		set_status (status_delete_via);
+		
+		reset_via_place;
+	end finalize_delete;
+
+
+	
+
+
+
+	procedure delete_via (
+		tool		: in type_tool;
+		position	: in type_point)
+	is begin
+		if not via_place.being_moved then
+
+			-- Set the tool being used:
+			via_place.tool := tool;
+			
+			if not clarification_pending then
+				find_vias (position);
+			else
+				via_place.being_moved := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally delete the selected via:
+			finalize_delete (
+				destination		=> position,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end delete_via;
+
 
 
 	

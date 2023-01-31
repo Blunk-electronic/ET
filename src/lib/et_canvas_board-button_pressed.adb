@@ -106,6 +106,9 @@ is
 				case noun is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						delete_non_electrical_device (MOUSE, point);
+
+					when NOUN_VIA =>
+						delete_via (MOUSE, point);
 						
 					when others => null;
 				end case;
@@ -177,6 +180,11 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
 							clarify_non_electrical_device;
+						end if;
+
+					when NOUN_VIA =>
+						if clarification_pending then
+							clarify_via;
 						end if;
 						
 					when others => null;							

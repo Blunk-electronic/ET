@@ -370,6 +370,50 @@ package body et_board_ops.vias is
 		update_ratsnest (module_cursor, log_threshold + 1);		
 	end move_via;
 
+
+
+	procedure delete_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via				: in type_proposed_via;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is
+			net_cursor : pac_nets.cursor := module.nets.find (via.net);
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				via_cursor : pac_vias.cursor := net.route.vias.find (via.via);
+			begin
+				net.route.vias.delete (via_cursor);
+			end query_net;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " net " & to_string (via.net)
+			& " deleting via at" & to_string (via.via.position),
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);		
+	end delete_via;
+
 	
 	
 end et_board_ops.vias;

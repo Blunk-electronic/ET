@@ -138,6 +138,24 @@ Commands and Verb-Noun key sequences
 	|VNS| p v
 
 
+#. Move via
+
+.. 	.. code-block::
+.. 
+.. 		place via [net name]
+
+	|VNS| m v
+
+	
+#. Delete via
+
+.. 	.. code-block::
+.. 
+.. 		place via [net name]
+
+	|VNS| d v
+
+	
 
 ++++++++++++++++++++++++++++++
 Fill Zones in Conductor Layers

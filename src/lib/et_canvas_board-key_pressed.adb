@@ -58,11 +58,21 @@ is
 			-- NOTE: Electrical devices can be deleted in
 			-- schematic only !
 
+
+			when GDK_LC_v =>
+				noun := NOUN_VIA;
+				set_status (status_delete_via);
+
+				
+				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
 				case noun is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						delete_non_electrical_device (KEYBOARD, point);
+
+					when NOUN_VIA =>
+						delete_via (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
@@ -74,6 +84,11 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
 							clarify_non_electrical_device;
+						end if;
+
+					when NOUN_VIA =>
+						if clarification_pending then
+							clarify_via;
 						end if;
 
 					when others => null;							

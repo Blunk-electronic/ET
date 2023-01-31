@@ -83,28 +83,28 @@ package et_canvas_board_devices is
 	
 	
 	-- to be output in the status bar:
-	status_flip : constant string := 
+	status_flip : constant string := -- CS rename to status_flip_device
 		status_click_left 
 		& "or "
 		& status_press_space
 		& "to flip device." 
 		& status_hint_for_abort;
 
-	status_move : constant string := 
+	status_move : constant string := -- CS rename to status_move_device
 		status_click_left 
 		& "or "
 		& status_press_space
 		& "to move device." 
 		& status_hint_for_abort;
 
-	status_rotate : constant string := 
+	status_rotate : constant string := -- CS rename to status_rotate_device
 		status_click_left 
 		& "or "
 		& status_press_space
 		& "to rotate device." 
 		& status_hint_for_abort;
 
-	status_delete : constant string := 
+	status_delete : constant string := -- CS rename to status_delete_device
 		status_click_left 
 		& "or "
 		& status_press_space

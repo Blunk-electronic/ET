@@ -97,8 +97,15 @@ package et_canvas_board_vias is
 		& "to move via." 
 		& status_hint_for_abort;
 
+	status_delete_via : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete via." 
+		& status_hint_for_abort;
 
 
+	
 	
 	-- The properties of the via being placed:
 	type type_via_place is record
@@ -170,7 +177,8 @@ package et_canvas_board_vias is
 		destination : in type_point);
 
 
-
+-- MOVE:
+	
 	-- Assigns the final position after the move to the selected via.
 	-- Resets global variable via_place:
 	procedure finalize_move (
@@ -182,7 +190,15 @@ package et_canvas_board_vias is
 		position	: in type_point);				   
 
 
+-- DELETE:
 	
+	procedure finalize_delete (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+	
+	procedure delete_via (
+		tool		: in type_tool;
+		position	: in type_point);				   
 	
 	
 	-- Clears via_place.being_moved and box_properties.displayed.

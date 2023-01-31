@@ -111,6 +111,12 @@ package et_board_ops.vias is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes a via:
+	procedure delete_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		via				: in type_proposed_via; -- incl via and net name
+		log_threshold	: in type_log_level);
+
 	
 end et_board_ops.vias;
 
