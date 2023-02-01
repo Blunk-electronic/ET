@@ -83,7 +83,7 @@ is
 				case noun is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							clarify_non_electrical_device;
+							select_non_electrical_device;
 						end if;
 
 					when NOUN_VIA =>
@@ -142,12 +142,12 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_electrical_device;
+							select_electrical_device;
 						end if;
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							clarify_non_electrical_device;
+							select_non_electrical_device;
 						end if;
 
 					when others => null;							
@@ -206,12 +206,12 @@ is
 
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_electrical_device;
+							select_electrical_device;
 						end if;
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							clarify_non_electrical_device;
+							select_non_electrical_device;
 						end if;
 
 					when NOUN_VIA =>
@@ -293,12 +293,12 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_electrical_device;
+							select_electrical_device;
 						end if;
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							clarify_non_electrical_device;
+							select_non_electrical_device;
 						end if;
 						
 					when others => null;							

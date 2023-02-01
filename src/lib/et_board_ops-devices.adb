@@ -58,8 +58,126 @@ package body et_board_ops.devices is
 	use pac_nets;
 
 	
+	function get_devices (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_devices_sch.map
+	is
+		use et_schematic;
+		use pac_devices_sch;
+		result : pac_devices_sch.map;
+
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;			
+		begin
+			while device_cursor /= pac_devices_sch.no_element loop
+
+				log (text => "probing device " & to_string (key (device_cursor)),
+					 level => log_threshold + 1);
+				log_indentation_up;
+					 
+				if in_catch_zone (
+					point_1		=> place, 
+					catch_zone	=> catch_zone, 
+					point_2		=> element (device_cursor).position.place) 
+				then
+					log_indentation_up;
+
+					log (text => "in catch zone", level => log_threshold + 1);
+					result.insert (key (device_cursor), element (device_cursor));
+							
+					log_indentation_down;
+				end if;
+				
+				next (device_cursor);
+
+				log_indentation_down;
+			end loop;
+		end query_devices;
+
+		
+	begin -- get_devices		
+		log (text => "looking up devices at" & to_string (place) 
+			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_devices;
 
 
+
+
+	function get_devices (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electric.map
+	is
+		result : pac_devices_non_electric.map;
+
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;			
+		begin
+			while device_cursor /= pac_devices_non_electric.no_element loop
+
+				log (text => "probing device " & to_string (key (device_cursor)),
+					 level => log_threshold + 1);
+				log_indentation_up;
+					 
+				if in_catch_zone (
+					point_1		=> place, 
+					catch_zone	=> catch_zone, 
+					point_2		=> element (device_cursor).position.place) 
+				then
+					log_indentation_up;
+
+					log (text => "in catch zone", level => log_threshold + 1);
+					result.insert (key (device_cursor), element (device_cursor));
+							
+					log_indentation_down;
+				end if;
+				
+				next (device_cursor);
+
+				log_indentation_down;
+			end loop;
+		end query_devices;
+
+		
+	begin -- get_devices		
+		log (text => "looking up devices at" & to_string (place) 
+			 & " catch zone" & catch_zone_to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_devices;
+
+	
 
 	function get_placeholders (
 		package_cursor : in et_packages.pac_package_models.cursor)
@@ -80,7 +198,7 @@ package body et_board_ops.devices is
 		
 		end return;
 	end get_placeholders;
-
+	
 	
 	procedure add_device ( -- non-electric !
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

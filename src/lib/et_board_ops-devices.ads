@@ -47,6 +47,22 @@ package et_board_ops.devices is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+	-- Collects all devices in the vicinity of the given point:	
+	function get_devices (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point; -- x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_devices_sch.map;
+
+
+	function get_devices (
+		module			: in pac_generic_modules.cursor;
+		place			: in type_point;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electric.map;
+
 	
 	-- Adds a non-electric device to the board:
 	procedure add_device (

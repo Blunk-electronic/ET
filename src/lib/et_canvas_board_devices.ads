@@ -82,6 +82,16 @@ package et_canvas_board_devices is
 	preliminary_electrical_device : type_preliminary_electrical_device;
 
 
+	-- This procedure:
+	-- - Clears list of proposed electrical devices.
+	-- - Sets global variable selected_electrical_device to no_element.
+	-- - resets global variable preliminary_electrical_device 
+	--   to its default values
+	procedure reset_preliminary_electrical_device;
+
+
+
+
 	
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
@@ -102,26 +112,23 @@ package et_canvas_board_devices is
 	preliminary_non_electrical_device : type_preliminary_non_electrical_device;
 
 
-
+	-- This procedure:
+	-- - Clears list of proposed non-electrical devices.
+	-- - Sets global variable selected_non_electrical_device to no_element.
+	-- - resets global variable preliminary_non_electrical_device 
+	--   to its default values
+	procedure reset_preliminary_non_electrical_device;
 
 	
-	-- Whenever a device is selected via the GUI, 
-	-- we store its cursor via this type.
-	-- This type is to be used for a device that
-	-- is already placed in the schematic and board. So we use it
-	-- for example for moving, mirroring or rotating of a device.
-	type type_selected_electrical_device is record
-		device	: et_schematic.pac_devices_sch.cursor;
-	end record;
-	
-	package pac_proposed_electrical_devices is new 
-		doubly_linked_lists (type_selected_electrical_device);
-	use pac_proposed_electrical_devices;
-	
-	proposed_electrical_device	: pac_proposed_electrical_devices.list; -- rename to proposed_electrical_devices
-	selected_electrical_device	: pac_proposed_electrical_devices.cursor;
 
 
+-- ELECTRICAL DEVICES:
+	
+	use pac_devices_sch;
+	proposed_electrical_devices	: pac_devices_sch.map;
+	selected_electrical_device	: pac_devices_sch.cursor;
+
+	
 	-- Returns true if the given electrical device matches the device 
 	-- indicated by cursor "selected_electrical_device":
 	function electrical_device_is_selected (
@@ -130,19 +137,13 @@ package et_canvas_board_devices is
 
 
 	
-
-	type type_selected_non_electrical_device is record
-		device	: pac_devices_non_electric.cursor;
-	end record;
+-- NON-ELECTRICAL DEVICES:
 	
-	package pac_proposed_non_electrical_devices is new 
-		doubly_linked_lists (type_selected_non_electrical_device);
-	use pac_proposed_non_electrical_devices;
+	use pac_devices_non_electric;
+	proposed_non_electrical_devices	: pac_devices_non_electric.map;
+	selected_non_electrical_device	: pac_devices_non_electric.cursor;
+
 	
-	proposed_non_electrical_devices	: pac_proposed_non_electrical_devices.list;
-	selected_non_electrical_device	: pac_proposed_non_electrical_devices.cursor;
-
-
 	-- Returns true if the given non-electrical device matches the device 
 	-- indicated by cursor "selected_non_electrical_device":
 	function non_electrical_device_is_selected (
@@ -156,39 +157,21 @@ package et_canvas_board_devices is
 	-- Resets selected_electrical_device to no_element.
 	procedure clear_proposed_electrical_devices;
 
+	-- Clears the list proposed_non_electrical_devices.
+	-- Resets selected_non_electrical_device to no_element.
 	procedure clear_proposed_non_electrical_devices;
 	
-
-	
-	-- Collects all units in the vicinity of the given point:	
-	function collect_devices (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_point; -- x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_electrical_devices.list;
 
 
 	-- Advances cursor selected_electrical_device to next device
 	-- in list proposed_electrical_device:
-	procedure clarify_electrical_device;
+	procedure select_electrical_device;
 
-	procedure clarify_non_electrical_device;
+	-- Advances cursor selected_non_electrical_device to next device
+	-- in list proposed_non_electrical_devices:
+	procedure select_non_electrical_device;
 	
-	
-	-- This procedure:
-	-- - Clears list of proposed electrical devices.
-	-- - Sets global variable selected_electrical_device to no_element.
-	-- - resets global variable preliminary_electrical_device 
-	--   to its default values
-	procedure reset_preliminary_electrical_device;
 
-	-- This procedure:
-	-- - Clears list of proposed non-electrical devices.
-	-- - Sets global variable selected_non_electrical_device to no_element.
-	-- - resets global variable preliminary_non_electrical_device 
-	--   to its default values
-	procedure reset_preliminary_non_electrical_device;
 	
 	
 	-- Locates all devices in the vicinity of given point.
