@@ -941,17 +941,6 @@ package body et_canvas_board_vias is
 			when 1 =>
 				preliminary_via.ready := true;
 				selected_via := proposed_vias.first;
-
-				--case verb is
-					--when VERB_DELETE => 
-						--set_status (status_delete_via);
-
-					--when VERB_MOVE =>
-						--set_status (status_move_via);
-
-					--when others => null;
-				--end case;
-
 				reset_request_clarification;
 
 				
@@ -974,7 +963,7 @@ package body et_canvas_board_vias is
 -- PLACE:
 
 	procedure place_via (
-		destination : in type_point) 
+		point	: in type_point) 
 	is
 		via : type_via (category => preliminary_via.category);
 	begin
@@ -985,7 +974,7 @@ package body et_canvas_board_vias is
 			
 			via.restring_inner := preliminary_via.restring_inner;
 			
-			move_to (via.position, destination);
+			move_to (via.position, point);
 
 			case preliminary_via.category is
 				when THROUGH =>
@@ -1015,13 +1004,13 @@ package body et_canvas_board_vias is
 
 	
 
--- MOVE:
-	
 
+	
+-- MOVE:
 
 	procedure move_via (
-		tool		: in type_tool;
-		position	: in type_point)
+		tool	: in type_tool;
+		point	: in type_point)
 	is 
 
 		-- Assigns the final position after the move to the selected via.
@@ -1038,7 +1027,7 @@ package body et_canvas_board_vias is
 					module_cursor	=> current_active_module,
 					via				=> element (selected_via),
 					coordinates		=> ABSOLUTE,
-					point			=> position,
+					point			=> point,
 					log_threshold	=> log_threshold);
 				
 			else
@@ -1052,14 +1041,30 @@ package body et_canvas_board_vias is
 
 
 	begin
+		-- Initially the preliminary_via is not ready.
 		if not preliminary_via.ready then
 
 			-- Set the tool being used:
 			preliminary_via.tool := tool;
 			
 			if not clarification_pending then
-				find_vias (position);
+				-- Locate all vias in the vicinity of the given point:
+				find_vias (point);
+				-- NOTE: If many vias have been found, then
+				-- clarification is now pending.
+
+				-- If find_vias has found only one via
+				-- then the flag preliminary_via.read is set true.
+
 			else
+				-- Here the clarification procedure ends.
+				-- A via has been selected (indicated by cursor selected_via)
+				-- via procedure select_via.
+				-- By setting preliminary_via.ready, the selected
+				-- via will be drawn at the tool position
+				-- when conductor objects are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected via will be assigned its final position.
 				preliminary_via.ready := true;
 				reset_request_clarification;
 			end if;
@@ -1074,7 +1079,6 @@ package body et_canvas_board_vias is
 	
 
 -- DELETE:
-
 
 	procedure delete_via (
 		tool	: in type_tool;

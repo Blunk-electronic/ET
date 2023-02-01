@@ -155,7 +155,8 @@ package et_canvas_board_vias is
 	
 
 	-- Advances cursor selected_via to next via
-	-- in list proposed_vias and sets cursor selected_via:
+	-- in list proposed_vias and sets cursor selected_via
+	-- to the candidate via:
 	procedure select_via;
 
 	
@@ -164,7 +165,7 @@ package et_canvas_board_vias is
 	-- If a single via found: 
 	-- - The single via gets selected (select_via then points there).
 	-- - preliminary_via.ready is set true.
-	-- - clarification is not requested
+	-- - clarification request is cleared
 	--
 	-- If more than one via found:
 	-- - The first of them is selected (selected_via points to to the first)
@@ -190,9 +191,9 @@ package et_canvas_board_vias is
 	
 	-- Builds the final via-to-be-placed from the information
 	-- provided by temporarily variable via_place.
-	-- Inserts the via in the module.
+	-- Places the via at the given point:
 	procedure place_via (
-		destination : in type_point);
+		point	: in type_point);
 
 
 	
@@ -206,9 +207,20 @@ package et_canvas_board_vias is
 		& status_hint_for_abort;
 
 	
+	-- Locates vias in the vicinity of the given point.
+	-- Depending on how many vias have been found, the behaviour is:
+	-- - If only one via found, then it is selected and 
+	--   the flag preliminary_via.ready will be set.
+	--   This causes the selected via to be drawn at the tool position.
+	-- - If more than one via found, then clarification is requested.
+	--   No via will be moved.
+	--   The next call of this procedure sets preliminary_via.ready
+	--   so that the selected via will be drawn at the tool position.
+	--   The next call of this procedure assigns the final position 
+	--   to the selected_via:
 	procedure move_via (
-		tool		: in type_tool;
-		position	: in type_point);				   
+		tool	: in type_tool;
+		point	: in type_point);				   
 
 
 	
