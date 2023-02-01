@@ -1105,36 +1105,28 @@ package body et_canvas_board_vias is
 		
 
 	begin
-		-- Initially the preliminary_via is not ready:
-		if not preliminary_via.ready then
+		-- Set the tool being used:
+		preliminary_via.tool := tool;
 
-			-- Set the tool being used:
-			preliminary_via.tool := tool;
+		-- Initially there is no clarification pending:
+		if not clarification_pending then
 
-			-- Initially there is no clarification pending:
-			if not clarification_pending then
+			-- Locate all vias in the vicinity of the given point:
+			find_vias (point);
+			-- NOTE: If many vias have been found, then
+			-- clarification is now pending.
 
-				-- Locate all vias in the vicinity of the given point:
-				find_vias (point);
-				-- NOTE: If many vias have been found, then
-				-- clarification is now pending.
-
-				-- If find_vias has found only one via
-				-- then delete that via immediately.
-				if preliminary_via.ready then
-					finalize;
-				end if;
-				
-			else
-				-- Here the clarification procedure ends.
-				-- A via has been selected (indicated by cursor selected_via)
-				-- and the preliminary_via is ready:
-				preliminary_via.ready := true;
-				reset_request_clarification;
+			-- If find_vias has found only one via
+			-- then delete that via immediately.
+			if preliminary_via.ready then
+				finalize;
 			end if;
 			
 		else
-			-- Finally delete the selected via:
+			-- Here the clarification procedure ends.
+			-- A via has been selected (indicated by cursor selected_via)
+			-- via procedure select_via.
+			reset_request_clarification;
 			finalize;
 		end if;
 	end delete_via;
