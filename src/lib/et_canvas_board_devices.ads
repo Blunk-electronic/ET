@@ -63,53 +63,46 @@ package et_canvas_board_devices is
 	use et_project.modules.pac_generic_modules;
 	
 
-	type type_electrical_device_being_moved is record
-		being_moved	: boolean := false;
-		tool		: type_tool := MOUSE;
-		device		: type_device_name := (others => <>); -- IC45 -- CS: use cursor instead ?
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information using this type:
+	type type_preliminary_electrical_device is record
+		-- This flag indicates that the device has been
+		-- clarified among the proposed device:
+		ready	: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the device:
+		tool	: type_tool := MOUSE;
+
+		device	: type_device_name := (others => <>); -- IC45 -- CS: use cursor instead ?
 	end record;
 
-	electrical_device_move : type_electrical_device_being_moved;
+	-- The place where preliminary information of
+	-- an electrical device is stored:
+	preliminary_electrical_device : type_preliminary_electrical_device;
 
 
-	type type_non_electrical_device_being_moved is record
-		being_moved	: boolean := false;
-		tool		: type_tool := MOUSE;
-		device		: type_device_name := (others => <>); -- FD1 -- CS: use cursor instead ?
+	
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information using this type:
+	type type_preliminary_non_electrical_device is record
+		-- This flag indicates that the device has been
+		-- clarified among the proposed device:
+		ready	: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the device:
+		tool	: type_tool := MOUSE;
+		
+		device	: type_device_name := (others => <>); -- FD1 -- CS: use cursor instead ?
 	end record;
 
-	non_electrical_device_move : type_non_electrical_device_being_moved;
+	-- The place where preliminary information of
+	-- a non-electrical device is stored:
+	preliminary_non_electrical_device : type_preliminary_non_electrical_device;
 
-	
-	
-	-- to be output in the status bar:
-	status_flip : constant string := -- CS rename to status_flip_device
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to flip device." 
-		& status_hint_for_abort;
 
-	status_move : constant string := -- CS rename to status_move_device
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move device." 
-		& status_hint_for_abort;
 
-	status_rotate : constant string := -- CS rename to status_rotate_device
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to rotate device." 
-		& status_hint_for_abort;
-
-	status_delete : constant string := -- CS rename to status_delete_device
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to delete device." 
-		& status_hint_for_abort;
 
 	
 	-- Whenever a device is selected via the GUI, 
@@ -186,10 +179,16 @@ package et_canvas_board_devices is
 	-- This procedure:
 	-- - Clears list of proposed electrical devices.
 	-- - Sets global variable selected_electrical_device to no_element.
-	-- - resets global variable electrical_device_move to its default values
-	procedure reset_electrical_device_move;
+	-- - resets global variable preliminary_electrical_device 
+	--   to its default values
+	procedure reset_preliminary_electrical_device;
 
-	procedure reset_non_electrical_device_move;
+	-- This procedure:
+	-- - Clears list of proposed non-electrical devices.
+	-- - Sets global variable selected_non_electrical_device to no_element.
+	-- - resets global variable preliminary_non_electrical_device 
+	--   to its default values
+	procedure reset_preliminary_non_electrical_device;
 	
 	
 	-- Locates all devices in the vicinity of given point.
@@ -205,6 +204,14 @@ package et_canvas_board_devices is
 
 	
 -- MOVE:	
+
+	status_move : constant string := -- CS rename to status_move_device
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move device." 
+		& status_hint_for_abort;
+
 	
 	-- Assigns the final position after the move to the selected 
 	-- electrical device.
@@ -229,6 +236,14 @@ package et_canvas_board_devices is
 
 	
 -- ROTATION:
+
+	status_rotate : constant string := -- CS rename to status_rotate_device
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rotate device." 
+		& status_hint_for_abort;
+
 	
 	default_rotation : constant type_rotation := 90.0;
 	
@@ -255,6 +270,15 @@ package et_canvas_board_devices is
 
 
 -- FLIP / MIRROR:
+
+	-- to be output in the status bar:
+	status_flip : constant string := -- CS rename to status_flip_device
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to flip device." 
+		& status_hint_for_abort;
+
 	
 	-- Flips the selected electrical device.
 	-- Resets global variable electrical_device_move:
@@ -275,6 +299,14 @@ package et_canvas_board_devices is
 
 
 -- DELETE:
+
+	status_delete : constant string := -- CS rename to status_delete_device
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete device." 
+		& status_hint_for_abort;
+
 	
 	-- Deletes the selected non-electrical device.
 	procedure finalize_delete_non_electrical (

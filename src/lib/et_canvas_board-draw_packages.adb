@@ -1731,7 +1731,7 @@ is
 					name	: in type_device_name;
 					device	: in out type_device_sch)
 				is begin
-					case electrical_device_move.tool is
+					case preliminary_electrical_device.tool is
 						when MOUSE =>
 							device.position.place := self.snap_to_grid (self.mouse_position);
 
@@ -1775,7 +1775,7 @@ is
 
 							-- If a move operation is in progress, then the mouse
 							-- or cursor position overwrites the device position:
-							if electrical_device_move.being_moved then
+							if preliminary_electrical_device.ready then
 								draw_being_moved;
 							else
 								draw_fixed;						
@@ -1837,7 +1837,7 @@ is
 					name	: in type_device_name;
 					device	: in out type_device_non_electric)
 				is begin
-					case non_electrical_device_move.tool is
+					case preliminary_non_electrical_device.tool is
 						when MOUSE =>
 							device.position.place := self.snap_to_grid (self.mouse_position);
 
@@ -1880,7 +1880,7 @@ is
 
 						-- If a move operation is in progress, then the mouse
 						-- or cursor position overwrites the device position:
-						if non_electrical_device_move.being_moved then
+						if preliminary_non_electrical_device.ready then
 							draw_being_moved;
 						else
 							draw_fixed;						

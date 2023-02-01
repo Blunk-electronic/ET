@@ -88,8 +88,8 @@ package et_canvas_board_vias is
 	-- collect preliminary information using this type:
 
 	type type_preliminary_via is record
-		-- This flag indicates that the vias has been
-		-- clarified among the proposed vias.
+		-- This flag indicates that the via has been
+		-- clarified among the proposed vias:
 		ready				: boolean := false;
 
 		-- This tells the GUI whether the mouse or the

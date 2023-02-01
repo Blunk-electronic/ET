@@ -45,12 +45,12 @@ is begin
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_DEVICE =>
-					if electrical_device_move.being_moved then
+					if preliminary_electrical_device.ready then
 						redraw_board;
 					end if;
 
 				when NOUN_NON_ELECTRICAL_DEVICE =>
-					if non_electrical_device_move.being_moved then
+					if preliminary_non_electrical_device.ready then
 						redraw_board;
 					end if;
 

@@ -292,15 +292,15 @@ package body et_canvas_board_devices is
 
 
 	
-	procedure reset_electrical_device_move is begin
-		electrical_device_move := (others => <>);
+	procedure reset_preliminary_electrical_device is begin
+		preliminary_electrical_device := (others => <>);
 		clear_proposed_electrical_devices;
-	end reset_electrical_device_move;
+	end reset_preliminary_electrical_device;
 	
-	procedure reset_non_electrical_device_move is begin
-		non_electrical_device_move := (others => <>);
+	procedure reset_preliminary_non_electrical_device is begin
+		preliminary_non_electrical_device := (others => <>);
 		clear_proposed_non_electrical_devices;
-	end reset_non_electrical_device_move;
+	end reset_preliminary_non_electrical_device;
 	
 
 	
@@ -322,10 +322,10 @@ package body et_canvas_board_devices is
 		case length (proposed_electrical_device) is
 			when 0 =>
 				reset_request_clarification;
-				reset_electrical_device_move;
+				reset_preliminary_electrical_device;
 				
 			when 1 =>
-				electrical_device_move.being_moved := true;
+				preliminary_electrical_device.ready := true;
 				selected_electrical_device := proposed_electrical_device.first;
 
 				case verb is
@@ -373,10 +373,10 @@ package body et_canvas_board_devices is
 		case length (proposed_non_electrical_devices) is
 			when 0 =>
 				reset_request_clarification;
-				reset_non_electrical_device_move;
+				reset_preliminary_non_electrical_device;
 				
 			when 1 =>
-				non_electrical_device_move.being_moved := true;
+				preliminary_non_electrical_device.ready := true;
 				selected_non_electrical_device := proposed_non_electrical_devices.first;
 
 				case verb is
@@ -441,7 +441,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_move);
 		
-		reset_electrical_device_move;
+		reset_preliminary_electrical_device;
 	end finalize_move_electrical;
 	
 
@@ -476,7 +476,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_move);
 		
-		reset_non_electrical_device_move;
+		reset_preliminary_non_electrical_device;
 	end finalize_move_non_electrical;
 
 
@@ -485,15 +485,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not electrical_device_move.being_moved then
+		if not preliminary_electrical_device.ready then
 
 			-- Set the tool being used:
-			electrical_device_move.tool := tool;
+			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_electrical_devices_for_move (position);
 			else
-				electrical_device_move.being_moved := true;
+				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -512,15 +512,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not non_electrical_device_move.being_moved then
+		if not preliminary_non_electrical_device.ready then
 
 			-- Set the tool being used:
-			non_electrical_device_move.tool := tool;
+			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_non_electrical_devices_for_move (position);
 			else
-				non_electrical_device_move.being_moved := true;
+				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -570,7 +570,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_rotate);
 		
-		reset_electrical_device_move;
+		reset_preliminary_electrical_device;
 	end finalize_rotate_electrical;
 	
 
@@ -605,7 +605,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_rotate);
 		
-		reset_non_electrical_device_move;
+		reset_preliminary_non_electrical_device;
 	end finalize_rotate_non_electrical;
 
 
@@ -615,15 +615,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not electrical_device_move.being_moved then
+		if not preliminary_electrical_device.ready then
 
 			-- Set the tool being used:
-			electrical_device_move.tool := tool;
+			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_electrical_devices_for_move (position);
 			else
-				electrical_device_move.being_moved := true;
+				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -643,15 +643,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not non_electrical_device_move.being_moved then
+		if not preliminary_non_electrical_device.ready then
 
 			-- Set the tool being used:
-			non_electrical_device_move.tool := tool;
+			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_non_electrical_devices_for_move (position);
 			else
-				non_electrical_device_move.being_moved := true;
+				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -700,7 +700,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_flip);
 		
-		reset_electrical_device_move;
+		reset_preliminary_electrical_device;
 	end finalize_flip_electrical;
 	
 
@@ -736,7 +736,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_flip);
 		
-		reset_non_electrical_device_move;
+		reset_preliminary_non_electrical_device;
 	end finalize_flip_non_electrical;
 
 
@@ -745,15 +745,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not electrical_device_move.being_moved then
+		if not preliminary_electrical_device.ready then
 
 			-- Set the tool being used:
-			electrical_device_move.tool := tool;
+			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_electrical_devices_for_move (position);
 			else
-				electrical_device_move.being_moved := true;
+				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -772,15 +772,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not non_electrical_device_move.being_moved then
+		if not preliminary_non_electrical_device.ready then
 
 			-- Set the tool being used:
-			non_electrical_device_move.tool := tool;
+			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_non_electrical_devices_for_move (position);
 			else
-				non_electrical_device_move.being_moved := true;
+				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -824,7 +824,7 @@ package body et_canvas_board_devices is
 		
 		set_status (status_delete);
 		
-		reset_non_electrical_device_move;
+		reset_preliminary_non_electrical_device;
 	end finalize_delete_non_electrical;
 
 	
@@ -832,15 +832,15 @@ package body et_canvas_board_devices is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not non_electrical_device_move.being_moved then
+		if not preliminary_non_electrical_device.ready then
 
 			-- Set the tool being used:
-			non_electrical_device_move.tool := tool;
+			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
 				find_non_electrical_devices_for_move (position);
 			else
-				non_electrical_device_move.being_moved := true;
+				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
