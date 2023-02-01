@@ -1126,6 +1126,9 @@ package body et_canvas_board_vias is
 				end if;
 				
 			else
+				-- Here the clarification procedure ends.
+				-- A via has been selected (indicated by cursor selected_via)
+				-- and the preliminary_via is ready:
 				preliminary_via.ready := true;
 				reset_request_clarification;
 			end if;
