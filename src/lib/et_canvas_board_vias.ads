@@ -154,15 +154,22 @@ package et_canvas_board_vias is
 	procedure clear_proposed_vias;
 	
 
-	-- Advances cursor selected_via to next device
-	-- in list proposed_vias:
-	procedure clarify_via;
+	-- Advances cursor selected_via to next via
+	-- in list proposed_vias and sets cursor selected_via:
+	procedure select_via;
 
 	
 	-- Locates all vias in the vicinity of given point.
-	-- If more than one via near point found, then it sets the
-	-- cursor selected_via to the first via and requests
-	-- for clarification.
+	--
+	-- If a single via found: 
+	-- - The single via gets selected (select_via then points there).
+	-- - preliminary_via.ready is set true.
+	-- - clarification is not requested
+	--
+	-- If more than one via found:
+	-- - The first of them is selected (selected_via points to to the first)
+	-- - preliminary_via.ready remains false.
+	-- - clarification is requested
 	procedure find_vias (
 		point : in type_point);
 
@@ -214,10 +221,17 @@ package et_canvas_board_vias is
 		& "to delete via." 
 		& status_hint_for_abort;
 
-	
+
+	-- Locates vias in the vicinity of the given point.
+	-- Depending on how many vias have been found, the behaviour is:
+	-- - If only one via found, then it is deleted immediately.
+	-- - If more than one via found, then clarification is requested.
+	--   No via will be deleted.
+	--   The next call of this procedure deletes the via indicated
+	--   by the cursor selected_via:
 	procedure delete_via (
-		tool		: in type_tool;
-		position	: in type_point);				   
+		tool	: in type_tool;
+		point	: in type_point);				   
 
 	
 	

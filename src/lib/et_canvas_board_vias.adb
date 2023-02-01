@@ -899,12 +899,11 @@ package body et_canvas_board_vias is
 
 	
 	
-	procedure clarify_via is begin
-		-- On every call of this procedure we must advance from one
-		-- via to the next in a circular manner. So if the end 
+	procedure select_via is begin
+		-- On every call of this procedure we advance from one
+		-- proposed via to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_via
 		-- moves back to the start of the list of proposed vias:
-		--if next (selected_via) /= pac_vias.no_element then
 		if next (selected_via) /= pac_proposed_vias.no_element then
 			next (selected_via);
 		else
@@ -915,7 +914,7 @@ package body et_canvas_board_vias is
 		set_status ("selected via " & to_string (selected_via) 
 			& ". " & status_next_object_clarification);
 		
-	end clarify_via;
+	end select_via;
 
 
 
@@ -943,15 +942,15 @@ package body et_canvas_board_vias is
 				preliminary_via.ready := true;
 				selected_via := proposed_vias.first;
 
-				case verb is
-					when VERB_DELETE => 
-						set_status (status_delete_via);
+				--case verb is
+					--when VERB_DELETE => 
+						--set_status (status_delete_via);
 
-					when VERB_MOVE =>
-						set_status (status_move_via);
+					--when VERB_MOVE =>
+						--set_status (status_move_via);
 
-					when others => null;
-				end case;
+					--when others => null;
+				--end case;
 
 				reset_request_clarification;
 
@@ -1078,8 +1077,8 @@ package body et_canvas_board_vias is
 
 
 	procedure delete_via (
-		tool			: in type_tool;
-		position		: in type_point)
+		tool	: in type_tool;
+		point	: in type_point)
 	is 
 
 		procedure finalize is 
@@ -1106,13 +1105,26 @@ package body et_canvas_board_vias is
 		
 
 	begin
+		-- Initially the preliminary_via is not ready:
 		if not preliminary_via.ready then
 
 			-- Set the tool being used:
 			preliminary_via.tool := tool;
-			
+
+			-- Initially there is no clarification pending:
 			if not clarification_pending then
-				find_vias (position);
+
+				-- Locate all vias in the vicinity of the given point:
+				find_vias (point);
+				-- NOTE: If many vias have been found, then
+				-- clarification is now pending.
+
+				-- If find_vias has found only one via
+				-- then delete that via immediately.
+				if preliminary_via.ready then
+					finalize;
+				end if;
+				
 			else
 				preliminary_via.ready := true;
 				reset_request_clarification;

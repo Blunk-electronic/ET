@@ -146,7 +146,7 @@ is
 
 					when NOUN_VIA =>
 						if clarification_pending then
-							clarify_via;
+							select_via;
 						end if;
 						
 					--when NOUN_VALUE => 
@@ -184,7 +184,7 @@ is
 
 					when NOUN_VIA =>
 						if clarification_pending then
-							clarify_via;
+							select_via;
 						end if;
 						
 					when others => null;							
