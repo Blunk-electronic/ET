@@ -48,15 +48,11 @@ with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
 with et_pcb;						use et_pcb;
 with et_devices;					use et_devices;
-
-with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 
 package et_canvas_board_devices is
 
-	use et_project.modules.pac_generic_modules;
-	
 
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:

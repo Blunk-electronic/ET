@@ -49,8 +49,8 @@ with gdk.event;						use gdk.event;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
 
+with gtk.window;					use gtk.window;
 with gtk.widget;					use gtk.widget;
-with gtk.box;
 
 with gtk.combo_box;					use gtk.combo_box;
 with gtk.cell_renderer_text;		
@@ -65,18 +65,16 @@ with gtk.container;					use gtk.container;
 with gtk.text_buffer;
 with gtk.text_iter;
 
-with et_modes.board;				use et_modes.board;
 with et_canvas_board;
-use et_canvas_board.pac_canvas;
 
-with et_logging;					use et_logging;
-
-with et_modes.board;
 with et_exceptions;					use et_exceptions;
 
 
 package body et_canvas_board_vias is
 
+	use et_canvas_board.pac_canvas;
+	
+	
 -- CATEGORY
 	
 	procedure category_changed (combo : access gtk_combo_box_record'class) is

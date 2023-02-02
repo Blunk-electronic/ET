@@ -46,6 +46,7 @@ with et_device_query_board;			use et_device_query_board;
 package body et_canvas_board_devices is
 
 	use et_canvas_board.pac_canvas;
+	use et_project.modules.pac_generic_modules;
 	
 
 	function electrical_device_is_selected (

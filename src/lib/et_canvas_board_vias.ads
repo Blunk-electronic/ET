@@ -37,11 +37,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   	         use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with gtk.window;					use gtk.window;
 with gtk.box;						use gtk.box;
 
 with et_general;					use et_general;
