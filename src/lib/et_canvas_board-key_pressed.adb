@@ -53,7 +53,7 @@ is
 		case key is
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_delete);
+				set_status (status_delete_device);
 
 			-- NOTE: Electrical devices can be deleted in
 			-- schematic only !
@@ -117,11 +117,11 @@ is
 		case key is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_flip);
+				set_status (status_flip_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_flip);
+				set_status (status_flip_device);
 
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
@@ -162,11 +162,11 @@ is
 		case key is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_move);
+				set_status (status_move_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_move);
+				set_status (status_move_device);
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
@@ -267,11 +267,11 @@ is
 		case key is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_rotate);
+				set_status (status_rotate_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_rotate);
+				set_status (status_rotate_device);
 
 				
 			-- If space pressed then the operator wishes to operate

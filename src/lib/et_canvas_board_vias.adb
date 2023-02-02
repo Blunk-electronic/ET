@@ -924,7 +924,7 @@ package body et_canvas_board_vias is
 	is 
 		vias : pac_vias.list;
 	begin
-		log (text => "locating vias for move/delete ...", level => log_threshold);
+		log (text => "locating vias ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Collect all vias in the vicinity of the given point:
@@ -942,7 +942,6 @@ package body et_canvas_board_vias is
 				preliminary_via.ready := true;
 				selected_via := proposed_vias.first;
 				reset_request_clarification;
-
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);

@@ -163,10 +163,10 @@ package body et_canvas_board_devices is
 	
 
 	
-	procedure find_electrical_devices_for_move (
+	procedure find_electrical_devices (
 		point : in type_point)
 	is begin
-		log (text => "locating devices for move/rotate/flip ...", level => log_threshold);
+		log (text => "locating devices ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -186,20 +186,6 @@ package body et_canvas_board_devices is
 			when 1 =>
 				preliminary_electrical_device.ready := true;
 				selected_electrical_device := proposed_electrical_devices.first;
-
-				case verb is
-					when VERB_FLIP => 
-						set_status (status_flip);
-
-					when VERB_MOVE => 
-						set_status (status_move);
-
-					when VERB_ROTATE => 
-						set_status (status_rotate);
-						
-					when others => null;
-				end case;
-
 				reset_request_clarification;
 				
 			when others =>
@@ -211,13 +197,13 @@ package body et_canvas_board_devices is
 		end case;
 
 		log_indentation_down;
-	end find_electrical_devices_for_move;
+	end find_electrical_devices;
 	
 
-	procedure find_non_electrical_devices_for_move (
+	procedure find_non_electrical_devices (
 		point : in type_point)
 	is begin
-		log (text => "locating non-electrical devices for move/rotate/flip ...", level => log_threshold);
+		log (text => "locating non-electrical devices ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -237,20 +223,6 @@ package body et_canvas_board_devices is
 			when 1 =>
 				preliminary_non_electrical_device.ready := true;
 				selected_non_electrical_device := proposed_non_electrical_devices.first;
-
-				case verb is
-					when VERB_FLIP => 
-						set_status (status_flip);
-
-					when VERB_MOVE => 
-						set_status (status_move);
-
-					when VERB_ROTATE => 
-						set_status (status_rotate);
-						
-					when others => null;
-				end case;
-
 				reset_request_clarification;
 				
 			when others =>
@@ -262,7 +234,7 @@ package body et_canvas_board_devices is
 		end case;
 
 		log_indentation_down;
-	end find_non_electrical_devices_for_move;
+	end find_non_electrical_devices;
 
 
 
@@ -293,7 +265,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_move);
+		set_status (status_move_device);
 		
 		reset_preliminary_electrical_device;
 	end finalize_move_electrical;
@@ -321,7 +293,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_move);
+		set_status (status_move_device);
 		
 		reset_preliminary_non_electrical_device;
 	end finalize_move_non_electrical;
@@ -338,7 +310,7 @@ package body et_canvas_board_devices is
 			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_electrical_devices_for_move (position);
+				find_electrical_devices (position);
 			else
 				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
@@ -365,7 +337,7 @@ package body et_canvas_board_devices is
 			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_non_electrical_devices_for_move (position);
+				find_non_electrical_devices (position);
 			else
 				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
@@ -410,7 +382,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_rotate);
+		set_status (status_rotate_device);
 		
 		reset_preliminary_electrical_device;
 	end finalize_rotate_electrical;
@@ -438,7 +410,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_rotate);
+		set_status (status_rotate_device);
 		
 		reset_preliminary_non_electrical_device;
 	end finalize_rotate_non_electrical;
@@ -456,7 +428,7 @@ package body et_canvas_board_devices is
 			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_electrical_devices_for_move (position);
+				find_electrical_devices (position);
 			else
 				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
@@ -484,7 +456,7 @@ package body et_canvas_board_devices is
 			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_non_electrical_devices_for_move (position);
+				find_non_electrical_devices (position);
 			else
 				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
@@ -529,7 +501,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_flip);
+		set_status (status_flip_device);
 		
 		reset_preliminary_electrical_device;
 	end finalize_flip_electrical;
@@ -560,7 +532,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_flip);
+		set_status (status_flip_device);
 		
 		reset_preliminary_non_electrical_device;
 	end finalize_flip_non_electrical;
@@ -577,7 +549,7 @@ package body et_canvas_board_devices is
 			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_electrical_devices_for_move (position);
+				find_electrical_devices (position);
 			else
 				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
@@ -604,7 +576,7 @@ package body et_canvas_board_devices is
 			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_non_electrical_devices_for_move (position);
+				find_non_electrical_devices (position);
 			else
 				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
@@ -641,7 +613,7 @@ package body et_canvas_board_devices is
 			
 		log_indentation_down;
 		
-		set_status (status_delete);
+		set_status (status_delete_device);
 		
 		reset_preliminary_non_electrical_device;
 	end finalize_delete_non_electrical;
@@ -657,7 +629,7 @@ package body et_canvas_board_devices is
 			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_non_electrical_devices_for_move (position);
+				find_non_electrical_devices (position);
 			else
 				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;

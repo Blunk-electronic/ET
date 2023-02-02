@@ -178,17 +178,21 @@ package et_canvas_board_devices is
 	-- If more than one device near point found, then it sets the
 	-- cursor selected_electrical_device to the first device and requests
 	-- for clarification.
-	procedure find_electrical_devices_for_move (
+	procedure find_electrical_devices (
 		point : in type_point);
 
-	procedure find_non_electrical_devices_for_move (
+	-- Locates all non-electrical devices in the vicinity of given point.
+	-- If more than one device near point found, then it sets the
+	-- cursor selected_non_electrical_device to the first device and requests
+	-- for clarification.
+	procedure find_non_electrical_devices (
 		point : in type_point);
 
 
 	
 -- MOVE:	
 
-	status_move : constant string := -- CS rename to status_move_device
+	status_move_device : constant string :=
 		status_click_left 
 		& "or "
 		& status_press_space
@@ -220,7 +224,7 @@ package et_canvas_board_devices is
 	
 -- ROTATION:
 
-	status_rotate : constant string := -- CS rename to status_rotate_device
+	status_rotate_device : constant string :=
 		status_click_left 
 		& "or "
 		& status_press_space
@@ -255,7 +259,7 @@ package et_canvas_board_devices is
 -- FLIP / MIRROR:
 
 	-- to be output in the status bar:
-	status_flip : constant string := -- CS rename to status_flip_device
+	status_flip_device : constant string :=
 		status_click_left 
 		& "or "
 		& status_press_space
@@ -283,7 +287,7 @@ package et_canvas_board_devices is
 
 -- DELETE:
 
-	status_delete : constant string := -- CS rename to status_delete_device
+	status_delete_device : constant string :=
 		status_click_left 
 		& "or "
 		& status_press_space
