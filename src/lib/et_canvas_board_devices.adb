@@ -38,8 +38,7 @@
 -- 
 
 
-with et_modes.board;				use et_modes.board;
-with et_canvas_board;				use et_canvas_board;
+with et_canvas_board;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_device_query_board;			use et_device_query_board;
 
@@ -240,88 +239,71 @@ package body et_canvas_board_devices is
 
 	
 -- MOVE:
-	
-	procedure finalize_move_electrical (
-		destination		: in type_point;
-		log_threshold	: in type_log_level)
-	is
-		use et_schematic;
-	begin
-		log (text => "finalizing move ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_electrical_device /= pac_devices_sch.no_element then
-			
-			move_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_electrical_device),
-				coordinates		=> ABSOLUTE,
-				point			=> destination,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_move_device);
-		
-		reset_preliminary_electrical_device;
-	end finalize_move_electrical;
-	
-
-	procedure finalize_move_non_electrical (
-		destination		: in type_point;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "finalizing move ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_non_electrical_device /= pac_devices_non_electric.no_element then
-
-			move_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_non_electrical_device),
-				coordinates		=> ABSOLUTE,
-				point			=> destination,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_move_device);
-		
-		reset_preliminary_non_electrical_device;
-	end finalize_move_non_electrical;
-
-
 
 	procedure move_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
+
+		-- Assigns the final position after the move to the selected 
+		-- electrical device.
+		-- Resets global variable preliminary_electrical_device:
+		procedure finalize is
+			use et_schematic;
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_electrical_device /= pac_devices_sch.no_element then
+				
+				move_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_electrical_device),
+					coordinates		=> ABSOLUTE,
+					point			=> point,
+					log_threshold	=> log_threshold);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_move_device);			
+			reset_preliminary_electrical_device;
+		end finalize;
+		
+	begin
+		-- Initially the preliminary_electrical_device is not ready.
 		if not preliminary_electrical_device.ready then
 
 			-- Set the tool being used:
 			preliminary_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_electrical_devices (position);
+				-- Locate all devices in the vicinity of the given point:
+				find_electrical_devices (point);
+				-- NOTE: If many devices have been found, then
+				-- clarification is now pending.
+
+				-- If find_electrical_devices has found only one device
+				-- then the flag preliminary_electrical_device.read is set true.
+				
 			else
+				-- Here the clarification procedure ends.
+				-- A device has been selected (indicated by cursor selected_electrical_device)
+				-- via procedure select_electrical_device.
+				-- By setting preliminary_electrical_device.ready, the selected
+				-- device will be drawn at the tool position
+				-- when packages are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected device will be assigned its final position.
 				preliminary_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
 		else
 			-- Finally move the selected device:
-			finalize_move_electrical (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-
+			finalize;
 		end if;
 	end move_electrical_device;
 
@@ -329,26 +311,64 @@ package body et_canvas_board_devices is
 	
 	procedure move_non_electrical_device (
 		tool		: in type_tool;
-		position	: in type_point)
-	is begin
+		point	: in type_point)
+	is 
+		-- Assigns the final position after the move to the selected 
+		-- non-electrical device.
+		-- Resets global variable preliminary_non_electrical_device:
+		procedure finalize is begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+
+				move_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_non_electrical_device),
+					coordinates		=> ABSOLUTE,
+					point			=> point,
+					log_threshold	=> log_threshold);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_move_device);			
+			reset_preliminary_non_electrical_device;
+		end finalize;
+		
+	begin
+		-- Initially the preliminary_non_electrical_device is not ready.
 		if not preliminary_non_electrical_device.ready then
 
 			-- Set the tool being used:
 			preliminary_non_electrical_device.tool := tool;
 			
 			if not clarification_pending then
-				find_non_electrical_devices (position);
+				-- Locate all devices in the vicinity of the given point:
+				find_non_electrical_devices (point);
+				-- NOTE: If many devices have been found, then
+				-- clarification is now pending.
+
+				-- If find_non_electrical_devices has found only one device
+				-- then the flag preliminary_non_electrical_device.read is set true.
 			else
+				-- Here the clarification procedure ends.
+				-- A device has been selected (indicated by cursor selected_non_electrical_device)
+				-- via procedure select_non_electrical_device.
+				-- By setting preliminary_non_electrical_device.ready, the selected
+				-- device will be drawn at the tool position
+				-- when packages are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected device will be assigned its final position.
 				preliminary_non_electrical_device.ready := true;
 				reset_request_clarification;
 			end if;
 			
 		else
 			-- Finally move the selected device:
-			finalize_move_non_electrical (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-
+			finalize;
 		end if;
 	end move_non_electrical_device;
 
@@ -358,115 +378,116 @@ package body et_canvas_board_devices is
 	
 -- ROTATE:
 
-	procedure finalize_rotate_electrical (
-		rotation		: in type_rotation := default_rotation;
-		log_threshold	: in type_log_level)
-	is
-		use et_schematic;
-	begin
-		log (text => "finalizing rotation ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_electrical_device /= pac_devices_sch.no_element then
-			
-			rotate_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_electrical_device),
-				coordinates		=> RELATIVE,
-				rotation		=> rotation,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_rotate_device);
-		
-		reset_preliminary_electrical_device;
-	end finalize_rotate_electrical;
-	
-
-	procedure finalize_rotate_non_electrical (
-		rotation		: in type_rotation := default_rotation;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "finalizing rotation ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_non_electrical_device /= pac_devices_non_electric.no_element then
-
-			rotate_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_non_electrical_device),
-				coordinates		=> RELATIVE,
-				rotation		=> rotation,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_rotate_device);
-		
-		reset_preliminary_non_electrical_device;
-	end finalize_rotate_non_electrical;
-
-
-
-
 	procedure rotate_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_electrical_device.ready then
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
 
-			-- Set the tool being used:
-			preliminary_electrical_device.tool := tool;
-			
-			if not clarification_pending then
-				find_electrical_devices (position);
+		-- Rotates the selected electrical device by default_rotation.
+		-- Resets global variable preliminary_electrical_device:
+		procedure finalize is
+			use et_schematic;
+		begin
+			log (text => "finalizing rotation ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_electrical_device /= pac_devices_sch.no_element then
+				
+				rotate_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_electrical_device),
+					coordinates		=> RELATIVE,
+					rotation		=> default_rotation,
+					log_threshold	=> log_threshold);
+				
 			else
-				preliminary_electrical_device.ready := true;
-				reset_request_clarification;
+				log (text => "nothing to do", level => log_threshold);
 			end if;
-			
+				
+			log_indentation_down;			
+			set_status (status_rotate_device);			
+			reset_preliminary_electrical_device;
+		end finalize;
+
+
+	begin
+		-- Set the tool being used:
+		preliminary_electrical_device.tool := tool;
+		
+		if not clarification_pending then
+			-- Locate all devices in the vicinity of the given point:
+			find_electrical_devices (point);
+			-- NOTE: If many devices have been found, then
+			-- clarification is now pending.
+
+			-- If find_electrical_devices has found only one device
+			-- then rotate that device immediately.
+			if preliminary_electrical_device.ready then
+				finalize;
+			end if;
+
 		else
-			-- Finally rotate the selected device:
-			finalize_rotate_electrical (
-				-- uses default rotation of 90 CCW
-				log_threshold	=> log_threshold + 1);
-
+			-- Here the clarification procedure ends.
+			-- A device has been selected (indicated by cursor selected_electrical_device)
+			-- via procedure select_electrical_device.
+			reset_request_clarification;
+			finalize;
 		end if;
-
 	end rotate_electrical_device;
 
 
 	
 	procedure rotate_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_non_electrical_device.ready then
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
 
-			-- Set the tool being used:
-			preliminary_non_electrical_device.tool := tool;
-			
-			if not clarification_pending then
-				find_non_electrical_devices (position);
+		-- Rotates the selected non-electrical device by default_rotation.
+		-- Resets global variable preliminary_non_electrical_device:
+		procedure finalize is begin
+			log (text => "finalizing rotation ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+
+				rotate_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_non_electrical_device),
+					coordinates		=> RELATIVE,
+					rotation		=> default_rotation,
+					log_threshold	=> log_threshold);
+				
 			else
-				preliminary_non_electrical_device.ready := true;
-				reset_request_clarification;
+				log (text => "nothing to do", level => log_threshold);
 			end if;
-			
-		else
-			-- Finally rotate the selected device:
-			finalize_rotate_non_electrical (
-				log_threshold	=> log_threshold + 1);
+				
+			log_indentation_down;			
+			set_status (status_rotate_device);			
+			reset_preliminary_non_electrical_device;
+		end finalize;
 
+	begin
+		-- Set the tool being used:
+		preliminary_non_electrical_device.tool := tool;
+		
+		if not clarification_pending then
+			-- Locate all devices in the vicinity of the given point:
+			find_non_electrical_devices (point);
+			-- NOTE: If many devices have been found, then
+			-- clarification is now pending.
+
+			-- If find_non_electrical_devices has found only one device
+			-- then rotate that device immediately.
+			if preliminary_non_electrical_device.ready then
+				finalize;
+			end if;
+
+		else
+			-- Here the clarification procedure ends.
+			-- A device has been selected (indicated by cursor selected_non_electrical_device)
+			-- via procedure select_non_electrical_device.
+			reset_request_clarification;
+			finalize;
 		end if;
 	end rotate_non_electrical_device;
 
@@ -474,172 +495,178 @@ package body et_canvas_board_devices is
 	
 
 -- FLIP / MIRROR:
-	
-	procedure finalize_flip_electrical (
-		log_threshold	: in type_log_level)
-	is
-		face : type_face;
-		use et_schematic;
-	begin
-		log (text => "finalizing flipping ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_electrical_device /= pac_devices_sch.no_element then
-
-			face := get_face (selected_electrical_device);
-			toggle (face);
-			
-			flip_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_electrical_device),
-				face			=> face,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_flip_device);
-		
-		reset_preliminary_electrical_device;
-	end finalize_flip_electrical;
-	
-
-	procedure finalize_flip_non_electrical (
-		log_threshold	: in type_log_level)
-	is
-		face : type_face;
-	begin
-		log (text => "finalizing flipping ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_non_electrical_device /= pac_devices_non_electric.no_element then
-
-			face := get_face (selected_non_electrical_device);
-			toggle (face);
-			
-			flip_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_non_electrical_device),
-				face			=> face,
-				log_threshold	=> log_threshold);
-			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_flip_device);
-		
-		reset_preliminary_non_electrical_device;
-	end finalize_flip_non_electrical;
-
 
 
 	procedure flip_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_electrical_device.ready then
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
 
-			-- Set the tool being used:
-			preliminary_electrical_device.tool := tool;
-			
-			if not clarification_pending then
-				find_electrical_devices (position);
+		-- Flips the selected electrical device.
+		-- Resets global variable preliminary_electrical_device:
+		procedure finalize is
+			face : type_face;
+			use et_schematic;
+		begin
+			log (text => "finalizing flipping ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_electrical_device /= pac_devices_sch.no_element then
+
+				face := get_face (selected_electrical_device);
+				toggle (face);
+				
+				flip_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_electrical_device),
+					face			=> face,
+					log_threshold	=> log_threshold);
+				
 			else
-				preliminary_electrical_device.ready := true;
-				reset_request_clarification;
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_flip_device);			
+			reset_preliminary_electrical_device;
+		end finalize;
+
+		
+	begin
+		-- Set the tool being used:
+		preliminary_electrical_device.tool := tool;
+		
+		if not clarification_pending then
+			-- Locate all devices in the vicinity of the given point:
+			find_electrical_devices (point);
+			-- NOTE: If many devices have been found, then
+			-- clarification is now pending.
+
+			-- If find_electrical_devices has found only one device
+			-- then flip that device immediately.
+			if preliminary_electrical_device.ready then
+				finalize;
 			end if;
 			
 		else
-			-- Finally rotate the selected device:
-			finalize_flip_electrical (
-				log_threshold	=> log_threshold + 1);
-
+			-- Here the clarification procedure ends.
+			-- A device has been selected (indicated by cursor selected_electrical_device)
+			-- via procedure select_electrical_device.
+			reset_request_clarification;
+			finalize;
 		end if;
-
 	end flip_electrical_device;
 
 
 	
 	procedure flip_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_non_electrical_device.ready then
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
 
-			-- Set the tool being used:
-			preliminary_non_electrical_device.tool := tool;
-			
-			if not clarification_pending then
-				find_non_electrical_devices (position);
+		procedure finalize is
+			face : type_face;
+		begin
+			log (text => "finalizing flipping ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+
+				face := get_face (selected_non_electrical_device);
+				toggle (face);
+				
+				flip_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_non_electrical_device),
+					face			=> face,
+					log_threshold	=> log_threshold);
+				
 			else
-				preliminary_non_electrical_device.ready := true;
-				reset_request_clarification;
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_flip_device);			
+			reset_preliminary_non_electrical_device;
+		end finalize;
+
+	begin
+		-- Set the tool being used:
+		preliminary_non_electrical_device.tool := tool;
+		
+		if not clarification_pending then
+			-- Locate all devices in the vicinity of the given point:
+			find_non_electrical_devices (point);
+			-- NOTE: If many devices have been found, then
+			-- clarification is now pending.
+
+			-- If find_non_electrical_devices has found only one device
+			-- then flip that device immediately.
+			if preliminary_non_electrical_device.ready then
+				finalize;
 			end if;
 			
 		else
-			-- Finally rotate the selected device:
-			finalize_flip_non_electrical (
-				log_threshold	=> log_threshold + 1);
-
+			-- Here the clarification procedure ends.
+			-- A device has been selected (indicated by cursor selected_non_electrical_device)
+			-- via procedure select_non_electrical_device.
+			reset_request_clarification;
+			finalize;
 		end if;
 	end flip_non_electrical_device;
 
 	
 
 -- DELETE:	
-
-	procedure finalize_delete_non_electrical (
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "finalizing deletion ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_non_electrical_device /= pac_devices_non_electric.no_element then
-
-			delete_device (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (selected_non_electrical_device),
-				log_threshold	=> log_threshold);
-
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-		
-		set_status (status_delete_device);
-		
-		reset_preliminary_non_electrical_device;
-	end finalize_delete_non_electrical;
-
 	
 	procedure delete_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point)
-	is begin
-		if not preliminary_non_electrical_device.ready then
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
 
-			-- Set the tool being used:
-			preliminary_non_electrical_device.tool := tool;
-			
-			if not clarification_pending then
-				find_non_electrical_devices (position);
+		procedure finalize is begin
+			log (text => "finalizing deletion ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+
+				delete_device (
+					module_name		=> key (current_active_module),
+					device_name		=> key (selected_non_electrical_device),
+					log_threshold	=> log_threshold);
+
 			else
-				preliminary_non_electrical_device.ready := true;
-				reset_request_clarification;
+				log (text => "nothing to do", level => log_threshold);
 			end if;
-			
-		else
-			-- Finally delete the selected device:
-			finalize_delete_non_electrical (
-				log_threshold	=> log_threshold + 1);
+				
+			log_indentation_down;			
+			set_status (status_delete_device);			
+			reset_preliminary_non_electrical_device;
+		end finalize;
 
+
+	begin
+		-- Set the tool being used:
+		preliminary_non_electrical_device.tool := tool;
+		
+		if not clarification_pending then
+			-- Locate all devices in the vicinity of the given point:
+			find_non_electrical_devices (point);
+			-- NOTE: If many devices have been found, then
+			-- clarification is now pending.
+
+			-- If find_non_electrical_devices has found only one device
+			-- then delete that device immediately.
+			if preliminary_non_electrical_device.ready then
+				finalize;
+			end if;
+
+		else
+			-- Here the clarification procedure ends.
+			-- A device has been selected (indicated by cursor selected_non_electrical_device)
+			-- via procedure select_non_electrical_device.
+			reset_request_clarification;
+			finalize;
 		end if;
 	end delete_non_electrical_device;
 

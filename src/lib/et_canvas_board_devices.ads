@@ -37,9 +37,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   	         use ada.containers;
-with ada.containers.doubly_linked_lists;
-
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 with et_canvas_general;				use et_canvas_general;
@@ -47,8 +44,6 @@ with et_canvas_general;				use et_canvas_general;
 with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
---with et_terminals;				use et_terminals;
---with et_packages;
 with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
 with et_pcb;						use et_pcb;
@@ -74,7 +69,7 @@ package et_canvas_board_devices is
 		-- cursor position is to be used when drawing the device:
 		tool	: type_tool := MOUSE;
 
-		device	: type_device_name := (others => <>); -- IC45 -- CS: use cursor instead ?
+		device	: type_device_name := (others => <>); -- IC45
 	end record;
 
 	-- The place where preliminary information of
@@ -200,25 +195,26 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 	
-	-- Assigns the final position after the move to the selected 
-	-- electrical device.
-	-- Resets global variable electrical_device_move:
-	procedure finalize_move_electrical (
-		destination		: in type_point;
-		log_threshold	: in type_log_level);
-
-	procedure finalize_move_non_electrical (
-		destination		: in type_point;
-		log_threshold	: in type_log_level);
-
-	
+	-- Locates devices in the vicinity of the given point.
+	-- Depending on how many devices have been found, the behaviour is:
+	-- - If only one device found, then it is selected and 
+	--   the flag preliminary_electrical_device.ready will be set.
+	--   This causes the selected device to be drawn at the tool position.
+	-- - If more than one device found, then clarification is requested.
+	--   No device will be moved.
+	--   The next call of this procedure sets preliminary_electrical_device.ready
+	--   so that the selected device will be drawn at the tool position.
+	--   The next call of this procedure assigns the final position 
+	--   to the selected_electrical_device:
 	procedure move_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
-	
+		tool	: in type_tool;
+		point	: in type_point);
+
+	-- Similar to procedure move_electrical_device but works 
+	-- on non-electrical devices:
 	procedure move_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
+		tool	: in type_tool;
+		point	: in type_point);
 
 
 	
@@ -234,24 +230,23 @@ package et_canvas_board_devices is
 	
 	default_rotation : constant type_rotation := 90.0;
 	
-	-- Rotates the selected electrical device by default_rotation.
-	-- Resets global variable electrical_device_move:
-	procedure finalize_rotate_electrical (
-		rotation		: in type_rotation := default_rotation;
-		log_threshold	: in type_log_level);
-
-	procedure finalize_rotate_non_electrical (
-		rotation		: in type_rotation := default_rotation;
-		log_threshold	: in type_log_level);
-
-
+	-- Locates electrical devices in the vicinity of the given point.
+	-- Depending on how many devices have been found, the behaviour is:
+	-- - If only one device found, then it is rotated immediately.
+	-- - If more than one device found, then clarification is requested.
+	--   No device will be rotated.
+	--   The next call of this procedure rotates the device indicated
+	--   by the cursor selected_electrical_device.
+	-- The rotation is always by 90 degree counter-clockwise:
 	procedure rotate_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
-	
+		tool	: in type_tool;
+		point	: in type_point);
+
+	-- Similar to procedure rotate_electrical_device but works 
+	-- on non-electrical devices:
 	procedure rotate_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
+		tool	: in type_tool;
+		point	: in type_point);
 
 	
 
@@ -265,23 +260,24 @@ package et_canvas_board_devices is
 		& status_press_space
 		& "to flip device." 
 		& status_hint_for_abort;
-
 	
-	-- Flips the selected electrical device.
-	-- Resets global variable electrical_device_move:
-	procedure finalize_flip_electrical (
-		log_threshold	: in type_log_level);
 
-	procedure finalize_flip_non_electrical (
-		log_threshold	: in type_log_level);
-
+	-- Locates electrical devices in the vicinity of the given point.
+	-- Depending on how many devices have been found, the behaviour is:
+	-- - If only one device found, then it is flipped immediately.
+	-- - If more than one device found, then clarification is requested.
+	--   No device will be flipped.
+	--   The next call of this procedure flips the device indicated
+	--   by the cursor selected_electrical_device.
 	procedure flip_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
+		tool	: in type_tool;
+		point	: in type_point);
 	
+	-- Similar to procedure flip_electrical_device but works 
+	-- on non-electrical devices:
 	procedure flip_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
+		tool	: in type_tool;
+		point	: in type_point);
 
 
 
@@ -295,16 +291,20 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 	
-	-- Deletes the selected non-electrical device.
-	procedure finalize_delete_non_electrical (
-		log_threshold	: in type_log_level);
-
-
+	-- Locates non-electrical devices in the vicinity of the given point.
+	-- Depending on how many devices have been found, the behaviour is:
+	-- - If only one device found, then it is flipped immediately.
+	-- - If more than one device found, then clarification is requested.
+	--   No device will be flipped.
+	--   The next call of this procedure flips the device indicated
+	--   by the cursor selected_non_electrical_device.
 	procedure delete_non_electrical_device (
-		tool		: in type_tool;
-		position	: in type_point);
+		tool	: in type_tool;
+		point	: in type_point);
 
 	
+	-- NOTE: Electrical devices must be deleted in the schematic !
+	-- For this reason there is no procedure here to delete an electrical device.
 
 	
 	
