@@ -59,7 +59,7 @@ is
 
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
-	-- The properties are taken from variable et_canvas_board_texts.text_place.
+	-- The properties are taken from variable et_canvas_board_texts.preliminary_text.
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_conductors (
@@ -80,9 +80,9 @@ is
 		-- The place where the text origin will be drawn:
 		origin : type_position;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.being_moved then
 			
-			if text_place.category = category and text_place.signal_layer = layer then
+			if preliminary_text.category = category and preliminary_text.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
 				point := self.tool_position;
@@ -92,7 +92,7 @@ is
 				draw_text_origin (self, origin);
 
 				-- Set the line width of the vector text:
-				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
+				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
 
 
 				-- NOTE: Texts in restrict layers are never mirrored.
@@ -106,17 +106,17 @@ is
 				
 				-- Vectorize the text on the fly:
 				v_text := vectorize_text (
-					content		=> text_place.text.content,
-					size		=> text_place.text.size,
-					rotation	=> get_rotation (text_place.text.position),
+					content		=> preliminary_text.text.content,
+					size		=> preliminary_text.text.size,
+					rotation	=> get_rotation (preliminary_text.text.position),
 					position	=> point,
 					mirror		=> mirror,
-					line_width	=> text_place.text.line_width,
-					alignment	=> text_place.text.alignment -- right, bottom
+					line_width	=> preliminary_text.text.line_width,
+					alignment	=> preliminary_text.text.alignment -- right, bottom
 					);
 
 				-- Draw the text:
-				draw_vector_text (v_text, text_place.text.line_width);
+				draw_vector_text (v_text, preliminary_text.text.line_width);
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;

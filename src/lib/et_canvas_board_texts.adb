@@ -96,8 +96,8 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		text_place.category := to_layer_category (glib.values.get_string (item_text));
-		--put_line ("cat " & to_string (text_place.category));
+		preliminary_text.category := to_layer_category (glib.values.get_string (item_text));
+		--put_line ("cat " & to_string (preliminary_text.category));
 
 		et_canvas_board.redraw_board;
 		
@@ -119,8 +119,8 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		text_place.face := to_face (glib.values.get_string (item_text));
-		--put_line ("face " & to_string (text_place.face));
+		preliminary_text.face := to_face (glib.values.get_string (item_text));
+		--put_line ("face " & to_string (preliminary_text.face));
 
 		et_canvas_board.redraw_board;
 		
@@ -142,8 +142,8 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (text_place.signal_layer));
+		preliminary_text.signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_text.signal_layer));
 
 		et_canvas_board.redraw_board;
 		
@@ -157,7 +157,7 @@ package body et_canvas_board_texts is
 		size := to_distance (text);
 
 		-- CS validate. output error in status bar
-		text_place.text.size := size;
+		preliminary_text.text.size := size;
 
 		et_canvas_board.redraw_board;
 	end apply_size;
@@ -205,7 +205,7 @@ package body et_canvas_board_texts is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		text_place.text.line_width := width;
+		preliminary_text.text.line_width := width;
 
 		et_canvas_board.redraw_board;
 	end apply_line_width;
@@ -254,8 +254,8 @@ package body et_canvas_board_texts is
 		--put_line (to_string (rotation));
 		-- CS validate. output error in status bar
 
-		set (text_place.text.position, rotation);
-		--put_line (to_string (text_place.text.position));
+		set (preliminary_text.text.position, rotation);
+		--put_line (to_string (preliminary_text.text.position));
 		et_canvas_board.redraw_board;
 	end apply_rotation;
 
@@ -302,19 +302,19 @@ package body et_canvas_board_texts is
 		use gtk.text_iter;
 		use et_text;
 		
-		text_buffer : constant gtk_text_buffer := get_buffer (text_place.entry_content);
+		text_buffer : constant gtk_text_buffer := get_buffer (preliminary_text.entry_content);
 		lower_bound, upper_bound : gtk_text_iter;
 	begin
 		--put_line ("button apply clicked");
 		get_bounds (text_buffer, lower_bound, upper_bound);
 		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
-		text_place.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
+		preliminary_text.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
 
 		-- CS check length and characters
 		
-		if not is_empty (text_place.text.content) then
-			--put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
-			text_place.being_moved := true;
+		if not is_empty (preliminary_text.text.content) then
+			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
+			preliminary_text.being_moved := true;
 			canvas.grab_focus;
 		end if;
 		
@@ -324,33 +324,33 @@ package body et_canvas_board_texts is
 	procedure place_text (
 		destination : in type_point) 
 	is begin
-		if text_place.being_moved then
-			move_to (text_place.text.position.place, destination);
+		if preliminary_text.being_moved then
+			move_to (preliminary_text.text.position.place, destination);
 			
-			if text_place.category in type_layer_category_non_conductor then
+			if preliminary_text.category in type_layer_category_non_conductor then
 
 				place_text_in_non_conductor_layer (
 					module_cursor 	=> current_active_module,
-					layer_category	=> text_place.category,
-					face			=> text_place.face,
-					text			=> text_place.text,
+					layer_category	=> preliminary_text.category,
+					face			=> preliminary_text.face,
+					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
 
-			elsif text_place.category in type_layer_category_outline then
+			elsif preliminary_text.category in type_layer_category_outline then
 
 				place_text_in_outline_layer (
 					module_cursor 	=> current_active_module,
-					layer_category	=> text_place.category,
-					text			=> text_place.text,
+					layer_category	=> preliminary_text.category,
+					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
 
 				
-			elsif text_place.category in type_layer_category_conductor then
+			elsif preliminary_text.category in type_layer_category_conductor then
 				
 				place_text_in_conductor_layer (
 					module_cursor 	=> current_active_module,
-					signal_layer	=> text_place.signal_layer,
-					text			=> text_place.text,
+					signal_layer	=> preliminary_text.signal_layer,
+					text			=> preliminary_text.text,
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -364,7 +364,7 @@ package body et_canvas_board_texts is
 
 	
 	procedure reset_text_place is begin
-		text_place.being_moved := false;
+		preliminary_text.being_moved := false;
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
@@ -467,7 +467,7 @@ package body et_canvas_board_texts is
 				model		=> +storage_model); -- ?
 
 			-- Set the category used last:
-			cbox_category.set_active (type_layer_category'pos (text_place.category));
+			cbox_category.set_active (type_layer_category'pos (preliminary_text.category));
 
 
 			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
@@ -515,7 +515,7 @@ package body et_canvas_board_texts is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (text_place.face));
+			cbox_face.set_active (type_face'pos (preliminary_text.face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -570,7 +570,7 @@ package body et_canvas_board_texts is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (text_place.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (preliminary_text.signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -598,7 +598,7 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_size.get_child).set_text (trim (to_string (text_place.text.size), left));
+			gtk_entry (cbox_size.get_child).set_text (trim (to_string (preliminary_text.text.size), left));
 			
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_size.get_child).on_key_press_event (size_key_pressed'access);
@@ -618,7 +618,7 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
 			-- Set the line width according to the value used last:
-			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (text_place.text.line_width), left));
+			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_text.text.line_width), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
@@ -638,7 +638,7 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (text_place.text.position)), left));
+			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (preliminary_text.text.position)), left));
 			
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
@@ -652,9 +652,9 @@ package body et_canvas_board_texts is
 			gtk_new (label_content, "CONTENT");
 			pack_start (box_content, label_content, padding => guint (spacing));
 
-			gtk_new (text_place.entry_content);
-			text_place.entry_content.set_accepts_tab (false); -- TAB character not allowed
-			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
+			gtk_new (preliminary_text.entry_content);
+			preliminary_text.entry_content.set_accepts_tab (false); -- TAB character not allowed
+			pack_start (box_content, preliminary_text.entry_content, padding => guint (spacing));
 		end make_view_for_content;
 
 		procedure make_apply_button is begin

@@ -77,16 +77,10 @@ package et_canvas_board_texts is
 	box_properties : type_box_properties;
 
 	
-	-- to be output in the status bar:
-	status_place_text : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to place text." 
-		& status_hint_for_abort;
 
-	-- The properties of the text being placed:
-	type type_text_place is record
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information using this type:
+	type type_preliminary_text is record
 		being_moved		: boolean := false;
 		
 		category		: type_layer_category := type_layer_category'first;
@@ -104,9 +98,22 @@ package et_canvas_board_texts is
 		entry_content	: gtk.text_view.gtk_text_view;
 	end record;
 
-	text_place : type_text_place;
+	-- The place where preliminary information of
+	-- a text is stored:
+	preliminary_text : type_preliminary_text;
 
 
+	
+-- PLACING:
+
+	-- to be output in the status bar:
+	status_place_text : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to place text." 
+		& status_hint_for_abort;
+	
 	procedure place_text (
 		destination : in type_point);
 
