@@ -677,7 +677,7 @@ package body et_canvas_board_texts is
 					log_threshold	=> log_threshold + 1);
 
 				
-			elsif preliminary_text.category in type_layer_category_conductor then
+			elsif preliminary_text.category = LAYER_CAT_CONDUCTOR then
 				
 				place_text_in_conductor_layer (
 					module_cursor 	=> current_active_module,

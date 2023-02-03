@@ -142,12 +142,6 @@ package et_board_shapes_and_text is
 	subtype type_layer_category_non_conductor is type_layer_category
 		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
 
-	subtype type_layer_category_conductor is type_layer_category
-		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_VIA_RESTRICT;
-
-	subtype type_layer_category_restrict is type_layer_category
-		range LAYER_CAT_ROUTE_RESTRICT .. LAYER_CAT_VIA_RESTRICT;
-	
 	
 	function to_layer_category (cat : in string) return type_layer_category;
 	function to_string (cat : in type_layer_category) return string;

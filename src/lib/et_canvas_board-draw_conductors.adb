@@ -64,7 +64,6 @@ is
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_conductors (
 		self    	: not null access type_view;
-		category	: in type_layer_category_conductor;
 		layer		: in et_pcb_stack.type_signal_layer)
 	is 
 		use et_pcb;
@@ -82,7 +81,8 @@ is
 	begin
 		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
 			
-			if preliminary_text.category = category and preliminary_text.signal_layer = layer then
+			if preliminary_text.category = LAYER_CAT_CONDUCTOR 
+			and preliminary_text.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
 				point := self.tool_position;
@@ -94,15 +94,8 @@ is
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
 
+				mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
 
-				-- NOTE: Texts in restrict layers are never mirrored.
-				-- Even in the deepest (bottom) signal layer such texts 
-				-- are not mirrored.
-				if category in type_layer_category_restrict then
-					mirror := NO;
-				else
-					mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
-				end if;
 				
 				-- Vectorize the text on the fly:
 				v_text := vectorize_text (
@@ -891,7 +884,7 @@ is
 				-- tracks:
 				iterate (module.nets, query_net_track'access);
 				
-				draw_text_being_placed_in_conductors (self, LAYER_CAT_CONDUCTOR, ly);				
+				draw_text_being_placed_in_conductors (self, ly);				
 			end if;
 		end loop;
 

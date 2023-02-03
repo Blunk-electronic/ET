@@ -964,7 +964,8 @@ is
 							log_threshold	=> log_threshold + 1);
 
 						
-					elsif layer_category in type_layer_category_conductor then
+					--elsif layer_category in type_layer_category_conductor then
+					elsif layer_category = LAYER_CAT_CONDUCTOR then
 						-- This includes restrict layers.
 						
 						signal_layer := to_signal_layer (f (6));  -- 5 
