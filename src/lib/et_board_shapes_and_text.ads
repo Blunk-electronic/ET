@@ -118,17 +118,19 @@ package et_board_shapes_and_text is
 		LAYER_CAT_OUTLINE,
 		-- CS LAYER_CAT_OUTLINE_TEMPLATE -- CS
 									
+		-- CONDUCTOR LAYERS.
+		-- These layers are numbered:
+		LAYER_CAT_CONDUCTOR,
+		
 		-- NON CONDUCTOR LAYERS.
 		-- These layers are paired. Means there is a TOP and a BOTTOM:
 		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_ASSY,
+		LAYER_CAT_STOP,
+		
 		LAYER_CAT_KEEPOUT,
 		LAYER_CAT_STENCIL,
-		LAYER_CAT_STOP,
 
-		-- CONDUCTOR LAYERS.
-		-- These layers are numbered:
-		LAYER_CAT_CONDUCTOR,
 		
 		-- NOTE: Restrict layers do not contain any conducting
 		-- objects. They are irrelevant for manufacturing.
@@ -140,6 +142,12 @@ package et_board_shapes_and_text is
 
 	
 	subtype type_layer_category_non_conductor is type_layer_category
+		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STENCIL; -- CS .. LAYER_CAT_VIA_RESTRICT ?
+
+	subtype type_text_layer is type_layer_category
+		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_STOP;
+
+	subtype type_text_layer_non_conductor is type_text_layer
 		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
 
 	

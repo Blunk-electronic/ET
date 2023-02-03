@@ -2648,7 +2648,7 @@ package body et_board_ops is
 	
 	procedure place_text_in_non_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category_non_conductor;
+		layer_category	: in type_text_layer_non_conductor;
 		face			: in type_face; -- top/bottom
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
@@ -2666,12 +2666,7 @@ package body et_board_ops is
 			v_text : type_vector_text;		
 			mirror : type_vector_text_mirrored;
 		begin
-			-- NOTE: Texts in bottom keepout are never mirrored:
-			if face = BOTTOM and layer_category = LAYER_CAT_KEEPOUT then
-				mirror := NO;
-			else
-				mirror := face_to_mirror (face);
-			end if;
+			mirror := face_to_mirror (face);
 			
 			v_text := vectorize_text (
 				content		=> text.content,

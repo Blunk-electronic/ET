@@ -415,7 +415,7 @@ package body et_canvas_board_texts is
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the layer categories in the storage model:
-			for choice in 0 .. type_layer_category'pos (type_layer_category'last) loop
+			for choice in 0 .. type_text_layer'pos (type_text_layer'last) loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
 					to_string (type_layer_category'val (choice)));

@@ -84,7 +84,7 @@ package et_canvas_board_texts is
 	type type_preliminary_text is record
 		ready		: boolean := false;
 		
-		category		: type_layer_category := type_layer_category'first;
+		category		: type_text_layer := type_text_layer'first;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 

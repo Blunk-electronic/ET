@@ -924,7 +924,7 @@ is
 		pos_xy			: type_point;
 		rotation		: type_rotation;
 		content			: pac_text_content.bounded_string;
-		layer_category	: type_layer_category;
+		layer_category	: type_text_layer;
 		signal_layer	: type_signal_layer;
 		face			: type_face;
 	begin
@@ -952,36 +952,31 @@ is
 				
 				if characters_valid (content) then
 
-					if layer_category in type_layer_category_non_conductor then
+					case layer_category is
+						when LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP =>
 
-						face := to_face (f (6)); -- top/bottom
-						
-						place_text_in_non_conductor_layer (
-							module_cursor 	=> module_cursor,
-							layer_category	=> layer_category,
-							face			=> face,
-							text			=> (text with content),
-							log_threshold	=> log_threshold + 1);
+							face := to_face (f (6)); -- top/bottom
+							
+							place_text_in_non_conductor_layer (
+								module_cursor 	=> module_cursor,
+								layer_category	=> layer_category,
+								face			=> face,
+								text			=> (text with content),
+								log_threshold	=> log_threshold + 1);
 
 						
-					--elsif layer_category in type_layer_category_conductor then
-					elsif layer_category = LAYER_CAT_CONDUCTOR then
-						-- This includes restrict layers.
+						when LAYER_CAT_CONDUCTOR =>
 						
-						signal_layer := to_signal_layer (f (6));  -- 5 
-						
-						-- This procedure automatically cares for mirroring:
-						place_text_in_conductor_layer (
-							module_cursor 	=> module_cursor,
-							signal_layer	=> signal_layer,
-							text			=> (text with content),
-							log_threshold	=> log_threshold + 1);
+							signal_layer := to_signal_layer (f (6));  -- 5 
+							
+							-- This procedure automatically cares for mirroring:
+							place_text_in_conductor_layer (
+								module_cursor 	=> module_cursor,
+								signal_layer	=> signal_layer,
+								text			=> (text with content),
+								log_threshold	=> log_threshold + 1);
 
-					else
-						raise semantic_error_1 with
-							"ERROR: Text not allowed in this layer category !";
-						-- CS should never happen
-					end if;
+					end case;
 
 				else
 					raise syntax_error_1 with
