@@ -2659,7 +2659,6 @@ package body et_board_ops is
 			module		: in out type_module) 
 		is
 			use et_text;
-			use pac_contour_texts;
 			use pac_doc_texts;
 			use pac_silk_texts;
 			use pac_stop_texts;
@@ -2729,50 +2728,6 @@ package body et_board_ops is
 	end place_text_in_non_conductor_layer;
 
 	
-	procedure place_text_in_outline_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category_outline;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level)
-	is 
-		procedure place_text (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is
-			v_text : type_vector_text;		
-			use pac_contour_texts;
-		begin
-			v_text := vectorize_text (
-				content		=> text.content,
-				size		=> text.size,
-				rotation	=> get_rotation (text.position),
-				position	=> text.position.place,
-				line_width	=> text.line_width
-				-- CS alignment
-				); 
-
-
-			case layer_category is
-				when LAYER_CAT_OUTLINE =>
-					append (module.board.contours.texts, (text with v_text));
-
-				when others => null; -- CS
-			end case;
-		end place_text;
-
-	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " placing text in outline layer at"
-			& to_string (text.position),
-			level => log_threshold);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> place_text'access);
-
-	end place_text_in_outline_layer;
 
 	
 	procedure place_text_in_conductor_layer (

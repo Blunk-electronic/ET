@@ -484,13 +484,6 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Places a text in the outline layer:
-	procedure place_text_in_outline_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category_outline;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level);
-
 	
 	-- Places a text in a conductor layer.
 	procedure place_text_in_conductor_layer (

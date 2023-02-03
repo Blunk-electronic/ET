@@ -47,8 +47,6 @@ is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_segments;
-
-	use pac_contour_texts;
 	
 	procedure query_segment (c : in pac_segments.cursor) is 
 	begin
@@ -66,16 +64,6 @@ is
 	end query_segment;
 
 	
-	procedure query_text (c : in pac_contour_texts.cursor) is begin
-		draw_text_origin (self, element (c).position);
-
-		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-
-		-- Draw the text:
-		draw_vector_text (element (c).vectors, element (c).line_width);		
-	end query_text;
-
 	
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
@@ -90,8 +78,6 @@ is
 		else
 			iterate (module.board.contours.outline.contour.segments, query_segment'access);
 		end if;
-		
-		iterate (module.board.contours.texts, query_text'access);
 	end query_outline_segments;
 
 	

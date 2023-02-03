@@ -3546,44 +3546,6 @@ is
 				board_reset_contour;
 			end insert_cutout_conductor;
 
-			
-			procedure build_contour_text is
-
-				procedure do_it (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) 
-				is 
-					use et_pcb_coordinates;
-					use pac_geometry_2;
-					use et_pcb_contour;
-					v_text : type_vector_text;
-				begin
-					v_text := vectorize_text (
-						content		=> board_text.content,
-						size		=> board_text.size,
-						rotation	=> get_rotation (board_text.position),
-						position	=> board_text.position.place,
-						line_width	=> board_text.line_width
-						-- CS alignment
-						); 
-					
-					pac_contour_texts.append (
-						container	=> module.board.contours.texts,
-						new_item	=> (board_text with v_text));
-
-				end do_it;
-
-				
-			begin -- build_contours_text
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> do_it'access);
-
-				-- clean up for next board text
-				board_text := (others => <>);
-
-			end build_contour_text;
 
 				
 			procedure insert_placeholder (
@@ -5316,9 +5278,6 @@ is
 						when SEC_BOTTOM =>
 							build_non_conductor_text (et_pcb_coordinates.BOTTOM);
 
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							build_contour_text;
-							
 						when SEC_CONDUCTOR =>
 							build_conductor_text;
 

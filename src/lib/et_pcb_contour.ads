@@ -112,16 +112,6 @@ package et_pcb_contour is
 	pcb_contour_line_width : constant type_general_line_width := 0.1;
 
 	
-	
-	type type_contour_text 
-		is new type_text_fab_with_content with
-	record
-		vectors	: type_vector_text;		
-	end record;
-
-	package pac_contour_texts is new doubly_linked_lists (type_contour_text);
-
-	
 end et_pcb_contour;
 
 -- Soli Deo Gloria

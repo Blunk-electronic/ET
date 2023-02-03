@@ -1507,26 +1507,16 @@ is
 			end write_hole;
 
 			use et_pcb_contour;
-			use pac_contour_texts;
-
-			procedure write_text (cursor : in pac_contour_texts.cursor) is begin
-				text_begin;
-				write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (cursor).content));
-				write_text_properties (element (cursor));
-				text_end;
-			end write_text;
 			
 		begin
 			section_mark (section_pcb_contours, HEADER);
 
-			-- board outline and texts
+			-- board outline (outer contours)
 			section_mark (section_outline, HEADER);
 			write_polygon_segments (element (module_cursor).board.contours.outline);
-			iterate (element (module_cursor).board.contours.texts, write_text'access);
 			section_mark (section_outline, FOOTER);
 
-			-- holes
+			-- holes (inner contours)
 			iterate (element (module_cursor).board.contours.holes, write_hole'access);
 			
 			section_mark (section_pcb_contours, FOOTER);

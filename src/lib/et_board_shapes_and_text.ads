@@ -138,8 +138,6 @@ package et_board_shapes_and_text is
 		LAYER_CAT_ROUTE_RESTRICT,
 		LAYER_CAT_VIA_RESTRICT);
 
-	subtype type_layer_category_outline is type_layer_category
-		range LAYER_CAT_OUTLINE .. LAYER_CAT_OUTLINE;
 	
 	subtype type_layer_category_non_conductor is type_layer_category
 		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
