@@ -178,7 +178,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_text_place;
+				reset_preliminary_text;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -226,7 +226,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_text_place;
+				reset_preliminary_text;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -275,7 +275,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_text_place;
+				reset_preliminary_text;
 				
 			when GDK_TAB => 
 				--put_line ("rotation via tab " & text);
@@ -314,75 +314,35 @@ package body et_canvas_board_texts is
 		
 		if not is_empty (preliminary_text.text.content) then
 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
-			preliminary_text.being_moved := true;
+			preliminary_text.ready := true;
 			canvas.grab_focus;
 		end if;
 		
 	end button_apply_clicked;
 
 
-	procedure place_text (
-		destination : in type_point) 
-	is begin
-		if preliminary_text.being_moved then
-			move_to (preliminary_text.text.position.place, destination);
-			
-			if preliminary_text.category in type_layer_category_non_conductor then
 
-				place_text_in_non_conductor_layer (
-					module_cursor 	=> current_active_module,
-					layer_category	=> preliminary_text.category,
-					face			=> preliminary_text.face,
-					text			=> preliminary_text.text,
-					log_threshold	=> log_threshold + 1);
-
-			elsif preliminary_text.category in type_layer_category_outline then
-
-				place_text_in_outline_layer (
-					module_cursor 	=> current_active_module,
-					layer_category	=> preliminary_text.category,
-					text			=> preliminary_text.text,
-					log_threshold	=> log_threshold + 1);
-
-				
-			elsif preliminary_text.category in type_layer_category_conductor then
-				
-				place_text_in_conductor_layer (
-					module_cursor 	=> current_active_module,
-					signal_layer	=> preliminary_text.signal_layer,
-					text			=> preliminary_text.text,
-					log_threshold	=> log_threshold + 1);
-
-			else
-				raise semantic_error_1 with
-					"ERROR: Text not allowed in this layer category !";
-				-- CS should never happen
-			end if;
-		end if;	
-	end place_text;
-
-
-	
-	procedure reset_text_place is begin
-		preliminary_text.being_moved := false;
+	procedure reset_preliminary_text is begin
+		preliminary_text.ready := false;
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
 			remove (box_right, box_properties.box_main);
 			box_properties.displayed := false;
 		end if;
-	end reset_text_place;
+	end reset_preliminary_text;
 
 	
 	procedure remove_text_properties is 
 		use et_modes.board;
 	begin
 		if verb /= VERB_PLACE then
-			reset_text_place;
+			reset_preliminary_text;
 		end if;
 	end remove_text_properties;		
 
-	
+
+
 	procedure show_text_properties is
 		use glib;
 
@@ -696,6 +656,55 @@ package body et_canvas_board_texts is
 		end if;
 		
 	end show_text_properties;
+
+	
+
+-- PLACE:
+	
+	procedure place_text (
+		point : in type_point) 
+	is begin
+		if preliminary_text.ready then
+			move_to (preliminary_text.text.position.place, point);
+			
+			if preliminary_text.category in type_layer_category_non_conductor then
+
+				place_text_in_non_conductor_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> preliminary_text.category,
+					face			=> preliminary_text.face,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+			elsif preliminary_text.category in type_layer_category_outline then
+
+				place_text_in_outline_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> preliminary_text.category,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+				
+			elsif preliminary_text.category in type_layer_category_conductor then
+				
+				place_text_in_conductor_layer (
+					module_cursor 	=> current_active_module,
+					signal_layer	=> preliminary_text.signal_layer,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				raise semantic_error_1 with
+					"ERROR: Text not allowed in this layer category !";
+				-- CS should never happen
+			end if;
+		end if;	
+	end place_text;
+
+
+	
+
+	
 	
 end et_canvas_board_texts;
 

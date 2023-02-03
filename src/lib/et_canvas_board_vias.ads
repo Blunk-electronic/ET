@@ -185,7 +185,7 @@ package et_canvas_board_vias is
 
 	
 	-- Builds the final via-to-be-placed from the information
-	-- provided by temporarily variable via_place.
+	-- provided by preliminary_via.
 	-- Places the via at the given point:
 	procedure place_via (
 		point	: in type_point);

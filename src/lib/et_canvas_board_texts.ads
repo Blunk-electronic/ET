@@ -76,12 +76,13 @@ package et_canvas_board_texts is
 
 	box_properties : type_box_properties;
 
+
 	
 
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 	type type_preliminary_text is record
-		being_moved		: boolean := false;
+		ready		: boolean := false;
 		
 		category		: type_layer_category := type_layer_category'first;
 		signal_layer	: type_signal_layer := signal_layer_default;
@@ -103,6 +104,22 @@ package et_canvas_board_texts is
 	preliminary_text : type_preliminary_text;
 
 
+	-- Clears preliminary_text.ready and box_properties.displayed.
+	-- Removes the text properties bar.
+	procedure reset_preliminary_text;
+
+	
+	-- Calls reset_preliminary_text if the verb is not VERB_PLACE.
+	procedure remove_text_properties;
+	
+
+	-- Builds the box for the text properties and
+	-- inserts it below the console.
+	-- If the box is already on display, nothing happens.
+	procedure show_text_properties;
+
+
+	
 	
 -- PLACING:
 
@@ -113,22 +130,16 @@ package et_canvas_board_texts is
 		& status_press_space
 		& "to place text." 
 		& status_hint_for_abort;
-	
+
+
+	-- Builds the final text-to-be-placed from the information
+	-- provided by preliminary_text.
+	-- Places the text at the given point:
 	procedure place_text (
-		destination : in type_point);
+		point : in type_point);
 
 	
-	-- Clears text_place.being_moved and box_properties.displayed.
-	-- Removes the text properties bar.
-	procedure reset_text_place;
-
-	-- Calls reset_text_place if the verb is not VERB_PLACE.
-	procedure remove_text_properties;
 	
-	-- Builds the box for the text properties and
-	-- inserts it below the console.
-	-- If the box is already on display, nothing happens.
-	procedure show_text_properties;
 	
 end et_canvas_board_texts;
 

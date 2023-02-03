@@ -66,7 +66,7 @@ is begin
 		when VERB_PLACE =>
 			case noun is
 				when NOUN_TEXT =>
-					if preliminary_text.being_moved then
+					if preliminary_text.ready then
 						redraw_board;
 					end if;
 

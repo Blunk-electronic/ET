@@ -339,7 +339,7 @@ begin -- key_pressed
 			reset_request_clarification;
 			status_enter_verb;
 
-			reset_text_place; -- after placing a text
+			reset_preliminary_text; -- after placing a text
 			reset_preliminary_via; -- after placing a via
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;

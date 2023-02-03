@@ -442,7 +442,7 @@ package body et_canvas_board is
 		-- The place where the text origin will be drawn:
 		origin : type_position;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.being_moved then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
 
 			if preliminary_text.category = category and preliminary_text.face = face then
 
