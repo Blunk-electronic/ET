@@ -82,8 +82,9 @@ with et_stencil;				use et_stencil;
 with et_silkscreen;
 with et_silkscreen.boards;
 
-with et_assy_doc;				use et_assy_doc;
-with et_assy_doc.boards;		use et_assy_doc.boards;
+with et_assy_doc;
+with et_assy_doc.boards;
+
 with et_keepout;				use et_keepout;
 with et_pcb_contour;			use et_pcb_contour;
 with et_text;
@@ -328,38 +329,7 @@ package et_board_ops is
 	
 	
 
--- ASSEMBLY DOCUMENTATION
 	
-	-- Draws a line in the assembly documentation.
-	procedure draw_assy_doc_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		line			: in et_assy_doc.type_doc_line;
-		log_threshold	: in type_log_level);
-
-	-- Draws an arc in the assembly documentation.
-	procedure draw_assy_doc_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_doc_arc;
-		log_threshold	: in type_log_level);
-
-	-- Draws a circle in the assembly documentation.
-	procedure draw_assy_doc_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;	
-		circle			: in type_doc_circle;
-		log_threshold	: in type_log_level);
-
-	-- Deletes the segment of the assembly documentation that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_assy_doc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
 
 	
 	

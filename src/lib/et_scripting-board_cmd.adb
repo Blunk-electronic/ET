@@ -56,6 +56,7 @@ with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;
+with et_board_ops.assy_doc;
 -- to do:
 
 
@@ -507,6 +508,7 @@ is
 
 	
 	procedure draw_assy_doc is
+		use et_board_ops.assy_doc;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -2283,7 +2285,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of assembly documentation
-								delete_assy_doc (
+								et_board_ops.assy_doc.delete_assy_doc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
