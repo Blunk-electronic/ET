@@ -667,29 +667,26 @@ package body et_canvas_board_texts is
 		if preliminary_text.ready then
 			move_to (preliminary_text.text.position.place, point);
 			
-			if preliminary_text.category in type_layer_category_non_conductor then
+			case preliminary_text.category is
+				when LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP =>
 
-				place_text_in_non_conductor_layer (
-					module_cursor 	=> current_active_module,
-					layer_category	=> preliminary_text.category,
-					face			=> preliminary_text.face,
-					text			=> preliminary_text.text,
-					log_threshold	=> log_threshold + 1);
+					place_text_in_non_conductor_layer (
+						module_cursor 	=> current_active_module,
+						layer_category	=> preliminary_text.category,
+						face			=> preliminary_text.face,
+						text			=> preliminary_text.text,
+						log_threshold	=> log_threshold + 1);
 
 				
-			elsif preliminary_text.category = LAYER_CAT_CONDUCTOR then
+				when LAYER_CAT_CONDUCTOR =>
 				
-				place_text_in_conductor_layer (
-					module_cursor 	=> current_active_module,
-					signal_layer	=> preliminary_text.signal_layer,
-					text			=> preliminary_text.text,
-					log_threshold	=> log_threshold + 1);
+					place_text_in_conductor_layer (
+						module_cursor 	=> current_active_module,
+						signal_layer	=> preliminary_text.signal_layer,
+						text			=> preliminary_text.text,
+						log_threshold	=> log_threshold + 1);
 
-			else
-				raise semantic_error_1 with
-					"ERROR: Text not allowed in this layer category !";
-				-- CS should never happen
-			end if;
+			end case;
 		end if;	
 	end place_text;
 

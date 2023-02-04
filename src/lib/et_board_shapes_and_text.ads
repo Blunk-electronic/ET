@@ -115,8 +115,6 @@ package et_board_shapes_and_text is
 	layer_category_prefix : constant string := "LAYER_CAT_";
 
 	type type_layer_category is (
-		LAYER_CAT_OUTLINE,
-		-- CS LAYER_CAT_OUTLINE_TEMPLATE -- CS
 									
 		-- CONDUCTOR LAYERS.
 		-- These layers are numbered:
