@@ -50,9 +50,8 @@ with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
-
+with gtk.window;					use gtk.window;
 with gtk.widget;					use gtk.widget;
-with gtk.box;
 
 with gtk.combo_box;					use gtk.combo_box;
 with gtk.cell_renderer_text;		
@@ -71,13 +70,15 @@ with gtk.text_iter;
 --with gtk.menu_item;
 --with gtk.menu_shell;
 
-with et_canvas_board;				--use et_canvas_board;
+with et_project.modules;				use et_project.modules;
+with et_canvas_board;					--use et_canvas_board;
 use et_canvas_board.pac_canvas;
 
-with et_board_ops;					use et_board_ops;
+with et_board_ops;						use et_board_ops;
 with et_modes.board;
-with et_logging;					use et_logging;
-with et_exceptions;					use et_exceptions;
+with et_logging;						use et_logging;
+with et_string_processing;				use et_string_processing;
+with et_exceptions;						use et_exceptions;
 
 
 package body et_canvas_board_texts is

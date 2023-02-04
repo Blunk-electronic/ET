@@ -37,27 +37,28 @@
 -- DESCRIPTION:
 -- 
 
-with gtk.window;					use gtk.window;
-with gtk.box;						use gtk.box;
-with gtk.text_view;					--use gtk.text_view;
 
-with et_general;					use et_general;
-with et_canvas_general;				use et_canvas_general;
-with et_canvas_schematic;
+with gtk.box;							use gtk.box;
+with gtk.text_view;						--use gtk.text_view;
 
-with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_canvas_general;					use et_canvas_general;
+
+with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
-with et_text;						use et_text;
+with et_text;							use et_text;
 
-with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_board_shapes_and_text;			use et_board_shapes_and_text;
 use et_board_shapes_and_text.pac_text_board;
 
-with et_pcb_stack;					use et_pcb_stack;
-with et_packages;					use et_packages;
-with et_project.modules;			use et_project.modules;
-with et_pcb;
-with et_string_processing;			use et_string_processing;
+with et_pcb_stack;						use et_pcb_stack;
+
+with et_silkscreen;
+with et_assy_doc;
+with et_stop_mask;
+with et_conductor_text.boards;
+
+
 
 package et_canvas_board_texts is
 
@@ -118,6 +119,25 @@ package et_canvas_board_texts is
 	-- If the box is already on display, nothing happens.
 	procedure show_text_properties;
 
+
+	type type_proposed_texts is record
+		assy_doc	: et_assy_doc.pac_doc_texts.list;
+		silksreen	: et_silkscreen.pac_silk_texts.list;
+		stop_mask	: et_stop_mask.pac_stop_texts.list;
+		conductors	: et_conductor_text.boards.pac_conductor_texts.list;
+	end record;
+
+	proposed_texts : type_proposed_texts;
+
+
+	type type_selected_text is record
+		assy_doc	: et_assy_doc.pac_doc_texts.cursor;
+		silksreen	: et_silkscreen.pac_silk_texts.cursor;
+		stop_mask	: et_stop_mask.pac_stop_texts.cursor;
+		conductors	: et_conductor_text.boards.pac_conductor_texts.cursor;
+	end record;
+
+	selected_text : type_selected_text;
 
 	
 	
