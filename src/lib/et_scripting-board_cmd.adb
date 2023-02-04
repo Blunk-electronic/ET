@@ -58,6 +58,7 @@ with et_board_ops.devices;
 with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
 with et_board_ops.stop_mask;
+with et_board_ops.stencil;
 -- to do:
 
 
@@ -857,6 +858,7 @@ is
 
 	
 	procedure draw_stencil is
+		use et_board_ops.stencil;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -2312,7 +2314,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of stencil
-								delete_stencil (
+								et_board_ops.stencil.delete_stencil (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (

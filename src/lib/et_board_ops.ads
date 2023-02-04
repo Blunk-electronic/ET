@@ -77,9 +77,8 @@ with et_fill_zones;				use et_fill_zones;
 with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 
-with et_stop_mask;				use et_stop_mask;
-
-with et_stencil;				use et_stencil;
+with et_stop_mask;
+with et_stencil;
 
 with et_silkscreen;
 with et_silkscreen.boards;
@@ -331,38 +330,6 @@ package et_board_ops is
 
 
 	
--- STENCIL
-
-	-- Draws a line in the stencil layer.
-	procedure draw_stencil_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		line			: in type_stencil_line;
-		log_threshold	: in type_log_level);
-
-	-- Draws an arc in the stencil layer.
-	procedure draw_stencil_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_stencil_arc;		
-		log_threshold	: in type_log_level);
-
-	-- Draws an circle in the stencil layer.
-	procedure draw_stencil_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		circle			: in type_stencil_circle;
-		log_threshold	: in type_log_level);
-
-	-- Deletes the segment of the stencil that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_stencil (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
 
 	
 -- TEXT / PLACEHOLDERS
