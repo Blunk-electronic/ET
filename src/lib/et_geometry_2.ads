@@ -1591,6 +1591,10 @@ package et_geometry_2 is
 		offset		: in type_rotation);
 
 
+	procedure nothing_found (
+		point		: in type_point; 
+		accuracy	: in type_catch_zone);
+
 	
 private
 

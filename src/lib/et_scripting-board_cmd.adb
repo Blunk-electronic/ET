@@ -55,6 +55,7 @@ with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
 with et_board_ops.devices;
+with et_board_ops.silkscreen;
 -- to do:
 
 
@@ -431,6 +432,7 @@ is
 
 	
 	procedure draw_silkscreen is
+		use et_board_ops.silkscreen;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -2258,7 +2260,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of silk screen
-								delete_silk_screen (
+								et_board_ops.silkscreen.delete_silk_screen (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (

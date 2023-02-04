@@ -4345,6 +4345,16 @@ package body et_geometry_2 is
 		position.rotation := add (position.rotation, offset);
 	end;
 
+
+	procedure nothing_found (
+		point		: in type_point; 
+		accuracy	: in type_catch_zone)
+	is begin
+		log (importance => WARNING, 
+			 text => "nothing found at" & to_string (point) &
+			 " in vicinity of" & catch_zone_to_string (accuracy));
+	end nothing_found;
+
 	
 end et_geometry_2;
 

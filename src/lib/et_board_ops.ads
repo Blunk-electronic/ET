@@ -78,13 +78,18 @@ with et_route_restrict.boards;	use et_route_restrict.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 with et_stop_mask;				use et_stop_mask;
 with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
-with et_silkscreen.boards;		use et_silkscreen.boards;
+
+with et_silkscreen;
+with et_silkscreen.boards;
+
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with et_keepout;				use et_keepout;
 with et_pcb_contour;			use et_pcb_contour;
 with et_text;
+
+with et_exceptions;					use et_exceptions;
+
 
 package et_board_ops is
 
@@ -322,39 +327,6 @@ package et_board_ops is
 
 	
 	
--- SILK SCREEN
-
-	-- Draws a line in the PCB silk_screen.
-	procedure draw_silk_screen_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		line			: in type_silk_line;
-		log_threshold	: in type_log_level);
-
-	-- Draws an arc in the PCB silk_screen.
-	procedure draw_silk_screen_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_silk_arc;
-		log_threshold	: in type_log_level);
-
-	-- Draws a circle in the PCB silk_screen.
-	procedure draw_silk_screen_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;	
-		circle			: in type_silk_circle;
-		log_threshold	: in type_log_level);
-
-	procedure delete_silk_screen (
-	-- Deletes the segment of the silk_screen that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
-
 
 -- ASSEMBLY DOCUMENTATION
 	
