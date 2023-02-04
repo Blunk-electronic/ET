@@ -61,6 +61,8 @@ with et_board_ops.stop_mask;
 with et_board_ops.stencil;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
+with et_board_ops.board_contour;
+
 -- to do:
 
 
@@ -355,6 +357,7 @@ is
 
 	
 	procedure draw_board_outline is
+		use et_board_ops.board_contour;
 		use et_pcb_contour;
 		
 		-- Extract from the given command the polygon arguments (everything after "outline"):
@@ -371,6 +374,8 @@ is
 
 	
 	procedure draw_hole is
+		use et_board_ops.board_contour;
+		
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
 		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
@@ -401,7 +406,9 @@ is
 
 	
 	
-	procedure delete_outline_segment is begin
+	procedure delete_outline_segment is 
+		use et_board_ops.board_contour;
+	begin
 		case get_field_count is
 			when 7 =>
 				-- delete a segment of board outline
@@ -418,7 +425,9 @@ is
 	end delete_outline_segment;
 
 	
-	procedure delete_hole_segment is begin
+	procedure delete_hole_segment is 
+		use et_board_ops.board_contour;
+	begin
 		case get_field_count is
 			when 7 =>
 				-- delete a segment of a hole

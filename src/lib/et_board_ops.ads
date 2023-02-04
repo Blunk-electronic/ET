@@ -68,12 +68,12 @@ with et_board_shapes_and_text;
 
 with et_assembly_variants;
 with et_pick_and_place;
-with et_devices;				use et_devices;
+with et_devices;					use et_devices;
 with et_conventions;
-with et_design_rules;			use et_design_rules;
+with et_design_rules;				use et_design_rules;
 with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_fill_zones;				use et_fill_zones;
+with et_fill_zones;					use et_fill_zones;
 
 with et_route_restrict.boards;
 with et_via_restrict.boards;
@@ -87,8 +87,6 @@ with et_silkscreen.boards;
 with et_assy_doc;
 with et_assy_doc.boards;
 
-with et_keepout;				use et_keepout;
-with et_pcb_contour;			use et_pcb_contour;
 with et_text;
 
 with et_exceptions;					use et_exceptions;
@@ -202,75 +200,6 @@ package et_board_ops is
 		layers 			: in et_pcb_stack.type_signal_layers.set);	
 
 	
-
-
-	
--- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
-
-	-- Assigns the given module a PCB outer edge.
-	-- Overwrites the already existing outline as there can
-	-- be only one outline:
-	procedure set_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		outline			: in type_outer_contour;
-		log_threshold	: in type_log_level);
-
-
-	-- Returns the outer edge of the PCB:
-	function get_outline (
-		module_cursor	: in pac_generic_modules.cursor)
-		return type_outer_contour;
-
-	
-	function get_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level)
-		return type_outer_contour;
-	
-
-	-- Deletes the segment of the outline that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
-
-	
-	
-	
-	-- Adds a hole to the already existing holes:
-	procedure add_hole (
-		module_cursor	: in pac_generic_modules.cursor;
-		hole			: in type_hole;
-		log_threshold	: in type_log_level);
-
-	
-	procedure add_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_hole;
-		log_threshold	: in type_log_level);
-
-	
-	-- Returns the holes of the given module:
-	function get_holes (
-		module_cursor	: in pac_generic_modules.cursor)
-		return pac_holes.list;
-
-	
-	-- Deletes the segment of a hole that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
-
-
-
-
 
 	
 
