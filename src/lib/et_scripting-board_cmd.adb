@@ -57,6 +57,7 @@ with et_pcb_contour;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
+with et_board_ops.stop_mask;
 -- to do:
 
 
@@ -784,6 +785,7 @@ is
 
 	
 	procedure draw_stop_mask is
+		use et_board_ops.stop_mask;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -2331,7 +2333,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of stop mask
-								delete_stop (
+								et_board_ops.stop_mask.delete_stop (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
