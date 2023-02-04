@@ -658,8 +658,50 @@ package body et_canvas_board_texts is
 		
 	end show_text_properties;
 
+
+
+	procedure select_text is begin
+		null;
+	end select_text;
 	
 
+	procedure find_texts (
+		point : in type_point)
+	is 
+		-- vias : pac_vias.list;
+	begin
+		log (text => "locating texts ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Collect all vias in the vicinity of the given point:
+		-- proposed_vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
+
+		--put_line (count_type'image (proposed_vias.length));
+		
+		-- evaluate the number of vias found here:
+-- 		case length (proposed_vias) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				reset_preliminary_via;
+-- 				
+-- 			when 1 =>
+-- 				preliminary_via.ready := true;
+-- 				selected_via := proposed_vias.first;
+-- 				reset_request_clarification;
+-- 				
+-- 			when others =>
+-- 				--log (text => "many objects", level => log_threshold + 2);
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first via
+-- 				selected_via := proposed_vias.first;
+-- 		end case;
+		
+		log_indentation_down;
+	end find_texts;
+
+
+	
 -- PLACE:
 	
 	procedure place_text (
@@ -692,7 +734,78 @@ package body et_canvas_board_texts is
 	end place_text;
 
 
+
 	
+-- MOVE:
+
+	procedure move_text (
+		tool	: in type_tool;
+		point	: in type_point)
+	is 
+
+		-- Assigns the final position after the move to the selected via.
+		-- Resets variable preliminary_via:
+-- 		procedure finalize is 
+-- 			use pac_proposed_vias;
+-- 		begin
+-- 			log (text => "finalizing move ...", level => log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			if selected_via /= pac_proposed_vias.no_element then
+-- 
+-- 				move_via (
+-- 					module_cursor	=> current_active_module,
+-- 					via				=> element (selected_via),
+-- 					coordinates		=> ABSOLUTE,
+-- 					point			=> point,
+-- 					log_threshold	=> log_threshold);
+-- 				
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
+-- 				
+-- 			log_indentation_down;			
+-- 			set_status (status_move_via);			
+-- 			reset_preliminary_via;
+-- 		end finalize;
+
+
+	begin
+		-- Initially the preliminary_text is not ready.
+		if not preliminary_text.ready then
+
+			-- Set the tool being used:
+			-- preliminary_text.tool := tool;
+			
+			if not clarification_pending then
+				-- Locate all vias in the vicinity of the given point:
+				find_texts (point);
+				
+				-- NOTE: If many vias have been found, then
+				-- clarification is now pending.
+
+				-- If find_vias has found only one via
+				-- then the flag preliminary_via.read is set true.
+
+			else
+				-- Here the clarification procedure ends.
+				-- A via has been selected (indicated by cursor selected_via)
+				-- via procedure select_via.
+				-- By setting preliminary_via.ready, the selected
+				-- via will be drawn at the tool position
+				-- when conductor objects are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected via will be assigned its final position.
+				preliminary_text.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected via:
+			null;
+			-- finalize;
+		end if;
+	end move_text;
 
 	
 	

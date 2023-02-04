@@ -43,6 +43,7 @@ with gtk.text_view;						--use gtk.text_view;
 
 with et_canvas_general;					use et_canvas_general;
 
+with et_geometry;						use et_geometry;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
@@ -140,6 +141,12 @@ package et_canvas_board_texts is
 	selected_text : type_selected_text;
 
 	
+	procedure select_text;
+	
+
+	procedure find_texts (
+		point : in type_point);
+
 	
 -- PLACING:
 
@@ -159,6 +166,21 @@ package et_canvas_board_texts is
 		point : in type_point);
 
 	
+
+-- MOVE:
+
+	status_move_text : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move text." 
+		& status_hint_for_abort;
+
+	
+	procedure move_text (
+		tool	: in type_tool;
+		point	: in type_point);				   
+
 	
 	
 end et_canvas_board_texts;

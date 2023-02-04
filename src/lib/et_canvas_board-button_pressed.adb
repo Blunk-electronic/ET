@@ -71,6 +71,9 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						move_non_electrical_device (MOUSE, point);
 
+					when NOUN_TEXT =>
+						move_text (MOUSE, point);
+						
 					when NOUN_VIA =>
 						move_via (MOUSE, snap_point);
 						
@@ -144,6 +147,11 @@ is
 							select_non_electrical_device;
 						end if;
 
+					when NOUN_TEXT =>
+						if clarification_pending then
+							select_text;
+						end if;
+						
 					when NOUN_VIA =>
 						if clarification_pending then
 							select_via;

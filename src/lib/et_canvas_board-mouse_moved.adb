@@ -54,6 +54,11 @@ is begin
 						redraw_board;
 					end if;
 
+				when NOUN_TEXT =>
+					if preliminary_text.ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_VIA =>
 					if preliminary_via.ready then
 						redraw_board;

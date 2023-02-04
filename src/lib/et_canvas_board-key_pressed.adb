@@ -172,6 +172,11 @@ is
 				noun := NOUN_VIA;
 				set_status (status_move_via);
 		
+			when GDK_LC_t =>
+				noun := NOUN_TEXT;
+				set_status (status_move_text);
+
+
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
@@ -182,10 +187,12 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						move_non_electrical_device (KEYBOARD, point);
 
-
+					when NOUN_TEXT =>
+						move_text (KEYBOARD, point);
+						
 					when NOUN_VIA =>
 						move_via (KEYBOARD, point);
-						
+
 					when others => null;
 				end case;		
 
@@ -214,6 +221,11 @@ is
 							select_non_electrical_device;
 						end if;
 
+					when NOUN_TEXT =>
+						if clarification_pending then
+							select_text;
+						end if;
+						
 					when NOUN_VIA =>
 						if clarification_pending then
 							select_via;
