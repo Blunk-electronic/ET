@@ -59,6 +59,8 @@ with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
 with et_board_ops.stop_mask;
 with et_board_ops.stencil;
+with et_board_ops.route_restrict;
+with et_board_ops.via_restrict;
 -- to do:
 
 
@@ -583,6 +585,7 @@ is
 	
 	
 	procedure draw_route_restrict is
+		use et_board_ops.route_restrict;
 		shape : type_shape := to_shape (f (7));
 	begin
 		case shape is
@@ -689,6 +692,7 @@ is
 
 	
 	procedure draw_via_restrict is
+		use et_board_ops.via_restrict;
 		shape : type_shape := to_shape (f (7));
 	begin
 		case shape is
@@ -2356,7 +2360,7 @@ is
 						case get_field_count is
 							when 7 =>
 								-- delete a segment of route restrict
-								delete_route_restrict (
+								et_board_ops.route_restrict.delete_route_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
 											x => to_distance (dd => f (5)),
@@ -2376,7 +2380,7 @@ is
 						case get_field_count is
 							when 7 =>
 								-- delete a segment of via restrict
-								delete_via_restrict (
+								et_board_ops.via_restrict.delete_via_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
 											x => to_distance (dd => f (5)),

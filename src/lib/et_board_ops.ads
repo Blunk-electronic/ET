@@ -74,8 +74,9 @@ with et_design_rules;			use et_design_rules;
 with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_fill_zones;				use et_fill_zones;
-with et_route_restrict.boards;	use et_route_restrict.boards;
-with et_via_restrict.boards;	use et_via_restrict.boards;
+
+with et_route_restrict.boards;
+with et_via_restrict.boards;
 
 with et_stop_mask;
 with et_stencil;
@@ -194,72 +195,14 @@ package et_board_ops is
 
 
 	
-	
--- ROUTE RESTRICT
-	
-	-- Draws route restrict line.
-	procedure draw_route_restrict_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in type_route_restrict_line;
-		log_threshold	: in type_log_level);
+	-- Tests the given set of signal layers whether each of them is available
+	-- according to the current layer stack of the given module.
+	procedure test_layers (
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		layers 			: in et_pcb_stack.type_signal_layers.set);	
 
 	
-	-- Draws a route restrict arc.
-	procedure draw_route_restrict_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in type_route_restrict_arc;
-		log_threshold	: in type_log_level);
 
-	
-	-- Draws a route restrict circle.
-	procedure draw_route_restrict_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in type_route_restrict_circle;
-		log_threshold	: in type_log_level);	
-
-	
-	-- Deletes the segment of route restrict that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_route_restrict (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
-
-
-	
--- VIA RESTRICT
-
-	-- Draws a via restrict line.
-	procedure draw_via_restrict_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in type_via_restrict_line;
-		log_threshold	: in type_log_level);
-
-	
-	-- Draws a via restrict arc.
-	procedure draw_via_restrict_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in type_via_restrict_arc;
-		log_threshold	: in type_log_level);
-
-	
-	-- Draws a via restrict circle.
-	procedure draw_via_restrict_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in type_via_restrict_circle;
-		log_threshold	: in type_log_level);
-
-	
-	-- Deletes the segment of via restrict that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_via_restrict (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_point; -- x/y
-		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level);
 
 	
 -- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
