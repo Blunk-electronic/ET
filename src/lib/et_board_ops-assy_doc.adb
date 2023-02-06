@@ -297,10 +297,51 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return pac_doc_texts.list
 	is
+		use et_text;
+		use pac_doc_texts;
 		result : pac_doc_texts.list;
-	begin
-		-- CS
 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			procedure query_text (c : in pac_doc_texts.cursor) is
+				text : type_doc_text renames element (c);
+			begin
+				if in_catch_zone (
+					point_1		=> point,
+					catch_zone	=> catch_zone,
+					point_2		=> text.position.place)
+				then
+					log (text => to_string (text.position.place) 
+						& " content " & enclose_in_quotes (to_string (text.content)),
+						level => log_threshold + 2);
+						
+					result.append (text);
+				end if;
+			end query_text;
+			
+		begin
+			module.board.assy_doc.top.texts.iterate (query_text'access);
+		end query_module;
+
+		
+	begin
+		log (text => "looking up texts at" & to_string (point) 
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
 		return result;
 	end get_texts;
 

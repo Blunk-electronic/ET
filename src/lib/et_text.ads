@@ -232,10 +232,12 @@ package et_text is
 		
 		type type_text_fab is new type_text with record
 			position	: pac_geometry_2.type_position; -- x/y/rotation
-			line_width	: type_text_line_width := type_text_line_width'first;
+			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
 		end record;
 
-
+		-- CS function get_position (text : in type_text_fab)
+		--return pac_geometry_2.type_position
+		
 		-- Mirrors a text along the given axis:
 		procedure mirror_text (
 			text	: in out type_text_fab;

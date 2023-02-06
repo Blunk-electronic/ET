@@ -775,6 +775,8 @@ package body et_canvas_board_texts is
 	
 	procedure select_text is 
 		end_reached : boolean := false;
+		position : type_position;
+		-- content : type_text_content.bounded_string;
 	begin
 		if end_reached and next (selected_text.assy_doc) /= pac_doc_texts.no_element then
 			next (selected_text.assy_doc);
@@ -812,6 +814,11 @@ package body et_canvas_board_texts is
 			null;
 			-- CS select first
 		end if;
+
+		-- show the selected text in the status bar
+		set_status ("selected text " & to_string (position)
+			& ". " & status_next_object_clarification);
+
 	end select_text;
 	
 
