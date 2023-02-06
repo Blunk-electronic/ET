@@ -288,6 +288,21 @@ package body et_board_ops.stop_mask is
 	end delete_stop;
 
 
+
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_stop_texts.list
+	is
+		result : pac_stop_texts.list;
+	begin
+
+		-- CS
+		return result;
+	end get_texts;
+
 	
 end et_board_ops.stop_mask;
 	

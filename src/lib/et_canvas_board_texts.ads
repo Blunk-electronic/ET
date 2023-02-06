@@ -37,6 +37,7 @@
 -- DESCRIPTION:
 -- 
 
+with ada.containers;   			       	use ada.containers;
 
 with gtk.box;							use gtk.box;
 with gtk.text_view;						--use gtk.text_view;
@@ -54,10 +55,10 @@ use et_board_shapes_and_text.pac_text_board;
 
 with et_pcb_stack;						use et_pcb_stack;
 
-with et_silkscreen;
-with et_assy_doc;
-with et_stop_mask;
-with et_conductor_text.boards;
+with et_silkscreen;						use et_silkscreen;
+with et_assy_doc;						use et_assy_doc;
+with et_stop_mask;						use et_stop_mask;
+with et_conductor_text.boards;			use et_conductor_text.boards;
 
 
 
@@ -84,7 +85,13 @@ package et_canvas_board_texts is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 	type type_preliminary_text is record
+		-- This flag indicates that the text has been
+		-- clarified among the proposed texts:
 		ready		: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the text:
+		tool		: type_tool := MOUSE;
 		
 		category		: type_text_layer := type_text_layer'first;
 		signal_layer	: type_signal_layer := signal_layer_default;
@@ -108,6 +115,7 @@ package et_canvas_board_texts is
 
 	-- Clears preliminary_text.ready and box_properties.displayed.
 	-- Removes the text properties bar.
+	-- Clears the proposed texts.
 	procedure reset_preliminary_text;
 
 	
@@ -122,26 +130,59 @@ package et_canvas_board_texts is
 
 
 	type type_proposed_texts is record
-		assy_doc	: et_assy_doc.pac_doc_texts.list;
-		silksreen	: et_silkscreen.pac_silk_texts.list;
-		stop_mask	: et_stop_mask.pac_stop_texts.list;
-		conductors	: et_conductor_text.boards.pac_conductor_texts.list;
+		assy_doc	: pac_doc_texts.list;
+		silkscreen	: pac_silk_texts.list;
+		stop_mask	: pac_stop_texts.list;
+		conductors	: pac_conductor_texts.list;
 	end record;
 
 	proposed_texts : type_proposed_texts;
 
 
+	
+	
 	type type_selected_text is record
-		assy_doc	: et_assy_doc.pac_doc_texts.cursor;
-		silksreen	: et_silkscreen.pac_silk_texts.cursor;
-		stop_mask	: et_stop_mask.pac_stop_texts.cursor;
-		conductors	: et_conductor_text.boards.pac_conductor_texts.cursor;
+		assy_doc	: pac_doc_texts.cursor;
+		silkscreen	: pac_silk_texts.cursor;
+		stop_mask	: pac_stop_texts.cursor;
+		conductors	: pac_conductor_texts.cursor;
 	end record;
 
 	selected_text : type_selected_text;
 
+
+	-- Returns true if the given text matches the text indicated
+	-- by selected_text:
+	function is_selected (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean;
+
+	function is_selected (
+		text_cursor	: in pac_silk_texts.cursor)
+		return boolean;
+
+	function is_selected (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean;
+
+	function is_selected (
+		text_cursor	: in pac_conductor_texts.cursor)
+		return boolean;
+
 	
+	
+	-- Clears the proposed_texts.
+	-- Resets selected_text:
+	procedure clear_proposed_texts;
+
+
 	procedure select_text;
+
+	function get_number_of_proposed_texts
+		return count_type; -- CS subtype ?
+
+	function get_first_proposed
+		return type_selected_text;
 	
 
 	procedure find_texts (

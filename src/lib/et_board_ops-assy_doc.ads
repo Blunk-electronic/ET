@@ -82,7 +82,15 @@ package et_board_ops.assy_doc is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
-	
+
+	-- Returns all texts in the vicinity of the given point:
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_doc_texts.list;
+
 											
 end et_board_ops.assy_doc;
 

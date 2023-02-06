@@ -75,6 +75,9 @@ with et_canvas_board;					--use et_canvas_board;
 use et_canvas_board.pac_canvas;
 
 with et_board_ops;						use et_board_ops;
+with et_board_ops.assy_doc;
+with et_board_ops.silkscreen;
+with et_board_ops.stop_mask;
 with et_modes.board;
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
@@ -325,6 +328,8 @@ package body et_canvas_board_texts is
 
 	procedure reset_preliminary_text is begin
 		preliminary_text.ready := false;
+		preliminary_text.tool := MOUSE;
+		clear_proposed_texts;
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
@@ -660,42 +665,234 @@ package body et_canvas_board_texts is
 
 
 
-	procedure select_text is begin
-		null;
+	use pac_doc_texts;
+	use pac_silk_texts;
+	use pac_stop_texts;
+	use pac_conductor_texts;
+
+	
+
+	function is_selected (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean
+	is begin
+		-- If there is no proposed assy doc text at all, then
+		-- there is nothing to do:
+		if proposed_texts.assy_doc.is_empty then
+			return false;
+		else
+			-- If there is no selected text, then there is nothing to do:
+			if selected_text.assy_doc /= pac_doc_texts.no_element then
+				if element (text_cursor) = element (selected_text.assy_doc) then
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;			
+	end is_selected;
+	
+
+	function is_selected (
+		text_cursor	: in pac_silk_texts.cursor)
+		return boolean
+	is begin
+		-- If there is no proposed silkscreen text at all, then
+		-- there is nothing to do:
+		if proposed_texts.silkscreen.is_empty then
+			return false;
+		else
+			-- If there is no selected text, then there is nothing to do:
+			if selected_text.silkscreen /= pac_silk_texts.no_element then
+				if element (text_cursor) = element (selected_text.silkscreen) then
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;			
+	end is_selected;
+
+
+	function is_selected (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean
+	is begin
+		-- If there is no proposed stop_mask text at all, then
+		-- there is nothing to do:
+		if proposed_texts.stop_mask.is_empty then
+			return false;
+		else
+			-- If there is no selected text, then there is nothing to do:
+			if selected_text.stop_mask /= pac_stop_texts.no_element then
+				if element (text_cursor) = element (selected_text.stop_mask) then
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;			
+	end is_selected;
+
+
+	function is_selected (
+		text_cursor	: in pac_conductor_texts.cursor)
+		return boolean
+	is begin
+		-- If there is no proposed conductor text at all, then
+		-- there is nothing to do:
+		if proposed_texts.conductors.is_empty then
+			return false;
+		else
+			-- If there is no selected text, then there is nothing to do:
+			if selected_text.conductors /= pac_conductor_texts.no_element then
+				if element (text_cursor) = element (selected_text.conductors) then
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;			
+	end is_selected;
+
+
+	
+	
+	procedure clear_proposed_texts is begin
+		proposed_texts := (others => <>);
+		selected_text := (others => <>);
+	end clear_proposed_texts;
+
+
+	
+	procedure select_text is 
+		end_reached : boolean := false;
+	begin
+		if end_reached and next (selected_text.assy_doc) /= pac_doc_texts.no_element then
+			next (selected_text.assy_doc);
+			end_reached := false;
+		else
+			-- selected_text.assy_doc := pac_doc_texts.no_element;
+			end_reached := true;
+		end if;
+		
+		if end_reached and next (selected_text.silkscreen) /= pac_silk_texts.no_element then
+			next (selected_text.silkscreen);
+			end_reached := false;
+		else
+			-- selected_text.silkscreen := pac_silk_texts.no_element;
+			end_reached := true;
+		end if;
+			
+		if end_reached and next (selected_text.stop_mask) /= pac_stop_texts.no_element then
+			next (selected_text.stop_mask);
+			end_reached := false;
+		else
+			-- selected_text.stop_mask := pac_stop_texts.no_element;
+			end_reached := true;
+		end if;
+
+		if end_reached and next (selected_text.conductors) /= pac_conductor_texts.no_element then
+			next (selected_text.conductors);
+			end_reached := false;
+		else			
+			-- selected_text.conductors := pac_conductor_texts.no_element;
+			end_reached := true;
+		end if;
+
+		if end_reached then
+			null;
+			-- CS select first
+		end if;
 	end select_text;
 	
 
+	
+	function get_number_of_proposed_texts
+		return count_type
+	is begin
+		return proposed_texts.assy_doc.length
+			+ proposed_texts.silkscreen.length
+			+ proposed_texts.stop_mask.length
+			+ proposed_texts.conductors.length;
+	end get_number_of_proposed_texts;
+
+
+	
+	function get_first_proposed
+		return type_selected_text
+	is
+		result : type_selected_text;
+	begin
+		if not proposed_texts.assy_doc.is_empty then
+			result.assy_doc := proposed_texts.assy_doc.first;
+			return result;
+		end if;
+
+		if not proposed_texts.silkscreen.is_empty then
+			result.silkscreen := proposed_texts.silkscreen.first;
+			return result;
+		end if;
+
+		if not proposed_texts.stop_mask.is_empty then
+			result.stop_mask := proposed_texts.stop_mask.first;
+			return result;
+		end if;
+
+		if not proposed_texts.conductors.is_empty then
+			result.conductors := proposed_texts.conductors.first;
+			return result;
+		end if;
+		
+		return result;
+	end get_first_proposed;
+
+	
+	
 	procedure find_texts (
 		point : in type_point)
 	is 
-		-- vias : pac_vias.list;
+		use et_board_ops.assy_doc;
+		use et_board_ops.silkscreen;
+		use et_board_ops.stop_mask;
 	begin
 		log (text => "locating texts ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all vias in the vicinity of the given point:
-		-- proposed_vias := get_vias (current_active_module, point, catch_zone_default, log_threshold + 1);
-
+		-- Collect all texts in the vicinity of the given point:
+		proposed_texts.assy_doc   := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.silkscreen := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.stop_mask  := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		-- CS conductors
+		
 		--put_line (count_type'image (proposed_vias.length));
 		
 		-- evaluate the number of vias found here:
--- 		case length (proposed_vias) is
--- 			when 0 =>
--- 				reset_request_clarification;
--- 				reset_preliminary_via;
--- 				
--- 			when 1 =>
--- 				preliminary_via.ready := true;
--- 				selected_via := proposed_vias.first;
--- 				reset_request_clarification;
--- 				
--- 			when others =>
--- 				--log (text => "many objects", level => log_threshold + 2);
--- 				set_request_clarification;
--- 
--- 				-- preselect the first via
--- 				selected_via := proposed_vias.first;
--- 		end case;
+		case get_number_of_proposed_texts is
+			when 0 =>
+				reset_request_clarification;
+				reset_preliminary_text;
+				
+			when 1 =>
+				preliminary_text.ready := true;
+				selected_text := get_first_proposed;
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the text
+				selected_text := get_first_proposed;
+		end case;
 		
 		log_indentation_down;
 	end find_texts;
@@ -743,13 +940,13 @@ package body et_canvas_board_texts is
 		point	: in type_point)
 	is 
 
-		-- Assigns the final position after the move to the selected via.
-		-- Resets variable preliminary_via:
--- 		procedure finalize is 
--- 			use pac_proposed_vias;
--- 		begin
--- 			log (text => "finalizing move ...", level => log_threshold);
--- 			log_indentation_up;
+		-- Assigns the final position after the move to the selected text.
+		-- Resets variable preliminary_text:
+		procedure finalize is 
+
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
 -- 
 -- 			if selected_via /= pac_proposed_vias.no_element then
 -- 
@@ -764,10 +961,10 @@ package body et_canvas_board_texts is
 -- 				log (text => "nothing to do", level => log_threshold);
 -- 			end if;
 -- 				
--- 			log_indentation_down;			
--- 			set_status (status_move_via);			
--- 			reset_preliminary_via;
--- 		end finalize;
+			log_indentation_down;			
+			set_status (status_move_text);
+			reset_preliminary_text;
+		end finalize;
 
 
 	begin
@@ -775,35 +972,34 @@ package body et_canvas_board_texts is
 		if not preliminary_text.ready then
 
 			-- Set the tool being used:
-			-- preliminary_text.tool := tool;
+			preliminary_text.tool := tool;
 			
 			if not clarification_pending then
-				-- Locate all vias in the vicinity of the given point:
+				-- Locate all texts in the vicinity of the given point:
 				find_texts (point);
 				
-				-- NOTE: If many vias have been found, then
+				-- NOTE: If many texts have been found, then
 				-- clarification is now pending.
 
-				-- If find_vias has found only one via
-				-- then the flag preliminary_via.read is set true.
+				-- If find_texts has found only one text
+				-- then the flag preliminary_text.read is set true.
 
 			else
 				-- Here the clarification procedure ends.
-				-- A via has been selected (indicated by cursor selected_via)
-				-- via procedure select_via.
-				-- By setting preliminary_via.ready, the selected
-				-- via will be drawn at the tool position
-				-- when conductor objects are drawn on the canvas.
+				-- A text has been selected (indicated by select_text)
+				-- via procedure select_text.
+				-- By setting preliminary_text.ready, the selected
+				-- text will be drawn at the tool position
+				-- when texts are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
-				-- the selected via will be assigned its final position.
+				-- the selected text will be assigned its final position.
 				preliminary_text.ready := true;
 				reset_request_clarification;
 			end if;
 			
 		else
-			-- Finally move the selected via:
-			null;
-			-- finalize;
+			-- Finally move the selected text:
+			finalize;
 		end if;
 	end move_text;
 
