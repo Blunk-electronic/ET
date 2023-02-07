@@ -128,23 +128,46 @@ package et_canvas_board_texts is
 	-- If the box is already on display, nothing happens.
 	procedure show_text_properties;
 
+	type type_proposed_assy_doc is record
+		top, bottom : pac_doc_texts.list;
+	end record;
 
+	type type_proposed_silkscreen is record
+		top, bottom : pac_silk_texts.list;
+	end record;
+
+	type type_proposed_stop_mask is record
+		top, bottom : pac_stop_texts.list;
+	end record;
+
+	
 	type type_proposed_texts is record
-		assy_doc	: pac_doc_texts.list;
-		silkscreen	: pac_silk_texts.list;
-		stop_mask	: pac_stop_texts.list;
+		assy_doc	: type_proposed_assy_doc;
+		silkscreen	: type_proposed_silkscreen;
+		stop_mask	: type_proposed_stop_mask;
 		conductors	: pac_conductor_texts.list;
 	end record;
 
 	proposed_texts : type_proposed_texts;
 
 
+	type type_selected_assy_doc is record
+		top, bottom : pac_doc_texts.cursor;
+	end record;
 	
+	type type_selected_silkscreen is record
+		top, bottom : pac_silk_texts.cursor;
+	end record;
+
+	type type_selected_stop_mask is record
+		top, bottom : pac_stop_texts.cursor;
+	end record;
+
 	
 	type type_selected_text is record
-		assy_doc	: pac_doc_texts.cursor;
-		silkscreen	: pac_silk_texts.cursor;
-		stop_mask	: pac_stop_texts.cursor;
+		assy_doc	: type_selected_assy_doc;
+		silkscreen	: type_selected_silkscreen;
+		stop_mask	: type_selected_stop_mask;
 		conductors	: pac_conductor_texts.cursor;
 	end record;
 
@@ -154,15 +177,18 @@ package et_canvas_board_texts is
 	-- Returns true if the given text matches the text indicated
 	-- by selected_text:
 	function is_selected (
-		text_cursor	: in pac_doc_texts.cursor)
+		text_cursor	: in pac_doc_texts.cursor;
+		face		: in type_face)
 		return boolean;
 
 	function is_selected (
-		text_cursor	: in pac_silk_texts.cursor)
+		text_cursor	: in pac_silk_texts.cursor;
+		face		: in type_face)
 		return boolean;
 
 	function is_selected (
-		text_cursor	: in pac_stop_texts.cursor)
+		text_cursor	: in pac_stop_texts.cursor;
+		face		: in type_face)
 		return boolean;
 
 	function is_selected (

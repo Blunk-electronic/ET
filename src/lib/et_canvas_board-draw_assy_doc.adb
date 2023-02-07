@@ -61,6 +61,14 @@ is
 	-- CS must be overwritten according to select status:
 	brightness : type_brightness := NORMAL;
 
+	procedure set_default_brightness is begin
+		set_color_assy_doc (context.cr, face, NORMAL);
+	end set_default_brightness;
+		
+	procedure set_highlight_brightness is begin
+		set_color_assy_doc (context.cr, face, BRIGHT);
+	end set_highlight_brightness;
+
 	
 	procedure query_line (c : in pac_doc_lines.cursor) is begin
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -133,15 +141,75 @@ is
 
 	end query_placeholder;
 
+
 	
-	procedure query_text (c : in pac_doc_texts.cursor) is begin
-		draw_text_origin (self, element (c).position);
+	procedure query_text (c : in pac_doc_texts.cursor) is 
+		text : type_doc_text renames element (c);
 
-		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
-		-- Draw the text:
-		draw_vector_text (element (c).vectors, element (c).line_width);		
+		-- Draws the given text as it is given:
+		procedure draw_unchanged is begin
+			draw_text_origin (self, text.position);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (text.line_width));
+			draw_vector_text (text.vectors, text.line_width);
+		end draw_unchanged;
+	
+	begin
+		if is_selected (c, face) then
+			set_highlight_brightness;
+
+			case verb is
+				when VERB_MOVE =>
+					if preliminary_text.ready then
+						-- Draw a temporarily copy of the original text at
+						-- the place where the tool is pointing at:
+						declare
+							text_tmp	: type_doc_text := text;
+							destination	: type_point;
+							offset		: type_distance_relative;
+						begin
+							case preliminary_text.tool is
+								when MOUSE =>
+									destination := self.snap_to_grid (self.mouse_position);
+													  
+								when KEYBOARD =>
+									destination := cursor_main.position;
+							end case;
+
+							-- Get the relative distance of the destination to the original
+							-- text position:
+							offset := get_distance_relative (get_place (text_tmp), destination);
+
+							-- Move the text:
+							move_text (text_tmp, offset);
+							move_vector_text (text_tmp.vectors, offset);
+
+							draw_text_origin (self, text_tmp.position);
+
+							-- Set the line width of the vector text:
+							set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+
+							-- Draw the text:
+							draw_vector_text (text_tmp.vectors, text_tmp.line_width);
+						end;
+					else
+						draw_unchanged;
+					end if;
+
+				when others =>
+					draw_unchanged;
+					
+			end case;
+
+			-- After drawing a selected (highlighted) text, the brightness
+			-- must be set to normal:
+			set_default_brightness;
+
+		else -- not selected
+			draw_unchanged;
+		end if;
 	end query_text;
 
 	

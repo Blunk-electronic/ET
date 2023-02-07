@@ -504,7 +504,7 @@ package et_geometry_2 is
 	-- returns	d.x := point_two.x - point_one.x
 	--			d.y := point_two.y - point_one.y;
 	function get_distance_relative (
-		point_one, point_two : in type_point) 
+		point_one, point_two : in type_point) -- CS rename to reference and point
 		return type_distance_relative;
 
 

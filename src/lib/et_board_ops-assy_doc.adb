@@ -292,6 +292,7 @@ package body et_board_ops.assy_doc is
 
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
 		point			: in type_point;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
@@ -323,7 +324,13 @@ package body et_board_ops.assy_doc is
 			end query_text;
 			
 		begin
-			module.board.assy_doc.top.texts.iterate (query_text'access);
+			case face is
+				when TOP =>
+					module.board.assy_doc.top.texts.iterate (query_text'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.texts.iterate (query_text'access);
+			end case;
 		end query_module;
 
 		

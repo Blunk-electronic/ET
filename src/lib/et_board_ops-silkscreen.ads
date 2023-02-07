@@ -86,6 +86,7 @@ package et_board_ops.silkscreen is
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
 		point			: in type_point;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)

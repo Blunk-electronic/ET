@@ -673,71 +673,137 @@ package body et_canvas_board_texts is
 	
 
 	function is_selected (
-		text_cursor	: in pac_doc_texts.cursor)
+		text_cursor	: in pac_doc_texts.cursor;
+		face		: in type_face)
 		return boolean
 	is begin
 		-- If there is no proposed assy doc text at all, then
 		-- there is nothing to do:
-		if proposed_texts.assy_doc.is_empty then
-			return false;
-		else
-			-- If there is no selected text, then there is nothing to do:
-			if selected_text.assy_doc /= pac_doc_texts.no_element then
-				if element (text_cursor) = element (selected_text.assy_doc) then
-					return true;
-				else
+		case face is
+			when TOP =>
+				if proposed_texts.assy_doc.top.is_empty then
 					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;			
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.assy_doc.top /= pac_doc_texts.no_element then
+						if element (text_cursor) = element (selected_text.assy_doc.top) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+
+			when BOTTOM =>
+				if proposed_texts.assy_doc.bottom.is_empty then
+					return false;
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.assy_doc.bottom /= pac_doc_texts.no_element then
+						if element (text_cursor) = element (selected_text.assy_doc.bottom) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+
+		end case;
 	end is_selected;
 	
 
 	function is_selected (
-		text_cursor	: in pac_silk_texts.cursor)
+		text_cursor	: in pac_silk_texts.cursor;
+		face		: in type_face)
 		return boolean
 	is begin
-		-- If there is no proposed silkscreen text at all, then
-		-- there is nothing to do:
-		if proposed_texts.silkscreen.is_empty then
-			return false;
-		else
-			-- If there is no selected text, then there is nothing to do:
-			if selected_text.silkscreen /= pac_silk_texts.no_element then
-				if element (text_cursor) = element (selected_text.silkscreen) then
-					return true;
-				else
+		case face is
+			when TOP =>
+				-- If there is no proposed silkscreen text at all, then
+				-- there is nothing to do:
+				if proposed_texts.silkscreen.top.is_empty then
 					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;			
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.silkscreen.top /= pac_silk_texts.no_element then
+						if element (text_cursor) = element (selected_text.silkscreen.top) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+
+			when BOTTOM =>
+				-- If there is no proposed silkscreen text at all, then
+				-- there is nothing to do:
+				if proposed_texts.silkscreen.bottom.is_empty then
+					return false;
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.silkscreen.bottom /= pac_silk_texts.no_element then
+						if element (text_cursor) = element (selected_text.silkscreen.bottom) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+
+		end case;
 	end is_selected;
 
 
 	function is_selected (
-		text_cursor	: in pac_stop_texts.cursor)
+		text_cursor	: in pac_stop_texts.cursor;
+		face		: in type_face)
 		return boolean
 	is begin
-		-- If there is no proposed stop_mask text at all, then
-		-- there is nothing to do:
-		if proposed_texts.stop_mask.is_empty then
-			return false;
-		else
-			-- If there is no selected text, then there is nothing to do:
-			if selected_text.stop_mask /= pac_stop_texts.no_element then
-				if element (text_cursor) = element (selected_text.stop_mask) then
-					return true;
-				else
+		case face is
+			when TOP =>
+				-- If there is no proposed stop_mask text at all, then
+				-- there is nothing to do:
+				if proposed_texts.stop_mask.top.is_empty then
 					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;			
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.stop_mask.top /= pac_stop_texts.no_element then
+						if element (text_cursor) = element (selected_text.stop_mask.top) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+
+			when BOTTOM =>
+				-- If there is no proposed stop_mask text at all, then
+				-- there is nothing to do:
+				if proposed_texts.stop_mask.bottom.is_empty then
+					return false;
+				else
+					-- If there is no selected text, then there is nothing to do:
+					if selected_text.stop_mask.bottom /= pac_stop_texts.no_element then
+						if element (text_cursor) = element (selected_text.stop_mask.bottom) then
+							return true;
+						else
+							return false;
+						end if;
+					else
+						return false;
+					end if;
+				end if;			
+		end case;
 	end is_selected;
 
 
@@ -776,45 +842,77 @@ package body et_canvas_board_texts is
 	procedure select_text is 
 		end_reached : boolean := false;
 		position : type_position;
-		-- content : type_text_content.bounded_string;
 	begin
-		if end_reached and next (selected_text.assy_doc) /= pac_doc_texts.no_element then
-			next (selected_text.assy_doc);
+		-- ASSY DOC
+		if next (selected_text.assy_doc.top) /= pac_doc_texts.no_element then
+			next (selected_text.assy_doc.top);
+			position := get_position (element (selected_text.assy_doc.top));
 			end_reached := false;
 		else
 			-- selected_text.assy_doc := pac_doc_texts.no_element;
 			end_reached := true;
 		end if;
-		
-		if end_reached and next (selected_text.silkscreen) /= pac_silk_texts.no_element then
-			next (selected_text.silkscreen);
-			end_reached := false;
-		else
-			-- selected_text.silkscreen := pac_silk_texts.no_element;
-			end_reached := true;
-		end if;
-			
-		if end_reached and next (selected_text.stop_mask) /= pac_stop_texts.no_element then
-			next (selected_text.stop_mask);
-			end_reached := false;
-		else
-			-- selected_text.stop_mask := pac_stop_texts.no_element;
-			end_reached := true;
-		end if;
 
-		if end_reached and next (selected_text.conductors) /= pac_conductor_texts.no_element then
-			next (selected_text.conductors);
-			end_reached := false;
-		else			
-			-- selected_text.conductors := pac_conductor_texts.no_element;
-			end_reached := true;
-		end if;
-
+		-- if end_reached and next (selected_text.assy_doc.bottom) /= pac_doc_texts.no_element then
+		-- 	next (selected_text.assy_doc.bottom);
+		-- 	end_reached := false;
+		-- else
+		-- 	-- selected_text.assy_doc := pac_doc_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
+  -- 
+		-- -- SILKSCREEN
+		-- if end_reached and next (selected_text.silkscreen.top) /= pac_silk_texts.no_element then
+		-- 	next (selected_text.silkscreen.top);
+		-- 	end_reached := false;
+		-- else
+		-- 	-- selected_text.silkscreen := pac_silk_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
+		-- if end_reached and next (selected_text.silkscreen.bottom) /= pac_silk_texts.no_element then
+		-- 	next (selected_text.silkscreen.bottom);
+		-- 	end_reached := false;
+		-- else
+		-- 	-- selected_text.silkscreen := pac_silk_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
+  -- 
+		-- -- STOP MASK
+		-- if end_reached and next (selected_text.stop_mask.top) /= pac_stop_texts.no_element then
+		-- 	next (selected_text.stop_mask.top);
+		-- 	end_reached := false;
+		-- else
+		-- 	-- selected_text.stop_mask := pac_stop_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
+		-- if end_reached and next (selected_text.stop_mask.bottom) /= pac_stop_texts.no_element then
+		-- 	next (selected_text.stop_mask.bottom);
+		-- 	end_reached := false;
+		-- else
+		-- 	-- selected_text.stop_mask := pac_stop_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
+  -- 
+		-- -- CONDUCTORS
+		-- if end_reached and next (selected_text.conductors) /= pac_conductor_texts.no_element then
+		-- 	next (selected_text.conductors);
+		-- 	end_reached := false;
+		-- else			
+		-- 	-- selected_text.conductors := pac_conductor_texts.no_element;
+		-- 	end_reached := true;
+		-- end if;
+  -- 
 		if end_reached then
 			null;
-			-- CS select first
+			selected_text.assy_doc.top := proposed_texts.assy_doc.top.first;
+			position := get_position (element (selected_text.assy_doc.top));
 		end if;
-
+  -- 
 		-- show the selected text in the status bar
 		set_status ("selected text " & to_string (position)
 			& ". " & status_next_object_clarification);
@@ -826,9 +924,16 @@ package body et_canvas_board_texts is
 	function get_number_of_proposed_texts
 		return count_type
 	is begin
-		return proposed_texts.assy_doc.length
-			+ proposed_texts.silkscreen.length
-			+ proposed_texts.stop_mask.length
+		return 
+			  proposed_texts.assy_doc.top.length
+			+ proposed_texts.assy_doc.bottom.length
+			  
+			+ proposed_texts.silkscreen.top.length
+			+ proposed_texts.silkscreen.bottom.length
+			
+			+ proposed_texts.stop_mask.top.length
+			+ proposed_texts.stop_mask.bottom.length
+			
 			+ proposed_texts.conductors.length;
 	end get_number_of_proposed_texts;
 
@@ -839,21 +944,40 @@ package body et_canvas_board_texts is
 	is
 		result : type_selected_text;
 	begin
-		if not proposed_texts.assy_doc.is_empty then
-			result.assy_doc := proposed_texts.assy_doc.first;
+		-- ASSY DOC
+		if not proposed_texts.assy_doc.top.is_empty then
+			result.assy_doc.top := proposed_texts.assy_doc.top.first;
 			return result;
 		end if;
 
-		if not proposed_texts.silkscreen.is_empty then
-			result.silkscreen := proposed_texts.silkscreen.first;
+		if not proposed_texts.assy_doc.bottom.is_empty then
+			result.assy_doc.bottom := proposed_texts.assy_doc.bottom.first;
 			return result;
 		end if;
 
-		if not proposed_texts.stop_mask.is_empty then
-			result.stop_mask := proposed_texts.stop_mask.first;
+		-- SILKSCREEN
+		if not proposed_texts.silkscreen.top.is_empty then
+			result.silkscreen.top := proposed_texts.silkscreen.top.first;
 			return result;
 		end if;
 
+		if not proposed_texts.silkscreen.bottom.is_empty then
+			result.silkscreen.bottom := proposed_texts.silkscreen.bottom.first;
+			return result;
+		end if;
+
+		-- STOP MASK
+		if not proposed_texts.stop_mask.top.is_empty then
+			result.stop_mask.top := proposed_texts.stop_mask.top.first;
+			return result;
+		end if;
+
+		if not proposed_texts.stop_mask.bottom.is_empty then
+			result.stop_mask.bottom := proposed_texts.stop_mask.bottom.first;
+			return result;
+		end if;
+
+		-- CONDUCTORS
 		if not proposed_texts.conductors.is_empty then
 			result.conductors := proposed_texts.conductors.first;
 			return result;
@@ -875,9 +999,14 @@ package body et_canvas_board_texts is
 		log_indentation_up;
 
 		-- Collect all texts in the vicinity of the given point:
-		proposed_texts.assy_doc   := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
-		proposed_texts.silkscreen := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
-		proposed_texts.stop_mask  := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.assy_doc.top   	:= get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.assy_doc.bottom  := get_texts (current_active_module, BOTTOM, point, catch_zone_default, log_threshold + 1);
+		
+		proposed_texts.silkscreen.top		:= get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.silkscreen.bottom	:= get_texts (current_active_module, BOTTOM, point, catch_zone_default, log_threshold + 1);
+		
+		proposed_texts.stop_mask.top	:= get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
+		proposed_texts.stop_mask.bottom	:= get_texts (current_active_module, BOTTOM, point, catch_zone_default, log_threshold + 1);
 		-- CS conductors
 		
 		--put_line (count_type'image (proposed_vias.length));

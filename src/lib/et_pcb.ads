@@ -437,7 +437,7 @@ package et_pcb is
 		frame			: et_frames.type_frame_pcb; -- incl. template name
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
-		silk_screen		: type_silkscreen_both_sides;
+		silk_screen		: type_silkscreen_both_sides; -- CS rename to silksceen
 		assy_doc		: type_assy_doc_both_sides;
 		stencil			: type_stencil_both_sides;
 		stop_mask		: type_stop_mask_both_sides;
