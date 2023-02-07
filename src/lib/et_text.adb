@@ -351,6 +351,12 @@ package body et_text is
 			move_by (text.position.place, offset);
 		end move_text;
 
+		procedure move_text (
+			text	: in out type_text_fab;
+			point	: in type_point)
+		is begin
+			text.position.place := point;
+		end move_text;
 
 		
 		function text_properties (
@@ -1100,7 +1106,7 @@ package body et_text is
 			-- boundaries
 			update_text_boundaries (text);
 		end move_vector_text;
-	
+
 		
 	end generic_pac_text;
 

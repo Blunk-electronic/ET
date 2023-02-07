@@ -268,6 +268,11 @@ package et_text is
 			text	: in out type_text_fab;
 			offset	: in type_distance_relative);
 
+		-- Moves a text to the given point:
+		procedure move_text (
+			text	: in out type_text_fab;
+			point	: in type_point);
+
 		
 		-- Returns the properties of the given text in a long single string.	
 		function text_properties (
@@ -1828,7 +1833,7 @@ package et_text is
 		procedure move_vector_text (
 			text	: in out type_vector_text;
 			offset	: in type_distance_relative);
-		
+
 		
 	private
 		type type_vector_text is record
