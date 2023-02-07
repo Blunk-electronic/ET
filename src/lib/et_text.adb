@@ -307,6 +307,26 @@ package body et_text is
 		end text_properties;
 
 
+		
+		function get_position (text : in type_text_fab)
+			return pac_geometry_2.type_position
+		is begin
+			return text.position;
+		end get_position;
+		
+		function get_place (text : in type_text_fab)
+			return type_point
+		is begin
+			return text.position.place;
+		end get_place;
+
+		function get_rotation (text : in type_text_fab)
+			return type_rotation
+		is begin
+			return text.position.rotation;
+		end get_rotation;
+
+		
 		procedure mirror_text (
 			text	: in out type_text_fab;
 			axis	: in type_axis_2d := Y)

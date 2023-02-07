@@ -235,8 +235,23 @@ package et_text is
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
 		end record;
 
-		-- CS function get_position (text : in type_text_fab)
-		--return pac_geometry_2.type_position
+
+		
+		
+		-- Returns the x/y coordinates and the rotation of a text:
+		function get_position (text : in type_text_fab)
+			return pac_geometry_2.type_position;
+		
+		-- Returns the x/y coordinates of a text:
+		function get_place (text : in type_text_fab)
+			return type_point;
+		
+		-- Returns the rotation of a text:
+		function get_rotation (text : in type_text_fab)
+			return type_rotation;
+
+
+		
 		
 		-- Mirrors a text along the given axis:
 		procedure mirror_text (
