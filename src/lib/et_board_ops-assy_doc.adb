@@ -352,6 +352,63 @@ package body et_board_ops.assy_doc is
 		return result;
 	end get_texts;
 
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_doc_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		new_position : type_point := get_place (text);
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is
+			text_cursor : pac_doc_texts.cursor;
+
+			procedure query_text (text : in out type_doc_text) is begin
+				text.position.place := new_position;
+			end query_text;
+			
+		begin
+			case face is
+				when TOP =>
+					text_cursor := module.board.assy_doc.top.texts.find (text);
+					module.board.assy_doc.top.texts.update_element (text_cursor, query_text'access);
+
+				when BOTTOM =>
+					text_cursor := module.board.assy_doc.bottom.texts.find (text);
+					module.board.assy_doc.bottom.texts.update_element (text_cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				new_position := point;
+
+			when RELATIVE =>
+				move_by (new_position, to_distance_relative (point));
+		end case;
+		
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " moving text from" & to_string (get_place (text))
+			& " to" & to_string (new_position),
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end move_text;
+
 	
 end et_board_ops.assy_doc;
 	
