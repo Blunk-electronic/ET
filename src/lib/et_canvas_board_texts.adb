@@ -670,8 +670,110 @@ package body et_canvas_board_texts is
 	use pac_stop_texts;
 	use pac_conductor_texts;
 
-	
 
+	function get_selected return type_selected_query_result is
+		S	: type_selected_text renames selected_text;
+		ct	: count_type := 0;
+		cat	: type_text_layer;
+		face : type_face;
+
+		procedure count is begin ct := ct + 1; end;
+		
+	begin
+		-- ASSY DOC
+		if S.assy_doc.top /= pac_doc_texts.no_element then
+			count;
+			face := TOP;
+			cat := LAYER_CAT_ASSY;
+		end if;
+		
+		if S.assy_doc.bottom /= pac_doc_texts.no_element then
+			count;
+			face := BOTTOM;
+			cat := LAYER_CAT_ASSY;
+		end if;
+
+
+		-- SILKSCREEN
+		if S.silkscreen.top /= pac_silk_texts.no_element then
+			count;
+			face := TOP;
+			cat := LAYER_CAT_SILKSCREEN;
+		end if;
+		
+		if S.silkscreen.bottom /= pac_silk_texts.no_element then
+			count;
+			face := BOTTOM;
+			cat := LAYER_CAT_SILKSCREEN;
+		end if;
+
+
+		-- STOP MASK
+		if S.stop_mask.top /= pac_stop_texts.no_element then
+			count;
+			face := TOP;
+			cat := LAYER_CAT_STOP;
+		end if;
+		
+		if S.stop_mask.bottom /= pac_stop_texts.no_element then
+			count;
+			face := BOTTOM;
+			cat := LAYER_CAT_STOP;
+		end if;
+
+
+		-- CONDUCTORS
+		if S.conductors /= pac_conductor_texts.no_element then
+			count;
+			cat := LAYER_CAT_CONDUCTOR;
+		end if;
+		
+
+		-- build the return value:
+		case ct is
+			when 0 => return (empty => TRUE, cat => LAYER_CAT_ASSY);
+			-- NOTE: The layer category is required here but has no meaning.
+
+			when 1 =>
+				case cat is 
+					when LAYER_CAT_ASSY => 
+						case face is
+							when TOP =>
+								return (FALSE, LAYER_CAT_ASSY, TOP, element (S.assy_doc.top));
+
+							when BOTTOM =>
+								return (FALSE, LAYER_CAT_ASSY, BOTTOM, element (S.assy_doc.bottom));
+						end case;
+
+					when LAYER_CAT_SILKSCREEN =>
+						case face is
+							when TOP =>
+								return (FALSE, LAYER_CAT_SILKSCREEN, TOP, element (S.silkscreen.top));
+
+							when BOTTOM =>
+								return (FALSE, LAYER_CAT_SILKSCREEN, BOTTOM, element (S.silkscreen.bottom));
+						end case;
+
+					when LAYER_CAT_STOP =>
+						case face is
+							when TOP =>
+								return (FALSE, LAYER_CAT_STOP, TOP, element (S.stop_mask.top));
+
+							when BOTTOM =>
+								return (FALSE, LAYER_CAT_STOP, BOTTOM, element (S.stop_mask.bottom));
+						end case;
+
+					when LAYER_CAT_CONDUCTOR =>
+						return (FALSE, LAYER_CAT_CONDUCTOR, element (S.conductors));
+				end case;
+
+				
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+	end get_selected;
+
+	
 	function is_selected (
 		text_cursor	: in pac_doc_texts.cursor;
 		face		: in type_face)
@@ -1079,24 +1181,39 @@ package body et_canvas_board_texts is
 		-- Assigns the final position after the move to the selected text.
 		-- Resets variable preliminary_text:
 		procedure finalize is 
-
+			use et_board_ops.assy_doc;
+			selected : constant type_selected_query_result := get_selected;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
--- 
--- 			if selected_via /= pac_proposed_vias.no_element then
--- 
--- 				move_via (
--- 					module_cursor	=> current_active_module,
--- 					via				=> element (selected_via),
--- 					coordinates		=> ABSOLUTE,
--- 					point			=> point,
--- 					log_threshold	=> log_threshold);
--- 				
--- 			else
--- 				log (text => "nothing to do", level => log_threshold);
--- 			end if;
--- 				
+
+			if not selected.empty then
+
+				case selected.cat is
+					when LAYER_CAT_ASSY =>
+
+						move_text (
+							module_cursor	=> current_active_module,
+							face			=> selected.assy_doc_face,
+							text			=> selected.assy_doc,
+							coordinates		=> ABSOLUTE,
+							point			=> point,
+							log_threshold	=> log_threshold);
+
+					when LAYER_CAT_SILKSCREEN =>
+						null;
+
+					when LAYER_CAT_STOP =>
+						null;
+
+					when LAYER_CAT_CONDUCTOR =>
+						null;
+				end case;
+						
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
 			log_indentation_down;			
 			set_status (status_move_text);
 			reset_preliminary_text;

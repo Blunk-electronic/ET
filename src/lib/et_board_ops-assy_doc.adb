@@ -335,9 +335,12 @@ package body et_board_ops.assy_doc is
 
 		
 	begin
-		log (text => "looking up texts at" & to_string (point) 
-			 & " catch zone" & catch_zone_to_string (catch_zone),
-			 level => log_threshold);
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " looking up assembly documentation texts at" & to_string (point) 
+			& " catch zone" & catch_zone_to_string (catch_zone),
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -371,7 +374,8 @@ package body et_board_ops.assy_doc is
 			text_cursor : pac_doc_texts.cursor;
 
 			procedure query_text (text : in out type_doc_text) is begin
-				text.position.place := new_position;
+				query_text.text.position.place := new_position;
+				put_line (to_string (new_position));
 			end query_text;
 			
 		begin
@@ -398,7 +402,8 @@ package body et_board_ops.assy_doc is
 		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " moving text from" & to_string (get_place (text))
+			& " face" & to_string (face) 
+			& " moving assembly documentation text from" & to_string (get_place (text))
 			& " to" & to_string (new_position),
 			level => log_threshold);
 

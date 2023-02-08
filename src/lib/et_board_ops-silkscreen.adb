@@ -333,10 +333,13 @@ package body et_board_ops.silkscreen is
 
 		
 	begin
-		log (text => "looking up texts at" & to_string (point) 
-			 & " catch zone" & catch_zone_to_string (catch_zone),
-			 level => log_threshold);
-
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " looking up silkscreen texts at" & to_string (point) 
+			& " catch zone" & catch_zone_to_string (catch_zone),
+			level => log_threshold);
+		
 		log_indentation_up;
 		
 		query_element (

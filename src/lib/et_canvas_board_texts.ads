@@ -174,6 +174,37 @@ package et_canvas_board_texts is
 	selected_text : type_selected_text;
 
 
+	type type_selected_query_result (
+		empty	: boolean := true;								
+		cat 	: type_text_layer := LAYER_CAT_ASSY) -- relevant if count is 1
+	is record
+		case empty is
+			when TRUE  => null; -- nothing selected
+			when FALSE =>
+				
+				case cat is
+					when LAYER_CAT_CONDUCTOR => 
+						conductor : type_conductor_text;
+						
+					when LAYER_CAT_SILKSCREEN => 
+						silkscreen_face	: type_face;
+						silkscreen		: type_silk_text;
+						
+					when LAYER_CAT_ASSY => 
+						assy_doc_face	: type_face;
+						assy_doc		: type_doc_text;
+						
+					when LAYER_CAT_STOP => 
+						stop_mask_face	: type_face;
+						stop_mask		: type_stop_text;
+				end case;
+
+		end case;
+	end record;
+
+	function get_selected return type_selected_query_result;
+	
+	
 	-- Returns true if the given text matches the text indicated
 	-- by selected_text:
 	function is_selected (
