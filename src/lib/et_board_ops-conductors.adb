@@ -1095,6 +1095,62 @@ package body et_board_ops.conductors is
 	
 
 
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_conductor_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		old_position : constant type_point := get_place (text);
+		new_position : type_point;
+		offset : type_distance_relative;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is
+			text_cursor : pac_conductor_texts.cursor;
+
+			procedure query_text (text : in out type_conductor_text) is begin
+				move_text (text, offset);
+				move_vector_text (text.vectors, offset);
+			end query_text;
+			
+		begin
+			text_cursor := module.board.conductors.texts.find (text);
+			module.board.conductors.texts.update_element (text_cursor, query_text'access);
+		end query_module;
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				new_position := point;
+				offset := get_distance_relative (old_position, new_position);
+
+			when RELATIVE =>
+				new_position := point;
+				offset := to_distance_relative (point);
+				move_by (new_position, offset);
+		end case;
+		
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " moving conductor text from" & to_string (old_position)
+			& " to" & to_string (new_position), -- CS by offset, signal layer number
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end move_text;
+
+	
+
 end et_board_ops.conductors;
 	
 -- Soli Deo Gloria

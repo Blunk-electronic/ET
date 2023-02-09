@@ -1232,7 +1232,14 @@ package body et_canvas_board_texts is
 
 
 					when LAYER_CAT_CONDUCTOR =>
-						null;
+
+						move_text (
+							module_cursor	=> current_active_module,
+							text			=> selected.conductor,
+							coordinates		=> ABSOLUTE,
+							point			=> point,
+							log_threshold	=> log_threshold);
+
 				end case;
 						
 			else

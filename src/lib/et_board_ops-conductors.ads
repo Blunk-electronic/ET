@@ -36,26 +36,6 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-
-with et_nets;
-with et_net_names;				use et_net_names;
-with et_logging;				use et_logging;
-with et_project.modules;		use et_project.modules;
-with et_terminals;				use et_terminals;
-with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
-
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
 with et_conductor_text.boards;			use et_conductor_text.boards;
@@ -228,6 +208,15 @@ package et_board_ops.conductors is
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list;
+
+
+	-- Moves a text:
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_conductor_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level);
 
 	
 end et_board_ops.conductors;

@@ -46,11 +46,9 @@ with et_submodules;
 with et_numbering;
 with et_symbols;
 with et_conductor_segment.boards;
-with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_exceptions;					use et_exceptions;
 
-with et_routing;
+-- with et_routing;
 
 
 package body et_board_ops is
@@ -925,15 +923,6 @@ package body et_board_ops is
 		iterate (layers, query_layer'access);
 	end;
 
-
-	
-	
-
-	
-
-
-
-	
 
 
 
