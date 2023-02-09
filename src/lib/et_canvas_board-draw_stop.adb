@@ -55,9 +55,13 @@ is
 	use pac_stop_texts;
 
 
-
-	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
+	procedure set_default_brightness is begin
+		set_color_stop_mask (context.cr, face, self.scale, NORMAL);
+	end set_default_brightness;
+		
+	procedure set_highlight_brightness is begin
+		set_color_stop_mask (context.cr, face, self.scale, BRIGHT);
+	end set_highlight_brightness;
 
 	
 	
@@ -129,15 +133,71 @@ is
 
 	
 	procedure query_text (c : in pac_stop_texts.cursor) is 
-		use pac_character_lines;
+		text : type_stop_text renames element (c);
+
+		-- Draws the given text as it is given:
+		procedure draw_unchanged is begin
+			draw_text_origin (self, text.position);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (text.line_width));
+			draw_vector_text (text.vectors, text.line_width);
+		end draw_unchanged;
+	
 	begin
-		draw_text_origin (self, element (c).position);
+		if is_selected (c, face) then
+			set_highlight_brightness;
 
-		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+			case verb is
+				when VERB_MOVE =>
+					if preliminary_text.ready then
+						-- Draw a temporarily copy of the original text at
+						-- the place where the tool is pointing at:
+						declare
+							text_tmp	: type_stop_text := text;
+							destination	: type_point;
+							offset		: type_distance_relative;
+						begin
+							case preliminary_text.tool is
+								when MOUSE =>
+									destination := self.snap_to_grid (self.mouse_position);
+													  
+								when KEYBOARD =>
+									destination := cursor_main.position;
+							end case;
 
-		-- Draw the text:
-		draw_vector_text (element (c).vectors, element (c).line_width);		
+							-- Get the relative distance of the destination to the original
+							-- text position:
+							offset := get_distance_relative (get_place (text_tmp), destination);
+
+							-- Move the text:
+							move_text (text_tmp, offset);
+							move_vector_text (text_tmp.vectors, offset);
+
+							draw_text_origin (self, text_tmp.position);
+
+							-- Set the line width of the vector text:
+							set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+
+							-- Draw the text:
+							draw_vector_text (text_tmp.vectors, text_tmp.line_width);
+						end;
+					else
+						draw_unchanged;
+					end if;
+
+				when others =>
+					draw_unchanged;
+					
+			end case;
+
+			-- After drawing a selected (highlighted) text, the brightness
+			-- must be set to normal:
+			set_default_brightness;
+
+		else -- not selected
+			draw_unchanged;
+		end if;
 	end query_text;
 
 
@@ -147,7 +207,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stop mask segments will be drawn with the same color:
-		set_color_stop_mask (context.cr, face, self.scale, brightness);
+		set_color_stop_mask (context.cr, face, self.scale, NORMAL);
 
 		case face is
 			when TOP =>

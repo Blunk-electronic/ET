@@ -91,7 +91,16 @@ package et_board_ops.stop_mask is
 		return pac_stop_texts.list;
 
 	
-											
+	-- Moves a text:
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_stop_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level);
+
+	
 end et_board_ops.stop_mask;
 
 -- Soli Deo Gloria

@@ -58,8 +58,6 @@ is
 	use pac_doc_texts;
 
 
-	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
 
 	procedure set_default_brightness is begin
 		set_color_assy_doc (context.cr, face, NORMAL);
@@ -146,7 +144,6 @@ is
 	procedure query_text (c : in pac_doc_texts.cursor) is 
 		text : type_doc_text renames element (c);
 
-
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
 			draw_text_origin (self, text.position);
@@ -218,7 +215,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All assy_doc segments will be drawn with the same color:
-		set_color_assy_doc (context.cr, face, brightness);
+		set_color_assy_doc (context.cr, face, NORMAL);
 
 		case face is
 			when TOP =>

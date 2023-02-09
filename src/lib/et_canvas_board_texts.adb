@@ -1182,6 +1182,9 @@ package body et_canvas_board_texts is
 		-- Resets variable preliminary_text:
 		procedure finalize is 
 			use et_board_ops.assy_doc;
+			use et_board_ops.silkscreen;
+			use et_board_ops.stop_mask;
+			
 			selected : constant type_selected_query_result := get_selected;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
@@ -1201,10 +1204,26 @@ package body et_canvas_board_texts is
 							log_threshold	=> log_threshold);
 
 					when LAYER_CAT_SILKSCREEN =>
-						null;
+
+						move_text (
+							module_cursor	=> current_active_module,
+							face			=> selected.silkscreen_face,
+							text			=> selected.silkscreen,
+							coordinates		=> ABSOLUTE,
+							point			=> point,
+							log_threshold	=> log_threshold);
+
 
 					when LAYER_CAT_STOP =>
-						null;
+
+						move_text (
+							module_cursor	=> current_active_module,
+							face			=> selected.stop_mask_face,
+							text			=> selected.stop_mask,
+							coordinates		=> ABSOLUTE,
+							point			=> point,
+							log_threshold	=> log_threshold);
+
 
 					when LAYER_CAT_CONDUCTOR =>
 						null;

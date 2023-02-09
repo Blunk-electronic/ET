@@ -364,7 +364,9 @@ package body et_board_ops.assy_doc is
 		point			: in type_point;
 		log_threshold	: in type_log_level)
 	is
-		new_position : type_point := get_place (text);
+		old_position : constant type_point := get_place (text);
+		new_position : type_point;
+		offset : type_distance_relative;
 
 		
 		procedure query_module (
@@ -374,8 +376,8 @@ package body et_board_ops.assy_doc is
 			text_cursor : pac_doc_texts.cursor;
 
 			procedure query_text (text : in out type_doc_text) is begin
-				query_text.text.position.place := new_position;
-				put_line (to_string (new_position));
+				move_text (text, offset);
+				move_vector_text (text.vectors, offset);
 			end query_text;
 			
 		begin
@@ -395,16 +397,19 @@ package body et_board_ops.assy_doc is
 		case coordinates is
 			when ABSOLUTE =>
 				new_position := point;
+				offset := get_distance_relative (old_position, new_position);
 
 			when RELATIVE =>
-				move_by (new_position, to_distance_relative (point));
+				new_position := point;
+				offset := to_distance_relative (point);
+				move_by (new_position, offset);
 		end case;
 		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
-			& " moving assembly documentation text from" & to_string (get_place (text))
-			& " to" & to_string (new_position),
+			& " moving assembly documentation text from" & to_string (old_position)
+			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
 
 		update_element (
