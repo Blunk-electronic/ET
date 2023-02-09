@@ -56,7 +56,8 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
-with et_fill_zones;					use et_fill_zones;
+with et_conductor_segment.boards;		use et_conductor_segment.boards;
+with et_fill_zones;						use et_fill_zones;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 
 with et_board_shapes_and_text;
@@ -196,6 +197,17 @@ package et_board_ops.conductors is
 		-- Net name is relevant if filil zone is part of a route.
 		-- The type of the given fill zone is the cirteria:
 		net_name		: in pac_net_name.bounded_string := no_name);
+
+
+	-- Fills fill zones. If nets is empty, then all
+	-- zones will be filled (even those who are floating).
+	-- If nets contains net names then only the zones of these
+	-- nets will be filled:
+	procedure fill_zones (
+		module_cursor	: in pac_generic_modules.cursor;	
+		log_category	: in type_log_category;
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 	
 	

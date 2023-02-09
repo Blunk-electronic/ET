@@ -789,133 +789,6 @@ package body et_board_ops.conductors is
 
 
 
-	procedure place_text_in_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		signal_layer	: in type_signal_layer;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level)
-	is
-		procedure place_text (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is
-			use pac_conductor_texts;
-			vectors : pac_character_lines.list;
-			use et_text;
-			mirror : type_vector_text_mirrored;
-
-			v_text : type_vector_text;
-			c_text : type_conductor_text;
-			
-		begin
-			mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
-
-			if mirror = YES then
-				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
-			else
-				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
-			end if;
-
-			
-			v_text := vectorize_text (
-				content		=> text.content,
-				size		=> text.size,
-				rotation	=> get_rotation (text.position),
-				position	=> text.position.place,
-				mirror		=> mirror,
-				line_width	=> text.line_width,
-				make_border	=> true -- CS should be false for restrict layers
-				-- CS alignment
-				); 
-
-			-- assemble the conductor text:
-			c_text := (text with 
-				layer		=> signal_layer,
-				vectors		=> v_text -- CS call vectorize_text here directly
-				--segments	=> make_segments (v_text, text.line_width)
-				);
-			
-			append (module.board.conductors.texts, c_text);
-		end place_text;
-
-	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " placing text in conductor layer at"
-			& to_string (text.position)
-			& " signal layer " & to_string (signal_layer),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> place_text'access);
-
-		log_indentation_down;
-	end place_text_in_conductor_layer;
-
-
-	
-
-	function get_texts (
-		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_conductor_texts.list
-	is
-		use et_text;
-		use pac_conductor_texts;
-		result : pac_conductor_texts.list;
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
-		is
-			procedure query_text (c : in pac_conductor_texts.cursor) is
-				text : type_conductor_text renames element (c);
-			begin
-				if in_catch_zone (
-					point_1		=> point,
-					catch_zone	=> catch_zone,
-					point_2		=> get_place (text))
-				then
-					log (text => to_string (get_place (text)) 
-						& " content " & enclose_in_quotes (to_string (text.content)),
-						level => log_threshold + 2);
-						
-					result.append (text);
-				end if;
-			end query_text;
-			
-		begin
-			module.board.conductors.texts.iterate (query_text'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " looking up conductor texts at" & to_string (point) 
-			& " catch zone" & catch_zone_to_string (catch_zone),
-			level => log_threshold);
-		
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log (text => "found" & count_type'image (result.length),
-			 level => log_threshold + 1);
-		
-		log_indentation_down;
-		return result;
-	end get_texts;
-	
-
 
 	procedure place_fill_zone (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1085,8 +958,143 @@ package body et_board_ops.conductors is
 	end place_fill_zone;
 
 
+	procedure fill_zones (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_category	: in type_log_category;
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names)
+	is separate;
 	
 	
+	
+	procedure place_text_in_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		signal_layer	: in type_signal_layer;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level)
+	is
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_conductor_texts;
+			vectors : pac_character_lines.list;
+			use et_text;
+			mirror : type_vector_text_mirrored;
+
+			v_text : type_vector_text;
+			c_text : type_conductor_text;
+			
+		begin
+			mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+
+			if mirror = YES then
+				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
+			else
+				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
+			end if;
+
+			
+			v_text := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> get_rotation (text.position),
+				position	=> text.position.place,
+				mirror		=> mirror,
+				line_width	=> text.line_width,
+				make_border	=> true -- CS should be false for restrict layers
+				-- CS alignment
+				); 
+
+			-- assemble the conductor text:
+			c_text := (text with 
+				layer		=> signal_layer,
+				vectors		=> v_text -- CS call vectorize_text here directly
+				--segments	=> make_segments (v_text, text.line_width)
+				);
+			
+			append (module.board.conductors.texts, c_text);
+		end place_text;
+
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing text in conductor layer at"
+			& to_string (text.position)
+			& " signal layer " & to_string (signal_layer),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
+		log_indentation_down;
+	end place_text_in_conductor_layer;
+
+	
+	
+
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_texts.list
+	is
+		use et_text;
+		use pac_conductor_texts;
+		result : pac_conductor_texts.list;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+				text : type_conductor_text renames element (c);
+			begin
+				if in_catch_zone (
+					point_1		=> point,
+					catch_zone	=> catch_zone,
+					point_2		=> get_place (text))
+				then
+					log (text => to_string (get_place (text)) 
+						& " content " & enclose_in_quotes (to_string (text.content)),
+						level => log_threshold + 2);
+						
+					result.append (text);
+				end if;
+			end query_text;
+			
+		begin
+			module.board.conductors.texts.iterate (query_text'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " looking up conductor texts at" & to_string (point) 
+			& " catch zone" & catch_zone_to_string (catch_zone),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+		return result;
+	end get_texts;
+	
+
+
 end et_board_ops.conductors;
 	
 -- Soli Deo Gloria

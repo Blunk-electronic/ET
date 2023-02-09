@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with et_board_ops.conductors;			use et_board_ops.conductors;
+
+
 separate (et_canvas_board)
 
 procedure key_pressed (
@@ -104,7 +107,7 @@ is
 		case key is
 			when GDK_LC_z =>
 				noun := NOUN_ZONE;
-				fill_fill_zones (current_active_module, NORMAL, log_threshold + 1);
+				fill_zones (current_active_module, NORMAL, log_threshold + 1);
 
 				set_status ("zones filled");
 				
