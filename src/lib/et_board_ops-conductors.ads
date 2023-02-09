@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                     BOARD OPERATIONS ON TRACKS                           --
+--                     BOARD OPERATIONS / CONDUCTOR OBJECTS                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -56,10 +56,12 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
+with et_conductor_text.boards;			use et_conductor_text.boards;
+
 with et_board_shapes_and_text;
 
 
-package et_board_ops.tracks is
+package et_board_ops.conductors is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -180,8 +182,17 @@ package et_board_ops.tracks is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
-											
-end et_board_ops.tracks;
+
+	-- Returns all texts in the vicinity of the given point:
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_texts.list;
+
+	
+end et_board_ops.conductors;
 
 -- Soli Deo Gloria
 

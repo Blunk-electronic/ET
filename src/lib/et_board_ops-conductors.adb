@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                     BOARD OPERATIONS ON TRACKS                           --
+--                     BOARD OPERATIONS / CONDUCTOR OBJECTS                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -47,7 +47,7 @@ with et_board_ops.devices;
 with et_device_query_board;			use et_device_query_board;
 
 
-package body et_board_ops.tracks is
+package body et_board_ops.conductors is
 
 	use pac_generic_modules;
 	use pac_nets;
@@ -785,9 +785,67 @@ package body et_board_ops.tracks is
 		
 	end ripup_track_segment;
 
+
+
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_texts.list
+	is
+		use et_text;
+		use pac_conductor_texts;
+		result : pac_conductor_texts.list;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+				text : type_conductor_text renames element (c);
+			begin
+				if in_catch_zone (
+					point_1		=> point,
+					catch_zone	=> catch_zone,
+					point_2		=> get_place (text))
+				then
+					log (text => to_string (get_place (text)) 
+						& " content " & enclose_in_quotes (to_string (text.content)),
+						level => log_threshold + 2);
+						
+					result.append (text);
+				end if;
+			end query_text;
+			
+		begin
+			module.board.conductors.texts.iterate (query_text'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " looking up conductor texts at" & to_string (point) 
+			& " catch zone" & catch_zone_to_string (catch_zone),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+		return result;
+	end get_texts;
 	
+
 	
-end et_board_ops.tracks;
+end et_board_ops.conductors;
 	
 -- Soli Deo Gloria
 

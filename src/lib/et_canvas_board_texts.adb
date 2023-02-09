@@ -78,6 +78,7 @@ with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
+with et_board_ops.conductors;
 with et_modes.board;
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
@@ -1096,6 +1097,7 @@ package body et_canvas_board_texts is
 		use et_board_ops.assy_doc;
 		use et_board_ops.silkscreen;
 		use et_board_ops.stop_mask;
+		use et_board_ops.conductors;
 	begin
 		log (text => "locating texts ...", level => log_threshold);
 		log_indentation_up;
@@ -1109,7 +1111,8 @@ package body et_canvas_board_texts is
 		
 		proposed_texts.stop_mask.top	:= get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
 		proposed_texts.stop_mask.bottom	:= get_texts (current_active_module, BOTTOM, point, catch_zone_default, log_threshold + 1);
-		-- CS conductors
+
+		proposed_texts.conductors := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
 		
 		--put_line (count_type'image (proposed_vias.length));
 		
@@ -1184,6 +1187,7 @@ package body et_canvas_board_texts is
 			use et_board_ops.assy_doc;
 			use et_board_ops.silkscreen;
 			use et_board_ops.stop_mask;
+			use et_board_ops.conductors;
 			
 			selected : constant type_selected_query_result := get_selected;
 		begin

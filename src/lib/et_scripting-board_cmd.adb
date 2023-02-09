@@ -38,7 +38,7 @@
 --   - command to define a global cutout area
 
 with et_board_shapes_and_text;
-with et_board_ops.tracks;
+with et_board_ops.conductors;
 with et_board_ops.vias;
 with et_drills;
 with et_modes.board;
@@ -74,7 +74,7 @@ procedure board_cmd (
 	log_threshold	: in type_log_level)
 is
 	use et_board_ops;
-	use et_board_ops.tracks;
+	use et_board_ops.conductors;
 	use et_board_ops.vias;
 	use et_packages;
 	use et_board_shapes_and_text;
