@@ -49,6 +49,7 @@ procedure update_ratsnest (
 	module_cursor	: in pac_generic_modules.cursor;
 	lth				: in type_log_level)
 is
+	use et_conductor_segment.boards;
 	
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;

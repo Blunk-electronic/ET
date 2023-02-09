@@ -71,8 +71,6 @@ with et_pick_and_place;
 with et_devices;					use et_devices;
 with et_conventions;
 with et_design_rules;				use et_design_rules;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
-
 
 with et_route_restrict.boards;
 with et_via_restrict.boards;
@@ -158,13 +156,6 @@ package et_board_ops is
 
 	
 
-	-- Returns the start and end positions (x/y) of all track 
-	-- segments (lines and arcs) of the given net:
-	-- The list of returned points uses fixed point coordinates
-	-- as the tracks are placed by the operator (their ends are man-made):
-	function get_track_ends (
-		net_cursor : in et_schematic.pac_nets.cursor)
-		return pac_points.list;
 
 	
 	-- Sets the grid of the module.
@@ -184,6 +175,15 @@ package et_board_ops is
 -- RATSNEST / TRACKS / FREETRACKS
 
 
+	-- Returns the start and end positions (x/y) of all track 
+	-- segments (lines and arcs) of the given net:
+	-- The list of returned points uses fixed point coordinates
+	-- as the tracks are placed by the operator (their ends are man-made):
+	function get_track_ends (
+		net_cursor : in et_schematic.pac_nets.cursor)
+		return pac_points.list;
+
+	
 	-- (Re)generates the ratsnest of all nets according to the current
 	-- positions of vias, tracks and terminals:
 	procedure update_ratsnest (
