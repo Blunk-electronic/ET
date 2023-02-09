@@ -225,24 +225,8 @@ package et_board_ops is
 
 	
 	
-	-- Places a text in a conductor layer.
-	procedure place_text_in_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		signal_layer	: in type_signal_layer;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level);
 
 
--- FILL ZONES
-	
-	procedure place_fill_zone (
-		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_zone'class;
-		log_threshold	: in type_log_level;
-
-		-- Net name is relevant if filil zone is part of a route.
-		-- The type of the given fill zone is the cirteria:
-		net_name		: in pac_net_name.bounded_string := no_name);
 
 	
 	-- Fills fill zones. If nets is empty, then all

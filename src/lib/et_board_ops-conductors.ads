@@ -56,6 +56,7 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
+with et_fill_zones;					use et_fill_zones;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 
 with et_board_shapes_and_text;
@@ -70,6 +71,7 @@ package et_board_ops.conductors is
 	use pac_net_name;
 
 
+-- TRACKS:
 	
 	-- Adds a line track segment to the given net in the given module.
 	procedure add_named_track (
@@ -183,6 +185,30 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+
+-- FILL ZONES
+	
+	procedure place_fill_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_zone'class;
+		log_threshold	: in type_log_level;
+
+		-- Net name is relevant if filil zone is part of a route.
+		-- The type of the given fill zone is the cirteria:
+		net_name		: in pac_net_name.bounded_string := no_name);
+
+	
+	
+-- TEXTS:
+	
+	-- Places a text in a conductor layer.
+	procedure place_text_in_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		signal_layer	: in type_signal_layer;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level);
+
+	
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;

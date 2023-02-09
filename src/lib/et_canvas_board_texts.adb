@@ -1144,7 +1144,9 @@ package body et_canvas_board_texts is
 	
 	procedure place_text (
 		point : in type_point) 
-	is begin
+	is 
+		use et_board_ops.conductors;
+	begin
 		if preliminary_text.ready then
 			move_to (preliminary_text.text.position.place, point);
 			
