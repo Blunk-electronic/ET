@@ -446,18 +446,76 @@ is
 	end query_placeholder;
 
 	
-	procedure query_text (c : in pac_conductor_texts.cursor) is begin
-		-- Draw the text if it is in the current layer:
-		if element (c).layer = current_layer then
+	procedure query_text (c : in pac_conductor_texts.cursor) is
+		text : type_conductor_text renames element (c);
 
-			draw_text_origin (self, element (c).position);
+		-- Draws the given text as it is given:
+		procedure draw_unchanged is begin
+			draw_text_origin (self, text.position);
 
 			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-			
-			-- Draw the text:
-			draw_vector_text (element (c).vectors, element (c).line_width);
+			set_line_width (context.cr, type_view_coordinate (text.line_width));
+			draw_vector_text (text.vectors, text.line_width);
+		end draw_unchanged;
 
+	begin
+		-- Draw the text if it is in the current layer:
+		if text.layer = current_layer then
+
+			if is_selected (c) then
+				brightness := BRIGHT;
+
+				case verb is
+					when VERB_MOVE =>
+						if preliminary_text.ready then
+							-- Draw a temporarily copy of the original text at
+							-- the place where the tool is pointing at:
+							declare
+								text_tmp	: type_conductor_text := text;
+								destination	: type_point;
+								offset		: type_distance_relative;
+							begin
+								case preliminary_text.tool is
+									when MOUSE =>
+										destination := self.snap_to_grid (self.mouse_position);
+														
+									when KEYBOARD =>
+										destination := cursor_main.position;
+								end case;
+
+								-- Get the relative distance of the destination to the original
+								-- text position:
+								offset := get_distance_relative (get_place (text_tmp), destination);
+
+								-- Move the text:
+								move_text (text_tmp, offset);
+								move_vector_text (text_tmp.vectors, offset);
+
+								draw_text_origin (self, text_tmp.position);
+
+								-- Set the line width of the vector text:
+								set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+
+								-- Draw the text:
+								draw_vector_text (text_tmp.vectors, text_tmp.line_width);
+							end;
+						else
+							draw_unchanged;
+						end if;
+
+					when others =>
+						draw_unchanged;
+						
+				end case;
+
+				-- After drawing a selected (highlighted) text, the brightness
+				-- must be set to normal:
+				brightness := NORMAL;
+
+			else -- not selected
+				draw_unchanged;
+			end if;
+			
 		end if;
 	end query_text;
 
