@@ -128,6 +128,11 @@ package et_canvas_board_texts is
 	-- If the box is already on display, nothing happens.
 	procedure show_text_properties;
 
+
+	
+
+	-- When texts in non-conductor layers are proposed,
+	-- we store them in lists according to layer category and face:
 	type type_proposed_assy_doc is record
 		top, bottom : pac_doc_texts.list;
 	end record;
@@ -140,7 +145,7 @@ package et_canvas_board_texts is
 		top, bottom : pac_stop_texts.list;
 	end record;
 
-	
+	-- All proposed texts are stored via this record type in sub-lists:
 	type type_proposed_texts is record
 		assy_doc	: type_proposed_assy_doc;
 		silkscreen	: type_proposed_silkscreen;
@@ -148,9 +153,13 @@ package et_canvas_board_texts is
 		conductors	: pac_conductor_texts.list;
 	end record;
 
+	-- The proposed texts are finally stored here:
 	proposed_texts : type_proposed_texts;
 
 
+	-- After clarification (among the proposed texts),
+	-- a cursor points to the selected text.
+	-- We use a cursor according to layer category and face:
 	type type_selected_assy_doc is record
 		top, bottom : pac_doc_texts.cursor;
 	end record;
@@ -163,7 +172,13 @@ package et_canvas_board_texts is
 		top, bottom : pac_stop_texts.cursor;
 	end record;
 
-	
+
+	-- When a certain text has been selected, then one of
+	-- these cursors points to the actual text.
+	-- Only two cases exist: 
+	-- 1. Nothing is selected. Means all cursors point to no_element.
+	-- 2. Only one text is selected. Means ONE of all the cursors points
+	--    to a text:
 	type type_selected_text is record
 		assy_doc	: type_selected_assy_doc;
 		silkscreen	: type_selected_silkscreen;
@@ -202,6 +217,9 @@ package et_canvas_board_texts is
 		end case;
 	end record;
 
+	
+	-- Queries the components of variable selected_text
+	-- and returns information about the actual selected text candidate:
 	function get_selected return type_selected_query_result;
 	
 	
@@ -233,6 +251,8 @@ package et_canvas_board_texts is
 	procedure clear_proposed_texts;
 
 
+	-- Advances the cursors in variable selected_text 
+	-- on each call of this procedure.
 	procedure select_text;
 
 	function get_number_of_proposed_texts

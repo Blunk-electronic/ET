@@ -944,18 +944,59 @@ package body et_canvas_board_texts is
 	
 	procedure select_text is 
 		end_reached : boolean := false;
+		advance : boolean := true;
 		position : type_position;
 	begin
 		-- ASSY DOC
-		if next (selected_text.assy_doc.top) /= pac_doc_texts.no_element then
-			next (selected_text.assy_doc.top);
-			position := get_position (element (selected_text.assy_doc.top));
-			end_reached := false;
-		else
-			-- selected_text.assy_doc := pac_doc_texts.no_element;
-			end_reached := true;
+
+		-- Advance in sub-list if it contains something. If it is empty
+		-- go to next sub-list:
+
+		if not proposed_texts.assy_doc.top.is_empty then
+			-- If there is a "next" element after the current cursor position,
+			-- then advance the cursor to that element:
+			if next (selected_text.assy_doc.top) /= pac_doc_texts.no_element then
+				next (selected_text.assy_doc.top);
+				advance := false;
+				
+				position := get_position (element (selected_text.assy_doc.top));
+			else
+				-- There is no "next". Set cursor to no_element.
+				selected_text.assy_doc.top := pac_doc_texts.no_element;
+			end if;
+
+		elsif advance and not proposed_texts.assy_doc.bottom.is_empty then
+			-- If there is a "next" element after the current cursor position,
+			-- then advance the cursor to that element:
+			if next (selected_text.assy_doc.bottom) /= pac_doc_texts.no_element then
+				next (selected_text.assy_doc.bottom);
+				advance := false;
+				
+				position := get_position (element (selected_text.assy_doc.bottom));
+			else
+				-- There is no "next". Set cursor to no_element.
+				selected_text.assy_doc.bottom := pac_doc_texts.no_element;
+			end if;
+
 		end if;
 
+		if advance then
+			selected_text := get_first_proposed;
+			
+			-- if not proposed_texts.assy_doc.top.is_empty then
+			-- 	selected_text.assy_doc.top := proposed_texts.assy_doc.top.first;
+   -- 
+			-- 	position := get_position (element (selected_text.assy_doc.top));
+			-- end if;
+   -- 
+			-- if not proposed_texts.assy_doc.bottom.is_empty then
+			-- 	selected_text.assy_doc.bottom := proposed_texts.assy_doc.bottom.first;
+   -- 
+			-- 	position := get_position (element (selected_text.assy_doc.bottom));
+			-- end if;
+
+		end if;
+		
 		-- if end_reached and next (selected_text.assy_doc.bottom) /= pac_doc_texts.no_element then
 		-- 	next (selected_text.assy_doc.bottom);
 		-- 	end_reached := false;
@@ -1010,11 +1051,11 @@ package body et_canvas_board_texts is
 		-- 	end_reached := true;
 		-- end if;
   -- 
-		if end_reached then
-			null;
-			selected_text.assy_doc.top := proposed_texts.assy_doc.top.first;
-			position := get_position (element (selected_text.assy_doc.top));
-		end if;
+		-- if end_reached then
+		-- 	null;
+		-- 	selected_text.assy_doc.top := proposed_texts.assy_doc.top.first;
+		-- 	position := get_position (element (selected_text.assy_doc.top));
+		-- end if;
   -- 
 		-- show the selected text in the status bar
 		set_status ("selected text " & to_string (position)
