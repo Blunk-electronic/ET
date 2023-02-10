@@ -38,6 +38,7 @@
 -- 
 
 with ada.containers;   			       	use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.box;							use gtk.box;
 with gtk.text_view;						--use gtk.text_view;
@@ -131,46 +132,72 @@ package et_canvas_board_texts is
 
 	
 
-	-- When texts in non-conductor layers are proposed,
-	-- we store them in lists according to layer category and face:
-	type type_proposed_assy_doc is record
-		top, bottom : pac_doc_texts.list;
-	end record;
+	-- -- When texts in non-conductor layers are proposed,
+	-- -- we store them in lists according to layer category and face:
+	-- type type_proposed_assy_doc is record
+	-- 	top, bottom : pac_doc_texts.list;
+	-- end record;
+ -- 
+	-- type type_proposed_silkscreen is record
+	-- 	top, bottom : pac_silk_texts.list;
+	-- end record;
+ -- 
+	-- type type_proposed_stop_mask is record
+	-- 	top, bottom : pac_stop_texts.list;
+	-- end record;
+ -- 
+	-- -- All proposed texts are stored via this record type in sub-lists:
+	-- type type_proposed_texts is record
+	-- 	assy_doc	: type_proposed_assy_doc;
+	-- 	silkscreen	: type_proposed_silkscreen;
+	-- 	stop_mask	: type_proposed_stop_mask;
+	-- 	conductors	: pac_conductor_texts.list;
+	-- end record;
+ -- 
+	-- -- The proposed texts are finally stored here:
+	-- proposed_texts : type_proposed_texts;
 
-	type type_proposed_silkscreen is record
-		top, bottom : pac_silk_texts.list;
-	end record;
 
-	type type_proposed_stop_mask is record
-		top, bottom : pac_stop_texts.list;
-	end record;
-
-	-- All proposed texts are stored via this record type in sub-lists:
-	type type_proposed_texts is record
-		assy_doc	: type_proposed_assy_doc;
-		silkscreen	: type_proposed_silkscreen;
-		stop_mask	: type_proposed_stop_mask;
-		conductors	: pac_conductor_texts.list;
-	end record;
-
-	-- The proposed texts are finally stored here:
-	proposed_texts : type_proposed_texts;
-
-
-	-- After clarification (among the proposed texts),
-	-- a cursor points to the selected text.
-	-- We use a cursor according to layer category and face:
-	type type_selected_assy_doc is record
-		top, bottom : pac_doc_texts.cursor;
-	end record;
+	type type_proposed_text (cat : type_text_layer) is record
+		case cat is
+			when LAYER_CAT_ASSY =>
+				doc_face	: type_face;
+				doc_text	: pac_doc_texts.cursor;
 	
-	type type_selected_silkscreen is record
-		top, bottom : pac_silk_texts.cursor;
+			when LAYER_CAT_SILKSCREEN =>
+				silk_face	: type_face;
+				silk_text	: pac_silk_texts.cursor;
+
+			when LAYER_CAT_STOP =>
+				stop_face	: type_face;
+				stop_text	: pac_stop_texts.cursor;
+
+			when LAYER_CAT_CONDUCTOR =>
+				conductor_text	: pac_conductor_texts.cursor;
+		end case;
 	end record;
 
-	type type_selected_stop_mask is record
-		top, bottom : pac_stop_texts.cursor;
-	end record;
+	package pac_proposed_texts is new indefinite_doubly_linked_lists (type_proposed_text);
+	use pac_proposed_texts;
+
+	proposed_texts	: pac_proposed_texts.list;
+	selected_text	: pac_proposed_texts.cursor;
+	
+
+-- 	-- After clarification (among the proposed texts),
+-- 	-- a cursor points to the selected text.
+-- 	-- We use a cursor according to layer category and face:
+-- 	type type_selected_assy_doc is record
+-- 		top, bottom : pac_doc_texts.cursor;
+-- 	end record;
+-- 	
+-- 	type type_selected_silkscreen is record
+-- 		top, bottom : pac_silk_texts.cursor;
+-- 	end record;
+-- 
+-- 	type type_selected_stop_mask is record
+-- 		top, bottom : pac_stop_texts.cursor;
+-- 	end record;
 
 
 	-- When a certain text has been selected, then one of
@@ -179,48 +206,48 @@ package et_canvas_board_texts is
 	-- 1. Nothing is selected. Means all cursors point to no_element.
 	-- 2. Only one text is selected. Means ONE of all the cursors points
 	--    to a text:
-	type type_selected_text is record
-		assy_doc	: type_selected_assy_doc;
-		silkscreen	: type_selected_silkscreen;
-		stop_mask	: type_selected_stop_mask;
-		conductors	: pac_conductor_texts.cursor;
-	end record;
+	-- type type_selected_text is record
+	-- 	assy_doc	: type_selected_assy_doc;
+	-- 	silkscreen	: type_selected_silkscreen;
+	-- 	stop_mask	: type_selected_stop_mask;
+	-- 	conductors	: pac_conductor_texts.cursor;
+	-- end record;
+ -- 
+	-- selected_text : type_selected_text;
 
-	selected_text : type_selected_text;
 
-
-	type type_selected_query_result (
-		empty	: boolean := true;								
-		cat 	: type_text_layer := LAYER_CAT_ASSY) -- relevant if count is 1
-	is record
-		case empty is
-			when TRUE  => null; -- nothing selected
-			when FALSE =>
-				
-				case cat is
-					when LAYER_CAT_CONDUCTOR => 
-						conductor : type_conductor_text;
-						
-					when LAYER_CAT_SILKSCREEN => 
-						silkscreen_face	: type_face;
-						silkscreen		: type_silk_text;
-						
-					when LAYER_CAT_ASSY => 
-						assy_doc_face	: type_face;
-						assy_doc		: type_doc_text;
-						
-					when LAYER_CAT_STOP => 
-						stop_mask_face	: type_face;
-						stop_mask		: type_stop_text;
-				end case;
-
-		end case;
-	end record;
-
+-- 	type type_selected_query_result (
+-- 		empty	: boolean := true;								
+-- 		cat 	: type_text_layer := LAYER_CAT_ASSY) -- relevant if count is 1
+-- 	is record
+-- 		case empty is
+-- 			when TRUE  => null; -- nothing selected
+-- 			when FALSE =>
+-- 				
+-- 				case cat is
+-- 					when LAYER_CAT_CONDUCTOR => 
+-- 						conductor : type_conductor_text;
+-- 						
+-- 					when LAYER_CAT_SILKSCREEN => 
+-- 						silkscreen_face	: type_face;
+-- 						silkscreen		: type_silk_text;
+-- 						
+-- 					when LAYER_CAT_ASSY => 
+-- 						assy_doc_face	: type_face;
+-- 						assy_doc		: type_doc_text;
+-- 						
+-- 					when LAYER_CAT_STOP => 
+-- 						stop_mask_face	: type_face;
+-- 						stop_mask		: type_stop_text;
+-- 				end case;
+-- 
+-- 		end case;
+-- 	end record;
+-- 
 	
 	-- Queries the components of variable selected_text
 	-- and returns information about the actual selected text candidate:
-	function get_selected return type_selected_query_result;
+	-- function get_selected return type_selected_query_result;
 	
 	
 	-- Returns true if the given text matches the text indicated
@@ -255,11 +282,11 @@ package et_canvas_board_texts is
 	-- on each call of this procedure.
 	procedure select_text;
 
-	function get_number_of_proposed_texts
-		return count_type; -- CS subtype ?
-
-	function get_first_proposed
-		return type_selected_text;
+	-- function get_number_of_proposed_texts
+	-- 	return count_type; -- CS subtype ?
+ -- 
+	-- function get_first_proposed
+	-- 	return type_selected_text;
 	
 
 	procedure find_texts (
