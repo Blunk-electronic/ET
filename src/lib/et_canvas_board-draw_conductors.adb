@@ -463,7 +463,8 @@ is
 		if text.layer = current_layer then
 
 			if is_selected (c) then
-				brightness := BRIGHT;
+				-- The selected text must be drawn highlighted:
+				set_color_conductor (context.cr, current_layer, BRIGHT);
 
 				case verb is
 					when VERB_MOVE =>
@@ -508,8 +509,8 @@ is
 				end case;
 
 				-- After drawing a selected (highlighted) text, the brightness
-				-- must be set to normal:
-				brightness := NORMAL;
+				-- must be set back to normal:
+				set_color_conductor (context.cr, current_layer, NORMAL);
 
 			else -- not selected
 				draw_unchanged;
@@ -554,6 +555,7 @@ is
 			circle.radius := type_float_positive (radius_base + r / 2.0);
 		end set_width_and_radius;
 
+		
 		procedure draw_restring is begin
 			set_color_vias (context.cr, brightness);
 			
