@@ -1010,62 +1010,60 @@ package body et_canvas_board_texts is
 		doc : pac_doc_texts.list;
 		silk : pac_silk_texts.list;
 		stop : pac_stop_texts.list;
-		cond : pac_conductor_texts.list;
+		conductors : pac_conductor_texts.list;
 
 		face : type_face := TOP;
 		
-		procedure query_text (text : in pac_doc_texts.cursor) is begin
+		procedure query_doc_text (text : in pac_doc_texts.cursor) is begin
 			proposed_texts.append ((
 				cat			=> LAYER_CAT_ASSY,
 				doc_face	=> face,
 				doc_text	=> text));
-		end query_text;
+		end query_doc_text;
 
-		procedure query_text (text : in pac_silk_texts.cursor) is begin
+		procedure query_silk_text (text : in pac_silk_texts.cursor) is begin
 			proposed_texts.append ((
 				cat			=> LAYER_CAT_SILKSCREEN,
 				silk_face	=> face,
 				silk_text	=> text));
-		end query_text;
+		end query_silk_text;
 
-		procedure query_text (text : in pac_stop_texts.cursor) is begin
+		procedure query_stop_text (text : in pac_stop_texts.cursor) is begin
 			proposed_texts.append ((
 				cat			=> LAYER_CAT_STOP,
 				stop_face	=> face,
 				stop_text	=> text));
-		end query_text;
+		end query_stop_text;
+
+		procedure collect is begin
+			doc := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			doc.iterate (query_doc_text'access);
+
+			silk := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			silk.iterate (query_silk_text'access);
+			
+			stop := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			stop.iterate (query_stop_text'access);
+		end collect;
+
+		procedure query_conductor_text (text : in pac_conductor_texts.cursor) is begin
+			proposed_texts.append ((
+				cat				=> LAYER_CAT_CONDUCTOR,
+				conductor_text	=> text));					   
+		end query_conductor_text;
 		
 	begin
 		log (text => "locating texts ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Collect all texts in the vicinity of the given point:
-
-		-- TOP
-		doc := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
-		doc.iterate (query_text'access);
-
--- 		silk := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
--- 		silk.iterate (query_text'access);
--- 		
--- 		stop := get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
--- 		stop.iterate (query_text'access);
--- 
--- 		-- BOTTOM
--- 		face := BOTTOM;
--- 		doc := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
--- 		doc.iterate (query_text'access);
--- 
--- 		silk := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
--- 		silk.iterate (query_text'access);
--- 		
--- 		stop := get_texts (current_active_module, TOP, point, catch_zone_default, log_threshold + 1);
--- 		stop.iterate (query_text'access);
-
+		face := TOP;
+		collect;
+		face := BOTTOM;
+		collect;
 		
--- 		proposed_texts.conductors := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
-		
-		--put_line (count_type'image (proposed_vias.length));
+		conductors := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		conductors.iterate (query_conductor_text'access);
 		
 		-- evaluate the number of vias found here:
 		case proposed_texts.length is
