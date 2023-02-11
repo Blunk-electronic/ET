@@ -132,126 +132,43 @@ package et_canvas_board_texts is
 
 	
 
-	-- -- When texts in non-conductor layers are proposed,
-	-- -- we store them in lists according to layer category and face:
-	-- type type_proposed_assy_doc is record
-	-- 	top, bottom : pac_doc_texts.list;
-	-- end record;
- -- 
-	-- type type_proposed_silkscreen is record
-	-- 	top, bottom : pac_silk_texts.list;
-	-- end record;
- -- 
-	-- type type_proposed_stop_mask is record
-	-- 	top, bottom : pac_stop_texts.list;
-	-- end record;
- -- 
-	-- -- All proposed texts are stored via this record type in sub-lists:
-	-- type type_proposed_texts is record
-	-- 	assy_doc	: type_proposed_assy_doc;
-	-- 	silkscreen	: type_proposed_silkscreen;
-	-- 	stop_mask	: type_proposed_stop_mask;
-	-- 	conductors	: pac_conductor_texts.list;
-	-- end record;
- -- 
-	-- -- The proposed texts are finally stored here:
-	-- proposed_texts : type_proposed_texts;
-
-
+	-- When texts are proposed, we classify them by
+	-- their layer category and face:
 	type type_proposed_text (cat : type_text_layer) is record
 		case cat is
 			when LAYER_CAT_ASSY =>
 				doc_face	: type_face;
-				doc_text	: pac_doc_texts.cursor;
+				doc_text	: type_doc_text; -- the text candidate itself
 	
 			when LAYER_CAT_SILKSCREEN =>
 				silk_face	: type_face;
-				silk_text	: pac_silk_texts.cursor;
+				silk_text	: type_silk_text;  -- the text candidate itself
 
 			when LAYER_CAT_STOP =>
 				stop_face	: type_face;
-				stop_text	: pac_stop_texts.cursor;
+				stop_text	: type_stop_text;  -- the text candidate itself
 
 			when LAYER_CAT_CONDUCTOR =>
-				conductor_text	: pac_conductor_texts.cursor;
+				conductor_text	: type_conductor_text;  -- the text candidate itself
 		end case;
 	end record;
 
+	-- All the proposed texts are collected via a list:
 	package pac_proposed_texts is new indefinite_doubly_linked_lists (type_proposed_text);
 	use pac_proposed_texts;
 
+	-- Here we store the proposed texts:
 	proposed_texts	: pac_proposed_texts.list;
+
+	-- A selected text among the proposed texts is held here.
+	-- After clarification (among the proposed texts),
+	-- this cursor points to the selected text candidate:
 	selected_text	: pac_proposed_texts.cursor;
 	
-
--- 	-- After clarification (among the proposed texts),
--- 	-- a cursor points to the selected text.
--- 	-- We use a cursor according to layer category and face:
--- 	type type_selected_assy_doc is record
--- 		top, bottom : pac_doc_texts.cursor;
--- 	end record;
--- 	
--- 	type type_selected_silkscreen is record
--- 		top, bottom : pac_silk_texts.cursor;
--- 	end record;
--- 
--- 	type type_selected_stop_mask is record
--- 		top, bottom : pac_stop_texts.cursor;
--- 	end record;
-
-
-	-- When a certain text has been selected, then one of
-	-- these cursors points to the actual text.
-	-- Only two cases exist: 
-	-- 1. Nothing is selected. Means all cursors point to no_element.
-	-- 2. Only one text is selected. Means ONE of all the cursors points
-	--    to a text:
-	-- type type_selected_text is record
-	-- 	assy_doc	: type_selected_assy_doc;
-	-- 	silkscreen	: type_selected_silkscreen;
-	-- 	stop_mask	: type_selected_stop_mask;
-	-- 	conductors	: pac_conductor_texts.cursor;
-	-- end record;
- -- 
-	-- selected_text : type_selected_text;
-
-
--- 	type type_selected_query_result (
--- 		empty	: boolean := true;								
--- 		cat 	: type_text_layer := LAYER_CAT_ASSY) -- relevant if count is 1
--- 	is record
--- 		case empty is
--- 			when TRUE  => null; -- nothing selected
--- 			when FALSE =>
--- 				
--- 				case cat is
--- 					when LAYER_CAT_CONDUCTOR => 
--- 						conductor : type_conductor_text;
--- 						
--- 					when LAYER_CAT_SILKSCREEN => 
--- 						silkscreen_face	: type_face;
--- 						silkscreen		: type_silk_text;
--- 						
--- 					when LAYER_CAT_ASSY => 
--- 						assy_doc_face	: type_face;
--- 						assy_doc		: type_doc_text;
--- 						
--- 					when LAYER_CAT_STOP => 
--- 						stop_mask_face	: type_face;
--- 						stop_mask		: type_stop_text;
--- 				end case;
--- 
--- 		end case;
--- 	end record;
--- 
-	
-	-- Queries the components of variable selected_text
-	-- and returns information about the actual selected text candidate:
-	-- function get_selected return type_selected_query_result;
 	
 	
 	-- Returns true if the given text matches the text indicated
-	-- by selected_text:
+	-- by cursor selected_text (see above):
 	function is_selected (
 		text_cursor	: in pac_doc_texts.cursor;
 		face		: in type_face)
@@ -278,20 +195,33 @@ package et_canvas_board_texts is
 	procedure clear_proposed_texts;
 
 
+	-- Returns the position of the given proposed text as string:
+	function get_position (
+		text_cursor : in pac_proposed_texts.cursor)
+		return string;
+
+	
+
 	-- Advances the cursors in variable selected_text 
 	-- on each call of this procedure.
 	procedure select_text;
 
-	-- function get_number_of_proposed_texts
-	-- 	return count_type; -- CS subtype ?
- -- 
-	-- function get_first_proposed
-	-- 	return type_selected_text;
-	
 
+	-- Locates texts in the vicinity of the given point.
+	-- Depending on how many texts have been found, the behaviour is:
+	-- - If only one text found, then it is selected and 
+	--   the flag preliminary_text.ready will be set.
+	--   This causes the selected text to be drawn at the tool position.
+	-- - If more than one text found, then clarification is requested.
+	--   No text will be moved.
+	--   The next call of this procedure sets preliminary_text.ready
+	--   so that the selected text will be drawn at the tool position.
+	--   The next call of this procedure assigns the final position 
+	--   to the selected_text:
 	procedure find_texts (
 		point : in type_point);
 
+	
 	
 -- PLACING:
 
