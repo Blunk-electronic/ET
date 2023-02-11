@@ -833,7 +833,7 @@ package body et_canvas_board_texts is
 					& to_string (get_position (text.stop_text));
 
 			when LAYER_CAT_CONDUCTOR =>
-				return "signal layer" & to_string (text.conductor_text.layer) & separator &
+				return "signal layer " & to_string (text.conductor_text.layer) & separator &
 					to_string (get_position (text.conductor_text));
 
 		end case;

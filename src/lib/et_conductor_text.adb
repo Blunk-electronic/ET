@@ -75,6 +75,7 @@ package body et_conductor_text is
 		text	: in out type_conductor_text;
 		offset	: in type_distance_relative)
 	is begin
+		move_by (text.position.place, offset);
 		move_vector_text (text.vectors, offset);
 	end move_text;
 

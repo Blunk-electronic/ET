@@ -1114,8 +1114,7 @@ package body et_board_ops.conductors is
 			text_cursor : pac_conductor_texts.cursor;
 
 			procedure query_text (text : in out type_conductor_text) is begin
-				move_text (text, offset);
-				move_vector_text (text.vectors, offset);
+				move_text (text, offset); -- incl. vector text
 			end query_text;
 			
 		begin

@@ -487,9 +487,8 @@ is
 								-- text position:
 								offset := get_distance_relative (get_place (text_tmp), destination);
 
-								-- Move the text:
-								move_text (text_tmp, offset);
-								move_vector_text (text_tmp.vectors, offset);
+								-- Move the text (incl. vector text):
+								move_text (text_tmp, offset);					
 
 								draw_text_origin (self, text_tmp.position);
 
