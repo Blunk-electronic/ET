@@ -60,6 +60,20 @@ package body et_colors is
 		return result;
 	end dim;
 
+
+	function dim (
+		color		: in type_color;
+		brightness	: in type_brightness)
+		return type_color
+	is begin
+		case brightness is
+			when DARK	=> return dim (color, 0.25);
+			when NORMAL	=> return dim (color, dim_factor_default);
+			when BRIGHT	=> return dim (color, 1.0);
+		end case;
+	end dim;
+
+	
 	
 	procedure set_color (
 		context		: in cairo_context;

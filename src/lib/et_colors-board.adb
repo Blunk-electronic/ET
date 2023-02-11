@@ -193,12 +193,11 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity) 
 	is begin
-		-- CS handle brightness
 		case face is
 			when TOP =>
 				create_fill_pattern (
 					context		=> context,
-					color		=> stop_mask_top,
+					color		=> dim (stop_mask_top, brightness),
 					opacity		=> opacity,
 					style		=> stop_mask_fill,
 					scale		=> scale);
@@ -206,7 +205,7 @@ package body et_colors.board is
 			when BOTTOM =>
 				create_fill_pattern (
 					context		=> context,
-					color		=> stop_mask_bottom,
+					color		=> dim (stop_mask_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stop_mask_fill,
 					scale		=> scale);
@@ -221,13 +220,11 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity)
 	is begin
-		-- CS handle brightness
-		
 		case face is
 			when TOP =>
 				create_fill_pattern (
 					context		=> context,
-					color		=> stencil_top,
+					color		=> dim (stencil_top, brightness),
 					opacity		=> opacity,
 					style		=> stencil_fill,
 					scale		=> scale);
@@ -235,7 +232,7 @@ package body et_colors.board is
 			when BOTTOM =>
 				create_fill_pattern (
 					context		=> context,
-					color		=> stencil_bottom,
+					color		=> dim (stencil_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stencil_fill,
 					scale		=> scale);

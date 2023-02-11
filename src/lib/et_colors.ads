@@ -63,9 +63,14 @@ package et_colors is
 	default_opacity : constant type_opacity := 0.5;
 	no_opacity : constant type_opacity := 1.0;
 
+
+	
 	type type_dim_factor is new color_range; -- 0.0 -> dark, 1.0 -> bright
 
-	dim_factor_default : constant type_dim_factor := 0.6;
+	dim_factor_default	: constant type_dim_factor := 0.6;
+	dim_factor_dark		: constant type_dim_factor := 0.25;
+	dim_factor_bright	: constant type_dim_factor := 1.0;
+
 	
 	-- Changes the brightness of a given color to the value
 	-- given by brightness:
@@ -77,6 +82,15 @@ package et_colors is
 	type type_brightness is (DARK, NORMAL, BRIGHT);
 	brightness_default : constant type_brightness := NORMAL;
 
+
+	-- Modifies the given color by the given brightness:
+	function dim (
+		color		: in type_color;
+		brightness	: in type_brightness)
+		return type_color;
+
+
+	
 	
 	-- Sets the given color, brightness and opacity in the given context:
 	procedure set_color (
@@ -84,6 +98,8 @@ package et_colors is
 		color		: in type_color;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
+
+
 
 	
 	type type_fill_style is (
