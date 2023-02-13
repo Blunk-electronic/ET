@@ -80,46 +80,6 @@ package body et_conductor_text is
 	end move_text;
 
 	
-
-	--function to_polygons (
-		--text		: in type_conductor_text;
-		--tolerance	: in type_distance_positive;
-		--debug		: in boolean := false)					 
-		--return pac_polygon_list.list
-	--is
-		--result : pac_polygon_list.list;
-
-		--linewidth : constant type_float_positive := 
-			--type_float_positive (get_linewidth (text.vectors));
-
-		--tolerance_float : constant type_float_positive := 
-			--type_float_positive (tolerance);
-
-
-		--use pac_polygon_union;
-		
-		--procedure query_line (l : in pac_character_lines.cursor) is
-			--use pac_character_lines;
-			--p : type_polygon := to_polygon (
-				--type_line_fine (element (l)), linewidth, tolerance_float, EXPAND);
-		--begin
-			--if debug then
-				--put_line (to_string (element (l)));
-				--put_line (to_string (p));
-			--end if;
-			
-			----put_line ("line");
-			--result.append (p);
-			---- don't ! multi_union (result);
-		--end query_line;
-		
-	--begin
-		--iterate (text.vectors, query_line'access);
-		--return result;
-	--end to_polygons;
-	
-
-	
 end et_conductor_text;
 
 -- Soli Deo Gloria

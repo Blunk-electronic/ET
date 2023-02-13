@@ -92,41 +92,6 @@ package et_conductor_text is
 		text	: in out type_conductor_text;
 		offset	: in type_distance_relative);
 
-
-	
-	--function to_polygons (
-		--text		: in type_conductor_text;
-		--tolerance	: in type_distance_positive;
-		--debug		: in boolean := false)					 
-		--return pac_polygon_list.list;
-
-	
-	
-	--package pac_conductor_line_segments is new
-		--doubly_linked_lists (type_conductor_line_segment);
-
-
-	--type type_conductor_text_package is new pac_text_fab.type_text_fab_with_content with null record;
-
-
-	
-	--package pac_conductor_texts_package is new 
-		--doubly_linked_lists (type_conductor_text_package);
-
-		
-
-	
-	--type type_conductor_text_board is new type_conductor_text_package with record
-		--layer	: type_signal_layer := type_signal_layer'first;
-	--end record;
-
-	--function to_string (text : in type_conductor_text)
-		--return string;
-	
-	--package pac_conductor_texts_board is new 
-		--doubly_linked_lists (type_conductor_text_board);
-
-	--use pac_conductor_texts_board;
 		
 
 	---- Logs the properties of the given text.
