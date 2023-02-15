@@ -1953,7 +1953,7 @@ package body et_geometry_2 is
 -- ZONES OF A LINE
 	
 	function which_zone (
-		line	: in type_line'class;
+		line	: in type_line;
 		point	: in type_point)
 		return type_line_zone 
 	is
