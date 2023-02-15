@@ -40,11 +40,16 @@ package body et_board_ops.assy_doc is
 
 	use pac_generic_modules;
 	
+	use pac_doc_lines;
+	use pac_doc_arcs;
+	use pac_doc_circles;
+	use pac_doc_texts;
 
+	
 	procedure draw_assy_doc_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		line			: in et_assy_doc.type_doc_line;
+		line			: in type_doc_line;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -52,9 +57,7 @@ package body et_board_ops.assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			use et_assy_doc.pac_doc_lines;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -85,6 +88,20 @@ package body et_board_ops.assy_doc is
 
 	end draw_assy_doc_line;
 
+
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_doc_line;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end move_line;
+
+
 	
 	procedure draw_assy_doc_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -97,9 +114,7 @@ package body et_board_ops.assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			use pac_doc_arcs;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -144,9 +159,7 @@ package body et_board_ops.assy_doc is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			use pac_doc_circles;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -192,9 +205,6 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_doc_lines;
-			use pac_doc_arcs;
-			use pac_doc_circles;
 			line_cursor   : pac_doc_lines.cursor;
 			arc_cursor    : pac_doc_arcs.cursor;
 			circle_cursor : pac_doc_circles.cursor;
@@ -270,6 +280,7 @@ package body et_board_ops.assy_doc is
 			end if;
 			
 		end delete;
+
 		
 	begin -- delete_assy_doc
 		log (text => "module " & to_string (module_name) &
@@ -299,10 +310,9 @@ package body et_board_ops.assy_doc is
 		return pac_doc_texts.list
 	is
 		use et_text;
-		use pac_doc_texts;
 		result : pac_doc_texts.list;
 
-
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 

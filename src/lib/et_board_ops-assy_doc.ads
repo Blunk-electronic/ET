@@ -53,8 +53,18 @@ package et_board_ops.assy_doc is
 	procedure draw_assy_doc_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		line			: in et_assy_doc.type_doc_line;
+		line			: in type_doc_line;
 		log_threshold	: in type_log_level);
+
+	
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_doc_line;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point;
+		log_threshold	: in type_log_level);
+
 
 	
 	-- Draws an arc in the assembly documentation.
