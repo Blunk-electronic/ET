@@ -528,7 +528,7 @@ is
 			when LINE =>
 				case get_field_count is
 					when 11 =>
-						draw_assy_doc_line (
+						draw_line (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							line			=> (
@@ -548,7 +548,7 @@ is
 			when ARC =>
 				case get_field_count is
 					when 14 =>
-						draw_assy_doc_arc (
+						draw_arc (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							arc				=> (
@@ -570,7 +570,7 @@ is
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
-						draw_assy_doc_circle (
+						draw_circle (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							circle			=> (
@@ -2302,7 +2302,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of assembly documentation
-								et_board_ops.assy_doc.delete_assy_doc (
+								et_board_ops.assy_doc.delete (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (

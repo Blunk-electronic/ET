@@ -46,7 +46,7 @@ package body et_board_ops.assy_doc is
 	use pac_doc_texts;
 
 	
-	procedure draw_assy_doc_line (
+	procedure draw_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -71,7 +71,7 @@ package body et_board_ops.assy_doc is
 			end case;
 		end;
 							   
-	begin -- draw_assy_doc_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing assembly documentation line" &
 			" face" & to_string (face) &
@@ -86,7 +86,7 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_assy_doc_line;
+	end draw_line;
 
 
 	procedure move_line (
@@ -103,7 +103,7 @@ package body et_board_ops.assy_doc is
 
 
 	
-	procedure draw_assy_doc_arc (
+	procedure draw_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
@@ -128,7 +128,7 @@ package body et_board_ops.assy_doc is
 			end case;
 		end;
 		
-	begin -- draw_assy_doc_arc
+	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing assembly documentation arc" &
 			" face" & to_string (face) &
@@ -145,10 +145,10 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_assy_doc_arc;
+	end draw_arc;
 
 	
-	procedure draw_assy_doc_circle (
+	procedure draw_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_doc_circle;
@@ -174,7 +174,7 @@ package body et_board_ops.assy_doc is
 			end case;
 		end;
 							   
-	begin -- draw_assy_doc_circle
+	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing assembly documentation circle" &
 			" face" & to_string (face) &
@@ -189,10 +189,10 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_assy_doc_circle;
+	end draw_circle;
 
 	
-	procedure delete_assy_doc (
+	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
@@ -282,7 +282,7 @@ package body et_board_ops.assy_doc is
 		end delete;
 
 		
-	begin -- delete_assy_doc
+	begin
 		log (text => "module " & to_string (module_name) &
 			" deleting assembly documentation segment face" & to_string (face) &
 			" at" & to_string (point) &
@@ -297,7 +297,7 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> delete'access);
 		
-	end delete_assy_doc;
+	end delete;
 
 
 

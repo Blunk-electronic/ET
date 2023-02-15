@@ -50,7 +50,7 @@ package et_board_ops.assy_doc is
 
 
 	-- Draws a line in the assembly documentation.
-	procedure draw_assy_doc_line (
+	procedure draw_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -68,7 +68,7 @@ package et_board_ops.assy_doc is
 
 	
 	-- Draws an arc in the assembly documentation.
-	procedure draw_assy_doc_arc (
+	procedure draw_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;
@@ -76,7 +76,7 @@ package et_board_ops.assy_doc is
 
 	
 	-- Draws a circle in the assembly documentation.
-	procedure draw_assy_doc_circle (
+	procedure draw_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_doc_circle;
@@ -86,7 +86,7 @@ package et_board_ops.assy_doc is
 	-- Deletes the segment of the assembly documentation that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_assy_doc (
+	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
