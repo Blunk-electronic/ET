@@ -56,6 +56,16 @@ package et_board_ops.assy_doc is
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level);
 
+
+	-- Returns all lines in the vicinity of the given point:
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_doc_lines.list;
+						   
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -89,6 +89,24 @@ package body et_board_ops.assy_doc is
 	end draw_line;
 
 
+
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_doc_lines.list
+	is
+		result : pac_doc_lines.list;
+	begin
+		-- CS
+
+		return result;
+	end get_lines;
+
+	
+	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -97,8 +115,32 @@ package body et_board_ops.assy_doc is
 		point			: in type_point;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+		begin
+			-- CS
+			null;
+		end query_module;
+
 	begin
-		null;
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " moving assembly documentation line" & to_string (line)
+			& " point of attack " & to_string (point),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		
+		log_indentation_down;
 	end move_line;
 
 
