@@ -65,6 +65,9 @@ is
 				
 			when VERB_MOVE =>
 				case noun is
+					when NOUN_ASSY =>
+						et_canvas_board_assy_doc.move_object (MOUSE, point);
+
 					when NOUN_DEVICE =>
 						move_electrical_device (MOUSE, point);
 
@@ -137,6 +140,11 @@ is
 							--clarify_placeholder;
 						--end if;
 
+					when NOUN_ASSY =>
+						if clarification_pending then
+							et_canvas_board_assy_doc.select_object;
+						end if;
+					
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							select_electrical_device;

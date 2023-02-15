@@ -78,6 +78,8 @@ with et_logging;					use et_logging;
 with et_canvas_board_texts;			use et_canvas_board_texts;
 with et_canvas_board_vias;			use et_canvas_board_vias;
 with et_canvas_board_devices;		use et_canvas_board_devices;
+with et_canvas_board_assy_doc;		use et_canvas_board_assy_doc;
+
 
 package et_canvas_board is
 

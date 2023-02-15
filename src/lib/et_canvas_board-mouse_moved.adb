@@ -44,6 +44,11 @@ is begin
 	case verb is
 		when VERB_MOVE =>
 			case noun is
+				when NOUN_ASSY =>
+					if et_canvas_board_assy_doc.preliminary_object.ready then
+						redraw_board;
+					end if;
+				
 				when NOUN_DEVICE =>
 					if preliminary_electrical_device.ready then
 						redraw_board;

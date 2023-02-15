@@ -163,6 +163,10 @@ is
 	
 	procedure move is begin
 		case key is
+			when GDK_LC_a =>
+				noun := NOUN_ASSY;
+				set_status (status_move_object);
+
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
 				set_status (status_move_device);
@@ -184,6 +188,9 @@ is
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
 				case noun is
+					when NOUN_ASSY =>
+						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
+						
 					when NOUN_DEVICE =>		
 						move_electrical_device (KEYBOARD, point);
 						
@@ -214,6 +221,11 @@ is
 							--clarify_placeholder;
 						--end if;
 
+					when NOUN_ASSY =>
+						if clarification_pending then
+							et_canvas_board_assy_doc.select_object;
+						end if;
+					
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							select_electrical_device;
