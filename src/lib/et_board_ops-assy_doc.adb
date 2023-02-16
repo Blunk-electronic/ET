@@ -99,8 +99,58 @@ package body et_board_ops.assy_doc is
 		return pac_doc_lines.list
 	is
 		result : pac_doc_lines.list;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+
+			procedure query_line (c : in pac_doc_lines.cursor) is
+				-- use pac_geometry_brd;
+				
+				line : type_doc_line renames element (c);
+				-- distance_to_point : constant type_float_positive := 
+				-- 	get_shortest_distance (line, point);
+			begin
+				-- if distance_to_point <= catch_zone then
+				-- 	result.append (line);
+				-- end if;
+
+				if in_catch_zone (
+					line	=> line,
+					width	=> line.width,
+					point	=> point,
+					zone	=> catch_zone)
+				then
+					result.append (line);
+				end if;
+			end query_line;
+			
+		begin
+			case face is
+				when TOP =>
+					module.board.assy_doc.top.lines.iterate (query_line'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.lines.iterate (query_line'access);
+			end case;
+		end query_module;
+			
 	begin
-		-- CS
+		log (text => "looking up lines at" & to_string (point) 
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;		
 
 		return result;
 	end get_lines;

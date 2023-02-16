@@ -1867,6 +1867,46 @@ package body et_geometry_2 is
 		return get_shortest_distance (point, to_line_fine (line));
 	end get_shortest_distance;
 
+
+	function in_catch_zone (
+		line	: in type_line;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_point;
+		zone	: in type_catch_zone)
+		return boolean
+	is
+		width_float : constant type_float_positive := type_float_positive (width);
+		distance_to_point : type_float_positive;
+	begin
+		distance_to_point := get_shortest_distance (line, point);
+
+		-- If no linewidth, then we simply compare the distance_to_point
+		-- with the zone:
+		if width = 0.0 then
+			if distance_to_point <= zone then
+				return true;
+			else
+				return false;
+			end if;
+
+		-- If a linewidth is given then there are two possible cases.
+		-- Case 1: The given point is inside the strip around the line.
+		-- Case 2: The point is outside the strip around the line.
+		else
+			if distance_to_point <= width_float then
+				-- case 1
+				return true;
+			else
+				-- case 2
+				if distance_to_point - width_float <= zone then 
+					return true;
+				else
+					return false;
+				end if;				
+			end if;
+		end if;
+	end in_catch_zone;
+
 	
 	
 	function get_intersection (
@@ -1879,7 +1919,7 @@ package body et_geometry_2 is
 			line		=> to_line_fine (line));		
 	end get_intersection;
 
-
+	
 
 	function get_intersection (
 		line_1, line_2 : in type_line)

@@ -923,6 +923,20 @@ package et_geometry_2 is
 		line	: in type_line;
 		point	: in type_vector)
 		return type_float_positive;
+
+
+	-- Returns true if the given line is in the catch zone
+	-- of the given point.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account when the distance of the point
+	-- to the line is computed. If a linewidth greater zero
+	-- is given, then we assume, that the line has round caps:
+	function in_catch_zone (
+		line	: in type_line;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_point;
+		zone	: in type_catch_zone)
+		return boolean;
 	
 	
 	-- Tests whether the given line_vector intersects the given 
