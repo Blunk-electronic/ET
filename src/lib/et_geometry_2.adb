@@ -1959,6 +1959,23 @@ package body et_geometry_2 is
 		move_by (point	=> line.end_point,		offset => offset);
 	end move_by;
 
+
+	procedure move_start_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (line.start_point, offset);
+	end move_start_by;
+
+
+	procedure move_end_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (line.end_point, offset);
+	end move_end_by;
+
+
 	
 	procedure mirror (
 		line		: in out type_line;
@@ -2076,6 +2093,36 @@ package body et_geometry_2 is
 		return zone;
 	end which_zone;
 
+
+
+	procedure move_line_to (
+		line			: in out type_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point)
+	is
+		zone : type_line_zone;
+		offset : type_distance_relative;
+	begin
+		zone := which_zone (line, point_of_attack);
+
+		case zone is
+			when START_POINT =>
+				offset := get_distance_relative (line.start_point, destination);
+				move_start_by (line, offset);
+				
+			when END_POINT =>
+				offset := get_distance_relative (line.end_point, destination);
+				move_end_by (line, offset);
+				
+			when CENTER =>
+				offset := get_distance_relative (line.start_point, destination);
+				move_start_by (line, offset);
+				
+				offset := get_distance_relative (line.end_point, destination);
+				move_end_by (line, offset);
+
+		end case;
+	end move_line_to;
 
 	
 

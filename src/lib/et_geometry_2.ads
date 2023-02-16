@@ -971,10 +971,22 @@ package et_geometry_2 is
 		distance	: in type_distance_positive);
 							
 	-- Moves a line by the given offset. 
+	-- This moves both start and end point by the given offset:
 	procedure move_by (
 		line	: in out type_line;
 		offset	: in type_distance_relative);
 
+	-- Moves the start point of a line by the given offset. 
+	procedure move_start_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative);
+
+	-- Moves the end point of a line by the given offset. 
+	procedure move_end_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative);
+	
+	
 	-- Mirrors a line along the given axis.
 	procedure mirror (
 		line		: in out type_line;
@@ -1018,6 +1030,14 @@ package et_geometry_2 is
 		return type_line_zone;
 
 
+	-- Moves a the start point, the end point or both ends of a line
+	-- according to the zone where the line is being attacked.
+	procedure move_line_to (
+		line			: in out type_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point);
+
+	
 
 -- ARC
 	
