@@ -1043,6 +1043,7 @@ package body et_schematic_ops.nets is
 									when ABSOLUTE =>
 										if dx = zero or dy = zero then
 
+											-- CS use procedure move_line_to ?
 											move_by (
 												point	=> segment.start_point,
 												offset	=> to_distance_relative (set (dx, dy)));
@@ -1062,6 +1063,7 @@ package body et_schematic_ops.nets is
 									when ABSOLUTE =>
 										if dx = zero or dy = zero then
 
+											-- CS use procedure move_line_to ?
 											move_by (
 												point	=> segment.end_point,
 												offset	=> to_distance_relative (set (dx, dy)));
@@ -1079,6 +1081,7 @@ package body et_schematic_ops.nets is
 							when CENTER =>
 								case coordinates is
 									when ABSOLUTE =>
+										-- CS use procedure move_line_to ?
 										move_by (
 											point	=> segment.start_point,
 											offset	=> to_distance_relative (set (dx, dy)));
