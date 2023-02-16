@@ -71,8 +71,9 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point_of_attack	: in type_point;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
 

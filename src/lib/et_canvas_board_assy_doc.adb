@@ -277,8 +277,8 @@ package body et_canvas_board_assy_doc is
 		point	: in type_point)
 	is
 
-		-- Assigns the final position after the move to the selected text.
-		-- Resets variable preliminary_text:
+		-- Assigns the final position after the move to the selected object.
+		-- Resets variable preliminary_object:
 		procedure finalize is 
 			use et_board_ops.assy_doc;
 		begin
@@ -295,8 +295,9 @@ package body et_canvas_board_assy_doc is
 								module_cursor	=> current_active_module,
 								face			=> object.line_face,
 								line			=> object.line,
-								coordinates		=> ABSOLUTE,
-								point			=> point,
+								point_of_attack	=> preliminary_object.point_of_attack,
+								-- coordinates		=> ABSOLUTE,
+								destination		=> point,
 								log_threshold	=> log_threshold);
 
 						when ARC =>
@@ -322,6 +323,8 @@ package body et_canvas_board_assy_doc is
 
 			-- Set the tool being used:
 			preliminary_object.tool := tool;
+
+			preliminary_object.point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:

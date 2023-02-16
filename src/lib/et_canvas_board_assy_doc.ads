@@ -79,6 +79,8 @@ package et_canvas_board_assy_doc is
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the object:
 		tool	: type_tool := MOUSE;
+
+		point_of_attack : type_point;
 		
 		face	: type_face := face_default;
 

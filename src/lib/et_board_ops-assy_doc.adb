@@ -161,8 +161,9 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point_of_attack	: in type_point;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_point;
 		log_threshold	: in type_log_level)
 	is
 
@@ -170,17 +171,39 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			line_cursor : pac_doc_lines.cursor;
+
+			procedure query_line (line : in out type_doc_line) is
+			begin
+				-- case coordinates is
+					-- when ABSOLUTE =>
+						move_line_to (line, point_of_attack, destination);
+						-- null;
+					-- when RELATIVE =>
+						-- null;
+						-- CS
+				-- end case;
+			end query_line;
+			
 		begin
-			-- CS
-			null;
+			case face is
+				when TOP =>
+					line_cursor := module.board.assy_doc.top.lines.find (line);
+					module.board.assy_doc.top.lines.update_element (line_cursor, query_line'access);
+					
+				when BOTTOM =>
+					line_cursor := module.board.assy_doc.bottom.lines.find (line);
+					module.board.assy_doc.bottom.lines.update_element (line_cursor, query_line'access);
+			end case;
 		end query_module;
 
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
-			& " moving assembly documentation line" & to_string (line)
-			& " point of attack " & to_string (point),
+			& " moving assy doc " & to_string (line)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
