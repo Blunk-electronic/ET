@@ -1010,10 +1010,11 @@ package body et_schematic_ops.nets is
 		
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
-			procedure query_strands (
+			module		: in out type_module)
+		is
+			
 			-- Searches the strands of the net for a segment that sits on given point_of_attack.
+			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -1030,78 +1031,25 @@ package body et_schematic_ops.nets is
 
 					
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
-						-- In case absolute movement is required we need these values:
-						dx : constant type_distance := get_distance (point_of_attack.place, destination, X);
-						dy : constant type_distance := get_distance (point_of_attack.place, destination, Y);
-
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := segment;
 					begin
-						case zone is
-							when START_POINT =>
-								case coordinates is
-									when ABSOLUTE =>
-										if dx = zero or dy = zero then
+						case coordinates is
+							when ABSOLUTE =>
+								move_line_to (segment, point_of_attack.place, destination);
 
-											-- CS use procedure move_line_to ?
-											move_by (
-												point	=> segment.start_point,
-												offset	=> to_distance_relative (set (dx, dy)));
+							when RELATIVE =>
+								case zone is
+									when START_POINT =>
+										move_start_by (segment, to_distance_relative (destination));
+
+									when END_POINT =>
+										move_end_by (segment, to_distance_relative (destination));
 										
-										else
-											segment.start_point := destination;
-										end if;
-										
-									when RELATIVE =>
-										move_by (
-											point	=> segment.start_point,
-											offset	=> to_distance_relative (destination));
-								end case;
-								
-							when END_POINT =>
-								case coordinates is
-									when ABSOLUTE =>
-										if dx = zero or dy = zero then
-
-											-- CS use procedure move_line_to ?
-											move_by (
-												point	=> segment.end_point,
-												offset	=> to_distance_relative (set (dx, dy)));
-
-										else
-											segment.end_point := destination;
-										end if;
-
-									when RELATIVE =>
-										move_by (
-											point	=> segment.end_point,
-											offset	=> to_distance_relative (destination));
-								end case;
-
-							when CENTER =>
-								case coordinates is
-									when ABSOLUTE =>
-										-- CS use procedure move_line_to ?
-										move_by (
-											point	=> segment.start_point,
-											offset	=> to_distance_relative (set (dx, dy)));
-
-										move_by (
-											point	=> segment.end_point,
-											offset	=> to_distance_relative (set (dx, dy)));
-
-									when RELATIVE =>
-										move_by (
-											point	=> segment.start_point,
-											offset	=> to_distance_relative (destination) -- the given position is relative
-											);
-
-										move_by (
-											point	=> segment.end_point,
-											offset	=> to_distance_relative (destination) -- the given position is relative
-											);
-										
-								end case;
+									when CENTER =>
+										move_start_by (segment, to_distance_relative (destination));
+										move_end_by (segment, to_distance_relative (destination));
+								end case;										
 						end case;
 
 						move_net_labels (
@@ -1112,9 +1060,9 @@ package body et_schematic_ops.nets is
 					end move_targeted_segment;
 
 					
-					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
 					-- This procedure moves the start/end points of segments that are connected
 					-- with the target_segment_before.
+					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := connected_segment;

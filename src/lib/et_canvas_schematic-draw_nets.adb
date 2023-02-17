@@ -543,8 +543,6 @@ is
 				point	=> segment.point_of_attack,
 				line	=> element (original_segment));
 
-		dx, dy : type_distance;
-
 		destination : type_point;
 		primary_segment : type_net_segment;
 
@@ -603,57 +601,11 @@ is
 					destination := cursor_main.position;
 			end case;
 
-			-- calculate the distance in x and y from point of attack to destination:
-			dx := get_distance (segment.point_of_attack, destination, X);
-			dy := get_distance (segment.point_of_attack, destination, Y);
-			
+		
 			case verb is
 				when VERB_DRAG =>
-
-					-- Depending on the zone being dragged, we move the
-					-- start or/and end point of the primary segment:
-					case zone is
-						when START_POINT =>
-							if dx = zero or dy = zero then
-
-								move_by (
-									point	=> primary_segment.start_point,
-									offset	=> to_distance_relative (set (dx, dy)));
-							
-							else
-								primary_segment.start_point := destination;
-							end if;
-
-							move_labels_and_secondary_nets;
-										
-						when END_POINT =>
-							if dx = zero or dy = zero then
-
-								move_by (
-									point	=> primary_segment.end_point,
-									offset	=> to_distance_relative (set (dx, dy)));
-							
-							else
-								primary_segment.end_point := destination;
-							end if;
-
-							move_labels_and_secondary_nets;
-							
-						when CENTER =>
-							move_by (
-								point	=> primary_segment.start_point,
-								offset	=> to_distance_relative (set (dx, dy)));
-
-							move_by (
-								point	=> primary_segment.end_point,
-								offset	=> to_distance_relative (set (dx, dy)));
-
-							move_labels_and_secondary_nets;
-
-					end case;
-					
-	-- 			when VERB_MOVE =>
-	-- 				null;
+					move_line_to (primary_segment, segment.point_of_attack, destination);
+					move_labels_and_secondary_nets;
 
 				when others => null;
 			end case;
