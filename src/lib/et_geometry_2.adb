@@ -2100,25 +2100,20 @@ package body et_geometry_2 is
 		point_of_attack	: in type_point;
 		destination		: in type_point)
 	is
-		zone : type_line_zone;
-		offset : type_distance_relative;
-	begin
-		zone := which_zone (line, point_of_attack);
+		zone : constant type_line_zone := which_zone (line, point_of_attack);
 
+		offset : constant type_distance_relative := 
+			get_distance_relative (point_of_attack, destination);
+	begin
 		case zone is
 			when START_POINT =>
-				offset := get_distance_relative (line.start_point, destination);
 				move_start_by (line, offset);
 				
 			when END_POINT =>
-				offset := get_distance_relative (line.end_point, destination);
 				move_end_by (line, offset);
 				
 			when CENTER =>
-				offset := get_distance_relative (line.start_point, destination);
 				move_start_by (line, offset);
-				
-				offset := get_distance_relative (line.end_point, destination);
 				move_end_by (line, offset);
 
 		end case;
