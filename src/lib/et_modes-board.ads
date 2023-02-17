@@ -75,6 +75,7 @@ package et_modes.board is
 	
 	type type_noun is (
 		NOUN_ASSY, -- assembly documentation
+		NOUN_ARC,
 		NOUN_BOARD,
 		NOUN_CENTER,
 		NOUN_CONDUCTORS,
@@ -88,6 +89,7 @@ package et_modes.board is
 		NOUN_KEEPOUT,
 		NOUN_LAYER, 	-- signal layer with dielectic
 		NOUN_LEVEL,
+		NOUN_LINE,
 		NOUN_NAME,
 		NOUN_NET,
 		NOUN_ORIGINS, -- the center of a package

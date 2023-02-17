@@ -259,7 +259,42 @@ is
 		end case;
 	end move;
 
-	
+
+	procedure draw is begin
+		case key is
+			when GDK_LC_l =>
+				noun := NOUN_LINE;
+				show_line_properties;
+				set_status (status_draw_line);
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when GDK_Space =>
+				case noun is
+					when NOUN_LINE =>
+
+						-- CS separate procedure ?
+						make_line (point);
+
+						if preliminary_line.complete then
+							case preliminary_line.category is
+								when LAYER_CAT_ASSY =>
+									draw_doc_line;
+
+								-- CS
+								when others => null;
+							end case;
+						end if;
+						
+					when others => null;
+				end case;
+
+				
+			when others => status_noun_invalid;
+		end case;
+	end draw;
+		
+		
 	procedure place is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -366,6 +401,7 @@ begin -- key_pressed
 			reset_request_clarification;
 			status_enter_verb;
 
+			reset_preliminary_line;
 			reset_preliminary_text; -- after placing a text
 			reset_preliminary_via; -- after placing a via
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
@@ -462,6 +498,7 @@ begin -- key_pressed
 
 						case verb is
 							when VERB_DELETE	=> delete;
+							when VERB_DRAW		=> draw;
 							when VERB_FILL		=> fill;
 							when VERB_FLIP		=> flip;
 							when VERB_MOVE		=> move;

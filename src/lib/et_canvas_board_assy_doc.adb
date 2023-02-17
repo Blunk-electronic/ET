@@ -42,7 +42,7 @@ with et_project.modules;				use et_project.modules;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
-with et_board_ops.assy_doc;
+with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
 
 with et_logging;						use et_logging;
 
@@ -265,7 +265,20 @@ package body et_canvas_board_assy_doc is
 	
 -- PLACING:
 
-	
+	procedure draw_doc_line
+	is 
+		line : type_doc_line;
+	begin
+		line := (preliminary_line.line with preliminary_line.width);
+
+		draw_line (
+			module_name	=> pac_generic_modules.key (current_active_module),
+			face		=> preliminary_line.face,
+			line		=> line,
+			log_threshold	=> log_threshold);
+		
+	end draw_doc_line;
+
 	
 
 -- MOVE:

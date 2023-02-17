@@ -75,6 +75,7 @@ with et_canvas_general;				use et_canvas_general;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
+with et_canvas_board_lines;			use et_canvas_board_lines;
 with et_canvas_board_texts;			use et_canvas_board_texts;
 with et_canvas_board_vias;			use et_canvas_board_vias;
 with et_canvas_board_devices;		use et_canvas_board_devices;

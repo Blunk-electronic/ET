@@ -41,7 +41,6 @@ with ada.containers;   			       	use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.box;							use gtk.box;
--- with gtk.text_view;						--use gtk.text_view;
 
 with et_canvas_general;					use et_canvas_general;
 
@@ -49,24 +48,13 @@ with et_geometry;						use et_geometry;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
--- with et_text;							use et_text;
-
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
--- use et_board_shapes_and_text.pac_text_board;
 
--- with et_pcb_stack;						use et_pcb_stack;
-
--- with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
--- with et_stop_mask;						use et_stop_mask;
--- with et_conductor_text.boards;			use et_conductor_text.boards;
-
+with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
 package et_canvas_board_assy_doc is
-
-
-
 	
 
 	-- Before placing, moving, deleting or other operations we
@@ -191,7 +179,9 @@ package et_canvas_board_assy_doc is
 	
 -- PLACING:
 
-	-- CS
+	procedure draw_doc_line;
+	
+
 	
 
 -- MOVE:
