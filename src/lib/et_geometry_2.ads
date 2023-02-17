@@ -1024,7 +1024,7 @@ package et_geometry_2 is
 	
 	-- Calculates the zone of the line where point is nearest.
 	-- Point is not required to sit exactly on the line.
-	function which_zone ( -- CS rename to get_zone
+	function get_zone (
 		line	: in type_line;
 		point	: in type_point)
 		return type_line_zone;

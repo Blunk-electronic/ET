@@ -539,7 +539,7 @@ is
 		use et_schematic_ops.nets;
 
 		-- Calculate the zone where the original segment is being attacked:
-		zone : constant type_line_zone := which_zone (
+		zone : constant type_line_zone := get_zone (
 				point	=> segment.point_of_attack,
 				line	=> element (original_segment));
 

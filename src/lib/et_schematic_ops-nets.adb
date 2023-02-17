@@ -1282,7 +1282,7 @@ package body et_schematic_ops.nets is
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							
 							-- Calculate the zone of attack:
-							zone := which_zone (
+							zone := get_zone (
 								point	=> point_of_attack.place,
 								line	=> element (segment_cursor));
 

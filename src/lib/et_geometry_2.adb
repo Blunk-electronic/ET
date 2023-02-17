@@ -2009,7 +2009,7 @@ package body et_geometry_2 is
 
 -- ZONES OF A LINE
 	
-	function which_zone (
+	function get_zone (
 		line	: in type_line;
 		point	: in type_point)
 		return type_line_zone 
@@ -2019,7 +2019,7 @@ package body et_geometry_2 is
 		line_length : type_distance;
 		zone_border : type_distance;
 		
-	begin -- which_zone
+	begin -- get_zone
 		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
 		
 		-- The greater distance from start to end point in X or Y determines 
@@ -2091,7 +2091,7 @@ package body et_geometry_2 is
 		end if;
 		
 		return zone;
-	end which_zone;
+	end get_zone;
 
 
 
@@ -2100,7 +2100,7 @@ package body et_geometry_2 is
 		point_of_attack	: in type_point;
 		destination		: in type_point)
 	is
-		zone : constant type_line_zone := which_zone (line, point_of_attack);
+		zone : constant type_line_zone := get_zone (line, point_of_attack);
 
 		offset : constant type_distance_relative := 
 			get_distance_relative (point_of_attack, destination);
