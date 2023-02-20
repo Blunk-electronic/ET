@@ -40,9 +40,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_sets;
-with ada.numerics;
-
-with ada.numerics.generic_elementary_functions;
 
 with glib;
 
@@ -94,15 +91,6 @@ package et_geometry is
 		return type_direction_of_rotation;
 
 	
-	
-	-- While drawing and editing we need information about the tool being used.
-	-- This is relevant for GUI operations only:
-	type type_tool is (MOUSE, KEYBOARD);
-
-	function to_string (tool : in type_tool) return string;
-
-	function to_tool (tool : in string) return type_tool;
-
 
 
 	

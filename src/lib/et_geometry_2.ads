@@ -1504,55 +1504,55 @@ package et_geometry_2 is
 
 	
 
--- PATH FROM POINT TO POINT
-	
-	-- When creating a path from one point to another use this type.
-	-- NOTE: This is general stuff. This does apply to all kinds of lines
-	-- from one point to another (nets, documentation, tracks, ...) !
-	-- If no bend, then we have just a start and an end point which 
-	--  will result in a direct line between the two points.
-	-- If bended, then we get an extra point where the bending takes place
-	--  which will result in two lines that connect the two points:
-	type type_path (bended : type_bended) is record
-		start_point, end_point : type_point;
-		case bended is
-			when NO		=> null; -- no bend
-			when YES	=> bend_point : type_point;
-		end case;
-	end record;
-
-	
-	-- Computes a path between two points according to the given bend style:
-	function to_path (
-		start_point, end_point	: in type_point;
-		style					: in type_bend_style)
-		return type_path;
-
-	
-	-- When a path is being drawn from one point to another
-	-- then we speak about a path from start point to end point
-	-- and optionally a bending point where the path changes
-	-- direction.
-	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
-	-- when being drawn via the GUI.
-	-- The path being drawn must provide information about the tool it is
-	-- being drawn with (mouse, touchpad, keyboard).
-	type type_path_live is record
-		being_drawn	: boolean := false;
-
-		start_point	: type_point;
-		end_point	: type_point;
-
-		bended		: type_bended := NO;
-		bend_point	: type_point;
-		bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
-		
-		tool		: type_tool := MOUSE;
-	end record;
-
-	
-	-- Switches to the next bend style of the given live path:
-	procedure next_bend_style (path : in out type_path_live);
+-- -- PATH FROM POINT TO POINT
+-- 	
+-- 	-- When creating a path from one point to another use this type.
+-- 	-- NOTE: This is general stuff. This does apply to all kinds of lines
+-- 	-- from one point to another (nets, documentation, tracks, ...) !
+-- 	-- If no bend, then we have just a start and an end point which 
+-- 	--  will result in a direct line between the two points.
+-- 	-- If bended, then we get an extra point where the bending takes place
+-- 	--  which will result in two lines that connect the two points:
+-- 	type type_path (bended : type_bended) is record
+-- 		start_point, end_point : type_point;
+-- 		case bended is
+-- 			when NO		=> null; -- no bend
+-- 			when YES	=> bend_point : type_point;
+-- 		end case;
+-- 	end record;
+-- 
+-- 	
+-- 	-- Computes a path between two points according to the given bend style:
+-- 	function to_path (
+-- 		start_point, end_point	: in type_point;
+-- 		style					: in type_bend_style)
+-- 		return type_path;
+-- 
+-- 	
+-- 	-- When a path is being drawn from one point to another
+-- 	-- then we speak about a path from start point to end point
+-- 	-- and optionally a bending point where the path changes
+-- 	-- direction.
+-- 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
+-- 	-- when being drawn via the GUI.
+-- 	-- The path being drawn must provide information about the tool it is
+-- 	-- being drawn with (mouse, touchpad, keyboard).
+-- 	type type_path_live is record
+-- 		being_drawn	: boolean := false;
+-- 
+-- 		start_point	: type_point;
+-- 		end_point	: type_point;
+-- 
+-- 		bended		: type_bended := NO;
+-- 		bend_point	: type_point;
+-- 		bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
+-- 		
+-- 		tool		: type_tool := MOUSE;
+-- 	end record;
+-- 
+-- 	
+-- 	-- Switches to the next bend style of the given live path:
+-- 	procedure next_bend_style (path : in out type_path_live);
 
 
 	

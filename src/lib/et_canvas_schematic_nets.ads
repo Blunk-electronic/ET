@@ -45,6 +45,7 @@ with et_net_names;					use et_net_names;
 with et_geometry;					use et_geometry;
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
+with et_canvas_schematic;
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_2;
 
@@ -61,6 +62,8 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 
+	use et_canvas_schematic.pac_canvas;
+	
 	use et_project.modules.pac_generic_modules;
 
 	use pac_net_name;
