@@ -1055,10 +1055,10 @@ package et_geometry_2 is
 	
 	function to_arc_fine (
 		arc : in type_arc)
-		return pac_geometry_1.type_arc;
+		return pac_geometry_1.type_arc_fine;
 
 	function to_arc_coarse (
-		arc : in pac_geometry_1.type_arc)
+		arc : in pac_geometry_1.type_arc_fine)
 		return type_arc'class;
 
 	

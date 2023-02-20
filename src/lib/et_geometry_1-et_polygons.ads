@@ -115,7 +115,7 @@ package et_geometry_1.et_polygons is
 	-- The edges start on the start point of the given arc and
 	-- end on the end point of the given arc:
 	function to_edges (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
@@ -953,7 +953,7 @@ package et_geometry_1.et_polygons is
 	-- Converts an arc with a given width to a polygon
 	-- with round caps on the arc ends:
 	function to_polygon (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		linewidth	: in type_float_positive;
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)

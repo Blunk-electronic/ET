@@ -1064,7 +1064,7 @@ package pac_canvas is
 	-- The arc will be drawn if its bounding box intersects global area.
 	-- If area is no_rectangle then the arc would be drawn in any case.
 	procedure draw_arc (
-		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
+		arc		: in pac_geometry_2.pac_geometry_1.type_arc_fine;
 
 		-- The line width is used for calculating the boundaries.
 		-- The width for the actual drawing must be set by the caller.

@@ -80,7 +80,7 @@ package body et_geometry_1.et_polygons is
 	
 
 	function to_edges (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
@@ -96,7 +96,7 @@ package body et_geometry_1.et_polygons is
 		arc_offset : constant type_offset := to_offset (arc.center);
 
 		-- Make a copy of the given arc with its center on the origin (0/0):
-		arc_origin : constant type_arc := move_to (arc, null_vector);
+		arc_origin : constant type_arc_fine := move_to (arc, null_vector);
 
 		-- Get the start and end angles of the arc:
 		arc_angles : constant type_arc_angles := to_arc_angles (arc_origin);
@@ -3462,7 +3462,7 @@ package body et_geometry_1.et_polygons is
 		center : constant type_edge := type_edge (line);
 		edge_right, edge_left : type_edge := center;
 		
-		arc : type_arc;
+		arc : type_arc_fine;
 		edges : pac_edges.list;
 		
 	begin
@@ -3505,7 +3505,7 @@ package body et_geometry_1.et_polygons is
 
 
 	function to_polygon (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		linewidth	: in type_float_positive;
 		tolerance	: in type_float_positive;
 		mode		: in type_approximation_mode)
@@ -3515,7 +3515,7 @@ package body et_geometry_1.et_polygons is
 
 		-- Normalize given arc so that it runs CCW.
 		-- Basing on arc_n everything else will be computed.
-		arc_n : constant type_arc := normalize_arc (arc);
+		arc_n : constant type_arc_fine := normalize_arc (arc);
 
 		center_radius : constant type_float_positive := get_radius_start (arc_n);
 		half_width    : constant type_float_positive := linewidth * 0.5;
@@ -3532,9 +3532,9 @@ package body et_geometry_1.et_polygons is
 
 		-- There will be an arc on the start and an arc on the end.
 		-- These arcs form the round caps:
-		arc_s, arc_e : type_arc;
+		arc_s, arc_e : type_arc_fine;
 
-		scratch_i, scratch_o : type_arc;		
+		scratch_i, scratch_o : type_arc_fine;		
 
 		edges : pac_edges.list;
 

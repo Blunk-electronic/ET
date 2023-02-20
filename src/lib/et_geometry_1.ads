@@ -1017,7 +1017,7 @@ package et_geometry_1 is
 
 	arc_direction_default : constant type_direction_of_rotation := CCW;
 	
-	type type_arc is record -- CS rename to type_arc_fine
+	type type_arc_fine is record
 		center		: type_vector;
 		start_point	: type_vector;
 		end_point	: type_vector;
@@ -1027,48 +1027,48 @@ package et_geometry_1 is
 
 
 	function to_string (
-		arc : in type_arc)
+		arc : in type_arc_fine)
 		return string;
 
 
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
-		arc : in type_arc) 
+		arc : in type_arc_fine) 
 		return type_float_positive;
 	
 	
 	-- Returns the distance between the end point and the center of the arc.
 	function get_radius_end (
-		arc : in type_arc) 
+		arc : in type_arc_fine) 
 		return type_float_positive;
 
 	
 	-- Swaps start and end point of an arc. Reverses the direction of the arc:
 	function reverse_arc (
-		arc : in type_arc) 
-		return type_arc;
+		arc : in type_arc_fine) 
+		return type_arc_fine;
 	
 	procedure reverse_arc (
-		arc : in out type_arc);
+		arc : in out type_arc_fine);
 
 
 	-- Changes the direction of an arc to CCW (mathematical sense)
 	-- by swapping start and end point. If direction is already CCW
 	-- then nothing happens.
 	function normalize_arc (
-		arc: in type_arc) 
-		return type_arc;
+		arc: in type_arc_fine) 
+		return type_arc_fine;
 
 	
 	-- Returns true if start and end point of arc are equal:
 	function zero_length (
-		arc : in type_arc) 
+		arc : in type_arc_fine) 
 		return boolean;
 
 
 	-- Returns the total span in degree between start and end of an arc:
 	function get_span (
-		arc	: type_arc)
+		arc	: type_arc_fine)
 		return type_angle;
 
 	
@@ -1094,31 +1094,31 @@ package et_geometry_1 is
 	
 	-- Moves an arc to the given position. 
 	procedure move_to (
-		arc			: in out type_arc;
+		arc			: in out type_arc_fine;
 		position	: in type_vector);
 
 	
 	function move_to (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		position	: in type_vector)
-		return type_arc;
+		return type_arc_fine;
 	
 
-	-- Converts a type_arc to a type_arc_angles.
+	-- Converts a type_arc_fine to a type_arc_fine_angles.
 	-- By default an arc having same start and end point
 	-- is regarded as a full circle. So the resulting arc will
 	-- have a span of 360 degrees.
 	-- If argument allow_full_circle is false, then such an arc
 	-- will be regarded as having a span of zero degree.
 	function to_arc_angles (
-		arc					: in type_arc;
+		arc					: in type_arc_fine;
 		allow_full_circle	: in boolean := true) 
 		return type_arc_angles;
 
 	
 	function to_arc (
 		arc : in type_arc_angles) 
-		return type_arc;
+		return type_arc_fine;
 	
 
 

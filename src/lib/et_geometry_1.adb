@@ -2112,7 +2112,7 @@ package body et_geometry_1 is
 -- ARCS
 
 	function to_string (
-		arc : in type_arc)
+		arc : in type_arc_fine)
 		return string 
 	is begin
 		return "arc: "
@@ -2124,7 +2124,7 @@ package body et_geometry_1 is
 
 
 	function get_radius_start (
-		arc : in type_arc) 
+		arc : in type_arc_fine) 
 		return type_float_positive 
 	is begin
 		return get_distance_total (arc.center, arc.start_point);
@@ -2132,7 +2132,7 @@ package body et_geometry_1 is
 
 	
 	function get_radius_end (
-		arc : in type_arc)
+		arc : in type_arc_fine)
 		return type_float_positive
 	is begin
 		return get_distance_total (arc.center, arc.end_point);
@@ -2140,10 +2140,10 @@ package body et_geometry_1 is
 
 
 	function reverse_arc (
-		arc : in type_arc) 
-		return type_arc
+		arc : in type_arc_fine) 
+		return type_arc_fine
 	is
-		result : type_arc := arc;
+		result : type_arc_fine := arc;
 	begin
 		result.start_point := arc.end_point;
 		result.end_point := arc.start_point;
@@ -2158,7 +2158,7 @@ package body et_geometry_1 is
 
 	
 	procedure reverse_arc (
-		arc : in out type_arc) 
+		arc : in out type_arc_fine) 
 	is
 		scratch : type_vector := arc.start_point;
 	begin
@@ -2173,8 +2173,8 @@ package body et_geometry_1 is
 
 
 	function normalize_arc (
-		arc: in type_arc) 
-		return type_arc
+		arc: in type_arc_fine) 
+		return type_arc_fine
 	is begin
 		case arc.direction is
 			when CW  => return reverse_arc (arc);					
@@ -2184,7 +2184,7 @@ package body et_geometry_1 is
 
 
 	function zero_length (
-		arc : in type_arc) 
+		arc : in type_arc_fine) 
 		return boolean 
 	is begin
 		if arc.start_point = arc.end_point then
@@ -2196,7 +2196,7 @@ package body et_geometry_1 is
 
 
 	function get_span (
-		arc	: type_arc)
+		arc	: type_arc_fine)
 		return type_angle
 	is
 		result : type_angle;
@@ -2248,7 +2248,7 @@ package body et_geometry_1 is
 
 	
 	procedure move_to (
-		arc			: in out type_arc;
+		arc			: in out type_arc_fine;
 		position	: in type_vector)
 	is
 		offset : constant type_offset := get_offset (arc.center, position);
@@ -2263,11 +2263,11 @@ package body et_geometry_1 is
 
 
 	function move_to (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		position	: in type_vector)
-		return type_arc
+		return type_arc_fine
 	is
-		result : type_arc := arc;
+		result : type_arc_fine := arc;
 	begin
 		move_to (result, position);
 		return result;
@@ -2275,7 +2275,7 @@ package body et_geometry_1 is
 		
 	
 	function to_arc_angles (
-		arc					: in type_arc;
+		arc					: in type_arc_fine;
 		allow_full_circle	: in boolean := true) 
 		return type_arc_angles 
 	is
@@ -2284,7 +2284,7 @@ package body et_geometry_1 is
 		result : type_arc_angles;
 					
 		-- Take a copy of the given arc in arc_tmp.
-		arc_tmp : type_arc := arc;
+		arc_tmp : type_arc_fine := arc;
 
 		procedure compute_end_point is begin
 			if get_x (arc_tmp.end_point) = 0.0 and get_y (arc_tmp.end_point) = 0.0 then
@@ -2349,9 +2349,9 @@ package body et_geometry_1 is
 
 	function to_arc (
 		arc : in type_arc_angles) 
-		return type_arc 
+		return type_arc_fine 
 	is
-		result : type_arc;
+		result : type_arc_fine;
 		x, y : type_float;
 		offset : constant type_offset := to_offset (arc.center);
 	begin

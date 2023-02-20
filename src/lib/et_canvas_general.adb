@@ -2562,7 +2562,7 @@ package body pac_canvas is
 
 
 	function get_boundaries (
-		arc			: in type_arc;
+		arc			: in type_arc_fine;
 		line_width	: in pac_geometry_2.type_distance_positive) 
 		return type_boundaries
 	is
@@ -2571,7 +2571,7 @@ package body pac_canvas is
 		result : type_boundaries; -- to be returned
 
 		-- normalize the given arc
-		arc_norm : type_arc := type_arc (normalize_arc (arc));
+		arc_norm : type_arc_fine := normalize_arc (arc);
 
 		-- Calculate the radius of the arc:
 		radius : constant type_float_positive := get_radius_start (arc_norm);
@@ -2719,7 +2719,7 @@ package body pac_canvas is
 	
 	
 	procedure draw_arc (
-		arc		: in pac_geometry_2.pac_geometry_1.type_arc;
+		arc		: in pac_geometry_2.pac_geometry_1.type_arc_fine;
 		width	: in pac_geometry_2.type_distance_positive)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
