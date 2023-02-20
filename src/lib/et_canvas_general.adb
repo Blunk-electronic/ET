@@ -232,7 +232,6 @@ package body pac_canvas is
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use pac_geometry_2;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
@@ -245,7 +244,6 @@ package body pac_canvas is
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use pac_geometry_2;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));
@@ -470,7 +468,6 @@ package body pac_canvas is
 		self	: not null access type_view'class)
 	is 
 		use et_general;
-		use pac_geometry_2;
 
 		-- The point in the drawing (in millimeters):
 		drawing_point : type_point;
@@ -494,7 +491,7 @@ package body pac_canvas is
 		-- CS: Assumes a random value if mouse outside the window.
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_xy := pac_geometry_2.type_point (to_point (
+		distance_xy := type_point (to_point (
 			d		=> get_distance_relative (cursor_main.position, drawing_point),
 			clip	=> true));
 
@@ -654,11 +651,9 @@ package body pac_canvas is
 
 
 	function to_model_point (
-		point	: in pac_geometry_2.type_point)
+		point	: in type_point)
 		return type_model_point
-	is 
-		use pac_geometry_2;
-	begin
+	is begin
 		return (type_float (get_x (point)), type_float (get_y (point)));
 	end to_model_point;
 
@@ -892,7 +887,7 @@ package body pac_canvas is
 
 	function mouse_position (
 		self	: not null access type_view'class)
-		return pac_geometry_2.type_point 
+		return type_point 
 	is
 		-- The x/y position of the mouse pointer:
 		position_pointer_x : gint;
@@ -905,7 +900,7 @@ package body pac_canvas is
 		model_point : type_model_point;
 
 		-- The point in the drawing (in millimeters):
-		drawing_point : pac_geometry_2.type_point;
+		drawing_point : type_point;
 	begin
 		-- Get the mouse position:
 		self.get_pointer (position_pointer_x, position_pointer_y);
@@ -1205,7 +1200,6 @@ package body pac_canvas is
 		model_point : type_model_point;
 
 		-- The point in the drawing:
-		use pac_geometry_2;
 		drawing_point : type_point;
 	begin
 		-- new_line;
@@ -1240,7 +1234,7 @@ package body pac_canvas is
 	
 	procedure center_on (
 		self		: not null access type_view'class;
-		center_on	: pac_geometry_2.type_point) -- in drawing
+		center_on	: type_point) -- in drawing
 	is
 		-- Convert the given point to a point in the model:
 		center_on_model : type_model_point := drawing_to_model (self, center_on);
@@ -1271,7 +1265,6 @@ package body pac_canvas is
 			x => area.x + area.width * 0.5,
 			y => area.y + area.height * 0.5);
 
-		use pac_geometry_2;
 		area_center_drawing : type_point := self.model_to_drawing (area_center);
 		
 		-- Calculate the position of the area in the drawing.
@@ -1296,14 +1289,14 @@ package body pac_canvas is
 		dyb : constant type_distance := border_bottom - get_y (cursor.position);
 	begin
 		if dxr >= zero then
-			self.center_on (pac_geometry_2.type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
+			self.center_on (type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
 		elsif dxl >= zero then
-			self.center_on (pac_geometry_2.type_point (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
+			self.center_on (type_point (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
 			
 		elsif dyt >= zero then
-			self.center_on (pac_geometry_2.type_point (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
+			self.center_on (type_point (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
 		elsif dyb >= zero then
-			self.center_on (pac_geometry_2.type_point (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
+			self.center_on (type_point (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
 		end if;
 		
 	end shift_area;
@@ -1541,7 +1534,7 @@ package body pac_canvas is
 		-- Convert from mouse pointer position to drawing point:
 		view_point		: constant type_view_point := (event.x, event.y);
 		model_point		: constant type_model_point := canvas.view_to_model (view_point);
-		drawing_point	: constant pac_geometry_2.type_point := canvas.model_to_drawing (model_point);
+		drawing_point	: constant type_point := canvas.model_to_drawing (model_point);
 	begin
 		--put_line ("mouse button " & to_string (mouse_button) & " at pos. " & to_string (drawing_point));
 
@@ -1609,8 +1602,6 @@ package body pac_canvas is
 
 		
 		function in_range (d : in type_float) return boolean is 
-
-			use pac_geometry_2;
 			
 			lower_limit : constant type_float := 
 				type_float (type_position_axis'first);
@@ -1771,8 +1762,8 @@ package body pac_canvas is
 
 
 	function lower_grid_coordinate (
-		coordinate	: in pac_geometry_2.type_distance;
-		grid		: in pac_geometry_2.type_distance_grid) 
+		coordinate	: in type_distance;
+		grid		: in type_distance_grid) 
 		return type_view_coordinate 
 	is 		
 		g : float := float (grid);
@@ -1784,10 +1775,9 @@ package body pac_canvas is
 
 	function snap_to_grid (
 		self	: not null access type_view'class;
-		point	: in pac_geometry_2.type_point)
-		return pac_geometry_2.type_point 
+		point	: in type_point)
+		return type_point 
 	is
-		use pac_geometry_2;
 	begin
 		return type_point (round (point, self.get_grid));
 	end snap_to_grid;
@@ -1795,7 +1785,7 @@ package body pac_canvas is
 	
 	procedure draw_grid (
 		area	: in type_bounding_box; -- the area of the drawing to be displayed
-		grid	: in pac_geometry_2.type_grid;
+		grid	: in type_grid;
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color)
@@ -1868,7 +1858,6 @@ package body pac_canvas is
 		box : type_bounding_box; -- to be returned
 
 		use et_frames;
-		use pac_geometry_2;
 
 		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
 						paper_size	=> self.get_frame.paper,
@@ -1967,9 +1956,9 @@ package body pac_canvas is
 	
 	function tool_position (
 		view : not null access type_view'class)
-		return pac_geometry_2.type_point 
+		return type_point 
 	is
-		point : pac_geometry_2.type_point;
+		point : type_point;
 	begin
 		case primary_tool is
 			when KEYBOARD	=> point := cursor_main.position;
@@ -2116,7 +2105,7 @@ package body pac_canvas is
 
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
-	function convert_x (x : in pac_geometry_2.type_distance) 
+	function convert_x (x : in type_distance) 
 		return type_view_coordinate 
 	is begin
 		return type_view_coordinate (x);
@@ -2133,7 +2122,7 @@ package body pac_canvas is
 
 	
 	function shift_y (
-		y		: in pac_geometry_2.type_distance)
+		y		: in type_distance)
 		return type_view_coordinate 
 	is begin
 		return type_view_coordinate (frame_height - type_float (y));
@@ -2145,12 +2134,10 @@ package body pac_canvas is
 -- PATH FROM POINT TO POINT
 	
 	function to_path (
-		start_point, end_point	: in pac_geometry_2.type_point;
+		start_point, end_point	: in type_point;
 		style					: in type_bend_style)
 		return type_path
 	is
-		use pac_geometry_2;
-		
 		-- The area required for the path is a rectangle.
 		-- We will need to figure out whether it is wider than tall:
 		dx : constant type_distance := get_distance (start_point, end_point, X);
@@ -2405,7 +2392,7 @@ package body pac_canvas is
 	function get_boundaries (
 		point_one	: in type_vector;
 		point_two	: in type_vector;
-		width		: in pac_geometry_2.type_distance_positive) 
+		width		: in type_distance_positive) 
 		return type_boundaries
 	is
 		result : type_boundaries;
@@ -2459,7 +2446,7 @@ package body pac_canvas is
 	-- The boundaries are extended by half the given width.
 	function get_boundaries (
 		line	: in type_line_fine;	
-		width	: in pac_geometry_2.type_distance_positive)
+		width	: in type_distance_positive)
 		return type_boundaries
 	is
 		result : type_boundaries;
@@ -2510,7 +2497,7 @@ package body pac_canvas is
 	-- Returns the bounding box of a line that has the given width:
 	function get_bounding_box_line (
 		line	: in type_line_fine;
-		width	: in pac_geometry_2.type_distance_positive)
+		width	: in type_distance_positive)
 		return type_bounding_box
 	is begin
 		return make_bounding_box (get_boundaries (line, width));
@@ -2518,8 +2505,8 @@ package body pac_canvas is
 	
 	
 	procedure draw_line (
-		line	: in pac_geometry_2.pac_geometry_1.type_line_fine;
-		width	: in pac_geometry_2.type_distance_positive)
+		line	: in type_line_fine;
+		width	: in type_distance_positive)
 	is
 		-- compute the bounding box of the given line
 		bounding_box : constant type_bounding_box := 
@@ -2563,7 +2550,7 @@ package body pac_canvas is
 
 	function get_boundaries (
 		arc			: in type_arc_fine;
-		line_width	: in pac_geometry_2.type_distance_positive) 
+		line_width	: in type_distance_positive) 
 		return type_boundaries
 	is
 		half_width : constant type_float_positive := type_float (line_width) * 0.5;
@@ -2601,8 +2588,6 @@ package body pac_canvas is
 				set_gx;
 			end if;
 		end same_quadrant;
-
-		use pac_geometry_2;
 		
 		
 	begin -- get_boundaries
@@ -2719,8 +2704,8 @@ package body pac_canvas is
 	
 	
 	procedure draw_arc (
-		arc		: in pac_geometry_2.pac_geometry_1.type_arc_fine;
-		width	: in pac_geometry_2.type_distance_positive)
+		arc		: in type_arc_fine;
+		width	: in type_distance_positive)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := get_boundaries (arc, width);
@@ -2776,11 +2761,10 @@ package body pac_canvas is
 
 	
 	procedure draw_circle (
-		circle	: in pac_geometry_2.type_circle'class;
+		circle	: in type_circle'class;
 		filled	: in type_filled;
-		width	: in pac_geometry_2.type_distance_positive)
+		width	: in type_distance_positive)
 	is
-		use pac_geometry_2;
 		use ada.numerics;
 		
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
@@ -2843,7 +2827,7 @@ package body pac_canvas is
 		contour	: in type_contour'class;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
-		width	: in pac_geometry_2.type_distance_positive;
+		width	: in type_distance_positive;
 		-- CS fill style
 		drawn	: in out boolean)
 	is
@@ -2870,7 +2854,6 @@ package body pac_canvas is
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
 
-		use pac_geometry_2;
 		use ada.numerics;
 		
 		
@@ -3032,7 +3015,7 @@ package body pac_canvas is
 
 	procedure draw_contour_with_circular_cutout (
 		outer_border	: in type_contour'class;
-		inner_border	: in pac_geometry_2.type_circle'class)
+		inner_border	: in type_circle'class)
 	is 
 		drawn : boolean := false;
 	begin
@@ -3080,16 +3063,14 @@ package body pac_canvas is
 
 	
 	procedure draw_rectangle (
-		position		: in pac_geometry_2.type_point; -- the lower left corner
+		position		: in type_point; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
 		width			: in type_float_positive;
 		--height			: in pac_shapes.pac_geometry_1.type_distance;
 		height			: in type_float_positive;
 		extend_boundaries	: in boolean := false;
-		boundaries_to_add	: in type_boundaries := pac_geometry_2.boundaries_default) 
+		boundaries_to_add	: in type_boundaries := boundaries_default) 
 	is
-		use pac_geometry_2;
-		
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := (
 			smallest_x	=> type_float (get_x (position)),
@@ -3277,7 +3258,7 @@ package body pac_canvas is
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
 		origin		: in boolean;
-		rotation	: in pac_geometry_2.type_rotation;
+		rotation	: in type_rotation;
 		alignment	: in type_text_alignment) 
 	is
 		-- Here we will store the extents of the given text:
@@ -3359,9 +3340,9 @@ package body pac_canvas is
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
-		position	: in pac_geometry_2.type_point; -- anchor point in the drawing, the origin
+		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
-		rotation	: in pac_geometry_2.type_rotation;
+		rotation	: in type_rotation;
 		alignment	: in type_text_alignment)
 	is
 		text_area : cairo_text_extents;
@@ -3372,8 +3353,6 @@ package body pac_canvas is
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
 
-		use pac_geometry_2;
-		
 		-- The position of the origin:
 		ox : constant type_view_coordinate := convert_x (get_x (position));
 		oy : constant type_view_coordinate := shift_y (get_y (position));
@@ -3453,7 +3432,7 @@ package body pac_canvas is
 	
 	procedure draw_vector_text (
 		text	: in type_vector_text;
-		width	: in pac_geometry_2.type_distance_positive)
+		width	: in type_distance_positive)
 	is
 		use pac_text;
 		
@@ -3524,7 +3503,6 @@ package body pac_canvas is
 		lines		: in et_frames.pac_lines.list;
 		tb_pos		: in et_frames.type_position)
 	is
-		use pac_geometry_2;
 		line : pac_geometry_2.type_line;
 		-- CS line should be a pac_geometry_1.type_line
 		-- for better performance
@@ -3556,7 +3534,6 @@ package body pac_canvas is
 		border_width	: in et_frames.type_border_width)
 	is 
 		use et_frames;
-		use pac_geometry_2;
 		line : pac_geometry_2.type_line;
 		-- CS line should be a pac_geometry_1.type_line
 		-- for better performance
@@ -3663,7 +3640,6 @@ package body pac_canvas is
 		frame_size		: in et_frames.type_frame_size;
 		border_width	: in et_frames.type_border_width)
 	is
-		use pac_geometry_2;
 		use et_frames;
 		
 		sector_width  : constant et_frames.type_distance := 
@@ -3676,7 +3652,7 @@ package body pac_canvas is
 		
 		procedure draw_index (
 			content	: in pac_text_content.bounded_string;
-			pos		: in pac_geometry_2.type_point) 
+			pos		: in type_point) 
 		is begin
 			draw_text (
 				content		=> content,
@@ -3842,7 +3818,6 @@ package body pac_canvas is
 		pos		: in et_frames.type_position;
 		tb_pos	: in et_frames.type_position)
 	is
-		use pac_geometry_2;
 		use et_frames;
 		-- The given position is given in frame coordinates and must be 
 		-- converted to schematic coordinates and shifted by the position
