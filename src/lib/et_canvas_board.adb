@@ -64,6 +64,13 @@ with et_meta;
 with et_ratsnest;					--use et_ratsnest;
 with et_exceptions;					use et_exceptions;
 
+with et_canvas_board_lines;			use et_canvas_board_lines;
+with et_canvas_board_texts;			use et_canvas_board_texts;
+with et_canvas_board_vias;			use et_canvas_board_vias;
+with et_canvas_board_devices;		use et_canvas_board_devices;
+with et_canvas_board_assy_doc;		use et_canvas_board_assy_doc;
+
+
 package body et_canvas_board is
 
 	use et_project.modules.pac_generic_modules;

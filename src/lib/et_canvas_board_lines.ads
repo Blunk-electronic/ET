@@ -43,7 +43,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with gtk.box;							use gtk.box;
 
 with et_canvas_general;					use et_canvas_general;
-
+with et_canvas_board;
 with et_geometry;						use et_geometry;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
@@ -57,9 +57,10 @@ with et_assy_doc;						use et_assy_doc;
 with et_stop_mask;						use et_stop_mask;
 
 
-
 package et_canvas_board_lines is
 
+	use et_canvas_board.pac_canvas;
+	
 
 	-- The text properties bar:
 	type type_box_properties is record
@@ -79,7 +80,7 @@ package et_canvas_board_lines is
 
 	type type_preliminary_line is record
 		ready		: boolean := false;
-		complete	: boolean := false;
+		-- complete	: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the text:
@@ -89,10 +90,11 @@ package et_canvas_board_lines is
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
-		line			: type_line;
+		--line			: type_line;
+		path			: type_path_live;
 		width			: type_distance_positive := 0.0;
 
-		counter	: natural := 0;
+		-- counter	: natural := 0;
 	end record;
 
 	-- The place where preliminary information of the line is stored:
@@ -100,8 +102,13 @@ package et_canvas_board_lines is
 
 
 	procedure reset_preliminary_line;
-	
 
+	
+	-- Resets the components of preliminary_line.path.
+	-- Exception: Leaves the bend style as it is.
+	procedure reset_path;
+
+	
 	procedure show_line_properties;
 
 
@@ -115,8 +122,10 @@ package et_canvas_board_lines is
 
 
 	procedure make_line (
+		tool	: in type_tool;
 		point	: in type_point);
 	
+
 	
 end et_canvas_board_lines;
 

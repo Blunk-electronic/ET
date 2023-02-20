@@ -64,15 +64,9 @@ with gtk.label;
 with gtk.gentry;					use gtk.gentry;
 with gtk.container;					use gtk.container;
 with gtk.button;					use gtk.button;
-with gtk.text_buffer;
-with gtk.text_iter;
---with gtk.menu;
---with gtk.menu_item;
---with gtk.menu_shell;
 
 with et_project.modules;				use et_project.modules;
-with et_canvas_board;					--use et_canvas_board;
-use et_canvas_board.pac_canvas;
+with et_canvas_board;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
@@ -87,13 +81,14 @@ with et_exceptions;						use et_exceptions;
 
 package body et_canvas_board_lines is
 
+	use et_canvas_board.pac_canvas;
 
 
 	procedure reset_preliminary_line is begin
 		preliminary_line.ready := false;
-		preliminary_line.complete := false;
+		-- preliminary_line.complete := false;
 		preliminary_line.tool := MOUSE;
-		preliminary_line.line := (others => <>);
+		-- preliminary_line.line := (others => <>);
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
@@ -102,6 +97,12 @@ package body et_canvas_board_lines is
 		end if;
 	end reset_preliminary_line;
 
+
+	procedure reset_path is begin
+		preliminary_line.path := (
+			bend_style	=> preliminary_line.path.bend_style, -- no change
+			others 		=> <>);
+	end reset_path;
 
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
@@ -226,42 +227,6 @@ package body et_canvas_board_lines is
 		apply_line_width (text);
 	end line_width_entered;
 
-
-	
--- 	procedure button_apply_clicked (button : access gtk_button_record'class) is
--- 		use gtk.text_view;
--- 		use gtk.text_buffer;
--- 		use gtk.text_iter;
--- 		use et_text;
--- 		
--- 		text_buffer : constant gtk_text_buffer := get_buffer (preliminary_line.entry_content);
--- 		lower_bound, upper_bound : gtk_text_iter;
--- 	begin
--- 		--put_line ("button apply clicked");
--- 		get_bounds (text_buffer, lower_bound, upper_bound);
--- 		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
--- 		preliminary_line.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
--- 
--- 		-- CS check length and characters
--- 		
--- 		if not is_empty (preliminary_line.text.content) then
--- 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_line.text.content)));
--- 			preliminary_line.ready := true;
--- 			canvas.grab_focus;
--- 		end if;
--- 		
--- 	end button_apply_clicked;
-
-
-
-	
-	-- procedure remove_text_properties is 
-	-- 	use et_modes.board;
-	-- begin
-	-- 	if verb /= VERB_PLACE then
-	-- 		reset_preliminary_line;
-	-- 	end if;
-	-- end remove_text_properties;		
 
 
 
@@ -530,25 +495,85 @@ package body et_canvas_board_lines is
 
 
 	procedure make_line (
+		tool	: in type_tool;
 		point	: in type_point)
 	is
+		PL : type_preliminary_line renames preliminary_line;
+		line : type_line;
+
+		procedure add_by_category is begin
+			case PL.category is
+				when LAYER_CAT_ASSY =>
+					
+					et_board_ops.assy_doc.draw_line (
+						module_name	=> pac_generic_modules.key (current_active_module),
+						face		=> PL.face,
+						line		=> (line with PL.width),
+						log_threshold	=> log_threshold);
+
+				when others =>
+					null;
+			end case;
+
+		end add_by_category;
+		
 	begin
-		case preliminary_line.counter is
-			when 0 =>
-				preliminary_line.line.start_point := point;
-				preliminary_line.ready := true;
+		-- case preliminary_line.counter is
+		-- 	when 0 =>
+		-- 		preliminary_line.line.start_point := point;
+		-- 		preliminary_line.ready := true;
+  -- 
+		-- 	when 1 =>
+		-- 		preliminary_line.line.end_point := point;
+		-- 		preliminary_line.complete := true;
+		-- 		preliminary_line.ready := false;
+		-- 		preliminary_line.counter := 0;
+  -- 
+		-- 	when others =>
+		-- 		raise constraint_error;  -- CS should never happen
+		-- end case;
+  -- 
+		-- preliminary_line.counter := preliminary_line.counter + 1;
 
-			when 1 =>
-				preliminary_line.line.end_point := point;
-				preliminary_line.complete := true;
-				preliminary_line.ready := false;
-				preliminary_line.counter := 0;
+		PL.tool := tool;
 
-			when others =>
-				raise constraint_error;  -- CS should never happen
-		end case;
 
-		preliminary_line.counter := preliminary_line.counter + 1;
+		if not PL.ready then
+			PL.path.start_point := point;
+			preliminary_line.ready := true;
+
+			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
+				status_press_space & status_set_end_point & status_hint_for_abort);
+
+		else
+			if PL.path.bended = NO then
+				PL.path.end_point := point;
+
+				-- CS insert a single line
+				line.start_point := PL.path.start_point;
+				line.end_point   := PL.path.end_point;
+				add_by_category;
+				
+			else
+				-- path is bended
+
+				-- insert first line:
+				line.start_point := PL.path.start_point;
+				line.end_point   := PL.path.bend_point;
+				add_by_category;
+
+				
+				-- insert second line:
+				PL.path.end_point := point;
+				line.start_point := PL.path.bend_point;
+				line.end_point   := PL.path.end_point;
+				add_by_category;
+
+			end if;
+
+			reset_preliminary_line;
+		end if;
+			
 	end make_line;
 		
 

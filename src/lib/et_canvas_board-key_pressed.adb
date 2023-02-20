@@ -264,6 +264,9 @@ is
 		case key is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
+
+				reset_path;
+				
 				show_line_properties;
 				set_status (status_draw_line);
 
@@ -274,21 +277,32 @@ is
 					when NOUN_LINE =>
 
 						-- CS separate procedure ?
-						make_line (point);
+						make_line (KEYBOARD, point);
 
-						if preliminary_line.complete then
-							case preliminary_line.category is
-								when LAYER_CAT_ASSY =>
-									draw_doc_line;
-
-								-- CS
-								when others => null;
-							end case;
-						end if;
+						-- if preliminary_line.complete then
+						-- 	case preliminary_line.category is
+						-- 		when LAYER_CAT_ASSY =>
+						-- 			draw_doc_line;
+      -- 
+						-- 		-- CS
+						-- 		when others => null;
+						-- 	end case;
+						-- end if;
 						
 					when others => null;
 				end case;
 
+			-- If B pressed, then a bend style is being selected.
+			-- this affects only certain modes and is ignored otherwise:
+			when GDK_LC_b =>
+				case noun is
+					when NOUN_LINE =>
+						next_bend_style (preliminary_line.path);
+						put_line ("bend style: " & type_bend_style'image ( preliminary_line.path.bend_style));
+						
+					when others => null;
+						
+				end case;
 				
 			when others => status_noun_invalid;
 		end case;

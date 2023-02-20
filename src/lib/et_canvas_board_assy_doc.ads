@@ -179,7 +179,7 @@ package et_canvas_board_assy_doc is
 	
 -- PLACING:
 
-	procedure draw_doc_line;
+	-- procedure draw_doc_line;
 	
 
 	
