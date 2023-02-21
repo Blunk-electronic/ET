@@ -79,22 +79,19 @@ package et_canvas_board_lines is
 
 
 	type type_preliminary_line is record
+		-- This flag tells the draw operations to draw the preliminary line:
 		ready		: boolean := false;
-		-- complete	: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the text:
+		-- cursor position is to be used when drawing the line:
 		tool		: type_tool := MOUSE;
 		
 		category		: type_text_layer := type_text_layer'first; -- CS ?
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
-		--line			: type_line;
 		path			: type_path_live;
 		width			: type_distance_positive := 0.0;
-
-		-- counter	: natural := 0;
 	end record;
 
 	-- The place where preliminary information of the line is stored:

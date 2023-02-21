@@ -259,14 +259,18 @@ package et_canvas_schematic_nets is
 
 -- DRAG/MOVE NET SEGMENT
 
-	type type_being_moved is new boolean;
 	type type_finalizing_granted is new boolean;
 
 	-- Global information for the GUI when a segment is being
 	-- moved or dragged:
 	type type_segment is record
-		being_moved				: type_being_moved := false;
+		-- This flag tells the draw operations to draw the preliminary segment:
+		ready					: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the segment:
 		tool					: type_tool := MOUSE;
+		
 		point_of_attack			: type_point;
 		finalizing_granted		: type_finalizing_granted := false;
 	end record;
@@ -359,7 +363,7 @@ package et_canvas_schematic_nets is
 	-- Global information for the GUI when a label is being
 	-- placed or moved:
 	type type_label is record
-		being_moved			: type_being_moved := false;
+		ready				: boolean := false;
 		tool				: type_tool := MOUSE;
 		appearance			: type_net_label_appearance := SIMPLE;
 		rotation_simple		: et_text.type_rotation_documentation := et_text.HORIZONTAL;

@@ -401,7 +401,7 @@ is
 						end if;
 
 						-- Rotate simple label:
-						if label.being_moved then
+						if label.ready then
 							toggle_rotation (label.rotation_simple);
 						end if;
 						

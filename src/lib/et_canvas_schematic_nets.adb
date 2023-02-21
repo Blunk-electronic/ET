@@ -918,7 +918,7 @@ package body et_canvas_schematic_nets is
 								reset_segment;
 								
 							when 1 =>
-								segment.being_moved := true;
+								segment.ready := true;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -946,7 +946,7 @@ package body et_canvas_schematic_nets is
 								reset_label;
 								
 							when 1 =>
-								label.being_moved := true;
+								label.ready := true;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -1027,7 +1027,7 @@ package body et_canvas_schematic_nets is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not segment.being_moved then
+		if not segment.ready then
 			
 			-- Set the tool being used for dragging the net segment:
 			segment.tool := tool;
@@ -1036,7 +1036,7 @@ package body et_canvas_schematic_nets is
 				find_segments (position);
 				segment.point_of_attack := position;
 			else
-				segment.being_moved := true;
+				segment.ready := true;
 				reset_request_clarification;
 			end if;
 
@@ -1536,7 +1536,7 @@ package body et_canvas_schematic_nets is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not label.being_moved then
+		if not label.ready then
 			
 			-- Set the tool being used:
 			label.tool := tool;
@@ -1544,7 +1544,7 @@ package body et_canvas_schematic_nets is
 			if not clarification_pending then
 				find_segments (position);
 			else
-				label.being_moved := true;
+				label.ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -1581,7 +1581,7 @@ package body et_canvas_schematic_nets is
 				reset_request_clarification;
 				
 			when 1 =>
-				label.being_moved := true;
+				label.ready := true;
 				selected_label := proposed_labels.first;
 				
 				set_status (status_move_label);
@@ -1703,7 +1703,7 @@ package body et_canvas_schematic_nets is
 		tool		: in type_tool;
 		position	: in type_point)
 	is begin
-		if not label.being_moved then
+		if not label.ready then
 
 			-- Set the tool being used:
 			label.tool := tool;
@@ -1711,7 +1711,7 @@ package body et_canvas_schematic_nets is
 			if not clarification_pending then
 				find_labels (position, SIMPLE);
 			else
-				label.being_moved := true;
+				label.ready := true;
 				reset_request_clarification;
 			end if;
 			

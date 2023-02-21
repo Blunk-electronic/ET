@@ -234,7 +234,7 @@ is
 	begin
 		case verb is
 			when VERB_PLACE =>
-				if label.being_moved then
+				if label.ready then
 
 					case label.tool is
 						when KEYBOARD	=> l.position := cursor_main.position;
@@ -316,7 +316,7 @@ is
 
 				if is_selected (net, strand, element (segment), label_cursor) then
 
-					if label.being_moved then
+					if label.ready then
 						-- Draw a copy of the label. Assign position
 						-- according to tool:
 						sl := element (label_cursor);
@@ -722,7 +722,7 @@ is
 						-- CS test verb and noun ?						
 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
 						
-							if segment.being_moved then
+							if segment.ready then
 								-- Draw the net segments being moved or dragged.
 								-- If we are dragging a segment, then other attached segments
 								-- will be dragged along.

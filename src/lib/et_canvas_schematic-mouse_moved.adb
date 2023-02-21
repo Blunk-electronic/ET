@@ -68,7 +68,7 @@ begin
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
 				when NOUN_LABEL =>
-					if label.being_moved then
+					if label.ready then
 						redraw_schematic;
 					end if;
 					
@@ -78,7 +78,7 @@ begin
 					end if;
 
 				when NOUN_NET =>
-					if segment.being_moved then
+					if segment.ready then
 						redraw_schematic;
 					end if;
 
