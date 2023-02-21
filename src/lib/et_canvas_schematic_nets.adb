@@ -426,40 +426,42 @@ package body et_canvas_schematic_nets is
 	procedure make_net_route (
 		tool	: in type_tool;
 		point	: in type_point)
-	is begin
+	is 
+		PS : type_preliminary_segment renames preliminary_segment;
+	begin
 		-- Set the tool being used for this net so that procedure
 		-- draw_net_segment_being_drawn knows where to get the end point from.
-		route.path.tool := tool;
+		PS.path.tool := tool;
 
-		if not route.path.being_drawn then
+		if not PS.path.being_drawn then
 
-			route.path.start_point := point;
+			PS.path.start_point := point;
 					
 			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (route.path.start_point, log_threshold + 3) then
+			if valid_for_net_segment (PS.path.start_point, log_threshold + 3) then
 
-				route.path.being_drawn := true;
+				PS.path.being_drawn := true;
 				
-				set_status (status_start_point & to_string (route.path.start_point) & ". " &
+				set_status (status_start_point & to_string (PS.path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
 			end if;
 
 		else
 			-- set end point
-			if route.path.bended = NO then
+			if PS.path.bended = NO then
 				
-				route.path.end_point := point;
+				PS.path.end_point := point;
 
 				-- Before processing the end point further, it must be validated:
-				if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
+				if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
 
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N, or empty
+						net_name_given	=> PS.net_name, -- RESET_N, or empty
 						segment			=> (
-								start_point	=> route.path.start_point,
-								end_point	=> route.path.end_point,
+								start_point	=> PS.path.start_point,
+								end_point	=> PS.path.end_point,
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
@@ -468,31 +470,31 @@ package body et_canvas_schematic_nets is
 
 			else
 				-- Before processing the BEND point further, it must be validated:
-				if valid_for_net_segment (route.path.bend_point, log_threshold + 3) then
+				if valid_for_net_segment (PS.path.bend_point, log_threshold + 3) then
 
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N, or empty
+						net_name_given	=> PS.net_name, -- RESET_N, or empty
 						segment			=> (
-								start_point	=> route.path.start_point,
-								end_point	=> route.path.bend_point,
+								start_point	=> PS.path.start_point,
+								end_point	=> PS.path.bend_point,
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
 					-- END POINT:
-					route.path.end_point := point;
+					PS.path.end_point := point;
 
 					-- Before processing the END point further, it must be validated:
-					if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
+					if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
 					
 						insert_net_segment (
 							module			=> current_active_module,
 							sheet			=> current_active_sheet,
-							net_name_given	=> route.name, -- RESET_N, or empty
+							net_name_given	=> PS.net_name, -- RESET_N, or empty
 							segment			=> (
-									start_point	=> route.path.bend_point,
-									end_point	=> route.path.end_point,
+									start_point	=> PS.path.bend_point,
+									end_point	=> PS.path.end_point,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 					
@@ -507,11 +509,11 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure reset_net_route is begin
-		route.path := (
-			bend_style	=> route.path.bend_style, -- no change
+		preliminary_segment.path := (
+			bend_style	=> preliminary_segment.path.bend_style, -- no change
 			others 		=> <>);
 
-		route.name := to_net_name ("");
+		preliminary_segment.net_name := to_net_name ("");
 	end reset_net_route;
 
 
@@ -572,6 +574,7 @@ package body et_canvas_schematic_nets is
 				end if;
 			end if;
 		end extend_net;
+
 		
 	begin -- insert_net_segment
 		log (text => "adding net segment on sheet " & to_sheet (sheet) & to_string (segment), 

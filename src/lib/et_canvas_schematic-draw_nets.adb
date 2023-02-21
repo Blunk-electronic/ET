@@ -910,12 +910,15 @@ is
 
 
 	procedure draw_net_route_being_drawn is
+		PS : type_preliminary_segment renames preliminary_segment;
+		
 		line : pac_geometry_2.type_line;
 
+		
 		procedure compute_route (s, e : in type_point) is 
 
 			-- Do the actual route calculation.
-			r : type_path := to_path (s, e, route.path.bend_style);
+			r : type_path := to_path (s, e, PS.path.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:
@@ -923,12 +926,13 @@ is
 					line		=> to_line_fine (line),
 					width		=> net_line_width);
 			end draw;
+
 			
 		begin -- compute_route
 
 			-- The calculated route may required a bend point.
 			-- Set/clear the "bended" flag of the net_segment being drawn.
-			route.path.bended := r.bended;
+			PS.path.bended := r.bended;
 
 			-- set color and line width for net segments:
 			set_color_nets (context.cr);
@@ -947,7 +951,7 @@ is
 			-- from start point to bend point. Then draw a second line from
 			-- bend point end point:
 			else
-				route.path.bend_point := r.bend_point;
+				PS.path.bend_point := r.bend_point;
 
 				line.start_point := r.start_point;
 				line.end_point := r.bend_point;
@@ -964,22 +968,22 @@ is
 
 		
 	begin -- draw_net_route_being_drawn
-		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
+		if verb = VERB_DRAW and noun = NOUN_NET and PS.path.being_drawn = true then
 
 			-- The route start point has been set eariler by procedures
 			-- key_pressed or button_pressed.
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
 
-			case route.path.tool is				
+			case PS.path.tool is				
 				when MOUSE => 
 					compute_route (
-						s	=> route.path.start_point,	-- start of route
+						s	=> PS.path.start_point,	-- start of route
 						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
 					
 				when KEYBOARD =>
 					compute_route (
-						s	=> route.path.start_point,	-- start of route
+						s	=> PS.path.start_point,	-- start of route
 						e	=> cursor_main.position);	-- end of route
 					
 			end case;			

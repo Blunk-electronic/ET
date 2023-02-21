@@ -215,7 +215,7 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (route.path);
+						next_bend_style (preliminary_segment.path);
 						
 					when others => null;
 						

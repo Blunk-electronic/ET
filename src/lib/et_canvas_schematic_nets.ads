@@ -196,15 +196,6 @@ package et_canvas_schematic_nets is
 		& status_hint_for_abort;
 
 	
-	-- When a net route is being drawn, then this global variable
-	-- shall be used:
-	type type_net_route is record
-		path	: type_path_live;
-		name	: pac_net_name.bounded_string := to_net_name ("");
-	end record;
-
-	route : type_net_route;
-
 	-- Builds a live net route. This procedure requires to be called twice:
 	-- first time for the start and the second time for the end point of the route.
 	-- The current bend style in global variable "net_route" is taken into account.
@@ -270,8 +261,12 @@ package et_canvas_schematic_nets is
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the segment:
 		tool					: type_tool := MOUSE;
+
+		path					: type_path_live;
 		
+		net_name				: pac_net_name.bounded_string := to_net_name ("");
 		point_of_attack			: type_point;
+		
 		finalizing_granted		: type_finalizing_granted := false;
 	end record;
 
