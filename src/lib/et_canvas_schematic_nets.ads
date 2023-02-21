@@ -263,7 +263,7 @@ package et_canvas_schematic_nets is
 
 	-- Global information for the GUI when a segment is being
 	-- moved or dragged:
-	type type_segment is record
+	type type_preliminary_segment is record
 		-- This flag tells the draw operations to draw the preliminary segment:
 		ready					: boolean := false;
 
@@ -275,14 +275,13 @@ package et_canvas_schematic_nets is
 		finalizing_granted		: type_finalizing_granted := false;
 	end record;
 
-	segment : type_segment;
+	preliminary_segment : type_preliminary_segment;
 
 
 	-- This procedure:
-	-- - Clears list of proposed segments.
-	-- - Sets global variable selected_segment.
-	-- - resets global variable "segment" to its default values
-	procedure reset_segment;
+	-- - Clears proposed segments (calls clear_proposed_segments).
+	-- - resets the preliminary_segment to its default values
+	procedure reset_preliminary_segment;
 
 	
 	

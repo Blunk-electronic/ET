@@ -538,9 +538,11 @@ is
 	is
 		use et_schematic_ops.nets;
 
+		PS : type_preliminary_segment renames preliminary_segment;
+
 		-- Calculate the zone where the original segment is being attacked:
 		zone : constant type_line_zone := get_zone (
-				point	=> segment.point_of_attack,
+				point	=> PS.point_of_attack,
 				line	=> element (original_segment));
 
 		destination : type_point;
@@ -568,8 +570,9 @@ is
 				primary_segment		=> primary_segment,
 				zone				=> zone);
 			
-			segment.finalizing_granted := true;
+			PS.finalizing_granted := true;
 		end move_labels_and_secondary_nets;
+
 		
 	begin -- draw_moving_segments
 		
@@ -582,7 +585,7 @@ is
 			module_name		=> key (current_active_module),
 			segment			=> element (original_segment),
 			zone			=> zone,
-			point_of_attack	=> to_position (segment.point_of_attack, current_active_sheet),
+			point_of_attack	=> to_position (PS.point_of_attack, current_active_sheet),
 			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
 		then
 			-- segment is movable
@@ -593,7 +596,7 @@ is
 			primary_segment := element (original_segment);
 
 			-- calculate the destination point according to the current drawing tool:
-			case segment.tool is
+			case PS.tool is
 				when MOUSE =>
 					destination := self.snap_to_grid (self.mouse_position);
 
@@ -604,7 +607,7 @@ is
 		
 			case verb is
 				when VERB_DRAG =>
-					move_line_to (primary_segment, segment.point_of_attack, destination);
+					move_line_to (primary_segment, PS.point_of_attack, destination);
 					move_labels_and_secondary_nets;
 
 				when others => null;
@@ -722,7 +725,7 @@ is
 						-- CS test verb and noun ?						
 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
 						
-							if segment.ready then
+							if preliminary_segment.ready then
 								-- Draw the net segments being moved or dragged.
 								-- If we are dragging a segment, then other attached segments
 								-- will be dragged along.
@@ -767,6 +770,7 @@ is
 
 				end if;
 			end query_segments;
+			
 			
 		begin -- query_strands_normal
 			while strand_cursor /= pac_strands.no_element loop

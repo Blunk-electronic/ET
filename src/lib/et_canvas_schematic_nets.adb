@@ -717,10 +717,10 @@ package body et_canvas_schematic_nets is
 	end valid_for_net_segment;
 
 
-	procedure reset_segment is begin
-		segment := (others => <>);
+	procedure reset_preliminary_segment is begin
+		preliminary_segment := (others => <>);
 		clear_proposed_segments;
-	end reset_segment;
+	end reset_preliminary_segment;
 
 	
 
@@ -839,24 +839,24 @@ package body et_canvas_schematic_nets is
 
 	end window_set_property;
 
+
 	
 -- DRAG/MOVE NET SEGMENT
-
-
 	
 	procedure finalize_drag (
 		destination		: in type_point;
 		log_threshold	: in type_log_level) 
 	is
+		PS : type_preliminary_segment renames preliminary_segment;
 		net_name : pac_net_name.bounded_string;
-		point_of_attack : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
+		point_of_attack : et_coordinates.type_position := to_position (PS.point_of_attack, current_active_sheet);
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Finalize only if procedure et_canvas_schematic.draw_nets has
 		-- granted permission:
-		if segment.finalizing_granted then
+		if PS.finalizing_granted then
 	
 			if selected_segment /= pac_proposed_segments.no_element then
 
@@ -884,7 +884,7 @@ package body et_canvas_schematic_nets is
 		
 		set_status (status_move);
 		
-		reset_segment;
+		reset_preliminary_segment;
 
 	end finalize_drag;
 
@@ -915,10 +915,10 @@ package body et_canvas_schematic_nets is
 						case length (proposed_segments) is
 							when 0 =>
 								reset_request_clarification;
-								reset_segment;
+								reset_preliminary_segment;
 								
 							when 1 =>
-								segment.ready := true;
+								preliminary_segment.ready := true;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -974,7 +974,7 @@ package body et_canvas_schematic_nets is
 						case length (proposed_segments) is
 							when 0 =>
 								reset_request_clarification;
-								reset_segment;
+								reset_preliminary_segment;
 								
 							when 1 =>
 								selected_segment := proposed_segments.first;
@@ -1026,17 +1026,19 @@ package body et_canvas_schematic_nets is
 	procedure drag_segment (
 		tool		: in type_tool;
 		position	: in type_point)
-	is begin
-		if not segment.ready then
+	is 
+		PS : type_preliminary_segment renames preliminary_segment;
+	begin
+		if not PS.ready then
 			
 			-- Set the tool being used for dragging the net segment:
-			segment.tool := tool;
+			PS.tool := tool;
 			
 			if not clarification_pending then
 				find_segments (position);
-				segment.point_of_attack := position;
+				PS.point_of_attack := position;
 			else
-				segment.ready := true;
+				PS.ready := true;
 				reset_request_clarification;
 			end if;
 

@@ -78,7 +78,7 @@ begin
 					end if;
 
 				when NOUN_NET =>
-					if segment.ready then
+					if preliminary_segment.ready then
 						redraw_schematic;
 					end if;
 
