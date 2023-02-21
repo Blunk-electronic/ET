@@ -429,9 +429,9 @@ package body et_canvas_schematic_nets is
 	is 
 		PS : type_preliminary_segment renames preliminary_segment;
 	begin
-		-- Set the tool being used for this net so that procedure
+		-- Set the tool being used for this path so that procedure
 		-- draw_net_segment_being_drawn knows where to get the end point from.
-		PS.path.tool := tool;
+		PS.tool := tool;
 
 		if not PS.path.being_drawn then
 

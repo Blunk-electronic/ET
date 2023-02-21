@@ -975,7 +975,7 @@ is
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
 
-			case PS.path.tool is				
+			case PS.tool is				
 				when MOUSE => 
 					compute_route (
 						s	=> PS.path.start_point,	-- start of route

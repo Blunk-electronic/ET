@@ -1009,8 +1009,6 @@ package pac_canvas is
 	-- direction.
 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 	-- when being drawn via the GUI.
-	-- The path being drawn must provide information about the tool it is
-	-- being drawn with (mouse, touchpad, keyboard).
 	type type_path_live is record
 		being_drawn	: boolean := false;
 
@@ -1020,8 +1018,6 @@ package pac_canvas is
 		bended		: type_bended := NO;
 		bend_point	: type_point;
 		bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
-		
-		tool		: type_tool := MOUSE;
 	end record;
 
 	
