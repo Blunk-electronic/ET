@@ -265,20 +265,9 @@ package body et_canvas_board_assy_doc is
 	
 	
 -- PLACING:
--- 
--- 	procedure draw_doc_line
--- 	is 
--- 		line : type_doc_line;
--- 	begin
--- 		-- line := (preliminary_line.line with preliminary_line.width);
--- 
--- 		draw_line (
--- 			module_name	=> pac_generic_modules.key (current_active_module),
--- 			face		=> preliminary_line.face,
--- 			line		=> line,
--- 			log_threshold	=> log_threshold);
--- 		
--- 	end draw_doc_line;
+	
+	-- see et_canvas_board_lines
+
 
 	
 

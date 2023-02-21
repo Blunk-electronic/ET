@@ -82,8 +82,17 @@ is
 						
 					when others => null;
 				end case;
+
+
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_LINE =>
+						make_line (MOUSE, snap_point);
+
+					when others => null;						
+				end case;
+
 				
-			
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_TEXT =>
@@ -169,6 +178,15 @@ is
 						--if clarification_pending then
 							--clarify_placeholder;
 						--end if;
+						
+					when others => null;							
+				end case;
+
+				
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_LINE =>
+						next_bend_style (preliminary_line.path);
 						
 					when others => null;							
 				end case;

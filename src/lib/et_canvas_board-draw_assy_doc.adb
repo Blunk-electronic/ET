@@ -272,6 +272,84 @@ is
 		end case;
 	end query_items;
 
+
+
+	
+	procedure draw_path is
+		PL : type_preliminary_line renames preliminary_line;
+
+
+		procedure compute_path (s, e : in type_point) is 
+			line : type_line;
+
+			-- Do the actual route calculation.
+			r : type_path := to_path (s, e, PL.path.bend_style);
+
+			-- Draws the line:
+			procedure draw is begin
+				draw_line (
+					line		=> to_line_fine (line),
+					width		=> PL.width);
+			end draw;
+			
+		begin -- compute_path
+
+			-- The calculated path may require a bend point.
+			-- Set/clear the "bended" flag of the line being drawn.
+			PL.path.bended := r.bended;
+
+			-- set linewidth:			
+			set_line_width (context.cr, type_view_coordinate (PL.width));
+
+			-- If the route does not require a bend point, draw a single line
+			-- from start to end point:
+			if r.bended = NO then
+				
+				line.start_point := r.start_point;
+				line.end_point := r.end_point;
+
+				draw;
+
+			-- If the path DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				PL.path.bend_point := r.bend_point;
+
+				line.start_point := r.start_point;
+				line.end_point := r.bend_point;
+				
+				draw;
+
+				line.start_point := r.bend_point;
+				line.end_point := r.end_point;
+				
+				draw;
+				
+			end if;
+		end compute_path;
+
+
+		
+	begin
+		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+		and PL.category = LAYER_CAT_ASSY then
+			case PL.tool is
+				when MOUSE => 
+					compute_path (
+						s	=> PL.path.start_point,	-- start of path
+						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+					
+				when KEYBOARD =>
+					compute_path (
+						s	=> PL.path.start_point,	-- start of path
+						e	=> cursor_main.position);	-- end of path
+
+			end case;
+
+		end if;
+	end draw_path;
+	
 	
 begin -- draw_assy_doc
 -- 	put_line ("draw board assembly documentation ...");
@@ -281,6 +359,9 @@ begin -- draw_assy_doc
 		process		=> query_items'access);
 
 	draw_text_being_placed (self, face, LAYER_CAT_ASSY);
+
+	-- Draw the lines of a path that is being drawn:
+	draw_path;
 	
 end draw_assy_doc;
 

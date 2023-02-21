@@ -275,19 +275,7 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_LINE =>
-
-						-- CS separate procedure ?
 						make_line (KEYBOARD, point);
-
-						-- if preliminary_line.complete then
-						-- 	case preliminary_line.category is
-						-- 		when LAYER_CAT_ASSY =>
-						-- 			draw_doc_line;
-      -- 
-						-- 		-- CS
-						-- 		when others => null;
-						-- 	end case;
-						-- end if;
 						
 					when others => null;
 				end case;
@@ -298,10 +286,8 @@ is
 				case noun is
 					when NOUN_LINE =>
 						next_bend_style (preliminary_line.path);
-						put_line ("bend style: " & type_bend_style'image ( preliminary_line.path.bend_style));
 						
 					when others => null;
-						
 				end case;
 				
 			when others => status_noun_invalid;

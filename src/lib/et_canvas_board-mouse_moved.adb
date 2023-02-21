@@ -42,6 +42,17 @@ procedure mouse_moved (
 	point	: in type_point) 
 is begin
 	case verb is
+		when VERB_DRAW =>
+			case noun is
+				when NOUN_LINE =>
+					if preliminary_line.ready then
+						redraw_board;
+					end if;
+					
+				when others => null;
+			end case;
+			
+			
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_ASSY =>
