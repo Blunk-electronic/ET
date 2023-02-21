@@ -189,7 +189,7 @@ is
 				set_status (status_draw_net);
 
 				-- we start a new route:
-				reset_net_route;
+				reset_preliminary_segment;
 
 				-- When drawing net segments, we enforce the default grid
 				-- and snap the cursor position to the default grid:

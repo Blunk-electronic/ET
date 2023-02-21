@@ -86,9 +86,7 @@ package body et_canvas_board_lines is
 
 	procedure reset_preliminary_line is begin
 		preliminary_line.ready := false;
-		-- preliminary_line.complete := false;
 		preliminary_line.tool := MOUSE;
-		-- preliminary_line.line := (others => <>);
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
@@ -98,11 +96,6 @@ package body et_canvas_board_lines is
 	end reset_preliminary_line;
 
 
-	procedure reset_path is begin
-		preliminary_line.path := (
-			bend_style	=> preliminary_line.path.bend_style, -- no change
-			others 		=> <>);
-	end reset_path;
 
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
@@ -518,22 +511,6 @@ package body et_canvas_board_lines is
 		end add_by_category;
 		
 	begin
-		-- case preliminary_line.counter is
-		-- 	when 0 =>
-		-- 		preliminary_line.line.start_point := point;
-		-- 		preliminary_line.ready := true;
-  -- 
-		-- 	when 1 =>
-		-- 		preliminary_line.line.end_point := point;
-		-- 		preliminary_line.complete := true;
-		-- 		preliminary_line.ready := false;
-		-- 		preliminary_line.counter := 0;
-  -- 
-		-- 	when others =>
-		-- 		raise constraint_error;  -- CS should never happen
-		-- end case;
-  -- 
-		-- preliminary_line.counter := preliminary_line.counter + 1;
 
 		PL.tool := tool;
 

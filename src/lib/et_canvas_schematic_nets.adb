@@ -433,14 +433,14 @@ package body et_canvas_schematic_nets is
 		-- draw_net_segment_being_drawn knows where to get the end point from.
 		PS.tool := tool;
 
-		if not PS.path.being_drawn then
+		if not PS.ready then
 
 			PS.path.start_point := point;
 					
 			-- Before processing the start point further, it must be validated:
 			if valid_for_net_segment (PS.path.start_point, log_threshold + 3) then
 
-				PS.path.being_drawn := true;
+				PS.ready := true;
 				
 				set_status (status_start_point & to_string (PS.path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
@@ -465,7 +465,7 @@ package body et_canvas_schematic_nets is
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
-					reset_net_route;
+					reset_preliminary_segment;
 				end if;
 
 			else
@@ -498,7 +498,7 @@ package body et_canvas_schematic_nets is
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 					
-						reset_net_route;
+						reset_preliminary_segment;
 					end if;
 				end if;
 
@@ -506,15 +506,6 @@ package body et_canvas_schematic_nets is
 		end if;
 	end make_net_route;
 	
-
-	
-	procedure reset_net_route is begin
-		preliminary_segment.path := (
-			bend_style	=> preliminary_segment.path.bend_style, -- no change
-			others 		=> <>);
-
-		preliminary_segment.net_name := to_net_name ("");
-	end reset_net_route;
 
 
 	procedure insert_net_segment (
@@ -720,8 +711,18 @@ package body et_canvas_schematic_nets is
 	end valid_for_net_segment;
 
 
-	procedure reset_preliminary_segment is begin
-		preliminary_segment := (others => <>);
+	procedure reset_preliminary_segment is 
+		PS : type_preliminary_segment renames preliminary_segment;
+	begin
+		PS.ready := false;
+		PS.tool := MOUSE;
+		-- PS.path := (bend_style => PS.path.bend_style, -- no change
+					-- others => <>);
+
+		PS.net_name := no_name;
+		PS.point_of_attack := origin;
+		PS.finalizing_granted := false;
+		
 		clear_proposed_segments;
 	end reset_preliminary_segment;
 

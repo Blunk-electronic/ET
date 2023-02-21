@@ -1010,8 +1010,6 @@ package pac_canvas is
 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 	-- when being drawn via the GUI.
 	type type_path_live is record
-		being_drawn	: boolean := false;
-
 		start_point	: type_point;
 		end_point	: type_point;
 

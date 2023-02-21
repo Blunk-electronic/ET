@@ -71,6 +71,7 @@ package et_canvas_schematic_nets is
 	use pac_strands;
 	use pac_net_segments;
 
+	
 	-- Whenever a segment is selected via the GUI, we store its
 	-- parent net, strand and the segment itself via this type:
 	type type_selected_segment is tagged record
@@ -196,10 +197,10 @@ package et_canvas_schematic_nets is
 		& status_hint_for_abort;
 
 	
-	-- Builds a live net route. This procedure requires to be called twice:
-	-- first time for the start and the second time for the end point of the route.
-	-- The current bend style in global variable "net_route" is taken into account.
-	-- The route may be started and finished with different tools. For example start
+	-- Builds a live net path. This procedure requires to be called twice:
+	-- first time for the start and the second time for the end point of the path.
+	-- The current bend style in preliminary_segment.path is taken into account.
+	-- The path may be started and finished with different tools. For example start
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_net_route (
 		tool	: in type_tool;
@@ -207,10 +208,6 @@ package et_canvas_schematic_nets is
 
 
 	
-	-- Resets the components of the net route.
-	-- Exception: Leaves the bend style as it is.
-	procedure reset_net_route;
-
 	-- Inserts a net segment in the module.
 	-- Deduces the name of the net to be extended by the
 	-- start or end point of the segment. 
@@ -264,7 +261,7 @@ package et_canvas_schematic_nets is
 
 		path					: type_path_live;
 		
-		net_name				: pac_net_name.bounded_string := to_net_name ("");
+		net_name				: pac_net_name.bounded_string := no_name;
 		point_of_attack			: type_point;
 		
 		finalizing_granted		: type_finalizing_granted := false;
@@ -321,6 +318,7 @@ package et_canvas_schematic_nets is
 		& "to rename all strands on all sheets." 
 		& status_hint_for_abort;	
 
+	
 	type type_net_rename is record
 		scope		: type_net_scope := SHEET; -- strand, sheet, everywhere
 		-- position	: type_point; -- x/y where net segment was selected
@@ -340,6 +338,7 @@ package et_canvas_schematic_nets is
 	procedure finalize_drag (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
+
 	
 	-- Locates all net segments in the vicinity of given point.
 	-- If more than one segment near point found, then it sets the
@@ -347,9 +346,11 @@ package et_canvas_schematic_nets is
 	-- for clarification.
 	procedure find_segments (point : in type_point);
 
+	
 	procedure drag_segment (
 		tool		: in type_tool;
 		position	: in type_point);
+
 
 	
 -- NET LABELS

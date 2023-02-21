@@ -57,7 +57,7 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_NET =>
-					if preliminary_segment.path.being_drawn then
+					if preliminary_segment.ready then
 						redraw;
 					end if;
 

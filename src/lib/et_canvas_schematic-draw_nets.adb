@@ -968,7 +968,7 @@ is
 
 		
 	begin -- draw_net_route_being_drawn
-		if verb = VERB_DRAW and noun = NOUN_NET and PS.path.being_drawn = true then
+		if verb = VERB_DRAW and noun = NOUN_NET and PS.ready = true then
 
 			-- The route start point has been set eariler by procedures
 			-- key_pressed or button_pressed.

@@ -265,7 +265,7 @@ is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
 
-				reset_path;
+				reset_preliminary_line;
 				
 				show_line_properties;
 				set_status (status_draw_line);

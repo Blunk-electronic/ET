@@ -99,13 +99,8 @@ package et_canvas_board_lines is
 
 
 	procedure reset_preliminary_line;
-
 	
-	-- Resets the components of preliminary_line.path.
-	-- Exception: Leaves the bend style as it is.
-	procedure reset_path;
 
-	
 	procedure show_line_properties;
 
 
