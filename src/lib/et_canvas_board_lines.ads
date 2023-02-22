@@ -86,12 +86,12 @@ package et_canvas_board_lines is
 		-- cursor position is to be used when drawing the line:
 		tool		: type_tool := MOUSE;
 		
-		category		: type_text_layer := type_text_layer'first; -- CS ?
+		category		: type_text_layer := LAYER_CAT_ASSY;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
 		path			: type_path_live;
-		width			: type_distance_positive := 0.0;
+		width			: type_distance_positive := 0.15;
 	end record;
 
 	-- The place where preliminary information of the line is stored:
