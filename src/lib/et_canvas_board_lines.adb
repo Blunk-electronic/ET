@@ -512,10 +512,16 @@ package body et_canvas_board_lines is
 
 		
 	begin -- make_path
-
+		
+		-- Set the tool being used for this path so that procedure
+		-- draw_path (for example in et_canvas_board-draw_nets-draw_assy_doc)
+		-- knows where to get the end point from.
 		PL.tool := tool;
 
-
+		-- Initally the preliminary_line is NOT ready. Nothing will be drawn.
+		-- Upon the first calling of this procedure the start point of the
+		-- path will be set.
+		
 		if not PL.ready then
 			-- set start point:
 			PL.path.start_point := point;
@@ -526,39 +532,49 @@ package body et_canvas_board_lines is
 			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
-		else
-			-- Set end point:
-			if PL.path.bended = NO then
-				PL.path.end_point := point;
+		else -- preliminary_line IS ready
 
-				-- insert a single line:
-				line.start_point := PL.path.start_point;
-				line.end_point   := PL.path.end_point;
-				add_by_category;
+			-- Start a new path only if the given point differs from 
+			-- the start point of the current path:
+			if point /= PL.path.start_point then
+
+				-- Complete the path by setting its end point.
+				-- The the current bend point (if there is one) into account:
+				
+				if PL.path.bended = NO then
+					PL.path.end_point := point;
+
+					-- insert a single line:
+					line.start_point := PL.path.start_point;
+					line.end_point   := PL.path.end_point;
+					add_by_category;
+					
+				else
+					-- The path is bended. The bend point has been computed
+					-- interactively while moving the mouse or the cursor.
+					-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
+
+					-- insert first line of the path:
+					line.start_point := PL.path.start_point;
+					line.end_point   := PL.path.bend_point;
+					add_by_category;
+
+					
+					-- insert second line of the path:
+					PL.path.end_point := point;
+					line.start_point := PL.path.bend_point;
+					line.end_point   := PL.path.end_point;
+					add_by_category;
+				end if;
+
+				-- Set start point of path so that a new
+				-- path can be drawn:
+				PL.path.start_point := point;
 				
 			else
-				-- The path is bended. The bend point has been computed
-				-- interactively while moving the mouse or the cursor.
-				-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
-
-				-- insert first line of the path:
-				line.start_point := PL.path.start_point;
-				line.end_point   := PL.path.bend_point;
-				add_by_category;
-
-				
-				-- insert second line of the path:
-				PL.path.end_point := point;
-				line.start_point := PL.path.bend_point;
-				line.end_point   := PL.path.end_point;
-				add_by_category;
+				reset_preliminary_line;
 			end if;
-
-			-- Set start point of path so that a new
-			-- path can be drawn:
-			PL.path.start_point := point;
-		end if;
-			
+		end if;			
 	end make_path;
 		
 
