@@ -483,86 +483,87 @@ package body et_canvas_board is
 
 
 
-	-- Computes the path from given start to given end point.
-	-- Takes the bend style given in preliminary_line into account.
-	-- Draws the path.
-	procedure compute_and_draw_path (
-		start_point, end_point : in type_point) 
+
+
+	procedure draw_path (
+		cat : in type_text_layer) 
 	is
-		PL : type_preliminary_line renames preliminary_line;
+		PL : type_preliminary_line renames preliminary_line;	
+
+
+		-- Computes the path from given start to given end point.
+		-- Takes the bend style given in preliminary_line into account.
+		-- Draws the path.
+		procedure compute_and_draw (
+			start_point, end_point : in type_point) 
+		is
+			line : type_line;
+
+			-- Do the actual path calculation.
+			path : constant type_path := to_path (start_point, end_point, PL.path.bend_style);
+
+			-- Draws the line:
+			procedure draw is begin
+				draw_line (
+					line		=> to_line_fine (line),
+					width		=> PL.width);
+			end draw;
+			
+		begin
+			-- The calculated path may require a bend point.
+			-- Set/clear the "bended" flag of the line being drawn.
+			PL.path.bended := path.bended;
+
+			-- set linewidth:			
+			set_line_width (context.cr, type_view_coordinate (PL.width));
+
+			-- If the path does not require a bend point, draw a single line
+			-- from start to end point:
+			if path.bended = NO then
+				
+				line.start_point := path.start_point;
+				line.end_point := path.end_point;
+
+				draw;
+
+			-- If the path DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				PL.path.bend_point := path.bend_point;
+
+				line.start_point := path.start_point;
+				line.end_point := path.bend_point;
+				
+				draw;
+
+				line.start_point := path.bend_point;
+				line.end_point := path.end_point;
+				
+				draw;
+				
+			end if;
+		end compute_and_draw;
+
 		
-		line : type_line;
-
-		-- Do the actual path calculation.
-		path : constant type_path := to_path (start_point, end_point, PL.path.bend_style);
-
-		-- Draws the line:
-		procedure draw is begin
-			draw_line (
-				line		=> to_line_fine (line),
-				width		=> PL.width);
-		end draw;
+	begin -- draw_path
 		
-	begin
+		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+		and PL.category = cat then
+			case PL.tool is
+				when MOUSE => 
+					compute_and_draw (
+						start_point	=> PL.path.start_point,	-- start of path
+						end_point	=> canvas.snap_to_grid (get_mouse_position));	-- end of route
+					
+				when KEYBOARD =>
+					compute_and_draw (
+						start_point	=> PL.path.start_point,	-- start of path
+						end_point	=> cursor_main.position);	-- end of path
 
-		-- The calculated path may require a bend point.
-		-- Set/clear the "bended" flag of the line being drawn.
-		PL.path.bended := path.bended;
-
-		-- set linewidth:			
-		set_line_width (context.cr, type_view_coordinate (PL.width));
-
-		-- If the path does not require a bend point, draw a single line
-		-- from start to end point:
-		if path.bended = NO then
-			
-			line.start_point := path.start_point;
-			line.end_point := path.end_point;
-
-			draw;
-
-		-- If the path DOES require a bend point, then draw first a line
-		-- from start point to bend point. Then draw a second line from
-		-- bend point end point:
-		else
-			PL.path.bend_point := path.bend_point;
-
-			line.start_point := path.start_point;
-			line.end_point := path.bend_point;
-			
-			draw;
-
-			line.start_point := path.bend_point;
-			line.end_point := path.end_point;
-			
-			draw;
-			
+			end case;
 		end if;
-	end compute_and_draw_path;
-
-
--- 	procedure draw_path (
--- 		cat : in type_text_layer) 
--- 	is
--- 		PL : type_preliminary_line renames preliminary_line;		
--- 	begin
--- 		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
--- 		and PL.category = cat then
--- 			case PL.tool is
--- 				when MOUSE => 
--- 					compute_and_draw_path (
--- 						start_point	=> PL.path.start_point,	-- start of path
--- 						end_point	=> snap_to_grid (self, mouse_position (self)));	-- end of route
--- 					
--- 				when KEYBOARD =>
--- 					compute_and_draw_path (
--- 						start_point	=> PL.path.start_point,	-- start of path
--- 						end_point	=> cursor_main.position);	-- end of path
--- 
--- 			end case;
--- 
--- 		end if;
--- 	end draw_path;
+	end draw_path;
 
 	
 	

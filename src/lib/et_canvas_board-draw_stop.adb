@@ -229,15 +229,20 @@ is
 		end case;
 
 	end query_items;
+
 	
 begin -- draw_stop
--- 	put_line ("draw solder stop mask ...");
+	
+	-- 	put_line ("draw solder stop mask ...");
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
 		process		=> query_items'access);
 
 	draw_text_being_placed (self, face, LAYER_CAT_STOP);
+
+	-- Draw the lines of a path that is being drawn:
+	draw_path (LAYER_CAT_STOP);
 	
 end draw_stop;
 
