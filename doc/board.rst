@@ -210,6 +210,30 @@ Commands and Verb-Noun key sequences
 
 
 	
++++++
+Lines
++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Assembly Documentation
+
+##. Draw
+
+	.. code-block::
+
+		draw assy top line [width] [from x] [from y] [to x] [to y]
+
+	|VNS| d l
+
+
+##. Move
+
+	|VNS| m a
+
+	
+	
 +++++++
 Modules
 +++++++
