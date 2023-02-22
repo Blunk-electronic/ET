@@ -145,7 +145,7 @@ is
 						-- and snap the cursor position to the default grid:
 						self.reset_grid_and_cursor;
 
-						make_net_route (MOUSE, snap_to_grid (self, point));
+						make_path (MOUSE, snap_to_grid (self, point));
 						
 					when others => null;							
 				end case;

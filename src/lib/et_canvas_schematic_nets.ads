@@ -202,7 +202,7 @@ package et_canvas_schematic_nets is
 	-- The current bend style in preliminary_segment.path is taken into account.
 	-- The path may be started and finished with different tools. For example start
 	-- with MOUSE and finish with KEYBOARD or vice versa.
-	procedure make_net_route (
+	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point);
 

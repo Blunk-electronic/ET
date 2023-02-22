@@ -487,7 +487,7 @@ package body et_canvas_board_lines is
 
 
 
-	procedure make_line (
+	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point)
 	is
@@ -509,49 +509,57 @@ package body et_canvas_board_lines is
 			end case;
 
 		end add_by_category;
+
 		
-	begin
+	begin -- make_path
 
 		PL.tool := tool;
 
 
 		if not PL.ready then
+			-- set start point:
 			PL.path.start_point := point;
+
+			-- Allow drawing of the path:
 			preliminary_line.ready := true;
 
 			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
 		else
+			-- Set end point:
 			if PL.path.bended = NO then
 				PL.path.end_point := point;
 
-				-- CS insert a single line
+				-- insert a single line:
 				line.start_point := PL.path.start_point;
 				line.end_point   := PL.path.end_point;
 				add_by_category;
 				
 			else
-				-- path is bended
+				-- The path is bended. The bend point has been computed
+				-- interactively while moving the mouse or the cursor.
+				-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
 
-				-- insert first line:
+				-- insert first line of the path:
 				line.start_point := PL.path.start_point;
 				line.end_point   := PL.path.bend_point;
 				add_by_category;
 
 				
-				-- insert second line:
+				-- insert second line of the path:
 				PL.path.end_point := point;
 				line.start_point := PL.path.bend_point;
 				line.end_point   := PL.path.end_point;
 				add_by_category;
-
 			end if;
 
-			reset_preliminary_line;
+			-- Set start point of path so that a new
+			-- path can be drawn:
+			PL.path.start_point := point;
 		end if;
 			
-	end make_line;
+	end make_path;
 		
 
 	

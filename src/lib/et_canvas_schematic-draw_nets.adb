@@ -909,7 +909,7 @@ is
 	end query_nets;
 
 
-	procedure draw_net_route_being_drawn is
+	procedure draw_path is
 		PS : type_preliminary_segment renames preliminary_segment;
 		
 		line : pac_geometry_2.type_line;
@@ -967,7 +967,7 @@ is
 		end compute_route;
 
 		
-	begin -- draw_net_route_being_drawn
+	begin -- draw_path
 		if verb = VERB_DRAW and noun = NOUN_NET and PS.ready = true then
 
 			-- The route start point has been set eariler by procedures
@@ -988,7 +988,7 @@ is
 					
 			end case;			
 		end if;
-	end draw_net_route_being_drawn;
+	end draw_path;
 
 	
 	
@@ -1004,7 +1004,7 @@ begin
 
 	-- Draw a net that is being drawn. If no net is being drawn,
 	-- then nothing happens here:
-	draw_net_route_being_drawn;
+	draw_path;
 
 	
 end draw_nets;

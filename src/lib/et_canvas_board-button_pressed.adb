@@ -87,7 +87,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_LINE =>
-						make_line (MOUSE, snap_point);
+						make_path (MOUSE, snap_point);
 
 					when others => null;						
 				end case;

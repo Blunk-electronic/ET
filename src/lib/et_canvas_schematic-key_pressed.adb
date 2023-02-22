@@ -204,7 +204,7 @@ is
 						-- and snap the cursor position to the default grid:
 						self.reset_grid_and_cursor;
 
-						make_net_route (KEYBOARD, cursor_main.position);	
+						make_path (KEYBOARD, cursor_main.position);	
 						
 					when others => null;
 				end case;

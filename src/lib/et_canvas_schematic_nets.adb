@@ -423,7 +423,7 @@ package body et_canvas_schematic_nets is
 	end delete_selected_net_segment;
 
 
-	procedure make_net_route (
+	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point)
 	is 
@@ -434,12 +434,13 @@ package body et_canvas_schematic_nets is
 		PS.tool := tool;
 
 		if not PS.ready then
-
+			-- Set start point:
 			PS.path.start_point := point;
 					
 			-- Before processing the start point further, it must be validated:
 			if valid_for_net_segment (PS.path.start_point, log_threshold + 3) then
 
+				-- Allow drawing of the path:
 				PS.ready := true;
 				
 				set_status (status_start_point & to_string (PS.path.start_point) & ". " &
@@ -447,14 +448,14 @@ package body et_canvas_schematic_nets is
 			end if;
 
 		else
-			-- set end point
-			if PS.path.bended = NO then
-				
+			-- Set end point:
+			if PS.path.bended = NO then				
 				PS.path.end_point := point;
 
 				-- Before processing the end point further, it must be validated:
 				if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
 
+					-- Insert a single net segment:
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
@@ -465,13 +466,17 @@ package body et_canvas_schematic_nets is
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
-					reset_preliminary_segment;
 				end if;
 
 			else
+				-- The path is bended. The bend point has been computed
+				-- interactively while moving the mouse or the cursor.
+				-- See procedure draw_path in et_canvas_schematic-draw_nets.
+				
 				-- Before processing the BEND point further, it must be validated:
 				if valid_for_net_segment (PS.path.bend_point, log_threshold + 3) then
 
+					-- Insert first segment of the path:
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
@@ -482,12 +487,15 @@ package body et_canvas_schematic_nets is
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
+
+					
 					-- END POINT:
 					PS.path.end_point := point;
-
+					
 					-- Before processing the END point further, it must be validated:
 					if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
-					
+
+						-- Insert second segment of the path:
 						insert_net_segment (
 							module			=> current_active_module,
 							sheet			=> current_active_sheet,
@@ -498,13 +506,16 @@ package body et_canvas_schematic_nets is
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 					
-						reset_preliminary_segment;
 					end if;
 				end if;
 
 			end if;
+
+			-- Set start point of path so that a new
+			-- path can be drawn:			
+			PS.path.start_point := point;
 		end if;
-	end make_net_route;
+	end make_path;
 	
 
 

@@ -113,7 +113,13 @@ package et_canvas_board_lines is
 		& status_hint_for_abort;
 
 
-	procedure make_line (
+
+	-- Builds a live path. This procedure requires to be called twice:
+	-- first time for the start and the second time for the end point of the path.
+	-- The current bend style in preliminary_line.path is taken into account.
+	-- The path may be started and finished with different tools. For example start
+	-- with MOUSE and finish with KEYBOARD or vice versa.
+	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point);
 	

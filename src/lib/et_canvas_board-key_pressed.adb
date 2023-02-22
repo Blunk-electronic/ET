@@ -275,7 +275,7 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_LINE =>
-						make_line (KEYBOARD, point);
+						make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
