@@ -478,7 +478,7 @@ is
 							begin
 								case preliminary_text.tool is
 									when MOUSE =>
-										destination := self.snap_to_grid (self.mouse_position);
+										destination := self.snap_to_grid (get_mouse_position);
 														
 									when KEYBOARD =>
 										destination := cursor_main.position;
@@ -817,7 +817,7 @@ is
 
 						case preliminary_via.tool is
 							when MOUSE =>
-								circle.center := self.snap_to_grid (self.mouse_position);
+								circle.center := self.snap_to_grid (get_mouse_position);
 
 							when KEYBOARD =>
 								circle.center := cursor_main.position;

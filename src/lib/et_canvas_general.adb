@@ -487,7 +487,7 @@ package body pac_canvas is
 		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
 		
 		-- Get the mouse position:
-		drawing_point := mouse_position (self);
+		drawing_point := get_mouse_position;
 		-- CS: Assumes a random value if mouse outside the window.
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
@@ -885,8 +885,7 @@ package body pac_canvas is
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
-	function mouse_position (
-		self	: not null access type_view'class)
+	function get_mouse_position
 		return type_point 
 	is
 		-- The x/y position of the mouse pointer:
@@ -903,7 +902,7 @@ package body pac_canvas is
 		drawing_point : type_point;
 	begin
 		-- Get the mouse position:
-		self.get_pointer (position_pointer_x, position_pointer_y);
+		canvas.get_pointer (position_pointer_x, position_pointer_y);
 
 		-- Limit the pointer coordinates in case they are negative.
 		if position_pointer_x < 0 then
@@ -920,13 +919,13 @@ package body pac_canvas is
 		view_point.y := type_view_coordinate (position_pointer_y);
 
 		-- Convert the view_point to a model_point:
-		model_point := self.view_to_model (view_point);
+		model_point := canvas.view_to_model (view_point);
 
 		-- Convert the model_point to the point in the drawing:
-		drawing_point := model_to_drawing (self, model_point);
+		drawing_point := model_to_drawing (canvas, model_point);
 		
 		return drawing_point;
-	end mouse_position;
+	end get_mouse_position;
 
 	
 	function vtm (
@@ -1962,7 +1961,7 @@ package body pac_canvas is
 	begin
 		case primary_tool is
 			when KEYBOARD	=> point := cursor_main.position;
-			when MOUSE		=> point := view.snap_to_grid (view.mouse_position);
+			when MOUSE		=> point := view.snap_to_grid (get_mouse_position);
 		end case;
 
 		return point;

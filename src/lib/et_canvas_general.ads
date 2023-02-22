@@ -551,8 +551,7 @@ package pac_canvas is
 
 	
 	-- Returns the position of the pointer in the drawing:
-	function mouse_position (
-		self	: not null access type_view'class)
+	function get_mouse_position
 		return type_point;
 
 	

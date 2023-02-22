@@ -90,7 +90,7 @@ is
 						begin
 							case preliminary_object.tool is
 								when MOUSE =>
-									move_line_to (line_tmp, POA, self.snap_to_grid (self.mouse_position));
+									move_line_to (line_tmp, POA, self.snap_to_grid (get_mouse_position));
 
 								when KEYBOARD =>
 									move_line_to (line_tmp, POA, cursor_main.position);
@@ -204,7 +204,7 @@ is
 						begin
 							case preliminary_text.tool is
 								when MOUSE =>
-									destination := self.snap_to_grid (self.mouse_position);
+									destination := self.snap_to_grid (get_mouse_position);
 													  
 								when KEYBOARD =>
 									destination := cursor_main.position;
@@ -283,7 +283,7 @@ is
 				when MOUSE => 
 					compute_and_draw_path (
 						start_point	=> PL.path.start_point,	-- start of path
-						end_point	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+						end_point	=> snap_to_grid (self, get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_and_draw_path (

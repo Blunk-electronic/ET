@@ -540,6 +540,30 @@ package body et_canvas_board is
 		end if;
 	end compute_and_draw_path;
 
+
+-- 	procedure draw_path (
+-- 		cat : in type_text_layer) 
+-- 	is
+-- 		PL : type_preliminary_line renames preliminary_line;		
+-- 	begin
+-- 		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+-- 		and PL.category = cat then
+-- 			case PL.tool is
+-- 				when MOUSE => 
+-- 					compute_and_draw_path (
+-- 						start_point	=> PL.path.start_point,	-- start of path
+-- 						end_point	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+-- 					
+-- 				when KEYBOARD =>
+-- 					compute_and_draw_path (
+-- 						start_point	=> PL.path.start_point,	-- start of path
+-- 						end_point	=> cursor_main.position);	-- end of path
+-- 
+-- 			end case;
+-- 
+-- 		end if;
+-- 	end draw_path;
+
 	
 	
 	procedure draw_outline (
