@@ -2546,7 +2546,7 @@ package body pac_canvas is
 		end if;
 	end draw_line;
 
-
+	
 
 	function get_boundaries (
 		arc			: in type_arc_fine;

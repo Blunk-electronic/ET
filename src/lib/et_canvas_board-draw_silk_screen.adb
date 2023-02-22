@@ -235,6 +235,30 @@ is
 		end case;
 
 	end query_items;
+
+
+
+	procedure draw_path is
+		PL : type_preliminary_line renames preliminary_line;		
+	begin
+		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+		and PL.category = LAYER_CAT_SILKSCREEN then
+			case PL.tool is
+				when MOUSE => 
+					compute_and_draw_path (
+						start_point	=> PL.path.start_point,	-- start of path
+						end_point	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+					
+				when KEYBOARD =>
+					compute_and_draw_path (
+						start_point	=> PL.path.start_point,	-- start of path
+						end_point	=> cursor_main.position);	-- end of path
+
+			end case;
+
+		end if;
+	end draw_path;
+
 	
 begin -- draw_silk_screen
 -- 	put_line ("draw board silk screen ...");
@@ -244,6 +268,9 @@ begin -- draw_silk_screen
 		process		=> query_items'access);
 
 	draw_text_being_placed (self, face, LAYER_CAT_SILKSCREEN);
+
+	-- Draw the lines of a path that is being drawn:
+	draw_path;
 	
 end draw_silk_screen;
 

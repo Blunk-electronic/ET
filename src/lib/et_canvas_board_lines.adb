@@ -504,6 +504,16 @@ package body et_canvas_board_lines is
 						line		=> (line with PL.width),
 						log_threshold	=> log_threshold);
 
+					
+				when LAYER_CAT_SILKSCREEN =>
+					
+					et_board_ops.silkscreen.draw_silk_screen_line (
+						module_name	=> pac_generic_modules.key (current_active_module),
+						face		=> PL.face,
+						line		=> (line with PL.width),
+						log_threshold	=> log_threshold);
+
+					
 				when others =>
 					null;
 			end case;

@@ -480,6 +480,66 @@ package body et_canvas_board is
 			end if;
 		end if;
 	end draw_text_being_placed;
+
+
+
+	-- Computes the path from given start to given end point.
+	-- Takes the bend style given in preliminary_line into account.
+	-- Draws the path.
+	procedure compute_and_draw_path (
+		start_point, end_point : in type_point) 
+	is
+		PL : type_preliminary_line renames preliminary_line;
+		
+		line : type_line;
+
+		-- Do the actual path calculation.
+		path : constant type_path := to_path (start_point, end_point, PL.path.bend_style);
+
+		-- Draws the line:
+		procedure draw is begin
+			draw_line (
+				line		=> to_line_fine (line),
+				width		=> PL.width);
+		end draw;
+		
+	begin
+
+		-- The calculated path may require a bend point.
+		-- Set/clear the "bended" flag of the line being drawn.
+		PL.path.bended := path.bended;
+
+		-- set linewidth:			
+		set_line_width (context.cr, type_view_coordinate (PL.width));
+
+		-- If the path does not require a bend point, draw a single line
+		-- from start to end point:
+		if path.bended = NO then
+			
+			line.start_point := path.start_point;
+			line.end_point := path.end_point;
+
+			draw;
+
+		-- If the path DOES require a bend point, then draw first a line
+		-- from start point to bend point. Then draw a second line from
+		-- bend point end point:
+		else
+			PL.path.bend_point := path.bend_point;
+
+			line.start_point := path.start_point;
+			line.end_point := path.bend_point;
+			
+			draw;
+
+			line.start_point := path.bend_point;
+			line.end_point := path.end_point;
+			
+			draw;
+			
+		end if;
+	end compute_and_draw_path;
+
 	
 	
 	procedure draw_outline (
