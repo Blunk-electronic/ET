@@ -107,6 +107,11 @@ package et_canvas_board_tracks is
 
 
 
+	type type_snap_mode is (
+		NEAREST_AIRWIRE,
+		NEAREST_OBJECT);
+	
+
 	-- Builds a live path. This procedure requires to be called twice:
 	-- first time for the start and the second time for the end point of the path.
 	-- The current bend style in preliminary_track.path is taken into account.
@@ -114,7 +119,8 @@ package et_canvas_board_tracks is
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_point;
+		mode	: in type_snap_mode);
 	
 
 	

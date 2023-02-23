@@ -389,7 +389,7 @@ is
 				case noun is
 					when NOUN_NET =>
 						null;
-						-- make_path (KEYBOARD, point);
+						make_path (KEYBOARD, point, NEAREST_AIRWIRE);
 						
 					when others => null;
 				end case;

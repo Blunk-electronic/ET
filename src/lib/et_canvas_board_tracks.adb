@@ -333,7 +333,8 @@ package body et_canvas_board_tracks is
 
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_point;
+		mode	: in type_snap_mode)
 	is
 		PL : type_preliminary_track renames preliminary_track;
 		line : type_line;
