@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with et_canvas_board_tracks;
+
+
 separate (et_canvas_board)
 
 procedure button_pressed (
@@ -115,7 +118,17 @@ is
 						
 					when others => null;
 				end case;
-			
+
+
+			when VERB_ROUTE =>
+				case noun is
+					when NOUN_NET =>
+						-- et_canvas_board_tracks. ...
+						null; -- CS
+
+					when others => null;
+				end case;
+								
 
 			when VERB_DELETE =>
 				case noun is

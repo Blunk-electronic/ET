@@ -36,7 +36,7 @@
 --
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
-
+with et_canvas_board_tracks;
 
 separate (et_canvas_board)
 
@@ -370,6 +370,44 @@ is
 		end case;
 	end rotate;
 
+
+	procedure route is 
+		use et_canvas_board_tracks;
+	begin
+		case key is
+			when GDK_LC_n =>
+				noun := NOUN_NET;
+
+				reset_preliminary_track;
+				
+				show_track_properties;
+				set_status (status_draw_track);
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when GDK_Space =>
+				case noun is
+					when NOUN_NET =>
+						null;
+						-- make_path (KEYBOARD, point);
+						
+					when others => null;
+				end case;
+
+			-- If B pressed, then a bend style is being selected.
+			-- this affects only certain modes and is ignored otherwise:
+			when GDK_LC_b =>
+				case noun is
+					when NOUN_NET =>
+						next_bend_style (preliminary_track.path);
+						
+					when others => null;
+				end case;
+				
+			when others => status_noun_invalid;
+		end case;
+	end route;
+
 	
 	procedure update is 
 		use et_ratsnest;
@@ -404,6 +442,7 @@ begin -- key_pressed
 			reset_preliminary_line;
 			reset_preliminary_text; -- after placing a text
 			reset_preliminary_via; -- after placing a via
+			et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
 			
@@ -504,6 +543,7 @@ begin -- key_pressed
 							when VERB_MOVE		=> move;
 							when VERB_PLACE		=> place;
 							when VERB_ROTATE	=> rotate;
+							when VERB_ROUTE		=> route;
 							when VERB_UPDATE	=> update;
 							when others => null; -- CS
 						end case;

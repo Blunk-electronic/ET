@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with et_canvas_board_tracks;
+
+
 separate (et_canvas_board)
 
 procedure mouse_moved (
@@ -98,7 +101,19 @@ is begin
 					
 				when others => null;
 			end case;
-		
+
+
+		when VERB_ROUTE =>
+			case noun is
+				when NOUN_NET =>
+					if et_canvas_board_tracks.preliminary_track.ready then
+						redraw_board;
+					end if;
+
+				when others => null;
+			end case;
+			
+			
 		when others => null;
 	end case;
 	
