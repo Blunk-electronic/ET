@@ -105,22 +105,38 @@ package et_display.board is
 
 	function ratsnest_enabled return boolean;
 
+
+
+-- CONDUCTOR LAYERS
 	
 	-- Returns true if any conductor layer is enabled:
 	function conductors_enabled return boolean;
 
+	
 	-- Returns true if any inner conductor layer is enabled:
 	function inner_conductors_enabled (
 		deepest_layer : in type_signal_layer) -- the deepest conductor layer of the board
 		return boolean;
+
 	
 	-- Returns true if the given conductor layer is enabled:
-	function conductor_enabled (layer : in type_signal_layer) return boolean;
+	function conductor_enabled (
+		layer : in type_signal_layer) return boolean;
 
+	
+	-- Enables the given conductor layer:
+	procedure enable_conductor (
+		layer : in type_signal_layer);
+
+	
 	-- Returns true if via layer is enabled:
 	function vias_enabled return boolean;
 
 
+
+	
+
+	
 	
 -- ROUTE RESTRICT
 

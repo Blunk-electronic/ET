@@ -74,6 +74,10 @@ with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
 with et_board_ops.conductors;
 with et_modes.board;
+
+with et_display;						use et_display;
+with et_display.board;					use et_display.board;
+
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
@@ -115,9 +119,17 @@ package body et_canvas_board_lines is
 		preliminary_line.category := to_layer_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (preliminary_line.category));
 
-		et_canvas_board.redraw_board;
+		-- display the objects in the selected layer category:
+		case preliminary_line.category is
+			when LAYER_CAT_CONDUCTOR =>
+				-- display the affected conductor layer:
+				enable_conductor (preliminary_line.signal_layer);
+
+			when others =>
+				null;
+		end case;
 		
-		-- CS display layer ?
+		et_canvas_board.redraw_board;
 	end layer_category_changed;
 
 	
@@ -161,9 +173,10 @@ package body et_canvas_board_lines is
 		preliminary_line.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_line.signal_layer));
 
-		et_canvas_board.redraw_board;
+		-- display the affected conductor layer:
+		enable_conductor (preliminary_line.signal_layer);
 		
-		-- CS display layer ?
+		et_canvas_board.redraw_board;		
 	end signal_layer_changed;
 
 	

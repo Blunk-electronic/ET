@@ -177,7 +177,11 @@ package body et_display.board is
 		return false;
 	end inner_conductors_enabled;
 
-	function conductor_enabled (layer : in type_signal_layer) return boolean is begin
+
+	
+	function conductor_enabled (
+		layer : in type_signal_layer) 
+	return boolean is begin
 		if layers.conductors (layer) = ON then
 			return true;
 		else
@@ -186,7 +190,13 @@ package body et_display.board is
 	end conductor_enabled;
 
 
-
+	procedure enable_conductor (
+		layer : in type_signal_layer)
+	is begin
+		layers.conductors (layer) := ON;
+	end enable_conductor;
+	
+	
 
 	
 	function route_restrict_enabled return boolean is begin
