@@ -36,10 +36,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_sets;
 
 with glib;
 
@@ -137,21 +133,6 @@ package et_geometry is
 	scale_default : constant type_scale := 1.0;
 	scale_factor_on_zoom : constant type_scale := 1.05;
 
-
-
-	
--- LINE BENDING -------
-
-	type type_bend_style is (
-		STRAIGTH_THEN_ANGLED,
-		DIRECT,
-		ANGLED_THEN_STRAIGHT,
-		VERTICAL_THEN_HORIZONTAL,
-		HORIZONTAL_THEN_VERTICAL
-		);
-
-	type type_bended is (NO, YES);
-	
 
 
 -- DISTANCE POINT TO LINE

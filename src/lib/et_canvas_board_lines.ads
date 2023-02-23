@@ -37,14 +37,10 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   			       	use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
 with gtk.box;							use gtk.box;
 
 with et_canvas_general;					use et_canvas_general;
 with et_canvas_board;
-with et_geometry;						use et_geometry;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 

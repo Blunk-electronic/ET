@@ -978,6 +978,17 @@ package pac_canvas is
 
 	
 -- PATH FROM POINT TO POINT
+
+	type type_bend_style is (
+		STRAIGTH_THEN_ANGLED,
+		DIRECT,
+		ANGLED_THEN_STRAIGHT,
+		VERTICAL_THEN_HORIZONTAL,
+		HORIZONTAL_THEN_VERTICAL
+		);
+
+	type type_bended is (NO, YES);
+
 	
 	-- When creating a path from one point to another use this type.
 	-- NOTE: This is general stuff. This does apply to all kinds of lines
