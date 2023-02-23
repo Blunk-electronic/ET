@@ -523,8 +523,16 @@ package body et_canvas_board_lines is
 						log_threshold	=> log_threshold);
 
 					
-				when others =>
-					null;
+				when LAYER_CAT_CONDUCTOR =>
+
+					-- Because we do not pass a net name, this is going
+					-- to be a freetrack:
+					et_board_ops.conductors.draw_track_line (
+						module_name	=> pac_generic_modules.key (current_active_module),
+						line		=> (line with PL.width, PL.signal_layer),
+						log_threshold	=> log_threshold);
+
+					
 			end case;
 
 		end add_by_category;

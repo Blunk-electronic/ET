@@ -180,7 +180,7 @@ package body et_board_ops.conductors is
 	
 	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in pac_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string := no_name; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level) 
 	is
@@ -201,7 +201,7 @@ package body et_board_ops.conductors is
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
 			" drawing line" &
-			" in layer" & to_string (line.layer) &
+			" in layer " & to_string (line.layer) & " " &
 			to_string (line),
 			level => log_threshold);
 

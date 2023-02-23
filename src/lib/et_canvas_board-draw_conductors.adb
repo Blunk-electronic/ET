@@ -1040,6 +1040,8 @@ begin -- draw_conductors
 
 		when others => null;
 	end case;
+
+	draw_path (LAYER_CAT_CONDUCTOR);
 	
 end draw_conductors;
 

@@ -53,6 +53,7 @@ with et_project;
 with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_display.board;
+with et_colors;
 with et_colors.board;				use et_colors.board;
 with et_modes.board;				use et_modes.board;
 with et_board_ops;					use et_board_ops;
@@ -497,6 +498,8 @@ package body et_canvas_board is
 		procedure compute_and_draw (
 			start_point, end_point : in type_point) 
 		is
+			use et_colors;
+			
 			line : type_line;
 
 			-- Do the actual path calculation.
@@ -516,6 +519,12 @@ package body et_canvas_board is
 
 			-- set linewidth:			
 			set_line_width (context.cr, type_view_coordinate (PL.width));
+
+			-- If we are drawing a path in a conductor layer then
+			-- the color must be set according to the signal layer:
+			if PL.category = LAYER_CAT_CONDUCTOR then
+				set_color_conductor (context.cr, PL.signal_layer, NORMAL);
+			end if;
 
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
