@@ -107,6 +107,28 @@ package body et_canvas_board_tracks is
 
 
 
+
+	procedure net_name_changed (combo : access gtk_combo_box_record'class) is
+		use glib;
+		use gtk.tree_model;
+		use gtk.list_store;
+
+		-- Get the model and active iter from the combo box:
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		item_text : glib.values.gvalue;
+	begin
+		-- Get the actual text of the entry (column is 0):
+		gtk.tree_model.get_value (model, iter, 0, item_text);
+
+		preliminary_track.net_name := to_net_name (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_track.signal_layer));
+
+	end net_name_changed;
+
+
+	
 	
 	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -200,11 +222,11 @@ package body et_canvas_board_tracks is
 		use gtk.list_store;
 		use gtk.tree_model;
 
-		box_signal_layer, --box_button,
-		box_line_width : gtk_vbox;
+		box_net_name, box_signal_layer, box_line_width : gtk_vbox;
 		
-		label_signal_layer, label_line_width : gtk_label;
+		label_net_name, label_signal_layer, label_line_width : gtk_label;
 		
+		cbox_net_name : gtk_combo_box;
 		cbox_signal_layer : gtk_combo_box;
 		-- Operator can choose between fixed menu entries.
 		
@@ -232,6 +254,67 @@ package body et_canvas_board_tracks is
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
+
+
+
+		procedure make_combo_for_net_name is
+			storage_model : gtk_list_store;
+
+			-- An entry consists of just a single column:
+			column_0 : constant := 0;
+
+			-- The single column is to contain strings:
+			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+
+			iter : gtk_tree_iter;			
+			render : gtk_cell_renderer_text;
+		begin
+			gtk_new_vbox (box_net_name, homogeneous => false);
+			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
+			
+			gtk_new (label_net_name, "NET NAME");
+			pack_start (box_net_name, label_net_name, padding => guint (spacing));
+
+			
+			-- Create the storage model:
+			gtk_new (list_store => storage_model, types => (entry_structure));
+
+			-- Insert the available net names in the storage model:
+			for choice in 
+				-- The top layer is always available:
+				type_signal_layer'first .. 
+
+				-- The deepest available layer depends on the stack configuration:
+				deepest_conductor_layer (current_active_module) 
+			loop
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0,
+					type_signal_layer'image (choice));
+			end loop;
+
+			-- Create the combo box:
+			gtk.combo_box.gtk_new_with_model (
+				combo_box	=> cbox_net_name,
+				model		=> +storage_model); -- ?
+
+			-- CS
+			-- Set the net name used last:
+			-- cbox_net_name.set_active (gint (preliminary_track.signal_layer) - 1);
+			-- NOTE: The entries are numbered from 0 .. N.
+
+
+			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
+			cbox_net_name.on_changed (net_name_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_net_name, render, expand => true);
+			add_attribute (cbox_net_name, render, "markup", column_0);
+
+		end make_combo_for_net_name;
+
+
 
 		
 		procedure make_combo_for_signal_layer is
@@ -328,9 +411,9 @@ package body et_canvas_board_tracks is
 			reorder_child (box_right, box_properties.box_main, 1);
 
 			-- build the elements of the properties bar:
+			make_combo_for_net_name;
 			make_combo_for_signal_layer;
 			make_combo_for_line_width;
-			-- make_apply_button;
 
 			-- Redraw the right box of the window:
 			box_right.show_all;
@@ -368,10 +451,17 @@ package body et_canvas_board_tracks is
 		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
 
-		procedure add_by_category is
+		procedure add_to_net is
+			use et_board_ops.conductors;
 		begin
+			add_named_track (
+				module_cursor	=> current_active_module, 
+				net_name		=> PT.net_name,
+				line			=> (line with PT.width, PT.signal_layer));
+			
 			null; -- CS
-		end;
+		end add_to_net;
+
 		
 	begin -- make_path
 		put_line ("make path"); --to_string (PT.snap_mode));
@@ -410,7 +500,7 @@ package body et_canvas_board_tracks is
 					-- insert a single line:
 					line.start_point := PT.path.start_point;
 					line.end_point   := PT.path.end_point;
-					add_by_category;
+					add_to_net;
 					
 				else
 					-- The path is bended. The bend point has been computed
@@ -420,14 +510,14 @@ package body et_canvas_board_tracks is
 					-- insert first line of the path:
 					line.start_point := PT.path.start_point;
 					line.end_point   := PT.path.bend_point;
-					add_by_category;
+					add_to_net;
 
 					
 					-- insert second line of the path:
 					PT.path.end_point := point;
 					line.start_point := PT.path.bend_point;
 					line.end_point   := PT.path.end_point;
-					add_by_category;
+					add_to_net;
 				end if;
 
 				-- Set start point of path so that a new

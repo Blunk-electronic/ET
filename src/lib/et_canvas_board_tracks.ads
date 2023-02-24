@@ -50,6 +50,7 @@ use et_pcb_coordinates.pac_geometry_2;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
 with et_pcb_stack;						use et_pcb_stack;
+with et_net_names;						use et_net_names;
 
 
 package et_canvas_board_tracks is
@@ -92,7 +93,8 @@ package et_canvas_board_tracks is
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the line:
 		tool		: type_tool := MOUSE;
-		
+
+		net_name		: pac_net_name.bounded_string := no_name;
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		path			: type_path_live;

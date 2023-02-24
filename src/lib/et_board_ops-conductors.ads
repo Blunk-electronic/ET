@@ -55,6 +55,7 @@ package et_board_ops.conductors is
 -- TRACKS:
 	
 	-- Adds a line track segment to the given net in the given module.
+	-- The given net must exist:
 	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
