@@ -153,8 +153,22 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the name of the first net of the given module.
+	-- Net names are sorted alphabetically:
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_net_name.bounded_string;
 	
+							   
+	-- Returns the names of all nets of the given module
+	-- sorted alphabetically:
+	function get_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_net_names.list;
 
+
+	
 	-- Returns lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;

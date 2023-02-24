@@ -43,6 +43,8 @@ with ada.strings.fixed; 			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;
 --with ada.characters.handling;		use ada.characters.handling;
 
+with ada.containers;
+
 with glib;
 with glib.values;
 
@@ -71,6 +73,8 @@ with et_canvas_board;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.conductors;
 with et_modes.board;
+
+with et_schematic_ops.nets;
 
 with et_display;						use et_display;
 with et_display.board;					use et_display.board;
@@ -117,14 +121,16 @@ package body et_canvas_board_tracks is
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
-		item_text : glib.values.gvalue;
+		name, index : glib.values.gvalue;
 	begin
-		-- Get the actual text of the entry (column is 0):
-		gtk.tree_model.get_value (model, iter, 0, item_text);
-
-		preliminary_track.net_name := to_net_name (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_track.signal_layer));
-
+		-- Get the net name of the entry (column is 0):
+		gtk.tree_model.get_value (model, iter, 0, name);
+		preliminary_track.net_name := to_net_name (glib.values.get_string (name));
+		
+		gtk.tree_model.get_value (model, iter, 1, index);
+		preliminary_track.net_index := positive'value (glib.values.get_string (index));
+		
+		-- put_line ("selected net " & pac_net_name.to_string (preliminary_track.net_name));
 	end net_name_changed;
 
 
@@ -233,8 +239,6 @@ package body et_canvas_board_tracks is
 		cbox_line_width : gtk_combo_box_text;
 		-- Operator may enter an additional value in the menu.
 		
-		-- button_apply : gtk_button;
-
 		-- These constants define the minimum and maximum of
 		-- characters that can be entered in the fields for 
 		-- text size and line width:
@@ -260,14 +264,32 @@ package body et_canvas_board_tracks is
 		procedure make_combo_for_net_name is
 			storage_model : gtk_list_store;
 
-			-- An entry consists of just a single column:
-			column_0 : constant := 0;
 
-			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+			column_0 : constant := 0; -- for the net name
+			column_1 : constant := 1; -- for the net index
+
+			entry_structure : glib.gtype_array := (
+					column_0 => glib.gtype_string,
+					column_1 => glib.gtype_string);
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+
+			use pac_net_names;
+			nets : pac_net_names.list := 
+				et_schematic_ops.nets.get_nets (current_active_module, log_threshold + 1);
+			
+			counter : positive := 1;
+
+			procedure query_net (c : in pac_net_names.cursor) is begin
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0, to_string (c));
+				gtk.list_store.set (storage_model, iter, column_1, positive'image (counter));
+				counter := counter + 1;
+			end query_net;
+
+			
 		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
@@ -280,26 +302,15 @@ package body et_canvas_board_tracks is
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the available net names in the storage model:
-			for choice in 
-				-- The top layer is always available:
-				type_signal_layer'first .. 
+			nets.iterate (query_net'access);
 
-				-- The deepest available layer depends on the stack configuration:
-				deepest_conductor_layer (current_active_module) 
-			loop
-				storage_model.append (iter);
-				gtk.list_store.set (storage_model, iter, column_0,
-					type_signal_layer'image (choice));
-			end loop;
-
-			-- Create the combo box:
+			-- Create the combo box with the net names inside:
 			gtk.combo_box.gtk_new_with_model (
 				combo_box	=> cbox_net_name,
 				model		=> +storage_model); -- ?
 
-			-- CS
-			-- Set the net name used last:
-			-- cbox_net_name.set_active (gint (preliminary_track.signal_layer) - 1);
+			-- Remember the net name used last:
+			cbox_net_name.set_active (gint (preliminary_track.net_index) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -457,9 +468,9 @@ package body et_canvas_board_tracks is
 			add_named_track (
 				module_cursor	=> current_active_module, 
 				net_name		=> PT.net_name,
-				line			=> (line with PT.width, PT.signal_layer));
+				line			=> (line with PT.width, PT.signal_layer),
+				log_threshold	=> log_threshold + 1);
 			
-			null; -- CS
 		end add_to_net;
 
 		

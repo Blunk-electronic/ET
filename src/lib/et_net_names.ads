@@ -104,7 +104,11 @@ package et_net_names is
 	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
 
-
+	-- Returns the name of the net indicated by the given cursor as string:
+	function to_string (
+		net	: in pac_net_names.cursor)
+		return string;
+	
 	
 -- INDEXED NETS
 

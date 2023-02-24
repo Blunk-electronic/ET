@@ -59,7 +59,9 @@ package et_board_ops.conductors is
 	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in type_conductor_line);
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level);
+
 
 	
 	-- Draws a track line. If net_name is empty (default) 

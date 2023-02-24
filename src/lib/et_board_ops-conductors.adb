@@ -132,7 +132,8 @@ package body et_board_ops.conductors is
 	procedure add_named_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in type_conductor_line) 
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level)
 	is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -174,7 +175,8 @@ package body et_board_ops.conductors is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-		
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end add_named_track;
 
 	
@@ -219,7 +221,7 @@ package body et_board_ops.conductors is
 				process		=> add_freetrack'access);
 
 		else
-			add_named_track (module_cursor, net_name, line);
+			add_named_track (module_cursor, net_name, line, log_threshold + 1);
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
@@ -335,7 +337,7 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line);
+		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
@@ -405,7 +407,7 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line);
+		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
@@ -468,7 +470,7 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line);
+		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
@@ -534,7 +536,7 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line);
+		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;

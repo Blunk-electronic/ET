@@ -95,6 +95,11 @@ package et_canvas_board_tracks is
 		tool		: type_tool := MOUSE;
 
 		net_name		: pac_net_name.bounded_string := no_name;
+
+		-- An index is required to remember the net name
+		-- that was selected via a combo box:
+		net_index		: positive := 1;
+		
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		path			: type_path_live;

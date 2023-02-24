@@ -145,6 +145,16 @@ package body et_net_names is
 	end anonymous;
 	
 
+	function to_string (
+		net	: in pac_net_names.cursor)
+		return string
+	is
+		use pac_net_names;
+	begin
+		return pac_net_name.to_string (element (net));
+	end to_string;
+
+	
 	
 -- INDEXED NETS
 	

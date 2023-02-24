@@ -1392,6 +1392,65 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end drag_segment;
 
+
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_net_name.bounded_string
+	is
+		result : pac_net_name.bounded_string;
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is begin
+			result := key (module.nets.first);
+		end query_module;
+
+	begin
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		return result;
+	end get_first_net;
+	
+	
+	function get_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_net_names.list
+	is
+		result : pac_net_names.list;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			procedure query_net (c : in pac_nets.cursor) is begin
+				result.append (key (c));
+			end query_net;
+			
+		begin
+			iterate (module.nets, query_net'access);
+		end query_module;
+
+
+	begin
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
+			 " collecting all nets",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+		return result;
+	end get_nets;
+
+
 	
 	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;
