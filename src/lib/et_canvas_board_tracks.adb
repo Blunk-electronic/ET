@@ -85,6 +85,15 @@ package body et_canvas_board_tracks is
 	use et_canvas_board.pac_canvas;
 
 
+	function to_string (
+		mode	: in type_snap_mode)
+		return string
+	is begin
+		return " " & type_snap_mode'image (mode);
+	end to_string;
+
+
+	
 	procedure reset_preliminary_track is begin
 		preliminary_track.ready := false;
 		preliminary_track.tool := MOUSE;
@@ -331,12 +340,32 @@ package body et_canvas_board_tracks is
 
 
 
+	procedure next_snap_mode is 
+		PT : type_preliminary_track renames preliminary_track;
+
+		i : constant natural := type_snap_mode'pos (PT.snap_mode);
+		-- i points now to the current snap mode
+
+		-- get the index of the last available snap mode:
+		max : constant natural := type_snap_mode'pos (type_snap_mode'last);
+	begin
+		if i < max then
+			-- jump to next snap mode
+			PT.snap_mode := type_snap_mode'succ (type_snap_mode'val (i));
+		else 
+			-- After the last snap mode, jump back to the first snap mode:
+			PT.snap_mode := type_snap_mode'first;
+		end if;
+
+		--put_line ("snap mode " & to_string (PT.snap_mode));
+	end next_snap_mode;
+	
+
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point;
-		mode	: in type_snap_mode)
+		point	: in type_point)
 	is
-		PL : type_preliminary_track renames preliminary_track;
+		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
 
 		procedure add_by_category is
@@ -345,41 +374,42 @@ package body et_canvas_board_tracks is
 		end;
 		
 	begin -- make_path
+		put_line ("make path"); --to_string (PT.snap_mode));
 		
 		-- Set the tool being used for this path so that procedure
-		-- draw_path (for example in et_canvas_board-draw_nets-draw_assy_doc)
+		-- draw_track (in et_canvas_board-draw_conductors)
 		-- knows where to get the end point from.
-		PL.tool := tool;
+		PT.tool := tool;
 
 		-- Initally the preliminary_track is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PL.ready then
+		if not PT.ready then
 			-- set start point:
-			PL.path.start_point := point;
+			PT.path.start_point := point;
 
 			-- Allow drawing of the path:
 			preliminary_track.ready := true;
 
-			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
+			set_status (status_start_point & to_string (PT.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
 		else -- preliminary_track IS ready
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
-			if point /= PL.path.start_point then
+			if point /= PT.path.start_point then
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 				
-				if PL.path.bended = NO then
-					PL.path.end_point := point;
+				if PT.path.bended = NO then
+					PT.path.end_point := point;
 
 					-- insert a single line:
-					line.start_point := PL.path.start_point;
-					line.end_point   := PL.path.end_point;
+					line.start_point := PT.path.start_point;
+					line.end_point   := PT.path.end_point;
 					add_by_category;
 					
 				else
@@ -388,21 +418,21 @@ package body et_canvas_board_tracks is
 					-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.start_point := PL.path.start_point;
-					line.end_point   := PL.path.bend_point;
+					line.start_point := PT.path.start_point;
+					line.end_point   := PT.path.bend_point;
 					add_by_category;
 
 					
 					-- insert second line of the path:
-					PL.path.end_point := point;
-					line.start_point := PL.path.bend_point;
-					line.end_point   := PL.path.end_point;
+					PT.path.end_point := point;
+					line.start_point := PT.path.bend_point;
+					line.end_point   := PT.path.end_point;
 					add_by_category;
 				end if;
 
 				-- Set start point of path so that a new
 				-- path can be drawn:
-				PL.path.start_point := point;
+				PT.path.start_point := point;
 				
 			else
 				reset_preliminary_track;

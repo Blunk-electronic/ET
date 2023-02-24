@@ -1417,7 +1417,7 @@ package body pac_canvas is
 		use gdk.types.keysyms;
 
 		key_ctrl	: gdk_modifier_type := event.state and control_mask;
-		--key_shift	: gdk_modifier_type := event.state and shift_mask;
+		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: gdk_key_type := event.keyval;
 	begin
 -- 		put_line ("key pressed");
@@ -1497,7 +1497,7 @@ package body pac_canvas is
 					
 				when others =>
 					-- put_line ("other key pressed");
-					canvas.key_pressed (key);
+					canvas.key_pressed (key, key_shift);
 
 					-- CS: test the TAB key explicitely in order to return false ?
 					event_handled := true;

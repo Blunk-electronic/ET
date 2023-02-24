@@ -41,8 +41,9 @@ with et_canvas_board_tracks;
 separate (et_canvas_board)
 
 procedure key_pressed (
-	self	: not null access type_view;
-	key		: in gdk_key_type) 
+	self		: not null access type_view;
+	key			: in gdk_key_type;
+	key_shift	: in gdk_modifier_type)
 is
 	use gdk.types;
 	use gdk.types.keysyms;
@@ -384,18 +385,25 @@ is
 				set_status (status_draw_track);
 
 
-			-- If space pressed, then the operator wishes to operate via keyboard:	
+			-- If space pressed, then the operator wishes to operate via keyboard.
 			when GDK_Space =>
 				case noun is
 					when NOUN_NET =>
-						null;
-						make_path (KEYBOARD, point, NEAREST_AIRWIRE);
+						et_canvas_board_tracks.make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
 
-			-- If B pressed, then a bend style is being selected.
-			-- this affects only certain modes and is ignored otherwise:
+			-- If "m" pressed, then a snap mode is being selected.
+			when GDK_LC_m =>
+				case noun is
+					when NOUN_NET =>
+						next_snap_mode;
+						
+					when others => null;
+				end case;
+				
+			-- If "b" pressed, then a bend style is being selected.
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>

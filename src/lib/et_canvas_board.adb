@@ -485,7 +485,12 @@ package body et_canvas_board is
 
 
 
-
+	-- Draws a path being drawn in a given layer category.
+	-- Uses the parameters in variable preliminary_line.
+	-- Computes the bend point (if required) and sets it accordingly
+	-- in preliminary_line.
+	-- Use it also for drawing freetracks in conductor layers.
+	-- NOTE: This is NOT for tracks of nets ! See procedure draw_conductors.
 	procedure draw_path (
 		cat : in type_text_layer) 
 	is
@@ -995,8 +1000,9 @@ package body et_canvas_board is
 
 	
 	procedure key_pressed (
-		self	: not null access type_view;
-		key		: in gdk_key_type) 
+		self		: not null access type_view;
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type)
 	is separate;
 
 	

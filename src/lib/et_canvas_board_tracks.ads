@@ -73,6 +73,18 @@ package et_canvas_board_tracks is
 
 
 
+	
+	type type_snap_mode is (
+		NEAREST_AIRWIRE, -- track starts/ends at the nearest airwire
+		NEAREST_OBJECT, -- track starts/ends at the nearest object
+		NO_SNAP);
+
+	
+	function to_string (
+		mode	: in type_snap_mode)
+		return string;
+	
+
 	type type_preliminary_track is record
 		-- This flag tells the draw operations to draw the preliminary line:
 		ready		: boolean := false;
@@ -85,6 +97,7 @@ package et_canvas_board_tracks is
 
 		path			: type_path_live;
 		width			: type_distance_positive := 0.15;
+		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;
 	end record;
 
 	-- The place where preliminary information of the line is stored:
@@ -97,6 +110,9 @@ package et_canvas_board_tracks is
 	procedure show_track_properties;
 
 
+	procedure next_snap_mode;
+	
+	
 	-- to be output in the status bar:
 	status_draw_track : constant string := 
 		status_click_left 
@@ -107,10 +123,6 @@ package et_canvas_board_tracks is
 
 
 
-	type type_snap_mode is (
-		NEAREST_AIRWIRE,
-		NEAREST_OBJECT);
-	
 
 	-- Builds a live path. This procedure requires to be called twice:
 	-- first time for the start and the second time for the end point of the path.
@@ -119,8 +131,7 @@ package et_canvas_board_tracks is
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point;
-		mode	: in type_snap_mode);
+		point	: in type_point);
 	
 
 	

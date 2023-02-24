@@ -325,8 +325,9 @@ package et_canvas_schematic is
 	procedure clear_proposed_objects;
 	
 	overriding procedure key_pressed (
-		self	: not null access type_view;
-		key		: in gdk_key_type);
+		self		: not null access type_view;
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type);
 
 	overriding procedure mouse_moved (
 		self	: not null access type_view;

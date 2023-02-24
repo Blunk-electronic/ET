@@ -51,6 +51,9 @@ with et_design_rules;				use et_design_rules;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 
+with et_canvas_board_tracks;		use et_canvas_board_tracks;
+
+
 separate (et_canvas_board)
 
 procedure draw_conductors (
@@ -1025,6 +1028,93 @@ is
 		end if;
 	end draw_via_being_placed;
 
+
+
+	-- Draws a conducting track path being drawn.
+	-- Uses the parameters in variable preliminary_track.
+	-- Computes the bend point (if required) and sets it accordingly
+	-- in preliminary_track.
+	procedure draw_track is
+		PT : type_preliminary_track renames preliminary_track;	
+
+
+		-- Computes the path from given start to given end point.
+		-- Takes the bend style given in preliminary_track into account.
+		-- Draws the path.
+		procedure compute_and_draw (
+			start_point, end_point : in type_point) 
+		is
+			use et_colors;
+			
+			line : type_line;
+
+			-- Do the actual path calculation.
+			path : constant type_path := to_path (start_point, end_point, PT.path.bend_style);
+
+			-- Draws the line:
+			procedure draw is begin
+				draw_line (
+					line		=> to_line_fine (line),
+					width		=> PT.width);
+			end draw;
+			
+		begin
+			-- The calculated path may require a bend point.
+			-- Set/clear the "bended" flag of the line being drawn.
+			PT.path.bended := path.bended;
+
+			-- set linewidth:			
+			set_line_width (context.cr, type_view_coordinate (PT.width));
+
+			-- Set the color according to the current signal layer:
+			set_color_conductor (context.cr, PT.signal_layer, NORMAL);
+
+			-- If the path does not require a bend point, draw a single line
+			-- from start to end point:
+			if path.bended = NO then
+				
+				line.start_point := path.start_point;
+				line.end_point := path.end_point;
+
+				draw;
+
+			-- If the path DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				PT.path.bend_point := path.bend_point;
+
+				line.start_point := path.start_point;
+				line.end_point := path.bend_point;
+				
+				draw;
+
+				line.start_point := path.bend_point;
+				line.end_point := path.end_point;
+				
+				draw;				
+			end if;
+		end compute_and_draw;
+
+		
+	begin -- draw_track
+		
+		if verb = VERB_ROUTE and noun = NOUN_NET and PT.ready then
+			case PT.tool is
+				when MOUSE => 
+					compute_and_draw (
+						start_point	=> PT.path.start_point,	-- start of path
+						end_point	=> canvas.snap_to_grid (get_mouse_position));	-- end of route
+					
+				when KEYBOARD =>
+					compute_and_draw (
+						start_point	=> PT.path.start_point,	-- start of path
+						end_point	=> cursor_main.position);	-- end of path
+
+			end case;
+		end if;
+	end draw_track;
+
 	
 	
 begin -- draw_conductors
@@ -1034,6 +1124,9 @@ begin -- draw_conductors
 		position	=> current_active_module,
 		process		=> query_items'access);
 
+
+	-- Draw a via that is being placed. If none is being placed,
+	-- nothing happens:
 	case verb is
 		when VERB_PLACE =>
 			draw_via_being_placed;
@@ -1041,7 +1134,15 @@ begin -- draw_conductors
 		when others => null;
 	end case;
 
+
+	-- Draw a freetrack being drawn. If no freetrack is being drawn,
+	-- nothing happens:
 	draw_path (LAYER_CAT_CONDUCTOR);
+
+
+	-- This is about a track that is connected to a net:
+	-- Draw a track that is being drawn. If none is being drawn, nothing happens:
+	draw_track;
 	
 end draw_conductors;
 

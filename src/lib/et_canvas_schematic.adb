@@ -830,8 +830,9 @@ package body et_canvas_schematic is
 
 	
 	procedure key_pressed (
-		self	: not null access type_view;
-		key		: in gdk_key_type) 
+		self		: not null access type_view;
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type)
 	is separate;
 
 	

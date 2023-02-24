@@ -123,8 +123,7 @@ is
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_NET =>
-						-- et_canvas_board_tracks. ...
-						null; -- CS
+						et_canvas_board_tracks.make_path (MOUSE, snap_point);
 
 					when others => null;
 				end case;
@@ -233,6 +232,15 @@ is
 						if clarification_pending then
 							select_via;
 						end if;
+						
+					when others => null;							
+				end case;
+
+
+			when VERB_ROUTE =>
+				case noun is
+					when NOUN_NET =>
+						next_bend_style (et_canvas_board_tracks.preliminary_track.path);
 						
 					when others => null;							
 				end case;

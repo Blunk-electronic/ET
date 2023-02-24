@@ -39,8 +39,9 @@
 separate (et_canvas_schematic)
 
 procedure key_pressed (
-	self	: not null access type_view;
-	key		: in gdk_key_type) 
+	self		: not null access type_view;
+	key			: in gdk_key_type;
+	key_shift	: in gdk_modifier_type)
 is
 	use gdk.types;
 	use gdk.types.keysyms;

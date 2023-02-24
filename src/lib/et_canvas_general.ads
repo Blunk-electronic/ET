@@ -841,8 +841,10 @@ package pac_canvas is
 
 	-- Evaluates the given keyboard key and sets the operation mode:
 	procedure key_pressed (
-		self	: not null access type_view;
-		key		: in gdk_key_type) is null;
+		self		: not null access type_view;
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type)
+		is null;
 
 	type type_mouse_button is new positive range 1 .. 7; -- CS range correct ?
 	-- 1 - left button
