@@ -976,7 +976,7 @@ is
 			position := self.tool_position;
 
 			-- Get the name of the targeted net:
-			net_name := get_name (preliminary_via.net);
+			net_name := preliminary_via.net_name;
 			
 			case preliminary_via.category is
 				when THROUGH =>

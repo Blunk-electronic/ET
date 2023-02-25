@@ -65,6 +65,7 @@ with gtk.container;					use gtk.container;
 with gtk.text_buffer;
 with gtk.text_iter;
 
+with et_schematic_ops.nets;
 with et_canvas_board;
 
 with et_exceptions;					use et_exceptions;
@@ -314,16 +315,18 @@ package body et_canvas_board_vias is
 	begin
 		-- Get the net name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
-
+		preliminary_via.net_name := to_net_name (glib.values.get_string (name));
+		
 		-- Get the net index of the entry column 1:
 		gtk.tree_model.get_value (model, iter, 1, index);
+		preliminary_via.net_index := positive'value (glib.values.get_string (index));
 		
-		set (
-			net		=> preliminary_via.net,
-			name	=> to_net_name (glib.values.get_string (name)),
-			idx 	=> positive'value (glib.values.get_string (index)));
+		-- set (
+		-- 	net		=> preliminary_via.net,
+		-- 	name	=> to_net_name (glib.values.get_string (name)),
+		-- 	idx 	=> positive'value (glib.values.get_string (index)));
 		
-		et_canvas_board.redraw_board;
+		et_canvas_board.redraw_board; -- CS ?
 		
 		-- CS display layer ?
 	end net_name_changed;
@@ -378,16 +381,16 @@ package body et_canvas_board_vias is
 		-- If the module contains nets, then set the topmost net in the alphabet.
 		-- If there are no nets in the module, then preliminary_via.net
 		-- remains un-initalized:
-		if is_empty (net_names) then
-			set (
-				net		=> preliminary_via.net,
-				name	=> to_net_name ("")); -- no name
-		else
-			set (
-				net		=> preliminary_via.net,
-				name	=> element (net_names.first), -- AGND
-				idx		=> to_index (net_names.first)); -- 1
-		end if;
+		-- if is_empty (net_names) then
+		-- 	set (
+		-- 		net		=> preliminary_via.net,
+		-- 		name	=> to_net_name ("")); -- no name
+		-- else
+		-- 	set (
+		-- 		net		=> preliminary_via.net,
+		-- 		name	=> element (net_names.first), -- AGND
+		-- 		idx		=> to_index (net_names.first)); -- 1
+		-- end if;
 		
 	end init_preliminary_via;
 
@@ -434,47 +437,17 @@ package body et_canvas_board_vias is
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
+		
 
 		-- NET NAME
 		procedure make_combo_net is
-			storage_model : gtk_list_store;
-
-			-- An entry consists of two columns.
-			-- But only the first will be displayed in the combo box. The first entry
-			-- will contain the net name.
-			-- The second entry will not be displayed but is necessary to convey
-			-- the net index.
-			column_0 : constant := 0; -- for the net name
-			column_1 : constant := 1; -- for the net index
-
-			-- As an indermediate format, the columns will contain 
-			-- the data type string:
-			entry_structure : glib.gtype_array := (
-					column_0 => glib.gtype_string,
-					column_1 => glib.gtype_string);
-
-			iter	: gtk_tree_iter;			
-			render	: gtk_cell_renderer_text;
-
-			-- We need a list of all net names of the current module:
-			use pac_net_names_indexed;
-			net_names : constant pac_net_names_indexed.vector := 
-				get_indexed_nets (current_active_module);
-
-			procedure query_net (n : in pac_net_names_indexed.cursor) is 
-				use gtk.list_store;
-			begin
-				storage_model.append (iter);
-
-				-- set the net name in the first column:
-				set (storage_model, iter, column_0, to_string (element (n)));
-
-				-- set the net index in the second column:
-				set (storage_model, iter, column_1, type_net_index'image (to_index (n)));
-			end query_net;
+			use et_canvas_board_tracks;
+			use et_schematic_ops.nets;
+			use pac_net_name;
 			
-		begin -- make_combo_net
-			
+			store : gtk_list_store;			
+			render	: gtk_cell_renderer_text;			
+		begin			
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
 
@@ -483,18 +456,25 @@ package body et_canvas_board_vias is
 
 			
 			-- Create the storage model:
-			gtk_new (list_store => storage_model, types => (entry_structure));
-
-			-- Insert the net names and indexes in the storage model:
-			net_names.iterate (query_net'access);
+			make_store_for_net_names (store);
 			
 			-- Create the combo box:
 			gtk_new_with_model (
 				combo_box	=> cbox_net_name,
-				model		=> +storage_model); -- ?
+				model		=> +store); -- ?
 
-			-- Preset the net used last:
-			cbox_net_name.set_active (gint (get_index (preliminary_via.net)) - 1);
+
+			-- Initally, on the first call of this procedure, there is no net name
+			-- specified in preliminary_via. In this case the first net of the 
+			-- module is assumed and the net index set accordingly.
+			-- NOTE: The net index is numbered from 0 .. N.
+			if preliminary_via.net_name = no_name then
+				preliminary_via.net_name := get_first_net (current_active_module);
+				preliminary_via.net_index := 1;
+			end if;
+			
+			-- Remember the net used last via its index:
+			cbox_net_name.set_active (gint (preliminary_via.net_index) - 1);
 
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
@@ -504,7 +484,7 @@ package body et_canvas_board_vias is
 			-- is required to make the entries visible:
 			gtk_new (render);
 			pack_start (cbox_net_name, render, expand => true);
-			add_attribute (cbox_net_name, render, "markup", column_0);
+			add_attribute (cbox_net_name, render, "markup", 0); -- column 0
 		end make_combo_net;
 
 		
@@ -808,7 +788,7 @@ package body et_canvas_board_vias is
 		-- bar is allowed to be shown. This should usually be the case.
 		-- If the module has no nets, then preliminary_via.net is not
 		-- initialized which forbids placing vias.
-		if is_initialized (preliminary_via.net) then
+		-- if is_initialized (preliminary_via.net) then
 			
 			-- If the box is already shown, do nothing.
 			-- Otherwise build it:
@@ -840,10 +820,10 @@ package body et_canvas_board_vias is
 				box_right.show_all;
 			end if;
 
-		else
-			raise semantic_error_1 with
-			"ERROR: The module has no nets. So no vias can be placed !";
-		end if;
+		-- else
+		-- 	raise semantic_error_1 with
+		-- 	"ERROR: The module has no nets. So no vias can be placed !";
+		-- end if;
 	end show_via_properties;
 
 
@@ -992,7 +972,7 @@ package body et_canvas_board_vias is
 
 			place_via (
 				module_cursor	=> current_active_module,
-				net_name		=> get_name (preliminary_via.net),
+				net_name		=> preliminary_via.net_name,
 				via				=> via,
 				log_threshold	=> log_threshold + 1);
 

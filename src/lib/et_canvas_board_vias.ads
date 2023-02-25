@@ -57,7 +57,7 @@ with et_pcb;
 with et_board_ops.vias;				use et_board_ops.vias;
 with et_logging;					use et_logging;
 
--- with et_canvas_board_tracks;
+with et_canvas_board_tracks;
 
 
 package et_canvas_board_vias is
@@ -93,7 +93,14 @@ package et_canvas_board_vias is
 		-- cursor position is to be used when drawing the via:
 		tool				: type_tool := MOUSE;
 		
-		net					: type_net_indexed; -- net name and index
+		-- net					: type_net_indexed; -- net name and index
+		net_name		: pac_net_name.bounded_string := no_name;
+
+		-- An index is required to remember the net name
+		-- that was selected via a combo box.
+		-- The net index is numbered from 0 .. N.
+		net_index		: positive := 1;
+
 		
 		category			: type_via_category := type_via_category'first;
 		drill				: type_drill;
