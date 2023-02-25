@@ -41,6 +41,7 @@
 -- with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.box;							use gtk.box;
+with gtk.list_store;					use gtk.list_store;			
 
 with et_canvas_general;					use et_canvas_general;
 with et_canvas_board;
@@ -117,6 +118,11 @@ package et_canvas_board_tracks is
 	procedure reset_preliminary_track;
 	
 
+	procedure make_store_for_net_names (
+		store : in out gtk_list_store);
+
+
+	
 	-- Displays the track properties:
 	procedure show_track_properties;
 

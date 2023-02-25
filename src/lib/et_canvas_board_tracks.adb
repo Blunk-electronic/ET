@@ -58,7 +58,6 @@ with gtk.widget;					use gtk.widget;
 with gtk.combo_box;					use gtk.combo_box;
 with gtk.cell_renderer_text;		
 with gtk.cell_layout;        		
-with gtk.list_store;				
 with gtk.tree_model;
 
 with gtk.combo_box_text;			use gtk.combo_box_text;
@@ -215,6 +214,47 @@ package body et_canvas_board_tracks is
 
 
 
+	procedure make_store_for_net_names (
+		store : in out gtk_list_store)
+	is
+		use gtk.tree_model;
+		use gtk.list_store;
+		use gtk.cell_layout;
+		
+		column_0 : constant := 0; -- for the net name
+		column_1 : constant := 1; -- for the net index
+
+		entry_structure : glib.gtype_array := (
+				column_0 => glib.gtype_string,
+				column_1 => glib.gtype_string);
+
+		iter : gtk_tree_iter;			
+
+		use et_schematic_ops.nets;
+		use pac_net_name;
+		use pac_net_names;
+
+		-- Fetch the net names of all nets of the current module:
+		nets : pac_net_names.list := get_nets (current_active_module, log_threshold + 1);
+		
+		counter : positive := 1;
+
+		-- Enters the name and index of a net into the storage model:
+		procedure query_net (c : in pac_net_names.cursor) is begin
+			store.append (iter);
+			set (store, iter, column_0, to_string (c));
+			set (store, iter, column_1, positive'image (counter));
+			counter := counter + 1;
+		end query_net;
+
+	begin
+		-- Create the storage model:
+		gtk_new (list_store => store, types => (entry_structure));
+
+		-- Insert the available net names in the storage model:
+		nets.iterate (query_net'access);	
+	end make_store_for_net_names;
+									 
 
 	procedure show_track_properties is
 		use glib;
@@ -225,7 +265,6 @@ package body et_canvas_board_tracks is
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
-		use gtk.list_store;
 		use gtk.tree_model;
 
 		box_net_name, box_signal_layer, box_line_width : gtk_vbox;
@@ -260,57 +299,27 @@ package body et_canvas_board_tracks is
 		spacing : constant natural := 5;
 
 
-
 		procedure make_combo_for_net_name is
-			storage_model : gtk_list_store;
-
-
-			column_0 : constant := 0; -- for the net name
-			column_1 : constant := 1; -- for the net index
-
-			entry_structure : glib.gtype_array := (
-					column_0 => glib.gtype_string,
-					column_1 => glib.gtype_string);
-
-			iter : gtk_tree_iter;			
+			store : gtk_list_store; -- will contain net names
 			render : gtk_cell_renderer_text;
 
 			use et_schematic_ops.nets;
 			use pac_net_name;
-			use pac_net_names;
-
-			-- Fetch the net names of all nets of the current module:
-			nets : pac_net_names.list := get_nets (current_active_module, log_threshold + 1);
 			
-			counter : positive := 1;
-
-			-- Enters the name and index of a net into the storage model:
-			procedure query_net (c : in pac_net_names.cursor) is begin
-				storage_model.append (iter);
-				gtk.list_store.set (storage_model, iter, column_0, to_string (c));
-				gtk.list_store.set (storage_model, iter, column_1, positive'image (counter));
-				counter := counter + 1;
-			end query_net;
-
-			
-		begin -- make_combo_for_net_name
+		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
 			
 			gtk_new (label_net_name, "NET NAME");
 			pack_start (box_net_name, label_net_name, padding => guint (spacing));
-
 			
-			-- Create the storage model:
-			gtk_new (list_store => storage_model, types => (entry_structure));
-
-			-- Insert the available net names in the storage model:
-			nets.iterate (query_net'access);
-
+			-- Create the storage for the net names:
+			make_store_for_net_names (store);
+			
 			-- Create the combo box with the net names inside:
 			gtk.combo_box.gtk_new_with_model (
 				combo_box	=> cbox_net_name,
-				model		=> +storage_model); -- ?
+				model		=> +store); -- ?
 
 			-- Initally, on the first call of this procedure, there is no net name
 			-- specified in preliminary_track. In this case the first net of the 
@@ -331,8 +340,7 @@ package body et_canvas_board_tracks is
 			-- is required to make the entries visible:
 			gtk_new (render);
 			pack_start (cbox_net_name, render, expand => true);
-			add_attribute (cbox_net_name, render, "markup", column_0);
-
+			add_attribute (cbox_net_name, render, "markup", 0); -- column 0
 		end make_combo_for_net_name;
 
 

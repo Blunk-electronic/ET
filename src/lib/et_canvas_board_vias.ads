@@ -57,6 +57,8 @@ with et_pcb;
 with et_board_ops.vias;				use et_board_ops.vias;
 with et_logging;					use et_logging;
 
+-- with et_canvas_board_tracks;
+
 
 package et_canvas_board_vias is
 
