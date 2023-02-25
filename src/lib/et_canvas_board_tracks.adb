@@ -485,7 +485,7 @@ package body et_canvas_board_tracks is
 
 		
 	begin -- make_path
-		put_line ("make path"); --to_string (PT.snap_mode));
+		--put_line ("make path"); --to_string (PT.snap_mode));
 		
 		-- Set the tool being used for this path so that procedure
 		-- draw_track (in et_canvas_board-draw_conductors)
@@ -508,9 +508,13 @@ package body et_canvas_board_tracks is
 
 		else -- preliminary_track IS ready
 
-			-- Start a new path only if the given point differs from 
-			-- the start point of the current path:
-			if point /= PT.path.start_point then
+			-- CASE 1: 
+			--  Start a new path only if the given point differs from 
+			--  the start point of the current path.
+			-- CASE 2:
+			--  If the given point is the same as the start point of the current path
+			--  then we assume the operator wants to terminate the routing operation.
+			if point /= PT.path.start_point then -- CASE 1
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
@@ -545,8 +549,8 @@ package body et_canvas_board_tracks is
 				-- path can be drawn:
 				PT.path.start_point := point;
 				
-			else
-				reset_preliminary_track;
+			else -- CASE 2
+				PT.ready := false;
 			end if;
 		end if;			
 	end make_path;

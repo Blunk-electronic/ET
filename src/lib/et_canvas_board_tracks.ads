@@ -112,12 +112,16 @@ package et_canvas_board_tracks is
 	preliminary_track : type_preliminary_track;
 
 
+	-- Sets the default tool to MOUSE, clears the "ready"-flag
+	-- and removes the track property box from the GUI:
 	procedure reset_preliminary_track;
 	
 
+	-- Displays the track properties:
 	procedure show_track_properties;
 
 
+	-- Advances to the next snap mode:
 	procedure next_snap_mode;
 	
 	
