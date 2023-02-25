@@ -275,13 +275,16 @@ package body et_canvas_board_tracks is
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
 
-
+			use et_schematic_ops.nets;
+			use pac_net_name;
 			use pac_net_names;
-			nets : pac_net_names.list := 
-				et_schematic_ops.nets.get_nets (current_active_module, log_threshold + 1);
+
+			-- Fetch the net names of all nets of the current module:
+			nets : pac_net_names.list := get_nets (current_active_module, log_threshold + 1);
 			
 			counter : positive := 1;
 
+			-- Enters the name and index of a net into the storage model:
 			procedure query_net (c : in pac_net_names.cursor) is begin
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0, to_string (c));
@@ -290,7 +293,7 @@ package body et_canvas_board_tracks is
 			end query_net;
 
 			
-		begin
+		begin -- make_combo_for_net_name
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
 			
@@ -309,10 +312,17 @@ package body et_canvas_board_tracks is
 				combo_box	=> cbox_net_name,
 				model		=> +storage_model); -- ?
 
-			-- Remember the net name used last:
-			cbox_net_name.set_active (gint (preliminary_track.net_index) - 1);
-			-- NOTE: The entries are numbered from 0 .. N.
+			-- Initally, on the first call of this procedure, there is no net name
+			-- specified in preliminary_track. In this case the first net of the 
+			-- module is assumed and the net index set accordingly.
+			-- NOTE: The net index is numbered from 0 .. N.
+			if preliminary_track.net_name = no_name then
+				preliminary_track.net_name := get_first_net (current_active_module);
+				preliminary_track.net_index := 1;
+			end if;
 
+			-- Remember the net used last via its index:
+			cbox_net_name.set_active (gint (preliminary_track.net_index) - 1);
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
 			cbox_net_name.on_changed (net_name_changed'access);
