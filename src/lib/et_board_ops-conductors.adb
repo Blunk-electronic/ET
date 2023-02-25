@@ -222,8 +222,6 @@ package body et_board_ops.conductors is
 
 		else
 			add_named_track (module_cursor, net_name, line, log_threshold + 1);
-
-			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
 
 	end draw_track_line;
@@ -338,8 +336,6 @@ package body et_board_ops.conductors is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-
-		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 
@@ -408,8 +404,6 @@ package body et_board_ops.conductors is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-
-		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
@@ -471,8 +465,6 @@ package body et_board_ops.conductors is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-
-		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
@@ -537,8 +529,6 @@ package body et_board_ops.conductors is
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-
-		update_ratsnest (module_cursor, log_threshold + 1);
 	end draw_track_line;
 
 	
@@ -593,7 +583,6 @@ package body et_board_ops.conductors is
 			else
 				net_not_found (net_name);
 			end if;
-
 		end add_named_track;
 
 		
@@ -626,7 +615,6 @@ package body et_board_ops.conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
-
 	end draw_track_arc;
 
 		
