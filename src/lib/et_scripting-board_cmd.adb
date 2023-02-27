@@ -2898,22 +2898,10 @@ is
 								single_cmd_status.finalization_pending := true;
 
 							when 5 => -- place via RESET_N
-								
 								-- Preset the net name so that it is visible
-								-- in the via properties bar. This requires
-								-- to set up an indexed net stored in preliminary_via.net:
-								-- set (
-								-- 	net		=> preliminary_via.net, 
-								-- 	name	=> to_net_name (f (5)));
-
+								-- in the via properties bar:
 								preliminary_via.net_name := to_net_name (f (5));
 
-								-- Update the index of the net
-								-- and the current active module:
-								-- set_index (
-								-- 	net		=> preliminary_via.net,
-								-- 	module	=> module_cursor);
-								
 								show_via_properties;
 								single_cmd_status.finalization_pending := true;
 

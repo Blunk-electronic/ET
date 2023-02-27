@@ -1451,6 +1451,43 @@ package body et_schematic_ops.nets is
 	end get_nets;
 
 
+
+	function get_net_index (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		log_threshold	: in type_log_level)		
+		return type_net_index
+	is
+		index : type_net_index := 0;
+
+		use pac_net_names;
+		nets : pac_net_names.list;
+		c : pac_net_names.cursor;
+	begin
+		-- Fetch the names of all nets (alphabetically sorted):
+		nets := get_nets (module_cursor, log_threshold + 1);
+
+		-- Iterate the nets until the given net has been found:
+		c := nets.first;
+		while c /= pac_net_names.no_element loop
+			if net_name = element (c) then
+				exit;
+			end if;
+			
+			index := index + 1;
+			
+			next (c);
+		end loop;
+
+		-- If the given net has not been found, raise exception:
+		if c = pac_net_names.no_element then
+			raise constraint_error;
+		end if;
+		
+		return index;
+	end get_net_index;
+
+	
 	
 	function get_nets_at_place (
 		module_name		: in pac_module_name.bounded_string;

@@ -311,22 +311,10 @@ package body et_canvas_board_vias is
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
 		name	: glib.values.gvalue;
-		index	: glib.values.gvalue;
 	begin
 		-- Get the net name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
 		preliminary_via.net_name := to_net_name (glib.values.get_string (name));
-		
-		-- Get the net index of the entry column 1:
-		gtk.tree_model.get_value (model, iter, 1, index);
-		preliminary_via.net_index := positive'value (glib.values.get_string (index));
-		
-		-- set (
-		-- 	net		=> preliminary_via.net,
-		-- 	name	=> to_net_name (glib.values.get_string (name)),
-		-- 	idx 	=> positive'value (glib.values.get_string (index)));
-		
-		et_canvas_board.redraw_board; -- CS ?
 		
 		-- CS display layer ?
 	end net_name_changed;
@@ -340,11 +328,6 @@ package body et_canvas_board_vias is
 
 		-- get the user specific settings of the board
 		settings : constant type_user_settings := get_user_settings (current_active_module);
-
-		-- We need a list of all net names of the current module:
-		use pac_net_names_indexed;
-		net_names : constant pac_net_names_indexed.vector := 
-			get_indexed_nets (current_active_module);
 		
 	begin
 		-- Set the drill size and restring according to user specific values:
@@ -372,25 +355,6 @@ package body et_canvas_board_vias is
 			preliminary_via.restring_inner	:= auto_set_restring (
 				INNER, preliminary_via.drill.diameter, rules.sizes.restring.delta_size);
 		end if;
-
-		--put_line ("length " & ada.containers.count_type'image (length (net_names)));
-		
-		--put_line ("name " & to_string (element (net_names.first))
-				  --& " idx " & natural'image (to_index (net_names.first)));
-
-		-- If the module contains nets, then set the topmost net in the alphabet.
-		-- If there are no nets in the module, then preliminary_via.net
-		-- remains un-initalized:
-		-- if is_empty (net_names) then
-		-- 	set (
-		-- 		net		=> preliminary_via.net,
-		-- 		name	=> to_net_name ("")); -- no name
-		-- else
-		-- 	set (
-		-- 		net		=> preliminary_via.net,
-		-- 		name	=> element (net_names.first), -- AGND
-		-- 		idx		=> to_index (net_names.first)); -- 1
-		-- end if;
 		
 	end init_preliminary_via;
 
@@ -463,19 +427,18 @@ package body et_canvas_board_vias is
 				combo_box	=> cbox_net_name,
 				model		=> +store); -- ?
 
-
-			-- Initally, on the first call of this procedure, there is no net name
+			-- Initially, on the first call of this procedure, there is no net name
 			-- specified in preliminary_via. In this case the first net of the 
 			-- module is assumed and the net index set accordingly.
 			-- NOTE: The net index is numbered from 0 .. N.
 			if preliminary_via.net_name = no_name then
 				preliminary_via.net_name := get_first_net (current_active_module);
-				preliminary_via.net_index := 1;
 			end if;
 			
-			-- Remember the net used last via its index:
-			cbox_net_name.set_active (gint (preliminary_via.net_index) - 1);
-
+			-- Set the acive net (in the box) via its index:
+			cbox_net_name.set_active (gint (
+				get_net_index (current_active_module, preliminary_via.net_name, log_threshold + 1)));
+			
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
 			cbox_net_name.on_changed (net_name_changed'access);

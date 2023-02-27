@@ -447,31 +447,6 @@ package et_project.modules is
 
 
 	
-	-- Returns the names of all nets that exist in the given module.
-	-- The return is a vector with alphabetically sorted net names
-	-- and a consequtive index as shown in this example table:
-	--
-	--     net       |  index
-	-- ------------------------
-	-- analog_input  |      1
-	-- digital_out   |      2
-	-- gnd           |      3
-	-- zero_pressure |    109
-	--
-	function get_indexed_nets (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return pac_net_names_indexed.vector;
-
-	-- This procedure updates the index of the given net
-	-- according to the given module.
-	-- Raises constraint error if given net.name does not
-	-- exist in the module:
-	procedure set_index ( -- CS
-		net 	: in out type_net_indexed; -- contains name and old index
-		module	: in pac_generic_modules.cursor);
-
-
-	
 end et_project.modules;
 
 -- Soli Deo Gloria

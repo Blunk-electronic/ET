@@ -155,37 +155,6 @@ package body et_net_names is
 	end to_string;
 
 	
-	
--- INDEXED NETS
-	
-	function get_index (net : in type_net_indexed) return type_net_index is begin
-		return net.idx;
-	end get_index;
-
-	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string is begin
-		return net.name;
-	end get_name;
-	
-	procedure set (
-		net 	: in out type_net_indexed;
-		name	: in pac_net_name.bounded_string;
-		idx		: in type_net_index := type_net_index'first)
-	is begin
-		net.name := name;
-		net.idx := idx;
-	end set;
-
-	function is_initialized (net : in type_net_indexed)
-		return boolean
-	is begin
-		if length (net.name) > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end is_initialized;
-
-	
 end et_net_names;
 
 -- Soli Deo Gloria

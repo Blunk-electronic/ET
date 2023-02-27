@@ -93,14 +93,7 @@ package et_canvas_board_vias is
 		-- cursor position is to be used when drawing the via:
 		tool				: type_tool := MOUSE;
 		
-		-- net					: type_net_indexed; -- net name and index
-		net_name		: pac_net_name.bounded_string := no_name;
-
-		-- An index is required to remember the net name
-		-- that was selected via a combo box.
-		-- The net index is numbered from 0 .. N.
-		net_index		: positive := 1;
-
+		net_name			: pac_net_name.bounded_string := no_name;
 		
 		category			: type_via_category := type_via_category'first;
 		drill				: type_drill;

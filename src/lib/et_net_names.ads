@@ -97,6 +97,7 @@ package et_net_names is
 	
 	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
+	-- CS rename to is_anonymous
 
 
 	-- Net names can also be collected in simple lists:
@@ -108,64 +109,7 @@ package et_net_names is
 	function to_string (
 		net	: in pac_net_names.cursor)
 		return string;
-	
-	
--- INDEXED NETS
 
-	-- Sometimes a list of net names along with an index is
-	-- required in a form like:
-
-	--     net       |  index
-	-- ------------------------
-	-- analog_input  |      1
-	-- digital_out   |      2
-	-- gnd           |      3
-	-- zero_pressure |    109
-
-	-- The GUI requires this format in order to list net names in
-	-- comboboxes.
-	
-	-- The index is defined as:	
-	subtype type_net_index is positive range 1 .. 1_000_000;
-	-- CS increase upper limit if necessary.
-	
-	-- Plain net names can be collected in a vector.
-	-- A vector is used in order to get a consequtive index.
-	package pac_net_names_indexed is new vectors (
-		index_type		=> type_net_index,
-		element_type	=> pac_net_name.bounded_string);
-
-	type type_net_indexed is private;
-
-	-- This function returns the index of an indexed net:
-	function get_index (net : in type_net_indexed) return type_net_index;
-
-	-- This function returns the name of an indexed net:
-	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string;
-
-	
-	-- This procedure "builds" an indexed net.
-	-- WARNING ! There is no check whether the net name
-	-- and the index match ! Fox example: You can build an indexed
-	-- net named "analog_input" with an index "999" and
-	-- nothing would prevent you from doing so.
-	procedure set (
-		net 	: in out type_net_indexed;
-		name	: in pac_net_name.bounded_string;
-		idx		: in type_net_index := type_net_index'first);
-
-	-- Returns true if the given indexed net has been
-	-- initialized. "Initialized" means, it has a
-	-- non-empty net name.
-	function is_initialized (net : in type_net_indexed)
-		return boolean;
-	
-
-	private
-		type type_net_indexed is record
-			name	: pac_net_name.bounded_string;
-			idx		: type_net_index := type_net_index'first;
-		end record;
 	
 end et_net_names;
 

@@ -97,11 +97,6 @@ package et_canvas_board_tracks is
 
 		net_name		: pac_net_name.bounded_string := no_name;
 
-		-- An index is required to remember the net name
-		-- that was selected via a combo box.
-		-- The net index is numbered from 0 .. N.
-		net_index		: positive := 1;
-		
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		path			: type_path_live;

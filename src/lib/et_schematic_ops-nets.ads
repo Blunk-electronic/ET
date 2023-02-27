@@ -168,6 +168,28 @@ package et_schematic_ops.nets is
 		return pac_net_names.list;
 
 
+	-- Nets may require to be indexed (for example with combo boxes)
+	-- in a form like:
+	--
+	--     net       |  index
+	-- ------------------------
+	-- analog_input  |      1
+	-- digital_out   |      2
+	-- gnd           |      3
+	-- zero_pressure |    109
+
+	-- We define a range for the net index. CS extend upper limit if required.
+	subtype type_net_index is natural range 0 .. 10_000;
+	
+	-- Returns for the given net a unique index.
+	-- The numbering starts at zero.
+	-- If the given net has not been found, raises exception:
+	function get_net_index (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_net_index;
+	
 	
 	-- Returns lists of nets that cross the given place.
 	function get_nets_at_place (

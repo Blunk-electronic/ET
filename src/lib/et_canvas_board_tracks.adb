@@ -120,14 +120,11 @@ package body et_canvas_board_tracks is
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
-		name, index : glib.values.gvalue;
+		name : glib.values.gvalue;
 	begin
 		-- Get the net name of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, name);
 		preliminary_track.net_name := to_net_name (glib.values.get_string (name));
-		
-		gtk.tree_model.get_value (model, iter, 1, index);
-		preliminary_track.net_index := positive'value (glib.values.get_string (index));
 		
 		-- put_line ("selected net " & pac_net_name.to_string (preliminary_track.net_name));
 	end net_name_changed;
@@ -217,9 +214,7 @@ package body et_canvas_board_tracks is
 	procedure make_store_for_net_names (
 		store : in out gtk_list_store)
 	is
-		use gtk.tree_model;
 		use gtk.list_store;
-		use gtk.cell_layout;
 		
 		column_0 : constant := 0; -- for the net name
 		column_1 : constant := 1; -- for the net index
@@ -228,6 +223,7 @@ package body et_canvas_board_tracks is
 				column_0 => glib.gtype_string,
 				column_1 => glib.gtype_string);
 
+		use gtk.tree_model;
 		iter : gtk_tree_iter;			
 
 		use et_schematic_ops.nets;
@@ -237,14 +233,14 @@ package body et_canvas_board_tracks is
 		-- Fetch the net names of all nets of the current module:
 		nets : pac_net_names.list := get_nets (current_active_module, log_threshold + 1);
 		
-		counter : positive := 1;
+		index : type_net_index := 0;
 
 		-- Enters the name and index of a net into the storage model:
 		procedure query_net (c : in pac_net_names.cursor) is begin
 			store.append (iter);
 			set (store, iter, column_0, to_string (c));
-			set (store, iter, column_1, positive'image (counter));
-			counter := counter + 1;
+			set (store, iter, column_1, type_net_index'image (index));
+			index := index + 1;
 		end query_net;
 
 	begin
@@ -256,6 +252,8 @@ package body et_canvas_board_tracks is
 	end make_store_for_net_names;
 									 
 
+	
+	
 	procedure show_track_properties is
 		use glib;
 
@@ -305,7 +303,7 @@ package body et_canvas_board_tracks is
 
 			use et_schematic_ops.nets;
 			use pac_net_name;
-			
+
 		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);
 			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
@@ -327,12 +325,13 @@ package body et_canvas_board_tracks is
 			-- NOTE: The net index is numbered from 0 .. N.
 			if preliminary_track.net_name = no_name then
 				preliminary_track.net_name := get_first_net (current_active_module);
-				preliminary_track.net_index := 1;
 			end if;
 
-			-- Remember the net used last via its index:
-			cbox_net_name.set_active (gint (preliminary_track.net_index) - 1);
+			-- Set the acive net (in the box) via its index:
+			cbox_net_name.set_active (gint (
+				get_net_index (current_active_module, preliminary_track.net_name, log_threshold + 1)));
 
+									  
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
 			cbox_net_name.on_changed (net_name_changed'access);
 
