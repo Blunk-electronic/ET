@@ -42,14 +42,13 @@ with et_schematic;						use et_schematic;
 with et_conductor_segment.boards;
 with et_ratsnest;						use et_ratsnest;
 with et_string_processing;				use et_string_processing;
--- with et_project.modules;				use et_project.modules;
 with et_board_ops.devices;				use et_board_ops.devices;
 with et_board_ops.vias;					use et_board_ops.vias;
 
 
 package body et_board_ops.ratsnest is
 
-	use pac_generic_modules;
+	
 	use pac_nets;
 
 	

@@ -50,7 +50,6 @@ with et_terminals;
 with et_packages;
 with et_device_rw;
 with et_device_query_schematic;		use et_device_query_schematic;
-with et_board_ops;					use et_board_ops;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_canvas_schematic;

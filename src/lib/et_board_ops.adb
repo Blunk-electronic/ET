@@ -53,7 +53,6 @@ with et_exceptions;					use et_exceptions;
 
 package body et_board_ops is
 
-	use pac_generic_modules;
 
 	use pac_devices_sch;
 	use pac_devices_non_electric;
@@ -337,6 +336,8 @@ package body et_board_ops is
 			process		=> query_submodules'access);
 
 		-- CS update_ratsnest (module_cursor, log_threshold + 1);
+		-- requires to move this procedure to a child package
+		-- for operations on submodules.
 	end move_submodule;
 
 	
@@ -899,13 +900,6 @@ package body et_board_ops is
 	end get_track_ends;
 
 
-
--- 	procedure update_ratsnest (
--- 		module_cursor	: in pac_generic_modules.cursor;
--- 		lth				: in type_log_level)
--- 	is separate;
--- 	
-	
 	
 	
 	procedure test_layers (

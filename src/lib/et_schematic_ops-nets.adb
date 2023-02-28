@@ -35,13 +35,13 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.strings.unbounded;			use ada.strings.unbounded;
+with ada.strings;						use ada.strings;
+with ada.strings.unbounded;				use ada.strings.unbounded;
 with ada.exceptions;
 
-with et_board_ops;					use et_board_ops;
-with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
-with et_exceptions;					use et_exceptions;
+with et_board_ops;						use et_board_ops;
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_exceptions;						use et_exceptions;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 

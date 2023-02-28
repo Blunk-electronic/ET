@@ -94,10 +94,10 @@ package et_board_ops is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+	use pac_generic_modules;
 	use et_board_shapes_and_text;
 	use pac_contours;
 	use pac_text_board;
-	use pac_net_name;
 
 	
 	-- Moves the origin of the board to the given point (relative to the lower left 
@@ -172,7 +172,7 @@ package et_board_ops is
 
 
 	
--- RATSNEST / TRACKS / FREETRACKS
+-- TRACKS / FREETRACKS
 
 
 	-- Returns the start and end positions (x/y) of all track 
@@ -183,12 +183,6 @@ package et_board_ops is
 		net_cursor : in et_schematic.pac_nets.cursor)
 		return pac_points.list;
 
-	
-	-- (Re)generates the ratsnest of all nets according to the current
-	-- positions of vias, tracks and terminals:
-	-- procedure update_ratsnest (
-	-- 	module_cursor	: in pac_generic_modules.cursor;
-	-- 	lth				: in type_log_level);
 
 
 	

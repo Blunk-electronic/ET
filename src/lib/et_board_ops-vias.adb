@@ -46,6 +46,7 @@ package body et_board_ops.vias is
 
 	use pac_generic_modules;
 	use pac_nets;
+	use pac_net_name;
 	use pac_vias;	
 
 
