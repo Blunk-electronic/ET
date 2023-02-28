@@ -173,16 +173,18 @@ package et_schematic_ops.nets is
 	--
 	--     net       |  index
 	-- ------------------------
+	-- AGND          |      0
 	-- analog_input  |      1
 	-- digital_out   |      2
 	-- gnd           |      3
 	-- zero_pressure |    109
-
+	--
+	-- NOTE: The numbering starts at zero.
+	
 	-- We define a range for the net index. CS extend upper limit if required.
 	subtype type_net_index is natural range 0 .. 10_000;
 	
 	-- Returns for the given net a unique index.
-	-- The numbering starts at zero.
 	-- If the given net has not been found, raises exception:
 	function get_net_index (
 		module_cursor	: in pac_generic_modules.cursor;
