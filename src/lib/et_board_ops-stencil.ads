@@ -36,9 +36,10 @@
 --
 --   ToDo: 
 
+with et_stencil;				use et_stencil;
+
 package et_board_ops.stencil is
 
-	use et_stencil;
 
 
 	-- CS rework procedures so that a module cursor

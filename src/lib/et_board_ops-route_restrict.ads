@@ -36,9 +36,12 @@
 --
 --   ToDo: 
 
+
+with et_route_restrict.boards;				use et_route_restrict.boards;
+
+
 package et_board_ops.route_restrict is
 
-	use et_route_restrict.boards;
 
 
 	-- CS rework procedures so that a module cursor
