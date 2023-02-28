@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           BOARD OPERATIONS                               --
+--                      BOARD OPERATIONS / TEXT                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -85,7 +85,7 @@ with et_text;
 with et_exceptions;					use et_exceptions;
 
 
-package et_board_ops is
+package et_board_ops.text is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -96,89 +96,25 @@ package et_board_ops is
 	use pac_text_board;
 
 	
-	-- Moves the origin of the board to the given point (relative to the lower left 
-	-- corner of the drawing frame):
-	procedure move_board (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level);
-
-	
-	-- Adds a signal layer to the board.
-	-- Renumbers the signal layers.							
-	procedure add_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
-		log_threshold	: in type_log_level);
-
-	
-	-- Returns the total number of signal layers used by the given module.
-	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
-		return et_pcb_stack.type_signal_layer;
-
-	
-	-- Tests whether the given layer is allowed according to current layer stack
-	-- of the given board.
-	procedure test_layer (
+	-- Maps from the meaning of a text placeholder
+	-- to its actutal content:
+	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer);
+		meaning 		: in et_pcb.type_text_meaning)										
+		return et_text.pac_text_content.bounded_string;
 
 	
-	-- Deletes a signal layer in the board.
-	-- Renumbers the signal layers.							   
-	procedure delete_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in et_pcb_stack.type_signal_layer;
-		log_threshold	: in type_log_level);
-
-	
-	-- Moves a submodule instance within the parent module layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level);
-
-	
-	-- Exports a pick & place file from the given top module and assembly variant.
-	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
-	--     See comment in procedure query_submodules.
-	procedure make_pick_and_place (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
-
-	
-
-
-	
-	-- Sets the grid of the module.
-	procedure set_grid (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in type_grid;
-		log_threshold	: in type_log_level);		
-
-	
-	procedure set_grid (
+	-- Places a text in a non conductor layer like
+	-- silkscreen or assembly doc:
+	procedure place_text_in_non_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in type_grid;
+		layer_category	: in type_text_layer_non_conductor;
+		face			: in type_face; -- top/bottom
+		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level);
-
-
-
-	
-	-- Tests the given set of signal layers whether each of them is available
-	-- according to the current layer stack of the given module.
-	procedure test_layers (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		layers 			: in et_pcb_stack.type_signal_layers.set);	
-
-
 
 											
-end et_board_ops;
+end et_board_ops.text;
 
 -- Soli Deo Gloria
 

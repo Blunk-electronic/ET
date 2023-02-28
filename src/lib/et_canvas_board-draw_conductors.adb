@@ -52,7 +52,7 @@ with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 
 with et_canvas_board_tracks;		use et_canvas_board_tracks;
-
+with et_board_ops.text;
 
 separate (et_canvas_board)
 
@@ -418,6 +418,7 @@ is
 -- TEXTS
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
+		use et_board_ops.text;
 		v_text : type_vector_text;
 	begin
 		-- Draw the placeholder if it is in the current layer:

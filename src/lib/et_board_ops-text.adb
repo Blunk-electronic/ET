@@ -1,0 +1,193 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                       BOARD OPERATIONS / TEXT                            --
+--                                                                          --
+--                               B o d y                                    --
+--                                                                          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab with in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+
+with et_assembly_variants;
+with et_meta;
+with et_netlists;
+with et_device_query_schematic;		use et_device_query_schematic;
+with et_schematic_ops.nets;			use et_schematic_ops.nets;
+with et_schematic_ops;				use et_schematic_ops;
+
+with et_submodules;
+with et_numbering;
+with et_symbols;
+with et_conductor_segment.boards;
+with et_exceptions;					use et_exceptions;
+
+-- with et_routing;
+
+
+package body et_board_ops.text is
+
+
+	use pac_devices_sch;
+	use pac_devices_non_electric;
+	use pac_nets;
+
+
+
+	-- Maps from the meaning of a text to its actutal content.
+	function to_placeholder_content (
+		module_cursor	: in pac_generic_modules.cursor;
+		meaning 		: in et_pcb.type_text_meaning)
+		return et_text.pac_text_content.bounded_string 
+	is
+		m : et_schematic.type_module renames element (module_cursor);
+		
+		use et_text;
+
+		use et_meta;
+		meta : constant et_meta.type_board := m.meta.board;
+
+		use et_assembly_variants;
+		use pac_assembly_variant_name;
+		variant : constant pac_assembly_variant_name.bounded_string := m.active_variant;
+
+		result : pac_text_content.bounded_string;
+
+		use et_pcb;
+	begin
+		case meaning is
+			when COMPANY			=> result := to_content (to_string (meta.company));
+			when CUSTOMER			=> result := to_content (to_string (meta.customer));
+			when PARTCODE			=> result := to_content (to_string (meta.partcode));
+			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
+			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
+			when PROJECT			=> null; -- CS
+			when MODULE				=> result := to_content (to_string (key (module_cursor)));
+			when REVISION			=> result := to_content (to_string (meta.revision));
+		end case;
+		
+		return result;
+	end to_placeholder_content;
+
+	
+	
+	procedure place_text_in_non_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_category	: in type_text_layer_non_conductor;
+		face			: in type_face; -- top/bottom
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level)
+	is 
+		use et_silkscreen;
+		use et_silkscreen.boards;
+
+		use et_assy_doc;
+		use et_assy_doc.boards;
+
+		use et_stop_mask;
+
+		
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use et_text;
+			use pac_doc_texts;
+			use pac_silk_texts;
+			use pac_stop_texts;
+
+			v_text : type_vector_text;		
+			mirror : type_vector_text_mirrored;
+		begin
+			mirror := face_to_mirror (face);
+			
+			v_text := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> get_rotation (text.position),
+				position	=> text.position.place,
+				mirror		=> mirror,
+				line_width	=> text.line_width
+				-- CS alignment
+				); 
+			
+			case layer_category is
+				when LAYER_CAT_ASSY =>
+					case face is
+						when TOP =>
+							append (module.board.assy_doc.top.texts, (text with v_text));
+						when BOTTOM =>
+							append (module.board.assy_doc.bottom.texts, (text with v_text));
+					end case;
+
+				when LAYER_CAT_SILKSCREEN =>
+					case face is
+						when TOP =>
+							append (module.board.silk_screen.top.texts, (text with v_text));
+						when BOTTOM =>
+							append (module.board.silk_screen.bottom.texts, (text with v_text));
+					end case;
+					
+				when LAYER_CAT_STOP =>
+					case face is
+						when TOP =>
+							append (module.board.stop_mask.top.texts, (text with v_text));
+						when BOTTOM =>
+							append (module.board.stop_mask.bottom.texts, (text with v_text));
+					end case;
+
+				when others => null;
+			end case;
+		end place_text;
+
+	begin -- place_text_in_non_conductor_layer
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing text in non-conductor layer at" -- CS output category
+			& to_string (text.position)
+			& " face" & to_string (face),
+			level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
+	end place_text_in_non_conductor_layer;
+
+
+end et_board_ops.text;
+	
+-- Soli Deo Gloria
+
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

@@ -79,6 +79,7 @@ with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
 with et_board_ops.conductors;
+with et_board_ops.text;
 with et_modes.board;
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
@@ -955,6 +956,7 @@ package body et_canvas_board_texts is
 		point : in type_point) 
 	is 
 		use et_board_ops.conductors;
+		use et_board_ops.text;
 	begin
 		if preliminary_text.ready then
 			move_to (preliminary_text.text.position.place, point);

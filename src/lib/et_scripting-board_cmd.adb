@@ -63,6 +63,7 @@ with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
 with et_board_ops.board_contour;
 with et_board_ops.ratsnest;
+with et_board_ops.text;
 
 
 -- to do:
@@ -943,6 +944,7 @@ is
 	
 	procedure place_text is
 		use pac_text_board;
+		use et_board_ops.text;
 		text			: type_text_fab;
 		pos_xy			: type_point;
 		rotation		: type_rotation;
