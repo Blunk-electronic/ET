@@ -36,16 +36,17 @@
 --
 --   ToDo: 
 
+with et_text;
+with et_silkscreen;					use et_silkscreen;
+with et_silkscreen.boards;			use et_silkscreen.boards;
+
 
 package et_board_ops.silkscreen is
-
-	use et_silkscreen;
-	use et_silkscreen.boards;
-
 	
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-
+	
+	use et_board_shapes_and_text;
 	use pac_text_board;
 
 

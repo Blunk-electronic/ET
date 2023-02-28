@@ -36,43 +36,6 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-with ada.exceptions;			use ada.exceptions;
-with ada.tags;
-
-with et_nets;
-with et_net_names;					use et_net_names;
-with et_general;					use et_general;
-with et_geometry;					use et_geometry;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
-with et_project.modules;			use et_project.modules;
-with et_schematic;					use et_schematic;
-with et_terminals;					use et_terminals;
-with et_pcb;						use et_pcb;
-with et_pcb_stack;					use et_pcb_stack;
-with et_pcb_coordinates;			use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
-
-with et_board_shapes_and_text;
-
-with et_assembly_variants;
-with et_pick_and_place;
-with et_devices;					use et_devices;
-with et_conventions;
-with et_design_rules;				use et_design_rules;
-
-
 with et_stop_mask;
 with et_silkscreen;
 with et_silkscreen.boards;
@@ -90,9 +53,7 @@ package et_board_ops.text is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use pac_generic_modules;
 	use et_board_shapes_and_text;
-	use pac_contours;
 	use pac_text_board;
 
 	

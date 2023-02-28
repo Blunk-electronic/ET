@@ -44,7 +44,9 @@ package et_board_ops.board_contour is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-
+	use et_board_shapes_and_text;
+	use pac_contours;
+	
 -- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
 
 	-- Assigns the given module a PCB outer edge.

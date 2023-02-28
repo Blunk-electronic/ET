@@ -36,16 +36,17 @@
 --
 --   ToDo: 
 
+with et_text;
+with et_stop_mask;				use et_stop_mask;
 
 
 package et_board_ops.stop_mask is
 
-	use et_stop_mask;
-
-
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-
+	
+	use et_board_shapes_and_text;
+	use pac_text_board;
 	
 	
 	-- Draws a line in the stop mask layer.

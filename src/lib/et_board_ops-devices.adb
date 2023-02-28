@@ -37,6 +37,7 @@
 
 with ada.exceptions;
 
+with et_conventions;
 with et_netlists;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_device_query_board;			use et_device_query_board;

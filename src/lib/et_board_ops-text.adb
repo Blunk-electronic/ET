@@ -35,24 +35,10 @@
 --   history of changes:
 --
 
-with et_assembly_variants;
 with et_meta;
-with et_netlists;
-with et_device_query_schematic;		use et_device_query_schematic;
-with et_schematic_ops.nets;			use et_schematic_ops.nets;
-with et_schematic_ops;				use et_schematic_ops;
-
-with et_submodules;
-with et_numbering;
-with et_symbols;
-with et_conductor_segment.boards;
-with et_exceptions;					use et_exceptions;
-
--- with et_routing;
 
 
 package body et_board_ops.text is
-
 
 	use pac_devices_sch;
 	use pac_devices_non_electric;

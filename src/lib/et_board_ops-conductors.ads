@@ -36,11 +36,10 @@
 --
 --   ToDo: 
 
+with et_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
 with et_conductor_text.boards;			use et_conductor_text.boards;
-
-with et_board_shapes_and_text;
 
 
 package et_board_ops.conductors is
@@ -49,6 +48,7 @@ package et_board_ops.conductors is
 	-- is used instead the module_name.
 
 	use et_board_shapes_and_text;
+	use pac_text_board;
 	use pac_net_name;
 
 
