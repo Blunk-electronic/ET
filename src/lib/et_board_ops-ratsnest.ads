@@ -37,10 +37,21 @@
 --   ToDo: 
 
 
+
 package et_board_ops.ratsnest is
 
 
 	use pac_net_name;
+
+
+	-- Returns the start and end positions (x/y) of all track 
+	-- segments (lines and arcs) of the given net:
+	-- The list of returned points uses fixed point coordinates
+	-- as the tracks are placed by the operator (their ends are man-made):
+	function get_track_ends (
+		net_cursor : in et_schematic.pac_nets.cursor)
+		return pac_points.list;
+
 
 	
 	-- (Re)generates the ratsnest of all nets according to the current

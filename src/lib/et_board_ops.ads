@@ -51,17 +51,17 @@ with ada.exceptions;			use ada.exceptions;
 with ada.tags;
 
 with et_nets;
-with et_net_names;				use et_net_names;
-with et_general;				use et_general;
-with et_geometry;				use et_geometry;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_project.modules;		use et_project.modules;
-with et_schematic;				use et_schematic;
-with et_terminals;				use et_terminals;
-with et_pcb;					use et_pcb;
-with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_net_names;					use et_net_names;
+with et_general;					use et_general;
+with et_geometry;					use et_geometry;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
+with et_project.modules;			use et_project.modules;
+with et_schematic;					use et_schematic;
+with et_terminals;					use et_terminals;
+with et_pcb;						use et_pcb;
+with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;
@@ -169,19 +169,6 @@ package et_board_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);
-
-
-	
--- TRACKS / FREETRACKS
-
-
-	-- Returns the start and end positions (x/y) of all track 
-	-- segments (lines and arcs) of the given net:
-	-- The list of returned points uses fixed point coordinates
-	-- as the tracks are placed by the operator (their ends are man-made):
-	function get_track_ends (
-		net_cursor : in et_schematic.pac_nets.cursor)
-		return pac_points.list;
 
 
 
