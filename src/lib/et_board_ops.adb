@@ -336,7 +336,7 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
-		update_ratsnest (module_cursor, log_threshold + 1);
+		-- CS update_ratsnest (module_cursor, log_threshold + 1);
 	end move_submodule;
 
 	
@@ -900,11 +900,11 @@ package body et_board_ops is
 
 
 
-	procedure update_ratsnest (
-		module_cursor	: in pac_generic_modules.cursor;
-		lth				: in type_log_level)
-	is separate;
-	
+-- 	procedure update_ratsnest (
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		lth				: in type_log_level)
+-- 	is separate;
+-- 	
 	
 	
 	

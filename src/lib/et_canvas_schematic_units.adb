@@ -69,7 +69,7 @@ with et_packages;
 
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;
-with et_board_ops;					--use et_board_ops;
+with et_board_ops.ratsnest;
 
 with et_material;
 with et_meta;
@@ -287,7 +287,7 @@ package body et_canvas_schematic_units is
 				delete (module.devices, unit.device);
 			end if;
 
-			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
+			et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 1);
 		end query_devices;
 		
 
@@ -840,7 +840,7 @@ package body et_canvas_schematic_units is
 				sheet			=> get_sheet (position_of_unit),
 				log_threshold	=> log_threshold + 1);
 
-			et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
+			et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 1);
 			
 			log_indentation_down;
 		end query_devices;

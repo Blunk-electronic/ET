@@ -51,7 +51,8 @@ with et_canvas_schematic;			use et_canvas_schematic;
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;
 with et_netlists;
-with et_board_ops;
+with et_board_ops.ratsnest;
+
 
 package body et_canvas_schematic_nets is
 
@@ -125,7 +126,7 @@ package body et_canvas_schematic_nets is
 
 		reset_request_clarification;
 
-		et_board_ops.update_ratsnest (module_cursor, log_threshold + 1);
+		et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 1);
 		
 		set_status (status_delete);
 		
@@ -687,7 +688,7 @@ package body et_canvas_schematic_nets is
 			extend_net (net_name_start);
 		end if;
 
-		et_board_ops.update_ratsnest (module, log_threshold + 1);
+		et_board_ops.ratsnest.update_ratsnest (module, log_threshold + 1);
 		
 		log_indentation_down;
 	end insert_net_segment;

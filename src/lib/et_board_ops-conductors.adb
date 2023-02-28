@@ -43,6 +43,7 @@ with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_exceptions;					use et_exceptions;
 with et_board_ops.devices;
+with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_device_query_board;			use et_device_query_board;
 

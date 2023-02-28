@@ -47,6 +47,8 @@ with et_pcb_rw.device_packages;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 
+with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
+
 
 
 package body et_board_ops.devices is

@@ -36,6 +36,7 @@
 --
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
+with et_board_ops.ratsnest;
 with et_canvas_board_tracks;
 
 separate (et_canvas_board)
@@ -418,6 +419,7 @@ is
 
 	
 	procedure update is 
+		use et_board_ops.ratsnest;
 		use et_ratsnest;
 	begin
 		case key is

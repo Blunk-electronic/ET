@@ -39,6 +39,8 @@ with et_nets;						use et_nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 
+with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
+
 
 package body et_board_ops.vias is
 

@@ -186,9 +186,9 @@ package et_board_ops is
 	
 	-- (Re)generates the ratsnest of all nets according to the current
 	-- positions of vias, tracks and terminals:
-	procedure update_ratsnest (
-		module_cursor	: in pac_generic_modules.cursor;
-		lth				: in type_log_level);
+	-- procedure update_ratsnest (
+	-- 	module_cursor	: in pac_generic_modules.cursor;
+	-- 	lth				: in type_log_level);
 
 
 	

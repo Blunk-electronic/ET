@@ -62,6 +62,8 @@ with et_board_ops.stencil;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
 with et_board_ops.board_contour;
+with et_board_ops.ratsnest;
+
 
 -- to do:
 
@@ -2186,6 +2188,7 @@ is
 
 
 	procedure update_ratsnest is
+		use et_board_ops.ratsnest;
 	begin
 		-- board demo update ratsnest
 		case get_field_count is

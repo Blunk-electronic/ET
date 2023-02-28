@@ -37,7 +37,7 @@
 --   ToDo: 
 
 with ada.exceptions;
-with et_board_ops;					use et_board_ops;
+with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 
 
 package body et_schematic_ops.units is
