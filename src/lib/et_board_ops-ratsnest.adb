@@ -36,11 +36,9 @@
 --
 --   ToDo: 
 
-with et_nets;
-with et_net_names;						use et_net_names;
+with et_nets;							use et_nets;
 with et_schematic;						use et_schematic;
 with et_conductor_segment.boards;
-with et_ratsnest;						use et_ratsnest;
 with et_string_processing;				use et_string_processing;
 with et_board_ops.devices;				use et_board_ops.devices;
 with et_board_ops.vias;					use et_board_ops.vias;
@@ -103,8 +101,6 @@ package body et_board_ops.ratsnest is
 		is
 
 			procedure query_net (net_cursor : in pac_nets.cursor) is
-
-				use et_nets;
 				use pac_geometry_brd;
 				use pac_vectors;
 				nodes : pac_vectors.list;
@@ -194,8 +190,7 @@ package body et_board_ops.ratsnest is
 		end query_module;
 
 		
-	begin -- update_ratsnest
-
+	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " updating ratsnest ...",
@@ -206,10 +201,62 @@ package body et_board_ops.ratsnest is
 		update_element (generic_modules, module_cursor, query_module'access);
 
 		log_indentation_down;
-
 	end update_ratsnest;
 
 
+
+	function get_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_proposed_airwires.list
+	is
+		result : pac_proposed_airwires.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			
+			procedure query_net (nc : in pac_nets.cursor) is
+				net : type_net renames element (nc);
+
+				procedure query_airwire (ac : in pac_airwires.cursor) is
+					use pac_airwires;
+					use pac_geometry_brd;
+					wire : type_airwire renames element (ac);
+					d : type_float_positive := get_shortest_distance (to_vector (point), wire);
+				begin
+					if d <= catch_zone then
+						result.append ((wire, key (nc)));
+					end if;
+				end query_airwire;
+				
+			begin
+				net.route.airwires.lines.iterate (query_airwire'access);
+			end query_net;
+			
+		begin
+			module.nets.iterate (query_net'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "looking up airwires at" & to_string (point)
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		-- log_indentation_up;
+
+		query_element (module_cursor, query_module'access);
+
+		-- log_indentation_down;
+		return result;
+	end get_airwires;
+
+	
 											
 end et_board_ops.ratsnest;
 

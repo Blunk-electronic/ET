@@ -37,6 +37,12 @@
 --   ToDo: 
 
 
+with ada.containers;   		         	use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+with et_net_names;						use et_net_names;
+with et_ratsnest;						use et_ratsnest;
+with et_logging;						use et_logging;
 
 package et_board_ops.ratsnest is
 
@@ -62,7 +68,27 @@ package et_board_ops.ratsnest is
 
 
 
-											
+	-- When airwires are to be collected in the vicinity of a certain 
+	-- point then each airwire can be identified with a net name:
+	
+	type type_proposed_airwire is record
+		wire		: type_airwire;
+		net_name	: pac_net_name.bounded_string; -- RESET_N
+	end record;
+
+	package pac_proposed_airwires is new doubly_linked_lists (type_proposed_airwire);
+	use pac_proposed_airwires;
+	
+
+	-- Returns all airwires in the vicinity of the given point:
+	function get_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_proposed_airwires.list;
+
+	
 end et_board_ops.ratsnest;
 
 -- Soli Deo Gloria
