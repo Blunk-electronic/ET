@@ -2380,7 +2380,7 @@ package body et_geometry_1 is
 	function get_distance (
 		line	: in type_line_fine;
 		vector	: in type_vector)
-		return type_float
+		return type_float_positive
 	is
 		dv : constant type_vector := to_line_vector (line).v_direction;
 		sv : constant type_vector := line.start_point;
@@ -2399,9 +2399,9 @@ package body et_geometry_1 is
 	function get_shortest_distance (
 		vector	: in type_vector;
 		line	: in type_line_fine)
-		return type_float
+		return type_float_positive
 	is
-		result : type_float := 0.0;
+		result : type_float_positive := 0.0;
 		
 		d : constant type_distance_point_line := get_distance (
 			vector		=> vector,

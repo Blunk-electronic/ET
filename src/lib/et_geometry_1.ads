@@ -1130,7 +1130,7 @@ package et_geometry_1 is
 	function get_distance (
 		line	: in type_line_fine;
 		vector	: in type_vector)
-		return type_float; -- CS type_float_positive
+		return type_float_positive;
 	
 
 	-- Returns the shortest distance from a given location vector
@@ -1139,7 +1139,7 @@ package et_geometry_1 is
 	function get_shortest_distance (
 		vector	: in type_vector;
 		line	: in type_line_fine)
-		return type_float; -- CS type_float_positive
+		return type_float_positive;
 
 
 	-- Returns true if the given location vector is on
