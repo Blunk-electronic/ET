@@ -53,6 +53,9 @@ with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_pcb_stack;						use et_pcb_stack;
 with et_net_names;						use et_net_names;
 
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_ratsnest;						use et_ratsnest;
+
 
 package et_canvas_board_tracks is
 
@@ -134,7 +137,36 @@ package et_canvas_board_tracks is
 		& "to draw track." 
 		& status_hint_for_abort;
 
+	
 
+	proposed_airwires : pac_proposed_airwires.list;
+	use pac_proposed_airwires;
+	
+	selected_airwire : pac_proposed_airwires.cursor;
+
+
+	use pac_airwires;
+	
+	-- Returns true if the given airwire matches the airwire indicated
+	-- by selected_airwire:
+	function airwire_is_selected (
+		airwire_cursor	: in pac_airwires.cursor;
+		net_name		: in pac_net_name.bounded_string)
+		return boolean;
+	
+
+	-- Advances cursor selected_airwire to next airwire
+	-- in list proposed_airwires and sets cursor selected_airwire
+	-- to the candidate airwire:
+	procedure select_airwire;
+
+	
+	-- Returns the start or the end point of the given proposed
+	-- airwire, depending on which of them is closer to the given point:
+	function get_nearest (
+		airwire	: in pac_proposed_airwires.cursor;
+		point	: in type_point)
+		return type_point;
 
 
 	-- Builds a live path. This procedure requires to be called twice:

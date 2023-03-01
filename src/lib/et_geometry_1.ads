@@ -867,6 +867,14 @@ package et_geometry_1 is
 	line_length_max : constant type_float_positive := type_float_positive'last;
 	line_length_min : constant type_float_positive := 1.0E-10; -- CS refine
 
+
+	-- Returns the start or the end point of the given line,
+	-- depending on which of them is closer to the given point:
+	function get_nearest (
+		line	: in type_line_fine;
+		point	: in type_vector)
+		return type_vector;
+	
 	
 	function get_length (
 		line : in type_line_fine)

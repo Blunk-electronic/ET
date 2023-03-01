@@ -1776,6 +1776,27 @@ package body et_geometry_1 is
 	end to_line_vector;
 
 
+	
+	function get_nearest (
+		line	: in type_line_fine;
+		point	: in type_vector)
+		return type_vector
+	is
+		distance_to_start, distance_to_end : type_float_positive;
+	begin
+		distance_to_start := get_distance_total (point, line.start_point);
+		distance_to_end   := get_distance_total (point, line.end_point);
+
+		if distance_to_start < distance_to_end then
+			return line.start_point;
+		else
+			return line.end_point;
+		end if;
+	end get_nearest;
+	
+
+
+	
 	function get_length (
 		line : in type_line_fine)
 		return type_float_positive

@@ -69,7 +69,6 @@ with gtk.button;					use gtk.button;
 with et_project.modules;				use et_project.modules;
 with et_canvas_board;
 
-with et_board_ops;						use et_board_ops;
 with et_board_ops.conductors;
 with et_modes.board;
 
@@ -468,10 +467,74 @@ package body et_canvas_board_tracks is
 			PT.snap_mode := type_snap_mode'first;
 		end if;
 
-		--put_line ("snap mode " & to_string (PT.snap_mode));
+		-- put_line ("snap mode " & to_string (PT.snap_mode));
+		-- CS show in toolbar or status bar
 	end next_snap_mode;
 	
+ 
+	function get_nearest (
+		airwire	: in pac_proposed_airwires.cursor;
+		point	: in type_point)
+		return type_point
+	is
+		use pac_proposed_airwires;
+		use pac_geometry_brd;
+		wire : type_airwire renames element (airwire).wire;
+	begin
+		return to_point (get_nearest (wire, to_vector (point)));
+	end get_nearest;
 
+
+
+	function airwire_is_selected (
+		airwire_cursor	: in pac_airwires.cursor;
+		net_name		: in pac_net_name.bounded_string)
+		return boolean
+	is 
+		use pac_airwires;
+		use pac_net_name;
+		airwire : type_airwire renames element (airwire_cursor);
+	begin
+		-- If there are no proposed airwires at all, then there is nothing to do:
+		if is_empty (proposed_airwires) then
+			return false;
+		else
+			-- If there is no selected airwire, then there is nothing to do:
+			if selected_airwire /= pac_proposed_airwires.no_element then
+				if element (selected_airwire).net_name = net_name and element (selected_airwire).wire = airwire then
+					return true;
+				else 
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end airwire_is_selected;
+
+	
+	procedure select_airwire is 
+		use pac_net_name;
+	begin
+		-- On every call of this procedure we advance from one
+		-- proposed airwire to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_airwire
+		-- moves back to the start of the list of proposed airwires:
+		if next (selected_airwire) /= pac_proposed_airwires.no_element then
+			next (selected_airwire);
+		else
+			selected_airwire := proposed_airwires.first;
+		end if;
+
+		-- show the net name of the selected airwire in the status bar
+		set_status ("selected net " & to_string (element (selected_airwire).net_name) 
+			& ". " & status_next_object_clarification);
+		
+	end select_airwire;
+
+
+
+	
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point)
@@ -479,6 +542,61 @@ package body et_canvas_board_tracks is
 		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
 
+		procedure set_start_point is
+		begin
+			case PT.snap_mode is
+				when NO_SNAP =>
+					-- set start point:
+					PT.path.start_point := point;
+
+					-- Allow drawing of the path:
+					preliminary_track.ready := true;
+
+				when NEAREST_AIRWIRE =>
+					if not clarification_pending then
+
+						proposed_airwires := get_airwires (current_active_module, point,
+							catch_zone_default, log_threshold + 1);
+
+						case proposed_airwires.length is
+							when 0 =>
+								-- set start point:
+								PT.path.start_point := point;
+
+								-- Allow drawing of the path:
+								preliminary_track.ready := true;
+
+							when 1 =>
+								PT.path.start_point := get_nearest (proposed_airwires.first, point);
+								selected_airwire := proposed_airwires.first;
+								
+								-- Allow drawing of the path:
+								preliminary_track.ready := true;
+
+							when others =>
+								set_request_clarification;
+								selected_airwire := proposed_airwires.first;
+								
+						end case;
+
+					else
+						PT.path.start_point := get_nearest (selected_airwire, point);
+								
+						-- Allow drawing of the path:
+						preliminary_track.ready := true;
+					end if;
+
+					
+				when NEAREST_OBJECT =>
+					null; -- CS
+			end case;
+
+			set_status (status_start_point & to_string (PT.path.start_point) & ". " &
+				status_press_space & status_set_end_point & status_hint_for_abort);
+
+		end set_start_point;
+		
+		
 		procedure add_to_net is
 			use et_board_ops.conductors;
 		begin
@@ -504,14 +622,8 @@ package body et_canvas_board_tracks is
 		-- path will be set.
 		
 		if not PT.ready then
-			-- set start point:
-			PT.path.start_point := point;
 
-			-- Allow drawing of the path:
-			preliminary_track.ready := true;
-
-			set_status (status_start_point & to_string (PT.path.start_point) & ". " &
-				status_press_space & status_set_end_point & status_hint_for_abort);
+			set_start_point;
 
 		else -- preliminary_track IS ready
 

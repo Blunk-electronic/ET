@@ -395,6 +395,7 @@ is
 					when others => null;
 				end case;
 
+				
 			-- If "m" pressed, then a snap mode is being selected.
 			when GDK_LC_m =>
 				case noun is
@@ -403,6 +404,7 @@ is
 						
 					when others => null;
 				end case;
+
 				
 			-- If "b" pressed, then a bend style is being selected.
 			when GDK_LC_b =>
@@ -412,6 +414,19 @@ is
 						
 					when others => null;
 				end case;
+
+				
+			-- If page down pressed, then the operator is clarifying:
+			when GDK_page_down =>
+				case noun is
+					when NOUN_NET =>
+						if clarification_pending then
+							select_airwire;
+						end if;
+						
+					when others => null;							
+				end case;
+
 				
 			when others => status_noun_invalid;
 		end case;

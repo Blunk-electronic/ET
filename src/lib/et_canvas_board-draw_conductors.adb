@@ -885,12 +885,23 @@ is
 			procedure query_net (n : in pac_nets.cursor) is 
 				use pac_airwires;
 				
-				procedure query_airwire (c : in pac_airwires.cursor) is begin
+				procedure query_airwire (c : in pac_airwires.cursor) is 
+					restore_brightness : boolean := false;
+				begin
+					-- If the candidate airwire is selected, then draw it highlighted:
+					if airwire_is_selected (c, key (n)) then
+						set_color_ratsnest (context.cr, BRIGHT);
+						restore_brightness := true;
+					end if;
 					
 					draw_line (
 						line		=> type_line_fine (element (c)),
 						width		=> type_distance (airwire_line_width));
-					
+
+					-- restore normal brightness
+					if restore_brightness then
+						set_color_ratsnest (context.cr);
+					end if;
 				end query_airwire;
 
 
