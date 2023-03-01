@@ -45,16 +45,10 @@ package body et_ratsnest is
 
 	
 	function to_airwire (
-		line : in et_conductor_segment.boards.type_conductor_line)
+		line : in type_conductor_line)
 		return type_airwire
-	is 
-		use pac_geometry_2;
-		result : type_airwire;
-	begin
-		result.start_point := to_vector (line.start_point);
-		result.end_point   := to_vector (line.end_point);
-
-		return result;
+	is begin
+		return type_airwire (to_line_fine (line));
 	end to_airwire;
 
 	
@@ -219,6 +213,7 @@ package body et_ratsnest is
 				origin		: type_vector;
 			end record;
 
+			
 			-- Set up the array of neigboring nodes:
 			type type_neigbors is array (1 .. linked_total) of type_neigbor;
 			neigbors : type_neigbors := (others => <>);

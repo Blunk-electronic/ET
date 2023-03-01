@@ -38,13 +38,14 @@
 --		- 
 --		- 
 
-with ada.text_io;				use ada.text_io;
-with ada.containers; 			use ada.containers;
+with ada.text_io;					use ada.text_io;
+with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_conductor_segment.boards;
+with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_conductor_segment.boards;	use et_conductor_segment.boards;
+
 
 package et_ratsnest is
 	
@@ -57,7 +58,7 @@ package et_ratsnest is
 
 	
 	function to_airwire (
-		line : in et_conductor_segment.boards.type_conductor_line)
+		line : in type_conductor_line)
 		return type_airwire;
 	
 	
