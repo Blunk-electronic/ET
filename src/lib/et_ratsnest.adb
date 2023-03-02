@@ -106,7 +106,7 @@ package body et_ratsnest is
 		use pac_vectors;
 		start : type_vector;
 
-		-- This is the list of unconneced nodes. It will become
+		-- This is the list of unconnected nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
 		-- it is empty, the PRIM-algorithm ends:
 		nodes_isolated : pac_vectors.list := nodes;
