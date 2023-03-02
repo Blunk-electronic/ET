@@ -46,10 +46,13 @@ with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
+with et_vias;						use et_vias;
+
 
 package et_ratsnest is
-	
+
 	use pac_geometry_brd;
+	use pac_geometry_2;
 	
 
 	type type_airwire is new type_line_fine;
@@ -57,7 +60,24 @@ package et_ratsnest is
 	package pac_airwires is new doubly_linked_lists (type_airwire);
 
 
-	graph : pac_geometry_2.pac_lines.list;
+	
+	type type_strand is record
+		nodes : pac_vectors.list;
+	end record;
+
+	package pac_strands is new doubly_linked_lists (type_strand);
+
+	
+	function get_strands (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list)
+		-- CS circles, fill zones ?
+		-- CS argument for deepest layer of the board
+		return pac_strands.list;
+
+
 	
 	
 	function to_airwire (

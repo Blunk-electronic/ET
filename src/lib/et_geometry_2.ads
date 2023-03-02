@@ -1038,11 +1038,11 @@ package et_geometry_2 is
 		destination		: in type_point);
 
 	
-	package pac_lines is new doubly_linked_lists (type_line);
-
-	function get_graph (
-		lines	: in pac_lines.list)
-		return pac_lines.list;
+	-- package pac_lines is new doubly_linked_lists (type_line);
+ -- 
+	-- function get_graph (
+	-- 	lines	: in pac_lines.list)
+	-- 	return pac_lines.list;
 
 	
 -- ARC

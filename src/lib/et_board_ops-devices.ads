@@ -135,9 +135,15 @@ package et_board_ops.devices is
 	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
 	-- The default assembly variant is assumed (means all devices are mounted).
+	-- If the argument "observe_techno" is true, then the technology (SMT, THT)
+	-- given in argument "technology" is used to filter out terminals:
+	-- If "observe_techno" is false (default) then all terminals are processed
+	-- and "technology" has no meaning (don't care):
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.pac_nets.cursor)
+		net_cursor		: in et_schematic.pac_nets.cursor;
+		observe_techno	: in boolean := false;
+		technology		: in type_assembly_technology := assembly_technology_default)
 		return pac_geometry_brd.pac_vectors.list;
 
 

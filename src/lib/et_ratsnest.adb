@@ -41,6 +41,9 @@
 
 --with ada.containers.multiway_trees;
 
+with et_pcb_stack;							use et_pcb_stack;
+
+
 package body et_ratsnest is
 
 	
@@ -93,6 +96,40 @@ package body et_ratsnest is
 	end iterate;
 
 
+
+	function get_strands (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list)
+		return pac_strands.list
+	is
+		result : pac_strands.list;
+
+		line_count : constant count_type := lines.length;
+		arc_count  : constant count_type := arcs.length;
+
+		type type_objects is record
+			lines	: pac_conductor_lines.list;
+			arcs	: pac_conductor_arcs.list;
+		end record;
+
+		type type_layer is array (type_signal_layer'first .. type_signal_layer'last) 
+			of type_objects;
+
+		layers : type_layer;
+			
+		lines_in_layer : pac_conductor_lines.list;
+	begin
+		for ly in layers'first .. layers'last loop
+			layers (ly).lines := get_lines_by_layer (lines, ly);
+			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
+			
+		end loop;
+		-- g := get_graph (lines);
+		
+		return result;
+	end get_strands;
 	
 	
 	function make_airwires (

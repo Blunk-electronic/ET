@@ -265,6 +265,17 @@ package body et_terminals is
 		log_indentation_down;
 	end terminal_properties;
 
+
+
+	function get_technology (
+		terminal_cursor	: in pac_terminals.cursor)
+		return type_assembly_technology
+	is 
+		use pac_terminals;
+	begin
+		return element (terminal_cursor).technology;
+	end get_technology;
+
 	
 
 	procedure iterate (

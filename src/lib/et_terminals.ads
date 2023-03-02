@@ -402,6 +402,12 @@ package et_terminals is
 		element_type	=> type_terminal);
 
 
+	-- Returns the assembly technology of the given terminal:
+	function get_technology (
+		terminal_cursor	: in pac_terminals.cursor)
+		return type_assembly_technology;
+	
+
 	-- Iterates the terminate. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		terminals	: in pac_terminals.map;

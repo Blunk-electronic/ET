@@ -148,14 +148,26 @@ package body et_board_ops.ratsnest is
 					put_line (to_string (element (c)));
 				end query_node;
 				
+				strands : et_ratsnest.pac_strands.list;
 				
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);
 				
-				-- get x/y of all terminals:
-				nodes := get_terminal_positions (module_cursor, net_cursor);
+				-- get x/y positions of all THT terminals:
+				nodes := get_terminal_positions (
+					module_cursor	=> module_cursor, 
+					net_cursor		=> net_cursor,
+					observe_techno	=> true,
+					technology		=> THT);
 
 				-- nodes.iterate (query_node'access); -- for debugging
+
+				-- Compute the strands fromed by lines, arcs, vias and terminals:
+				strands := get_strands (
+					lines		=> net.route.lines,
+					arcs		=> net.route.arcs,
+					vias		=> net.route.vias,
+					terminals	=> nodes);
 				
 				-- Get x/y of all vias and append their positions to nodes.
 				-- The via positions must be converted to location vectors:
@@ -175,6 +187,8 @@ package body et_board_ops.ratsnest is
 				-- are later required in order to create the real airwires.
 				make_virtual_airwires;
 
+
+					
 				-- compute the ratsnest:
 				-- Make airwires from the list of nodes. Suppress the 
 				-- virtual airwires:

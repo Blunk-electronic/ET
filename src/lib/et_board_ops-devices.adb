@@ -852,7 +852,9 @@ package body et_board_ops.devices is
 
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.pac_nets.cursor)
+		net_cursor		: in et_schematic.pac_nets.cursor;
+		observe_techno	: in boolean := false;
+		technology		: in type_assembly_technology := assembly_technology_default)
 		return pac_geometry_brd.pac_vectors.list
 	is
 		use pac_geometry_brd;
@@ -867,8 +869,10 @@ package body et_board_ops.devices is
 		use pac_device_ports;
 		
 		procedure query_device (d : in pac_device_ports.cursor) is
+			-- CS use rename
 			device_cursor : pac_devices_sch.cursor;
 			terminal_position : type_vector;
+			terminal_cursor : et_terminals.pac_terminals.cursor;
 		begin
 			device_cursor := locate_device (module_cursor, element (d).device_name);
 
@@ -887,12 +891,30 @@ package body et_board_ops.devices is
 
 				-- port_properties.terminal -- 14, H6
 
-				-- Get for the candidate port the position of the associated terminal:
-				terminal_position := 
-					get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
-				
-				-- Add the terminal position to the result:
-				append (result, terminal_position);
+				-- If technology is to be oberved then the
+				-- technology of the candidate terminal must match the given technology:
+				if observe_techno then
+					terminal_cursor := get_terminal (device_cursor, element (d).unit_name, element (d).port_name);
+					
+					if get_technology (terminal_cursor) = technology then
+
+						-- Get for the candidate port the position of the associated terminal:
+						terminal_position := 
+							get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
+						
+						-- Add the terminal position to the result:
+						append (result, terminal_position);
+					end if;
+
+				else
+					-- Get for the candidate port the position of the associated terminal
+					-- regardless of the technology:
+					terminal_position := 
+						get_terminal_position (module_cursor, device_cursor, port_properties.terminal).place;
+					
+					-- Add the terminal position to the result:
+					append (result, terminal_position);
+				end if;
 			end if;
 		end query_device;
 
