@@ -2136,27 +2136,28 @@ package body et_kicad_to_native is
 		native_shapes : et_symbols.type_shapes;
 
 		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
-			pac_lines.append (
+			pac_symbol_lines.append (
 				container	=> native_shapes.lines,
 				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
 		end;
 
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
-			pac_arcs.append (
+			pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
-				new_item	=> type_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
+				new_item	=> et_symbols.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
 		end;
 
 		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
-			pac_circles.append (
+			pac_symbol_circles.append (
 				container	=> native_shapes.circles,
 				new_item	=> (
 					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
 					with filled => NO));
 		end;						
 
-		procedure copy_polyline (cursor : in et_kicad_libraries.type_symbol_polylines.cursor) is 
+		
 		-- Converts a polyline to single lines and appends them to native_shapes.lines.
+		procedure copy_polyline (cursor : in et_kicad_libraries.type_symbol_polylines.cursor) is 
 			use et_kicad;
 			use type_symbol_points;
 
@@ -2167,7 +2168,7 @@ package body et_kicad_to_native is
 			point_cursor : type_symbol_points.cursor := polyline.points.first;
 
 			-- This is the native line that will be appended to native.shapes.lines:
-			line : type_line := (width => polyline.width, others => <>);
+			line : type_symbol_line := (width => polyline.width, others => <>);
 
 			-- This flag indicates whether a start or an end point of a line is expected:
 			start : boolean := true; -- when start point -> true, when end point -> false
@@ -2189,7 +2190,7 @@ package body et_kicad_to_native is
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
-						et_symbols.pac_lines.append (
+						et_symbols.pac_symbol_lines.append (
 							container	=> native_shapes.lines,
 							new_item	=> line);
 
@@ -2204,8 +2205,8 @@ package body et_kicad_to_native is
 		end copy_polyline;
 
 		
-		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
 		-- Converts a rectangle to four lines and appends them to native_shapes.lines.
+		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
 			use et_kicad;
 			use type_symbol_rectangles;
 			use et_coordinates;
@@ -2214,14 +2215,14 @@ package body et_kicad_to_native is
 			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
 
 			-- This is the native line that will be appended to native_shapes.lines:
-			line : type_line := (width => rectangle.width, others => <>);
+			line : type_symbol_line := (width => rectangle.width, others => <>);
 			width, height : et_coordinates.type_distance;
 
 			-- These two points are required to form the final rectangle:
 			corner_C, corner_D : pac_geometry_2.type_point;
 			
 			procedure append_line is begin
-				et_symbols.pac_lines.append (
+				et_symbols.pac_symbol_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
 			end;

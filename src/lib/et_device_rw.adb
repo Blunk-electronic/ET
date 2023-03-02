@@ -394,9 +394,9 @@ package body et_device_rw is
 		units_external		: pac_units_external.map;
 
 		-- CS move to et_schematic_rw ? wrong ? better to et_symbol_rw ?
-		symbol_line			: et_symbols.type_line;
-		symbol_arc			: et_symbols.type_arc;
-		symbol_circle		: et_symbols.type_circle;
+		symbol_line			: type_symbol_line;
+		symbol_arc			: type_symbol_arc;
+		symbol_circle		: type_symbol_circle;
 		symbol_text_base	: type_text_basic;
 		
 		symbol_text_position		: type_point;
@@ -641,11 +641,11 @@ package body et_device_rw is
 			port_output_tristate	:= output_tristate_default;
 			port_output_weakness	:= output_weakness_default;
 			port_power_level		:= port_power_level_default;
-
 		end insert_port;
+
 		
 		procedure process_line is 
-
+			
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
@@ -707,7 +707,7 @@ package body et_device_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								pac_lines.append (
+								pac_symbol_lines.append (
 									container	=> unit_symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -722,7 +722,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								pac_arcs.append (
+								pac_symbol_arcs.append (
 									container	=> unit_symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -737,7 +737,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								pac_circles.append (
+								pac_symbol_circles.append (
 									container	=> unit_symbol.shapes.circles,
 									new_item	=> symbol_circle);
 

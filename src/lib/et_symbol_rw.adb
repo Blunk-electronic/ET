@@ -184,14 +184,14 @@ package body et_symbol_rw is
 	is
 		use et_text;
 
-		use pac_lines;
-		use pac_arcs;
-		use pac_circles;
+		use pac_symbol_lines;
+		use pac_symbol_arcs;
+		use pac_symbol_circles;
 		use pac_texts;
 		use pac_ports;
 
 		
-		procedure write_line (cursor : in pac_lines.cursor) is begin
+		procedure write_line (cursor : in pac_symbol_lines.cursor) is begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
@@ -200,7 +200,7 @@ package body et_symbol_rw is
 		end write_line;
 
 		
-		procedure write_arc (cursor : in pac_arcs.cursor) is begin
+		procedure write_arc (cursor : in pac_symbol_arcs.cursor) is begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
@@ -211,7 +211,7 @@ package body et_symbol_rw is
 		end write_arc;
 
 		
-		procedure write_circle (cursor : in pac_circles.cursor) is 
+		procedure write_circle (cursor : in pac_symbol_circles.cursor) is 
 			use et_coordinates.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
@@ -422,9 +422,9 @@ package body et_symbol_rw is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		appearance			: type_appearance;
 		symbol				: access type_symbol;
-		symbol_line			: et_symbols.type_line;
-		symbol_arc			: et_symbols.type_arc;
-		symbol_circle		: et_symbols.type_circle;
+		symbol_line			: type_symbol_line;
+		symbol_arc			: type_symbol_arc;
+		symbol_circle		: type_symbol_circle;
 		symbol_text_base	: type_text_basic;
 
 		symbol_cursor		: pac_symbols.cursor;
@@ -593,7 +593,7 @@ package body et_symbol_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								pac_lines.append (
+								pac_symbol_lines.append (
 									container	=> symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -608,7 +608,7 @@ package body et_symbol_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								pac_arcs.append (
+								pac_symbol_arcs.append (
 									container	=> symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -623,7 +623,7 @@ package body et_symbol_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								pac_circles.append (
+								pac_symbol_circles.append (
 									container	=> symbol.shapes.circles,
 									new_item	=> symbol_circle);
 

@@ -2119,6 +2119,19 @@ package body et_geometry_2 is
 		end case;
 	end move_line_to;
 
+
+
+	function get_graph (
+		lines	: in pac_lines.list)
+		return pac_lines.list
+	is
+		result : pac_lines.list;
+	begin
+
+		return result;
+	end get_graph;
+
+
 	
 
 -- ARC

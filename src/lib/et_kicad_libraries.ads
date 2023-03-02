@@ -230,7 +230,7 @@ package et_kicad_libraries is
 	
 	-- lines of a symbol:
 	package type_symbol_lines is new doubly_linked_lists (
-		element_type	=> et_symbols.type_line,
+		element_type	=> et_symbols.type_symbol_line,
 		"="				=> et_symbols."=");
 
 	-- polylines of a symbol:
@@ -260,7 +260,7 @@ package et_kicad_libraries is
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
 	
 	-- arcs of a symbol:
-	type type_symbol_arc is new et_symbols.type_arc with record
+	type type_symbol_arc is new et_symbols.type_symbol_arc with record
 		start_angle		: et_coordinates.pac_geometry_sch.type_angle;
 		end_angle		: et_coordinates.pac_geometry_sch.type_angle;
 		radius			: et_coordinates.pac_geometry_sch.type_float_positive;

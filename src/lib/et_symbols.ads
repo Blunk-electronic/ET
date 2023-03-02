@@ -358,39 +358,54 @@ package et_symbols is
 	
 
 
+-- LINES
 
-
-	-- lines
-	type type_line is new pac_geometry_2.type_line with record
-		width		: type_line_width := line_width_default;
+	type type_symbol_line is new pac_geometry_2.type_line with record
+		width	: type_line_width := line_width_default;
 	end record;
-	package pac_lines is new doubly_linked_lists (type_line);
+	
+	package pac_symbol_lines is new doubly_linked_lists (type_symbol_line);
 
-	-- Arcs
-	type type_arc is new pac_geometry_2.type_arc with record
-		width		: type_line_width := line_width_default;
+	
+	
+-- ARCS
+	
+	type type_symbol_arc is new pac_geometry_2.type_arc with record
+		width	: type_line_width := line_width_default;
 	end record;
-	package pac_arcs is new doubly_linked_lists (type_arc);
+	
+	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 
 	type type_circle_filled is (NO, YES);
-	function to_string (filled : in type_circle_filled) return string;
-	function to_circle_filled (filled : in string) return type_circle_filled;
 	
-	-- Circles
+	function to_string (filled : in type_circle_filled) return string;
+	
+	function to_circle_filled (filled : in string) return type_circle_filled;
+
+
+
+	
+
+-- CIRCLES
+	
 	type type_circle_base is new pac_geometry_2.type_circle with record
-		width		: type_line_width := line_width_default;
+		width	: type_line_width := line_width_default;
 	end record;
 
-	type type_circle is new type_circle_base with record
-		filled		: type_circle_filled := NO;
+	type type_symbol_circle is new type_circle_base with record
+		filled	: type_circle_filled := NO;
 	end record;
-	package pac_circles is new doubly_linked_lists (type_circle);
 
+	package pac_symbol_circles is new doubly_linked_lists (type_symbol_circle);
+
+
+
+	
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
-		lines		: pac_lines.list 	:= pac_lines.empty_list;
-		arcs 		: pac_arcs.list		:= pac_arcs.empty_list;
-		circles		: pac_circles.list	:= pac_circles.empty_list;
+		lines		: pac_symbol_lines.list		:= pac_symbol_lines.empty_list;
+		arcs 		: pac_symbol_arcs.list		:= pac_symbol_arcs.empty_list;
+		circles		: pac_symbol_circles.list	:= pac_symbol_circles.empty_list;
 	end record;
 
 

@@ -706,7 +706,7 @@ package et_geometry_2 is
 
 	
 	type type_line is new type_line_base with null record;
-
+	
 
 	function to_line_fine (
 		line : in type_line)
@@ -1038,7 +1038,13 @@ package et_geometry_2 is
 		destination		: in type_point);
 
 	
+	package pac_lines is new doubly_linked_lists (type_line);
 
+	function get_graph (
+		lines	: in pac_lines.list)
+		return pac_lines.list;
+
+	
 -- ARC
 	
 	type type_arc_base is abstract tagged record  -- CS should be private ?

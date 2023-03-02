@@ -56,11 +56,15 @@ package et_ratsnest is
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);
 
+
+	graph : pac_geometry_2.pac_lines.list;
+	
 	
 	function to_airwire (
 		line : in type_conductor_line)
 		return type_airwire;
-	
+
+
 	
 	-- Returns true if the container airwires contains the given
 	-- candidate airwire:

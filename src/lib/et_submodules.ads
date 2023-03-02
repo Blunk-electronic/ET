@@ -285,7 +285,7 @@ package et_submodules is
 						rotation	=> 180.0);
 
 		-- the arc that connects the ports
-		arc	: et_symbols.type_arc := (
+		arc	: et_symbols.type_symbol_arc := (
 						center		=> (x => 0.0, y => 0.0),
 						start_point	=> (x => -5.0, y => 0.0),
 						end_point	=> (x =>  5.0, y => 0.0),

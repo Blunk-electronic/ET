@@ -61,17 +61,18 @@ is
 		use pac_text_schematic;
 		use pac_geometry_2;
 		
-		use pac_lines;
-		use pac_arcs;
-		use pac_circles;
+		use pac_symbol_lines;
+		use pac_symbol_arcs;
+		use pac_symbol_circles;
 		use pac_ports;
 		use pac_texts;
 		
 		type type_line is new pac_geometry_2.type_line with null record;
 		type type_arc is new pac_geometry_2.type_arc with null record;		
 		type type_circle is new pac_geometry_2.type_circle with null record;
+
 		
-		procedure draw_line (c : in pac_lines.cursor) is 
+		procedure draw_line (c : in pac_symbol_lines.cursor) is 
 			-- Take a copy of the given line:
 			line : type_line := (pac_geometry_2.type_line (element (c)) with null record);
 		begin
@@ -82,7 +83,7 @@ is
 		end draw_line;
 
 		
-		procedure draw_arc (c : in pac_arcs.cursor) is 
+		procedure draw_arc (c : in pac_symbol_arcs.cursor) is 
 			-- Take a copy of the given arc:
 			arc : type_arc := (pac_geometry_2.type_arc (element (c)) with null record);
 		begin
@@ -93,7 +94,7 @@ is
 		end draw_arc;
 
 		
-		procedure draw_circle (c : in pac_circles.cursor) is 
+		procedure draw_circle (c : in pac_symbol_circles.cursor) is 
 			circle : type_circle := (pac_geometry_2.type_circle (element (c)) with null record);
 		begin
 			rotate_by (circle, unit_rotation);
