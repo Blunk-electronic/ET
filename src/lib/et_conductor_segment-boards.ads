@@ -59,8 +59,16 @@ package et_conductor_segment.boards is
 	end record;
 
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
+	use pac_conductor_lines;
 
 	
+	-- Extracts those lines which are in the given layer:
+	function get_lines_by_layer (
+		lines	: in pac_conductor_lines.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_lines.list;
+	
+		
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
@@ -81,7 +89,17 @@ package et_conductor_segment.boards is
 	end record;
 
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
+	use pac_conductor_arcs;
 
+	
+	-- Extracts those arcs which are in the given layer:
+	function get_arcs_by_layer (
+		arcs	: in pac_conductor_arcs.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_arcs.list;
+
+
+	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

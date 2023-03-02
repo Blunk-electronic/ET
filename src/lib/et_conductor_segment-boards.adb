@@ -41,12 +41,34 @@ with ada.strings;			use ada.strings;
 
 package body et_conductor_segment.boards is
 
+
+	function get_lines_by_layer (
+		lines	: in pac_conductor_lines.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_lines.list
+	is
+		result : pac_conductor_lines.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is
+			line : type_conductor_line renames element (c);
+		begin
+			if line.layer = layer then
+				result.append (line);
+			end if;
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		return result;
+	end get_lines_by_layer;
+
+
+	
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
 		process	: not null access procedure (position : in pac_conductor_lines.cursor);
 		proceed	: not null access boolean)
 	is
-		use pac_conductor_lines;
 		c : pac_conductor_lines.cursor := lines.first;
 	begin
 		while c /= pac_conductor_lines.no_element and proceed.all = TRUE loop
@@ -64,7 +86,6 @@ package body et_conductor_segment.boards is
 		return boolean 
 	is
 		result : boolean := false; -- to be returned
-		use pac_conductor_lines;
 	begin
 		if element (line).layer = layer then
 			if element (line).on_line (to_vector (point)) then
@@ -84,12 +105,35 @@ package body et_conductor_segment.boards is
 	end on_segment;
 
 
+	function get_arcs_by_layer (
+		arcs	: in pac_conductor_arcs.list;
+		layer	: in type_signal_layer)
+		return pac_conductor_arcs.list
+	is
+		result : pac_conductor_arcs.list;
+
+		procedure query_arc (c : in pac_conductor_arcs.cursor) is
+			arc : type_conductor_arc renames element (c);
+		begin
+			if arc.layer = layer then
+				result.append (arc);
+			end if;
+		end query_arc;
+		
+	begin
+		arcs.iterate (query_arc'access);
+		return result;
+	end get_arcs_by_layer;
+	
+
+
+
+	
 	procedure iterate (
 		arcs	: in pac_conductor_arcs.list;
 		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
 		proceed	: not null access boolean)
 	is
-		use pac_conductor_arcs;
 		c : pac_conductor_arcs.cursor := arcs.first;
 	begin
 		while c /= pac_conductor_arcs.no_element and proceed.all = TRUE loop
@@ -107,7 +151,6 @@ package body et_conductor_segment.boards is
 		return boolean 
 	is
 		result : boolean := false; -- to be returned
-		use pac_conductor_arcs;
 	begin
 		if element (arc).layer = layer then
 			-- CS use 
