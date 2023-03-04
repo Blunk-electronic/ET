@@ -66,7 +66,8 @@ package et_ratsnest is
 	end record;
 
 	package pac_strands is new doubly_linked_lists (type_strand);
-
+	use pac_strands;
+	
 	
 	function get_strands (
 		lines		: in pac_conductor_lines.list;
@@ -128,6 +129,7 @@ package et_ratsnest is
 	-- that particular airwire will be discarded and not appended to the return.
 	function make_airwires (
 		nodes				: in pac_vectors.list;
+		strands				: in pac_strands.list;					   
 		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list;
 	

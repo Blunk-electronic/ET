@@ -89,7 +89,7 @@ package body et_ratsnest is
 		use pac_airwires;
 		c : pac_airwires.cursor := airwires.first;
 	begin
-		while c /= no_element and proceed.all = TRUE loop
+		while c /= pac_airwires.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -97,6 +97,150 @@ package body et_ratsnest is
 
 
 
+	function are_connected (
+		line_1, line_2 : in type_conductor_line)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if line_1.start_point = line_2.start_point
+		or line_1.start_point = line_2.end_point
+		or line_1.end_point   = line_2.start_point
+		or line_1.end_point   = line_2.end_point
+		then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end are_connected;
+
+
+	function is_connected (
+		line	: in type_conductor_line;
+		lines	: in pac_conductor_lines.list)
+		return boolean
+	is
+		result : boolean := false;
+
+		use pac_conductor_lines;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is begin
+			if are_connected (element (c), line) then
+				result := true;
+				-- CS abort iterator
+			end if;
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		return result;
+	end is_connected;
+
+	
+		
+	function get_connected_nodes (
+		lines	: in out pac_conductor_lines.list)
+		return pac_vectors.list
+	is
+		use pac_conductor_lines;
+		use pac_vectors;
+		nodes : pac_vectors.list;
+
+		procedure to_nodes (l : type_conductor_line) is 
+			lf : type_line_fine;
+		begin
+			lf := to_line_fine (l);
+			nodes.append (lf.start_point);
+			nodes.append (lf.end_point);
+		end to_nodes;
+		
+
+		count : constant count_type := lines.length;
+		
+		procedure query_node (c : in pac_vectors.cursor) is begin
+			put_line (to_string (element (c)));
+		end query_node;
+
+
+		collector : pac_conductor_lines.list;
+
+		
+		procedure search is
+			found : boolean := false;
+			
+			procedure query_line (l : in type_conductor_line) is
+			begin
+				if is_connected (l, collector) then
+					found := true;
+					collector.append (l);
+				end if;
+			end query_line;
+			
+			lc : pac_conductor_lines.cursor;
+			
+		begin
+			collector.append (lines.first_element);
+			lines.delete_first;
+			to_nodes (collector.first_element);
+
+			lc := lines.first;
+			while lc /= pac_conductor_lines.no_element loop
+
+				query_element (lc, query_line'access);
+
+				if found then 
+					lines.delete (lc);
+					lc := lines.first;
+				else
+					next (lc);					
+				end if;
+			end loop;
+
+			lines := collector;
+		end search;
+
+		
+	begin
+		case count is
+			when 0 => null;
+
+			when 1 =>
+				to_nodes (lines.first_element);
+				lines.clear;
+
+			when others =>
+				search;
+-- 				put_line ("ct " & count_type'image (count));
+-- 				
+-- 				PL := lines.first_element;
+-- 				put_line ("PL   " & to_string (PL));
+-- 				append (PL);
+-- 				cursor := next (lines.first);
+-- 				while cursor /= pac_conductor_lines.no_element loop
+-- 					put_line ("line " & to_string (element (cursor)));
+-- 					
+-- 					if are_connected (PL, element (cursor)) then
+-- 						append (element (cursor));
+-- 					else
+-- 						remainder.append (element (cursor));
+-- 					end if;
+-- 					next (cursor);
+-- 				end loop;
+-- 
+-- 				lines := remainder;
+		end case;
+
+		remove_redundant_vectors (nodes);
+
+		put_line ("connected nodes");
+		nodes.iterate (query_node'access);
+		return nodes;
+	end get_connected_nodes;
+
+	
+		
 	function get_strands (
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
@@ -124,16 +268,49 @@ package body et_ratsnest is
 		for ly in layers'first .. layers'last loop
 			layers (ly).lines := get_lines_by_layer (lines, ly);
 			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
-			
 		end loop;
-		-- g := get_graph (lines);
+
+		for ly in layers'first .. layers'last loop
+			while not layers (ly).lines.is_empty loop
+				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
+
+			end loop;
+		end loop;
+
+		-- CS vias, tht terminals, arcs
 		
 		return result;
 	end get_strands;
 	
+
+	function airwire_in_strand (
+		wire	: in type_airwire;
+		strands	: in pac_strands.list)
+		return boolean
+	is
+		result : boolean := false;
+
+		procedure query_strand (c : in pac_strands.cursor) is
+			strand : type_strand renames element (c);
+		begin
+			if strand.nodes.contains (wire.start_point) 
+			and strand.nodes.contains (wire.end_point) then
+				result := true; 
+				-- CS abort strand iterator
+			end if;
+		end query_strand;
+		
+	begin
+		strands.iterate (query_strand'access);
+		return result;
+	end airwire_in_strand;
+
+
+	
 	
 	function make_airwires (
 		nodes				: in pac_vectors.list;
+		strands				: in pac_strands.list;
 		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
 		return pac_airwires.list
 	is		
@@ -177,7 +354,11 @@ package body et_ratsnest is
 			-- CS make sure length is greater zero ? Since we assume unique positions
 			-- of the given nodes, this check should not be required.
 
-			if not contains_airwire (virtual_airwires, aw) then
+			-- if not contains_airwire (virtual_airwires, aw) then
+			-- 	result.append (aw);
+			-- end if;
+
+			if not airwire_in_strand (aw, strands) then
 				result.append (aw);
 			end if;
 		end add_airwire;
