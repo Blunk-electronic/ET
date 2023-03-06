@@ -578,6 +578,11 @@ package et_geometry_1 is
 	-- Location vectors can be stored in simple lists:	
 	package pac_vectors is new doubly_linked_lists (type_vector);
 	use pac_vectors;
+
+
+	-- Outputs x/x of the given list of vectors to standard output:
+	procedure put_vectors (
+		vectors	: in pac_vectors.list);
 	
 
 	-- Converts an array of vectors to a list.
@@ -622,6 +627,13 @@ package et_geometry_1 is
 	procedure remove_redundant_vectors (
 		vectors : in out pac_vectors.list);
 
+
+	-- Removes from the given list vectors_1 the vectors given in
+	-- vectors_2:
+	procedure remove (
+		vectors_1 : in out pac_vectors.list; -- primary list
+		vectors_2 : in pac_vectors.list); -- vectors to be removed
+	
 
 	-- Sorts the list of vectors by the distance of the vectors
 	-- to the given reference point. Nearest comes first:

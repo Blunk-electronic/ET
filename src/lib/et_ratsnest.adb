@@ -159,10 +159,6 @@ package body et_ratsnest is
 
 		count : constant count_type := lines.length;
 		
-		procedure query_node (c : in pac_vectors.cursor) is begin
-			put_line (to_string (element (c)));
-		end query_node;
-
 
 		collector : pac_conductor_lines.list;
 
@@ -175,6 +171,7 @@ package body et_ratsnest is
 				if is_connected (l, collector) then
 					found := true;
 					collector.append (l);
+					to_nodes (l);
 				end if;
 			end query_line;
 			
@@ -198,11 +195,13 @@ package body et_ratsnest is
 				end if;
 			end loop;
 
-			lines := collector;
+			-- lines := collector;
 		end search;
 
 		
 	begin
+		put_line ("ct " & count_type'image (count));
+		
 		case count is
 			when 0 => null;
 
@@ -212,7 +211,6 @@ package body et_ratsnest is
 
 			when others =>
 				search;
--- 				put_line ("ct " & count_type'image (count));
 -- 				
 -- 				PL := lines.first_element;
 -- 				put_line ("PL   " & to_string (PL));
@@ -234,8 +232,8 @@ package body et_ratsnest is
 
 		remove_redundant_vectors (nodes);
 
-		put_line ("connected nodes");
-		nodes.iterate (query_node'access);
+		-- put_line ("connected nodes");
+		-- nodes.iterate (query_node'access);
 		return nodes;
 	end get_connected_nodes;
 
@@ -270,7 +268,8 @@ package body et_ratsnest is
 			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
 		end loop;
 
-		for ly in layers'first .. layers'last loop
+		--for ly in layers'first .. layers'last loop
+		for ly in layers'first .. 1 loop
 			while not layers (ly).lines.is_empty loop
 				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
 
@@ -310,8 +309,7 @@ package body et_ratsnest is
 	
 	function make_airwires (
 		nodes				: in pac_vectors.list;
-		strands				: in pac_strands.list;
-		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
+		strands				: in pac_strands.list)
 		return pac_airwires.list
 	is		
 		use pac_airwires;
@@ -325,8 +323,8 @@ package body et_ratsnest is
 		-- it is empty, the PRIM-algorithm ends:
 		nodes_isolated : pac_vectors.list := nodes;
 
-		-- These are the nodes of spann-graph that we are going to build.
-		-- Once a node gets linked (with an airwire), the the node
+		-- These are the nodes of the spann-graph that we are going to build.
+		-- Once a node gets linked (with an airwire), the node
 		-- will be added to nodes_linked. So this list of nodes grows
 		-- over time until all given nodes have been added to the graph.
 		-- Initially it is empty:
@@ -349,14 +347,10 @@ package body et_ratsnest is
 
 
 		-- Appends the given airwire to the result if it
-		-- is not already in the given list of virtual_airwires:
+		-- is not already in the given list of strands:
 		procedure add_airwire (aw : in type_airwire) is begin
 			-- CS make sure length is greater zero ? Since we assume unique positions
 			-- of the given nodes, this check should not be required.
-
-			-- if not contains_airwire (virtual_airwires, aw) then
-			-- 	result.append (aw);
-			-- end if;
 
 			if not airwire_in_strand (aw, strands) then
 				result.append (aw);
@@ -496,9 +490,10 @@ package body et_ratsnest is
 
 
 		node_tmp : type_vector;
-				
-	begin -- make_airwires
 
+		
+	begin -- make_airwires
+		
 		-- If there are at least two nodes then start constructing the SCN.
 		-- Otherwise return an empty list of airwires.
 		if nodes.length >= 2 then

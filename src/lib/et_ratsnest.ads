@@ -124,13 +124,12 @@ package et_ratsnest is
 	--  The algorithm used here bases on the article:
 	-- "Shortest Connection Networks And Some Generalizations"
 	-- written by R.C.PRIM, date 1957-05-08
-	--  Optionally a list of virtual airwires can be given. If this function
-	-- attempts to create an airwire that is already in virtual_airwires then
+	--  Optionally a list of strands (already routed stuff) can be given. If this function
+	-- attempts to create an airwire that is already in a strand then
 	-- that particular airwire will be discarded and not appended to the return.
 	function make_airwires (
 		nodes				: in pac_vectors.list;
-		strands				: in pac_strands.list;					   
-		virtual_airwires	: in pac_airwires.list := pac_airwires.empty_list)
+		strands				: in pac_strands.list)
 		return pac_airwires.list;
 	
 end et_ratsnest;

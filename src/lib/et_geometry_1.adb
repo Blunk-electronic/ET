@@ -914,6 +914,20 @@ package body et_geometry_1 is
 	end get_displacement;
 
 
+	procedure put_vectors (
+		vectors	: in pac_vectors.list)
+	is
+
+		procedure query_vector (c : in pac_vectors.cursor) is begin
+			put_line (to_string (element (c)));
+		end;
+		
+	begin
+		vectors.iterate (query_vector'access);
+	end put_vectors;
+
+
+	
 	function to_list (
 		vectors : in type_vector_array)
 		return pac_vectors.list
@@ -1038,6 +1052,28 @@ package body et_geometry_1 is
 	end remove_redundant_vectors;
 
 
+	procedure remove (
+		vectors_1 : in out pac_vectors.list; -- primary list
+		vectors_2 : in pac_vectors.list) -- to be removed
+	is
+
+		procedure query_vector_to_be_removed (c2 : in pac_vectors.cursor) is
+			-- locate vector-to-be-removed in primary list:
+			c1 : pac_vectors.cursor := vectors_1.find (element (c2));
+		begin
+			-- If vector-to-be-removed exists in primary list,
+			-- then delete it in the primary list:
+			if c1 /= pac_vectors.no_element then
+				vectors_1.delete (c1);
+			end if;
+		end query_vector_to_be_removed;
+		
+	begin
+		-- iterate list of vectors-to-be-removed:
+		vectors_2.iterate (query_vector_to_be_removed'access);
+	end remove;
+
+	
 	procedure sort_by_distance (
 		vectors		: in out pac_vectors.list;
 		reference	: in type_vector)

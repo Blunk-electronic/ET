@@ -122,29 +122,29 @@ package body et_board_ops.ratsnest is
 				-- become nodes. But, an airwire between start and end of a single
 				-- track segment is useless and must be supressed. For this
 				-- reason we collect a list of such airwires in container virtual_airwires:
-				virtual_airwires : pac_airwires.list;
+				-- virtual_airwires : pac_airwires.list;
 
-				
-				procedure make_virtual_airwires is
-					use pac_conductor_lines;
-					use pac_conductor_arcs;
-					
-					procedure query_line (l : in pac_conductor_lines.cursor) is begin
-						--put_line ("virtual airwire: " & to_string (element (l)));
-						virtual_airwires.append (to_airwire (element (l)));
-					end query_line;
-
-					procedure query_arc (a : in pac_conductor_arcs.cursor) is begin
-						virtual_airwires.append ((
-							start_point => to_vector (element (a).start_point), 
-							end_point   => to_vector (element (a).end_point)));
-					end query_arc;
-					
-				begin
-					net.route.lines.iterate (query_line'access);
-					net.route.arcs.iterate (query_arc'access);
-				end make_virtual_airwires;
-	
+-- 				
+-- 				procedure make_virtual_airwires is
+-- 					use pac_conductor_lines;
+-- 					use pac_conductor_arcs;
+-- 					
+-- 					procedure query_line (l : in pac_conductor_lines.cursor) is begin
+-- 						--put_line ("virtual airwire: " & to_string (element (l)));
+-- 						virtual_airwires.append (to_airwire (element (l)));
+-- 					end query_line;
+-- 
+-- 					procedure query_arc (a : in pac_conductor_arcs.cursor) is begin
+-- 						virtual_airwires.append ((
+-- 							start_point => to_vector (element (a).start_point), 
+-- 							end_point   => to_vector (element (a).end_point)));
+-- 					end query_arc;
+-- 					
+-- 				begin
+-- 					net.route.lines.iterate (query_line'access);
+-- 					net.route.arcs.iterate (query_arc'access);
+-- 				end make_virtual_airwires;
+-- 	
 
 				procedure query_node (c : in pac_vectors.cursor) is begin
 					put_line (to_string (element (c)));
@@ -178,7 +178,7 @@ package body et_board_ops.ratsnest is
 
 				-- Create from the tracks a list of virtual_airwires. These airwires
 				-- are later required in order to create the real airwires.
-				make_virtual_airwires;
+				-- make_virtual_airwires;
 
 
 
@@ -203,7 +203,9 @@ package body et_board_ops.ratsnest is
 				-- compute the ratsnest:
 				-- Make airwires from the list of nodes. Suppress the 
 				-- virtual airwires:
-				airwires := make_airwires (nodes, strands, virtual_airwires);				
+				-- airwires := make_airwires (nodes, strands, virtual_airwires);
+				airwires := make_airwires (nodes, strands);
+				
 				net.route.airwires.lines := airwires;				
 			end query_net;
 
