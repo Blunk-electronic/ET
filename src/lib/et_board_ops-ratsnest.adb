@@ -110,46 +110,11 @@ package body et_board_ops.ratsnest is
 				use pac_geometry_brd;
 				use pac_vectors;
 				nodes : pac_vectors.list;
-
-				tht_positions : pac_vectors.list;
 				
 				use pac_airwires;
 				airwires : pac_airwires.list;
 				
-				-- The function make_airwires generates airwires between terminals,
-				-- vias and tracks. Each of them becomes a node.
-				-- Regarding tracks: The start and end points of tracks also
-				-- become nodes. But, an airwire between start and end of a single
-				-- track segment is useless and must be supressed. For this
-				-- reason we collect a list of such airwires in container virtual_airwires:
-				-- virtual_airwires : pac_airwires.list;
-
--- 				
--- 				procedure make_virtual_airwires is
--- 					use pac_conductor_lines;
--- 					use pac_conductor_arcs;
--- 					
--- 					procedure query_line (l : in pac_conductor_lines.cursor) is begin
--- 						--put_line ("virtual airwire: " & to_string (element (l)));
--- 						virtual_airwires.append (to_airwire (element (l)));
--- 					end query_line;
--- 
--- 					procedure query_arc (a : in pac_conductor_arcs.cursor) is begin
--- 						virtual_airwires.append ((
--- 							start_point => to_vector (element (a).start_point), 
--- 							end_point   => to_vector (element (a).end_point)));
--- 					end query_arc;
--- 					
--- 				begin
--- 					net.route.lines.iterate (query_line'access);
--- 					net.route.arcs.iterate (query_arc'access);
--- 				end make_virtual_airwires;
--- 	
-
-				procedure query_node (c : in pac_vectors.cursor) is begin
-					put_line (to_string (element (c)));
-				end query_node;
-				
+				tht_positions : pac_vectors.list;
 				strands : et_ratsnest.pac_strands.list;
 				
 			begin -- query_net
@@ -159,8 +124,6 @@ package body et_board_ops.ratsnest is
 				nodes := get_terminal_positions (
 					module_cursor	=> module_cursor, 
 					net_cursor		=> net_cursor);
-				
-				-- nodes.iterate (query_node'access); -- for debugging
 				
 				-- Get x/y of all vias and append their positions to nodes.
 				-- The via positions must be converted to location vectors:
@@ -175,14 +138,17 @@ package body et_board_ops.ratsnest is
 				
 				-- remove redundant/overlapping nodes
 				remove_redundant_vectors (nodes);
-
-				-- Create from the tracks a list of virtual_airwires. These airwires
-				-- are later required in order to create the real airwires.
-				-- make_virtual_airwires;
-
-
-
 				
+					
+				-- COMPUTE THE RATSNEST / AIRWIRES
+				
+				-- Make airwires from the list of nodes:
+				airwires := make_airwires (nodes);
+
+
+				-- POST PROCESS AIRWIRES
+				
+				-- Remove excessive airwires due to already routed stuff.
 				-- get x/y positions of all THT terminals:
 				tht_positions := get_terminal_positions (
 					module_cursor	=> module_cursor, 
@@ -196,15 +162,9 @@ package body et_board_ops.ratsnest is
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,
 					terminals	=> tht_positions);
-
-
 				
-					
-				-- compute the ratsnest:
-				-- Make airwires from the list of nodes. Suppress the 
-				-- virtual airwires:
-				-- airwires := make_airwires (nodes, strands, virtual_airwires);
-				airwires := make_airwires (nodes, strands);
+				post_process_airwires (airwires, strands);
+
 				
 				net.route.airwires.lines := airwires;				
 			end query_net;
