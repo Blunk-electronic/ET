@@ -47,6 +47,7 @@ with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_vias;						use et_vias;
+with et_pcb_stack;					use et_pcb_stack;
 
 
 package et_ratsnest is
@@ -58,7 +59,13 @@ package et_ratsnest is
 	type type_airwire is new type_line_fine;
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);
+	use pac_airwires;
 
+
+	-- Returns from the list of airwires the shortes of them:
+	function get_shortest_airwire (
+		wires : in pac_airwires.list)
+		return type_airwire;
 
 	
 	type type_strand is record
@@ -69,16 +76,6 @@ package et_ratsnest is
 	use pac_strands;
 	
 	
-	function get_strands (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list)
-		-- CS circles, fill zones ?
-		-- CS argument for deepest layer of the board
-		return pac_strands.list;
-
-
 	
 	
 	function to_airwire (
@@ -129,6 +126,43 @@ package et_ratsnest is
 		return pac_airwires.list;
 
 
+	-- Returns the start and end points (nodes) of the lines which are
+	-- connected with each other. Deletes the affected lines
+	-- from the given list.
+	-- If no lines given, then an empty list is returned.
+	function get_connected_nodes (
+		lines	: in out pac_conductor_lines.list)
+		return pac_vectors.list;
+
+
+	-- Returns the nodes of strands formed by the given
+	-- lines, arcs, vias and terminals:
+	function get_strands (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list; -- THT terminals !
+		deepest		: in type_signal_layer)
+		return pac_strands.list;
+
+
+	-- Returns true if the given airwire connects
+	-- two nodes which are inside of any strand:
+	function airwire_in_strand (
+		wire	: in type_airwire;
+		strands	: in pac_strands.list)
+		return boolean;
+
+
+	-- Returns true if the given airwire is connected with
+	-- only one node of the given strand:
+	function airwire_enters_strand (
+		wire			: in type_airwire;
+		strand_cursor	: in pac_strands.cursor)
+		return boolean;
+	
+		
+	
 	-- Removes airwires which are no longer required due to
 	-- already routed stuff (given in argument "strands");
 	procedure post_process_airwires (

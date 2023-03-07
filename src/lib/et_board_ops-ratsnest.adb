@@ -161,7 +161,8 @@ package body et_board_ops.ratsnest is
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,
-					terminals	=> tht_positions);
+					terminals	=> tht_positions,
+					deepest		=> deepest_conductor_layer (module_cursor));
 				
 				post_process_airwires (airwires, strands);
 

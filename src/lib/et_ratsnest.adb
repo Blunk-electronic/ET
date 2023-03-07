@@ -39,12 +39,29 @@
 --		- 
 
 
---with ada.containers.multiway_trees;
-
-with et_pcb_stack;							use et_pcb_stack;
-
 
 package body et_ratsnest is
+
+
+	function get_shortest_airwire (
+		wires : in pac_airwires.list)
+		return type_airwire
+	is
+		result : type_airwire;
+		shortest : type_float_positive := type_float_positive'last;
+
+		procedure query_wire (c : in pac_airwires.cursor) is
+			candidate_length : type_float_positive := get_length (element (c));
+		begin
+			if candidate_length < shortest then
+				shortest := candidate_length;
+			end if;
+		end query_wire;
+		
+	begin
+		wires.iterate (query_wire'access);
+		return result;
+	end get_shortest_airwire;
 
 	
 	function to_airwire (
@@ -390,8 +407,7 @@ package body et_ratsnest is
 		procedure search is
 			found : boolean := false;
 			
-			procedure query_line (l : in type_conductor_line) is
-			begin
+			procedure query_line (l : in type_conductor_line) is begin
 				if is_connected (l, collector) then
 					found := true;
 					collector.append (l);
@@ -414,17 +430,16 @@ package body et_ratsnest is
 				if found then 
 					lines.delete (lc);
 					lc := lines.first;
+					found := false;
 				else
 					next (lc);					
 				end if;
 			end loop;
-
-			-- lines := collector;
 		end search;
 
 		
 	begin
-		--put_line ("ct " & count_type'image (count));
+		-- put_line ("get connected nodes from lines " & count_type'image (count));
 		
 		case count is
 			when 0 => null;
@@ -435,29 +450,10 @@ package body et_ratsnest is
 
 			when others =>
 				search;
--- 				
--- 				PL := lines.first_element;
--- 				put_line ("PL   " & to_string (PL));
--- 				append (PL);
--- 				cursor := next (lines.first);
--- 				while cursor /= pac_conductor_lines.no_element loop
--- 					put_line ("line " & to_string (element (cursor)));
--- 					
--- 					if are_connected (PL, element (cursor)) then
--- 						append (element (cursor));
--- 					else
--- 						remainder.append (element (cursor));
--- 					end if;
--- 					next (cursor);
--- 				end loop;
--- 
--- 				lines := remainder;
 		end case;
 
 		remove_redundant_vectors (nodes);
 
-		-- put_line ("connected nodes");
-		-- nodes.iterate (query_node'access);
 		return nodes;
 	end get_connected_nodes;
 
@@ -467,7 +463,8 @@ package body et_ratsnest is
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
 		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list)
+		terminals	: in pac_vectors.list;
+		deepest		: in type_signal_layer)
 		return pac_strands.list
 	is
 		result : pac_strands.list;
@@ -480,23 +477,25 @@ package body et_ratsnest is
 			arcs	: pac_conductor_arcs.list;
 		end record;
 
-		type type_layer is array (type_signal_layer'first .. type_signal_layer'last) 
+		type type_layer is array (type_signal_layer'first .. deepest) 
 			of type_objects;
 
 		layers : type_layer;
 			
 		lines_in_layer : pac_conductor_lines.list;
 	begin
-		for ly in layers'first .. layers'last loop
+		-- put_line ("get strands...");
+
+		-- Separate the given lines and arcs by their signal layer:
+		for ly in layers'first .. deepest loop
 			layers (ly).lines := get_lines_by_layer (lines, ly);
 			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
 		end loop;
 
-		--for ly in layers'first .. layers'last loop
-		for ly in layers'first .. 1 loop
+
+		for ly in layers'first .. deepest loop
 			while not layers (ly).lines.is_empty loop
 				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
-
 			end loop;
 		end loop;
 
@@ -528,13 +527,82 @@ package body et_ratsnest is
 		return result;
 	end airwire_in_strand;
 
+
+	function airwire_enters_strand (
+		wire			: in type_airwire;
+		strand_cursor	: in pac_strands.cursor)
+		return boolean
+	is
+		strand : type_strand renames element (strand_cursor);
+		
+		result : boolean := false;
+
+		-- procedure query_node (c : in pac_vectors.cursor) is begin
+		-- 	if strand.nodes.contains (wire.start_point)
+		-- 	xor strand.nodes.contains (wire.end_point) then
+		-- 		result := true; 
+		-- 		-- CS abort node iterator
+		-- 	end if;
+		-- end query_node;
+		
+	begin
+		-- strand.nodes.iterate (query_node'access);
+
+		if  strand.nodes.contains (wire.start_point)
+		xor strand.nodes.contains (wire.end_point) then
+			result := true; 
+		end if;
+		
+		return result;
+	end airwire_enters_strand;
+
 	
 	procedure post_process_airwires (
 		airwires	: in out pac_airwires.list;
 		strands		: in pac_strands.list)
 	is
+		airwires_new : pac_airwires.list;
+
+		procedure query_airwire (c : in pac_airwires.cursor) is
+			aw : type_airwire renames element (c);
+		begin
+			if not airwire_in_strand (aw, strands) then
+				airwires_new.append (aw);
+			end if;
+		end query_airwire;
+
+
+		procedure query_strand (c : in pac_strands.cursor) is
+			strand : type_strand renames element (c);
+
+			aws_entering : pac_airwires.list;
+			shortest_airwire : type_airwire;
+
+			procedure query_airwire (a : in pac_airwires.cursor) is
+				wire : type_airwire renames element (a);
+			begin
+				if airwire_enters_strand (wire, c) then
+					aws_entering.append (wire);
+				end if;
+			end query_airwire;
+			
+		begin
+			-- Collect airwires that are entering the strand:
+			airwires_new.iterate (query_airwire'access);
+
+			shortest_airwire := get_shortest_airwire (aws_entering);
+		end query_strand;
+
+		
 	begin
-		null;
+		put_line ("post processing ...");
+		
+		-- Remove those airwires which connect nodes inside strands:
+		airwires.iterate (query_airwire'access);
+
+		airwires := airwires_new;
+
+		strands.iterate (query_strand'access);
 	end post_process_airwires;
 
 	
