@@ -162,7 +162,7 @@ package body et_ratsnest is
 		end add_airwire;
 		
 		
-		-- Returns the node that is nearest to the given node.
+		-- Returns the node (among isolated nodes) that is nearest to the given node.
 		-- It does not probe the distance of the given node to itself (which would be zero).
 		-- This function works according to principle 1 (P1) of the PRIM-algorithm.
 		-- It searches in the list of isolated nodes: 
@@ -205,7 +205,8 @@ package body et_ratsnest is
 		-- 1. For each node of the current graph search the nearest neigbor.
 		-- 2. Store the neigbor in an array.
 		-- 3. Find in the array the neigbor that is closest to the graph.
-		-- 4. Return that neigbor to the caller.
+		-- 4. Make an airwire from the graph to that neigbor.
+		-- 5. Return that neigbor to the caller.
 		function get_nearest_neighbor_of_graph
 			return type_vector
 		is
@@ -273,7 +274,6 @@ package body et_ratsnest is
 						-- make an airwire from the node of the grap to
 						-- the neigboring node. If a closer neigbor has been
 						-- found, then aw_tmp will be overwritten accordingly:
-						--aw_tmp := type_line (make_line (neigbors (i).origin, neigbors (i).node));
 						aw_tmp := make_line (neigbors (i).origin, neigbors (i).node);
 					end if;
 				end loop;
@@ -319,13 +319,16 @@ package body et_ratsnest is
 			add_airwire ((start, node_tmp));
 
 			
-			-- As long as there are any isolated nodes, apply P2.
+			-- As long as there are any isolated nodes left over, apply P2.
 			-- Each time P2 is applied
 			-- - nodes_isolated becomes shorter by on node.
 			-- - nodes_linked becomes longer by one node.
 			while not nodes_isolated.is_empty loop
 				-- Apply P2:
 				node_tmp := get_nearest_neighbor_of_graph;
+				-- NOTE: The current graph is stored in nodes_linked.
+				-- An airwire has been added to the result.
+				
 				move_to_linked_nodes (node_tmp);
 			end loop;
 
