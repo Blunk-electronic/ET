@@ -914,6 +914,23 @@ package body et_geometry_1 is
 	end get_displacement;
 
 
+	procedure iterate (
+		vectors	: in pac_vectors.list;
+		process	: not null access procedure (position : in pac_vectors.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_vectors.cursor := vectors.first;
+	begin
+		while c /= pac_vectors.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+		
+
+	
 	procedure put_vectors (
 		vectors	: in pac_vectors.list)
 	is

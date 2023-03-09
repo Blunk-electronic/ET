@@ -580,6 +580,13 @@ package et_geometry_1 is
 	use pac_vectors;
 
 
+	-- Iterates the vectors. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		vectors	: in pac_vectors.list;
+		process	: not null access procedure (position : in pac_vectors.cursor);
+		proceed	: not null access boolean);
+
+	
 	-- Outputs x/x of the given list of vectors to standard output:
 	procedure put_vectors (
 		vectors	: in pac_vectors.list);
