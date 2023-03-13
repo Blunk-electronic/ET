@@ -122,7 +122,8 @@ package et_ratsnest is
 	-- "Shortest Connection Networks And Some Generalizations"
 	-- written by R.C.PRIM, date 1957-05-08
 	function make_airwires (
-		nodes : in pac_vectors.list)
+		nodes	: in pac_vectors.list;
+		strands	: in pac_strands.list)
 		return pac_airwires.list;
 
 
