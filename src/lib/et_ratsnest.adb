@@ -366,7 +366,6 @@ package body et_ratsnest is
 		result : pac_airwires.list := pac_airwires.empty_list; -- to be returned
 		
 		use pac_vectors;
-		start : type_vector;
 
 		-- This is the list of unconnected nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
@@ -374,12 +373,11 @@ package body et_ratsnest is
 		nodes_isolated : pac_vectors.list := nodes;
 
 		-- For each given strand an initial "isolated fragment" must be built.
-		-- These are the nodes of isolted fragments of the spann-graph that we are going to build.
+		-- These are the nodes of isolated fragments of the spann-graph that we are going to build.
 		-- Once a node gets linked (with an airwire) with an isolated fragment, then node
 		-- will be added to the affected fragment in nodes_linked. So the particual list of nodes grows
 		-- over time until all given nodes have been added to the graph.
 		-- Initially it is empty:
-		-- nodes_linked : pac_vectors.list := pac_vectors.empty_list;
 		isolated_fragments : pac_strands.list;
 
 		-- Moves the given node from the list of isolated nodes to
@@ -557,12 +555,11 @@ package body et_ratsnest is
 
 		procedure complete_fragments is
 			fc : pac_strands.cursor := isolated_fragments.first;
-			-- N : type_neigbor;
-
 
 			type type_claimed_neigbor is record
 				neigbor		: type_neigbor;
 				fragment	: pac_strands.cursor;
+				processed	: boolean := false;
 			end record;
 
 			type type_claimed_neigbors is array (1 .. isolated_fragments.length) of type_claimed_neigbor;
@@ -618,92 +615,151 @@ package body et_ratsnest is
 			end expand_fragment;
 
 			
-		begin
-			if not nodes_isolated.is_empty then -- if there are isolated nodes left
+		begin -- complete_fragments
 				
-				-- iterate isolated fragments:
-				while fc /= pac_strands.no_element loop
-					
-					claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc);
-					claimed_neigbors (idx).fragment := fc;
+			-- Iterate the isolated fragments. Each fragment
+			-- claimes a nearest isolated neigbor. This neigbor
+			-- is stored in an array.
+			while fc /= pac_strands.no_element loop
+				
+				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc);
+				claimed_neigbors (idx).fragment := fc;
 
-					idx := idx + 1;
-					next (fc);
-				end loop;
+				idx := idx + 1;
+				next (fc);
+			end loop;
 
 
-				-- iterate claimed neigbors:
-				for i in claimed_neigbors'first .. claimed_neigbors'length loop
-					if is_unique (claimed_neigbors (i).neigbor.node) then
-						expand_fragment (i);
-					else
-						idx := get_idx_of_nearest (claimed_neigbors (i).neigbor.node);
+			-- Iterate claimed neigbors:
+			-- 1. If a neigbor is claimed by only one
+			--    fragment, then this fragment gets expanded by that neigbor node.
+			-- 2. If a neigbor is claimed by more than one fragment, then the fragment
+			--    that is closest gets the expanded by that neigbor.
+			for i in claimed_neigbors'first .. claimed_neigbors'length loop
+				if is_unique (claimed_neigbors (i).neigbor.node) then -- case 1
+					expand_fragment (i);
+				else -- case 2
+					idx := get_idx_of_nearest (claimed_neigbors (i).neigbor.node);
+					if not claimed_neigbors (idx).processed then
+						claimed_neigbors (idx).processed := true;
 						expand_fragment (idx);
-					end if;						
-				end loop;
-				
-			end if;
+					end if;
+				end if;						
+			end loop;
+
 		end complete_fragments;
-		
 
-		node_tmp : type_vector;
-		fragment : pac_vectors.list;
 
-		
-	begin -- make_airwires
+		procedure make_single_fragment is
 
-		if not strands.is_empty then -- means: if there are strands given
-
-			-- Fast forward: Build the isolated fragments from the given 
-			-- strands:
-			strands.iterate (query_given_strand'access);
-
-			complete_fragments;
-
-			-- CS connect fragments
-			
-		else
-			-- no strands given
-					
-
-			-- If there are at least two nodes then start constructing the SCN.
-			-- Otherwise return an empty list of airwires.
-			if nodes_isolated.length >= 2 then
-
+			procedure make_first_fragment (fragment : in out type_strand) is
+				start : type_vector;
+				node : type_vector;
+			begin
 				-- Set the start point of the SCN:
 				start := first_element (nodes_isolated);
 
 				-- Apply P1:
-				node_tmp := get_nearest_neighbor_of_node (start);
+				node := get_nearest_neighbor_of_node (start);
 
-				-- create the first fragment of the SCN:
-				move_to_linked_nodes (fragment, start);
-				move_to_linked_nodes (fragment, node_tmp);
-
+				move_to_linked_nodes (fragment.nodes, start);
+				move_to_linked_nodes (fragment.nodes, node);
 				-- The list nodes_isolated has been shortened by two nodes.
 				-- The fragment now contains two nodes.
 
 				-- create the first airwire
-				add_airwire ((start, node_tmp));
+				add_airwire ((start, node));
+			end make_first_fragment;
+
+
+			-- We have to handle just a single fragment here.
+			-- This container contains only one fragment:
+			fragment : pac_strands.list;
+			
+			neigbor : type_neigbor;
+			
+			procedure extend_fragment (fragment : in out type_strand) is begin
+				move_to_linked_nodes (fragment.nodes, neigbor.node);
+
+				-- create the airwire
+				add_airwire ((neigbor.origin, neigbor.node));
+			end extend_fragment;
+
+			
+		begin
+			-- If there are at least two nodes, then start constructing the SCN.
+			-- Otherwise return an empty list of airwires.
+			if nodes_isolated.length >= 2 then
+
+				-- Create the first fragment of the SCN:
+				fragment.append ((nodes => pac_vectors.empty_list));
+				fragment.update_element (fragment.first, make_first_fragment'access);
 				
 				
 				-- As long as there are any isolated nodes left over, apply P2.
 				-- Each time P2 is applied
 				-- - nodes_isolated becomes shorter by on node.
-				-- - nodes_linked becomes longer by one node.
+				-- - the list of nodes of the fragment becomes longer by one node.
 				while not nodes_isolated.is_empty loop
 					-- Apply P2:
-					node_tmp := get_nearest_neighbor_of_fragment (fragment);
-					-- NOTE: The current graph is stored in nodes_linked.
-					-- An airwire has been added to the result.
-					
-					move_to_linked_nodes (node_tmp);
+					neigbor := get_nearest_neighbor_of_fragment (fragment.first);
+					fragment.update_element (fragment.first, extend_fragment'access);
 				end loop;
-			end if;
+			end if;			
+		end make_single_fragment;
 
+
+		procedure connect_isolated_fragments is
+			-- type type_nearest_fragment is record
+			-- 	neigbor	: type_neigbor;
+			-- 	fragment : pac_strands.cursor;
+			-- end record;
+
+			-- function get_nearest_fragment (c : in pac_strands.cursor)
+			-- 	return type_nearest_fragment
+			-- is
+			-- 	result : type_nearest_fragment;
+			-- begin
+			-- 	return result;
+			-- end get_nearest_fragment;
+   -- 
+			-- fc : pac_strands.cursor := isolated_fragments.first;
+			-- nearest_fragment : type_nearest_fragment;
+		begin
+			-- while fc /= pac_strands.no_element loop
+			-- 	nearest_fragment := get_nearest_fragment (fc);
+			-- 	next (fc);
+			-- end loop;
+
+			null;
+		end connect_isolated_fragments;
+
+		
+	begin -- make_airwires
+
+		if not strands.is_empty then -- means: if there are strands given
+			-- put_line ("strands given");
+			
+			-- Fast forward: Build the isolated fragments from the given 
+			-- strands:
+			strands.iterate (query_given_strand'access);
+
+			-- As long as there are isolated nodes left over,
+			-- complete the isolated fragments:
+			while not nodes_isolated.is_empty loop
+				complete_fragments;
+			end loop;
+			
+			-- CS connect isolated_fragments
+			connect_isolated_fragments;
+			
+		else
+			-- no strands given
+			-- put_line ("no strands given");
+			make_single_fragment;
 		end if;
 			
-		-- Return the connection of airwires:
+		-- Return the collection of airwires:
 		return result;
 	end make_airwires_2;
 
@@ -858,9 +914,13 @@ package body et_ratsnest is
 	begin
 		-- put_line ("get strands...");
 
+		-- put_line (" lines total" & count_type'image (lines.length));
+		
 		-- Separate the given lines and arcs by their signal layer:
 		for ly in layers'first .. deepest loop
+			-- put_line (" layer" & type_signal_layer'image (ly));
 			layers (ly).lines := get_lines_by_layer (lines, ly);
+			-- put_line ("  lines" & count_type'image (layers (ly).lines.length));
 			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
 		end loop;
 

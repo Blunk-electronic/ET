@@ -126,7 +126,13 @@ package et_ratsnest is
 		strands	: in pac_strands.list)
 		return pac_airwires.list;
 
+	function make_airwires_2 (
+		nodes	: in pac_vectors.list;
+		strands	: in pac_strands.list)
+		return pac_airwires.list;
 
+
+	
 	-- Returns the start and end points (nodes) of the lines which are
 	-- connected with each other. Deletes the affected lines
 	-- from the given list.

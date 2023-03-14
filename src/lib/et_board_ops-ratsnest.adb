@@ -166,7 +166,7 @@ package body et_board_ops.ratsnest is
 				
 				-- post_process_airwires (airwires, strands);
 
-				airwires := make_airwires (nodes, strands);
+				airwires := make_airwires_2 (nodes, strands);
 				
 				net.route.airwires.lines := airwires;				
 			end query_net;
