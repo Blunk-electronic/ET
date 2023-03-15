@@ -397,8 +397,8 @@ package body et_ratsnest is
 	
 	
 	function get_nearest_neighbor_of_fragment (
-		isolated_nodes	: in pac_vectors.list;
-		fragment_cursor : in pac_strands.cursor)
+		fragment_cursor : in pac_strands.cursor;
+		isolated_nodes	: in pac_vectors.list)
 		return type_neigbor
 	is
 		fragment : type_strand renames element (fragment_cursor);
@@ -476,8 +476,41 @@ package body et_ratsnest is
 		return type_nearest_fragment
 	is
 		result : type_nearest_fragment;
-	begin
 
+		type type_neigbor_fragments is array (1 .. fragments.length - 1) of type_nearest_fragment;
+		neigbor_fragments : type_neigbor_fragments;
+		
+		ct : count_type := 0;
+		
+		procedure query_fragment (c : in pac_strands.cursor) is
+			fragment : type_strand renames element (c); -- the candidate fragment
+			neigbor : type_neigbor;
+		begin
+			if fragment /= element (reference) then
+			-- CS if c /= reference then
+				ct := ct + 1;
+				-- We regard the nodes of the candidate fragment as if they where 
+				-- isolated nodes:
+				neigbor := get_nearest_neighbor_of_fragment (reference, fragment.nodes);
+				neigbor_fragments (ct) := (neigbor, c);
+			end if;
+		end query_fragment;
+
+		smallest_distance : type_float_positive := type_float_positive'last;
+		
+	begin
+		-- Collect the nearest fragments in array neigbor_fragments:
+		fragments.iterate (query_fragment'access);
+
+		-- Find in array neigbor_fragments the one with the smallest distance
+		-- to the given reference fragment:
+		for i in neigbor_fragments'first .. neigbor_fragments'last loop
+			if neigbor_fragments (i).neigbor.distance < smallest_distance then
+				smallest_distance := neigbor_fragments (i).neigbor.distance;
+				result := neigbor_fragments (i);
+			end if;
+		end loop;	
+		
 		return result;
 	end get_nearest_fragment;
 
@@ -619,7 +652,7 @@ package body et_ratsnest is
 			-- is stored in an array.
 			while fc /= pac_strands.no_element loop
 				
-				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (isolated_nodes, fc);
+				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc, isolated_nodes);
 				claimed_neigbors (idx).fragment := fc;
 
 				idx := idx + 1;
@@ -699,7 +732,7 @@ package body et_ratsnest is
 				-- - the list of nodes of the fragment becomes longer by one node.
 				while not isolated_nodes.is_empty loop
 					-- Apply P2:
-					neigbor := get_nearest_neighbor_of_fragment (isolated_nodes, fragment.first);
+					neigbor := get_nearest_neighbor_of_fragment (fragment.first, isolated_nodes);
 					fragment.update_element (fragment.first, extend_fragment'access);
 				end loop;
 			end if;			
@@ -708,22 +741,37 @@ package body et_ratsnest is
 
 		procedure connect_isolated_fragments is
 
+			nearest_fragment : type_nearest_fragment;
+			scratch : type_strand;
 
-			-- function get_nearest_fragment (c : in pac_strands.cursor)
-			-- 	return type_nearest_fragment
-			-- is
-			-- 	result : type_nearest_fragment;
-			-- begin
-			-- 	return result;
-			-- end get_nearest_fragment;
-   -- 
-			-- fc : pac_strands.cursor := isolated_fragments.first;
-			-- nearest_fragment : type_nearest_fragment;
+			procedure query_fragment (fragment : in out type_strand) is
+			begin
+				-- put_line ("nodes A" & count_type'image (fragment.nodes.length));
+				-- put_line ("scratch" & count_type'image (scratch.nodes.length));
+				splice (
+					target	=> fragment.nodes,
+					before	=> pac_vectors.no_element, 
+					source	=> scratch.nodes);
+
+				-- put_line ("nodes B" & count_type'image (fragment.nodes.length));
+			end query_fragment;
+			
 		begin
-			-- while fc /= pac_strands.no_element loop
-			-- 	nearest_fragment := get_nearest_fragment (fc);
-			-- 	next (fc);
-			-- end loop;
+			-- put_line ("isolated fragments init" & count_type'image (isolated_fragments.length));
+			
+			while isolated_fragments.length > 1 loop
+				-- put_line ("isolated fragments left" & count_type'image (isolated_fragments.length));
+				
+				nearest_fragment := get_nearest_fragment (isolated_fragments, isolated_fragments.first);
+
+				add_airwire ((nearest_fragment.neigbor.origin, nearest_fragment.neigbor.node));
+				-- put_line (to_string (result.last_element));
+				
+				scratch := element (nearest_fragment.fragment);
+				isolated_fragments.update_element (isolated_fragments.first, query_fragment'access);
+
+				isolated_fragments.delete (nearest_fragment.fragment);
+			end loop;
 
 			null;
 		end connect_isolated_fragments;
@@ -743,9 +791,11 @@ package body et_ratsnest is
 			while not isolated_nodes.is_empty loop
 				complete_fragments;
 			end loop;
+
+			-- The container "isolated_fragments" now contains all fragments.
+			-- But there is no link between the fragments yet.
 			
-			-- CS connect isolated_fragments
-			connect_isolated_fragments;
+			-- connect_isolated_fragments;
 			
 		else
 			-- no strands given

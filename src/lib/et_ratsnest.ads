@@ -68,11 +68,11 @@ package et_ratsnest is
 		return type_airwire;
 
 	
-	type type_strand is record
+	type type_strand is record -- CS rename to type_fragment
 		nodes : pac_vectors.list;
 	end record;
 
-	package pac_strands is new doubly_linked_lists (type_strand);
+	package pac_strands is new doubly_linked_lists (type_strand); -- CS rename to pac_fragments
 	use pac_strands;
 	
 	
@@ -159,21 +159,21 @@ package et_ratsnest is
 	-- 3. Find in the array the neigbor that is closest to the fragment.
 	-- 4. Return that neigbor to the caller.
 	function get_nearest_neighbor_of_fragment (
-		isolated_nodes	: in pac_vectors.list;
-		fragment_cursor : in pac_strands.cursor)
+		fragment_cursor : in pac_strands.cursor;
+		isolated_nodes	: in pac_vectors.list)
 		return type_neigbor;
 
 	
 	type type_nearest_fragment is record
-		neigbor	: type_neigbor;
-		fragment : pac_strands.cursor;
+		neigbor		: type_neigbor;
+		fragment	: pac_strands.cursor;
 	end record;
 
 	-- Returns the isolated fragment and its node that is
 	-- nearest to the given isolated fragment:
 	function get_nearest_fragment (
-		fragments	: in pac_strands.list;
-		reference	: in pac_strands.cursor)
+		fragments	: in pac_strands.list;   -- the fragments to be searched in
+		reference	: in pac_strands.cursor) -- the candidate fragment
 		return type_nearest_fragment;
 
 	
