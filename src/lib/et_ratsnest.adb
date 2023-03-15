@@ -355,6 +355,132 @@ package body et_ratsnest is
 		-- Return the connection of airwires:
 		return result;
 	end make_airwires;
+
+
+
+	function get_nearest_neighbor_of_node (
+		isolated_nodes	: in pac_vectors.list;
+		node_in			: in type_vector)
+		return type_vector
+	is
+		smallest_distance : type_float_positive := type_float_positive'last;
+		node_nearest : type_vector; -- to be returned
+
+		use pac_vectors;
+		
+		procedure query_node (c : in pac_vectors.cursor) is
+			d_tmp : type_float_positive;
+		begin
+			-- ignore the given node. For others nodes: get the distance
+			-- from node_in to the candidate node:
+			if element (c) /= node_in then
+				d_tmp := get_absolute (get_distance (element (c), node_in));
+
+				-- Update the smallest distance and register the
+				-- candidate node if current distance is smaller than
+				-- the previous distance between the nodes:
+				if d_tmp < smallest_distance then
+					smallest_distance := d_tmp;
+					node_nearest := element (c);
+				end if;
+			end if;
+		end query_node;
+		
+	begin
+		-- probe all nodes (except the given node):
+		isolated_nodes.iterate (query_node'access);
+
+		-- return the nearest node that has been found:
+		return node_nearest;
+	end get_nearest_neighbor_of_node;
+
+	
+	
+	function get_nearest_neighbor_of_fragment (
+		isolated_nodes	: in pac_vectors.list;
+		fragment_cursor : in pac_strands.cursor)
+		return type_neigbor
+	is
+		fragment : type_strand renames element (fragment_cursor);
+
+		result : type_neigbor; -- to be returned
+
+		-- The total number of nodes in the current fragment. It is required
+		-- in order to set up the array, because for each node of the fragment
+		-- there will be a nearest neigboring node:
+		linked_total : constant count_type := fragment.nodes.length;
+
+
+		
+		-- Set up the array of neigboring nodes:
+		type type_neigbors is array (1 .. linked_total) of type_neigbor;
+		neigbors : type_neigbors := (others => <>);
+
+		-- Set up a pointer to the elements of the array:
+		subtype type_neigbor_pointer is count_type range 1 .. linked_total + 1;
+		pointer : type_neigbor_pointer := 1;
+
+
+		use pac_vectors;
+		
+		-- Finds the nearest isolated neigbor of a linked node:
+		procedure query_node_of_fragment (c : in pac_vectors.cursor) is
+			node	: type_vector renames element (c);
+			neigbor	: type_neigbor;
+		begin
+			neigbor.node := get_nearest_neighbor_of_node (isolated_nodes, node);
+			neigbor.distance := get_absolute (get_distance (node, neigbor.node));
+			neigbor.origin := node;
+
+			-- store neigbor in array:
+			neigbors (pointer) := neigbor;
+
+			-- prepare for next node:
+			pointer := pointer + 1; 
+		end query_node_of_fragment;
+
+
+		-- Searches in array "neigbors" for the neigbor that has the smallest
+		-- distance to the fragment.
+		-- Generates an airwire to that neigbor.
+		procedure find_nearest_among_neigbors is
+			smallest_distance : type_float_positive := type_float_positive'last;
+		begin
+			for i in neigbors'first .. neigbors'last loop
+
+				-- Update the result if current neigbor is
+				-- closer than the previous distance to the fragment.
+				if neigbors (i).distance < smallest_distance then
+					smallest_distance := neigbors (i).distance;
+					
+					result := neigbors (i);
+				end if;
+			end loop;
+		end find_nearest_among_neigbors;
+		
+		
+	begin
+		-- Probe the nodes of the given fragment:
+		fragment.nodes.iterate (query_node_of_fragment'access);
+
+		find_nearest_among_neigbors;
+		
+		return result;
+	end get_nearest_neighbor_of_fragment;
+
+
+	
+	function get_nearest_fragment (
+		fragments	: in pac_strands.list;
+		reference	: in pac_strands.cursor)
+		return type_nearest_fragment
+	is
+		result : type_nearest_fragment;
+	begin
+
+		return result;
+	end get_nearest_fragment;
+
 	
 
 	function make_airwires_2 (
@@ -370,7 +496,7 @@ package body et_ratsnest is
 		-- This is the list of unconnected nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
 		-- it is empty, the PRIM-algorithm ends:
-		nodes_isolated : pac_vectors.list := nodes;
+		isolated_nodes : pac_vectors.list := nodes;
 
 		-- For each given strand an initial "isolated fragment" must be built.
 		-- These are the nodes of isolated fragments of the spann-graph that we are going to build.
@@ -381,7 +507,7 @@ package body et_ratsnest is
 		isolated_fragments : pac_strands.list;
 
 		-- Moves the given node from the list of isolated nodes to
-		-- the given list of linked nodes. So the list nodes_isolated gets
+		-- the given list of linked nodes. So the list isolated_nodes gets
 		-- shorter by one node. The given list "linked" gets longer by one node:
 		procedure move_to_linked_nodes (
 			linked	: in out pac_vectors.list;
@@ -390,8 +516,8 @@ package body et_ratsnest is
 			nc : pac_vectors.cursor;
 		begin
 			-- remove from isolated nodes:
-			nc := nodes_isolated.find (node);
-			nodes_isolated.delete (nc);
+			nc := isolated_nodes.find (node);
+			isolated_nodes.delete (nc);
   
 			-- add to linked nodes:
 			linked.append (node);
@@ -406,135 +532,6 @@ package body et_ratsnest is
 			result.append (aw);
 		end add_airwire;
 		
-		
-		-- Returns the node (among isolated nodes) that is nearest to the given node.
-		-- It does not probe the distance of the given node to itself (which would be zero).
-		-- This function works according to principle 1 (P1) of the PRIM-algorithm.
-		-- It searches in the list of isolated nodes: 
-		function get_nearest_neighbor_of_node (node_in : in type_vector)
-			return type_vector
-		is
-			smallest_distance : type_float_positive := type_float_positive'last;
-			node_nearest : type_vector; -- to be returned
-			
-			procedure query_node (c : in pac_vectors.cursor) is
-				d_tmp : type_float_positive;
-			begin
-				-- ignore the given node. For others nodes: get the distance
-				-- from node_in to the candidate node:
-				if element (c) /= node_in then
-					d_tmp := get_absolute (get_distance (element (c), node_in));
-
-					-- Update the smallest distance and register the
-					-- candidate node if current distance is smaller than
-					-- the previous distance between the nodes:
-					if d_tmp < smallest_distance then
-						smallest_distance := d_tmp;
-						node_nearest := element (c);
-					end if;
-				end if;
-			end query_node;
-			
-		begin
-			-- probe all nodes (except the given node):
-			nodes_isolated.iterate (query_node'access);
-
-			-- return the nearest node that has been found:
-			return node_nearest;
-		end get_nearest_neighbor_of_node;
-		
-
-
-		-- The neigboring node of a fragment:
-		type type_neigbor is record
-			-- the neigboring node itself:
-			node		: type_vector; 
-
-			-- the distance to the fragment:
-			distance	: type_float_positive := 0.0; 
-
-			-- the referencing node in the fragment:
-			origin		: type_vector;
-		end record;
-		
-		-- Returns the isolated node that is nearest to the given fragment:
-		-- This function works according to principle 2 (P2) of the PRIM-algorithm.
-		-- The general workflow is as follows:
-		-- 1. For each node of the given fragment search the nearest neigbor.
-		-- 2. Store the neigbor in an array.
-		-- 3. Find in the array the neigbor that is closest to the fragment.
-		-- 4. Return that neigbor to the caller.
-		function get_nearest_neighbor_of_fragment (
-			fragment_cursor : in pac_strands.cursor)
-			return type_neigbor
-		is
-			fragment : type_strand renames element (fragment_cursor);
-
-			result : type_neigbor; -- to be returned
-
-			-- The total number of nodes in the current fragment. It is required
-			-- in order to set up the array, because for each node of the fragment
-			-- there will be a nearest neigboring node:
-			linked_total : constant count_type := fragment.nodes.length;
-
-
-			
-			-- Set up the array of neigboring nodes:
-			type type_neigbors is array (1 .. linked_total) of type_neigbor;
-			neigbors : type_neigbors := (others => <>);
-
-			-- Set up a pointer to the elements of the array:
-			subtype type_neigbor_pointer is count_type range 1 .. linked_total + 1;
-			pointer : type_neigbor_pointer := 1;
-
-			
-			-- Finds the nearest isolated neigbor of a linked node:
-			procedure query_node_of_fragment (c : in pac_vectors.cursor) is
-				node	: type_vector renames element (c);
-				neigbor	: type_neigbor;
-			begin
-				neigbor.node := get_nearest_neighbor_of_node (node);
-				neigbor.distance := get_absolute (get_distance (node, neigbor.node));
-				neigbor.origin := node;
-
-				-- store neigbor in array:
-				neigbors (pointer) := neigbor;
-
-				-- prepare for next node:
-				pointer := pointer + 1; 
-			end query_node_of_fragment;
-
-
-			-- Searches in array "neigbors" for the neigbor that has the smallest
-			-- distance to the fragment.
-			-- Generates an airwire to that neigbor.
-			procedure find_nearest_among_neigbors is
-				smallest_distance : type_float_positive := type_float_positive'last;
-			begin
-				for i in neigbors'first .. neigbors'last loop
-
-					-- Update the result if current neigbor is
-					-- closer than the previous distance to the fragment.
-					if neigbors (i).distance < smallest_distance then
-						smallest_distance := neigbors (i).distance;
-						
-						result := neigbors (i);
-					end if;
-				end loop;
-			end find_nearest_among_neigbors;
-			
-			
-		begin
-			-- Probe the nodes of the given fragment:
-			fragment.nodes.iterate (query_node_of_fragment'access);
-
-			find_nearest_among_neigbors;
-			
-			return result;
-		end get_nearest_neighbor_of_fragment;
-
-
-
 
 		procedure query_given_strand (c : in pac_strands.cursor) is
 			strand : type_strand renames element (c);
@@ -622,7 +619,7 @@ package body et_ratsnest is
 			-- is stored in an array.
 			while fc /= pac_strands.no_element loop
 				
-				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc);
+				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (isolated_nodes, fc);
 				claimed_neigbors (idx).fragment := fc;
 
 				idx := idx + 1;
@@ -657,14 +654,14 @@ package body et_ratsnest is
 				node : type_vector;
 			begin
 				-- Set the start point of the SCN:
-				start := first_element (nodes_isolated);
+				start := first_element (isolated_nodes);
 
 				-- Apply P1:
-				node := get_nearest_neighbor_of_node (start);
+				node := get_nearest_neighbor_of_node (isolated_nodes, start);
 
 				move_to_linked_nodes (fragment.nodes, start);
 				move_to_linked_nodes (fragment.nodes, node);
-				-- The list nodes_isolated has been shortened by two nodes.
+				-- The list isolated_nodes has been shortened by two nodes.
 				-- The fragment now contains two nodes.
 
 				-- create the first airwire
@@ -689,7 +686,7 @@ package body et_ratsnest is
 		begin
 			-- If there are at least two nodes, then start constructing the SCN.
 			-- Otherwise return an empty list of airwires.
-			if nodes_isolated.length >= 2 then
+			if isolated_nodes.length >= 2 then
 
 				-- Create the first fragment of the SCN:
 				fragment.append ((nodes => pac_vectors.empty_list));
@@ -698,11 +695,11 @@ package body et_ratsnest is
 				
 				-- As long as there are any isolated nodes left over, apply P2.
 				-- Each time P2 is applied
-				-- - nodes_isolated becomes shorter by on node.
+				-- - isolated_nodes becomes shorter by on node.
 				-- - the list of nodes of the fragment becomes longer by one node.
-				while not nodes_isolated.is_empty loop
+				while not isolated_nodes.is_empty loop
 					-- Apply P2:
-					neigbor := get_nearest_neighbor_of_fragment (fragment.first);
+					neigbor := get_nearest_neighbor_of_fragment (isolated_nodes, fragment.first);
 					fragment.update_element (fragment.first, extend_fragment'access);
 				end loop;
 			end if;			
@@ -710,10 +707,7 @@ package body et_ratsnest is
 
 
 		procedure connect_isolated_fragments is
-			-- type type_nearest_fragment is record
-			-- 	neigbor	: type_neigbor;
-			-- 	fragment : pac_strands.cursor;
-			-- end record;
+
 
 			-- function get_nearest_fragment (c : in pac_strands.cursor)
 			-- 	return type_nearest_fragment
@@ -746,7 +740,7 @@ package body et_ratsnest is
 
 			-- As long as there are isolated nodes left over,
 			-- complete the isolated fragments:
-			while not nodes_isolated.is_empty loop
+			while not isolated_nodes.is_empty loop
 				complete_fragments;
 			end loop;
 			

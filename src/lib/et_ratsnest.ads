@@ -126,6 +126,57 @@ package et_ratsnest is
 		strands	: in pac_strands.list)
 		return pac_airwires.list;
 
+	
+	-- The neigboring node of a fragment:
+	type type_neigbor is record
+		-- the neigboring node itself:
+		node		: type_vector; 
+
+		-- the distance to the fragment:
+		distance	: type_float_positive := 0.0; 
+
+		-- the referencing node in the fragment:
+		origin		: type_vector;
+	end record;
+
+
+
+	-- Returns the node (among isolated nodes) that is nearest to the given node.
+	-- It does not probe the distance of the given node to itself (which would be zero).
+	-- This function works according to principle 1 (P1) of the PRIM-algorithm.
+	-- It searches in the list of isolated nodes: 
+	function get_nearest_neighbor_of_node (
+		isolated_nodes	: in pac_vectors.list;
+		node_in 		: in type_vector)
+		return type_vector;
+	
+	
+	-- Returns the isolated node that is nearest to the given fragment:
+	-- This function works according to principle 2 (P2) of the PRIM-algorithm.
+	-- The general workflow is as follows:
+	-- 1. For each node of the given fragment search the nearest neigbor.
+	-- 2. Store the neigbor in an array.
+	-- 3. Find in the array the neigbor that is closest to the fragment.
+	-- 4. Return that neigbor to the caller.
+	function get_nearest_neighbor_of_fragment (
+		isolated_nodes	: in pac_vectors.list;
+		fragment_cursor : in pac_strands.cursor)
+		return type_neigbor;
+
+	
+	type type_nearest_fragment is record
+		neigbor	: type_neigbor;
+		fragment : pac_strands.cursor;
+	end record;
+
+	-- Returns the isolated fragment and its node that is
+	-- nearest to the given isolated fragment:
+	function get_nearest_fragment (
+		fragments	: in pac_strands.list;
+		reference	: in pac_strands.cursor)
+		return type_nearest_fragment;
+
+	
 	function make_airwires_2 (
 		nodes	: in pac_vectors.list;
 		strands	: in pac_strands.list)
