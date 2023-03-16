@@ -591,6 +591,8 @@ package body et_ratsnest is
 		-- Initially it is empty:
 		isolated_fragments : pac_strands.list;
 
+
+		---------------------------------------------------------------------------------------------
 		-- Moves the given node from the list of isolated nodes to
 		-- the given list of linked nodes. So the list isolated_nodes gets
 		-- shorter by one node. The given list "linked" gets longer by one node:
@@ -609,6 +611,8 @@ package body et_ratsnest is
 		end move_to_linked_nodes;
 
 
+
+		---------------------------------------------------------------------------------------------
 		-- Appends the given airwire to the result:
 		procedure add_airwire (aw : in type_airwire) is begin
 			-- CS make sure length is greater zero ? Since we assume unique positions
@@ -618,6 +622,7 @@ package body et_ratsnest is
 		end add_airwire;
 		
 
+		---------------------------------------------------------------------------------------------
 		procedure query_given_strand (c : in pac_strands.cursor) is
 			strand : type_strand renames element (c);
 
@@ -635,6 +640,8 @@ package body et_ratsnest is
 		end query_given_strand;
 
 
+
+		---------------------------------------------------------------------------------------------
 		procedure complete_fragments is
 			fc : pac_strands.cursor := isolated_fragments.first;
 
@@ -644,10 +651,45 @@ package body et_ratsnest is
 				processed	: boolean := false;
 			end record;
 
-			type type_claimed_neigbors is array (1 .. isolated_fragments.length) of type_claimed_neigbor;
+			fragment_count : constant count_type := isolated_fragments.length;
+
+			-- Prepare a table that contains for each fragment a nearest claimed neigbor:
+			type type_claimed_neigbors is array (1 .. fragment_count) of type_claimed_neigbor;
 			claimed_neigbors : type_claimed_neigbors;
+
+			-- Prepare a table that contains the distances of all isolated nodes
+			-- to the isolated fragments. Currently the table is empty:
+			type type_distance_tables is array (1 .. fragment_count) of pac_distances_table.map;
+			distance_tables : type_distance_tables;
+
+
+			-----------------------------------------------------------------------------------------			
+			-- Returns true if the given neigbor is closer to the given fragment
+			-- than to any other fragment:
+			function is_closest_to_fragment (
+				f_idx	: in count_type; -- the index of the given fragment
+				neigbor	: in type_neigbor)
+				return boolean
+			is
+				use pac_distances_table;
+				node_cursor : pac_distances_table.cursor;
+				result : boolean := true;
+			begin
+				for i in distance_tables'first .. distance_tables'last loop
+					if i /= f_idx then -- ignore the given fragment
+						node_cursor := distance_tables (i).find (neigbor.node);
+						if element (node_cursor) < neigbor.distance then
+							return false;
+						end if;
+					end if;
+				end loop;
+				return result;
+			end is_closest_to_fragment;
+			
+			
 			idx : count_type := 1;
 
+			-----------------------------------------------------------------------------------------			
 			function is_unique (node : in type_vector) return boolean is
 				occurences : count_type := 0;
 			begin
@@ -666,7 +708,8 @@ package body et_ratsnest is
 				-- CS if occurences = 0 then ?
 			end is_unique;
 
-
+			
+			-----------------------------------------------------------------------------------------
 			function get_idx_of_nearest (node : in type_vector) return count_type is
 				result : count_type := 0;
 				smallest_distance : type_float_positive := type_float_positive'last;
@@ -684,6 +727,7 @@ package body et_ratsnest is
 			end get_idx_of_nearest;
 
 
+			-----------------------------------------------------------------------------------------
 			procedure expand_fragment (i : in count_type) is
 				
 				procedure do_it (fr : in out type_strand) is begin
@@ -696,7 +740,7 @@ package body et_ratsnest is
 				isolated_fragments.update_element (claimed_neigbors (i).fragment, do_it'access);			
 			end expand_fragment;
 
-			
+		---------------------------------------------------------------------------------------------
 		begin -- complete_fragments
 				
 			-- Iterate the isolated fragments. Each fragment
@@ -707,6 +751,9 @@ package body et_ratsnest is
 				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc, isolated_nodes);
 				claimed_neigbors (idx).fragment := fc;
 
+				-- Create a distances table for each fragment:
+				distance_tables (idx) := get_distances_to_isoldated_nodes (fc, isolated_nodes);
+				
 				idx := idx + 1;
 				next (fc);
 			end loop;
@@ -719,7 +766,9 @@ package body et_ratsnest is
 			--    that is closest gets the expanded by that neigbor.
 			for i in claimed_neigbors'first .. claimed_neigbors'length loop
 				if is_unique (claimed_neigbors (i).neigbor.node) then -- case 1
-					expand_fragment (i);
+					if is_closest_to_fragment (i, claimed_neigbors (i).neigbor) then
+						expand_fragment (i);
+					end if;
 				else -- case 2
 					idx := get_idx_of_nearest (claimed_neigbors (i).neigbor.node);
 					if not claimed_neigbors (idx).processed then
@@ -732,6 +781,8 @@ package body et_ratsnest is
 		end complete_fragments;
 
 
+
+		---------------------------------------------------------------------------------------------
 		procedure make_single_fragment is
 
 			procedure make_first_fragment (fragment : in out type_strand) is
@@ -791,6 +842,8 @@ package body et_ratsnest is
 		end make_single_fragment;
 
 
+		
+		---------------------------------------------------------------------------------------------
 		procedure connect_isolated_fragments is
 
 			nearest_fragment : type_nearest_fragment;
@@ -829,6 +882,7 @@ package body et_ratsnest is
 		end connect_isolated_fragments;
 
 		
+	-------------------------------------------------------------------------------------------------
 	begin -- make_airwires
 
 		if not strands.is_empty then -- means: if there are strands given
@@ -845,9 +899,8 @@ package body et_ratsnest is
 			end loop;
 
 			-- The container "isolated_fragments" now contains all fragments.
-			-- But there is no link between the fragments yet.
-			
-			-- CS connect_isolated_fragments;
+			-- But there is no link between the fragments yet:
+			connect_isolated_fragments;
 			
 		else
 			-- no strands given
