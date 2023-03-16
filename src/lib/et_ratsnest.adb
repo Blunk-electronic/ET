@@ -42,6 +42,8 @@
 
 package body et_ratsnest is
 
+	use pac_vectors;
+	
 
 	function get_shortest_airwire (
 		wires : in pac_airwires.list)
@@ -395,6 +397,56 @@ package body et_ratsnest is
 	end get_nearest_neighbor_of_node;
 
 	
+
+	function get_distance_to_fragment (
+		fragment_cursor	: in pac_strands.cursor;
+		node			: in type_vector)
+		return type_float_positive
+	is	
+		fragment : type_strand renames element (fragment_cursor);
+		
+		result : type_float_positive := type_float_positive'last;
+
+		procedure query_node (c : in pac_vectors.cursor) is
+			distance : type_float_positive := get_distance_total (element (c), node);
+		begin
+			if distance < result then
+				result := distance;
+			end if;
+		end query_node;
+		
+	begin
+		fragment.nodes.iterate (query_node'access);		
+		return result;
+	end get_distance_to_fragment;
+
+	
+	function get_distances_to_isoldated_nodes (
+		fragment_cursor	: in pac_strands.cursor;
+		isolated_nodes	: in pac_vectors.list)
+		return pac_distances_table.map
+	is
+		result : pac_distances_table.map;
+
+		procedure query_node (c : in pac_vectors.cursor) is 
+			node : type_vector renames element (c);
+			position_in_table : pac_distances_table.cursor;
+			inserted : boolean := true;
+		begin
+			result.insert (
+				key			=> node,
+				new_item	=> get_distance_to_fragment (fragment_cursor, node),
+				position	=> position_in_table,
+				inserted	=> inserted);
+
+		end query_node;
+		
+	begin
+		isolated_nodes.iterate (query_node'access);
+		return result;
+	end get_distances_to_isoldated_nodes;
+
+
 	
 	function get_nearest_neighbor_of_fragment (
 		fragment_cursor : in pac_strands.cursor;
@@ -795,7 +847,7 @@ package body et_ratsnest is
 			-- The container "isolated_fragments" now contains all fragments.
 			-- But there is no link between the fragments yet.
 			
-			-- connect_isolated_fragments;
+			-- CS connect_isolated_fragments;
 			
 		else
 			-- no strands given

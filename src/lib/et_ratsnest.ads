@@ -41,6 +41,7 @@
 with ada.text_io;					use ada.text_io;
 with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
@@ -150,6 +151,26 @@ package et_ratsnest is
 		node_in 		: in type_vector)
 		return type_vector;
 	
+
+	-- Returns the shortest distance of a node 
+	-- to the given fragment:
+	function get_distance_to_fragment (
+		fragment_cursor	: in pac_strands.cursor;
+		node			: in type_vector)
+		return type_float_positive;
+
+	
+	-- Nodes and their distances to a fragment:
+	package pac_distances_table is new ordered_maps (
+		key_type		=> type_vector,
+		element_type	=> type_float_positive);
+
+	-- Returns the distances of isolated nodes to a fragment:
+	function get_distances_to_isoldated_nodes (
+		fragment_cursor	: in pac_strands.cursor;
+		isolated_nodes	: in pac_vectors.list)
+		return pac_distances_table.map;
+
 	
 	-- Returns the isolated node that is nearest to the given fragment:
 	-- This function works according to principle 2 (P2) of the PRIM-algorithm.
