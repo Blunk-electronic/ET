@@ -77,6 +77,26 @@ package et_ratsnest is
 	use pac_strands;
 	
 	
+	-- Returns the start and end points (nodes) of the lines which are
+	-- connected with each other. Deletes the affected lines
+	-- from the given list.
+	-- If no lines given, then an empty list is returned.
+	function get_connected_nodes (
+		lines	: in out pac_conductor_lines.list)
+		return pac_vectors.list;
+
+
+	-- Returns the nodes of strands formed by the given
+	-- lines, arcs, vias and terminals:
+	function get_strands (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list; -- THT terminals !
+		deepest		: in type_signal_layer)
+		return pac_strands.list;
+
+
 	
 	
 	function to_airwire (
@@ -204,26 +224,6 @@ package et_ratsnest is
 		strands	: in pac_strands.list)
 		return pac_airwires.list;
 
-
-	
-	-- Returns the start and end points (nodes) of the lines which are
-	-- connected with each other. Deletes the affected lines
-	-- from the given list.
-	-- If no lines given, then an empty list is returned.
-	function get_connected_nodes (
-		lines	: in out pac_conductor_lines.list)
-		return pac_vectors.list;
-
-
-	-- Returns the nodes of strands formed by the given
-	-- lines, arcs, vias and terminals:
-	function get_strands (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list; -- THT terminals !
-		deepest		: in type_signal_layer)
-		return pac_strands.list;
 
 
 end et_ratsnest;

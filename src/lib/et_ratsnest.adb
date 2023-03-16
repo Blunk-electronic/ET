@@ -65,6 +65,182 @@ package body et_ratsnest is
 		return result;
 	end get_shortest_airwire;
 
+
+	
+
+	function are_connected (
+		line_1, line_2 : in type_conductor_line)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if line_1.start_point = line_2.start_point
+		or line_1.start_point = line_2.end_point
+		or line_1.end_point   = line_2.start_point
+		or line_1.end_point   = line_2.end_point
+		then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end are_connected;
+
+	
+
+	function is_connected (
+		line	: in type_conductor_line;
+		lines	: in pac_conductor_lines.list)
+		return boolean
+	is
+		result : boolean := false;
+
+		use pac_conductor_lines;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is begin
+			if are_connected (element (c), line) then
+				result := true;
+				-- CS abort iterator
+			end if;
+		end query_line;
+		
+	begin
+		lines.iterate (query_line'access);
+		return result;
+	end is_connected;
+
+	
+		
+	function get_connected_nodes (
+		lines	: in out pac_conductor_lines.list)
+		return pac_vectors.list
+	is
+		use pac_conductor_lines;
+		nodes : pac_vectors.list;
+
+		procedure to_nodes (l : type_conductor_line) is 
+			lf : type_line_fine;
+		begin
+			lf := to_line_fine (l);
+			nodes.append (lf.start_point);
+			nodes.append (lf.end_point);
+		end to_nodes;
+		
+
+		count : constant count_type := lines.length;
+		
+
+		collector : pac_conductor_lines.list;
+
+		
+		procedure search is
+			found : boolean := false;
+			
+			procedure query_line (l : in type_conductor_line) is begin
+				if is_connected (l, collector) then
+					found := true;
+					collector.append (l);
+					to_nodes (l);
+				end if;
+			end query_line;
+			
+			lc : pac_conductor_lines.cursor;
+			
+		begin
+			collector.append (lines.first_element);
+			lines.delete_first;
+			to_nodes (collector.first_element);
+
+			lc := lines.first;
+			while lc /= pac_conductor_lines.no_element loop
+
+				query_element (lc, query_line'access);
+
+				if found then 
+					lines.delete (lc);
+					lc := lines.first;
+					found := false;
+				else
+					next (lc);					
+				end if;
+			end loop;
+		end search;
+
+		
+	begin
+		-- put_line ("get connected nodes from lines " & count_type'image (count));
+		
+		case count is
+			when 0 => null;
+
+			when 1 =>
+				to_nodes (lines.first_element);
+				lines.clear;
+
+			when others =>
+				search;
+		end case;
+
+		remove_redundant_vectors (nodes);
+
+		return nodes;
+	end get_connected_nodes;
+
+	
+		
+	function get_strands (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list;
+		deepest		: in type_signal_layer)
+		return pac_strands.list
+	is
+		result : pac_strands.list;
+
+		line_count : constant count_type := lines.length;
+		arc_count  : constant count_type := arcs.length;
+
+		type type_objects is record
+			lines	: pac_conductor_lines.list;
+			arcs	: pac_conductor_arcs.list;
+		end record;
+
+		type type_layer is array (type_signal_layer'first .. deepest) 
+			of type_objects;
+
+		layers : type_layer;
+			
+		lines_in_layer : pac_conductor_lines.list;
+	begin
+		-- put_line ("get strands...");
+
+		-- put_line (" lines total" & count_type'image (lines.length));
+		
+		-- Separate the given lines and arcs by their signal layer:
+		for ly in layers'first .. deepest loop
+			-- put_line (" layer" & type_signal_layer'image (ly));
+			layers (ly).lines := get_lines_by_layer (lines, ly);
+			-- put_line ("  lines" & count_type'image (layers (ly).lines.length));
+			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
+		end loop;
+
+
+		for ly in layers'first .. deepest loop
+			while not layers (ly).lines.is_empty loop
+				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
+			end loop;
+		end loop;
+
+		-- CS vias, tht terminals, arcs
+		
+		return result;
+	end get_strands;
+
+
+
+	
 	
 	function to_airwire (
 		line : in type_conductor_line)
@@ -124,7 +300,6 @@ package body et_ratsnest is
 		smallest_distance : type_float_positive := type_float_positive'last;
 		node_nearest : type_vector; -- to be returned
 
-		use pac_vectors;
 		
 		procedure query_node (c : in pac_vectors.cursor) is
 			d_tmp : type_float_positive;
@@ -229,8 +404,6 @@ package body et_ratsnest is
 		pointer : type_neigbor_pointer := 1;
 
 
-		use pac_vectors;
-		
 		-- Finds the nearest isolated neigbor of a linked node:
 		procedure query_node_of_fragment (c : in pac_vectors.cursor) is
 			node	: type_vector renames element (c);
@@ -332,7 +505,6 @@ package body et_ratsnest is
 		use pac_airwires;
 		result : pac_airwires.list := pac_airwires.empty_list; -- to be returned
 		
-		use pac_vectors;
 
 		-- This is the list of unconnected nodes. It will become
 		-- shorter and shorter over time until it is empty. As soon as
@@ -667,179 +839,6 @@ package body et_ratsnest is
 		-- Return the collection of airwires:
 		return result;
 	end make_airwires;
-
-	
-
-
-	function are_connected (
-		line_1, line_2 : in type_conductor_line)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if line_1.start_point = line_2.start_point
-		or line_1.start_point = line_2.end_point
-		or line_1.end_point   = line_2.start_point
-		or line_1.end_point   = line_2.end_point
-		then
-			result := true;
-		else
-			result := false;
-		end if;
-		
-		return result;
-	end are_connected;
-
-
-	function is_connected (
-		line	: in type_conductor_line;
-		lines	: in pac_conductor_lines.list)
-		return boolean
-	is
-		result : boolean := false;
-
-		use pac_conductor_lines;
-
-		procedure query_line (c : in pac_conductor_lines.cursor) is begin
-			if are_connected (element (c), line) then
-				result := true;
-				-- CS abort iterator
-			end if;
-		end query_line;
-		
-	begin
-		lines.iterate (query_line'access);
-		return result;
-	end is_connected;
-
-	
-		
-	function get_connected_nodes (
-		lines	: in out pac_conductor_lines.list)
-		return pac_vectors.list
-	is
-		use pac_conductor_lines;
-		use pac_vectors;
-		nodes : pac_vectors.list;
-
-		procedure to_nodes (l : type_conductor_line) is 
-			lf : type_line_fine;
-		begin
-			lf := to_line_fine (l);
-			nodes.append (lf.start_point);
-			nodes.append (lf.end_point);
-		end to_nodes;
-		
-
-		count : constant count_type := lines.length;
-		
-
-		collector : pac_conductor_lines.list;
-
-		
-		procedure search is
-			found : boolean := false;
-			
-			procedure query_line (l : in type_conductor_line) is begin
-				if is_connected (l, collector) then
-					found := true;
-					collector.append (l);
-					to_nodes (l);
-				end if;
-			end query_line;
-			
-			lc : pac_conductor_lines.cursor;
-			
-		begin
-			collector.append (lines.first_element);
-			lines.delete_first;
-			to_nodes (collector.first_element);
-
-			lc := lines.first;
-			while lc /= pac_conductor_lines.no_element loop
-
-				query_element (lc, query_line'access);
-
-				if found then 
-					lines.delete (lc);
-					lc := lines.first;
-					found := false;
-				else
-					next (lc);					
-				end if;
-			end loop;
-		end search;
-
-		
-	begin
-		-- put_line ("get connected nodes from lines " & count_type'image (count));
-		
-		case count is
-			when 0 => null;
-
-			when 1 =>
-				to_nodes (lines.first_element);
-				lines.clear;
-
-			when others =>
-				search;
-		end case;
-
-		remove_redundant_vectors (nodes);
-
-		return nodes;
-	end get_connected_nodes;
-
-	
-		
-	function get_strands (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list;
-		deepest		: in type_signal_layer)
-		return pac_strands.list
-	is
-		result : pac_strands.list;
-
-		line_count : constant count_type := lines.length;
-		arc_count  : constant count_type := arcs.length;
-
-		type type_objects is record
-			lines	: pac_conductor_lines.list;
-			arcs	: pac_conductor_arcs.list;
-		end record;
-
-		type type_layer is array (type_signal_layer'first .. deepest) 
-			of type_objects;
-
-		layers : type_layer;
-			
-		lines_in_layer : pac_conductor_lines.list;
-	begin
-		-- put_line ("get strands...");
-
-		-- put_line (" lines total" & count_type'image (lines.length));
-		
-		-- Separate the given lines and arcs by their signal layer:
-		for ly in layers'first .. deepest loop
-			-- put_line (" layer" & type_signal_layer'image (ly));
-			layers (ly).lines := get_lines_by_layer (lines, ly);
-			-- put_line ("  lines" & count_type'image (layers (ly).lines.length));
-			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
-		end loop;
-
-
-		for ly in layers'first .. deepest loop
-			while not layers (ly).lines.is_empty loop
-				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
-			end loop;
-		end loop;
-
-		-- CS vias, tht terminals, arcs
-		
-		return result;
-	end get_strands;
 	
 
 end et_ratsnest;
