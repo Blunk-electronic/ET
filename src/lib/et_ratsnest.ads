@@ -112,20 +112,6 @@ package et_ratsnest is
 	airwire_line_width : constant type_float_positive := 0.01;
 
 
-	-- Constructs from a list of nodes a list of airwires.
-	-- The airwires are returned as a Shortest-Connection-Network (SCN)
-	-- or a spanning-subgraph. 
-	--  The given list of nodes must contain at least 2 nodes. Otherwise
-	-- no airwire will be returned.
-	--  CS: For the moment we assume that no node sits on top of another node,
-	-- means each node has a unique x/y position.
-	--  The algorithm used here bases on the article:
-	-- "Shortest Connection Networks And Some Generalizations"
-	-- written by R.C.PRIM, date 1957-05-08
-	function make_airwires (
-		nodes	: in pac_vectors.list;
-		strands	: in pac_strands.list)
-		return pac_airwires.list;
 
 	
 	-- The neigboring node of a fragment:
@@ -159,6 +145,7 @@ package et_ratsnest is
 		node			: in type_vector)
 		return type_float_positive;
 
+
 	
 	-- Nodes and their distances to a fragment:
 	package pac_distances_table is new ordered_maps (
@@ -171,6 +158,8 @@ package et_ratsnest is
 		isolated_nodes	: in pac_vectors.list)
 		return pac_distances_table.map;
 
+
+	
 	
 	-- Returns the isolated node that is nearest to the given fragment:
 	-- This function works according to principle 2 (P2) of the PRIM-algorithm.
@@ -184,6 +173,8 @@ package et_ratsnest is
 		isolated_nodes	: in pac_vectors.list)
 		return type_neigbor;
 
+
+	
 	
 	type type_nearest_fragment is record
 		neigbor		: type_neigbor;
@@ -197,8 +188,18 @@ package et_ratsnest is
 		reference	: in pac_strands.cursor) -- the candidate fragment
 		return type_nearest_fragment;
 
-	
-	function make_airwires_2 (
+
+	-- Constructs from a list of isolated nodes and isolated fragments
+	-- a list of airwires.
+	-- The airwires are returned as a Shortest-Connection-Network (SCN)
+	-- or a spanning-subgraph. 
+	--  CS: For the moment we assume that no isolated node sits on top 
+	-- of another node, means each node has a unique x/y position.
+	--  The algorithm used here bases on the article:
+	-- "Shortest Connection Networks And Some Generalizations"
+	-- written by R.C.PRIM, date 1957-05-08 and has been extended so
+	-- that already present isolated fragments are taken into account:
+	function make_airwires (
 		nodes	: in pac_vectors.list;
 		strands	: in pac_strands.list)
 		return pac_airwires.list;
@@ -225,30 +226,6 @@ package et_ratsnest is
 		return pac_strands.list;
 
 
-	-- Returns true if the given airwire connects
-	-- two nodes which are inside of any strand:
-	function airwire_in_strand (
-		wire	: in type_airwire;
-		strands	: in pac_strands.list)
-		return boolean;
-
-
-	-- Returns true if the given airwire is connected with
-	-- only one node of the given strand:
-	function airwire_enters_strand (
-		wire			: in type_airwire;
-		strand_cursor	: in pac_strands.cursor)
-		return boolean;
-	
-		
-	
-	-- Removes airwires which are no longer required due to
-	-- already routed stuff (given in argument "strands");
-	procedure post_process_airwires (
-		airwires	: in out pac_airwires.list;
-		strands		: in pac_strands.list);
-
-	
 end et_ratsnest;
 
 -- Soli Deo Gloria

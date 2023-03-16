@@ -142,12 +142,6 @@ package body et_board_ops.ratsnest is
 					
 				-- COMPUTE THE RATSNEST / AIRWIRES
 				
-				-- Make airwires from the list of nodes:
-			-- airwires := make_airwires (nodes);
-
-
-				-- POST PROCESS AIRWIRES
-				
 				-- Remove excessive airwires due to already routed stuff.
 				-- get x/y positions of all THT terminals:
 				tht_positions := get_terminal_positions (
@@ -164,9 +158,8 @@ package body et_board_ops.ratsnest is
 					terminals	=> tht_positions,
 					deepest		=> deepest_conductor_layer (module_cursor));
 				
-				-- post_process_airwires (airwires, strands);
-
-				airwires := make_airwires_2 (nodes, strands);
+				-- Make airwires from the list of nodes:
+				airwires := make_airwires (nodes, strands);
 				
 				net.route.airwires.lines := airwires;				
 			end query_net;
