@@ -115,7 +115,7 @@ package body et_board_ops.ratsnest is
 				airwires : pac_airwires.list;
 				
 				tht_positions : pac_vectors.list;
-				strands : et_ratsnest.pac_strands.list;
+				strands : et_ratsnest.pac_isolated_fragments.list;
 				
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);

@@ -195,9 +195,9 @@ package body et_ratsnest is
 		vias		: in pac_vias.list;
 		terminals	: in pac_vectors.list;
 		deepest		: in type_signal_layer)
-		return pac_strands.list
+		return pac_isolated_fragments.list
 	is
-		result : pac_strands.list;
+		result : pac_isolated_fragments.list;
 
 		line_count : constant count_type := lines.length;
 		arc_count  : constant count_type := arcs.length;
@@ -330,11 +330,11 @@ package body et_ratsnest is
 	
 
 	function get_distance_to_fragment (
-		fragment_cursor	: in pac_strands.cursor;
+		fragment_cursor	: in pac_isolated_fragments.cursor;
 		node			: in type_vector)
 		return type_float_positive
 	is	
-		fragment : type_strand renames element (fragment_cursor);
+		fragment : type_fragment renames element (fragment_cursor);
 		
 		result : type_float_positive := type_float_positive'last;
 
@@ -353,7 +353,7 @@ package body et_ratsnest is
 
 	
 	function get_distances_to_isoldated_nodes (
-		fragment_cursor	: in pac_strands.cursor;
+		fragment_cursor	: in pac_isolated_fragments.cursor;
 		isolated_nodes	: in pac_vectors.list)
 		return pac_distances_table.map
 	is
@@ -380,11 +380,11 @@ package body et_ratsnest is
 
 	
 	function get_nearest_neighbor_of_fragment (
-		fragment_cursor : in pac_strands.cursor;
+		fragment_cursor : in pac_isolated_fragments.cursor;
 		isolated_nodes	: in pac_vectors.list)
 		return type_neigbor
 	is
-		fragment : type_strand renames element (fragment_cursor);
+		fragment : type_fragment renames element (fragment_cursor);
 
 		result : type_neigbor; -- to be returned
 
@@ -452,8 +452,8 @@ package body et_ratsnest is
 
 	
 	function get_nearest_fragment (
-		fragments	: in pac_strands.list;
-		reference	: in pac_strands.cursor)
+		fragments	: in pac_isolated_fragments.list;
+		reference	: in pac_isolated_fragments.cursor)
 		return type_nearest_fragment
 	is
 		result : type_nearest_fragment;
@@ -463,8 +463,8 @@ package body et_ratsnest is
 		
 		ct : count_type := 0;
 		
-		procedure query_fragment (c : in pac_strands.cursor) is
-			fragment : type_strand renames element (c); -- the candidate fragment
+		procedure query_fragment (c : in pac_isolated_fragments.cursor) is
+			fragment : type_fragment renames element (c); -- the candidate fragment
 			neigbor : type_neigbor;
 		begin
 			if fragment /= element (reference) then
@@ -499,7 +499,7 @@ package body et_ratsnest is
 
 	function make_airwires (
 		nodes	: in pac_vectors.list;
-		strands	: in pac_strands.list)
+		strands	: in pac_isolated_fragments.list)
 		return pac_airwires.list
 	is		
 		use pac_airwires;
@@ -517,7 +517,7 @@ package body et_ratsnest is
 		-- will be added to the affected fragment in nodes_linked. So the particual list of nodes grows
 		-- over time until all given nodes have been added to the graph.
 		-- Initially it is empty:
-		isolated_fragments : pac_strands.list;
+		isolated_fragments : pac_isolated_fragments.list;
 
 
 		---------------------------------------------------------------------------------------------
@@ -551,8 +551,8 @@ package body et_ratsnest is
 		
 
 		---------------------------------------------------------------------------------------------
-		procedure query_given_strand (c : in pac_strands.cursor) is
-			strand : type_strand renames element (c);
+		procedure query_given_strand (c : in pac_isolated_fragments.cursor) is
+			strand : type_fragment renames element (c);
 
 			linked : pac_vectors.list;
 			
@@ -571,11 +571,11 @@ package body et_ratsnest is
 
 		---------------------------------------------------------------------------------------------
 		procedure complete_fragments is
-			fc : pac_strands.cursor := isolated_fragments.first;
+			fc : pac_isolated_fragments.cursor := isolated_fragments.first;
 
 			type type_claimed_neigbor is record
 				neigbor		: type_neigbor;
-				fragment	: pac_strands.cursor;
+				fragment	: pac_isolated_fragments.cursor;
 				processed	: boolean := false;
 			end record;
 
@@ -658,7 +658,7 @@ package body et_ratsnest is
 			-----------------------------------------------------------------------------------------
 			procedure expand_fragment (i : in count_type) is
 				
-				procedure do_it (fr : in out type_strand) is begin
+				procedure do_it (fr : in out type_fragment) is begin
 					move_to_linked_nodes (fr.nodes, claimed_neigbors (i).neigbor.node);
 					add_airwire (make_line (
 						claimed_neigbors (i).neigbor.origin, claimed_neigbors (i).neigbor.node));
@@ -674,7 +674,7 @@ package body et_ratsnest is
 			-- Iterate the isolated fragments. Each fragment
 			-- claimes a nearest isolated neigbor. This neigbor
 			-- is stored in an array.
-			while fc /= pac_strands.no_element loop
+			while fc /= pac_isolated_fragments.no_element loop
 				
 				claimed_neigbors (idx).neigbor := get_nearest_neighbor_of_fragment (fc, isolated_nodes);
 				claimed_neigbors (idx).fragment := fc;
@@ -713,7 +713,7 @@ package body et_ratsnest is
 		---------------------------------------------------------------------------------------------
 		procedure make_single_fragment is
 
-			procedure make_first_fragment (fragment : in out type_strand) is
+			procedure make_first_fragment (fragment : in out type_fragment) is
 				start : type_vector;
 				node : type_vector;
 			begin
@@ -735,11 +735,11 @@ package body et_ratsnest is
 
 			-- We have to handle just a single fragment here.
 			-- This container contains only one fragment:
-			fragment : pac_strands.list;
+			fragment : pac_isolated_fragments.list;
 			
 			neigbor : type_neigbor;
 			
-			procedure extend_fragment (fragment : in out type_strand) is begin
+			procedure extend_fragment (fragment : in out type_fragment) is begin
 				move_to_linked_nodes (fragment.nodes, neigbor.node);
 
 				-- create the airwire
@@ -775,9 +775,9 @@ package body et_ratsnest is
 		procedure connect_isolated_fragments is
 
 			nearest_fragment : type_nearest_fragment;
-			scratch : type_strand;
+			scratch : type_fragment;
 
-			procedure query_fragment (fragment : in out type_strand) is
+			procedure query_fragment (fragment : in out type_fragment) is
 			begin
 				-- put_line ("nodes A" & count_type'image (fragment.nodes.length));
 				-- put_line ("scratch" & count_type'image (scratch.nodes.length));
