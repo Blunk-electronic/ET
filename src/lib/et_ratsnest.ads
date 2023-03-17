@@ -212,18 +212,18 @@ package et_ratsnest is
 
 
 	-- Constructs from a list of isolated nodes and isolated fragments
-	-- a list of airwires.
-	-- The airwires are returned as a Shortest-Connection-Network (SCN)
-	-- or a spanning-subgraph. 
-	--  CS: For the moment we assume that no isolated node sits on top 
-	-- of another node, means each node has a unique x/y position.
-	--  The algorithm used here bases on the article:
-	-- "Shortest Connection Networks And Some Generalizations"
-	-- written by R.C.PRIM, date 1957-05-08 and has been extended so
-	-- that already present isolated fragments are taken into account:
+	-- a list of airwires. 
+	-- IMPORTANT: Initially ALL the given nodes are regarded as "isolated" from
+	-- each other, regardless whether they are already connected with each other or not.
+	-- Argument "strands" contains nodes of already connected nodes.
+	--  The airwires are returned as a Shortest-Connection-Network (SCN)
+	-- or a spanning-subgraph. The algorithm used here bases partly on the concept 
+	-- written article: "Shortest Connection Networks And Some Generalizations" 
+	-- by R.C.PRIM, date 1957-05-08. The algorithm has been extended here so that 
+	-- already present isolated fragments are taken into account:
 	function make_airwires (
-		nodes	: in pac_vectors.list;
-		strands	: in pac_isolated_fragments.list)
+		nodes	: in pac_vectors.list;	-- ALL nodes (routed and unrouted stuff)
+		strands	: in pac_isolated_fragments.list) -- already routed stuff
 		return pac_airwires.list;
 
 

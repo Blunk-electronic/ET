@@ -142,7 +142,7 @@ package body et_board_ops.ratsnest is
 					
 				-- COMPUTE THE RATSNEST / AIRWIRES
 				
-				-- Remove excessive airwires due to already routed stuff.
+				-- As preparation to compute strands (already routed stuff)
 				-- get x/y positions of all THT terminals:
 				tht_positions := get_terminal_positions (
 					module_cursor	=> module_cursor, 
@@ -150,15 +150,20 @@ package body et_board_ops.ratsnest is
 					observe_techno	=> true,
 					technology		=> THT);
 			
-				-- Compute the strands formed by lines, arcs, vias and terminals:
+				-- Compute the strands formed by lines, arcs, vias and THT-terminals:
 				strands := get_strands (
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,
 					terminals	=> tht_positions,
 					deepest		=> deepest_conductor_layer (module_cursor));
+
 				
 				-- Make airwires from the list of nodes:
+				-- The container "nodes" contains ALL nodes of both
+				-- unrouted and routed stuff.
+				-- "strands" contains routed stuff, means object which are
+				-- directly connected (not via ariwires):
 				airwires := make_airwires (nodes, strands);
 				
 				net.route.airwires.lines := airwires;				

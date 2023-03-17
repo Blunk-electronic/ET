@@ -530,12 +530,20 @@ package body et_ratsnest is
 		is
 			nc : pac_vectors.cursor;
 		begin
-			-- remove from isolated nodes:
+			-- Find the given node in isolated_nodes:
 			nc := isolated_nodes.find (node);
-			isolated_nodes.delete (nc);
+
+			-- If the node has already been removed from
+			-- isolated nodes, then there is nothing to do.
+			-- This results from isolated nodes sitting on top of each other.
+			if nc /= pac_vectors.no_element then
+
+				-- Remove the node from list isolated_nodes:
+				isolated_nodes.delete (nc);
   
-			-- add to linked nodes:
-			linked.append (node);
+				-- Add the node to linked nodes:
+				linked.append (node);
+			end if;
 		end move_to_linked_nodes;
 
 
