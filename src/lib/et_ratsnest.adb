@@ -38,7 +38,7 @@
 --		- 
 --		- 
 
-
+with ada.containers.multiway_trees;
 
 package body et_ratsnest is
 
@@ -189,7 +189,7 @@ package body et_ratsnest is
 
 	
 		
-	function get_strands (
+	function get_fragments (
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
 		vias		: in pac_vias.list;
@@ -202,41 +202,53 @@ package body et_ratsnest is
 		line_count : constant count_type := lines.length;
 		arc_count  : constant count_type := arcs.length;
 
-		type type_objects is record
+		type type_tracks_in_layer is record
 			lines	: pac_conductor_lines.list;
 			arcs	: pac_conductor_arcs.list;
 		end record;
 
-		type type_layer is array (type_signal_layer'first .. deepest) 
-			of type_objects;
+		type type_tracks_in_layers is array (type_signal_layer'first .. deepest) 
+			of type_tracks_in_layer;
 
-		layers : type_layer;
+		tracks_in_layers : type_tracks_in_layers;
 			
-		lines_in_layer : pac_conductor_lines.list;
+
+
+		type type_fragments_per_layer is array (type_signal_layer'first .. deepest)
+			of pac_isolated_fragments.list;
+
+		fragments_per_layer : type_fragments_per_layer;
+
+		-- package pac_fragments is new multiway_trees (type_fragment);
+		-- strand : pac_fragments.tree;
+		
 	begin
 		-- put_line ("get strands...");
 
 		-- put_line (" lines total" & count_type'image (lines.length));
 		
 		-- Separate the given lines and arcs by their signal layer:
-		for ly in layers'first .. deepest loop
+		for ly in tracks_in_layers'first .. deepest loop
 			-- put_line (" layer" & type_signal_layer'image (ly));
-			layers (ly).lines := get_lines_by_layer (lines, ly);
+			tracks_in_layers (ly).lines := get_lines_by_layer (lines, ly);
 			-- put_line ("  lines" & count_type'image (layers (ly).lines.length));
-			layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
+			tracks_in_layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
 		end loop;
 
 
-		for ly in layers'first .. deepest loop
-			while not layers (ly).lines.is_empty loop
-				result.append ((nodes => get_connected_nodes (layers (ly).lines)));
+		for ly in tracks_in_layers'first .. deepest loop
+			while not tracks_in_layers (ly).lines.is_empty loop
+				result.append ((nodes => get_connected_nodes (tracks_in_layers (ly).lines)));
+
+				-- fragments_per_layer (ly).append ((nodes => get_connected_nodes (tracks_in_layers (ly).lines)));
 			end loop;
 		end loop;
 
 		-- CS vias, tht terminals, arcs
 		
+		
 		return result;
-	end get_strands;
+	end get_fragments;
 
 
 

@@ -88,9 +88,10 @@ package et_ratsnest is
 		return pac_vectors.list;
 
 
-	-- Returns the nodes of strands formed by the given
-	-- lines, arcs, vias and terminals:
-	function get_strands (
+	-- Returns the fragments formed by the given
+	-- lines, arcs, vias and terminals of a net.
+	-- NOTE: All conductor objects here belong to a single net.
+	function get_fragments (
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
 		vias		: in pac_vias.list;

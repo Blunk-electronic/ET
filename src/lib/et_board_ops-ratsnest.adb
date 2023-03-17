@@ -115,7 +115,7 @@ package body et_board_ops.ratsnest is
 				airwires : pac_airwires.list;
 				
 				tht_positions : pac_vectors.list;
-				strands : et_ratsnest.pac_isolated_fragments.list;
+				fragments : et_ratsnest.pac_isolated_fragments.list;
 				
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);
@@ -142,7 +142,7 @@ package body et_board_ops.ratsnest is
 					
 				-- COMPUTE THE RATSNEST / AIRWIRES
 				
-				-- As preparation to compute strands (already routed stuff)
+				-- As preparation to compute fragments (already routed stuff)
 				-- get x/y positions of all THT terminals:
 				tht_positions := get_terminal_positions (
 					module_cursor	=> module_cursor, 
@@ -150,8 +150,8 @@ package body et_board_ops.ratsnest is
 					observe_techno	=> true,
 					technology		=> THT);
 			
-				-- Compute the strands formed by lines, arcs, vias and THT-terminals:
-				strands := get_strands (
+				-- Compute the fragments formed by lines, arcs, vias and THT-terminals:
+				fragments := get_fragments (
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,
@@ -162,9 +162,9 @@ package body et_board_ops.ratsnest is
 				-- Make airwires from the list of nodes:
 				-- The container "nodes" contains ALL nodes of both
 				-- unrouted and routed stuff.
-				-- "strands" contains routed stuff, means object which are
-				-- directly connected (not via ariwires):
-				airwires := make_airwires (nodes, strands);
+				-- "fragments" contains nodes which are already
+				-- directly connected via tracks, vias and tht-terminals (not via ariwires):
+				airwires := make_airwires (nodes, fragments);
 				
 				net.route.airwires.lines := airwires;				
 			end query_net;
