@@ -99,6 +99,13 @@ package et_ratsnest is
 		deepest		: in type_signal_layer)
 		return pac_isolated_fragments.list;
 
+	function get_fragments_2 (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list; -- THT terminals !
+		deepest		: in type_signal_layer)
+		return pac_isolated_fragments.list;
 
 	
 	

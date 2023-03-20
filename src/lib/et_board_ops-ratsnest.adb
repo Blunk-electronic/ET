@@ -151,7 +151,7 @@ package body et_board_ops.ratsnest is
 					technology		=> THT);
 			
 				-- Compute the fragments formed by lines, arcs, vias and THT-terminals:
-				fragments := get_fragments (
+				fragments := get_fragments_2 (
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,

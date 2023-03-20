@@ -251,6 +251,124 @@ package body et_ratsnest is
 	end get_fragments;
 
 
+	function get_fragments_2 (
+		lines		: in pac_conductor_lines.list;
+		arcs		: in pac_conductor_arcs.list;
+		vias		: in pac_vias.list;
+		terminals	: in pac_vectors.list;
+		deepest		: in type_signal_layer)
+		return pac_isolated_fragments.list
+	is
+		result : pac_isolated_fragments.list;
+
+		use pac_conductor_lines;
+		
+		lines_tmp		: pac_conductor_lines.list := lines;
+		-- CS arcs
+		vias_tmp		: pac_vias.list := vias;
+		terminals_tmp	: pac_vectors.list := terminals;
+
+		line_cursor : pac_conductor_lines.cursor;
+		
+		type type_strand is record
+			lines		: pac_conductor_lines.list;
+			-- CS arcs
+			vias		: pac_vias.list;
+			terminals	: pac_vectors.list;
+		end record;
+
+		strand : type_strand;
+
+
+							 
+		
+		function is_connected_with_strand (
+			line_in	: in type_conductor_line)
+			return boolean
+		is
+			result : boolean := false;
+
+			use pac_conductor_lines;
+
+			procedure query_line (c : in pac_conductor_lines.cursor) is 
+				candidate : type_conductor_line renames element (c);
+			begin
+				-- if line_in.layer = candidate.layer then
+					if are_connected (line_in, candidate) then
+						result := true;
+						-- CS abort iterator
+					end if;
+				-- end if;
+			end query_line;
+			
+		begin
+			strand.lines.iterate (query_line'access);
+			return result;
+		end is_connected_with_strand;
+
+		
+
+		function get_nodes (strand : in type_strand)
+			return pac_vectors.list
+		is 
+			result : pac_vectors.list;
+			
+			procedure query_line (c : in pac_conductor_lines.cursor) is begin
+				result.append (to_vector (element (c).start_point));
+				result.append (to_vector (element (c).end_point));
+			end query_line;
+				
+		begin
+			strand.lines.iterate (query_line'access);
+			remove_redundant_vectors (result);
+			return result;
+		end get_nodes;
+		
+
+		
+	begin
+		-- put_line ("get fragments...");
+
+		while not lines_tmp.is_empty loop
+			strand.lines.append (lines_tmp.first_element);
+			lines_tmp.delete_first;
+
+			if lines_tmp.is_empty then
+				result.append ((nodes => get_nodes (strand)));
+			else
+
+				-- Iterate the remaining conductor lines:
+				line_cursor := lines_tmp.first;
+				while line_cursor /= pac_conductor_lines.no_element loop
+					-- If the candidate line is connected with the strand,
+					-- then merge the candidate line into the strand and
+					-- remove it from the remaining conductor lines (in lines_tmp).
+					-- Then abort the iteration:
+					if is_connected_with_strand (element (line_cursor)) then
+						strand.lines.append (element (line_cursor));
+						lines_tmp.delete (line_cursor);
+						if lines_tmp.is_empty then -- nothing left
+							exit;
+						else
+							line_cursor := lines_tmp.first;
+						end if;
+
+					-- If the candidate line is not connected with the strand,
+					-- then advance to the next line (in lines_tmp):
+					else						
+						next (line_cursor);						
+					end if;						
+				end loop;
+
+				result.append ((nodes => get_nodes (strand)));
+				strand.lines.clear;
+
+			end if;
+		end loop;
+		
+		
+		return result;
+	end get_fragments_2;
 
 	
 	
