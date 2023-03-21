@@ -146,6 +146,11 @@ package et_canvas_board_tracks is
 
 
 	use pac_airwires;
+
+	
+	-- Resets select_airwire and clears proposed_airwires:
+	procedure reset_airwires;
+	
 	
 	-- Returns true if the given airwire matches the airwire indicated
 	-- by selected_airwire:

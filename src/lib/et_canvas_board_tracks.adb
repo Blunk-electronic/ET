@@ -485,6 +485,11 @@ package body et_canvas_board_tracks is
 	end get_nearest;
 
 
+	procedure reset_airwires is begin
+		selected_airwire := pac_proposed_airwires.no_element;
+		proposed_airwires.clear;
+	end reset_airwires;
+	
 
 	function airwire_is_selected (
 		airwire_cursor	: in pac_airwires.cursor;

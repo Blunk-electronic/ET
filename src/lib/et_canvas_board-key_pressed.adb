@@ -458,7 +458,7 @@ begin -- key_pressed
 		when GDK_Escape =>
 			expect_entry := expect_entry_default;
 			
-			-- Verb and noun emain as they are
+			-- Verb and noun remain as they are
 			-- so that the mode is unchanged.
 			
 			reset_request_clarification;
@@ -468,6 +468,7 @@ begin -- key_pressed
 			reset_preliminary_text; -- after placing a text
 			reset_preliminary_via; -- after placing a via
 			et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
+			et_canvas_board_tracks.reset_airwires;
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
 			
