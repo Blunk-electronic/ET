@@ -142,22 +142,14 @@ package body et_board_ops.ratsnest is
 					
 				-- COMPUTE THE RATSNEST / AIRWIRES
 				
-				-- As preparation to compute fragments (already routed stuff)
-				-- get x/y positions of all THT terminals:
-				tht_positions := get_terminal_positions (
-					module_cursor	=> module_cursor, 
-					net_cursor		=> net_cursor,
-					observe_techno	=> true,
-					technology		=> THT);
-			
-				-- Compute the isolated fragments formed by lines, 
-				-- arcs, vias and THT-terminals:
+				-- Compute the isolated fragments formed by lines and arcs.
+				-- NOTE: Vias and THT-terminals are not required here, because
+				-- solely the start/end points of lines and arcs matter to obtain
+				-- the nodes. The physical connection by vias or THT-terminals
+				-- is irrelevant here:
 				fragments := get_fragments (
 					lines		=> net.route.lines,
-					arcs		=> net.route.arcs,
-					vias		=> net.route.vias,
-					terminals	=> tht_positions,
-					deepest		=> deepest_conductor_layer (module_cursor));
+					arcs		=> net.route.arcs);
 
 				
 				-- Make airwires from the list of nodes:

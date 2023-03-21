@@ -80,23 +80,15 @@ package et_ratsnest is
 	
 	
 
-	-- Returns the fragments formed by the given conductor
+	-- Returns the isolated fragments formed by the given conductor
 	-- lines, arcs, vias and terminals of a net.
 	-- NOTE: All conductor objects here belong to a single net.
 	function get_fragments (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list; -- THT terminals !
-		deepest		: in type_signal_layer)
+		lines	: in pac_conductor_lines.list;
+		arcs	: in pac_conductor_arcs.list)
 		return pac_isolated_fragments.list;
 
 	
-	
-	function to_airwire (
-		line : in type_conductor_line)
-		return type_airwire;
-
 
 	
 	-- Returns true if the container airwires contains the given
