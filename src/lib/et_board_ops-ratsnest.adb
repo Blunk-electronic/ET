@@ -114,7 +114,6 @@ package body et_board_ops.ratsnest is
 				use pac_airwires;
 				airwires : pac_airwires.list;
 				
-				tht_positions : pac_vectors.list;
 				fragments : et_ratsnest.pac_isolated_fragments.list;
 				
 			begin -- query_net
