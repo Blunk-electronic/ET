@@ -115,7 +115,7 @@ package et_ratsnest is
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
 	-- GUI relevant only:
-	airwire_line_width : constant type_float_positive := 0.01;
+	airwire_line_width : constant type_float_positive := 0.03;
 
 
 
