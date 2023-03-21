@@ -38,7 +38,7 @@
 --		- 
 --		- 
 
-with ada.containers.multiway_trees;
+-- with ada.containers.multiway_trees;
 
 package body et_ratsnest is
 
@@ -67,191 +67,10 @@ package body et_ratsnest is
 
 
 	
-
-	function are_connected (
-		line_1, line_2 : in type_conductor_line)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if line_1.start_point = line_2.start_point
-		or line_1.start_point = line_2.end_point
-		or line_1.end_point   = line_2.start_point
-		or line_1.end_point   = line_2.end_point
-		then
-			result := true;
-		else
-			result := false;
-		end if;
-		
-		return result;
-	end are_connected;
-
 	
 
-	function is_connected (
-		line	: in type_conductor_line;
-		lines	: in pac_conductor_lines.list)
-		return boolean
-	is
-		result : boolean := false;
 
-		use pac_conductor_lines;
-
-		procedure query_line (c : in pac_conductor_lines.cursor) is begin
-			if are_connected (element (c), line) then
-				result := true;
-				-- CS abort iterator
-			end if;
-		end query_line;
-		
-	begin
-		lines.iterate (query_line'access);
-		return result;
-	end is_connected;
-
-	
-		
-	function get_connected_nodes (
-		lines	: in out pac_conductor_lines.list)
-		return pac_vectors.list
-	is
-		use pac_conductor_lines;
-		nodes : pac_vectors.list;
-
-		procedure to_nodes (l : type_conductor_line) is 
-			lf : type_line_fine;
-		begin
-			lf := to_line_fine (l);
-			nodes.append (lf.start_point);
-			nodes.append (lf.end_point);
-		end to_nodes;
-		
-
-		count : constant count_type := lines.length;
-		
-
-		collector : pac_conductor_lines.list;
-
-		
-		procedure search is
-			found : boolean := false;
-			
-			procedure query_line (l : in type_conductor_line) is begin
-				if is_connected (l, collector) then
-					found := true;
-					collector.append (l);
-					to_nodes (l);
-				end if;
-			end query_line;
-			
-			lc : pac_conductor_lines.cursor;
-			
-		begin
-			collector.append (lines.first_element);
-			lines.delete_first;
-			to_nodes (collector.first_element);
-
-			lc := lines.first;
-			while lc /= pac_conductor_lines.no_element loop
-
-				query_element (lc, query_line'access);
-
-				if found then 
-					lines.delete (lc);
-					lc := lines.first;
-					found := false;
-				else
-					next (lc);					
-				end if;
-			end loop;
-		end search;
-
-		
-	begin
-		-- put_line ("get connected nodes from lines " & count_type'image (count));
-		
-		case count is
-			when 0 => null;
-
-			when 1 =>
-				to_nodes (lines.first_element);
-				lines.clear;
-
-			when others =>
-				search;
-		end case;
-
-		remove_redundant_vectors (nodes);
-
-		return nodes;
-	end get_connected_nodes;
-
-	
-		
 	function get_fragments (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list;
-		deepest		: in type_signal_layer)
-		return pac_isolated_fragments.list
-	is
-		result : pac_isolated_fragments.list;
-
-		line_count : constant count_type := lines.length;
-		arc_count  : constant count_type := arcs.length;
-
-		type type_tracks_in_layer is record
-			lines	: pac_conductor_lines.list;
-			arcs	: pac_conductor_arcs.list;
-		end record;
-
-		type type_tracks_in_layers is array (type_signal_layer'first .. deepest) 
-			of type_tracks_in_layer;
-
-		tracks_in_layers : type_tracks_in_layers;
-			
-
-
-		type type_fragments_per_layer is array (type_signal_layer'first .. deepest)
-			of pac_isolated_fragments.list;
-
-		fragments_per_layer : type_fragments_per_layer;
-
-		-- package pac_fragments is new multiway_trees (type_fragment);
-		-- strand : pac_fragments.tree;
-		
-	begin
-		-- put_line ("get strands...");
-
-		-- put_line (" lines total" & count_type'image (lines.length));
-		
-		-- Separate the given lines and arcs by their signal layer:
-		for ly in tracks_in_layers'first .. deepest loop
-			-- put_line (" layer" & type_signal_layer'image (ly));
-			tracks_in_layers (ly).lines := get_lines_by_layer (lines, ly);
-			-- put_line ("  lines" & count_type'image (layers (ly).lines.length));
-			tracks_in_layers (ly).arcs  := get_arcs_by_layer  (arcs, ly);
-		end loop;
-
-
-		for ly in tracks_in_layers'first .. deepest loop
-			while not tracks_in_layers (ly).lines.is_empty loop
-				result.append ((nodes => get_connected_nodes (tracks_in_layers (ly).lines)));
-
-				-- fragments_per_layer (ly).append ((nodes => get_connected_nodes (tracks_in_layers (ly).lines)));
-			end loop;
-		end loop;
-
-		-- CS vias, tht terminals, arcs
-		
-		
-		return result;
-	end get_fragments;
-
-
-	function get_fragments_2 (
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
 		vias		: in pac_vias.list;
@@ -294,7 +113,8 @@ package body et_ratsnest is
 				candidate : type_conductor_line renames element (c);
 			begin
 				-- if line_in.layer = candidate.layer then
-					if are_connected (line_in, candidate) then
+				if are_connected (
+					line_1	=> line_in, line_2 => candidate, observe_layer => false) then
 						result := true;
 						-- CS abort iterator
 					end if;
@@ -308,7 +128,7 @@ package body et_ratsnest is
 
 		
 
-		function get_nodes (strand : in type_strand)
+		function get_nodes_of_strand (strand : in type_strand)
 			return pac_vectors.list
 		is 
 			result : pac_vectors.list;
@@ -322,7 +142,7 @@ package body et_ratsnest is
 			strand.lines.iterate (query_line'access);
 			remove_redundant_vectors (result);
 			return result;
-		end get_nodes;
+		end get_nodes_of_strand;
 		
 
 		
@@ -334,7 +154,7 @@ package body et_ratsnest is
 			lines_tmp.delete_first;
 
 			if lines_tmp.is_empty then
-				result.append ((nodes => get_nodes (strand)));
+				result.append ((nodes => get_nodes_of_strand (strand)));
 			else
 
 				-- Iterate the remaining conductor lines:
@@ -360,7 +180,7 @@ package body et_ratsnest is
 					end if;						
 				end loop;
 
-				result.append ((nodes => get_nodes (strand)));
+				result.append ((nodes => get_nodes_of_strand (strand)));
 				strand.lines.clear;
 
 			end if;
@@ -368,7 +188,7 @@ package body et_ratsnest is
 		
 		
 		return result;
-	end get_fragments_2;
+	end get_fragments;
 
 	
 	

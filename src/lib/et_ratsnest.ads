@@ -79,27 +79,11 @@ package et_ratsnest is
 	use pac_isolated_fragments;
 	
 	
-	-- Returns the start and end points (nodes) of the lines which are
-	-- connected with each other. Deletes the affected lines
-	-- from the given list.
-	-- If no lines given, then an empty list is returned.
-	function get_connected_nodes (
-		lines	: in out pac_conductor_lines.list)
-		return pac_vectors.list;
 
-
-	-- Returns the fragments formed by the given
+	-- Returns the fragments formed by the given conductor
 	-- lines, arcs, vias and terminals of a net.
 	-- NOTE: All conductor objects here belong to a single net.
 	function get_fragments (
-		lines		: in pac_conductor_lines.list;
-		arcs		: in pac_conductor_arcs.list;
-		vias		: in pac_vias.list;
-		terminals	: in pac_vectors.list; -- THT terminals !
-		deepest		: in type_signal_layer)
-		return pac_isolated_fragments.list;
-
-	function get_fragments_2 (
 		lines		: in pac_conductor_lines.list;
 		arcs		: in pac_conductor_arcs.list;
 		vias		: in pac_vias.list;

@@ -150,8 +150,9 @@ package body et_board_ops.ratsnest is
 					observe_techno	=> true,
 					technology		=> THT);
 			
-				-- Compute the fragments formed by lines, arcs, vias and THT-terminals:
-				fragments := get_fragments_2 (
+				-- Compute the isolated fragments formed by lines, 
+				-- arcs, vias and THT-terminals:
+				fragments := get_fragments (
 					lines		=> net.route.lines,
 					arcs		=> net.route.arcs,
 					vias		=> net.route.vias,

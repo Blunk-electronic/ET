@@ -58,9 +58,28 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+	
+	-- Returns true if the given line segments are connected.
+	-- Criteria for "Connected" are: 
+	-- 1. Their start/end points sit on top of each 
+	--    other so that a chain is formed.
+	-- 2. One line starts or ends between start and end
+	--    of the other line.
+	-- By default the signal layer is checked. If the given lines
+	-- are in different layers, then they are regarded as not 
+	-- connected IN ANY CASE.
+	-- If "observe_layer" is false, then the layer is ignored. This
+	-- option is useful when computing the ratsnest (or airwires):
+	function are_connected (
+		line_1, line_2	: in type_conductor_line;
+		observe_layer	: in boolean := true)					   
+		return boolean;
+
+	
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 
+	
 	
 	-- Extracts those lines which are in the given layer:
 	function get_lines_by_layer (

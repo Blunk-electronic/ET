@@ -41,7 +41,46 @@ with ada.strings;			use ada.strings;
 
 package body et_conductor_segment.boards is
 
+	function are_connected (
+		line_1, line_2	: in type_conductor_line;
+		observe_layer	: in boolean := true)					   
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- test layers:
+		if observe_layer then
+			if line_1.layer /= line_2.layer then
+				return false;
+			end if;
+		end if;
 
+		-- test start and end points:
+		if line_1.start_point = line_2.start_point
+		or line_1.start_point = line_2.end_point
+		or line_1.end_point   = line_2.start_point
+		or line_1.end_point   = line_2.end_point
+		then
+			result := true;
+		else
+			result := false;
+		end if;
+
+		-- test start/end points between start/end points:
+		if result = false then
+			if line_1.on_line (to_vector (line_2.start_point)) 
+			or line_1.on_line (to_vector (line_2.end_point)) 
+			or line_2.on_line (to_vector (line_1.start_point)) 
+			or line_2.on_line (to_vector (line_1.end_point)) 
+			then
+				result := true;
+			end if;
+		end if;
+		
+		return result;
+	end are_connected;
+
+	
 	function get_lines_by_layer (
 		lines	: in pac_conductor_lines.list;
 		layer	: in type_signal_layer)
