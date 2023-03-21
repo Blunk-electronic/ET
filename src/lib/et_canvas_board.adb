@@ -877,7 +877,7 @@ package body et_canvas_board is
 		size : type_distance_positive;
 		width : type_view_coordinate;
 	begin
-		size := cursor_half_size / type_distance_positive (self.scale);
+		size := cursor_half_size / type_distance_positive (global_scale);
 		
 		-- set start and end point of horizontal line
 		lh.start_point := type_point (set (
@@ -899,7 +899,7 @@ package body et_canvas_board is
 
 
 		-- The line width is inversely proportional to the scale:
-		width := type_view_coordinate (cursor_line_width) / self.scale;
+		width := type_view_coordinate (cursor_line_width) / global_scale;
 		
 		set_line_width (context.cr, width);
 		

@@ -463,11 +463,6 @@ package pac_canvas is
 		-- set_scale or by procedure scale_to_fit.
 		topleft  	: type_model_point;
 
-		-- The drawing scale:
-		-- - increases on zoom in
-		-- - decreases on zoom out
-		scale     	: type_scale := scale_default;
-		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
 
 		-- Required for the scrollbars:
@@ -486,6 +481,12 @@ package pac_canvas is
 	
 	canvas	: type_view_ptr;
 
+
+	-- The drawing scale:
+	-- - increases on zooming in
+	-- - decreases on zooming out
+	global_scale : type_scale := scale_default;
+	
 	
 	-- redraws the canvas:
 	procedure redraw (view : in type_view_ptr);
@@ -531,7 +532,6 @@ package pac_canvas is
 -- 		return gtk.handlers.handler_id;
 
 	
-	function get_scale (self : not null access type_view) return type_scale;
 
 	
 	-- The cairo context to perform the actual drawing.
@@ -632,12 +632,11 @@ package pac_canvas is
 		self  : not null access type_view'class);
 
 
-	-- Changes the scaling factor for self.
-	-- this also scrolls the view so that either preserve or the current center
+	-- Changes the global scaling factor "global_scale".
+	-- This also scrolls the view so that either preserve or the current center
 	-- of the view remains at the same location in the widget, as if the user
 	-- was zooming towards that specific point.
 	procedure set_scale (
-		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
 		preserve : in type_model_point := model_origin);
 

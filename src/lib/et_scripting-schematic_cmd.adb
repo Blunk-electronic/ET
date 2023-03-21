@@ -125,9 +125,8 @@ is
 	begin
 		case runmode is
 			when MODE_MODULE =>
-
 				log (text => "zoom level", level => log_threshold + 1);
-				set_scale (canvas, s);
+				set_scale (s);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);

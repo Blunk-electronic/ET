@@ -57,11 +57,11 @@ is
 
 
 	procedure set_default_brightness is begin
-		set_color_stop_mask (context.cr, face, self.scale, NORMAL);
+		set_color_stop_mask (context.cr, face, global_scale, NORMAL);
 	end set_default_brightness;
 		
 	procedure set_highlight_brightness is begin
-		set_color_stop_mask (context.cr, face, self.scale, BRIGHT);
+		set_color_stop_mask (context.cr, face, global_scale, BRIGHT);
 	end set_highlight_brightness;
 
 	
@@ -208,7 +208,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stop mask segments will be drawn with the same color:
-		set_color_stop_mask (context.cr, face, self.scale, NORMAL);
+		set_color_stop_mask (context.cr, face, global_scale, NORMAL);
 
 		case face is
 			when TOP =>

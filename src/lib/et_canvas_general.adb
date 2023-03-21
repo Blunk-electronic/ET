@@ -763,7 +763,8 @@ package body pac_canvas is
 
 		-- Set the CTM so that following draw operations are scaled
 		-- according to the scale factor of the view:
-		cairo.scale (cr, self.scale, self.scale);
+		--cairo.scale (cr, self.scale, self.scale);
+		cairo.scale (cr, global_scale, global_scale);
 	end set_transform;
 
 	
@@ -876,11 +877,6 @@ package body pac_canvas is
 	end viewport_changed;
 
 	
-	function get_scale (self : not null access type_view) return type_scale is
-	begin
-		return self.scale;
-	end get_scale;
-
 
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
@@ -946,7 +942,7 @@ package body pac_canvas is
 		p      : in type_view_point) 
 		return type_model_point 
 	is begin
-		return vtm (p, self.scale, self.topleft);
+		return vtm (p, global_scale, self.topleft);
 	end view_to_model;
 
 	
@@ -957,13 +953,13 @@ package body pac_canvas is
 	is
 		-- Get the position of the given rectangle in model coordinatess
 		-- (upper left corner):
-		p1 : type_model_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
+		p1 : type_model_point := vtm ((rect.x, rect.y), global_scale, self.topleft);
 	begin
 		return (
 			x      => p1.x,
 			y      => p1.y,
-			width  => type_float_positive (rect.width / self.scale),
-			height => type_float_positive (rect.height / self.scale));
+			width  => type_float_positive (rect.width / global_scale),
+			height => type_float_positive (rect.height / global_scale));
 	end view_to_model;
 
 	
@@ -985,7 +981,7 @@ package body pac_canvas is
 		p      : in type_model_point) 
 		return type_view_point 
 	is begin
-		return mtv (p, self.scale, self.topleft);
+		return mtv (p, global_scale, self.topleft);
 	end model_to_view;
 
 	
@@ -1305,12 +1301,12 @@ package body pac_canvas is
 		point	: in type_model_point; -- model point
 		step	: in type_scale) 
 	is
-		scale : gdouble := canvas.get_scale * step;
+		scale : gdouble := global_scale * step;
 	begin
 		-- Ensure scale is within allowed range. If outside range,
 		-- then the canvas scale will be left unchanged:
 		if scale in type_scale then
-			canvas.set_scale (scale, point);
+			set_scale (scale, point);
 		end if;
 	end zoom_in;
 
@@ -1319,12 +1315,12 @@ package body pac_canvas is
 		point	: in type_model_point; -- model point
 		step	: in type_scale) 
 	is
-		scale : gdouble := canvas.get_scale / step;
+		scale : gdouble := global_scale / step;
 	begin
 		-- Ensure scale is within allowed range. If outside range,
 		-- then the canvas scale will be left unchanged:
 		if scale in type_scale then
-			canvas.set_scale (scale, point);
+			set_scale (scale, point);
 		end if;
 	end zoom_out;
 
@@ -1582,12 +1578,11 @@ package body pac_canvas is
 
 	
 	procedure set_scale (
-		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
 		preserve : in type_model_point := model_origin)
 	is
 		-- backup old scale
-		old_scale : constant type_float := type_float (self.scale);
+		old_scale : constant type_float := type_float (global_scale);
 
 		-- save requested scale
 		new_scale : constant type_float := type_float (scale);
@@ -1625,7 +1620,7 @@ package body pac_canvas is
 			p := preserve;
 		else
 			-- get the visible area
-			box := self.get_visible_area;
+			box := canvas.get_visible_area;
 
 			-- set p at the center of the visible area
 			p := (
@@ -1633,32 +1628,33 @@ package body pac_canvas is
 				y => box.y + box.height / 2.0);
 		end if;
 
-		self.scale := scale;
+
+		global_scale := scale;
 
 		-- Calculate the new topleft corner of the visible area:
 		-- Reason: The next time a model point is computed (via view_to_model)
 		-- the point must not change. So topleft is now moved so that
 		-- function view_to_model returns for the same view point the same
 		-- model point.
-		cx := p.x - self.topleft.x;
+		cx := p.x - canvas.topleft.x;
 		cx := cx * old_scale;
 		
-		cy := p.y - self.topleft.y;
+		cy := p.y - canvas.topleft.y;
 		cy := cy * old_scale;
 
 		dx := p.x - cx / new_scale;
 		dy := p.y - cy / new_scale;
 
 		if in_range (dx) and in_range (dy) then
-			self.topleft := (dx, dy);
+			canvas.topleft := (dx, dy);
 			--get_x (p) - cx / new_scale,
 			--get_y (p) - cy / new_scale)
 			--);
 		end if;
 		
-		self.scale_to_fit_requested := 0.0;
-		self.set_adjustment_values;
-		self.queue_draw;
+		canvas.scale_to_fit_requested := 0.0;
+		canvas.set_adjustment_values;
+		canvas.queue_draw;
 	end set_scale;
 
 	
@@ -1739,7 +1735,7 @@ package body pac_canvas is
 				s := gdouble'min (max_scale, wmin);
 				s := gdouble'max (min_scale, s);
 
-				self.scale := s;
+				global_scale := s;
 
 				-- calculate the new topleft corner of the visible area:
 				self.topleft := (
@@ -1801,8 +1797,8 @@ package body pac_canvas is
 		density_x, density_y : type_view_coordinate;
 	begin
 		-- Calcuate the grid density in x and y.
-		density_x := 1.0 / (type_view_coordinate (grid.x) * canvas.scale);
-		density_y := 1.0 / (type_view_coordinate (grid.y) * canvas.scale);
+		density_x := 1.0 / (type_view_coordinate (grid.x) * global_scale);
+		density_y := 1.0 / (type_view_coordinate (grid.y) * global_scale);
 
 		-- If density in x AND in y is below the threshold_grid_density
 		-- then draw the grid.
@@ -1811,11 +1807,11 @@ package body pac_canvas is
 			-- set the grid color
 			cairo.set_source_rgb (context.cr, color.red, color.green, color.blue);
 
-			dot_size := 2.0 / canvas.scale;
+			dot_size := 2.0 / global_scale;
 			-- CS dot_size_multiplier as constant in spec ?
 			-- CS limit to max and min ?
 			
-			line_width := 1.0 / canvas.scale;
+			line_width := 1.0 / global_scale;
 			-- CS limit to max and min ?
 			-- CS line_widht_multiplier as constant in spec ?
 			
@@ -2972,7 +2968,7 @@ package body pac_canvas is
 					
 				when NO =>
 					-- Calculate the line width of the contours:
-					scale := get_scale (canvas);
+					scale := global_scale;
 					set_line_width (context.cr, type_view_coordinate (0.01 + 1.0 / scale));
 					
 					-- The ends of the line are round:

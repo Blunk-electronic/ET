@@ -106,7 +106,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stencil segments will be drawn with the same color:
-		set_color_stencil (context.cr, face, self.scale, brightness);
+		set_color_stencil (context.cr, face, global_scale, brightness);
 
 		case face is
 			when TOP =>

@@ -543,7 +543,7 @@ is
 				
 			begin
 				-- top
-				set_color_stop_mask (context.cr, TOP, self.scale, brightness);
+				set_color_stop_mask (context.cr, TOP, global_scale, brightness);
 				stopmask.top.lines.iterate (query_line'access);
 				stopmask.top.arcs.iterate (query_arc'access);
 				stopmask.top.circles.iterate (query_circle'access);
@@ -551,7 +551,7 @@ is
 				stopmask.top.texts.iterate (query_text'access);
 
 				-- bottom
-				set_color_stop_mask (context.cr, BOTTOM, self.scale, brightness);
+				set_color_stop_mask (context.cr, BOTTOM, global_scale, brightness);
 				stopmask.bottom.lines.iterate (query_line'access);
 				stopmask.bottom.arcs.iterate (query_arc'access);
 				stopmask.bottom.circles.iterate (query_circle'access);
@@ -655,14 +655,14 @@ is
 				
 			begin
 				-- top
-				set_color_stencil (context.cr, TOP, self.scale, brightness);
+				set_color_stencil (context.cr, TOP, global_scale, brightness);
 				stencil.top.lines.iterate (query_line'access);
 				stencil.top.arcs.iterate (query_arc'access);
 				stencil.top.circles.iterate (query_circle'access);
 				stencil.top.contours.iterate (query_contour'access);
 
 				-- bottom
-				set_color_stencil (context.cr, BOTTOM, self.scale, brightness);
+				set_color_stencil (context.cr, BOTTOM, global_scale, brightness);
 				stencil.bottom.lines.iterate (query_line'access);
 				stencil.bottom.arcs.iterate (query_arc'access);
 				stencil.bottom.circles.iterate (query_circle'access);
@@ -1254,7 +1254,7 @@ is
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 								end case;
 
-								set_color_stop_mask (context.cr, f, self.scale, brightness);
+								set_color_stop_mask (context.cr, f, global_scale, brightness);
 
 								draw_contour (
 									contour	=> stop_mask_contours,
@@ -1308,7 +1308,7 @@ is
 								end case;
 
 								
-								set_color_stencil (context.cr, f, self.scale, brightness);
+								set_color_stencil (context.cr, f, global_scale, brightness);
 								
 								draw_contour (
 									contour	=> stencil_contours,
@@ -1416,7 +1416,7 @@ is
 										move_contours (pad_pos, stop_mask_contours, flip, package_position);
 								end case;
 
-								set_color_stop_mask (context.cr, f, self.scale, brightness);
+								set_color_stop_mask (context.cr, f, global_scale, brightness);
 								
 								-- draw the outer contour of the stop mask opening
 								draw_contour (
