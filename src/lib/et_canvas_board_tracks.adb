@@ -595,6 +595,8 @@ package body et_canvas_board_tracks is
 								
 						-- Allow drawing of the path:
 						preliminary_track.ready := true;
+
+						reset_request_clarification;
 					end if;
 
 					

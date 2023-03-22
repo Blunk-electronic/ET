@@ -240,7 +240,16 @@ is
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (et_canvas_board_tracks.preliminary_track.path);
+						-- As long as a clarification of the 
+						-- airwires is pending, a right click
+						-- advances to the next airwire.
+						-- If no clarification is requested, then
+						-- a right click changes the bend style:
+						if clarification_pending then
+							et_canvas_board_tracks.select_airwire;
+						else
+							next_bend_style (et_canvas_board_tracks.preliminary_track.path);
+						end if;
 						
 					when others => null;							
 				end case;
