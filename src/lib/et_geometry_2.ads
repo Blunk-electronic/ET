@@ -517,7 +517,7 @@ package et_geometry_2 is
 
 	
 	subtype type_catch_zone is type_float_positive
-		range 0.0 .. type_float (type_distance_positive'last/100.0);
+		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 
 
 	function catch_zone_to_string (
