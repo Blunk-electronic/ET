@@ -887,7 +887,7 @@ package body et_canvas_board_texts is
 				silk_face	=> face,
 				silk_text	=> element (text)));
 		end query_silk_text;
-
+		
 		procedure query_stop_text (text : in pac_stop_texts.cursor) is begin
 			proposed_texts.append ((
 				cat			=> LAYER_CAT_STOP,
@@ -895,17 +895,19 @@ package body et_canvas_board_texts is
 				stop_text	=> element (text)));
 		end query_stop_text;
 
+		
 		procedure collect is begin
-			doc := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			doc := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
 			doc.iterate (query_doc_text'access);
 
-			silk := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			silk := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
 			silk.iterate (query_silk_text'access);
 			
-			stop := get_texts (current_active_module, face, point, catch_zone_default, log_threshold + 1);
+			stop := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
 			stop.iterate (query_stop_text'access);
 		end collect;
 
+		
 		procedure query_conductor_text (text : in pac_conductor_texts.cursor) is begin
 			proposed_texts.append ((
 				cat				=> LAYER_CAT_CONDUCTOR,
@@ -923,7 +925,7 @@ package body et_canvas_board_texts is
 		face := BOTTOM;
 		collect;
 		
-		conductors := get_texts (current_active_module, point, catch_zone_default, log_threshold + 1);
+		conductors := get_texts (current_active_module, point, get_catch_zone, log_threshold + 1);
 		conductors.iterate (query_conductor_text'access);
 		
 		-- evaluate the number of vias found here:
