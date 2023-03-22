@@ -81,6 +81,8 @@ with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 
+with et_geometry;
+
 
 package body et_canvas_board_tracks is
 
@@ -548,6 +550,7 @@ package body et_canvas_board_tracks is
 		line : type_line;
 
 		procedure set_start_point is
+			use et_pcb_coordinates.pac_geometry_brd;
 		begin
 			case PT.snap_mode is
 				when NO_SNAP =>
@@ -560,8 +563,11 @@ package body et_canvas_board_tracks is
 				when NEAREST_AIRWIRE =>
 					if not clarification_pending then
 
-						proposed_airwires := get_airwires (current_active_module, point,
-							catch_zone_default, log_threshold + 1);
+						proposed_airwires := get_airwires (
+							module_cursor	=> current_active_module, 
+							point			=> point,
+							catch_zone		=> get_catch_zone,
+							log_threshold	=> log_threshold + 1);
 
 						case proposed_airwires.length is
 							when 0 =>

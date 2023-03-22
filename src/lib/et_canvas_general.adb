@@ -171,6 +171,13 @@ package body pac_canvas is
 	procedure redraw (view : in type_view_ptr) is begin
 		queue_draw (view);
 	end;
+
+
+	function get_catch_zone return type_catch_zone is 
+	begin
+		return 20.0 / type_float_positive (global_scale);
+	end get_catch_zone;
+
 	
 	function on_key_event (
 		self	: access gtk_widget_record'class;

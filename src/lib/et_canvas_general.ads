@@ -172,7 +172,9 @@ package et_canvas_general is
 
 	function to_tool (tool : in string) return type_tool;
 
-	
+
+
+
 
 
 ---------------------------------------------------------------------------
@@ -487,6 +489,11 @@ package pac_canvas is
 	-- - decreases on zooming out
 	global_scale : type_scale := scale_default;
 	
+
+	-- Returns a catch zone according to the current
+	-- global_scale:
+	function get_catch_zone return type_catch_zone;
+
 	
 	-- redraws the canvas:
 	procedure redraw (view : in type_view_ptr);
