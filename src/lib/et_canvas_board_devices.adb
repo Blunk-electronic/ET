@@ -173,7 +173,7 @@ package body et_canvas_board_devices is
 		proposed_electrical_devices := get_devices (
 			module			=> current_active_module,
 			place			=> point,
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			catch_zone		=> get_catch_zone,
 			log_threshold	=> log_threshold + 1);
 
 		
@@ -210,7 +210,7 @@ package body et_canvas_board_devices is
 		proposed_non_electrical_devices := get_devices (
 			module			=> current_active_module,
 			place			=> point,
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			catch_zone		=> get_catch_zone,
 			log_threshold	=> log_threshold + 1);
 
 		
