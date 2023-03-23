@@ -438,7 +438,6 @@ package body et_canvas_board is
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. Otherwise
 	-- nothing happens here:
 	procedure draw_text_being_placed (
-		self    	: not null access type_view;
 		face		: in type_face;
 		category	: in type_layer_category_non_conductor)
 	is 
@@ -455,7 +454,7 @@ package body et_canvas_board is
 			if preliminary_text.category = category and preliminary_text.face = face then
 
 				-- Set the point where the text is to be drawn:
-				point := self.tool_position;
+				point := canvas.tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
@@ -586,24 +585,13 @@ package body et_canvas_board is
 		is separate;
 
 	
-	procedure draw_silk_screen (
-		self    : not null access type_view;
-		face	: in type_face) is separate;
-
+	procedure draw_silk_screen (face : in type_face) is separate;
 	
-	procedure draw_assy_doc (
-		self    : not null access type_view;
-		face	: in type_face) is separate;
+	procedure draw_assy_doc (face : in type_face) is separate;
 
+	procedure draw_stop (face : in type_face) is separate;
 	
-	procedure draw_stop (
-		self    : not null access type_view;
-		face	: in type_face) is separate;
-
-	
-	procedure draw_stencil (
-		self    : not null access type_view;
-		face	: in type_face) is separate;
+	procedure draw_stencil (face : in type_face) is separate;
 
 	
 	procedure draw_keepout (
@@ -645,22 +633,22 @@ package body et_canvas_board is
 		
 		procedure draw_silkscreen is begin
 			if silkscreen_enabled (BOTTOM) then
-				draw_silk_screen (self, BOTTOM);
+				draw_silk_screen (BOTTOM);
 			end if;
 
 			if silkscreen_enabled (TOP) then
-				draw_silk_screen (self, TOP);
+				draw_silk_screen (TOP);
 			end if;
 		end draw_silkscreen;
 
 		
 		procedure draw_assy_doc is begin
 			if assy_doc_enabled (BOTTOM) then
-				draw_assy_doc (self, BOTTOM);
+				draw_assy_doc (BOTTOM);
 			end if;
 
 			if assy_doc_enabled (TOP) then
-				draw_assy_doc (self, TOP);
+				draw_assy_doc (TOP);
 			end if;
 		end draw_assy_doc;
 
@@ -678,22 +666,22 @@ package body et_canvas_board is
 		
 		procedure draw_stop_mask is begin
 			if stop_mask_enabled (BOTTOM) then
-				draw_stop (self, BOTTOM);
+				draw_stop (BOTTOM);
 			end if;
 
 			if stop_mask_enabled (TOP) then
-				draw_stop (self, TOP);
+				draw_stop (TOP);
 			end if;
 		end draw_stop_mask;
 
 		
 		procedure draw_stencil is begin
 			if stencil_enabled (BOTTOM) then
-				draw_stencil (self, BOTTOM);
+				draw_stencil (BOTTOM);
 			end if;
 
 			if stencil_enabled (TOP) then
-				draw_stencil (self, TOP);
+				draw_stencil (TOP);
 			end if;
 		end draw_stencil;
 

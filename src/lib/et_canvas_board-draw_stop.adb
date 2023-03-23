@@ -43,8 +43,7 @@ with et_board_ops.text;			use et_board_ops.text;
 separate (et_canvas_board)
 
 procedure draw_stop (
-	self    : not null access type_view;
-	face	: in type_face)
+	face : in type_face)
 is
 	use pac_geometry_2;	
 	
@@ -240,7 +239,7 @@ begin -- draw_stop
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (self, face, LAYER_CAT_STOP);
+	draw_text_being_placed (face, LAYER_CAT_STOP);
 
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_STOP);

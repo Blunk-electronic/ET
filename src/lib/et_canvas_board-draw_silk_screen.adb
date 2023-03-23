@@ -46,8 +46,7 @@ separate (et_canvas_board)
 
 
 procedure draw_silk_screen (
-	self    : not null access type_view;
-	face	: in type_face)
+	face : in type_face)
 is
 	use et_board_shapes_and_text;
 	use pac_geometry_2;	
@@ -283,7 +282,7 @@ begin -- draw_silk_screen
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (self, face, LAYER_CAT_SILKSCREEN);
+	draw_text_being_placed (face, LAYER_CAT_SILKSCREEN);
 
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_SILKSCREEN);

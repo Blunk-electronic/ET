@@ -44,8 +44,7 @@ separate (et_canvas_board)
 
 
 procedure draw_stencil (
-	self    : not null access type_view;
-	face	: in type_face) 
+	face : in type_face) 
 is
 	use pac_geometry_2;	
 
@@ -131,7 +130,7 @@ begin -- draw_stencil
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (self, face, LAYER_CAT_STENCIL);
+	draw_text_being_placed (face, LAYER_CAT_STENCIL);
 	
 end draw_stencil;
 
