@@ -879,6 +879,7 @@ is
 		module		: in type_module) 
 	is
 
+		-- Draw airwires:
 		procedure draw_ratsnest is
 			use et_ratsnest;
 			
@@ -887,21 +888,31 @@ is
 				
 				procedure query_airwire (c : in pac_airwires.cursor) is 
 					restore_brightness : boolean := false;
+					skip : boolean := false;
 				begin
 					-- If the candidate airwire is selected, then draw it highlighted:
 					if airwire_is_selected (c, key (n)) then
 						set_color_ratsnest (context.cr, BRIGHT);
 						restore_brightness := true;
+
+						-- If a path is being drawn, then the selected
+						-- airwire shall not be visible:
+						if preliminary_track.ready then
+							skip := true;
+						end if;
+					end if;
+
+					if not skip then
+						draw_line (
+							line		=> type_line_fine (element (c)),
+							width		=> type_distance (airwire_line_width));
 					end if;
 					
-					draw_line (
-						line		=> type_line_fine (element (c)),
-						width		=> type_distance (airwire_line_width));
-
 					-- restore normal brightness
 					if restore_brightness then
 						set_color_ratsnest (context.cr);
 					end if;
+
 				end query_airwire;
 
 
