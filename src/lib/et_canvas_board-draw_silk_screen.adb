@@ -117,7 +117,7 @@ is
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		v_text : type_vector_text;
 	begin
-		draw_text_origin (self, element (c).position);
+		draw_text_origin (element (c).position);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -144,7 +144,7 @@ is
 
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
-			draw_text_origin (self, text.position);
+			draw_text_origin (text.position);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (text.line_width));
@@ -167,7 +167,7 @@ is
 						begin
 							case preliminary_text.tool is
 								when MOUSE =>
-									destination := self.snap_to_grid (get_mouse_position);
+									destination := snap_to_grid (get_mouse_position);
 													  
 								when KEYBOARD =>
 									destination := cursor_main.position;
@@ -181,7 +181,7 @@ is
 							move_text (text_tmp, offset);
 							move_vector_text (text_tmp.vectors, offset);
 
-							draw_text_origin (self, text_tmp.position);
+							draw_text_origin (text_tmp.position);
 
 							-- Set the line width of the vector text:
 							set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));

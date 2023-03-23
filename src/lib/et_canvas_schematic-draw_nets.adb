@@ -238,7 +238,7 @@ is
 
 					case label.tool is
 						when KEYBOARD	=> l.position := cursor_main.position;
-						when MOUSE		=> l.position := self.snap_to_grid (get_mouse_position);
+						when MOUSE		=> l.position := snap_to_grid (get_mouse_position);
 					end case;
 					
 					case label.appearance is
@@ -325,7 +325,7 @@ is
 							when KEYBOARD =>
 								sl.position := cursor_main.position;
 							when MOUSE =>
-								sl.position := self.snap_to_grid (get_mouse_position);
+								sl.position := snap_to_grid (get_mouse_position);
 						end case;
 
 						-- draw the temporarily label
@@ -598,7 +598,7 @@ is
 			-- calculate the destination point according to the current drawing tool:
 			case PS.tool is
 				when MOUSE =>
-					destination := self.snap_to_grid (get_mouse_position);
+					destination := snap_to_grid (get_mouse_position);
 
 				when KEYBOARD =>
 					destination := cursor_main.position;
@@ -670,7 +670,7 @@ is
 			-- current drawing tool and the current displacement of the unit:
 			case unit_move.tool is
 				when MOUSE =>
-					tool_position := self.snap_to_grid (get_mouse_position);
+					tool_position := snap_to_grid (get_mouse_position);
 
 				when KEYBOARD =>
 					tool_position := cursor_main.position;
@@ -979,7 +979,7 @@ is
 				when MOUSE => 
 					compute_route (
 						s	=> PS.path.start_point,	-- start of route
-						e	=> snap_to_grid (self, get_mouse_position));	-- end of route
+						e	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_route (

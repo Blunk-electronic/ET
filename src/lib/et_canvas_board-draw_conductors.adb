@@ -56,9 +56,7 @@ with et_board_ops.text;
 
 separate (et_canvas_board)
 
-procedure draw_conductors (
-	self    : not null access type_view) 
-is
+procedure draw_conductors is
 
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
@@ -66,8 +64,7 @@ is
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed_in_conductors (
-		self    	: not null access type_view;
-		layer		: in et_pcb_stack.type_signal_layer)
+		layer : in et_pcb_stack.type_signal_layer)
 	is 
 		use et_pcb;
 		use et_pcb_stack;
@@ -88,11 +85,11 @@ is
 			and preliminary_text.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
-				point := self.tool_position;
+				point := canvas.tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin);
+				draw_text_origin (origin);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
@@ -424,7 +421,7 @@ is
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (self, element (c).position);
+			draw_text_origin (element (c).position);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
@@ -455,7 +452,7 @@ is
 
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
-			draw_text_origin (self, text.position);
+			draw_text_origin (text.position);
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (text.line_width));
@@ -482,7 +479,7 @@ is
 							begin
 								case preliminary_text.tool is
 									when MOUSE =>
-										destination := self.snap_to_grid (get_mouse_position);
+										destination := snap_to_grid (get_mouse_position);
 														
 									when KEYBOARD =>
 										destination := cursor_main.position;
@@ -495,7 +492,7 @@ is
 								-- Move the text (incl. vector text):
 								move_text (text_tmp, offset);					
 
-								draw_text_origin (self, text_tmp.position);
+								draw_text_origin (text_tmp.position);
 
 								-- Set the line width of the vector text:
 								set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
@@ -821,7 +818,7 @@ is
 
 						case preliminary_via.tool is
 							when MOUSE =>
-								circle.center := self.snap_to_grid (get_mouse_position);
+								circle.center := snap_to_grid (get_mouse_position);
 
 							when KEYBOARD =>
 								circle.center := cursor_main.position;
@@ -969,7 +966,7 @@ is
 				-- tracks:
 				iterate (module.nets, query_net_track'access);
 				
-				draw_text_being_placed_in_conductors (self, ly);				
+				draw_text_being_placed_in_conductors (ly);				
 			end if;
 		end loop;
 
@@ -996,7 +993,7 @@ is
 		if preliminary_via.ready then
 
 			-- Set the point where the via is to be drawn:
-			position := self.tool_position;
+			position := canvas.tool_position;
 
 			-- Get the name of the targeted net:
 			net_name := preliminary_via.net_name;
@@ -1127,7 +1124,7 @@ is
 				when MOUSE => 
 					compute_and_draw (
 						start_point	=> PT.path.start_point,	-- start of path
-						end_point	=> canvas.snap_to_grid (get_mouse_position));	-- end of route
+						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_and_draw (

@@ -731,7 +731,6 @@ package pac_canvas is
 	
 	-- Returns the given point x/y rounded to the current grid.
 	function snap_to_grid (
-		self	: not null access type_view'class;
 		point	: in type_point) 
 		return type_point;
 

@@ -1733,7 +1733,7 @@ is
 				is begin
 					case preliminary_electrical_device.tool is
 						when MOUSE =>
-							device.position.place := self.snap_to_grid (get_mouse_position);
+							device.position.place := snap_to_grid (get_mouse_position);
 
 						when KEYBOARD =>
 							device.position.place := cursor_main.position;
@@ -1839,7 +1839,7 @@ is
 				is begin
 					case preliminary_non_electrical_device.tool is
 						when MOUSE =>
-							device.position.place := self.snap_to_grid (get_mouse_position);
+							device.position.place := snap_to_grid (get_mouse_position);
 
 						when KEYBOARD =>
 							device.position.place := cursor_main.position;

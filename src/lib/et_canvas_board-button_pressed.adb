@@ -45,7 +45,7 @@ procedure button_pressed (
 	button	: in type_mouse_button;
 	point	: in type_point) 
 is
-	snap_point : constant type_point := snap_to_grid (self, point);
+	snap_point : constant type_point := snap_to_grid (point);
 
 	
 	procedure left_button is begin

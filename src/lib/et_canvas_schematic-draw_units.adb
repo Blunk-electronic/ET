@@ -800,7 +800,7 @@ is
 
 						case unit_move.tool is
 							when MOUSE =>
-								unit_position := self.snap_to_grid (get_mouse_position);
+								unit_position := snap_to_grid (get_mouse_position);
 								
 							when KEYBOARD =>
 								unit_position := cursor_main.position;
@@ -852,7 +852,7 @@ is
 											move_by (
 												point	=> sch_placeholder_name.position,
 												offset	=> get_distance_relative (
-													placeholder_move.absolute_position, self.snap_to_grid (get_mouse_position)));
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
@@ -876,7 +876,7 @@ is
 											move_by (
 												point	=> sch_placeholder_purpose.position,
 												offset	=> get_distance_relative (
-													placeholder_move.absolute_position, self.snap_to_grid (get_mouse_position)));
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
@@ -900,7 +900,7 @@ is
 											move_by (
 												point	=> sch_placeholder_value.position,
 												offset	=> get_distance_relative (
-													placeholder_move.absolute_position, self.snap_to_grid (get_mouse_position)));
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
@@ -938,7 +938,7 @@ is
 					
 						case unit_move.tool is
 							when MOUSE =>
-								unit_position := self.snap_to_grid (get_mouse_position);
+								unit_position := snap_to_grid (get_mouse_position);
 								
 							when KEYBOARD =>
 								unit_position := cursor_main.position;
@@ -1048,7 +1048,7 @@ is
 			-- Set the destination coordinates according to current tool:
 			case unit_add.tool is
 				when KEYBOARD	=> destination := cursor_main.position;
-				when MOUSE		=> destination := self.snap_to_grid (get_mouse_position);
+				when MOUSE		=> destination := snap_to_grid (get_mouse_position);
 			end case;
 			
 			case unit_cursor.ext_int is

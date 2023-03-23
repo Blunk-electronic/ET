@@ -396,8 +396,7 @@ package body et_canvas_board is
 	-- NOTE: This text or text placeholder is not related to the package of a device.
 	-- It is a general text like "L2", "TOP", "BOTTOM", "REV 123", "ABC-Systems", ...
 	procedure draw_text_origin (
-		self    : not null access type_view;
-		p		: in type_position) -- the position of the origin
+		p : in type_position) -- the position of the origin
 	is		
 		use pac_text_board;
 
@@ -459,7 +458,7 @@ package body et_canvas_board is
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (self, origin);
+				draw_text_origin (origin);
 
 				-- Set the line width of the vector text:
 				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
@@ -568,7 +567,7 @@ package body et_canvas_board is
 				when MOUSE => 
 					compute_and_draw (
 						start_point	=> PL.path.start_point,	-- start of path
-						end_point	=> canvas.snap_to_grid (get_mouse_position));	-- end of route
+						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_and_draw (
@@ -622,9 +621,7 @@ package body et_canvas_board is
 
 	
 	-- Draws objects in conductor layers (incl. vias):
-	procedure draw_conductors (
-		self    : not null access type_view)
-		is separate;
+	procedure draw_conductors is separate;
 
 	
 	procedure draw_packages (
@@ -710,10 +707,7 @@ package body et_canvas_board is
 		procedure draw_conductor_layers is begin
 			draw_route_restrict (self);
 			draw_via_restrict (self);
-			
-			draw_conductors (self);
-
-			-- CS unrouted
+			draw_conductors;
 		end draw_conductor_layers;
 
 		

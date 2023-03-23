@@ -45,7 +45,7 @@ procedure button_pressed (
 	button	: in type_mouse_button;
 	point	: in type_point) 
 is
-	snap_point : constant type_point := snap_to_grid (self, point);
+	snap_point : constant type_point := snap_to_grid (point);
 
 	procedure left_button is 
 		use pac_devices_lib;
@@ -82,7 +82,7 @@ is
 								when 2 =>
 									-- Finally place the unit at the current 
 									-- mouse position:
-									finalize_add_device (snap_to_grid (self, point));
+									finalize_add_device (snap_to_grid (point));
 
 								when others => null;
 							end case;
@@ -145,7 +145,7 @@ is
 						-- and snap the cursor position to the default grid:
 						self.reset_grid_and_cursor;
 
-						make_path (MOUSE, snap_to_grid (self, point));
+						make_path (MOUSE, snap_to_grid (point));
 						
 					when others => null;							
 				end case;
@@ -161,13 +161,13 @@ is
 							unit_add.tool := MOUSE;
 
 							if not clarification_pending then
-								invoke_unit (snap_to_grid (self, point));
+								invoke_unit (snap_to_grid (point));
 							else
 								show_units;
 							end if;
 
 						else
-							finalize_invoke (snap_to_grid (self, point), log_threshold + 1);
+							finalize_invoke (snap_to_grid (point), log_threshold + 1);
 						end if;
 						
 					when others => null;

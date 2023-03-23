@@ -503,7 +503,7 @@ package body pac_canvas is
 			clip	=> true));
 
 		-- Snap the distance to the current grid:
-		distance_xy := self.snap_to_grid (distance_xy);
+		distance_xy := snap_to_grid (distance_xy);
 
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_pol := get_distance (cursor_main.position, drawing_point);
@@ -1219,7 +1219,7 @@ package body pac_canvas is
 		drawing_point := model_to_drawing (canvas, model_point);
 
 		-- Snap the drawing point to the current grid:
-		drawing_point := canvas.snap_to_grid (drawing_point);
+		drawing_point := snap_to_grid (drawing_point);
 		--put_line (to_string (x (drawing_point)));
 
 		-- Update mouse position display (left of the canvas).
@@ -1776,12 +1776,12 @@ package body pac_canvas is
 
 
 	function snap_to_grid (
-		self	: not null access type_view'class;
+		-- self	: not null access type_view'class;
 		point	: in type_point)
 		return type_point 
 	is
 	begin
-		return type_point (round (point, self.get_grid));
+		return type_point (round (point, canvas.get_grid));
 	end snap_to_grid;
 
 	
@@ -1964,7 +1964,7 @@ package body pac_canvas is
 	begin
 		case primary_tool is
 			when KEYBOARD	=> point := cursor_main.position;
-			when MOUSE		=> point := view.snap_to_grid (get_mouse_position);
+			when MOUSE		=> point := snap_to_grid (get_mouse_position);
 		end case;
 
 		return point;

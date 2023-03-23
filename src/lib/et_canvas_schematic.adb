@@ -600,7 +600,7 @@ package body et_canvas_schematic is
 		self : not null access type_view)
 	is begin
 		reset_grid_density;
-		cursor_main.position := self.snap_to_grid (cursor_main.position);
+		cursor_main.position := snap_to_grid (cursor_main.position);
 		self.update_coordinates_display;
 	end reset_grid_and_cursor;
 
@@ -610,7 +610,7 @@ package body et_canvas_schematic is
 		density	: in type_grid_density)
 	is begin
 		grid_density := density;
-		cursor_main.position := self.snap_to_grid (cursor_main.position);
+		cursor_main.position := snap_to_grid (cursor_main.position);
 		self.update_coordinates_display;
 	end set_grid;
 
