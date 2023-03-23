@@ -234,7 +234,8 @@ package body et_canvas_board_assy_doc is
 		log_indentation_up;
 
 		-- Collect all objects in the vicinity of the given point
-		-- and transfer them to the list proposed_texts:
+		-- and transfer them to the list proposed_objects:
+		-- CS should depend on enabled top/bottom side
 		face := TOP;
 		collect;
 		face := BOTTOM;
@@ -254,6 +255,7 @@ package body et_canvas_board_assy_doc is
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
+				preliminary_object.ready := true;
 
 				-- preselect the object
 				selected_object := proposed_objects.first;

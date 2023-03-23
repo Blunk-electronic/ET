@@ -61,7 +61,7 @@ package et_canvas_board_silkscreen is
 	-- collect preliminary information using this type:
 	type type_preliminary_object is record
 		-- This flag indicates that the object has been
-		-- clarified among the proposed lines:
+		-- clarified among the proposed objects:
 		ready	: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
@@ -82,7 +82,7 @@ package et_canvas_board_silkscreen is
 	end record;
 
 	-- The place where preliminary information of
-	-- a line is stored:
+	-- an object is stored:
 	preliminary_object : type_preliminary_object;
 
 
