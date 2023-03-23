@@ -456,7 +456,7 @@ is
 			when LINE =>
 				case get_field_count is
 					when 11 =>
-						draw_silk_screen_line (
+						draw_line (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							line			=> (
@@ -478,7 +478,7 @@ is
 			when ARC =>
 				case get_field_count is
 					when 14 =>
-						draw_silk_screen_arc (
+						draw_arc (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							arc				=> (
@@ -502,7 +502,7 @@ is
 			when CIRCLE =>
 				case get_field_count is
 					when 10 =>
-						draw_silk_screen_circle (
+						draw_circle (
 							module_name 	=> module,
 							face			=> to_face (f (5)),
 							circle			=> (
@@ -2283,7 +2283,7 @@ is
 						case get_field_count is
 							when 8 =>
 								-- delete a segment of silk screen
-								et_board_ops.silkscreen.delete_silk_screen (
+								et_board_ops.silkscreen.delete (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (

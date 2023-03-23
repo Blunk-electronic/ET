@@ -45,7 +45,7 @@ package body et_board_ops.silkscreen is
 	use pac_silk_circles;
 
 	
-	procedure draw_silk_screen_line (
+	procedure draw_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
@@ -85,7 +85,7 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_silk_screen_line;
+	end draw_line;
 
 
 	function get_lines (
@@ -208,7 +208,7 @@ package body et_board_ops.silkscreen is
 
 
 	
-	procedure draw_silk_screen_arc (
+	procedure draw_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;		
@@ -250,10 +250,10 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_silk_screen_arc;
+	end draw_arc;
 
 	
-	procedure draw_silk_screen_circle (
+	procedure draw_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_silk_circle;
@@ -294,10 +294,10 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_silk_screen_circle;
+	end draw_circle;
 
 	
-	procedure delete_silk_screen (
+	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
@@ -402,7 +402,7 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> delete'access);
 		
-	end delete_silk_screen;
+	end delete;
 
 	
 	function get_texts (
