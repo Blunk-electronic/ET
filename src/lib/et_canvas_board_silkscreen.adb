@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                CANVAS BOARD / ASSEMBLY DOCUMENTATION                     --
+--                      CANVAS BOARD / SILKSCREEN                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2023 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -41,13 +41,13 @@ with et_project.modules;				use et_project.modules;
 
 with et_canvas_board;
 
-with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
+with et_board_ops.silkscreen;			use et_board_ops.silkscreen;
 
 with et_logging;						use et_logging;
 
 
 
-package body et_canvas_board_assy_doc is
+package body et_canvas_board_silkscreen is
 
 	use et_canvas_board.pac_canvas;
 	
@@ -59,15 +59,15 @@ package body et_canvas_board_assy_doc is
 	end reset_preliminary_object;
 
 
-	use pac_doc_lines;
-	use pac_doc_arcs;
-	use pac_doc_circles;
+	use pac_silk_lines;
+	use pac_silk_arcs;
+	use pac_silk_circles;
 
 	
 	-- Returns true if the given object matches the object indicated
 	-- by cursor selected_object (see above):
 	function is_selected (
-		line_cursor	: in pac_doc_lines.cursor;
+		line_cursor	: in pac_silk_lines.cursor;
 		face		: in type_face)
 		return boolean
 	is begin
@@ -76,7 +76,7 @@ package body et_canvas_board_assy_doc is
 		else
 			if selected_object /= pac_proposed_objects.no_element then
 				declare
-					candidate : type_doc_line renames element (line_cursor);
+					candidate : type_silk_line renames element (line_cursor);
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.line_face = face then
@@ -97,7 +97,7 @@ package body et_canvas_board_assy_doc is
 	
 
 	function is_selected (
-		arc_cursor	: in pac_doc_arcs.cursor;
+		arc_cursor	: in pac_silk_arcs.cursor;
 		face		: in type_face)
 		return boolean
 	is begin
@@ -106,7 +106,7 @@ package body et_canvas_board_assy_doc is
 		else
 			if selected_object /= pac_proposed_objects.no_element then
 				declare
-					candidate : type_doc_arc renames element (arc_cursor);
+					candidate : type_silk_arc renames element (arc_cursor);
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.arc_face = face then
@@ -127,7 +127,7 @@ package body et_canvas_board_assy_doc is
 
 
 	function is_selected (
-		circle_cursor	: in pac_doc_circles.cursor;
+		circle_cursor	: in pac_silk_circles.cursor;
 		face			: in type_face)
 		return boolean
 	is begin
@@ -136,7 +136,7 @@ package body et_canvas_board_assy_doc is
 		else
 			if selected_object /= pac_proposed_objects.no_element then
 				declare
-					candidate : type_doc_circle renames element (circle_cursor);
+					candidate : type_silk_circle renames element (circle_cursor);
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.circle_face = face then
@@ -208,11 +208,11 @@ package body et_canvas_board_assy_doc is
 	is 
 		face : type_face := TOP;
 		
-		lines : pac_doc_lines.list;
-		arcs : pac_doc_arcs.list;
-		circles : pac_doc_circles.list;
+		lines : pac_silk_lines.list;
+		arcs : pac_silk_arcs.list;
+		circles : pac_silk_circles.list;
 
-		procedure query_line (c : in pac_doc_lines.cursor) is begin
+		procedure query_line (c : in pac_silk_lines.cursor) is begin
 			proposed_objects.append ((
 				shape		=> LINE,
 				line_face	=> face,
@@ -221,7 +221,7 @@ package body et_canvas_board_assy_doc is
 
 		
 		procedure collect is 
-			use et_board_ops.assy_doc;
+			use et_board_ops.silkscreen;
 		begin
 			lines := get_lines (current_active_module, face, point, get_catch_zone, log_threshold + 1);
 			lines.iterate (query_line'access);
@@ -283,7 +283,7 @@ package body et_canvas_board_assy_doc is
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_board_ops.assy_doc;
+			use et_board_ops.silkscreen;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
@@ -299,7 +299,6 @@ package body et_canvas_board_assy_doc is
 								face			=> object.line_face,
 								line			=> object.line,
 								point_of_attack	=> preliminary_object.point_of_attack,
-								-- coordinates		=> ABSOLUTE,
 								destination		=> point,
 								log_threshold	=> log_threshold);
 
@@ -360,7 +359,7 @@ package body et_canvas_board_assy_doc is
 
 	
 	
-end et_canvas_board_assy_doc;
+end et_canvas_board_silkscreen;
 
 -- Soli Deo Gloria
 

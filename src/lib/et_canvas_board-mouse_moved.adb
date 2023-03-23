@@ -62,7 +62,12 @@ is begin
 					if et_canvas_board_assy_doc.preliminary_object.ready then
 						redraw_board;
 					end if;
-				
+
+				when NOUN_SILKSCREEN =>
+					if et_canvas_board_silkscreen.preliminary_object.ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_DEVICE =>
 					if preliminary_electrical_device.ready then
 						redraw_board;

@@ -71,6 +71,9 @@ is
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (MOUSE, point);
 
+					when NOUN_SILKSCREEN =>
+						et_canvas_board_silkscreen.move_object (MOUSE, point);
+						
 					when NOUN_DEVICE =>
 						move_electrical_device (MOUSE, point);
 
@@ -165,7 +168,12 @@ is
 						if clarification_pending then
 							et_canvas_board_assy_doc.select_object;
 						end if;
-					
+
+					when NOUN_SILKSCREEN =>
+						if clarification_pending then
+							et_canvas_board_silkscreen.select_object;
+						end if;
+						
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							select_electrical_device;

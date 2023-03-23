@@ -40,6 +40,11 @@ package body et_board_ops.silkscreen is
 
 	use pac_generic_modules;
 	
+	use pac_silk_lines;
+	use pac_silk_arcs;
+	use pac_silk_circles;
+
+	
 	procedure draw_silk_screen_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -51,9 +56,7 @@ package body et_board_ops.silkscreen is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is			
-			use pac_silk_lines;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -84,6 +87,126 @@ package body et_board_ops.silkscreen is
 
 	end draw_silk_screen_line;
 
+
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_silk_lines.list
+	is
+		result : pac_silk_lines.list;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+
+			procedure query_line (c : in pac_silk_lines.cursor) is
+				line : type_silk_line renames element (c);
+			begin
+				if in_catch_zone (
+					line	=> line,
+					width	=> line.width,
+					point	=> point,
+					zone	=> catch_zone)
+				then
+					result.append (line);
+				end if;
+			end query_line;
+			
+		begin
+			case face is
+				when TOP =>
+					module.board.silk_screen.top.lines.iterate (query_line'access);
+
+				when BOTTOM =>
+					module.board.silk_screen.bottom.lines.iterate (query_line'access);
+			end case;
+		end query_module;
+			
+	begin
+		log (text => "looking up lines at" & to_string (point) 
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;		
+
+		return result;
+	end get_lines;
+
+	
+	
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_silk_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			line_cursor : pac_silk_lines.cursor;
+
+			procedure query_line (line : in out type_silk_line) is
+			begin
+				-- case coordinates is
+					-- when ABSOLUTE =>
+						move_line_to (line, point_of_attack, destination);
+						-- null;
+					-- when RELATIVE =>
+						-- null;
+						-- CS
+				-- end case;
+			end query_line;
+			
+		begin
+			case face is
+				when TOP =>
+					line_cursor := module.board.silk_screen.top.lines.find (line);
+					module.board.silk_screen.top.lines.update_element (line_cursor, query_line'access);
+					
+				when BOTTOM =>
+					line_cursor := module.board.silk_screen.bottom.lines.find (line);
+					module.board.silk_screen.bottom.lines.update_element (line_cursor, query_line'access);
+			end case;
+		end query_module;
+
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " moving assy doc " & to_string (line)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		
+		log_indentation_down;
+	end move_line;
+
+
+
 	
 	procedure draw_silk_screen_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -96,9 +219,7 @@ package body et_board_ops.silkscreen is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			use pac_silk_arcs;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -143,9 +264,7 @@ package body et_board_ops.silkscreen is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is
-			use pac_silk_circles;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -191,9 +310,6 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use pac_silk_lines;
-			use pac_silk_arcs;
-			use pac_silk_circles;
 			line_cursor   : pac_silk_lines.cursor;
 			arc_cursor    : pac_silk_arcs.cursor;
 			circle_cursor : pac_silk_circles.cursor;

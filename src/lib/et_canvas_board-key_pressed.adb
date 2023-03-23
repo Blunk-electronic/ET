@@ -167,8 +167,12 @@ is
 		case key is
 			when GDK_LC_a =>
 				noun := NOUN_ASSY;
-				set_status (status_move_object);
+				set_status (et_canvas_board_assy_doc.status_move_object);
 
+			when GDK_LC_s =>
+				noun := NOUN_SILKSCREEN;
+				set_status (et_canvas_board_assy_doc.status_move_object);
+				
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
 				set_status (status_move_device);
@@ -192,6 +196,9 @@ is
 				case noun is
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
+
+					when NOUN_SILKSCREEN =>
+						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
 						
 					when NOUN_DEVICE =>		
 						move_electrical_device (KEYBOARD, point);
@@ -227,7 +234,12 @@ is
 						if clarification_pending then
 							et_canvas_board_assy_doc.select_object;
 						end if;
-					
+
+					when NOUN_SILKSCREEN =>
+						if clarification_pending then
+							et_canvas_board_silkscreen.select_object;
+						end if;
+						
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							select_electrical_device;
@@ -471,6 +483,9 @@ begin -- key_pressed
 			et_canvas_board_tracks.reset_airwires;
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
+
+			et_canvas_board_assy_doc.reset_preliminary_object;
+			et_canvas_board_silkscreen.reset_preliminary_object;
 			
 		when GDK_F11 =>
 			et_canvas_schematic.previous_module;

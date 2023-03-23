@@ -232,6 +232,22 @@ Commands and Verb-Noun key sequences
 
 	|VNS| m a
 
+
+
+#. Silkscreen
+
+##. Draw
+
+	.. code-block::
+
+		draw silkscreen top line [width] [from x] [from y] [to x] [to y]
+
+	|VNS| d l
+
+
+##. Move
+
+	|VNS| m s
 	
 	
 +++++++

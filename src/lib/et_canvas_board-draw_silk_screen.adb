@@ -52,6 +52,7 @@ is
 	use et_board_shapes_and_text;
 	use pac_geometry_2;	
 
+	use et_canvas_board_silkscreen;
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
@@ -71,13 +72,48 @@ is
 
 	
 	
-	procedure query_line (c : in pac_silk_lines.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		
-		draw_line (
-			line		=> to_line_fine (element (c)),
-			width		=> element (c).width);
+	procedure query_line (c : in pac_silk_lines.cursor) is 
+		line : type_silk_line renames element (c);
 
+		procedure draw_unchanged is begin
+			draw_line (to_line_fine (line), line.width);
+		end draw_unchanged;
+
+	begin
+		set_line_width (context.cr, type_view_coordinate (line.width));
+		
+		if is_selected (c, face) then
+			set_highlight_brightness;
+
+			case verb is
+				when VERB_MOVE =>
+					if preliminary_object.ready then
+						declare
+							line_tmp : type_silk_line := line;
+							POA : type_point renames preliminary_object.point_of_attack;
+						begin
+							case preliminary_object.tool is
+								when MOUSE =>
+									move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
+
+								when KEYBOARD =>
+									move_line_to (line_tmp, POA, cursor_main.position);
+							end case;
+
+							draw_line (to_line_fine (line_tmp), line.width);
+						end;
+					end if;
+
+				when others =>
+					draw_unchanged;
+					
+			end case;
+			
+			set_default_brightness;
+		else
+			-- draw the line as it is:
+			draw_unchanged;
+		end if;
 	end query_line;
 
 	

@@ -57,6 +57,25 @@ package et_board_ops.silkscreen is
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level);
 
+
+	-- Returns all lines in the vicinity of the given point:
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_silk_lines.list;
+
+
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_silk_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+	
 	
 	-- Draws an arc in the PCB silk_screen.
 	procedure draw_silk_screen_arc (
