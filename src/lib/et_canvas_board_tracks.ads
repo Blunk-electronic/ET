@@ -37,18 +37,22 @@
 -- DESCRIPTION:
 -- 
 
--- with ada.containers;   			       	use ada.containers;
--- with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers;   			       	use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.box;							use gtk.box;
 with gtk.list_store;					use gtk.list_store;			
 
 with et_canvas_general;					use et_canvas_general;
 with et_canvas_board;
+
+with et_geometry;						use et_geometry;
 with et_pcb_coordinates;				use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_2;
 
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
+
+with et_conductor_segment.boards;		use et_conductor_segment.boards;
 
 with et_pcb_stack;						use et_pcb_stack;
 with et_net_names;						use et_net_names;
@@ -137,6 +141,12 @@ package et_canvas_board_tracks is
 		& "to draw track." 
 		& status_hint_for_abort;
 
+	status_move_track : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move track segment." 
+		& status_hint_for_abort;
 	
 
 	proposed_airwires : pac_proposed_airwires.list;
@@ -182,7 +192,75 @@ package et_canvas_board_tracks is
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_point);
+
+
+
+
+	-- Before moving or ripping-up we
+	-- collect preliminary information using this type:
+	type type_preliminary_segment is record
+		-- This flag indicates that the segment has been
+		-- clarified among the proposed segments:
+		ready		: boolean := false;
+
+		-- This tells the GUI whether the mouse or the
+		-- cursor position is to be used when drawing the segment:
+		tool		: type_tool := MOUSE;
+
+		-- net_name		: pac_net_name.bounded_string := no_name;
+		shape			: type_shape := LINE;
+		signal_layer	: type_signal_layer := signal_layer_default;
+		line			: type_conductor_line;
+		arc				: type_conductor_arc;
+	end record;
+
+	-- The place where preliminary information of
+	-- a segment is stored:
+	preliminary_segment : type_preliminary_segment;
+
+
+
+	-- Clears preliminary_segment.ready.
+	-- Clears the proposed segments.
+	procedure clear_preliminary_segment;
 	
+
+	-- When segments are proposed, we classify them by their shape:
+	type type_proposed_segment (shape : type_shape) is record
+		case shape is
+			when LINE =>
+				line		: type_conductor_line; -- the line candidate itself
+	
+			when ARC =>
+				arc			: type_conductor_arc;  -- the arc candidate itself
+
+			when CIRCLE =>
+				null; -- CS
+
+		end case;
+	end record;
+
+
+	-- All the proposed segments are collected via a list:
+	package pac_proposed_segments is new indefinite_doubly_linked_lists (type_proposed_segment);
+	use pac_proposed_segments;
+
+	-- Here we store the proposed segments:
+	proposed_segments : pac_proposed_segments.list;
+
+	-- A selected segment among the proposed segments is held here.
+	-- After clarification (among the proposed segments),
+	-- this cursor points to the selected segment candidate:
+	selected_segment : pac_proposed_segments.cursor;
+	
+
+	
+	procedure select_track;
+
+	procedure move_track (
+		tool	: in type_tool;
+		point	: in type_point);				   
+
 
 	
 end et_canvas_board_tracks;

@@ -108,7 +108,7 @@ package et_modes.board is
 		NOUN_TEXT,
 		NOUN_TEXT_SIZE,
 		NOUN_TEXT_LINE_WIDTH,
--- 		TRACK,
+		NOUN_TRACK,
 		NOUN_VALUE,
 		NOUN_VIA,
 		NOUN_VIAS,

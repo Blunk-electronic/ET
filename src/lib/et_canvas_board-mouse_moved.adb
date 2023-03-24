@@ -67,6 +67,11 @@ is begin
 					if et_canvas_board_silkscreen.preliminary_object.ready then
 						redraw_board;
 					end if;
+
+				when NOUN_TRACK =>
+					if et_canvas_board_tracks.preliminary_segment.ready then
+						redraw_board;
+					end if;
 					
 				when NOUN_DEVICE =>
 					if preliminary_electrical_device.ready then

@@ -172,6 +172,10 @@ is
 			when GDK_LC_s =>
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_assy_doc.status_move_object);
+
+			when GDK_LC_r =>
+				noun := NOUN_TRACK;
+				set_status (et_canvas_board_tracks.status_move_track);
 				
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
@@ -200,6 +204,9 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
 						
+					when NOUN_TRACK =>
+						et_canvas_board_tracks.move_track (KEYBOARD, point);
+
 					when NOUN_DEVICE =>		
 						move_electrical_device (KEYBOARD, point);
 						
@@ -238,6 +245,11 @@ is
 					when NOUN_SILKSCREEN =>
 						if clarification_pending then
 							et_canvas_board_silkscreen.select_object;
+						end if;
+
+					when NOUN_TRACK =>
+						if clarification_pending then
+							et_canvas_board_tracks.select_track;
 						end if;
 						
 					when NOUN_DEVICE =>

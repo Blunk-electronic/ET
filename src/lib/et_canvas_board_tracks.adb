@@ -688,6 +688,38 @@ package body et_canvas_board_tracks is
 	end make_path;
 		
 
+
+
+	-- Clears the proposed_segments.
+	-- Resets selected_segment:
+	procedure clear_proposed_segments is begin
+		proposed_segments.clear;
+		selected_segment := pac_proposed_segments.no_element;
+	end clear_proposed_segments;
+	
+	
+	procedure clear_preliminary_segment is begin
+		preliminary_segment.ready := false;
+		preliminary_segment.tool := MOUSE;
+		clear_proposed_segments;
+	end clear_preliminary_segment;
+
+	
+	procedure select_track is
+	begin
+		null;
+	end select_track;
+	
+	
+	procedure move_track (
+		tool	: in type_tool;
+		point	: in type_point)
+	is
+	begin
+		null;
+	end move_track;
+
+	
 	
 end et_canvas_board_tracks;
 
