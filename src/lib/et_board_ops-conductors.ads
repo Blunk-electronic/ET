@@ -148,6 +148,31 @@ package et_board_ops.conductors is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level);
 
+
+	-- Returns all lines in the given signal layer
+	-- in the vicinity of the given point:
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_lines.list;
+	
+
+	-- Moves a line segment.
+	-- If the net name is given, then the process consumes
+	-- less time. The given net must exist. Otherwise an exception
+	-- is raised:
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point;
+		log_threshold	: in type_log_level;
+		net_name		: in pac_net_name.bounded_string := no_name); -- reset_n
+
+	
 	
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 	procedure draw_track_arc (

@@ -52,6 +52,10 @@ with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_stop_mask;						use et_stop_mask;
 
+-- IMPORTANT:
+-- This is about drawing lines in assy doc, silkscreen, stop mask, stencil
+-- and freetracks in conductor layers.
+-- Conductor segments connected with a net are handled in et_canvas_board_tracks.
 
 package et_canvas_board_lines is
 

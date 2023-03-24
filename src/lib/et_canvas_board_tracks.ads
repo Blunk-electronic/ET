@@ -61,6 +61,12 @@ with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_ratsnest;						use et_ratsnest;
 
 
+-- IMPORTANT:
+-- This is about drawing conductor segments which are connected
+-- with a net.
+-- Freetracks in conductor layers are handled in et_canvas_board_lines.
+
+
 package et_canvas_board_tracks is
 
 	use et_canvas_board.pac_canvas;
@@ -205,8 +211,10 @@ package et_canvas_board_tracks is
 
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the segment:
-		tool		: type_tool := MOUSE;
-
+		tool			: type_tool := MOUSE;
+		
+		point_of_attack : type_point;
+		
 		-- net_name		: pac_net_name.bounded_string := no_name;
 		shape			: type_shape := LINE;
 		signal_layer	: type_signal_layer := signal_layer_default;
@@ -227,6 +235,8 @@ package et_canvas_board_tracks is
 
 	-- When segments are proposed, we classify them by their shape:
 	type type_proposed_segment (shape : type_shape) is record
+		net_name : pac_net_name.bounded_string := no_name;
+		
 		case shape is
 			when LINE =>
 				line		: type_conductor_line; -- the line candidate itself

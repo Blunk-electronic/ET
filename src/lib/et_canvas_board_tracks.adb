@@ -706,17 +706,168 @@ package body et_canvas_board_tracks is
 
 	
 	procedure select_track is
+		use pac_net_name;
 	begin
-		null;
+		-- On every call of this procedure we advance from one
+		-- proposed segment to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_segment
+		-- moves back to the start of the list of proposed segments:
+		if next (selected_segment) /= pac_proposed_segments.no_element then
+			next (selected_segment);
+		else
+			selected_segment := proposed_segments.first;
+		end if;
+
+		-- show the net name of the selected airwire in the status bar
+		set_status ("selected net " & to_string (element (selected_segment).net_name) 
+			& ". " & status_next_object_clarification);
+		
 	end select_track;
 	
+
+
+	procedure find_segments (
+	   point : in type_point)
+	is 
+		use pac_conductor_lines;
+		use pac_conductor_arcs;
+		
+		lines : pac_conductor_lines.list;
+		arcs : pac_conductor_arcs.list;
+		-- circles : pac_conductor_circles.list;
+
+		procedure query_line (c : in pac_conductor_lines.cursor) is begin
+			proposed_segments.append ((
+				net_name	=> no_name, -- CS
+				shape		=> LINE,
+				line		=> element (c)));
+		end query_line;
+
+		
+		procedure collect (layer : in type_signal_layer) is 
+			use et_board_ops.conductors;
+		begin
+			lines := get_lines (current_active_module, layer, point, get_catch_zone, log_threshold + 1);
+			lines.iterate (query_line'access);
+  			-- CS arcs, circles
+		end collect;
+	
+	begin
+		log (text => "locating segment ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Collect all objects in the vicinity of the given point
+		-- and transfer them to the list proposed_segments:
+		-- CS should depend on enabled signal layer
+		for ly in 1 .. deepest_conductor_layer (current_active_module) loop
+			collect (ly);
+		end loop;
+
+		
+		-- evaluate the number of segments found here:
+		case proposed_segments.length is
+			when 0 =>
+				reset_request_clarification;
+				clear_preliminary_segment;
+				
+			when 1 =>
+				preliminary_segment.ready := true;
+				selected_segment := proposed_segments.first;
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+				preliminary_segment.ready := true;
+
+				-- preselect the segment
+				selected_segment := proposed_segments.first;
+		end case;
+		
+		log_indentation_down;
+	end find_segments;
+
+
 	
 	procedure move_track (
 		tool	: in type_tool;
 		point	: in type_point)
 	is
+
+		-- Assigns the final position after the move to the selected segment.
+		-- Resets variable preliminary_segment:
+		procedure finalize is 
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_segment /= pac_proposed_segments.no_element then
+				declare
+					use et_board_ops.conductors;
+					segment : type_proposed_segment renames element (selected_segment);
+				begin
+					case segment.shape is
+						when LINE =>
+							move_line (
+								module_cursor	=> current_active_module,
+								line			=> segment.line,
+								point_of_attack	=> preliminary_segment.point_of_attack,
+								destination		=> point,
+								log_threshold	=> log_threshold);
+       
+						when ARC =>
+							null; -- CS
+
+						when CIRCLE =>
+							null; -- CS
+					end case;
+				end;
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_move_track);
+			clear_preliminary_segment;
+		end finalize;
+			
+		
 	begin
-		null;
+		-- Initially the preliminary_segment is not ready.
+		if not preliminary_segment.ready then
+
+			-- Set the tool being used:
+			preliminary_segment.tool := tool;
+
+			preliminary_segment.point_of_attack := point;
+			
+			if not clarification_pending then
+				-- Locate all segments in the vicinity of the given point:
+				find_segments (point);
+				
+				-- NOTE: If many segments have been found, then
+				-- clarification is now pending.
+
+				-- If find_segments has found only one segment
+				-- then the flag preliminary_segment.ready is set true.
+
+			else
+				-- Here the clarification procedure ends.
+				-- A segment has been selected (indicated by selected_segment)
+				-- via procedure selected_segment.
+				-- By setting preliminary_segment.ready, the selected
+				-- segment will be drawn at the tool position
+				-- when segments are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected segment will be assigned its final position.
+				preliminary_segment.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			finalize;
+		end if;
+
 	end move_track;
 
 	

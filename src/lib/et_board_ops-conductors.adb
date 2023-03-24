@@ -532,6 +532,137 @@ package body et_board_ops.conductors is
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 	end draw_track_line;
 
+
+	function get_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		point			: in type_point;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_lines.list
+	is
+		result : pac_conductor_lines.list;
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+
+			procedure query_line (c : in pac_conductor_lines.cursor) is
+				use pac_conductor_lines;
+				line : type_conductor_line renames element (c);
+			begin
+				if line.layer = layer then
+					if in_catch_zone (
+						line	=> line,
+						width	=> line.width,
+						point	=> point,
+						zone	=> catch_zone)
+					then
+						result.append (line);
+					end if;
+				end if;
+			end query_line;
+
+			procedure query_net (c : in pac_nets.cursor) is
+				use et_nets;
+				net : type_net renames element (c);
+			begin
+				net.route.lines.iterate (query_line'access);
+			end query_net;
+			
+		begin
+			module.nets.iterate (query_net'access);
+		end query_module;
+			
+	begin
+		log (text => "looking up segments at" & to_string (point)
+			 & " in signal layer " & to_string (layer)
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+		return result;
+	end get_lines;
+	
+
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		point_of_attack	: in type_point;
+		destination		: in type_point;
+		log_threshold	: in type_log_level;
+		net_name		: in pac_net_name.bounded_string := no_name) -- reset_n
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			net_cursor : pac_nets.cursor;
+
+			procedure query_line (line : in out type_conductor_line) is
+			begin
+				-- case coordinates is
+					-- when ABSOLUTE =>
+						move_line_to (line, point_of_attack, destination);
+						-- null;
+					-- when RELATIVE =>
+						-- null;
+						-- CS
+				-- end case;
+			end query_line;
+
+			procedure query_net (c : in pac_nets.cursor) is
+				use et_nets;
+				net : type_net renames element (c);
+				line_cursor : pac_conductor_lines.cursor;
+			begin
+				line_cursor := net.route.lines.find (line);
+				-- module.board.silk_screen.top.lines.update_element (line_cursor, query_line'access);
+				null;
+			end query_net;
+			
+		begin
+			if net_name = no_name then
+				module.nets.iterate (query_net'access);
+			else
+				net_cursor := module.nets.find (net_name);
+				-- module.nets.update_element (net_cursor, update_net'access);
+				-- CS
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " signal layer" & to_string (line.layer) 
+			& " moving line segment " & to_string (line)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_line;
+
+
+	
 	
 	procedure draw_track_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
