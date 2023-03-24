@@ -267,6 +267,12 @@ package et_canvas_board_tracks is
 	
 	procedure select_track;
 
+	function is_selected (
+		line_cursor	: in pac_conductor_lines.cursor)
+		return boolean;
+
+
+	
 	procedure move_track (
 		tool	: in type_tool;
 		point	: in type_point);				   

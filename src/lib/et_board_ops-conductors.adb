@@ -603,43 +603,56 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level;
 		net_name		: in pac_net_name.bounded_string := no_name) -- reset_n
 	is
+		use pac_conductor_lines;
+		use et_nets;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
 			net_cursor : pac_nets.cursor;
-
-			procedure query_line (line : in out type_conductor_line) is
-			begin
-				-- case coordinates is
-					-- when ABSOLUTE =>
-						move_line_to (line, point_of_attack, destination);
-						-- null;
-					-- when RELATIVE =>
-						-- null;
-						-- CS
-				-- end case;
-			end query_line;
+			proceed : aliased boolean := true;
+			
 
 			procedure query_net (c : in pac_nets.cursor) is
-				use et_nets;
 				net : type_net renames element (c);
 				line_cursor : pac_conductor_lines.cursor;
 			begin
+				net_cursor := c;
 				line_cursor := net.route.lines.find (line);
-				-- module.board.silk_screen.top.lines.update_element (line_cursor, query_line'access);
-				null;
+				if line_cursor /= pac_conductor_lines.no_element then
+					proceed := false; -- abort iteration
+				end if;
 			end query_net;
+
+
+			procedure update_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				procedure move (line : in out type_conductor_line) is begin
+					move_line_to (line, point_of_attack, destination);
+				end;
+
+				line_cursor : pac_conductor_lines.cursor;
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				line_cursor := net.route.lines.find (line);
+				net.route.lines.update_element (line_cursor, move'access);
+			end update_net;
 			
 		begin
 			if net_name = no_name then
-				module.nets.iterate (query_net'access);
+				-- Find the net that contains the given line segment:
+				iterate (module.nets, query_net'access, proceed'access);
+				-- Now net_cursor points to the target net.
+				
 			else
 				net_cursor := module.nets.find (net_name);
-				-- module.nets.update_element (net_cursor, update_net'access);
-				-- CS
 			end if;
+
+			module.nets.update_element (net_cursor, update_net'access);			
 		end query_module;
 
 		
@@ -659,6 +672,8 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
 	end move_line;
 
 

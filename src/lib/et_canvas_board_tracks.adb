@@ -725,6 +725,34 @@ package body et_canvas_board_tracks is
 	end select_track;
 	
 
+	function is_selected (
+		line_cursor	: in pac_conductor_lines.cursor)
+		return boolean
+	is 
+		use pac_conductor_lines;
+	begin
+		if proposed_segments.is_empty then
+			return false;
+		else
+			if selected_segment /= pac_proposed_segments.no_element then
+				declare
+					candidate : type_conductor_line renames element (line_cursor);
+					selected : type_proposed_segment renames element (selected_segment);
+				begin
+					-- CS test selected.shape
+					if selected.line = candidate then
+						return true;
+					else
+						return false;
+					end if;
+				end;
+			else
+				return false;
+			end if;
+		end if;
+	end is_selected;
+
+	
 
 	procedure find_segments (
 	   point : in type_point)

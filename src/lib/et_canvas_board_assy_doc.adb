@@ -80,6 +80,7 @@ package body et_canvas_board_assy_doc is
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.line_face = face then
+						-- CS test selected.shape
 						if candidate = selected.line then
 							return true;
 						else
@@ -110,6 +111,7 @@ package body et_canvas_board_assy_doc is
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.arc_face = face then
+						-- CS test selected.shape						
 						if candidate = selected.arc then
 							return true;
 						else
@@ -140,6 +142,7 @@ package body et_canvas_board_assy_doc is
 					selected : type_proposed_object renames element (selected_object);
 				begin
 					if selected.circle_face = face then
+						-- CS test selected.shape
 						if candidate = selected.circle then
 							return true;
 						else
