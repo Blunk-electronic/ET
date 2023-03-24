@@ -885,7 +885,7 @@ begin -- key_pressed
 								verb := VERB_PLACE;
 								status_enter_noun;
 								
-							when GDK_LC_r =>
+							when GDK_LC_o =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
 

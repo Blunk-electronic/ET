@@ -45,7 +45,7 @@ non-electrical devices (without a representation in the schematic).
 		rotate device R1 absolute 10
 		rotate device R1 relative -45
 
-	|VNS| r d
+	|VNS| o d
 
 #. Rotate non-electrical device
 
@@ -54,7 +54,7 @@ non-electrical devices (without a representation in the schematic).
 		rotate device FD1 absolute 10
 		rotate device MH1 relative -45
 
-	|VNS| r n
+	|VNS| o n
 
 
 	
@@ -118,7 +118,7 @@ Commands and Verb-Noun key sequences
 
 		route net
 
-	|VNS| t n
+	|VNS| r n
 
 	
 

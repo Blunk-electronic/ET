@@ -109,7 +109,7 @@ Commands and Verb-Noun key sequences
 
 		rotate unit IC1 [A]
 
-	|VNS| r u
+	|VNS| o u
 
 
 #. Set package variant
@@ -185,7 +185,7 @@ Placeholders for Name, Value, Partcode and Purpose
 
 		rotate name IC1 [A]
 
-	|VNS| r n
+	|VNS| o n
 		
 
 #. Rotate value
@@ -194,7 +194,7 @@ Placeholders for Name, Value, Partcode and Purpose
 
 		rotate value IC1 [A]
 
-	|VNS| r v
+	|VNS| o v
 		
 
 #. Rotate purpose
@@ -203,7 +203,7 @@ Placeholders for Name, Value, Partcode and Purpose
 
 		rotate purpose RN1 [A]
 
-	|VNS| r p
+	|VNS| o p
 	
 
 		
@@ -297,7 +297,7 @@ Commands and Verb-Noun key sequences
 
 	|VNS| p l
 
-	Rotate: right mouse click or key r
+	Rotate: right mouse click or key o
 	
 	
 #. Place tag label

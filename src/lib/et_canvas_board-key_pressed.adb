@@ -546,11 +546,11 @@ begin -- key_pressed
 								verb := VERB_PLACE;
 								status_enter_noun;
 
-							when GDK_LC_r =>
+							when GDK_LC_o =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
 								
-							when GDK_LC_t =>
+							when GDK_LC_r =>
 								verb := VERB_ROUTE;
 								status_enter_noun;
 
