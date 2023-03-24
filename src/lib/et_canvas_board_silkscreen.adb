@@ -342,7 +342,7 @@ package body et_canvas_board_silkscreen is
 
 			else
 				-- Here the clarification procedure ends.
-				-- A object has been selected (indicated by select_object)
+				-- A object has been selected (indicated by selected_object)
 				-- via procedure select_object.
 				-- By setting preliminary_object.ready, the selected
 				-- object will be drawn at the tool position
