@@ -175,19 +175,65 @@ procedure draw_conductors is
 	current_layer : type_signal_layer;
 
 
+	procedure set_default_brightness is begin
+		set_color_conductor (context.cr, current_layer, NORMAL);
+	end set_default_brightness;
+		
+	procedure set_highlight_brightness is begin
+		set_color_conductor (context.cr, current_layer, BRIGHT);
+	end set_highlight_brightness;
+	
+
 	
 -- LINES, ARCS, CIRCLES
 	
-	procedure query_line (c : in pac_conductor_lines.cursor) is begin
+	procedure query_line (c : in pac_conductor_lines.cursor) is 
+		line : type_conductor_line renames element (c);
 
+		procedure draw_unchanged is begin
+			draw_line (to_line_fine (line), line.width);
+		end draw_unchanged;
+
+	begin
 		-- Draw the line if it is in the current layer:
-		if element (c).layer = current_layer then
+		if line.layer = current_layer then
 			
-			set_line_width (context.cr, type_view_coordinate (element (c).width));
-			
-			draw_line (
-				line		=> to_line_fine (element (c)),
-				width		=> element (c).width);
+			set_line_width (context.cr, type_view_coordinate (line.width));
+
+			-- If the segment is selected, then it must be drawn highlighted:
+			if is_selected (c) then
+				set_highlight_brightness;
+
+				case verb is
+					-- If the segment is being moved, then a temporarily
+					-- segment must be drawn instead of the original one:
+					when VERB_MOVE =>
+						if preliminary_segment.ready then
+							declare
+								line_tmp : type_conductor_line := line;
+								POA : type_point renames preliminary_segment.point_of_attack;
+							begin
+								case preliminary_segment.tool is
+									when MOUSE =>
+										move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
+
+									when KEYBOARD =>
+										move_line_to (line_tmp, POA, cursor_main.position);
+								end case;
+
+								draw_line (to_line_fine (line_tmp), line.width);
+							end;
+						end if;
+
+					when others =>
+						draw_unchanged;
+						
+				end case;
+
+				set_default_brightness;
+			else
+				draw_unchanged;
+			end if;
 
 		end if;
 	end query_line;

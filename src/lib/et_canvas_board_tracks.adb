@@ -698,11 +698,11 @@ package body et_canvas_board_tracks is
 	end clear_proposed_segments;
 	
 	
-	procedure clear_preliminary_segment is begin
+	procedure reset_preliminary_segment is begin
 		preliminary_segment.ready := false;
 		preliminary_segment.tool := MOUSE;
 		clear_proposed_segments;
-	end clear_preliminary_segment;
+	end reset_preliminary_segment;
 
 	
 	procedure select_track is
@@ -796,7 +796,7 @@ package body et_canvas_board_tracks is
 		case proposed_segments.length is
 			when 0 =>
 				reset_request_clarification;
-				clear_preliminary_segment;
+				reset_preliminary_segment;
 				
 			when 1 =>
 				preliminary_segment.ready := true;
@@ -856,7 +856,7 @@ package body et_canvas_board_tracks is
 				
 			log_indentation_down;			
 			set_status (status_move_track);
-			clear_preliminary_segment;
+			reset_preliminary_segment;
 		end finalize;
 			
 		

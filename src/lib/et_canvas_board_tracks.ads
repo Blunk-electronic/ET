@@ -230,7 +230,7 @@ package et_canvas_board_tracks is
 
 	-- Clears preliminary_segment.ready.
 	-- Clears the proposed segments.
-	procedure clear_preliminary_segment;
+	procedure reset_preliminary_segment;
 	
 
 	-- When segments are proposed, we classify them by their shape:
