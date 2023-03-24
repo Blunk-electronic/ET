@@ -338,7 +338,7 @@ package body et_canvas_board_silkscreen is
 				-- clarification is now pending.
 
 				-- If find_objects has found only one object
-				-- then the flag preliminary_object.read is set true.
+				-- then the flag preliminary_object.ready is set true.
 
 			else
 				-- Here the clarification procedure ends.
