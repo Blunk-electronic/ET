@@ -806,7 +806,6 @@ package body et_canvas_board_tracks is
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-				preliminary_segment.ready := true;
 
 				-- preselect the segment
 				selected_segment := proposed_segments.first;
@@ -897,7 +896,6 @@ package body et_canvas_board_tracks is
 		end if;
 
 	end move_track;
-
 	
 	
 end et_canvas_board_tracks;
