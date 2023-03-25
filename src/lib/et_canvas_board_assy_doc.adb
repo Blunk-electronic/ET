@@ -258,7 +258,6 @@ package body et_canvas_board_assy_doc is
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-				preliminary_object.ready := true;
 
 				-- preselect the object
 				selected_object := proposed_objects.first;

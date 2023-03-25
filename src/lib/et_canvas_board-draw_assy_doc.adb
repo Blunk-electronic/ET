@@ -99,6 +99,8 @@ is
 
 							draw_line (to_line_fine (line_tmp), line.width);
 						end;
+					else
+						draw_unchanged;
 					end if;
 
 				when others =>
