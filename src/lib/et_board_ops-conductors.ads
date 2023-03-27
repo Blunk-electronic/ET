@@ -36,6 +36,11 @@
 --
 --   ToDo: 
 
+
+with ada.containers;   			       	use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+
 with et_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
@@ -149,6 +154,18 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+	
+
+	
+	-- If segment lines are connected in a certain area, then
+	-- they can be identified by their parent net:
+	type type_get_lines_result is record
+		net		: pac_net_name.bounded_string;
+		line	: type_conductor_line;
+	end record;
+
+	package pac_get_lines_result is new doubly_linked_lists (type_get_lines_result);
+	
 	-- Returns all lines in the given signal layer
 	-- in the vicinity of the given point:
 	function get_lines (
@@ -157,7 +174,11 @@ package et_board_ops.conductors is
 		point			: in type_point;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_conductor_lines.list;
+		return pac_get_lines_result.list;
+
+
+
+
 	
 
 	-- Moves a line segment.

@@ -537,15 +537,17 @@ package body et_board_ops.conductors is
 		point			: in type_point;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_conductor_lines.list
+		return pac_get_lines_result.list
 	is
-		result : pac_conductor_lines.list;
+		result : pac_get_lines_result.list;
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
-
+			net_name : pac_net_name.bounded_string;
+			
 			procedure query_line (c : in pac_conductor_lines.cursor) is
 				use pac_conductor_lines;
 				line : type_conductor_line renames element (c);
@@ -557,7 +559,7 @@ package body et_board_ops.conductors is
 						point	=> point,
 						zone	=> catch_zone)
 					then
-						result.append (line);
+						result.append ((net_name, line));
 					end if;
 				end if;
 			end query_line;
@@ -566,13 +568,15 @@ package body et_board_ops.conductors is
 				use et_nets;
 				net : type_net renames element (c);
 			begin
+				net_name := key (c);
 				net.route.lines.iterate (query_line'access);
 			end query_net;
 			
 		begin
 			module.nets.iterate (query_net'access);
 		end query_module;
-			
+
+		
 	begin
 		log (text => "looking up segments at" & to_string (point)
 			 & " in signal layer " & to_string (layer)

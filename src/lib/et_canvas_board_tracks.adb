@@ -710,14 +710,17 @@ package body et_canvas_board_tracks is
 		return string
 	is
 		segment : type_proposed_segment renames element (segment_cursor);
+		use pac_net_name;
+
+		net_name : constant string := to_string ("net " & segment.net_name) & " / ";
 	begin
 		case segment.shape is
 			when LINE =>
-				return to_string (line => segment.line, width => false);
+				return net_name & to_string (line => segment.line, width => false);
 					-- no need to show the linewidth
 
 			when ARC =>
-				return to_string (segment.arc);
+				return net_name & to_string (segment.arc);
 
 			when CIRCLE =>
 				return ""; -- CS
@@ -779,18 +782,22 @@ package body et_canvas_board_tracks is
 	procedure find_segments (
 	   point : in type_point)
 	is 
-		use pac_conductor_lines;
 		use pac_conductor_arcs;
 		
-		lines : pac_conductor_lines.list;
+		use et_board_ops.conductors;
+
+		use pac_get_lines_result;
+		lines : pac_get_lines_result.list;
+
+		-- use pac_get_arcs_result;
 		arcs : pac_conductor_arcs.list;
 		-- circles : pac_conductor_circles.list;
 
-		procedure query_line (c : in pac_conductor_lines.cursor) is begin
+		procedure query_line (c : in pac_get_lines_result.cursor) is begin
 			proposed_segments.append ((
-				net_name	=> no_name, -- CS
+				net_name	=> element (c).net, -- RESET_N
 				shape		=> LINE,
-				line		=> element (c)));
+				line		=> element (c).line)); -- the segment itself
 		end query_line;
 
 		
