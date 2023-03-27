@@ -227,6 +227,13 @@ procedure draw_conductors is
 							draw_unchanged;
 						end if;
 
+					when VERB_RIPUP =>
+						if preliminary_segment.ready then
+							draw_line (to_line_fine (line), line.width);
+						else
+							draw_unchanged;
+						end if;
+						
 					when others =>
 						draw_unchanged;
 						

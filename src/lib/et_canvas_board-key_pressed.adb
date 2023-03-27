@@ -456,6 +456,53 @@ is
 		end case;
 	end route;
 
+
+	procedure ripup is 
+		use et_canvas_board_tracks;
+	begin
+		case key is
+			when GDK_LC_n =>
+				noun := NOUN_NET;
+
+
+			-- If space pressed, then the operator wishes to operate via keyboard.
+			when GDK_Space =>
+				case noun is
+					when NOUN_NET =>
+						et_canvas_board_tracks.ripup (point);
+						
+					when others => null;
+				end case;
+
+				
+			-- If "m" pressed, then a ripup mode is being selected.
+			when GDK_LC_m =>
+				case noun is
+					when NOUN_NET =>
+						null;
+						-- CS ripup mode
+						
+					when others => null;
+				end case;
+
+				
+			-- If page down pressed, then the operator is clarifying:
+			when GDK_page_down =>
+				case noun is
+					when NOUN_NET =>
+						if clarification_pending then
+							et_canvas_board_tracks.select_track;
+						end if;
+						
+					when others => null;							
+				end case;
+
+				
+			when others => status_noun_invalid;
+		end case;
+	end ripup;
+
+
 	
 	procedure update is 
 		use et_board_ops.ratsnest;
@@ -567,6 +614,10 @@ begin -- key_pressed
 								verb := VERB_ROUTE;
 								status_enter_noun;
 
+							when GDK_LC_i =>
+								verb := VERB_RIPUP;
+								status_enter_noun;
+								
 							when GDK_LC_u =>
 								verb := VERB_UPDATE;
 								status_enter_noun;
@@ -598,6 +649,7 @@ begin -- key_pressed
 							when VERB_PLACE		=> place;
 							when VERB_ROTATE	=> rotate;
 							when VERB_ROUTE		=> route;
+							when VERB_RIPUP		=> ripup;
 							when VERB_UPDATE	=> update;
 							when others => null; -- CS
 						end case;

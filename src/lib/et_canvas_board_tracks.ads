@@ -154,7 +154,15 @@ package et_canvas_board_tracks is
 		& "to move track segment." 
 		& status_hint_for_abort;
 	
+	status_ripup : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to ripup track segment." 
+		& status_hint_for_abort;
 
+
+	
 	proposed_airwires : pac_proposed_airwires.list;
 	use pac_proposed_airwires;
 	
@@ -264,7 +272,8 @@ package et_canvas_board_tracks is
 	selected_segment : pac_proposed_segments.cursor;
 	
 
-	
+	-- Advances the cursor selected_segment 
+	-- on each call of this procedure.
 	procedure select_track;
 
 	function is_selected (
@@ -272,10 +281,27 @@ package et_canvas_board_tracks is
 		return boolean;
 
 
+
+	-- Locates segments in the vicinity of the given point
+	-- and stores them in proposed_segments.
+	-- Depending on how many segments have been found, the behaviour is:
+	-- - If only one segment found, then it is selected and 
+	--   the flag preliminary_segment.ready will be set.
+	-- - If more than one segment found, then clarification is requested.
+	--   The first segment of them is selected.
+	procedure find_segments (
+	   point : in type_point);
+	
 	
 	procedure move_track (
 		tool	: in type_tool;
 		point	: in type_point);				   
+
+
+	-- CS type_ripup_mode
+	
+	procedure ripup (
+		point	: in type_point);
 
 
 	

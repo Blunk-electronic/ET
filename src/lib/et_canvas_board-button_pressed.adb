@@ -135,6 +135,15 @@ is
 				end case;
 								
 
+			when VERB_RIPUP =>
+				case noun is
+					when NOUN_NET =>
+						et_canvas_board_tracks.ripup (point);
+
+					when others => null;
+				end case;
+
+				
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
@@ -265,6 +274,25 @@ is
 							et_canvas_board_tracks.select_airwire;
 						else
 							next_bend_style (et_canvas_board_tracks.preliminary_track.path);
+						end if;
+						
+					when others => null;							
+				end case;
+
+
+			when VERB_RIPUP =>
+				case noun is
+					when NOUN_NET =>
+						-- As long as a clarification of the 
+						-- airwires is pending, a right click
+						-- advances to the next airwire.
+						-- If no clarification is requested, then
+						-- a right click changes the bend style:
+						if clarification_pending then
+							et_canvas_board_tracks.select_track;
+						else
+							-- CS ripup mode
+							null;
 						end if;
 						
 					when others => null;							

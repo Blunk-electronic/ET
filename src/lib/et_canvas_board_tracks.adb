@@ -781,10 +781,10 @@ package body et_canvas_board_tracks is
 		end collect;
 	
 	begin
-		log (text => "locating segment ...", level => log_threshold);
+		log (text => "locating segments ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all objects in the vicinity of the given point
+		-- Collect all segments in the vicinity of the given point
 		-- and transfer them to the list proposed_segments:
 		-- CS should depend on enabled signal layer
 		for ly in 1 .. deepest_conductor_layer (current_active_module) loop
@@ -896,6 +896,82 @@ package body et_canvas_board_tracks is
 		end if;
 
 	end move_track;
+
+ 
+	procedure ripup (
+		point	: in type_point)
+	is
+
+		-- Deletes the selected segment.
+		-- Resets variable preliminary_segment:
+		procedure finalize is begin
+			log (text => "finalizing ripup ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_segment /= pac_proposed_segments.no_element then
+				null;
+-- 				declare
+-- 					use et_board_ops.conductors;
+-- 					segment : type_proposed_segment renames element (selected_segment);
+-- 				begin
+-- 					case segment.shape is
+-- 						when LINE =>
+-- 							move_line (
+-- 								module_cursor	=> current_active_module,
+-- 								line			=> segment.line,
+-- 								point_of_attack	=> preliminary_segment.point_of_attack,
+-- 								destination		=> point,
+-- 								log_threshold	=> log_threshold);
+--        
+-- 						when ARC =>
+-- 							null; -- CS
+-- 
+-- 						when CIRCLE =>
+-- 							null; -- CS
+-- 					end case;
+-- 				end;
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_ripup);
+			reset_preliminary_segment;
+		end finalize;
+		
+	begin
+		-- Initially the preliminary_segment is not ready.
+		if not preliminary_segment.ready then
+
+			if not clarification_pending then
+				-- Locate all segments in the vicinity of the given point:
+				find_segments (point);
+				
+				-- NOTE: If many segments have been found, then
+				-- clarification is now pending.
+
+				-- If find_segments has found only one segment
+				-- then the flag preliminary_segment.ready is set true.
+
+			else
+				-- Here the clarification procedure ends.
+				-- A segment has been selected (indicated by selected_segment)
+				-- via procedure selected_segment.
+				-- By setting preliminary_segment.ready, the selected
+				-- segment will be drawn at the tool position
+				-- when segments are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected segment will be assigned its final position.
+				preliminary_segment.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			finalize;
+		end if;
+
+	end ripup;
+
 	
 	
 end et_canvas_board_tracks;
