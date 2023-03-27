@@ -161,17 +161,13 @@ package et_canvas_board_silkscreen is
 	procedure select_object;
 
 
-	-- Locates objects in the vicinity of the given point.
+	-- Locates objects in the vicinity of the given point
+	-- and stores them in proposed_objects.
 	-- Depending on how many objects have been found, the behaviour is:
 	-- - If only one object found, then it is selected and 
 	--   the flag preliminary_object.ready will be set.
-	--   This causes the selected object to be drawn at the tool position.
 	-- - If more than one object found, then clarification is requested.
-	--   No object will be moved.
-	--   The next call of this procedure sets preliminary_object.ready
-	--   so that the selected object will be drawn at the tool position.
-	--   The next call of this procedure assigns the final position 
-	--   to the selected_object:
+	--   The first object of them is selected.
 	procedure find_objects (
 		point : in type_point);
 
