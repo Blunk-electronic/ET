@@ -648,12 +648,15 @@ package body et_kicad_to_native is
 						log (text => board_track & "line", level => log_threshold + 4);
 						log_indentation_up;
 
-						log (text => before & to_string (line), level => log_threshold + 4);
+						log (text => before & to_string (line, true), -- log incl. width
+							 level => log_threshold + 4);
+						
 
 						move (line.start_point);
 						move (line.end_point);
 						
-						log (text => now & to_string (line), level => log_threshold + 4);
+						log (text => now & to_string (line, true),  -- log incl. width
+							 level => log_threshold + 4);
 						
 						log_indentation_down;
 					end move_line;
@@ -1775,12 +1778,14 @@ package body et_kicad_to_native is
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
+					log (text => before & to_string (line, true),  -- log incl. width
+						 level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
+					log (text => now & to_string (line, true),  -- log incl. width
+						 level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;

@@ -58,6 +58,14 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+
+	-- Returns the start/end point and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		line	: in type_conductor_line;
+		width	: in boolean := false)				   
+		return string;
+	
 	
 	-- Returns true if the given line segments are connected.
 	-- Criteria for "Connected" are: 

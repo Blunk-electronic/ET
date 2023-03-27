@@ -41,6 +41,25 @@ with ada.strings;			use ada.strings;
 
 package body et_conductor_segment.boards is
 
+
+	function to_string (
+		line	: in type_conductor_line;
+		width	: in boolean := false)
+		return string
+	is 
+		l : type_conductor_line renames line;
+
+		text : string := to_string (pac_geometry_2.type_line (l))
+				& "/ ly " & to_string (l.layer);
+	begin
+		if width then
+			return text & "/ width " & to_string (l.width);
+		else
+			return text;
+		end if;
+	end to_string;
+
+	
 	function are_connected (
 		line_1, line_2	: in type_conductor_line;
 		observe_layer	: in boolean := true)					   

@@ -45,6 +45,7 @@ package body et_conductor_segment is
 	
 	
 -- LINES	
+
 	
 	function to_polygon (
 		line 		: in type_conductor_line;

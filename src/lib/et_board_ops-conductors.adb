@@ -203,9 +203,7 @@ package body et_board_ops.conductors is
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
-			" drawing line" &
-			" in layer " & to_string (line.layer) & " " &
-			to_string (line),
+			" drawing " & to_string (line, true),  -- log incl. width
 			level => log_threshold);
 
 		-- locate module
@@ -659,8 +657,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " signal layer" & to_string (line.layer) 
-			& " moving line segment " & to_string (line)
+			& " moving " & to_string (line, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);

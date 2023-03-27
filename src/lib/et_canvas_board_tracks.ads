@@ -270,8 +270,13 @@ package et_canvas_board_tracks is
 	-- After clarification (among the proposed segments),
 	-- this cursor points to the selected segment candidate:
 	selected_segment : pac_proposed_segments.cursor;
-	
 
+	
+	function to_string (
+		segment_cursor : in pac_proposed_segments.cursor)
+		return string;
+
+	
 	-- Advances the cursor selected_segment 
 	-- on each call of this procedure.
 	procedure select_track;

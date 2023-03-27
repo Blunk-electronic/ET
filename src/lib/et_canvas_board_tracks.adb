@@ -704,6 +704,27 @@ package body et_canvas_board_tracks is
 		clear_proposed_segments;
 	end reset_preliminary_segment;
 
+
+	function to_string (
+		segment_cursor : in pac_proposed_segments.cursor)
+		return string
+	is
+		segment : type_proposed_segment renames element (segment_cursor);
+	begin
+		case segment.shape is
+			when LINE =>
+				return to_string (line => segment.line, width => false);
+					-- no need to show the linewidth
+
+			when ARC =>
+				return to_string (segment.arc);
+
+			when CIRCLE =>
+				return ""; -- CS
+				-- return to_string (segment.circle);
+		end case;
+	end to_string;
+
 	
 	procedure select_track is
 		use pac_net_name;
@@ -718,9 +739,10 @@ package body et_canvas_board_tracks is
 			selected_segment := proposed_segments.first;
 		end if;
 
-		-- show the net name of the selected airwire in the status bar
-		set_status ("selected net " & to_string (element (selected_segment).net_name) 
-			& ". " & status_next_object_clarification);
+		-- Show information about the selected segment in the status bar:
+		set_status ("selected: "
+			& to_string (selected_segment) & ". "
+			& status_next_object_clarification);
 		
 	end select_track;
 	
