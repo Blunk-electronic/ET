@@ -416,6 +416,64 @@ package body et_board_ops.assy_doc is
 
 
 
+	procedure delete (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_doc_line;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_doc_lines;
+			line_cursor : pac_doc_lines.cursor;
+		begin
+			case face is
+				when TOP =>
+					-- Locate the given line in the top documentation layer:
+					line_cursor := module.board.assy_doc.top.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_doc_lines.no_element then
+						module.board.assy_doc.top.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+
+				when BOTTOM =>
+					-- Locate the given line in the bottom documentation layer:
+					line_cursor := module.board.assy_doc.bottom.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_doc_lines.no_element then
+						module.board.assy_doc.bottom.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " deleting in assy doc." & to_string (line),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete;
+
+
+	
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;

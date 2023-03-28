@@ -175,7 +175,7 @@ package et_canvas_board_silkscreen is
 	
 -- PLACING:
 
-	-- procedure draw_silk_line;
+	-- see package et_canvas_board_lines
 	
 
 	
@@ -186,12 +186,27 @@ package et_canvas_board_silkscreen is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move object." 
+		& "to move object in silkscreen." 
 		& status_hint_for_abort;
 
 	
 	procedure move_object (
 		tool	: in type_tool;
+		point	: in type_point);				   
+
+
+
+-- DELETE:
+
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object in silkscreen." 
+		& status_hint_for_abort;
+
+	
+	procedure delete_object (
 		point	: in type_point);				   
 
 	

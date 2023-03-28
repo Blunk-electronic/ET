@@ -103,7 +103,15 @@ package et_board_ops.silkscreen is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
+	
+	-- Deletes the given line in the given module:
+	procedure delete (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_silk_line;
+		log_threshold	: in type_log_level);
 
+	
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;

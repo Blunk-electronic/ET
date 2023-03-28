@@ -1023,7 +1023,7 @@ package body et_canvas_board_tracks is
 			else
 				-- Here the clarification procedure ends.
 				-- A segment has been selected (indicated by selected_segment)
-				-- via procedure selected_segment.
+				-- via procedure select_segment.
 				-- preliminary_segment.ready := true;
 
 				finalize;

@@ -268,16 +268,10 @@ package body et_canvas_board_assy_doc is
 
 	
 	
--- PLACING:
-	
-	-- see et_canvas_board_lines
-
 
 	
 
 -- MOVE:
-
-
 	
 	procedure move_object (
 		tool	: in type_tool;
@@ -363,6 +357,75 @@ package body et_canvas_board_assy_doc is
 	end move_object;
 
 	
+	
+
+-- DELETE:
+	
+	procedure delete_object (
+		point	: in type_point)
+	is
+		-- Deletes the selected object.
+		-- Resets variable preliminary_object:
+		procedure finalize is 
+			use et_board_ops.assy_doc;
+		begin
+			log (text => "finalizing delete ...", level => log_threshold);
+			log_indentation_up;
+
+			if selected_object /= pac_proposed_objects.no_element then
+				declare
+					object : type_proposed_object renames element (selected_object);
+				begin
+					case object.shape is
+						when LINE =>
+							delete (
+								module_cursor	=> current_active_module,
+								face			=> object.line_face,
+								line			=> object.line,
+								log_threshold	=> log_threshold);
+
+						when ARC =>
+							null; -- CS
+
+						when CIRCLE =>
+							null; -- CS
+					end case;
+				end;
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_delete_object);
+			reset_preliminary_object;
+		end finalize;
+
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			
+			-- NOTE: If many segments have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag preliminary_object.ready is set true.
+
+			if preliminary_object.ready then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected (indicated by selected_object)
+			-- via procedure selected_object.
+
+			finalize;
+			reset_request_clarification;
+		end if;
+	end delete_object;
+
 	
 end et_canvas_board_assy_doc;
 

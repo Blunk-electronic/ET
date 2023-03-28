@@ -163,7 +163,7 @@ Commands and Verb-Noun key sequences
 .. 
 .. 		place via [net name]
 
-	|VNS| d v
+	|VNS| del v
 
 	
 
@@ -243,6 +243,11 @@ Commands and Verb-Noun key sequences
 	|VNS| m a
 
 
+##. Delete
+
+	|VNS| del a
+
+	
 
 #. Silkscreen
 
@@ -259,6 +264,11 @@ Commands and Verb-Noun key sequences
 
 	|VNS| m s
 	
+
+##. Delete
+
+	|VNS| del s
+
 	
 +++++++
 Modules

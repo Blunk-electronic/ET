@@ -146,6 +146,12 @@ is
 				
 			when VERB_DELETE =>
 				case noun is
+					when NOUN_ASSY =>
+						et_canvas_board_assy_doc.delete_object (point);
+
+					when NOUN_SILKSCREEN =>
+						et_canvas_board_silkscreen.delete_object (point);
+					
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						delete_non_electrical_device (MOUSE, point);
 
@@ -248,6 +254,16 @@ is
 
 			when VERB_DELETE =>
 				case noun is
+					when NOUN_ASSY =>
+						if clarification_pending then
+							et_canvas_board_assy_doc.select_object;
+						end if;
+
+					when NOUN_SILKSCREEN =>
+						if clarification_pending then
+							et_canvas_board_silkscreen.select_object;
+						end if;
+					
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
 							select_non_electrical_device;

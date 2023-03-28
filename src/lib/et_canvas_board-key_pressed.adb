@@ -56,6 +56,15 @@ is
 
 	procedure delete is begin
 		case key is
+			when GDK_LC_a =>
+				noun := NOUN_ASSY;
+				set_status (et_canvas_board_assy_doc.status_delete_object);
+
+			when GDK_LC_s =>
+				noun := NOUN_SILKSCREEN;
+				set_status (et_canvas_board_silkscreen.status_delete_object);
+
+			
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (status_delete_device);
@@ -73,6 +82,13 @@ is
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
 				case noun is
+					when NOUN_ASSY =>
+						et_canvas_board_assy_doc.delete_object (point);
+
+					when NOUN_SILKSCREEN =>
+						et_canvas_board_silkscreen.delete_object (point);
+
+
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						delete_non_electrical_device (KEYBOARD, point);
 
@@ -86,6 +102,16 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
 				case noun is
+					when NOUN_ASSY =>
+						if clarification_pending then
+							et_canvas_board_assy_doc.select_object;
+						end if;
+
+					when NOUN_SILKSCREEN =>
+						if clarification_pending then
+							et_canvas_board_silkscreen.select_object;
+						end if;
+					
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
 							select_non_electrical_device;
@@ -171,7 +197,7 @@ is
 
 			when GDK_LC_s =>
 				noun := NOUN_SILKSCREEN;
-				set_status (et_canvas_board_assy_doc.status_move_object);
+				set_status (et_canvas_board_silkscreen.status_move_object);
 
 			when GDK_LC_r =>
 				noun := NOUN_TRACK;
