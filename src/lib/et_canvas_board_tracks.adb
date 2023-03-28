@@ -1005,7 +1005,7 @@ package body et_canvas_board_tracks is
 		
 	begin
 		-- Initially the preliminary_segment is not ready.
-		if not preliminary_segment.ready then
+		-- if not preliminary_segment.ready then
 
 			if not clarification_pending then
 				-- Locate all segments in the vicinity of the given point:
@@ -1017,22 +1017,22 @@ package body et_canvas_board_tracks is
 				-- If find_segments has found only one segment
 				-- then the flag preliminary_segment.ready is set true.
 
+				if preliminary_segment.ready then
+					finalize;
+				end if;
 			else
 				-- Here the clarification procedure ends.
 				-- A segment has been selected (indicated by selected_segment)
 				-- via procedure selected_segment.
-				-- By setting preliminary_segment.ready, the selected
-				-- segment will be drawn at the tool position
-				-- when segments are drawn on the canvas.
-				-- Furtheron, on the next call of this procedure
-				-- the selected segment will be assigned its final position.
-				preliminary_segment.ready := true;
+				-- preliminary_segment.ready := true;
+
+				finalize;
 				reset_request_clarification;
 			end if;
 			
-		else
-			finalize;
-		end if;
+		-- else
+		-- 	finalize;
+		-- end if;
 
 	end ripup;
 

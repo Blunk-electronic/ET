@@ -120,7 +120,17 @@ Commands and Verb-Noun key sequences
 
 	|VNS| r n
 
+
 	
+#. Ripping-up routed segments
+
+	.. code-block::
+
+		ripup net
+
+	|VNS| i n
+
+Select the ripup mode by pressing key m (single segment or all segments of the net).
 
 ++++
 Vias
