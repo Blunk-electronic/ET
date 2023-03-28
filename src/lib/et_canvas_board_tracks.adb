@@ -926,39 +926,73 @@ package body et_canvas_board_tracks is
 
 	end move_track;
 
- 
+
+	procedure reset_ripup_mode is begin
+		ripup_mode := SINGLE_SEGMENT;
+	end reset_ripup_mode;
+	
+
+	procedure next_ripup_mode is
+		PT : type_preliminary_track renames preliminary_track;
+
+		i : constant natural := type_ripup_mode'pos (ripup_mode);
+		-- i points now to the current ripup mode
+
+		-- get the index of the last available ripup mode:
+		max : constant natural := type_ripup_mode'pos (type_ripup_mode'last);
+	begin
+		if i < max then
+			-- jump to next mode
+			ripup_mode := type_ripup_mode'succ (type_ripup_mode'val (i));
+		else 
+			-- After the last mode, jump back to the first mode:
+			ripup_mode := type_ripup_mode'first;
+		end if;
+
+		-- Show the ripup mode in the status bar:
+		set_status ("ripup mode: " & type_ripup_mode'image (ripup_mode));
+	end next_ripup_mode;
+
+	
+	
 	procedure ripup (
 		point	: in type_point)
 	is
-
-		-- Deletes the selected segment.
+		-- Rips up the selected single segment or the whole net.
 		-- Resets variable preliminary_segment:
 		procedure finalize is begin
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_segment /= pac_proposed_segments.no_element then
-				null;
--- 				declare
--- 					use et_board_ops.conductors;
--- 					segment : type_proposed_segment renames element (selected_segment);
--- 				begin
--- 					case segment.shape is
--- 						when LINE =>
--- 							move_line (
--- 								module_cursor	=> current_active_module,
--- 								line			=> segment.line,
--- 								point_of_attack	=> preliminary_segment.point_of_attack,
--- 								destination		=> point,
--- 								log_threshold	=> log_threshold);
---        
--- 						when ARC =>
--- 							null; -- CS
--- 
--- 						when CIRCLE =>
--- 							null; -- CS
--- 					end case;
--- 				end;
+				declare
+					use et_board_ops.conductors;
+					segment : type_proposed_segment renames element (selected_segment);
+				begin
+					case segment.shape is
+						when LINE =>
+							case ripup_mode is
+								when SINGLE_SEGMENT =>
+									ripup_line_segment (
+										module_cursor	=> current_active_module,
+										net_name		=> segment.net_name,	
+										line			=> segment.line,
+										log_threshold	=> log_threshold);
+
+								when WHOLE_NET =>
+									ripup_all_segments (
+										module_cursor	=> current_active_module,
+										net_name		=> segment.net_name,
+										log_threshold	=> log_threshold);
+							end case;
+       
+						when ARC =>
+							null; -- CS
+
+						when CIRCLE =>
+							null; -- CS
+					end case;
+				end;
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -966,6 +1000,7 @@ package body et_canvas_board_tracks is
 			log_indentation_down;			
 			set_status (status_ripup);
 			reset_preliminary_segment;
+			reset_ripup_mode;
 		end finalize;
 		
 	begin

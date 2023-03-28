@@ -216,6 +216,23 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+	-- Rips up the given line segment in the given net.
+	-- If the net or the segment does not exist then
+	-- nothing happens and an error message is logged:
+	procedure ripup_line_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level);
+
+
+	-- Rips up all segments of the given net:
+	procedure ripup_all_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level);
+
+	
 
 -- FILL ZONES
 	

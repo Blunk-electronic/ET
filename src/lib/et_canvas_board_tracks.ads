@@ -211,7 +211,8 @@ package et_canvas_board_tracks is
 
 
 	-- Before moving or ripping-up we
-	-- collect preliminary information using this type:
+	-- collect preliminary information using this type.
+	-- In case of a ripup operation, only the flag "ready" is relevant.
 	type type_preliminary_segment is record
 		-- This flag indicates that the segment has been
 		-- clarified among the proposed segments:
@@ -303,7 +304,17 @@ package et_canvas_board_tracks is
 		point	: in type_point);				   
 
 
-	-- CS type_ripup_mode
+	type type_ripup_mode is (
+		SINGLE_SEGMENT,
+		WHOLE_NET);
+		-- CS other modes ?
+
+	ripup_mode : type_ripup_mode := SINGLE_SEGMENT;
+
+	procedure reset_ripup_mode;
+	
+	procedure next_ripup_mode;
+	
 	
 	procedure ripup (
 		point	: in type_point);

@@ -284,15 +284,15 @@ is
 				case noun is
 					when NOUN_NET =>
 						-- As long as a clarification of the 
-						-- airwires is pending, a right click
-						-- advances to the next airwire.
+						-- segment is pending, a right click
+						-- advances to the next segment.
 						-- If no clarification is requested, then
-						-- a right click changes the bend style:
+						-- a right click changes the ripup mode:
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
 						else
-							-- CS ripup mode
-							null;
+							-- select ripup mode
+							et_canvas_board_tracks.next_ripup_mode;
 						end if;
 						
 					when others => null;							

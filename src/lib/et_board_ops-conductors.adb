@@ -830,7 +830,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			-- A net belonging to a net requires the net to be located in the given module:
+			-- Locate the given net in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
@@ -921,10 +921,129 @@ package body et_board_ops.conductors is
 				process		=> ripup_named_track'access);
 
 			update_ratsnest (module_cursor, log_threshold + 1);
-		end if;
-		
+		end if;		
 	end ripup_track_segment;
 
+
+
+	procedure ripup_line_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			-- Locate the given net in the given module::
+			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+
+			use et_nets;
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				-- Locate the given segment in the given net:
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor := net.route.lines.find (line);
+			begin
+				if line_cursor /= pac_conductor_lines.no_element then
+					delete (net.route.lines, line_cursor);
+				else
+					null; -- CS message "segment not found" ?
+				end if;
+			end query_net;
+			
+
+		begin			
+			if net_exists (net_cursor) then
+
+				pac_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_net'access);
+
+			else
+				net_not_found (net_name);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			" net " & to_string (net_name) &
+			" ripping up segment" & to_string (line, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end ripup_line_segment;
+
+
+
+	procedure ripup_all_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			-- Locate the given net in the given module::
+			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+
+			use et_nets;
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				-- Locate the given segment in the given net:
+				use pac_conductor_lines;
+			begin
+				net.route.lines.clear;
+				net.route.arcs.clear;
+				-- CS net.route.circles.clear;
+			end query_net;
+			
+
+		begin			
+			if net_exists (net_cursor) then
+
+				pac_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_net'access);
+
+			else
+				net_not_found (net_name);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			" net " & to_string (net_name) &
+			" ripping all segments",
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end ripup_all_segments;
 
 	
 

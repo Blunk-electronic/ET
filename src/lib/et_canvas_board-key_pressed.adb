@@ -479,8 +479,7 @@ is
 			when GDK_LC_m =>
 				case noun is
 					when NOUN_NET =>
-						null;
-						-- CS ripup mode
+						next_ripup_mode;
 						
 					when others => null;
 				end case;
@@ -541,6 +540,7 @@ begin -- key_pressed
 			et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
 			et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
 			et_canvas_board_tracks.reset_airwires;
+			et_canvas_board_tracks.reset_ripup_mode;
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
 
