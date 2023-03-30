@@ -40,6 +40,7 @@
 with ada.containers;   		         	use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
 with et_ratsnest;						use et_ratsnest;
 with et_logging;						use et_logging;
@@ -55,7 +56,7 @@ package et_board_ops.ratsnest is
 	-- The list of returned points uses fixed point coordinates
 	-- as the tracks are placed by the operator (their ends are man-made):
 	function get_track_ends (
-		net_cursor : in et_schematic.pac_nets.cursor)
+		net_cursor : in pac_nets.cursor)
 		return pac_points.list;
 
 

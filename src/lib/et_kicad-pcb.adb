@@ -47,6 +47,7 @@ with et_import;
 with et_vias;
 with et_pcb_stack;
 with et_symbols;
+with et_nets;
 
 with et_pcb_contour;			use et_pcb_contour;
 
@@ -4705,10 +4706,10 @@ package body et_kicad.pcb is
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
 				mod_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
-				module   : in out type_module) is
-
+				module   : in out type_module) 
+			is
 				-- The nets of the module are copied here (in their present state):
-				use pac_nets;
+				use et_nets.pac_nets;
 				nets 		: et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				

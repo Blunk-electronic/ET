@@ -232,7 +232,7 @@ package et_schematic_ops is
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string)
-		return et_schematic.pac_nets.cursor;
+		return pac_nets.cursor;
 
 
 	-- Returns the name of the active assembly variant of the given module:

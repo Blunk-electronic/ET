@@ -330,7 +330,7 @@ package body et_nets is
 		return (not proceed);
 	end on_strand;
 
-
+	
 
 	function get_strand (
 		net		: in type_net;
@@ -495,6 +495,22 @@ package body et_nets is
 
 		
 	end merge_nets;
+
+
+
+	procedure iterate (
+		nets	: in pac_nets.map;
+		process	: not null access procedure (position : in pac_nets.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_nets;
+		c : pac_nets.cursor := nets.first;
+	begin
+		while c /= pac_nets.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
 
 	

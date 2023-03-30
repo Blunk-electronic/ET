@@ -227,18 +227,18 @@ package et_schematic is
 
 
 
-	package pac_nets is new ordered_maps (
-		key_type		=> pac_net_name.bounded_string,
-		element_type	=> type_net);
+	-- package pac_nets is new ordered_maps (
+	-- 	key_type		=> pac_net_name.bounded_string,
+	-- 	element_type	=> type_net);
 
 
 	
 
-	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		nets	: in pac_nets.map;
-		process	: not null access procedure (position : in pac_nets.cursor);
-		proceed	: not null access boolean);
+	-- -- Iterates the nets. Aborts the process when the proceed-flag goes false:
+	-- procedure iterate (
+	-- 	nets	: in pac_nets.map;
+	-- 	process	: not null access procedure (position : in pac_nets.cursor);
+	-- 	proceed	: not null access boolean);
 
 	
 	
@@ -368,14 +368,6 @@ package et_schematic is
 
 
 	
--- COMMITS (required for undo/redo operations via the GUI):
-	
--- 	package pac_commit_net is new et_commit.pac_commit (pac_nets.map);
--- 	use pac_commit_net;
--- 	
--- 	package pac_commit_nets is new vectors (
--- 		index_type 		=> et_commit.type_commit_index, 
--- 		element_type	=> pac_commit_net.type_commit);
 
 	
 -- MODULE

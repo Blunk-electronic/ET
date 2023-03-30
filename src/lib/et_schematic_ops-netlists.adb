@@ -225,8 +225,8 @@ package body et_schematic_ops.netlists is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in et_schematic.type_module) 
 				is
-					use et_schematic.pac_nets;
-					net_cursor_sch : et_schematic.pac_nets.cursor := module.nets.first;
+					use et_nets.pac_nets;
+					net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
 
 					net_name : pac_net_name.bounded_string;
 					all_ports : et_nets.type_ports;
@@ -294,9 +294,9 @@ package body et_schematic_ops.netlists is
 					-- no element then it is about the default variant.
 					
 					-- loop in nets of given module
-					while net_cursor_sch /= et_schematic.pac_nets.no_element loop
+					while net_cursor_sch /= et_nets.pac_nets.no_element loop
 
-						net_name := et_schematic.pac_nets.key (net_cursor_sch);
+						net_name := et_nets.pac_nets.key (net_cursor_sch);
 						
 						log (text => "net " 
 							 & pac_net_name.to_string (prefix) 

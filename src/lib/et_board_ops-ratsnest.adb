@@ -36,7 +36,6 @@
 --
 --   ToDo: 
 
-with et_nets;							use et_nets;
 with et_schematic;						use et_schematic;
 with et_conductor_segment.boards;
 with et_string_processing;				use et_string_processing;
@@ -51,7 +50,7 @@ package body et_board_ops.ratsnest is
 
 
 	function get_track_ends (
-		net_cursor : in et_schematic.pac_nets.cursor)
+		net_cursor : in pac_nets.cursor)
 		return pac_points.list
 	is
 		use et_conductor_segment.boards;

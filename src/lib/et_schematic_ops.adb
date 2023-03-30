@@ -1709,7 +1709,7 @@ package body et_schematic_ops is
 			
 		begin
 			-- Iterate through the nets of the module:
-			et_schematic.iterate (module.nets, query_net'access, proceed'access);
+			iterate (module.nets, query_net'access, proceed'access);
 		end query_nets;
 
 		

@@ -55,16 +55,16 @@ package body et_routing is
 
 		-- Get a cursor to the net connected with the terminal.
 		-- If there is no net connected then we return a not-connected-status:
-		net : constant et_schematic.pac_nets.cursor := 
+		net : constant pac_nets.cursor := 
 			et_schematic_ops.get_net (module, device, pac_terminals.key (terminal));
 		
 		net_class	: type_net_class;
 		status		: type_get_terminal_clearance_result;
 
-		use et_schematic.pac_nets;
+		use pac_nets;
 	begin
 
-		if net = et_schematic.pac_nets.no_element then
+		if net = pac_nets.no_element then
 			status := (connected => false);
 		else
 			--log (text => "net " & enclose_in_quotes (to_string (et_schematic.pac_nets.key (net))));

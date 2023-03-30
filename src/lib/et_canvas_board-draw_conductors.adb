@@ -45,6 +45,8 @@ with et_conductor_text.boards;		use et_conductor_text.boards;
 with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
+with et_nets;						use et_nets;
+
 with et_thermal_relief;				use et_thermal_relief;
 with et_pcb_stack;					use et_pcb_stack;
 with et_design_rules;				use et_design_rules;
@@ -117,7 +119,8 @@ procedure draw_conductors is
 
 	
 	use et_schematic;
-	use et_schematic.pac_nets;
+	
+	use pac_nets;
 
 	use pac_geometry_2;
 	use pac_polygons;

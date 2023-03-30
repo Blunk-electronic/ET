@@ -2452,7 +2452,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module)
 			is
-				use et_schematic;
+				use et_nets;
 				inserted : boolean;
 				cursor : pac_nets.cursor;
 			begin -- insert_net

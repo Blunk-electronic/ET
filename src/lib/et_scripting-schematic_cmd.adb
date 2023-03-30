@@ -321,8 +321,7 @@ is
 		use et_canvas_schematic_nets;
 		use pac_proposed_segments;
 		
-		net_cursor : et_schematic.pac_nets.cursor := 
-			locate_net (current_active_module, net);
+		net_cursor : pac_nets.cursor := locate_net (current_active_module, net);
 
 		strand_cursor : pac_strands.cursor;
 		

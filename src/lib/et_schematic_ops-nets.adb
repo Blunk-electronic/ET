@@ -2846,7 +2846,7 @@ package body et_schematic_ops.nets is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.pac_nets;
+		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		function no_label_placed return string is begin

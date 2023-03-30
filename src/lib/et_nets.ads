@@ -44,6 +44,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
+with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
@@ -240,6 +241,7 @@ package et_nets is
 	end record;
 
 
+	
 	-- Returns the cursor to the strand at the given place.
 	-- If no strand found then the return is no_element:
 	function get_strand (
@@ -281,6 +283,33 @@ package et_nets is
 	procedure merge_nets (
 		net_1	: in out type_net;
 		net_2	: in out type_net);
+
+
+	use pac_net_name;
+
+	-- Many nets are to be collected in maps:
+	package pac_nets is new ordered_maps (
+		key_type		=> pac_net_name.bounded_string, -- RESET_N
+		element_type	=> type_net);
+
+
+	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		nets	: in pac_nets.map;
+		process	: not null access procedure (position : in pac_nets.cursor);
+		proceed	: not null access boolean);
+
+
+
+-- COMMITS (required for undo/redo operations via the GUI):
+	
+-- 	package pac_commit_net is new et_commit.pac_commit (pac_nets.map);
+-- 	use pac_commit_net;
+-- 	
+-- 	package pac_commit_nets is new vectors (
+-- 		index_type 		=> et_commit.type_commit_index, 
+-- 		element_type	=> pac_commit_net.type_commit);
+
 	
 end et_nets;
 

@@ -37,10 +37,10 @@
 --   ToDo: 
 
 
-with ada.containers;   	         use ada.containers;
+with ada.containers;   	         	use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_vias;					use et_vias;
+with et_vias;						use et_vias;
 
 
 package et_board_ops.vias is

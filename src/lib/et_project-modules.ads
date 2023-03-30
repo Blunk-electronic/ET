@@ -139,7 +139,7 @@ package et_project.modules is
 	-- to a parent module.
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
-		net			: in et_schematic.pac_nets.cursor;
+		net			: in et_nets.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
@@ -442,7 +442,7 @@ package et_project.modules is
 	-- "default" class will be returned:
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_schematic.pac_nets.cursor)  -- GND, RESET_N, ...
+		net		: in et_nets.pac_nets.cursor)  -- GND, RESET_N, ...
 		return et_pcb.type_net_class;
 
 

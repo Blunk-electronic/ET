@@ -260,10 +260,8 @@ package body et_project.modules is
 
 	
 	function netchanger_as_port_available (
-	-- Returns true if the given net provides a netchanger that may serve as port
-	-- to a parent module.
 		module		: in pac_generic_modules.cursor;
-		net			: in et_schematic.pac_nets.cursor;
+		net			: in et_nets.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 
 		return boolean 
 	is
@@ -518,7 +516,9 @@ package body et_project.modules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
+			use et_nets;
 			net_cursor : pac_nets.cursor;
 
 			-- The port being inquired is a net inside the submodule.
@@ -943,7 +943,7 @@ package body et_project.modules is
 
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_schematic.pac_nets.cursor) -- GND, RESET_N, ...
+		net		: in et_nets.pac_nets.cursor) -- GND, RESET_N, ...
 		return et_pcb.type_net_class
 	is
 		use et_pcb;
@@ -957,9 +957,10 @@ package body et_project.modules is
 			use pac_net_class_name;
 
 			use et_schematic;
+			use et_nets;
 			use pac_nets;
 		begin
-			if net = et_schematic.pac_nets.no_element then -- freetrack
+			if net = et_nets.pac_nets.no_element then -- freetrack
 				null;
 				-- CS load result with DRU settings (min track clearance, min track width, 
 				-- min via drill size)

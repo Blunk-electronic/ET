@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-with et_nets;						use et_nets;
+
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 
@@ -52,7 +52,7 @@ package body et_board_ops.vias is
 
 	
 	function get_via_positions (
-		net_cursor : in et_schematic.pac_nets.cursor)
+		net_cursor : in pac_nets.cursor)
 		return pac_points.list
 	is
 		use pac_points;

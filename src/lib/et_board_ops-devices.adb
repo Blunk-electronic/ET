@@ -852,7 +852,7 @@ package body et_board_ops.devices is
 
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.pac_nets.cursor;
+		net_cursor		: in et_nets.pac_nets.cursor;
 		observe_techno	: in boolean := false;
 		technology		: in type_assembly_technology := assembly_technology_default)
 		return pac_geometry_brd.pac_vectors.list

@@ -40,25 +40,7 @@ with ada.exceptions;
 
 package body et_schematic is
 
-
-
-	procedure iterate (
-		nets	: in pac_nets.map;
-		process	: not null access procedure (position : in pac_nets.cursor);
-		proceed	: not null access boolean)
-	is
-		use pac_nets;
-		c : pac_nets.cursor := nets.first;
-	begin
-		while c /= pac_nets.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-
-
-			
+				
 	function get_first_strand_on_sheet (
 		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)
