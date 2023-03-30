@@ -41,6 +41,9 @@ with ada.text_io;						use ada.text_io;
 
 with et_general;						use et_general;
 with et_schematic;						use et_schematic;
+with et_nets;							use et_nets;
+
+with et_commit;							use et_commit;
 
 
 package body et_undo_redo is
@@ -51,7 +54,7 @@ package body et_undo_redo is
 		noun	: in et_modes.schematic.type_noun)
 	is
 		use et_schematic;
-		-- use pac_commit_net;
+		use pac_net_commit;
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -59,8 +62,9 @@ package body et_undo_redo is
 		is
 			
 		begin
-			-- module.net_commits.append (make_commit (module.nets));
-			null;
+			increment (module.commit_index);
+			
+			module.net_commits.append (make_commit (module.nets));
 		end query_module;
 
 	begin
@@ -82,7 +86,7 @@ package body et_undo_redo is
 		noun	: in et_modes.board.type_noun)
 	is
 		use et_schematic;
-		-- use pac_commit_net;
+		use pac_net_commit;
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -90,8 +94,8 @@ package body et_undo_redo is
 		is
 			
 		begin
-			-- module.net_commits.append (make_commit (module.nets));
-			null;
+			increment (module.commit_index);			
+			module.net_commits.append (make_commit (module.nets));
 		end query_module;
 
 	begin
@@ -112,11 +116,15 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			
+			use pac_net_commit;
 		begin
-			-- module.net_commits.append (make_commit (module.nets));
-			-- module.nets.clear;
-			null;
+			if module.commit_index > 0 then
+				decrement (module.commit_index);
+			
+				module.nets := module.net_commits.last_element.item;
+				module.net_commits.delete_last;
+			end if;
+			
 		end query_module;
 
 		

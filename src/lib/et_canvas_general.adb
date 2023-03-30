@@ -1463,10 +1463,12 @@ package body pac_canvas is
 				-- Undo the last operation on ctrl-z
 				when GDK_LC_z =>
 					canvas.undo;
+					event_handled := true;
 
 				-- Redo the last operation on ctrl-y
 				when GDK_LC_y => -- CS shift + ctrl-z
 					canvas.redo;
+					event_handled := true;
 
 					
 				when others => null;

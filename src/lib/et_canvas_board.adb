@@ -1016,7 +1016,8 @@ package body et_canvas_board is
 		self : not null access type_view) 
 	is begin
 		-- put_line ("board undo");
-	    et_undo_redo.undo;
+		et_undo_redo.undo;
+		redraw;
 	end undo;
 
 	

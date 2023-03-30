@@ -38,7 +38,14 @@
 
 package et_commit is
 
-	subtype type_commit_index is positive range 1 .. 100; -- CS increase 
+	subtype type_commit_index is natural range 0 .. 100; -- CS increase 
+
+	procedure increment (
+		index	: in out type_commit_index);
+
+	procedure decrement (
+		index	: in out type_commit_index);
+
 
 	
 	generic

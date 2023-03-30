@@ -39,6 +39,26 @@ with ada.text_io;				use ada.text_io;
 
 
 package body et_commit is
+
+
+	procedure increment (
+		index	: in out type_commit_index)
+	is begin
+		index := index + 1;
+
+		put_line ("commit idx" & type_commit_index'image (index));
+	end increment;
+
+
+	procedure decrement (
+		index	: in out type_commit_index)
+	is begin
+		index := index - 1;
+
+		put_line ("commit idx" & type_commit_index'image (index));
+	end decrement;
+
+
 	
 
 	package body pac_commit is
@@ -65,7 +85,9 @@ package body et_commit is
 			result.item := item;
 			return result;
 		end make_commit;
-		
+
+
+		-- function get_item 
 	end pac_commit;
 
 	

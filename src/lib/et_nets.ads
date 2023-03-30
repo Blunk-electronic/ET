@@ -45,6 +45,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
+with ada.containers.vectors;
 
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
@@ -56,6 +57,8 @@ with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
 with et_netlists;
 with et_pcb;
+with et_commit;
+
 
 package et_nets is
 
@@ -301,14 +304,16 @@ package et_nets is
 
 
 
--- COMMITS (required for undo/redo operations via the GUI):
 	
--- 	package pac_commit_net is new et_commit.pac_commit (pac_nets.map);
--- 	use pac_commit_net;
--- 	
--- 	package pac_commit_nets is new vectors (
--- 		index_type 		=> et_commit.type_commit_index, 
--- 		element_type	=> pac_commit_net.type_commit);
+-- COMMITS (required for undo/redo operations via the GUI):
+	use et_commit;
+	
+	package pac_net_commit is new pac_commit (pac_nets.map);
+	use pac_net_commit;
+	
+	package pac_net_commits is new vectors (
+		index_type 		=> type_commit_index, 
+		element_type	=> pac_net_commit.type_commit);
 
 	
 end et_nets;

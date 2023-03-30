@@ -84,6 +84,7 @@ with et_meta;
 with et_design_rules;
 with et_commit;
 
+
 package et_schematic is
 
 	use pac_net_name;
@@ -373,6 +374,8 @@ package et_schematic is
 -- MODULE
 												 
 	type type_module is record
+		commit_index	: et_commit.type_commit_index := 1;
+		
 		meta			: et_meta.type_meta; -- for both schematic and layout
 
 		rules			: type_rules; -- design rules, erc rules ...
@@ -403,7 +406,7 @@ package et_schematic is
 		-- On adding, moving or deleting units the structure in 
 		-- selector "net" must be updated:
 		nets 	    	: pac_nets.map;
-		-- net_commits		: pac_commit_nets.vector;
+		net_commits		: pac_net_commits.vector;
 		
 		-- The assembly variants of the module.
 		-- (means which device is mounted or not or which device can have a different
