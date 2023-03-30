@@ -1459,6 +1459,15 @@ package body pac_canvas is
 				-- Save drawing on ctrl-s
 				when GDK_LC_s =>
 					canvas.save_drawing;
+
+				-- Undo the last operation on ctrl-z
+				when GDK_LC_z =>
+					canvas.undo;
+
+				-- Redo the last operation on ctrl-y
+				when GDK_LC_y => -- CS shift + ctrl-z
+					canvas.redo;
+
 					
 				when others => null;
 			end case;

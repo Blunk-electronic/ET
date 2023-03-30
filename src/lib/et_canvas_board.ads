@@ -281,6 +281,17 @@ package et_canvas_board is
 	-- et_canvas_schematic.save_module:
 	overriding procedure save_drawing (
 		self : not null access type_view);
+
+
+	
+-- UNDO / REDO:
+	
+	overriding procedure undo (
+		self : not null access type_view);
+
+	overriding procedure redo (
+		self : not null access type_view);
+
 	
 end et_canvas_board;
 

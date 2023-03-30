@@ -239,6 +239,7 @@ package body et_general is
 
 
 -- GENERICS
+
 	
 	package body stack_lifo is
 		s : array (1..max) of item;

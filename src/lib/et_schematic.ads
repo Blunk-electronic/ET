@@ -82,6 +82,7 @@ with et_devices;				use et_devices;
 with et_frames;
 with et_meta;
 with et_design_rules;
+with et_commit;
 
 package et_schematic is
 
@@ -364,8 +365,21 @@ package et_schematic is
 		-- CS ERC rules ?
 	end record;
 	
+
+
+	
+-- COMMITS (required for undo/redo operations via the GUI):
+	
+-- 	package pac_commit_net is new et_commit.pac_commit (pac_nets.map);
+-- 	use pac_commit_net;
+-- 	
+-- 	package pac_commit_nets is new vectors (
+-- 		index_type 		=> et_commit.type_commit_index, 
+-- 		element_type	=> pac_commit_net.type_commit);
+
 	
 -- MODULE
+												 
 	type type_module is record
 		meta			: et_meta.type_meta; -- for both schematic and layout
 
@@ -397,7 +411,8 @@ package et_schematic is
 		-- On adding, moving or deleting units the structure in 
 		-- selector "net" must be updated:
 		nets 	    	: pac_nets.map;
-
+		-- net_commits		: pac_commit_nets.vector;
+		
 		-- The assembly variants of the module.
 		-- (means which device is mounted or not or which device can have a different
 		-- value, partcode or purpose):

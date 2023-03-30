@@ -977,9 +977,19 @@ package pac_canvas is
 	procedure save_drawing (
 		self : not null access type_view) is null;
 
+	
+
+-- UNDO / REDO:
+	
+	procedure undo (
+		self : not null access type_view) is null;
+	
+	procedure redo (
+		self : not null access type_view) is null;
 
 
 
+	
 	
 --PRIMITIVE DRAW OPERATIONS------------------
 

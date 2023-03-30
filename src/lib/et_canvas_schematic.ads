@@ -354,6 +354,17 @@ package et_canvas_schematic is
 	overriding procedure save_drawing (
 		self : not null access type_view);
 
+
+	
+-- UNDO / REDO:
+	
+	overriding procedure undo (
+		self : not null access type_view);
+
+	overriding procedure redo (
+		self : not null access type_view);
+
+
 	
 end et_canvas_schematic;
 

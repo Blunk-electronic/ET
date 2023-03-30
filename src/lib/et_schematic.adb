@@ -370,6 +370,8 @@ package body et_schematic is
 		raise constraint_error;
 	end device_name_in_use;
 
+
+	
 		
 	function show_danger (danger : in type_danger) return string is
 		preamble : constant string (1..9) := " RISK OF ";

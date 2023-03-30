@@ -65,6 +65,8 @@ with et_canvas_schematic_units;			use et_canvas_schematic_units;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
+with et_undo_redo;
+
 
 package body et_canvas_schematic is
 
@@ -896,6 +898,22 @@ package body et_canvas_schematic is
 	is begin
 		save_module;
 	end save_drawing;
+
+
+	procedure undo (
+		self : not null access type_view) 
+	is begin
+		-- put_line ("schematic undo");
+	    et_undo_redo.undo;
+	end undo;
+
+	
+	procedure redo (
+		self : not null access type_view) 
+	is begin
+		-- put_line ("schematic redo");
+		et_undo_redo.redo;
+	end redo;
 
 	
 end et_canvas_schematic;

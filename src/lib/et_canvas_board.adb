@@ -72,6 +72,7 @@ with et_canvas_board_devices;		use et_canvas_board_devices;
 with et_canvas_board_assy_doc;		--use et_canvas_board_assy_doc;
 with et_canvas_board_silkscreen;	--use et_canvas_board_silkscreen;
 
+with et_undo_redo;
 
 package body et_canvas_board is
 
@@ -1007,6 +1008,24 @@ package body et_canvas_board is
 	is begin
 		save_module;
 	end save_drawing;
+
+
+
+	
+	procedure undo (
+		self : not null access type_view) 
+	is begin
+		-- put_line ("board undo");
+	    et_undo_redo.undo;
+	end undo;
+
+	
+	procedure redo (
+		self : not null access type_view) 
+	is begin
+		-- put_line ("board redo");
+		et_undo_redo.redo;
+	end redo;
 
 	
 end et_canvas_board;

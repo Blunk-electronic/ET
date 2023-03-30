@@ -53,6 +53,8 @@ with et_pcb;
 with et_netlists;
 with et_board_ops.ratsnest;
 
+with et_undo_redo;
+
 
 package body et_canvas_schematic_nets is
 
@@ -1080,6 +1082,8 @@ package body et_canvas_schematic_nets is
 			finalize_drag (
 				destination		=> position,
 				log_threshold	=> log_threshold + 1);
+
+			et_undo_redo.commit (verb, noun);
 		end if;		
 	end drag_segment;
 
