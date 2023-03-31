@@ -904,7 +904,8 @@ package body et_canvas_schematic is
 		self : not null access type_view) 
 	is begin
 		-- put_line ("schematic undo");
-	    et_undo_redo.undo;
+		et_undo_redo.undo;
+		redraw;
 	end undo;
 
 	
@@ -913,6 +914,7 @@ package body et_canvas_schematic is
 	is begin
 		-- put_line ("schematic redo");
 		et_undo_redo.redo;
+		redraw;
 	end redo;
 
 	

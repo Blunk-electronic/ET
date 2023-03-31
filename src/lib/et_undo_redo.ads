@@ -41,6 +41,7 @@ with et_project.modules;			use et_project.modules;
 
 with et_modes.schematic;
 with et_modes.board;
+with et_commit;						use et_commit;
 
 
 package et_undo_redo is
@@ -49,11 +50,13 @@ package et_undo_redo is
 
 
 	procedure commit (
+		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
 		noun	: in et_modes.schematic.type_noun);
 
 
 	procedure commit (
+		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
 		noun	: in et_modes.board.type_noun);
 

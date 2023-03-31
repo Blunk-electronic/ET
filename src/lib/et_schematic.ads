@@ -374,7 +374,7 @@ package et_schematic is
 -- MODULE
 												 
 	type type_module is record
-		commit_index	: et_commit.type_commit_index := 1;
+		commit_index	: et_commit.type_commit_index_zero_based := 0;
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
 

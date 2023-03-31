@@ -1026,6 +1026,7 @@ package body et_canvas_board is
 	is begin
 		-- put_line ("board redo");
 		et_undo_redo.redo;
+		redraw;
 	end redo;
 
 	

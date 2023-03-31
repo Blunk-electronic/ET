@@ -38,6 +38,8 @@
 -- 
 
 with ada.text_io;						use ada.text_io;
+with ada.containers;					use ada.containers;
+with ada.containers.vectors;
 
 with et_general;						use et_general;
 with et_schematic;						use et_schematic;
@@ -50,6 +52,7 @@ package body et_undo_redo is
 
 
 	procedure commit (
+		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
 		noun	: in et_modes.schematic.type_noun)
 	is
@@ -59,12 +62,10 @@ package body et_undo_redo is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
-		is
-			
-		begin
-			increment (module.commit_index);
-			
+		is begin
+			increment (module.commit_index);			
 			module.net_commits.append (make_commit (module.nets));
+			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
 	begin
@@ -82,6 +83,7 @@ package body et_undo_redo is
 	
 
 	procedure commit (
+		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
 		noun	: in et_modes.board.type_noun)
 	is
@@ -91,11 +93,10 @@ package body et_undo_redo is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
-		is
-			
-		begin
+		is begin
 			increment (module.commit_index);			
 			module.net_commits.append (make_commit (module.nets));
+			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
 	begin
@@ -117,12 +118,24 @@ package body et_undo_redo is
 			module		: in out type_module)
 		is
 			use pac_net_commit;
+			use pac_net_commits;
 		begin
 			if module.commit_index > 0 then
 				decrement (module.commit_index);
-			
+
+				-- put_line ("stack height A:" & count_type'image (module.net_commits.length));
+				-- put_line ("stack last idx:" & extended_index'image (module.net_commits.last_index));
+				
+				-- auf redo stack: module.net_commits.last_element.item;
+				module.net_commits.delete_last;
+
+				
+				decrement (module.commit_index);
 				module.nets := module.net_commits.last_element.item;
 				module.net_commits.delete_last;
+				-- put_line ("stack height B:" & count_type'image (module.net_commits.length));
+			else
+				put_line ("nothing to undo");
 			end if;
 			
 		end query_module;

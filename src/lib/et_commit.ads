@@ -38,13 +38,25 @@
 
 package et_commit is
 
-	subtype type_commit_index is natural range 0 .. 100; -- CS increase 
+
+	-- The commit stage regards the state of the design
+	-- before and after a certain operation:
+	type type_commit_stage is (
+		PRE,
+		POST);
+	
+	
+	subtype type_commit_index_zero_based is natural range 0 .. 100;  
+	-- CS increase upper limit
+	
+	subtype type_commit_index is type_commit_index_zero_based 
+		range 1 .. type_commit_index_zero_based'last;
 
 	procedure increment (
-		index	: in out type_commit_index);
+		index	: in out type_commit_index_zero_based);
 
 	procedure decrement (
-		index	: in out type_commit_index);
+		index	: in out type_commit_index_zero_based);
 
 
 	

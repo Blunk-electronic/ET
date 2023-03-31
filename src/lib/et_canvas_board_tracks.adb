@@ -84,6 +84,7 @@ with et_exceptions;						use et_exceptions;
 with et_geometry;
 
 with et_undo_redo;
+with et_commit;
 
 
 package body et_canvas_board_tracks is
@@ -965,11 +966,16 @@ package body et_canvas_board_tracks is
 		procedure finalize is
 			use et_modes.board;
 			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_segment /= pac_proposed_segments.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun);
+				
 				declare
 					use et_board_ops.conductors;
 					segment : type_proposed_segment renames element (selected_segment);
@@ -998,6 +1004,10 @@ package body et_canvas_board_tracks is
 							null; -- CS
 					end case;
 				end;
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun);
+				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -1006,8 +1016,6 @@ package body et_canvas_board_tracks is
 			set_status (status_ripup);
 			reset_preliminary_segment;
 			reset_ripup_mode;
-
-			commit (verb, noun);
 		end finalize;
 		
 	begin
