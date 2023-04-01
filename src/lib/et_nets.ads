@@ -45,7 +45,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
-with ada.containers.vectors;
 
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
@@ -311,13 +310,12 @@ package et_nets is
 	package pac_net_commit is new pac_commit (pac_nets.map);
 	use pac_net_commit;
 	
-	package pac_net_commits is new vectors (
-		index_type 		=> type_commit_index, 
+	package pac_net_commits is new doubly_linked_lists (
 		element_type	=> pac_net_commit.type_commit);
 
 	type type_undo_redo_stack is record
-		dos		: pac_net_commits.vector;
-		redos	: pac_net_commits.vector;
+		dos		: pac_net_commits.list;
+		redos	: pac_net_commits.list;
 	end record;
 	
 	
