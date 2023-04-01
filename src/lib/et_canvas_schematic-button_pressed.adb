@@ -106,7 +106,7 @@ is
 						
 					when NOUN_NET => 
 						if not clarification_pending then
-							delete_net_segment (point);
+							delete_net_segment (snap_point);
 						else
 							delete_selected_net_segment;
 						end if;
