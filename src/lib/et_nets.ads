@@ -315,6 +315,11 @@ package et_nets is
 		index_type 		=> type_commit_index, 
 		element_type	=> pac_net_commit.type_commit);
 
+	type type_undo_redo_stack is record
+		dos		: pac_net_commits.vector;
+		redos	: pac_net_commits.vector;
+	end record;
+	
 	
 end et_nets;
 

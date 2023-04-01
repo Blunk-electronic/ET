@@ -64,7 +64,7 @@ package body et_undo_redo is
 			module		: in out type_module)
 		is begin
 			increment (module.commit_index);			
-			module.net_commits.append (make_commit (module.nets));
+			module.net_commits.dos.append (make_commit (module.nets));
 			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
@@ -95,7 +95,7 @@ package body et_undo_redo is
 			module		: in out type_module)
 		is begin
 			increment (module.commit_index);			
-			module.net_commits.append (make_commit (module.nets));
+			module.net_commits.dos.append (make_commit (module.nets));
 			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
@@ -126,13 +126,13 @@ package body et_undo_redo is
 				-- put_line ("stack height A:" & count_type'image (module.net_commits.length));
 				-- put_line ("stack last idx:" & extended_index'image (module.net_commits.last_index));
 				
-				-- auf redo stack: module.net_commits.last_element.item;
-				module.net_commits.delete_last;
+				module.net_commits.redos.append (make_commit (module.net_commits.dos.last_element.item));
+				module.net_commits.dos.delete_last;
 
 				
 				decrement (module.commit_index);
-				module.nets := module.net_commits.last_element.item;
-				module.net_commits.delete_last;
+				module.nets := module.net_commits.dos.last_element.item;
+				module.net_commits.dos.delete_last;
 				-- put_line ("stack height B:" & count_type'image (module.net_commits.length));
 			else
 				put_line ("nothing to undo");
@@ -159,12 +159,20 @@ package body et_undo_redo is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
-		is
-			
+		is 		
+			use pac_net_commit;
+			use pac_net_commits;
 		begin
-			-- module.net_commits.append (make_commit (module.nets));
-			-- module.nets.clear;
-			null;
+			if module.net_commits.redos.length > 0 then
+				increment (module.commit_index);			
+				
+				module.nets := module.net_commits.redos.last_element.item;
+				module.net_commits.dos.append (make_commit (module.nets));
+				
+				module.net_commits.redos.delete_last;
+			else
+				put_line ("nothing to redo");
+			end if;
 		end query_module;
 
 		

@@ -66,7 +66,7 @@ package et_commit is
 
 		type type_commit is record
 			item	: type_item;
-			-- CS time, message
+			-- CS stage, time, message
 		end record;
 
 		function "=" (

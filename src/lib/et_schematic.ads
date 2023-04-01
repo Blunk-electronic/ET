@@ -406,7 +406,7 @@ package et_schematic is
 		-- On adding, moving or deleting units the structure in 
 		-- selector "net" must be updated:
 		nets 	    	: pac_nets.map;
-		net_commits		: pac_net_commits.vector;
+		net_commits		: et_nets.type_undo_redo_stack;
 		
 		-- The assembly variants of the module.
 		-- (means which device is mounted or not or which device can have a different
