@@ -56,7 +56,8 @@ package et_commit is
 		index	: in out type_commit_index_zero_based);
 
 	procedure decrement (
-		index	: in out type_commit_index_zero_based);
+		index	: in out type_commit_index_zero_based;
+		count	: in type_commit_index := 1);
 
 
 	
@@ -65,8 +66,10 @@ package et_commit is
 	package pac_commit is
 
 		type type_commit is record
+			index	: type_commit_index;
+			stage	: type_commit_stage;
 			item	: type_item;
-			-- CS stage, time, message
+			-- CS time, message
 		end record;
 
 		function "=" (
@@ -74,6 +77,8 @@ package et_commit is
 			return boolean;
 		
 		function make_commit (
+			index	: in type_commit_index;
+			stage	: in type_commit_stage;
 			item	: in type_item)
 			return type_commit;
 		

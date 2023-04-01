@@ -39,12 +39,12 @@
 
 with ada.text_io;						use ada.text_io;
 with ada.containers;					use ada.containers;
-with ada.containers.vectors;
 
 with et_general;						use et_general;
 with et_schematic;						use et_schematic;
 with et_nets;							use et_nets;
-
+with et_modes.schematic;
+with et_modes.board;
 with et_commit;							use et_commit;
 
 
@@ -62,9 +62,27 @@ package body et_undo_redo is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
-		is begin
+		is 
+			use et_modes.schematic;
+		begin
 			increment (module.commit_index);			
-			module.net_commits.dos.append (make_commit (module.nets));
+
+			case verb is
+				when VERB_DRAW | VERB_DELETE | VERB_DRAG => -- CS others
+
+					case noun is
+						when NOUN_NET =>
+							module.net_commits.dos.append (
+								make_commit (module.commit_index, stage, module.nets));
+
+						when others =>
+							null;
+					end case;
+					
+				when others =>
+					null;
+			end case;
+
 			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
@@ -93,9 +111,27 @@ package body et_undo_redo is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
-		is begin
-			increment (module.commit_index);			
-			module.net_commits.dos.append (make_commit (module.nets));
+		is 
+			use et_modes.board;
+		begin
+			increment (module.commit_index);	
+
+			case verb is
+				when VERB_DELETE | VERB_ROUTE | VERB_RIPUP | VERB_MOVE => -- CS others
+
+					case noun is
+						when NOUN_TRACK =>
+							module.net_commits.dos.append (
+								make_commit (module.commit_index, stage, module.nets));
+
+						when others =>
+							null;
+					end case;
+					
+				when others =>
+					null;
+			end case;
+			
 			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
 
@@ -121,19 +157,31 @@ package body et_undo_redo is
 			use pac_net_commits;
 		begin
 			if module.commit_index > 0 then
-				decrement (module.commit_index);
+
+				-- Locate the undo-stack that contains the latest commit:
+
+				-- Search in nets:
+				if module.net_commits.dos.last_element.index = module.commit_index then
+
+					-- undo post-commit:
+					module.net_commits.redos.append (module.net_commits.dos.last_element);
+					module.net_commits.dos.delete_last;
+
+					-- undo pre-commit:
+					-- restore state
+					module.nets := module.net_commits.dos.last_element.item;
+					module.net_commits.dos.delete_last;
+				end if;
 
 				-- put_line ("stack height A:" & count_type'image (module.net_commits.length));
-				-- put_line ("stack last idx:" & extended_index'image (module.net_commits.last_index));
-				
-				module.net_commits.redos.append (make_commit (module.net_commits.dos.last_element.item));
-				module.net_commits.dos.delete_last;
+
+				-- CS Search other stacks:
+
+
+
 
 				
-				decrement (module.commit_index);
-				module.nets := module.net_commits.dos.last_element.item;
-				module.net_commits.dos.delete_last;
-				-- put_line ("stack height B:" & count_type'image (module.net_commits.length));
+				decrement (module.commit_index, 2);
 			else
 				put_line ("nothing to undo");
 			end if;
@@ -162,15 +210,31 @@ package body et_undo_redo is
 		is 		
 			use pac_net_commit;
 			use pac_net_commits;
+
+			commit_index : type_commit_index := module.commit_index + 2;
 		begin
-			if module.net_commits.redos.length > 0 then
-				increment (module.commit_index);			
+			-- increment (module.commit_index);
+			
+			-- Locate the redo-stack that contains the latest commit:
+			
+			if not module.net_commits.redos.is_empty then
+
+				if module.net_commits.redos.last_element.index = commit_index then
+
+					-- Move latest commit back to dos-stack:
+					module.net_commits.dos.append (module.net_commits.redos.last_element);
+
+					-- Restore design:
+					module.nets := module.net_commits.redos.last_element.item;
+					
+					module.net_commits.redos.delete_last;
+				end if;
+								
 				
-				module.nets := module.net_commits.redos.last_element.item;
-				module.net_commits.dos.append (make_commit (module.nets));
-				
-				module.net_commits.redos.delete_last;
 			else
+				-- CS other redo-stacks like
+				-- CS elsif not module.silscreen_commits.redos.is_empty then
+				
 				put_line ("nothing to redo");
 			end if;
 		end query_module;
