@@ -350,6 +350,9 @@ package body et_canvas_schematic_nets is
 	is 
 		use et_schematic_ops.nets;
 		segment_cursor : pac_proposed_segments.cursor;
+
+		use et_undo_redo;
+		use et_commit;
 	begin
 		log (text => "deleting net segment ...", level => log_threshold);
 		log_indentation_up;
@@ -368,11 +371,17 @@ package body et_canvas_schematic_nets is
 				
 			when 1 =>
 				segment_cursor := proposed_segments.first;
-			
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun);
+		
 				delete_selected_segment (
 					module_cursor	=> current_active_module,
 					segment			=> element (segment_cursor),
 					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -414,14 +423,22 @@ package body et_canvas_schematic_nets is
 	
 	procedure delete_selected_net_segment is
 		use et_schematic_ops.nets;
+		use et_undo_redo;
+		use et_commit;
 	begin
 		log (text => "deleting net segment after clarification ...", level => log_threshold);
 		log_indentation_up;
+
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun);
 
 		delete_selected_segment (
 			module_cursor	=> current_active_module,
 			segment			=> element (selected_segment),
 			log_threshold	=> log_threshold + 1);
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;
