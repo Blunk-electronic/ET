@@ -614,12 +614,19 @@ package body et_canvas_schematic_nets is
 			end if;
 		end extend_net;
 
+
+		use et_undo_redo;
+		use et_commit;
 		
 	begin -- insert_net_segment
 		log (text => "adding net segment on sheet " & to_sheet (sheet) & to_string (segment), 
 			 level => log_threshold);
 
 		log_indentation_up;
+
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun);
+		
 
 		-- Look for already existing nets at the start of the segment:
 		segments_at_start_point := collect_segments (
@@ -709,6 +716,9 @@ package body et_canvas_schematic_nets is
 		end if;
 
 		et_board_ops.ratsnest.update_ratsnest (module, log_threshold + 1);
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun);
 		
 		log_indentation_down;
 	end insert_net_segment;
