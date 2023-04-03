@@ -53,7 +53,8 @@ package et_commit is
 		range 1 .. type_commit_index_zero_based'last;
 
 	procedure increment (
-		index	: in out type_commit_index_zero_based);
+		index	: in out type_commit_index_zero_based;
+		count	: in type_commit_index := 1);
 
 	procedure decrement (
 		index	: in out type_commit_index_zero_based;

@@ -42,9 +42,10 @@ package body et_commit is
 
 
 	procedure increment (
-		index	: in out type_commit_index_zero_based)
+		index	: in out type_commit_index_zero_based;
+		count	: in type_commit_index := 1)
 	is begin
-		index := index + 1;
+		index := index + count;
 
 		put_line ("commit idx" & type_commit_index_zero_based'image (index));
 	end increment;

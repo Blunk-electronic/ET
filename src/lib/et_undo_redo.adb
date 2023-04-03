@@ -120,7 +120,7 @@ package body et_undo_redo is
 				when VERB_DELETE | VERB_ROUTE | VERB_RIPUP | VERB_MOVE => -- CS others
 
 					case noun is
-						when NOUN_TRACK =>
+						when NOUN_NET | NOUN_TRACK =>
 							module.net_commits.dos.append (
 								make_commit (module.commit_index, stage, module.nets));
 
@@ -155,30 +155,42 @@ package body et_undo_redo is
 		is
 			use pac_net_commit;
 			use pac_net_commits;
+
+			-- Backup places for pre- and post-commits:
+			pre_commit, post_commit : type_commit;
+			
 		begin
+			-- An undo-operation is allowed if there have been
+			-- commits in the past. Otherwise there would be nothing to undo:
 			if module.commit_index > 0 then
 
-				-- Locate the undo-stack that contains the latest commit:
+				-- Since we have multiple do-stacks (for various kinds of objects),
+				-- the do-stack that contains the latest commit must be processed.
+				-- All other do-stacks remain untouched:
 
 				-- Search in nets:
 				if module.net_commits.dos.last_element.index = module.commit_index then
 
-					-- undo post-commit:
-					module.net_commits.redos.append (module.net_commits.dos.last_element);
+					-- Backup post-commit and delete the original:
+					post_commit := module.net_commits.dos.last_element;
 					module.net_commits.dos.delete_last;
 
-					-- undo pre-commit:
-					-- restore state
-					module.nets := module.net_commits.dos.last_element.item;
+					-- Backup pre-commit and delete the original:
+					pre_commit := module.net_commits.dos.last_element;
 					module.net_commits.dos.delete_last;
+
+					-- Restore the affected part of the design according 
+					-- to the pre-commit:
+					module.nets := pre_commit.item;
+
+
+					-- Put pre- and post commit on redo-stack:
+					module.net_commits.redos.append (pre_commit);
+					module.net_commits.redos.append (post_commit);					
 				end if;
 
-				-- put_line ("stack height A:" & count_type'image (module.net_commits.length));
 
 				-- CS Search other stacks:
-
-
-
 
 				
 				decrement (module.commit_index, 2);
@@ -212,8 +224,14 @@ package body et_undo_redo is
 			use pac_net_commits;
 
 			commit_index : type_commit_index := module.commit_index + 2;
+
+			-- Backup places for pre- and post-commits:
+			pre_commit, post_commit : type_commit;
+
+			-- After a successful redo-operation, this flag is set.
+			-- This causes the module.commit_index to be incremented by 2:
+			done : boolean := false;
 		begin
-			-- increment (module.commit_index);
 			
 			-- Locate the redo-stack that contains the latest commit:
 			
@@ -221,15 +239,29 @@ package body et_undo_redo is
 
 				if module.net_commits.redos.last_element.index = commit_index then
 
-					-- Move latest commit back to dos-stack:
-					module.net_commits.dos.append (module.net_commits.redos.last_element);
-
-					-- Restore design:
-					module.nets := module.net_commits.redos.last_element.item;
-					
+					-- Backup post-commit and delete the original:
+					post_commit := module.net_commits.redos.last_element;
 					module.net_commits.redos.delete_last;
+
+					-- Backup pre-commit and delete the original:
+					pre_commit := module.net_commits.redos.last_element;
+					module.net_commits.redos.delete_last;
+
+					
+					-- Put pre- and post-commit back to dos-stack:
+					module.net_commits.dos.append (pre_commit);
+					module.net_commits.dos.append (post_commit);
+
+					-- Restore design according to the post-commit:
+					module.nets := post_commit.item;
+
+					done := true;
 				end if;
-								
+
+				
+				if done then
+					increment (module.commit_index, 2);
+				end if;
 				
 			else
 				-- CS other redo-stacks like
