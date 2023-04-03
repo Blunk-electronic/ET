@@ -47,7 +47,7 @@ package body et_commit is
 	is begin
 		index := index + count;
 
-		put_line ("commit idx" & type_commit_index_zero_based'image (index));
+		-- put_line ("commit idx" & type_commit_index_zero_based'image (index));
 	end increment;
 
 
@@ -57,7 +57,7 @@ package body et_commit is
 	is begin
 		index := index - count;
 
-		put_line ("commit idx" & type_commit_index_zero_based'image (index));
+		-- put_line ("commit idx" & type_commit_index_zero_based'image (index));
 	end decrement;
 
 

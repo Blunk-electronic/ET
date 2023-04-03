@@ -51,13 +51,14 @@ with et_commit;							use et_commit;
 package body et_undo_redo is
 
 
-	procedure commit (
+	procedure commit ( -- in schematic
 		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
 		noun	: in et_modes.schematic.type_noun)
 	is
 		use et_schematic;
 		use pac_net_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -82,9 +83,8 @@ package body et_undo_redo is
 				when others =>
 					null;
 			end case;
-
-			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
+		
 
 	begin
 		put_line ("commit in schematic");
@@ -100,13 +100,14 @@ package body et_undo_redo is
 
 	
 
-	procedure commit (
+	procedure commit ( -- in board
 		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
 		noun	: in et_modes.board.type_noun)
 	is
 		use et_schematic;
 		use pac_net_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -131,9 +132,8 @@ package body et_undo_redo is
 				when others =>
 					null;
 			end case;
-			
-			-- put_line ("stack height:" & count_type'image (module.net_commits.length));
 		end query_module;
+		
 
 	begin
 		put_line ("commit in board");
@@ -158,6 +158,39 @@ package body et_undo_redo is
 
 			-- Backup places for pre- and post-commits:
 			pre_commit, post_commit : type_commit;
+
+			-- After a successful redo-operation, this flag is set.
+			done : boolean := false;
+
+			
+			procedure undo_nets is 
+				dos		: pac_net_commits.list renames module.net_commits.dos;
+				redos	: pac_net_commits.list renames module.net_commits.redos;
+			begin
+				if dos.last_element.index = module.commit_index then
+
+					-- Backup post-commit and delete the original:
+					post_commit := dos.last_element;
+					dos.delete_last;
+
+					-- Backup pre-commit and delete the original:
+					pre_commit := dos.last_element;
+					dos.delete_last;
+
+					-- Restore the affected part of the design according 
+					-- to the pre-commit:
+					module.nets := pre_commit.item;
+
+
+					-- Put pre- and post commit on redo-stack:
+					redos.append (pre_commit);
+					redos.append (post_commit);					
+
+					-- Mark the undo-operation as successful:
+					done := true;
+				end if;
+			end undo_nets;
+
 			
 		begin
 			-- An undo-operation is allowed if there have been
@@ -169,31 +202,16 @@ package body et_undo_redo is
 				-- All other do-stacks remain untouched:
 
 				-- Search in nets:
-				if module.net_commits.dos.last_element.index = module.commit_index then
+				undo_nets;				
 
-					-- Backup post-commit and delete the original:
-					post_commit := module.net_commits.dos.last_element;
-					module.net_commits.dos.delete_last;
-
-					-- Backup pre-commit and delete the original:
-					pre_commit := module.net_commits.dos.last_element;
-					module.net_commits.dos.delete_last;
-
-					-- Restore the affected part of the design according 
-					-- to the pre-commit:
-					module.nets := pre_commit.item;
-
-
-					-- Put pre- and post commit on redo-stack:
-					module.net_commits.redos.append (pre_commit);
-					module.net_commits.redos.append (post_commit);					
+				if not done then
+					null;
+					-- CS Search other stacks:
 				end if;
 
-
-				-- CS Search other stacks:
-
-				
+				-- CS if done then ?
 				decrement (module.commit_index, 2);
+				-- end if;
 			else
 				put_line ("nothing to undo");
 			end if;
@@ -223,50 +241,69 @@ package body et_undo_redo is
 			use pac_net_commit;
 			use pac_net_commits;
 
-			commit_index : type_commit_index := module.commit_index + 2;
+			-- Contains the index of the latest commit:
+			commit_index : constant type_commit_index := module.commit_index + 2;
 
 			-- Backup places for pre- and post-commits:
 			pre_commit, post_commit : type_commit;
 
 			-- After a successful redo-operation, this flag is set.
-			-- This causes the module.commit_index to be incremented by 2:
 			done : boolean := false;
-		begin
+
 			
-			-- Locate the redo-stack that contains the latest commit:
+			procedure redo_nets is
+				dos		: pac_net_commits.list renames module.net_commits.dos;
+				redos	: pac_net_commits.list renames module.net_commits.redos;
+			begin
+				-- If there are no commits on the redo-stack, then there is
+				-- nothing to do.
+				if not redos.is_empty then
+
+					-- Do the redo-operation if the last commit is 
+					-- the latest among all commits:
+					if redos.last_element.index = commit_index then
+
+						-- Backup post-commit and delete the original:
+						post_commit := redos.last_element;
+						redos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := redos.last_element;
+						redos.delete_last;
+
+						
+						-- Put pre- and post-commit back to dos-stack:
+						dos.append (pre_commit);
+						dos.append (post_commit);
+
+						-- Restore design according to the post-commit:
+						module.nets := post_commit.item;
+
+						-- Mark the redo-operation as successful:
+						done := true;
+					end if;
+				end if;
+			end redo_nets;
 			
-			if not module.net_commits.redos.is_empty then
-
-				if module.net_commits.redos.last_element.index = commit_index then
-
-					-- Backup post-commit and delete the original:
-					post_commit := module.net_commits.redos.last_element;
-					module.net_commits.redos.delete_last;
-
-					-- Backup pre-commit and delete the original:
-					pre_commit := module.net_commits.redos.last_element;
-					module.net_commits.redos.delete_last;
-
-					
-					-- Put pre- and post-commit back to dos-stack:
-					module.net_commits.dos.append (pre_commit);
-					module.net_commits.dos.append (post_commit);
-
-					-- Restore design according to the post-commit:
-					module.nets := post_commit.item;
-
-					done := true;
-				end if;
-
 				
-				if done then
-					increment (module.commit_index, 2);
-				end if;
-				
-			else
+		begin -- query_module
+
+			-- Since we have multiple redo-stacks (for various kinds of objects),
+			-- the redo-stack that contains the latest commit must be processed.
+			-- All other redo-stacks remain untouched:
+
+			-- Search in nets:
+			redo_nets;
+
+			if not done then
+				null;
 				-- CS other redo-stacks like
 				-- CS elsif not module.silscreen_commits.redos.is_empty then
+			end if;
 				
+			if done then
+				increment (module.commit_index, 2);
+			else
 				put_line ("nothing to redo");
 			end if;
 		end query_module;
