@@ -272,7 +272,7 @@ package body et_logging is
 		set_output (report_handle);
 		
 		put_line (system_name & " " & version & " messages log");
-		put_line (date);
+		put_line (get_date);
 		put_line (metric_system);
 		put_line (angles_in_degrees);
 		put_line (row_separator_double);
@@ -299,7 +299,7 @@ package body et_logging is
 			
 			put_line (row_separator_single);
 			
-			put_line (date);
+			put_line (get_date);
 			put_line (system_name & " log messages end");
 
 			set_output (standard_output);

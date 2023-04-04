@@ -65,7 +65,9 @@ package et_time is
 
 	
 	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
-	function date (preamble : in boolean := true) return string;
+	function get_date (
+		preamble : in boolean := true) 
+		return string;
 
 	
 	-- Use it to indicate uninialized date.

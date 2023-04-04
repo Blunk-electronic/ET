@@ -356,7 +356,7 @@ package body et_frame_rw is
 
 		-- write a nice header
 		put_line (comment_mark & space & et_general.system_name & space & "drawing frame template");
-		put_line (comment_mark & space & date);
+		put_line (comment_mark & space & get_date);
 		put_line (comment_mark & space & row_separator_double);
 		new_line;
 

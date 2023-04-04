@@ -749,7 +749,7 @@ package body et_pcb_rw.device_packages is
 		
 		-- write a nice header
 		put_line (comment_mark & " " & et_general.system_name & " package");
-		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 

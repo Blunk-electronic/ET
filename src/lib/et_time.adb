@@ -47,14 +47,16 @@ package body et_time is
 	end date_now;
 
 	
-	function date (preamble : in boolean := true) return string is
-	begin
+	function get_date (
+		preamble : in boolean := true) 
+		return string 
+	is begin
 		if preamble then
 			return "date " & string (date_now);
 		else
 			return string (date_now);
 		end if;
-	end date;
+	end get_date;
 
 	
 	function date_first return time is

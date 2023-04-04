@@ -98,7 +98,7 @@ is
 		-- write in a nice header
 		set_output (module_file_handle);
 		put_line (comment_mark & " " & system_name & " module");
-		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 	end write_header;		
@@ -111,7 +111,7 @@ is
 		log (text => "closing module file ...", level => log_threshold + 1);
 		
 		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " module file end");
 		new_line;
 

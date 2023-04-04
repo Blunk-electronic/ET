@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-with et_time;						use et_time;
 
 separate (et_project)
 

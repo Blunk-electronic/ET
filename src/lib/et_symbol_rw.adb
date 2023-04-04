@@ -364,7 +364,7 @@ package body et_symbol_rw is
 		
 		-- write a nice header
 		put_line (comment_mark & " " & et_general.system_name & " symbol");
-		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 

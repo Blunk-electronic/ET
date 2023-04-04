@@ -743,7 +743,7 @@ package body et_netlists is
 		begin
 		-- writes a nice header in the netlist file
 			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
-			put_line (netlist_handle, comment_mark & " " & date);
+			put_line (netlist_handle, comment_mark & " " & get_date);
 			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (child_count (netlist_cursor)));
