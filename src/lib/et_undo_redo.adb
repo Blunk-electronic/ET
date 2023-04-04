@@ -45,19 +45,20 @@ with et_schematic;						use et_schematic;
 with et_nets;							use et_nets;
 with et_modes.schematic;
 with et_modes.board;
-with et_commit;							use et_commit;
 
 
 package body et_undo_redo is
 
 
+	use pac_net_commit;
+	
+	
 	procedure commit ( -- in schematic
 		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
 		noun	: in et_modes.schematic.type_noun)
 	is
 		use et_schematic;
-		use pac_net_commit;
 
 		
 		procedure query_module (
@@ -106,7 +107,6 @@ package body et_undo_redo is
 		noun	: in et_modes.board.type_noun)
 	is
 		use et_schematic;
-		use pac_net_commit;
 
 		
 		procedure query_module (
@@ -153,9 +153,6 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			use pac_net_commit;
-			use pac_net_commits;
-
 			-- Backup places for pre- and post-commits:
 			pre_commit, post_commit : type_commit;
 
@@ -164,6 +161,7 @@ package body et_undo_redo is
 
 			
 			procedure undo_nets is 
+				use pac_net_commits;
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
 			begin
@@ -238,9 +236,6 @@ package body et_undo_redo is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 		
-			use pac_net_commit;
-			use pac_net_commits;
-
 			-- Contains the index of the latest commit:
 			commit_index : constant type_commit_index := module.commit_index + 2;
 
@@ -252,6 +247,7 @@ package body et_undo_redo is
 
 			
 			procedure redo_nets is
+				use pac_net_commits;				
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
 			begin

@@ -48,21 +48,36 @@ package et_undo_redo is
 
 	use pac_generic_modules;
 
-
+	-- Puts a fragment of the design on the undo-stacks of
+	-- the current active module.
+	-- The fragment can be nets, silkscreen, board contours, meta info, ...
+	-- The affected fragment to be committed depends on the
+	-- given verb and noun.
+	-- This commit procedure must be called before and after a 
+	-- schematic operation. For this reason we speak about
+	-- PRE- and POST-commits (see package et_commit). A complete
+	-- commit consists of a PRE- and a POST-commit.
+	-- So this procedure requires to be called twice.
 	procedure commit (
 		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
 		noun	: in et_modes.schematic.type_noun);
 
 
+	-- Likewise as the procedure above.
+	-- This commit procedure must be called before and after a 
+	-- schematic operation:
 	procedure commit (
 		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
 		noun	: in et_modes.board.type_noun);
 
 
+	-- Restores the design state (both in schematic and board)
+	-- to the state BEFORE the latest commit:
 	procedure undo;
 
+	-- Redoes the the latest undo-operation:
 	procedure redo;
 
 	
