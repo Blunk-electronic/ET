@@ -44,6 +44,8 @@ package et_commit is
 	type type_commit_stage is (
 		PRE,
 		POST);
+
+	function to_string (stage : in type_commit_stage) return string;
 	
 	
 	subtype type_commit_index_zero_based is natural range 0 .. 100;  

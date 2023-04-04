@@ -37,11 +37,14 @@
 -- DESCRIPTION:
 -- 
 
+with ada.strings.bounded;       	use ada.strings.bounded;
+
 with et_project.modules;			use et_project.modules;
 
 with et_modes.schematic;
 with et_modes.board;
 with et_commit;						use et_commit;
+with et_logging;					use et_logging;
 
 
 package et_undo_redo is
@@ -61,7 +64,8 @@ package et_undo_redo is
 	procedure commit (
 		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
-		noun	: in et_modes.schematic.type_noun);
+		noun	: in et_modes.schematic.type_noun;
+		lth		: in type_log_level);
 
 
 	-- Likewise as the procedure above.
@@ -70,16 +74,37 @@ package et_undo_redo is
 	procedure commit (
 		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
-		noun	: in et_modes.board.type_noun);
+		noun	: in et_modes.board.type_noun;
+		lth		: in type_log_level);
 
 
+
+	
+	undo_message_length_max : constant positive := 50;
+	package pac_undo_message is new generic_bounded_length (undo_message_length_max);
+
+	
 	-- Restores the design state (both in schematic and board)
-	-- to the state BEFORE the latest commit:
-	procedure undo;
+	-- to the state BEFORE the latest commit.
+	-- Moves the latest PRE- and POST-commit to one of the the redo-stacks.
+	-- Via the argument "message" the procedure returns some helpful information
+	-- to be displayed in the GUI:
+	procedure undo (
+		message	: in out pac_undo_message.bounded_string;
+		lth		: in type_log_level);
+	
 
+	redo_message_length_max : constant positive := 50;
+	package pac_redo_message is new generic_bounded_length (redo_message_length_max);
+
+	
 	-- Redoes the the latest undo-operation:
-	procedure redo;
-
+	-- Moves the latest PRE- and POST-commit back to one of the the do-stacks.
+	-- Via the argument "message" the procedure returns some helpful information
+	-- to be displayed in the GUI:
+	procedure redo  (
+		message	: in out pac_redo_message.bounded_string;
+		lth		: in type_log_level);
 	
 	
 end et_undo_redo;

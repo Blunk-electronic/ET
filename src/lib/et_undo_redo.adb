@@ -53,19 +53,20 @@ package body et_undo_redo is
 	use pac_net_commit;
 	
 	
-	procedure commit ( -- in schematic
+	procedure commit ( -- in schematic domain
 		stage	: in type_commit_stage;
 		verb	: in et_modes.schematic.type_verb;
-		noun	: in et_modes.schematic.type_noun)
+		noun	: in et_modes.schematic.type_noun;
+		lth		: in type_log_level)
 	is
 		use et_schematic;
+		use et_modes.schematic;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 
-			use et_modes.schematic;
 		begin
 			increment (module.commit_index);			
 
@@ -74,6 +75,8 @@ package body et_undo_redo is
 
 					case noun is
 						when NOUN_NET =>
+							log (text => "nets", level => lth + 1);
+							
 							module.net_commits.dos.append (
 								make_commit (module.commit_index, stage, module.nets));
 
@@ -88,32 +91,38 @@ package body et_undo_redo is
 		
 
 	begin
-		put_line ("commit in schematic");
+		log (text => "commit in schematic (" 
+			 & to_string (stage) & " / " & to_string (verb) & " " & to_string (noun) & ")",
+			 level => lth + 1);
+		
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> current_active_module,
 			process		=> query_module'access);
 
+		log_indentation_down;
 	end commit;
 
 
 
 	
 
-	procedure commit ( -- in board
+	procedure commit ( -- in board domain
 		stage	: in type_commit_stage;
 		verb	: in et_modes.board.type_verb;
-		noun	: in et_modes.board.type_noun)
+		noun	: in et_modes.board.type_noun;
+		lth		: in type_log_level)
 	is
 		use et_schematic;
+		use et_modes.board;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 
-			use et_modes.board;
 		begin
 			increment (module.commit_index);	
 
@@ -122,6 +131,8 @@ package body et_undo_redo is
 
 					case noun is
 						when NOUN_NET | NOUN_TRACK =>
+							log (text => "nets", level => lth + 1);
+							
 							module.net_commits.dos.append (
 								make_commit (module.commit_index, stage, module.nets));
 
@@ -136,19 +147,29 @@ package body et_undo_redo is
 		
 
 	begin
-		put_line ("commit in board");
-		
+		log (text => "commit in board (" 
+			 & to_string (stage) & " / " & to_string (verb) & " " & to_string (noun) & ")",
+			 level => lth + 1);
+
+		log_indentation_up;
+
 		update_element (
 			container	=> generic_modules,
 			position	=> current_active_module,
 			process		=> query_module'access);
 
+		log_indentation_down;
 	end commit;
 
 
 
-	procedure undo is
+	procedure undo (
+		message	: in out pac_undo_message.bounded_string;
+		lth		: in type_log_level)
+	is
+		use pac_undo_message;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -159,6 +180,8 @@ package body et_undo_redo is
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
 
+			nothing_to_do : constant string := "nothing to undo";
+
 			
 			procedure undo_nets is 
 				use pac_net_commits;
@@ -167,6 +190,8 @@ package body et_undo_redo is
 			begin
 				if dos.last_element.index = module.commit_index then
 
+					log (text => "nets", level => lth + 1);
+					
 					-- Backup post-commit and delete the original:
 					post_commit := dos.last_element;
 					dos.delete_last;
@@ -190,7 +215,8 @@ package body et_undo_redo is
 			end undo_nets;
 
 			
-		begin
+		begin -- query_module
+			
 			-- An undo-operation is allowed if there have been
 			-- commits in the past. Otherwise there would be nothing to undo:
 			if module.commit_index > 0 then
@@ -211,27 +237,35 @@ package body et_undo_redo is
 				decrement (module.commit_index, 2);
 				-- end if;
 			else
-				put_line ("nothing to undo");
-			end if;
-			
+				log (text => nothing_to_do, level => lth + 1);
+				message := to_bounded_string (nothing_to_do);
+			end if;			
 		end query_module;
 
 		
 	begin
-		put_line ("undo");
+		log (text => "undo", level => lth);
 
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> current_active_module,
 			process		=> query_module'access);
-		
+
+		log_indentation_down;
 	end undo;
 	
 
 
 
-	procedure redo is
+	procedure redo (
+		message	: in out pac_redo_message.bounded_string;
+		lth		: in type_log_level)
+	is
+		use pac_redo_message;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -245,6 +279,8 @@ package body et_undo_redo is
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
 
+			nothing_to_do : constant string := "nothing to redo";
+			
 			
 			procedure redo_nets is
 				use pac_net_commits;				
@@ -259,6 +295,8 @@ package body et_undo_redo is
 					-- the latest among all commits:
 					if redos.last_element.index = commit_index then
 
+						log (text => "nets", level => lth + 1);
+						
 						-- Backup post-commit and delete the original:
 						post_commit := redos.last_element;
 						redos.delete_last;
@@ -294,25 +332,29 @@ package body et_undo_redo is
 			if not done then
 				null;
 				-- CS other redo-stacks like
-				-- CS elsif not module.silscreen_commits.redos.is_empty then
+				-- CS elsif not module.silkscreen_commits.redos.is_empty then
 			end if;
 				
 			if done then
 				increment (module.commit_index, 2);
 			else
-				put_line ("nothing to redo");
+				log (text => nothing_to_do, level => lth + 1);
+				message := to_bounded_string (nothing_to_do);
 			end if;
 		end query_module;
 
 		
 	begin
-		put_line ("redo");
+		log (text => "redo", level => lth);
 
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> current_active_module,
 			process		=> query_module'access);
-		
+
+		log_indentation_down;		
 	end redo;
 
 	

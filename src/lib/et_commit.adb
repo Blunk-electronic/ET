@@ -40,6 +40,11 @@ with ada.text_io;				use ada.text_io;
 
 package body et_commit is
 
+	function to_string (stage : in type_commit_stage) return string is begin
+		return type_commit_stage'image (stage);
+	end to_string;
+		
+	
 
 	procedure increment (
 		index	: in out type_commit_index_zero_based;

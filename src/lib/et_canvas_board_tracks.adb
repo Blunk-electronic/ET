@@ -974,7 +974,7 @@ package body et_canvas_board_tracks is
 			if selected_segment /= pac_proposed_segments.no_element then
 
 				-- Commit the current state of the design:
-				commit (PRE, verb, noun);
+				commit (PRE, verb, noun, log_threshold + 1);
 				
 				declare
 					use et_board_ops.conductors;
@@ -1006,7 +1006,7 @@ package body et_canvas_board_tracks is
 				end;
 
 				-- Commit the new state of the design:
-				commit (POST, verb, noun);
+				commit (POST, verb, noun, log_threshold + 1);
 				
 			else
 				log (text => "nothing to do", level => log_threshold);

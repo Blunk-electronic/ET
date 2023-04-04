@@ -373,7 +373,7 @@ package body et_canvas_schematic_nets is
 				segment_cursor := proposed_segments.first;
 
 				-- Commit the current state of the design:
-				commit (PRE, verb, noun);
+				commit (PRE, verb, noun, log_threshold + 1);
 		
 				delete_selected_segment (
 					module_cursor	=> current_active_module,
@@ -381,7 +381,7 @@ package body et_canvas_schematic_nets is
 					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
-				commit (POST, verb, noun);
+				commit (POST, verb, noun, log_threshold + 1);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -430,7 +430,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_up;
 
 		-- Commit the current state of the design:
-		commit (PRE, verb, noun);
+		commit (PRE, verb, noun, log_threshold + 1);
 
 		delete_selected_segment (
 			module_cursor	=> current_active_module,
@@ -438,7 +438,7 @@ package body et_canvas_schematic_nets is
 			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
-		commit (POST, verb, noun);
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;
@@ -625,7 +625,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_up;
 
 		-- Commit the current state of the design:
-		commit (PRE, verb, noun);
+		commit (PRE, verb, noun, log_threshold + 1);
 		
 
 		-- Look for already existing nets at the start of the segment:
@@ -718,7 +718,7 @@ package body et_canvas_schematic_nets is
 		et_board_ops.ratsnest.update_ratsnest (module, log_threshold + 1);
 
 		-- Commit the new state of the design:
-		commit (POST, verb, noun);
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;
 	end insert_net_segment;
@@ -1108,7 +1108,7 @@ package body et_canvas_schematic_nets is
 
 		else
 			-- Commit the current state of the design:
-			commit (PRE, verb, noun);
+			commit (PRE, verb, noun, log_threshold + 1);
 			
 			-- Finally assign the cursor position to the
 			-- currently selected segment:
@@ -1117,7 +1117,7 @@ package body et_canvas_schematic_nets is
 				log_threshold	=> log_threshold + 1);
 
 			-- Commit the new state of the design:
-			commit (POST, verb, noun);
+			commit (POST, verb, noun, log_threshold + 1);
 		end if;		
 	end drag_segment;
 

@@ -1014,18 +1014,34 @@ package body et_canvas_board is
 	
 	procedure undo (
 		self : not null access type_view) 
-	is begin
+	is 
+		use et_undo_redo;
+		use pac_undo_message;
+		message : pac_undo_message.bounded_string;
+	begin
 		-- put_line ("board undo");
-		et_undo_redo.undo;
+		undo (message, log_threshold + 1);
+
+		-- Show the undo-message in the status bar:
+		set_status (to_string (message));
+		
 		redraw;
 	end undo;
 
 	
 	procedure redo (
 		self : not null access type_view) 
-	is begin
+	is 
+		use et_undo_redo;
+		use pac_redo_message;
+		message : pac_redo_message.bounded_string;
+	begin
 		-- put_line ("board redo");
-		et_undo_redo.redo;
+		redo (message, log_threshold + 1);
+
+		-- Show the redo-message in the status bar:
+		set_status (to_string (message));
+		
 		redraw;
 	end redo;
 
