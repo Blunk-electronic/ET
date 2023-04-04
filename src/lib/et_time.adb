@@ -1,12 +1,12 @@
-------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               COMMIT                                     --
+--                             DATE AND TIME                                --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2023 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -33,64 +33,53 @@
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
 --   history of changes:
---
-
-with et_time;				use et_time;
 
 
-package et_commit is
 
+package body et_time is
 
-	-- The commit stage regards the state of the design
-	-- before and after a certain operation:
-	type type_commit_stage is (
-		PRE,
-		POST);
-
-	function to_string (stage : in type_commit_stage) return string;
-	
-	
-	subtype type_commit_index_zero_based is natural range 0 .. 100;  
-	-- CS increase upper limit
-	
-	subtype type_commit_index is type_commit_index_zero_based 
-		range 1 .. type_commit_index_zero_based'last;
-
-	procedure increment (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
-	procedure decrement (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
+	function date_now return type_date is
+		now		: constant time := clock;
+		date	: string (1..19) := image (now, time_zone => utc_time_offset (now));
+	begin
+		date (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
+		return type_date (date);
+	end date_now;
 
 	
-	generic
-		type type_item is private;
-	package pac_commit is
+	function date (preamble : in boolean := true) return string is
+	begin
+		if preamble then
+			return "date " & string (date_now);
+		else
+			return string (date_now);
+		end if;
+	end date;
 
-		type type_commit is record
-			index		: type_commit_index;
-			stage		: type_commit_stage;
-			item		: type_item;
-			timestap	: type_date;
-			-- CS message
-		end record;
-
-		function "=" (
-			left, right : in type_commit)
-			return boolean;
-		
-		function make_commit (
-			index	: in type_commit_index;
-			stage	: in type_commit_stage;
-			item	: in type_item)
-			return type_commit;
-		
-	end pac_commit;	
 	
-end et_commit;
+	function date_first return time is
+		r : time := gnat.calendar.no_time; -- 1901-01-01
+		--time_of (year => 1970, month => 01, day => 01, seconds => 1.0); -- return 1970-01-01
+	begin
+		return r;
+	end date_first;
+	
+
+	function to_string (date : in type_date) return string is
+	begin
+		return string (date);
+	end to_string;
+
+	
+	function date_valid (date : in type_date) return boolean is
+	begin
+		-- CS
+		-- CS: call a procedure that says something like "date format invalid" or "date in stone age or date in future"
+		return true;
+	end date_valid;
+
+	
+end et_time;
 
 -- Soli Deo Gloria
 

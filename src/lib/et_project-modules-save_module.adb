@@ -35,9 +35,9 @@
 --   history of changes:
 --
 
-with et_pcb_rw;					use et_pcb_rw;
+with et_pcb_rw;						use et_pcb_rw;
 with et_pcb_rw.restrict;
-
+with et_time;						use et_time;
 
 separate (et_project.modules)
 

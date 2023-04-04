@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2023 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -45,32 +45,12 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;            use ada.containers;
 with ada.containers.indefinite_vectors;
 
-with ada.calendar;				use ada.calendar;
-with ada.calendar.formatting;	use ada.calendar.formatting;
-with ada.calendar.time_zones;	use ada.calendar.time_zones;
 
 with et_general;
 
 package et_string_processing is
 
 
-	
--- DATE
-	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
-	type type_date is new string (1..19); -- "2017-08-17T14:17:25"
-
-	function to_string (date : in type_date) return string;
-	-- Returns the given date as string.
-
-	function date_valid (date : in type_date) return boolean;
-	-- Returns true if given date is valid and plausible.
-	
-	function date (preamble : in boolean := true) return string;
-	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
-
-	function date_first return time; -- returns 1901-01-01
-	-- Use it to indicate uninialized date.
-	
 	row_separator_length 	: constant positive := 100;
 	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";	
 	row_separator_double	: constant string (1..row_separator_length)	:= row_separator_length * "=";

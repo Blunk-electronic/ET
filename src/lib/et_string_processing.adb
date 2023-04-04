@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2023 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -39,36 +39,11 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 
 --with ada.exceptions;
 with gnat.source_info;
-with gnat.calendar;
+
 
 package body et_string_processing is
 
-	
-	function date_now return type_date is
-		now		: constant time := clock;
-		date	: string (1..19) := image (now, time_zone => utc_time_offset (now));
-	begin
-		date (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
-		return type_date (date);
-	end date_now;
 
-	function date (preamble : in boolean := true) return string is
-	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
-	begin
-		if preamble then
-			return "date " & string (date_now);
-		else
-			return string (date_now);
-		end if;
-	end date;
-
-	function date_first return time is
-		r : time := gnat.calendar.no_time; -- 1901-01-01
-		--time_of (year => 1970, month => 01, day => 01, seconds => 1.0); -- return 1970-01-01
-	begin
-		return r;
-	end date_first;
-	
 	function metric_system return string is
 	-- Returns a message about the metric system used.
 	begin
@@ -100,21 +75,6 @@ package body et_string_processing is
 -- 		end if;
 -- 	end check_updated_vs_commissioned;
 
-	
-	function to_string (date : in type_date) return string is
-	-- Returns the given date as string.
-	begin
-		return string (date);
-	end to_string;
-	
-	function date_valid (date : in type_date) return boolean is
-	-- Returns true if given date is valid and plausible.
-	begin
-		-- CS
-		-- CS: call a procedure that says something like "date format invalid" or "date in stone age or date in future"
-		return true;
-	end date_valid;
-	
 
 	function strip_directory_separator (text : in string) return string is
 	-- Removes the trailing directory separtor (if preset).
@@ -125,6 +85,7 @@ package body et_string_processing is
 			return text;
 		end if;
 	end strip_directory_separator;
+
 	
 	function ht_to_space (c : in character) return character is
 	begin 
@@ -134,6 +95,7 @@ package body et_string_processing is
 		end case;
 	end ht_to_space;		
 
+	
 	function tilde_to_space (c : in character) return character is
 	-- Replaces a tilde by space. Other characters are returned unchanged.
 	begin
@@ -228,6 +190,7 @@ package body et_string_processing is
 		return "";
 	end remove_comment_from_line;
 
+	
 	function get_field_count (text_in : string) return natural is
 		line_length	:	Natural := text_in'last;	-- length of given text
 		char_pt		:	Natural := 1;				-- charcter pointer (points to character being processed inside the given line)
@@ -286,6 +249,7 @@ package body et_string_processing is
 		end if;
 	end strip_quotes;
 
+	
 	function enclose_in_quotes (
 		text_in	: in string;
 		quote	: in character := latin_1.apostrophe) 
@@ -294,6 +258,7 @@ package body et_string_processing is
 		return quote & text_in & quote;
 	end enclose_in_quotes;
 
+	
 	function enclose_in_quotes (
 		charcter_in	: in character;
 		quote		: in character := latin_1.apostrophe) 
@@ -301,6 +266,7 @@ package body et_string_processing is
 	begin
 		return quote & charcter_in & quote;
 	end enclose_in_quotes;
+
 	
 	function trim_space_in_string (text_in : in string) return string is
 	-- shrinks successive space characters to a single one in given string		
@@ -330,6 +296,7 @@ package body et_string_processing is
 		return to_string(s);
 	end trim_space_in_string;
 
+	
 	function remove_trailing_directory_separator (path_in : string) return string is
 	-- removes a trailing directory separator.
 	begin
@@ -355,6 +322,7 @@ package body et_string_processing is
 			return false;
 		end if;
 	end;
+
 	
 	function get_field_from_line( 
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content until trailer_to is also returned.
@@ -462,6 +430,7 @@ package body et_string_processing is
 		return to_string(field);
 	end get_field_from_line;
 
+	
 	function read_line ( 
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down

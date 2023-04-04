@@ -56,6 +56,7 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_2;
 
 with et_string_processing;
+with et_time;
 with et_general_rw;				use et_general_rw;
 with et_schematic_rw;			use et_schematic_rw;
 with et_symbol_rw;				use et_symbol_rw;
@@ -118,6 +119,8 @@ package body et_device_rw is
 		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;
+		use et_time;
+		
 		file_handle : ada.text_io.file_type;
 
 		use pac_variants;

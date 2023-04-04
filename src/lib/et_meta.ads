@@ -54,6 +54,7 @@ with ada.calendar.time_zones;	use ada.calendar.time_zones;
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
+with et_time;					use et_time;
 with et_logging;				use et_logging;
 
 
@@ -181,8 +182,8 @@ package et_meta is
 		checked_by		: pac_person.bounded_string := person_default;
 		approved_by		: pac_person.bounded_string := person_default;
 		drawn_date		: time := clock;
-		checked_date	: time := et_string_processing.date_first; -- default 1901-01-01
-		approved_date	: time := et_string_processing.date_first; -- default 1901-01-01
+		checked_date	: time := date_first; -- default 1901-01-01
+		approved_date	: time := date_first; -- default 1901-01-01
 	end record;
 
 	type type_schematic is new type_basic with record

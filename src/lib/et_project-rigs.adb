@@ -43,8 +43,10 @@ with ada.tags;
 with ada.exceptions;
 with ada.directories;
 
-with et_general_rw;				use et_general_rw;
-	
+with et_general_rw;					use et_general_rw;
+with et_time;						use et_time;
+
+
 package body et_project.rigs is
 
 	--use et_general.pac_net_name;

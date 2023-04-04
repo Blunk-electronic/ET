@@ -1,12 +1,12 @@
-------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               COMMIT                                     --
+--                             DATE AND TIME                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2023 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -33,64 +33,46 @@
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
 --   history of changes:
---
 
-with et_time;				use et_time;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.text_io;				use ada.text_io;
+
+with ada.calendar;				use ada.calendar;
+with ada.calendar.formatting;	use ada.calendar.formatting;
+with ada.calendar.time_zones;	use ada.calendar.time_zones;
+
+with gnat.calendar;
 
 
-package et_commit is
+package et_time is
 
 
-	-- The commit stage regards the state of the design
-	-- before and after a certain operation:
-	type type_commit_stage is (
-		PRE,
-		POST);
-
-	function to_string (stage : in type_commit_stage) return string;
-	
-	
-	subtype type_commit_index_zero_based is natural range 0 .. 100;  
-	-- CS increase upper limit
-	
-	subtype type_commit_index is type_commit_index_zero_based 
-		range 1 .. type_commit_index_zero_based'last;
-
-	procedure increment (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
-	procedure decrement (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
+	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
+	type type_date is new string (1..19); -- "2017-08-17T14:17:25"
 
 	
-	generic
-		type type_item is private;
-	package pac_commit is
+	-- Returns the given date as string.
+	function to_string (date : in type_date) return string;
 
-		type type_commit is record
-			index		: type_commit_index;
-			stage		: type_commit_stage;
-			item		: type_item;
-			timestap	: type_date;
-			-- CS message
-		end record;
+	
+	-- Returns true if given date is valid and plausible.
+	function date_valid (date : in type_date) return boolean;
 
-		function "=" (
-			left, right : in type_commit)
-			return boolean;
+	
+	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
+	function date (preamble : in boolean := true) return string;
+
+	
+	-- Use it to indicate uninialized date.
+	function date_first return time; -- returns 1901-01-01
+	
 		
-		function make_commit (
-			index	: in type_commit_index;
-			stage	: in type_commit_stage;
-			item	: in type_item)
-			return type_commit;
-		
-	end pac_commit;	
-	
-end et_commit;
+end et_time;
 
 -- Soli Deo Gloria
 

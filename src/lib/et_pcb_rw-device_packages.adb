@@ -46,6 +46,7 @@ with et_text;						use et_text;
 with et_terminals;					use et_terminals;
 
 with et_conductor_text.packages;	use et_conductor_text.packages;
+with et_time;						use et_time;
 
 
 package body et_pcb_rw.device_packages is

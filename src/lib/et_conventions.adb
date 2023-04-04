@@ -50,7 +50,7 @@ with ada.exceptions;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_general;
-
+with et_time;							use et_time;
 with et_project;
 with et_project.modules;
 -- with et_import;

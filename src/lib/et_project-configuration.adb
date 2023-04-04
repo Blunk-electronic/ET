@@ -48,6 +48,8 @@ with ada.containers;            	use ada.containers;
 with et_general_rw;					use et_general_rw;
 
 with et_conventions;
+with et_time;						use et_time;
+
 
 package body et_project.configuration is
 

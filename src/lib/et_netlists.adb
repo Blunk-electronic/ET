@@ -57,7 +57,8 @@ with ada.exceptions;
 
 with et_export;
 
-with et_csv;					use et_csv;
+with et_csv;						use et_csv;
+with et_time;						use et_time;
 
 package body et_netlists is
 	

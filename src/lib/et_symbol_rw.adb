@@ -47,6 +47,7 @@ with et_geometry;				use et_geometry;
 with et_text;
 
 with et_device_placeholders;		use et_device_placeholders;
+with et_time;						use et_time;
 
 
 package body et_symbol_rw is
