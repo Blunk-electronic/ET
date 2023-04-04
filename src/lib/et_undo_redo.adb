@@ -135,6 +135,7 @@ package body et_undo_redo is
 							
 							module.net_commits.dos.append (
 								make_commit (module.commit_index, stage, module.nets));
+								-- CS In order to save memory, do not commit the fill lines of zones ?
 
 						when others =>
 							null;
