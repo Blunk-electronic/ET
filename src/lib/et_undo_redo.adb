@@ -169,7 +169,6 @@ package body et_undo_redo is
 		lth		: in type_log_level)
 	is
 		use pac_undo_message;
-
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -212,6 +211,9 @@ package body et_undo_redo is
 
 					-- Mark the undo-operation as successful:
 					done := true;
+
+					-- put_line (post_commit.timestap);
+					-- message := to_bounded_string ("undo" & to_string (post_commit.timestap));
 				end if;
 			end undo_nets;
 

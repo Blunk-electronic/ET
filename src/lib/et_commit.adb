@@ -92,9 +92,11 @@ package body et_commit is
 			result : type_commit;
 		begin
 			result := ((
-				index	=> index,
-				stage	=> stage,		   
-				item	=> item));
+				index		=> index,
+				stage		=> stage,		   
+				item		=> item,
+				timestap	=> type_date (date)
+				));
 			return result;
 		end make_commit;
 

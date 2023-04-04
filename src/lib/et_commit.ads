@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with et_string_processing;		use et_string_processing;
+
 
 package et_commit is
 
@@ -69,10 +71,11 @@ package et_commit is
 	package pac_commit is
 
 		type type_commit is record
-			index	: type_commit_index;
-			stage	: type_commit_stage;
-			item	: type_item;
-			-- CS time, message
+			index		: type_commit_index;
+			stage		: type_commit_stage;
+			item		: type_item;
+			timestap	: type_date;
+			-- CS message
 		end record;
 
 		function "=" (

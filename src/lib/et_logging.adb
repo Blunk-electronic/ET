@@ -39,7 +39,7 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 
 --with ada.exceptions;
 with gnat.source_info;
-with gnat.calendar;
+-- with gnat.calendar;
 
 package body et_logging is
 
