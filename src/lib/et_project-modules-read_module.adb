@@ -41,6 +41,8 @@ with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 with et_pcb_rw;					use et_pcb_rw;
 with et_pcb_rw.restrict;		use et_pcb_rw.restrict;
 
+with et_time;
+
 
 separate (et_project.modules)
 
@@ -142,6 +144,7 @@ is
 	-- basic meta stuff, returns a false.
 	function read_meta_basic return boolean is
 		use et_meta;
+		use et_time;
 		kw : constant string := f (line, 1);
 		result : boolean := true;
 	begin

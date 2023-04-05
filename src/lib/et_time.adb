@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -58,6 +59,27 @@ package body et_time is
 		end if;
 	end get_date;
 
+
+	function to_string_full (
+		time	: ada.calendar.time)
+		return string
+	is
+		now : string (1..19) := image (time);
+	begin
+		now (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
+		return now;
+	end to_string_full;
+	
+
+	function to_string_YMD (
+		time	: ada.calendar.time)
+		return string
+	is
+		now : string (1..10) := image (time) (1..10);
+	begin
+		return now;
+	end to_string_YMD;
+
 	
 	function date_first return time is
 		r : time := gnat.calendar.no_time; -- 1901-01-01
@@ -71,6 +93,21 @@ package body et_time is
 	begin
 		return string (date);
 	end to_string;
+
+
+	function to_date (
+		date : in string) 
+		return time 
+	is begin
+		-- The function "value" requires something like "2017-08-17 14:17:25".
+		-- Since date provides only year, month and day, we append hours, minutes and seconds.
+		return value (date & " 00:00:00");
+
+		exception when event:
+			--others => log (ERROR, text => "date invalid !", console => true);
+			others => put_line ("ERROR ! Date invalid !");
+				raise;
+	end to_date;
 
 	
 	function date_valid (date : in type_date) return boolean is

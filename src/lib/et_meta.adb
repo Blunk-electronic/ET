@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -94,25 +95,6 @@ package body et_meta is
 		return pac_person.to_string (person);
 	end;
 	
-	function to_string (date : in time) return string is
-		-- The function "image" returns something like "2017-08-17 14:17:25".
-		-- We extract only year, month and day:
-		t : constant string (1..10) := image (date) (1..10);
-	begin
-		return t; -- 2019-01-01
-	end;
-
-	function to_date (date : in string) return time is -- 2019-01-01 
-	begin
-		-- The function "value" requires something like "2017-08-17 14:17:25".
-		-- Since date provides only year, month and day, we append hours, minutes and seconds.
-		return value (date & " 00:00:00");
-
-		exception when event:
-			others => log (ERROR, text => "date invalid !", console => true);
-				raise;
-	end;
-
 
 	function exists (lib : in pac_preferred_library_schematic.bounded_string)
 		return boolean 
@@ -125,6 +107,7 @@ package body et_meta is
 			return false;
 		end if;
 	end exists;
+	
 	
 	function to_preferred_library_schematic (lib : in string)
 		return pac_preferred_library_schematic.bounded_string

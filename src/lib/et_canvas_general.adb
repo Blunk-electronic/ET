@@ -63,7 +63,7 @@ with gdk.event;						use gdk.event;
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
-
+with et_time;
 with et_project;
 with et_project.modules;
 with et_assembly_variants;		--use et_assembly_variants;
@@ -3885,6 +3885,7 @@ package body pac_canvas is
 		use pac_generic_modules;
 		
 		use et_meta;
+		use et_time;
 		--use et_canvas_schematic;
 		
 		
@@ -3995,7 +3996,7 @@ package body pac_canvas is
 
 		-- drawn date
 		draw_text (
-			content	=> to_content (to_string (meta.drawn_date)), -- 2010-04-23
+			content	=> to_content (to_string_YMD (meta.drawn_date)), -- 2010-04-23
 			size	=> ph_basic.drawn_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.drawn_date.position,
@@ -4004,7 +4005,7 @@ package body pac_canvas is
 
 		-- checked date
 		draw_text (
-			content	=> to_content (to_string (meta.checked_date)), -- 2010-04-23
+			content	=> to_content (to_string_YMD (meta.checked_date)), -- 2010-04-23
 			size	=> ph_basic.checked_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.checked_date.position,
@@ -4013,7 +4014,7 @@ package body pac_canvas is
 
 		-- approved date
 		draw_text (
-			content	=> to_content (to_string (meta.approved_date)), -- 2010-04-23
+			content	=> to_content (to_string_YMD (meta.approved_date)), -- 2010-04-23
 			size	=> ph_basic.approved_date.size,
 			font	=> font_placeholders,
 			pos		=> ph_basic.approved_date.position,

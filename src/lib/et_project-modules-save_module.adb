@@ -148,13 +148,13 @@ is
 			write (keyword => keyword_revision, parameters => to_string (basic.revision));
 			
 			write (keyword => keyword_drawn_by, parameters => to_string (basic.drawn_by), wrap => true);
-			write (keyword => keyword_drawn_date, parameters => to_string (basic.drawn_date));
+			write (keyword => keyword_drawn_date, parameters => to_string_YMD (basic.drawn_date));
 			
 			write (keyword => keyword_checked_by, parameters => to_string (basic.checked_by), wrap => true);
-			write (keyword => keyword_checked_date, parameters => to_string (basic.checked_date));
+			write (keyword => keyword_checked_date, parameters => to_string_YMD (basic.checked_date));
 
 			write (keyword => keyword_approved_by, parameters => to_string (basic.approved_by), wrap => true);
-			write (keyword => keyword_approved_date, parameters => to_string (basic.approved_date));
+			write (keyword => keyword_approved_date, parameters => to_string_YMD (basic.approved_date));
 		end write_basic;
 
 		procedure write_schematic (sch : in type_schematic) is 
