@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -44,9 +45,35 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
 with gnat.directory_operations;
 
-with et_string_processing;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
+
 
 package body et_general is
+
+	function to_string (
+		domain : in type_domain) 
+		return string 
+	is 
+		s : string := type_domain'image (domain);
+	begin
+		return s (domain_prefix'length + 1 .. s'last);
+	end to_string;
+
+	
+	function to_domain (
+		domain : in string) 
+		return type_domain 
+	is begin
+		return type_domain'value (domain_prefix & domain);
+
+		exception when event: others => 
+			log (ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
+			--put_line ("ERROR domain " & domain & " invalid !");
+			raise;
+	end to_domain;
+
+
 	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
