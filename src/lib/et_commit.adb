@@ -88,7 +88,8 @@ package body et_commit is
 		function make_commit (
 			index	: in type_commit_index;
 			stage	: in type_commit_stage;					 
-			item	: in type_item)
+			item	: in type_item;
+			message	: in pac_commit_message.bounded_string)
 			return type_commit
 		is
 			result : type_commit;
@@ -97,7 +98,8 @@ package body et_commit is
 				index		=> index,
 				stage		=> stage,		   
 				item		=> item,
-				timestamp	=> ada.calendar.clock -- the time of the commit
+				timestamp	=> ada.calendar.clock, -- the time of the commit
+				message		=> message
 				));
 			return result;
 		end make_commit;

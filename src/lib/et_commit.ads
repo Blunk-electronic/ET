@@ -36,8 +36,10 @@
 --   history of changes:
 --
 
-with et_time;					use et_time;
+with ada.strings.bounded;       	use ada.strings.bounded;
+
 with ada.calendar;
+with et_time;					use et_time;
 
 
 package et_commit is
@@ -67,6 +69,9 @@ package et_commit is
 		count	: in type_commit_index := 1);
 
 
+	commit_message_length_max : constant positive := 50;
+	package pac_commit_message is new generic_bounded_length (commit_message_length_max);
+
 	
 	generic
 		type type_item is private;
@@ -77,7 +82,7 @@ package et_commit is
 			stage		: type_commit_stage;
 			item		: type_item;
 			timestamp	: ada.calendar.time; -- the time of the commit
-			-- CS message
+			message		: pac_commit_message.bounded_string;
 		end record;
 
 		function "=" (
@@ -87,7 +92,8 @@ package et_commit is
 		function make_commit (
 			index	: in type_commit_index;
 			stage	: in type_commit_stage;
-			item	: in type_item)
+			item	: in type_item;
+			message	: in pac_commit_message.bounded_string)
 			return type_commit;
 		
 	end pac_commit;	

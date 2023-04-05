@@ -64,11 +64,14 @@ package body et_undo_redo is
 		use et_schematic;
 		use et_modes.schematic;
 
+		verb_noun : constant string := to_string (verb) & " " & to_string (noun);
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 
+			use pac_commit_message;
 		begin
 			increment (module.commit_index);			
 
@@ -79,9 +82,14 @@ package body et_undo_redo is
 						when NOUN_NET =>
 							log (text => "nets", level => lth + 1);
 							
-							module.net_commits.dos.append (
-								make_commit (module.commit_index, stage, module.nets));
+							module.net_commits.dos.append (make_commit (
+								index	=> module.commit_index, 
+								stage	=> stage, 
+								item	=> module.nets,
+								message	=> to_bounded_string (verb_noun)
+								));
 
+							
 						when others =>
 							null;
 					end case;
@@ -94,7 +102,7 @@ package body et_undo_redo is
 
 	begin
 		log (text => "commit in schematic (" 
-			 & to_string (stage) & " / " & to_string (verb) & " " & to_string (noun) & ")",
+			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 		
 		log_indentation_up;
@@ -120,11 +128,14 @@ package body et_undo_redo is
 		use et_schematic;
 		use et_modes.board;
 
+		verb_noun : constant string := to_string (verb) & " " & to_string (noun);
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is 
+			use pac_commit_message;
 		begin
 			increment (module.commit_index);	
 
@@ -135,8 +146,12 @@ package body et_undo_redo is
 						when NOUN_NET | NOUN_TRACK =>
 							log (text => "nets", level => lth + 1);
 							
-							module.net_commits.dos.append (
-								make_commit (module.commit_index, stage, module.nets));
+							module.net_commits.dos.append (make_commit (
+								index	=> module.commit_index, 
+								stage	=> stage, 
+								item	=> module.nets,
+								message	=> to_bounded_string (verb_noun)
+								));
 								-- CS In order to save memory, do not commit the fill lines of zones ?
 
 						when others =>
@@ -151,7 +166,7 @@ package body et_undo_redo is
 
 	begin
 		log (text => "commit in board (" 
-			 & to_string (stage) & " / " & to_string (verb) & " " & to_string (noun) & ")",
+			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 
 		log_indentation_up;
@@ -171,6 +186,13 @@ package body et_undo_redo is
 		lth		: in type_log_level)
 	is
 		use pac_undo_message;
+		use pac_commit_message;
+
+		
+		procedure add_to_message (text : in string) is begin
+			message := message & " " & to_bounded_string (text);
+		end add_to_message;
+	
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -214,9 +236,12 @@ package body et_undo_redo is
 					-- Mark the undo-operation as successful:
 					done := true;
 
+					-- Assemble undo-message:
+					add_to_message (to_string (post_commit.message));
+					
 					-- CS add duration between post-commit and current time (like 2 minutes ago)
 					--put_line (to_string_full (post_commit.timestamp));
-					--message := to_bounded_string ("undo" & to_string (post_commit.timestamp));
+
 				end if;
 			end undo_nets;
 
@@ -226,6 +251,9 @@ package body et_undo_redo is
 			-- An undo-operation is allowed if there have been
 			-- commits in the past. Otherwise there would be nothing to undo:
 			if module.commit_index > 0 then
+
+				-- Build preample of undo-message:
+				add_to_message ("undo:");
 
 				-- Since we have multiple do-stacks (for various kinds of objects),
 				-- the do-stack that contains the latest commit must be processed.
@@ -246,6 +274,8 @@ package body et_undo_redo is
 				-- end if;
 			else
 				log (text => nothing_to_do, level => lth + 1);
+
+				-- Assemble undo-message:
 				message := to_bounded_string (nothing_to_do);
 			end if;			
 		end query_module;
@@ -272,6 +302,12 @@ package body et_undo_redo is
 		lth		: in type_log_level)
 	is
 		use pac_redo_message;
+		use pac_commit_message;
+
+		
+		procedure add_to_message (text : in string) is begin
+			message := message & " " & to_bounded_string (text);
+		end add_to_message;
 
 		
 		procedure query_module (
@@ -323,6 +359,13 @@ package body et_undo_redo is
 
 						-- Mark the redo-operation as successful:
 						done := true;
+
+						-- Assemble redo-message:
+						add_to_message (to_string (post_commit.message));
+					
+						-- CS add duration between post-commit and current time (like 2 minutes ago)
+						--put_line (to_string_full (post_commit.timestamp));
+						
 					end if;
 				end if;
 			end redo_nets;
@@ -334,6 +377,9 @@ package body et_undo_redo is
 			-- the redo-stack that contains the latest commit must be processed.
 			-- All other redo-stacks remain untouched:
 
+			-- Build preample of undo-message:
+			add_to_message ("redo:");
+			
 			-- Search in nets:
 			redo_nets;
 
@@ -342,11 +388,14 @@ package body et_undo_redo is
 				-- CS other redo-stacks like
 				-- CS elsif not module.silkscreen_commits.redos.is_empty then
 			end if;
-				
+
+			
 			if done then
 				increment (module.commit_index, 2);
 			else
 				log (text => nothing_to_do, level => lth + 1);
+
+				-- Assemble redo-message (overwrite old stuff in message):
 				message := to_bounded_string (nothing_to_do);
 			end if;
 		end query_module;
