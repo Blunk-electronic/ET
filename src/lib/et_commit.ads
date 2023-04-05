@@ -76,7 +76,7 @@ package et_commit is
 			index		: type_commit_index;
 			stage		: type_commit_stage;
 			item		: type_item;
-			timestamp	: ada.calendar.time;
+			timestamp	: ada.calendar.time; -- the time of the commit
 			-- CS message
 		end record;
 

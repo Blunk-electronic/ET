@@ -97,7 +97,7 @@ package body et_commit is
 				index		=> index,
 				stage		=> stage,		   
 				item		=> item,
-				timestamp	=> ada.calendar.clock
+				timestamp	=> ada.calendar.clock -- the time of the commit
 				));
 			return result;
 		end make_commit;

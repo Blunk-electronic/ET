@@ -214,7 +214,8 @@ package body et_undo_redo is
 					-- Mark the undo-operation as successful:
 					done := true;
 
-					put_line (to_string_full (post_commit.timestamp));
+					-- CS add duration between post-commit and current time (like 2 minutes ago)
+					--put_line (to_string_full (post_commit.timestamp));
 					--message := to_bounded_string ("undo" & to_string (post_commit.timestamp));
 				end if;
 			end undo_nets;
@@ -240,6 +241,8 @@ package body et_undo_redo is
 
 				-- CS if done then ?
 				decrement (module.commit_index, 2);
+
+				
 				-- end if;
 			else
 				log (text => nothing_to_do, level => lth + 1);
