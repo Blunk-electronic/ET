@@ -46,6 +46,7 @@ with et_schematic;						use et_schematic;
 with et_nets;							use et_nets;
 with et_modes.schematic;
 with et_modes.board;
+with et_time;							use et_time;
 
 
 package body et_undo_redo is
@@ -213,7 +214,7 @@ package body et_undo_redo is
 					-- Mark the undo-operation as successful:
 					done := true;
 
-					-- put_line (post_commit.timestap);
+					put_line (to_string_full (post_commit.timestamp));
 					--message := to_bounded_string ("undo" & to_string (post_commit.timestamp));
 				end if;
 			end undo_nets;

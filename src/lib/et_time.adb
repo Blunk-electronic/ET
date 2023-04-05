@@ -64,7 +64,7 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : string (1..19) := image (time);
+		now : string (1..19) := image (time, time_zone => utc_time_offset (time));
 	begin
 		now (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return now;
@@ -75,7 +75,7 @@ package body et_time is
 		time	: ada.calendar.time)
 		return string
 	is
-		now : string (1..10) := image (time) (1..10);
+		now : string (1..10) := image (time, time_zone => utc_time_offset (time)) (1..10);
 	begin
 		return now;
 	end to_string_YMD;
