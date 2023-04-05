@@ -39,7 +39,8 @@
 with ada.strings.bounded;       	use ada.strings.bounded;
 
 with ada.calendar;
-with et_time;					use et_time;
+with et_time;						use et_time;
+with et_general;					use et_general;
 
 
 package et_commit is
@@ -83,6 +84,7 @@ package et_commit is
 			item		: type_item;
 			timestamp	: ada.calendar.time; -- the time of the commit
 			message		: pac_commit_message.bounded_string;
+			domain		: type_domain; -- schematic, board
 		end record;
 
 		function "=" (
@@ -93,7 +95,8 @@ package et_commit is
 			index	: in type_commit_index;
 			stage	: in type_commit_stage;
 			item	: in type_item;
-			message	: in pac_commit_message.bounded_string)
+			message	: in pac_commit_message.bounded_string;
+			domain	: in type_domain)
 			return type_commit;
 		
 	end pac_commit;	

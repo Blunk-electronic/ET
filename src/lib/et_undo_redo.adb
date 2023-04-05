@@ -64,6 +64,8 @@ package body et_undo_redo is
 		use et_schematic;
 		use et_modes.schematic;
 
+		domain : constant type_domain := DOM_SCHEMATIC;
+		
 		verb_noun : constant string := to_string (verb) & " " & to_string (noun);
 		
 		
@@ -86,7 +88,8 @@ package body et_undo_redo is
 								index	=> module.commit_index, 
 								stage	=> stage, 
 								item	=> module.nets,
-								message	=> to_bounded_string (verb_noun)
+								message	=> to_bounded_string (verb_noun),
+								domain	=> domain
 								));
 
 							
@@ -101,7 +104,7 @@ package body et_undo_redo is
 		
 
 	begin
-		log (text => "commit in schematic (" 
+		log (text => "commit in " & to_string (domain) & "(" 
 			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 		
@@ -128,6 +131,8 @@ package body et_undo_redo is
 		use et_schematic;
 		use et_modes.board;
 
+		domain : constant type_domain := DOM_BOARD;
+
 		verb_noun : constant string := to_string (verb) & " " & to_string (noun);
 
 		
@@ -150,7 +155,8 @@ package body et_undo_redo is
 								index	=> module.commit_index, 
 								stage	=> stage, 
 								item	=> module.nets,
-								message	=> to_bounded_string (verb_noun)
+								message	=> to_bounded_string (verb_noun),
+								domain	=> domain
 								));
 								-- CS In order to save memory, do not commit the fill lines of zones ?
 
@@ -165,7 +171,7 @@ package body et_undo_redo is
 		
 
 	begin
-		log (text => "commit in board (" 
+		log (text => "commit in " & to_string (domain) & "(" 
 			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 
@@ -242,6 +248,8 @@ package body et_undo_redo is
 					-- CS add duration between post-commit and current time (like 2 minutes ago)
 					--put_line (to_string_full (post_commit.timestamp));
 
+					-- Add domain to message:
+					add_to_message ("(in " & to_string (post_commit.domain) & ")");
 				end if;
 			end undo_nets;
 
@@ -270,7 +278,6 @@ package body et_undo_redo is
 				-- CS if done then ?
 				decrement (module.commit_index, 2);
 
-				
 				-- end if;
 			else
 				log (text => nothing_to_do, level => lth + 1);
@@ -365,7 +372,9 @@ package body et_undo_redo is
 					
 						-- CS add duration between post-commit and current time (like 2 minutes ago)
 						--put_line (to_string_full (post_commit.timestamp));
-						
+
+						-- Add domain to message:
+						add_to_message ("(in " & to_string (post_commit.domain) & ")");
 					end if;
 				end if;
 			end redo_nets;
