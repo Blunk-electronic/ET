@@ -2486,37 +2486,28 @@ package body et_geometry_1 is
 	begin
 		-- put_line ("vector" & to_string (vector) & " " & to_string (line));
 		
-		if on_start_point (d) or on_end_point (d) then
-			-- Point is on top of start or end point of line.
-			-- put_line ("on start or end");
-			null; -- result keeps its default (zero distance, zero angle)
+		if not out_of_range (d) then
+			-- put_line ("in range");
+			
+			-- An imaginary line can be drawn perpendicular from
+			-- point to line. Both intersect each other.
+			result := get_distance (d);
 		else
+			-- put_line ("out of range");
+			
+			-- No imaginary line can be drawn perpendicular from
+			-- point to line.
 
-			--if on_line (get_intersection (d), line) then 
-			if not out_of_range (d) then
-				-- put_line ("in range");
-				
-				-- An imaginary line can be drawn perpendicular from
-				-- point to line. Both intersect each other.
-				result := get_distance (d);
+			-- Compare the distances to the end points of the line:
+			d_to_start := get_distance_total (line.start_point, vector);
+			d_to_end   := get_distance_total (line.end_point, vector);
+
+			if d_to_start < d_to_end then
+				result := d_to_start;
 			else
-				-- put_line ("out of range");
-				
-				-- No imaginary line can be drawn perpendicular from
-				-- point to line.
-
-				-- Compare the distances to the end points of the line:
-				d_to_start := get_distance_total (line.start_point, vector);
-				d_to_end   := get_distance_total (line.end_point, vector);
-
-				if d_to_start < d_to_end then
-					result := d_to_start;
-				else
-					result := d_to_end;
-				end if;
-				
+				result := d_to_end;
 			end if;
-
+			
 		end if;
 
 		-- put_line ("distance" & to_string (result));
