@@ -278,23 +278,23 @@ package body et_canvas_schematic_nets is
 					log_indentation_up;
 					
 					while segment_cursor /= pac_net_segments.no_element loop
-						log (text => "probing segment" & to_string (element (segment_cursor)),
+						log (text => "probing segment " & to_string (element (segment_cursor)),
 							level => log_threshold + 1);
-						
-						-- If the segment is within the catch zone, append
-						-- the current net, stand and segment cursor to the result:
-						if on_line (
-							point		=> place.place,
-							line		=> element (segment_cursor)) 
-						then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with catch_zone	
 
+						--put_line ("probing segment");
+
+						-- If the segment is in the catch zone, append
+						-- the current net, stand and segment cursor to the result:
+						if in_catch_zone (
+							line	=> element (segment_cursor),
+							width	=> net_line_width,
+							point	=> place.place,
+							zone	=> catch_zone)
+						then
 							log_indentation_up;
 							log (text => "sits on segment", level => log_threshold + 1);
 						
 							result.append ((net_cursor, strand_cursor, segment_cursor));
-
 							log_indentation_down;
 						end if;
 
@@ -361,7 +361,7 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			catch_zone		=> get_catch_zone,
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of segments found here:
