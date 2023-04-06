@@ -41,37 +41,57 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
 
 with et_geometry;				use et_geometry;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_pcb_coordinates;		--use et_pcb_coordinates;
+-- with et_board_shapes_and_text;	use et_board_shapes_and_text;
 
 
 procedure get_distance is
 
-	use pac_geometry_brd;
-	use pac_geometry_2;
+	use et_pcb_coordinates.pac_geometry_brd;
+	-- use et_pcb_coordinates.pac_geometry_2;
 
-	use pac_contours;
-	use pac_polygons;
+	-- use pac_contours;
+	-- use pac_polygons;
 
 	
 	
-	v : type_vector := set (8.0, 6.0, 0.0);
-	e : type_edge; -- := (start_point => set (0.0, 0.0), end_point => set (11.0. 0.0));
+	--v : type_vector := set (8.0, 6.0, 0.0);
+	--v : type_vector := set (1.16000000000E+02, 1.24000000000E+02, 0.0);
+	v : type_vector := set (1.16000000000E+02, 1.23999999999E+02, 0.0);
+	--e : type_edge; -- := (start_point => set (0.0, 0.0), end_point => set (11.0. 0.0));
+	l : type_line_fine := ((
+		start_point	=> set (6.60000000000E+01, 1.24000000000E+02),
+		end_point	=> set (6.60000000000E+01, 1.30000000000E+02)));
 
 	d : type_distance_point_line;
-	
+
+	--offset : type_offset := (0.0, type_float_positive'small);
+	offset : type_offset := (0.0, 1.0E-17);
 begin
-	e.start_point := (0.0, 0.0, 0.0);
-	e.end_point := (11.0, 0.0, 0.0);
+	-- e.start_point := (0.0, 0.0, 0.0);
+	-- e.end_point := (11.0, 0.0, 0.0);
 
+	for i in 1 .. 1_000_000_000 loop
 
-	d := get_distance (
-		vector	=> v,
-		line	=> e,
-		line_range	=> WITH_END_POINTS);
+		--put_line ("v: " & to_string (v) & " | " & to_string (l));
+		-- put_line ("v: " & to_string (v));
+		
+		d := get_distance (
+			vector	=> v,
+			line	=> l,
+			line_range	=> WITH_END_POINTS);
 
-	put_line ("distance" & to_string (get_distance (d)));
-	
+		--put_line ("distance" & to_string (get_distance (d)));
+		--new_line;
+
+		if d.distance = 0.0 then
+			put_line ("v: " & to_string (v));
+			put_line ("distance" & to_string (get_distance (d)));
+			exit;
+		end if;
+		
+		move_by (v, offset);
+	end loop;
 	
 end get_distance;
 
