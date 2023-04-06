@@ -962,7 +962,7 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			catch_zone		=> get_catch_zone,
 			log_threshold	=> log_threshold + 1);
 
 		-- Since this procedure is called by several schematic operations,

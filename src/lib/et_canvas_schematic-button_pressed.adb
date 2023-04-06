@@ -94,7 +94,8 @@ is
 					when others => null;
 							
 				end case;
-			
+
+				
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_LABEL =>
@@ -106,7 +107,7 @@ is
 						
 					when NOUN_NET => 
 						if not clarification_pending then
-							delete_net_segment (snap_point);
+							delete_net_segment (point);
 						else
 							delete_selected_net_segment;
 						end if;
@@ -121,6 +122,7 @@ is
 					when others => null;
 				end case;
 
+				
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
@@ -133,10 +135,11 @@ is
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						self.reset_grid_and_cursor;
-						drag_segment (MOUSE, snap_point);
+						drag_segment (MOUSE, point);
 		
 					when others => null;
 				end case;
+
 				
 			when VERB_DRAW =>
 				case noun is
@@ -150,6 +153,7 @@ is
 					when others => null;							
 				end case;
 
+				
 			when VERB_INVOKE =>
 				case noun is
 
@@ -173,6 +177,7 @@ is
 					when others => null;
 						
 				end case;
+
 				
 			when VERB_MOVE =>
 				case noun is
@@ -199,6 +204,7 @@ is
 					when others => null;							
 				end case;
 
+				
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_LABEL =>
@@ -207,6 +213,7 @@ is
 					when others => null;
 				end case;
 
+				
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -225,6 +232,7 @@ is
 						
 					when others => null;
 				end case;
+
 				
 			when VERB_ROTATE =>
 				case noun is
@@ -266,6 +274,7 @@ is
 					when others => null;
 				end case;
 
+				
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
@@ -278,6 +287,7 @@ is
 					when others => null;
 				end case;
 
+				
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -301,6 +311,7 @@ is
 		end case;
 		
 	end left_button;
+
 
 	
 	-- If right button clicked, then the operator is clarifying:
