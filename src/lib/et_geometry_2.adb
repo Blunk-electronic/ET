@@ -1878,11 +1878,15 @@ package body et_geometry_2 is
 		width_float : constant type_float_positive := type_float_positive (width);
 		distance_to_point : type_float_positive;
 	begin
+		-- put_line ("point " & to_string (point));
+		-- put_line ("line  " & to_string (line));
+		
 		distance_to_point := get_shortest_distance (line, point);
 
 		-- If no linewidth, then we simply compare the distance_to_point
 		-- with the zone:
 		if width = 0.0 then
+			-- put_line ("distance to point " & to_string (distance_to_point));
 			if distance_to_point <= zone then
 				return true;
 			else
