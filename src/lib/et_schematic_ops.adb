@@ -1981,16 +1981,14 @@ package body et_schematic_ops is
 
 	
 	function ports_at_place (
-	-- Returns lists of device, netchanger and submodule ports at the given place.
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return type_ports 
 	is
 		ports : type_ports; -- to be returned
 
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
@@ -2186,14 +2184,12 @@ package body et_schematic_ops is
 		end query_module;
 		
 	begin -- ports_at_place
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			 " locating ports at" & to_string (position => place),
 			 level => log_threshold);
 
 		log_indentation_up;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		query_element (
 			position	=> module_cursor,
@@ -4472,7 +4468,7 @@ package body et_schematic_ops is
 
 					-- Collect all ports of possible other devices, submodules and netchangers
 					-- at given point:
-					ports := ports_at_place (module_name, point, log_threshold + 2);
+					ports := ports_at_place (module_cursor, point, log_threshold + 2);
 
 					-- If no device and no submodule ports here:
 					if is_empty (ports.devices) and is_empty (ports.submodules) then
@@ -5727,7 +5723,7 @@ package body et_schematic_ops is
 
 			-- Collect all ports of possible other devices, submodules and netchangers
 			-- at given point:
-			ports := ports_at_place (key (module_cursor), point, log_threshold + 1);
+			ports := ports_at_place (module_cursor, point, log_threshold + 1);
 
 			-- If no device or netchanger ports here:
 			if is_empty (ports.devices) and is_empty (ports.netchangers) then

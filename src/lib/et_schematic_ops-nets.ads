@@ -72,6 +72,7 @@ package et_schematic_ops.nets is
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
 
+	
 	-- Returns true if given point sits on the given segment.
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
@@ -80,6 +81,7 @@ package et_schematic_ops.nets is
 		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
+
 	
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
@@ -87,14 +89,12 @@ package et_schematic_ops.nets is
 	-- must provide sheet and x/y start position of strand. 
 	-- CS: In the future x/y can be any point on any segment of the strand.
 	procedure rename_net (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
-
-	-- CS procedure rename_net that takes a module cursor
 
 	
 	-- Deletes a net. The scope determines whether to delete a certain strand,
@@ -103,15 +103,16 @@ package et_schematic_ops.nets is
 	-- must provide sheet and x/y start position of strand. In the future x/y can be
 	-- any point on any segment of the strand.
 	procedure delete_net (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	
 	-- Deletes a segment of a net.
 	procedure delete_segment (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
@@ -124,7 +125,7 @@ package et_schematic_ops.nets is
 	-- Tests whether the zone of a net segment is movable.
 	-- Returns true if movable, returns falso otherwise.
 	function movable (
-		module_name		: in pac_module_name.bounded_string; -- CS should be a cursor
+		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
 		point_of_attack	: in et_coordinates.type_position;
@@ -145,7 +146,7 @@ package et_schematic_ops.nets is
 	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
 	--       CS: The resulting overlapping segments should be detected by the ERC.
 	procedure drag_segment (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -195,7 +196,7 @@ package et_schematic_ops.nets is
 	
 	-- Returns lists of nets that cross the given place.
 	function get_nets_at_place (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list;
@@ -226,7 +227,7 @@ package et_schematic_ops.nets is
 	
 	-- See description for procedure insert_segment.
 	procedure insert_net (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
@@ -235,7 +236,7 @@ package et_schematic_ops.nets is
 
 	-- Sets the net class of a net:
 	procedure set_net_class (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
 		log_threshold	: in type_log_level);
@@ -244,7 +245,7 @@ package et_schematic_ops.nets is
 	
 	-- Sets the scope of a net.
 	procedure set_scope (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
@@ -255,7 +256,7 @@ package et_schematic_ops.nets is
 	-- is split in two new segments with the junction between them.
 	-- If there is no net segment at the given position, no junction is placed and warning issued.
 	procedure place_junction (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level);
 
@@ -272,7 +273,7 @@ package et_schematic_ops.nets is
 	
 	-- Places a label next to a segment at position.
 	procedure place_net_label (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 
 		-- The reference point at the segment:
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
@@ -294,9 +295,9 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 	
-	procedure delete_net_label (
 	-- Deletes a label.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	procedure delete_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
@@ -306,13 +307,12 @@ package et_schematic_ops.nets is
 	-- Queries the position of the given net. If a stub is at the
 	-- given position returns the direction of the stub.
 	function query_stub (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level)
 		return type_stub;
 
-	-- CS write a function query_stub that take a module cursor and a net cursor instead.
 	
 end et_schematic_ops.nets;
 

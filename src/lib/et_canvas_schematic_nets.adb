@@ -822,7 +822,7 @@ package body et_canvas_schematic_nets is
 				end case;
 
 				rename_net (
-					module_name		=> key (current_active_module),
+					module_cursor	=> current_active_module,
 					net_name_before	=> selected_net, -- RESET_N
 					net_name_after	=> to_net_name (self.get_text), -- RST_N
 					scope			=> net_rename.scope,
@@ -925,14 +925,12 @@ package body et_canvas_schematic_nets is
 				net_name := key (element (selected_segment).net);
 
 				drag_segment (
-					module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+					module_cursor	=> current_active_module,
 					net_name		=> net_name,
 					point_of_attack	=> point_of_attack,
 					coordinates		=> et_geometry.ABSOLUTE,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-
-				-- CS Use a procedure drag_segment that takes a cursor to the module instead.
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1507,7 +1505,7 @@ package body et_canvas_schematic_nets is
 								-- A tag label can be attached to a stub only.
 								declare
 									s : constant type_stub := query_stub (
-										module_name		=> key (module_cursor),
+										module_cursor	=> module_cursor,
 										net_name		=> net_name,
 										position		=> to_position (type_point (destination), current_active_sheet),
 										log_threshold	=> log_threshold + 1);

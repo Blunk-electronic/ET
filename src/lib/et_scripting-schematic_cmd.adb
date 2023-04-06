@@ -722,6 +722,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_BUILD =>
 				case noun is
 					when NOUN_SUBMODULES_TREE =>
@@ -739,6 +740,7 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_CHECK =>
 				case noun is
@@ -757,6 +759,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -783,6 +786,7 @@ is
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 9 =>
@@ -810,6 +814,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_VARIANT => 
@@ -835,7 +840,8 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
-																	
+
+				
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -850,13 +856,14 @@ is
 								
 							when others => command_incomplete;
 						end case;
-								
+
+						
 					when NOUN_LABEL =>
 						case fields is
 							when 7 =>
 								delete_net_label
 									(
-									module_name		=> module,
+									module_cursor	=> current_active_module,
 
 									position		=> to_position (
 														point => type_point (set (
@@ -871,6 +878,7 @@ is
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_MODULE =>
 						case fields is
 							when 4 => delete_active_module;								
@@ -878,6 +886,7 @@ is
 							when 6 .. count_type'last => too_long;								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_NET =>
 						case fields is
@@ -888,7 +897,7 @@ is
 							when 5 =>
 								delete_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name			=> to_net_name (f (5)), -- RESET
 									scope				=> EVERYWHERE,
 									place				=> to_position (
@@ -902,7 +911,7 @@ is
 							when 6 =>
 								delete_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name			=> to_net_name (f (5)), -- RESET
 									scope				=> SHEET,
 									place				=> to_position (
@@ -915,7 +924,7 @@ is
 							when 8 =>
 								delete_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name			=> to_net_name (f (5)), -- RESET
 									scope				=> STRAND,
 									place				=> to_position (
@@ -929,9 +938,9 @@ is
 							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
-
 						end case;
 
+						
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 5 =>
@@ -961,13 +970,14 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_SEGMENT =>
 						case fields is
 							when 8 =>
 								delete_segment
 									(
-									module_name		=> module,
+									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									place			=> to_position (
 														point => type_point (set (
@@ -980,7 +990,8 @@ is
 								
 							when others => command_incomplete;
 						end case;
-								
+
+						
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 5 =>
@@ -1130,7 +1141,7 @@ is
 							when 11 =>
 								drag_segment
 									(
-									module_name		=> module,
+									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									point_of_attack	=> to_position (
 														point => type_point (set (
@@ -1171,6 +1182,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_DRAW =>
 				case noun is
@@ -1179,7 +1191,7 @@ is
 							when 10 =>
 								insert_net
 									(
-									module_name		=> module,
+									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									start_point		=> to_position (
 															point => type_point (set (
@@ -1201,6 +1213,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
@@ -1501,6 +1514,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_PLACE =>
 				case noun is
@@ -1509,7 +1523,7 @@ is
 							when 7 =>
 								place_junction 
 									(
-									module_name 	=> module,
+									module_cursor 	=> current_active_module,
 									place			=> to_position 
 														(
 														sheet => to_sheet (f (5)),
@@ -1526,14 +1540,15 @@ is
 								
 							when others => command_incomplete;
 						end case;
-								
+
+						
 					when NOUN_LABEL =>
 						case fields is
 							when 10 =>
 								-- SIMPLE LABEL
 								place_net_label
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 
 									segment_position	=> to_position (
 															point => type_point (set (
@@ -1560,7 +1575,7 @@ is
 								-- TAG LABEL
 								place_net_label
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 
 									segment_position	=> to_position (
 															point => type_point (set (
@@ -1583,6 +1598,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
@@ -1594,6 +1610,7 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_REMOVE =>
 				case noun is
@@ -1672,7 +1689,7 @@ is
 							when 6 =>
 								rename_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> EVERYWHERE,
@@ -1687,7 +1704,7 @@ is
 							when 7 =>
 								rename_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> SHEET,
@@ -1701,7 +1718,7 @@ is
 							when 9 =>
 								rename_net
 									(
-									module_name			=> module,
+									module_cursor		=> current_active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> STRAND,
@@ -1721,6 +1738,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_RENUMBER =>
 				case noun is
 					when NOUN_DEVICES =>
@@ -1863,6 +1881,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_SET =>
 				case noun is
@@ -1871,7 +1890,7 @@ is
 							when 6 =>
 								-- schematic led_driver set class GND pwr
 								set_net_class (
-									module_name		=> module,
+									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)),
 									net_class		=> et_pcb.to_net_class_name (f (6)),
 									log_threshold	=> log_threshold + 1);
@@ -1879,6 +1898,7 @@ is
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_GRID =>
 						case fields is
@@ -1895,7 +1915,8 @@ is
 								
 							when others => command_incomplete;
 						end case;
-				
+
+						
 					when NOUN_PARTCODE =>
 						case fields is
 							when 6 =>
@@ -1918,7 +1939,8 @@ is
 								
 							when others => command_incomplete;
 						end case;
-								
+
+						
 					when NOUN_PURPOSE =>
 						case fields is
 							when 6 =>
@@ -1942,12 +1964,13 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_SCOPE =>
 						case fields is
 							when 6 =>
 								set_scope (
-									module_name 	=> module,
+									module_cursor 	=> current_active_module,
 									net_name		=> to_net_name (f (5)),
 									scope			=> et_netlists.to_net_scope (f (6)),
 									log_threshold	=> log_threshold + 1
@@ -1957,6 +1980,7 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_SUBMODULE_FILE =>
 						case fields is

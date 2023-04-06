@@ -53,7 +53,7 @@ package body et_schematic_ops.nets is
 	use pac_net_segments;
 	use pac_strands;
 	use pac_nets;
-
+	use pac_generic_modules;
 
 
 	function lowest_available_anonymous_net (
@@ -161,15 +161,13 @@ package body et_schematic_ops.nets is
 	
 	
 	procedure rename_net (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor_old : pac_nets.cursor; -- points to the old net
 		net_cursor_new : pac_nets.cursor; -- points to the new net
 
@@ -383,13 +381,10 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- rename_net
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			 " renaming net " & enclose_in_quotes (to_string (net_name_before)) &
 			 " to " & enclose_in_quotes (to_string (net_name_after)),
 			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- locate the requested nets in the module
 		net_cursor_old := locate_net (module_cursor, net_name_before);
@@ -451,14 +446,12 @@ package body et_schematic_ops.nets is
 	
 	procedure delete_net (
 		-- See comment in procedure locate_strand.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		
@@ -571,12 +564,9 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_net		
-		log (text => "module " & enclose_in_quotes (to_string (module_name))
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			& " deleting net " & enclose_in_quotes (to_string (net_name)),
 			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- locate the requested nets in the module
 		net_cursor := locate_net (module_cursor, net_name);
@@ -623,13 +613,11 @@ package body et_schematic_ops.nets is
 
 	
 	procedure delete_segment (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor : pac_nets.cursor; -- points to the net
 
 
@@ -732,13 +720,10 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_segment
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			& " deleting in net " & enclose_in_quotes (to_string (net_name))
 			& " segment at" & enclose_in_quotes (to_string (position => place)),
 			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- locate the requested nets in the module
 		net_cursor := locate_net (module_cursor, net_name);
@@ -784,7 +769,7 @@ package body et_schematic_ops.nets is
 
 	
 	function movable (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
 		point_of_attack	: in et_coordinates.type_position;
@@ -814,7 +799,7 @@ package body et_schematic_ops.nets is
 			while device /= pac_device_ports.no_element loop
 
 				if position ( -- CS use a similar function that takes only cursors ?
-					module_name		=> module_name,
+					module_name		=> key (module_cursor),
 					device_name		=> element (device).device_name,
 					port_name		=> element (device).port_name,
 					log_threshold	=> log_threshold + 2) 
@@ -835,7 +820,7 @@ package body et_schematic_ops.nets is
 				while submodule /= pac_submodule_ports.no_element loop
 
 					if position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> module_name,
+						module_name		=> key (module_cursor),
 						submod_name		=> element (submodule).module_name,
 						port_name		=> element (submodule).port_name,
 						log_threshold	=> log_threshold + 2) 
@@ -858,7 +843,7 @@ package body et_schematic_ops.nets is
 				while netchanger /= pac_netchanger_ports.no_element loop
 
 					if position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> module_name,
+						module_name		=> key (module_cursor),
 						index			=> element (netchanger).index,
 						port			=> element (netchanger).port,
 						log_threshold	=> log_threshold + 2) 
@@ -992,15 +977,13 @@ package body et_schematic_ops.nets is
 
 	
 	procedure drag_segment (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor : pac_nets.cursor; -- points to the net
 
 
@@ -1170,7 +1153,7 @@ package body et_schematic_ops.nets is
 							when START_POINT =>
 								ports := ports_at_place 
 									(
-									module_name	=> module_name, 
+									module_cursor	=> module_cursor, 
 									place 		=> to_position (
 													point => segment.start_point,
 													sheet => get_sheet (point_of_attack)),
@@ -1178,11 +1161,12 @@ package body et_schematic_ops.nets is
 									);
 
 								append_portlists;
+
 								
 							when END_POINT =>
 								ports := ports_at_place 
 									(
-									module_name	=> module_name, 
+									module_cursor	=> module_cursor, 
 									place 		=> to_position (
 													point => segment.end_point,
 													sheet => get_sheet (point_of_attack)),
@@ -1190,11 +1174,12 @@ package body et_schematic_ops.nets is
 									);
 
 								append_portlists;
+
 								
 							when CENTER =>
 								ports := ports_at_place 
 									(
-									module_name	=> module_name, 
+									module_cursor	=> module_cursor, 
 									place 		=> to_position (
 													point => segment.start_point,
 													sheet => get_sheet (point_of_attack)),
@@ -1205,7 +1190,7 @@ package body et_schematic_ops.nets is
 								
 								ports := ports_at_place 
 									(
-									module_name	=> module_name, 
+									module_cursor	=> module_cursor, 
 									place 		=> to_position (
 													point => segment.end_point,
 													sheet => get_sheet (point_of_attack)),
@@ -1242,7 +1227,7 @@ package body et_schematic_ops.nets is
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (
-								module_name, element (segment_cursor),
+								module_cursor, element (segment_cursor),
 								zone, point_of_attack, log_threshold + 1)
 							then
 								
@@ -1356,22 +1341,20 @@ package body et_schematic_ops.nets is
 	begin -- drag_segment
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 					& " dragging net " & enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => point_of_attack)
 					& " to" & to_string (destination),
 					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
 					& " dragging net " & enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => point_of_attack)
 					& " by" & to_string (destination),
 					level => log_threshold);
 		end case;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- locate the requested nets in the module
 		net_cursor := locate_net (module_cursor, net_name);
@@ -1491,16 +1474,16 @@ package body et_schematic_ops.nets is
 	
 	
 	function get_nets_at_place (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list 
 	is
 		nets : pac_net_names.list; -- to be returned
 
-		module_cursor : pac_generic_modules.cursor; -- points to the module
 		net_cursor : pac_nets.cursor; -- points to the net
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
@@ -1537,6 +1520,7 @@ package body et_schematic_ops.nets is
 						next (segment_cursor);
 					end loop;
 				end query_segments;
+
 				
 			begin -- query_nets
 				-- Search in strands of net. Cancel search after the first matching segment.
@@ -1558,20 +1542,18 @@ package body et_schematic_ops.nets is
 					next (strand_cursor);
 				end loop;
 			end query_nets;				
+
 			
 		begin -- query_module
 			iterate (module.nets, query_nets'access);
 		end query_module;
 		
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			 " locating nets at" & to_string (position => place),
 			 level => log_threshold);
 
 		log_indentation_up;
-
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		query_element (
 			position	=> module_cursor,
@@ -1667,7 +1649,7 @@ package body et_schematic_ops.nets is
 					point => segment_new.start_point);
 			
 			net_names := get_nets_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor,
 					place			=> point,
 					log_threshold	=> log_threshold);
 
@@ -1679,7 +1661,7 @@ package body et_schematic_ops.nets is
 					point => segment_new.end_point);
 			
 			net_names := get_nets_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor,
 					place			=> point,
 					log_threshold	=> log_threshold);
 
@@ -1692,7 +1674,7 @@ package body et_schematic_ops.nets is
 			-----------
 			-- look for any ports at start point of the new net segment
 			ports := ports_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
 										point => segment_new.start_point),
@@ -1703,7 +1685,7 @@ package body et_schematic_ops.nets is
 			-- look for any ports at end point of the new net segment
 			-- The end point is just x/y. The sheet must be derived from the start point.
 			ports := ports_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
 										point => segment_new.end_point),
@@ -1919,7 +1901,7 @@ package body et_schematic_ops.nets is
 			begin				
 				-- look for any ports at start point of the new net segment
 				ports := ports_at_place (
-						module_name		=> module_name,
+						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet	=> sheet,
 											point	=> segment_new.start_point),
@@ -1929,7 +1911,7 @@ package body et_schematic_ops.nets is
 
 				-- look for any ports at end point of the new net segment
 				ports := ports_at_place (
-						module_name		=> module_name,
+						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet => sheet,
 											point => segment_new.end_point),
@@ -2029,7 +2011,7 @@ package body et_schematic_ops.nets is
 					point => segment_new.start_point);
 
 			net_names := get_nets_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor,
 					place			=> point,
 					log_threshold	=> log_threshold);
 
@@ -2041,7 +2023,7 @@ package body et_schematic_ops.nets is
 					point => segment_new.end_point);
 			
 			net_names := get_nets_at_place (
-					module_name		=> module_name,
+					module_cursor	=> module_cursor,
 					place			=> point,
 					log_threshold	=> log_threshold);
 
@@ -2096,7 +2078,7 @@ package body et_schematic_ops.nets is
 						
 						-- look for any ports at start point of the new segment
 						ports := ports_at_place (
-								module_name		=> module_name,
+								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet	=> sheet,
 													point	=> segment_new.start_point),
@@ -2132,7 +2114,7 @@ package body et_schematic_ops.nets is
 
 						-- look for any ports at end point of the new segment
 						ports := ports_at_place (
-								module_name		=> module_name,
+								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet => sheet,
 													point => segment_new.end_point),
@@ -2230,14 +2212,14 @@ package body et_schematic_ops.nets is
 			-- place junctions if required
 			if junction_at_start_point.required then
 				place_junction (
-					module_name		=> key (module_cursor), -- CS use place_junction which takes a cursor instead
+					module_cursor	=> module_cursor,
 					place			=> junction_at_start_point.place,
 					log_threshold	=> log_threshold + 1);
 			end if;
 
 			if junction_at_end_point.required then
 				place_junction (
-					module_name		=> key (module_cursor), -- CS use place_junction which takes a cursor instead
+					module_cursor	=> module_cursor,
 					place			=> junction_at_end_point.place,
 					log_threshold	=> log_threshold + 1);
 			end if;
@@ -2250,26 +2232,21 @@ package body et_schematic_ops.nets is
 
 	
 	procedure insert_net (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level) 
 	is		
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor : pac_nets.cursor; -- points to the net
 		segment : type_net_segment;
 
 	begin -- insert_net
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" inserting net " & enclose_in_quotes (to_string (net_name)) &
 			" segment from" & to_string (position => start_point) &
 			" to" & to_string (end_point), level => log_threshold);
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
-
 		-- The net can be in the module already. Locate the requested net in the module.
 		-- net_cursor will point to no_element if the net is not already there.
 		net_cursor := locate_net (module_cursor, net_name);
@@ -2292,15 +2269,14 @@ package body et_schematic_ops.nets is
 
 
 	procedure set_net_class (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
 		log_threshold	: in type_log_level)
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
 
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
+		
 		procedure query_module (
 			name	: in pac_module_name.bounded_string;
 			module	: in out type_module)
@@ -2334,13 +2310,11 @@ package body et_schematic_ops.nets is
 		end query_module;
 								
 	begin
-		log (text => "module " & to_string (module_name) 
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			& " setting class of net " & enclose_in_quotes (to_string (net_name)) 
 			& " to " & enclose_in_quotes (et_pcb.to_string (net_class)),
 			level => log_threshold);
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- The net can be in the module already. Locate the requested net in the module.
 		-- net_cursor will point to no_element if the net is not already there.
@@ -2361,14 +2335,11 @@ package body et_schematic_ops.nets is
 
 	
 	procedure set_scope (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level) 
 	is
-
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		procedure query_nets (
@@ -2394,13 +2365,11 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- set_scope
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" setting scope of net " & to_string (net_name) &
 			" to" & et_netlists.to_string (scope),
 			level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- locate the net
 		net_cursor := locate_net (module_cursor, net_name);
@@ -2421,14 +2390,13 @@ package body et_schematic_ops.nets is
 
 	
 	procedure place_junction (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being checked
-
 		segment_found : boolean := false; -- goes true if a net segment has been found to place the junction at
-	
+
+		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -2798,19 +2766,16 @@ package body et_schematic_ops.nets is
 		
 		
 	begin -- place_junction
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			& " placing junction at" & to_string (position => place) 
 			& " ...", 
 			level => log_threshold);
 		
 		log_indentation_up;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
-
 
 		-- Figure out how many nets are crossing the given place:
-		nets_at_place := get_nets_at_place (module_name, place, log_threshold + 1);
+		nets_at_place := get_nets_at_place (module_cursor, place, log_threshold + 1);
 
 		
 		case length (nets_at_place) is
@@ -2836,7 +2801,7 @@ package body et_schematic_ops.nets is
 	
 	
 	procedure place_net_label (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point := origin; -- x/y
 		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
@@ -2844,11 +2809,10 @@ package body et_schematic_ops.nets is
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		use pac_nets;
 		net_cursor : pac_nets.cursor; -- points to the net
 
+		
 		function no_label_placed return string is begin
 			return (et_coordinates.to_string (position => segment_position) & " !" &
 				" No label placed ! Specify another position and try again.");
@@ -2902,7 +2866,7 @@ package body et_schematic_ops.nets is
 							when TAG =>
 								-- A tag label can be attached to a stub only.
 								declare
-									s : constant type_stub := query_stub (module_name, net_name, segment_position, log_threshold + 1);
+									s : constant type_stub := query_stub (module_cursor, net_name, segment_position, log_threshold + 1);
 								begin
 									if s.is_stub then
 									
@@ -2971,7 +2935,7 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- place_net_label
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" labeling segment at"  &
 			to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
@@ -2982,11 +2946,9 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_up;
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		-- collect names of nets that cross the given segment_position
-		nets := get_nets_at_place (module_name, segment_position, log_threshold + 1);
+		nets := get_nets_at_place (module_cursor, segment_position, log_threshold + 1);
 
 		case length (nets) is
 			when 0 =>
@@ -3018,15 +2980,14 @@ package body et_schematic_ops.nets is
 
 	
 	procedure delete_net_label (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
 		-- This flag goes true once the targeted net label
 		-- has been found. All iterations are cancelled as soon as it goes true.
 		label_found : boolean := false;
+
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -3102,15 +3063,12 @@ package body et_schematic_ops.nets is
 		end query_nets;
 		
 	begin -- delete_net_label
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" deleting net label at" &
 			et_coordinates.to_string (position => position),
 			level => log_threshold);
 		
 		log_indentation_up;
-
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		update_element (
 			container	=> generic_modules,
@@ -3127,13 +3085,12 @@ package body et_schematic_ops.nets is
 
 
 	function query_stub (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		position		: in et_coordinates.type_position; -- sheet/x/y		
 		log_threshold	: in type_log_level)
 		return type_stub 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
 		net_cursor : pac_nets.cursor; -- points to the net
 		
 		ports : type_ports;
@@ -3211,11 +3168,12 @@ package body et_schematic_ops.nets is
 			end loop;
 		end query_strands;
 
+		
 	begin -- query_stub
 		log (text => "querying stub at" & to_string (position), level => log_threshold);
 
 		-- Query ports at the given position.
-		ports := ports_at_place (module_name, position, log_threshold + 1);
+		ports := ports_at_place (module_cursor, position, log_threshold + 1);
 		
 		-- If there are no ports then examine the net further.
 		-- If there are devices, submodule or netchanger ports, then the given position
@@ -3223,9 +3181,6 @@ package body et_schematic_ops.nets is
 		if no_ports (ports) then
 			log (text => "no ports here. examining net further ...", level => log_threshold + 1);
 		
-			-- locate module
-			module_cursor := locate_module (module_name);
-
 			-- locate the net (it should exist)
 			net_cursor := locate_net (module_cursor, net_name);
 			

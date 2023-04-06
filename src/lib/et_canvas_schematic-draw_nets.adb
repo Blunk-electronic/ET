@@ -270,7 +270,7 @@ is
 							declare
 								use et_schematic_ops.nets;
 								s : constant type_stub := query_stub (
-										module_name		=> key (current_active_module),
+										module_cursor	=> current_active_module,
 										net_name		=> selected_net,
 										position		=> to_position (type_point (l.position), current_active_sheet),
 										log_threshold	=> log_threshold + 1);
@@ -582,7 +582,7 @@ is
 		-- If the segment is not movable then it will be drawn as given by
 		-- the module database.
 		if movable (
-			module_name		=> key (current_active_module),
+			module_cursor	=> current_active_module,
 			segment			=> element (original_segment),
 			zone			=> zone,
 			point_of_attack	=> to_position (PS.point_of_attack, current_active_sheet),

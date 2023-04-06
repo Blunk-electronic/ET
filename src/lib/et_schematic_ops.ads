@@ -275,7 +275,7 @@ package et_schematic_ops is
 	
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 	function ports_at_place (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
