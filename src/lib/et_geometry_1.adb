@@ -2484,21 +2484,23 @@ package body et_geometry_1 is
 
 		d_to_start, d_to_end : type_float;
 	begin
-		--put_line ("point" & to_string (point) & " " & to_string (line));
+		-- put_line ("vector" & to_string (vector) & " " & to_string (line));
 		
 		if on_start_point (d) or on_end_point (d) then
 			-- Point is on top of start or end point of line.
-			--log (text => "on start or end");
+			-- put_line ("on start or end");
 			null; -- result keeps its default (zero distance, zero angle)
 		else
 
 			--if on_line (get_intersection (d), line) then 
 			if not out_of_range (d) then
+				-- put_line ("in range");
 				
 				-- An imaginary line can be drawn perpendicular from
 				-- point to line. Both intersect each other.
 				result := get_distance (d);
 			else
+				-- put_line ("out of range");
 				
 				-- No imaginary line can be drawn perpendicular from
 				-- point to line.
@@ -2517,7 +2519,7 @@ package body et_geometry_1 is
 
 		end if;
 
-		--put_line (to_string (result));
+		-- put_line ("distance" & to_string (result));
 		
 		return result;
 	end get_shortest_distance;
@@ -2584,34 +2586,10 @@ package body et_geometry_1 is
 			
 		lambda_forward, lambda_backward : type_float;
 	begin
-		--put_line ("line direction vector: " & to_string (line_direction));
-		--put_line ("line direction angle : " & to_string (line_direction));
-		
-		-- The first and simplest test is to figure out whether
-		-- the given point sits exactly on the start or end point of the line.
-		-- Mind: result.distance has default zero.
-		-- This test includes the start and end points of the line. 
-		-- On match we exit this function prematurely and return the result
-		-- with the appropiate flags set.
-		--case line_range is
-			--when WITH_END_POINTS | BEYOND_END_POINTS =>
-				
-				--if vector = line.start_point then
-					
-					--result.sits_on_start := true;
-					--result.out_of_range := false;
-					--return result;
-
-				--elsif vector = line.end_point then
-					
-					--result.sits_on_end := true;
-					--result.out_of_range := false;
-					--return result;
-
-				--end if;
-				
-			--when others => null;
-		--end case;
+		-- new_line;
+		-- put_line ("get distance");
+		-- put_line ("v: " & to_string (vector) & " " & to_string (line));
+		-- put_line ("line direction vector: " & to_string (line_direction));
 
 		
 		-- Compute the distance from the given point to the given line.
@@ -2619,12 +2597,13 @@ package body et_geometry_1 is
 		-- It assumes an indefinite long line without start or end point.
 		result.distance := get_distance (line, vector);
 
-		--put_line ("distance " & to_string (result.distance));
+		-- put_line ("distance " & to_string (result.distance));
 
 		-- Set iv so that it points to the intersection. The
 		-- intersection can be anywhere on that indefinite long line.
 		compute_intersection;
 
+		-- put_line ("iv " & to_string (iv));
 		
 		-- Any point on a line can be computed by this formula (see textbook on vector algebra):
 		-- iv = line.start_point + lambda_forward  * line_direction
@@ -2639,7 +2618,7 @@ package body et_geometry_1 is
 
 		
 		if lambda_forward = 0.0 then -- iv points TO start point of line
-			--put_line ("on start point");
+			-- put_line ("on start point");
 			case line_range is
 				when BETWEEN_END_POINTS =>
 					result.out_of_range := true;
@@ -2654,7 +2633,7 @@ package body et_geometry_1 is
 		
 		
 		if lambda_forward < 0.0 then -- iv points BEFORE start of line
-			--put_line ("before start point");
+			-- put_line ("before start point");
 			case line_range is
 				when BEYOND_END_POINTS => 
 					result.out_of_range := false;
@@ -2677,7 +2656,7 @@ package body et_geometry_1 is
 
 		
 		if lambda_backward = 0.0 then -- iv points TO end point of line
-			--put_line ("on end point");
+			-- put_line ("on end point");
 			case line_range is
 				when BETWEEN_END_POINTS =>
 					result.out_of_range := true;
@@ -2692,7 +2671,7 @@ package body et_geometry_1 is
 
 
 		if lambda_backward > 0.0 then -- iv points AFTER end of line
-			--put_line ("after end point");
+			-- put_line ("after end point");
 			case line_range is
 				when BEYOND_END_POINTS => 
 					result.out_of_range := false;
@@ -2710,6 +2689,7 @@ package body et_geometry_1 is
 
 		result.out_of_range := false;
 
+		-- put_line ("distance " & to_string (result.distance));
 		return result;
 	end get_distance;
 

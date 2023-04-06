@@ -1179,8 +1179,9 @@ package et_geometry_1 is
 	
 	
 	type type_distance_point_line is record -- CS make private ?
-		sits_on_start	: boolean := false;
-		sits_on_end		: boolean := false;
+		sits_on_start	: boolean := false; -- intersection vector !
+		sits_on_end		: boolean := false; -- intersection vector !
+		
 		out_of_range	: boolean := true;
 
 		-- A virtual line runs from the given point perpendicular
