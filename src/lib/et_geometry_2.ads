@@ -1030,7 +1030,7 @@ package et_geometry_2 is
 		return type_line_zone;
 
 
-	-- Moves a the start point, the end point or both ends of a line
+	-- Moves the start point, the end point or both ends of a line
 	-- according to the zone where the line is being attacked.
 	procedure move_line_to (
 		line			: in out type_line;
