@@ -104,7 +104,7 @@ package body et_undo_redo is
 		
 
 	begin
-		log (text => "commit in " & to_string (domain) & "(" 
+		log (text => "commit in " & to_string (domain) & " (" 
 			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 		
@@ -171,7 +171,7 @@ package body et_undo_redo is
 		
 
 	begin
-		log (text => "commit in " & to_string (domain) & "(" 
+		log (text => "commit in " & to_string (domain) & " (" 
 			 & to_string (stage) & " / " & verb_noun & ")",
 			 level => lth + 1);
 
