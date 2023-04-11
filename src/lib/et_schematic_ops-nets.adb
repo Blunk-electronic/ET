@@ -1020,9 +1020,11 @@ package body et_schematic_ops.nets is
 					begin
 						case coordinates is
 							when ABSOLUTE =>
+								--log (text => "move targeted segment absolute", level => log_threshold + 3);
 								move_line_to (segment, point_of_attack.place, destination);
 
 							when RELATIVE =>
+								--log (text => "move targeted segment relative", level => log_threshold + 3);
 								case zone is
 									when START_POINT =>
 										move_start_by (segment, to_distance_relative (destination));
@@ -1336,22 +1338,23 @@ package body et_schematic_ops.nets is
 			
 		end query_net;
 
+
+		praeamble : constant string := "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " dragging segment of net " & enclose_in_quotes (to_string (net_name))
+			& " / point of attack" & to_string (position => point_of_attack)
+			& " ";
 		
 	begin -- drag_segment
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-					& " dragging net " & enclose_in_quotes (to_string (net_name))
-					& " segment at" & to_string (position => point_of_attack)
-					& " to" & to_string (destination),
+				log (text => praeamble & " to" & to_string (destination),
 					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-					& " dragging net " & enclose_in_quotes (to_string (net_name))
-					& " segment at" & to_string (position => point_of_attack)
-					& " by" & to_string (destination),
+				log (text => praeamble & " by" & to_string (destination),
 					level => log_threshold);
+
 		end case;
 		
 
