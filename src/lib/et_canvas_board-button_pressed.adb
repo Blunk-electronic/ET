@@ -69,13 +69,13 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_ASSY =>
-						et_canvas_board_assy_doc.move_object (MOUSE, point);
+						et_canvas_board_assy_doc.move_object (MOUSE, snap_point);
 
 					when NOUN_SILKSCREEN =>
-						et_canvas_board_silkscreen.move_object (MOUSE, point);
+						et_canvas_board_silkscreen.move_object (MOUSE, snap_point);
 
 					when NOUN_TRACK =>
-						et_canvas_board_tracks.move_track (MOUSE, point);
+						et_canvas_board_tracks.move_track (MOUSE, snap_point);
 						
 					when NOUN_DEVICE =>
 						move_electrical_device (MOUSE, point);
