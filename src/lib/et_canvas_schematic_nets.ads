@@ -262,6 +262,9 @@ package et_canvas_schematic_nets is
 		path					: type_path_live;
 		
 		net_name				: pac_net_name.bounded_string := no_name;
+
+		-- The point along the segment where the operator
+		-- grabs the segment:
 		point_of_attack			: type_point;
 		
 		finalizing_granted		: type_finalizing_granted := false;
@@ -332,13 +335,6 @@ package et_canvas_schematic_nets is
 
 	
 	
-
-	-- Assigns the given destination after the drag to the selected segment.
-	-- Resets the global variable "segment".
-	procedure finalize_drag (
-		destination		: in type_point;
-		log_threshold	: in type_log_level);
-
 	
 	-- Locates all net segments in the vicinity of given point.
 	-- If more than one segment near point found, then it sets the

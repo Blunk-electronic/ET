@@ -1221,8 +1221,7 @@ package body et_schematic_ops.nets is
 								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
-							log (text => "dragging segment" 
-								& to_string (element (segment_cursor))
+							log (text => "dragging " & to_string (element (segment_cursor))
 								& " at " & type_line_zone'image (zone), level => log_threshold + 1);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.

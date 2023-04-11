@@ -905,48 +905,48 @@ package body et_canvas_schematic_nets is
 	
 -- DRAG/MOVE NET SEGMENT
 	
-	procedure finalize_drag (
-		destination		: in type_point;
-		log_threshold	: in type_log_level) 
-	is
-		PS : type_preliminary_segment renames preliminary_segment;
-		net_name : pac_net_name.bounded_string;
-		point_of_attack : et_coordinates.type_position := to_position (PS.point_of_attack, current_active_sheet);
-	begin
-		log (text => "finalizing drag ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Finalize only if procedure et_canvas_schematic.draw_nets has
-		-- granted permission:
-		if PS.finalizing_granted then
-	
-			if selected_segment /= pac_proposed_segments.no_element then
-
-				net_name := key (element (selected_segment).net);
-
-				drag_segment (
-					module_cursor	=> current_active_module,
-					net_name		=> net_name,
-					point_of_attack	=> point_of_attack,
-					coordinates		=> et_geometry.ABSOLUTE,
-					destination		=> destination,
-					log_threshold	=> log_threshold + 1);
-
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-		else
-			log (text => "not granted", level => log_threshold);
-		end if;
-		
-		log_indentation_down;
-		
-		set_status (status_move);
-		
-		reset_preliminary_segment;
-
-	end finalize_drag;
+-- 	procedure finalize_drag (
+-- 		destination		: in type_point;
+-- 		log_threshold	: in type_log_level) 
+-- 	is
+-- 		PS : type_preliminary_segment renames preliminary_segment;
+-- 		net_name : pac_net_name.bounded_string;
+-- 		point_of_attack : et_coordinates.type_position := to_position (PS.point_of_attack, current_active_sheet);
+-- 	begin
+-- 		log (text => "finalizing drag ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- Finalize only if procedure et_canvas_schematic.draw_nets has
+-- 		-- granted permission:
+-- 		if PS.finalizing_granted then
+-- 	
+-- 			if selected_segment /= pac_proposed_segments.no_element then
+-- 
+-- 				net_name := key (element (selected_segment).net);
+-- 
+-- 				drag_segment (
+-- 					module_cursor	=> current_active_module,
+-- 					net_name		=> net_name,
+-- 					point_of_attack	=> point_of_attack,
+-- 					coordinates		=> et_geometry.ABSOLUTE,
+-- 					destination		=> destination,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
+-- 				
+-- 		else
+-- 			log (text => "not granted", level => log_threshold);
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 		
+-- 		set_status (status_move);
+-- 		
+-- 		reset_preliminary_segment;
+-- 
+-- 	end finalize_drag;
 
 	
 	procedure find_segments (point : in type_point) is 
@@ -1090,6 +1090,50 @@ package body et_canvas_schematic_nets is
 		PS : type_preliminary_segment renames preliminary_segment;
 		use et_undo_redo;
 		use et_commit;
+
+		
+		-- Assigns the given destination after the drag to the selected segment:
+		procedure finalize_drag is
+			net_name : pac_net_name.bounded_string;
+			
+			point_of_attack : et_coordinates.type_position := 
+				to_position (PS.point_of_attack, current_active_sheet);
+		begin
+			log (text => "finalizing drag ...", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Finalize only if procedure et_canvas_schematic.draw_nets has
+			-- granted permission:
+			if PS.finalizing_granted then
+		
+				if selected_segment /= pac_proposed_segments.no_element then
+
+					net_name := key (element (selected_segment).net);
+
+					drag_segment (
+						module_cursor	=> current_active_module,
+						net_name		=> net_name,
+						point_of_attack	=> point_of_attack,
+						coordinates		=> et_geometry.ABSOLUTE,
+						destination		=> position,
+						log_threshold	=> log_threshold + 2);
+
+				else
+					log (text => "nothing to do", level => log_threshold);
+				end if;
+					
+			else
+				log (text => "not granted", level => log_threshold);
+			end if;
+			
+			log_indentation_down;
+			
+			set_status (status_move);
+			
+			reset_preliminary_segment;
+		end finalize_drag;
+
+		
 	begin
 		if not PS.ready then
 			
@@ -1110,9 +1154,7 @@ package body et_canvas_schematic_nets is
 			
 			-- Finally assign the cursor position to the
 			-- currently selected segment:
-			finalize_drag (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
+			finalize_drag;
 
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
