@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -18,8 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -904,49 +905,6 @@ package body et_canvas_schematic_nets is
 
 	
 -- DRAG/MOVE NET SEGMENT
-	
--- 	procedure finalize_drag (
--- 		destination		: in type_point;
--- 		log_threshold	: in type_log_level) 
--- 	is
--- 		PS : type_preliminary_segment renames preliminary_segment;
--- 		net_name : pac_net_name.bounded_string;
--- 		point_of_attack : et_coordinates.type_position := to_position (PS.point_of_attack, current_active_sheet);
--- 	begin
--- 		log (text => "finalizing drag ...", level => log_threshold);
--- 		log_indentation_up;
--- 
--- 		-- Finalize only if procedure et_canvas_schematic.draw_nets has
--- 		-- granted permission:
--- 		if PS.finalizing_granted then
--- 	
--- 			if selected_segment /= pac_proposed_segments.no_element then
--- 
--- 				net_name := key (element (selected_segment).net);
--- 
--- 				drag_segment (
--- 					module_cursor	=> current_active_module,
--- 					net_name		=> net_name,
--- 					point_of_attack	=> point_of_attack,
--- 					coordinates		=> et_geometry.ABSOLUTE,
--- 					destination		=> destination,
--- 					log_threshold	=> log_threshold + 1);
--- 
--- 			else
--- 				log (text => "nothing to do", level => log_threshold);
--- 			end if;
--- 				
--- 		else
--- 			log (text => "not granted", level => log_threshold);
--- 		end if;
--- 		
--- 		log_indentation_down;
--- 		
--- 		set_status (status_move);
--- 		
--- 		reset_preliminary_segment;
--- 
--- 	end finalize_drag;
 
 	
 	procedure find_segments (point : in type_point) is 
