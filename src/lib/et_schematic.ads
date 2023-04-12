@@ -308,7 +308,7 @@ package et_schematic is
 	
 
 	
--- COMMITS (required for undo/redo operations via the GUI):
+	-- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;
 	
 	package pac_device_commit is new pac_commit (pac_devices_sch.map);
@@ -425,7 +425,8 @@ package et_schematic is
 		
 		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
 		board			: et_pcb.type_board;
-
+		board_commits	: et_pcb.type_board_undo_redo_stack;
+		
 		-- The tree of submodules is stored here. 
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):

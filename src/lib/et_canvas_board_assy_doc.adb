@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -44,7 +45,9 @@ with et_canvas_board;
 with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
 
 with et_logging;						use et_logging;
-
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 package body et_canvas_board_assy_doc is
@@ -280,13 +283,20 @@ package body et_canvas_board_assy_doc is
 
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
-		procedure finalize is 
+		procedure finalize is
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 			use et_board_ops.assy_doc;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_object /= pac_proposed_objects.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
 				declare
 					object : type_proposed_object renames element (selected_object);
 				begin
@@ -308,6 +318,9 @@ package body et_canvas_board_assy_doc is
 							null; -- CS
 					end case;
 				end;
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -368,11 +381,19 @@ package body et_canvas_board_assy_doc is
 		-- Resets variable preliminary_object:
 		procedure finalize is 
 			use et_board_ops.assy_doc;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_object /= pac_proposed_objects.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
 				declare
 					object : type_proposed_object renames element (selected_object);
 				begin
@@ -391,6 +412,9 @@ package body et_canvas_board_assy_doc is
 							null; -- CS
 					end case;
 				end;
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;

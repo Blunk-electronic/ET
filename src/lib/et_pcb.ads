@@ -344,8 +344,6 @@ package et_pcb is
 -- LOGGING PROPERTIES OF OBJECTS
 
 	
-
-	
 	-- Logs the properties of the given line of a route
 	procedure route_line_properties (
 		cursor			: in pac_conductor_lines.cursor;
@@ -388,6 +386,10 @@ package et_pcb is
 	end record;
 
 
+	
+
+
+-- NON-ELECTICAL DEVICES:
 
 	-- Devices which do not have a counterpart in the schematic 
 	-- (like fiducials, mounting holes, ...). They can have
@@ -418,8 +420,8 @@ package et_pcb is
 
 	use pac_devices_non_electric;
 	
-
--- COMMITS (required for undo/redo operations via the GUI):
+	
+	-- COMMITS OF NON-ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;
 	
 	package pac_non_electrical_device_commit is new pac_commit (pac_devices_non_electric.map);
@@ -442,11 +444,14 @@ package et_pcb is
 		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
 		proceed	: not null access boolean);
 
+
 	
 
 	
+-- BOARD / LAYOUT:
+
 	
-	-- This is general board stuff:
+	-- This is non-electical board stuff:
 	type type_board is tagged record
 		origin			: type_point := origin_default;
 		frame			: et_frames.type_frame_pcb; -- incl. template name
@@ -465,6 +470,19 @@ package et_pcb is
 		contours		: type_pcb_contours; -- pcb outline
 
 		user_settings	: type_user_settings;
+	end record;
+
+
+	-- BOARD COMMITS (required for undo/redo operations via the GUI):
+	package pac_board_commit is new pac_commit (type_board);
+	use pac_board_commit;
+	
+	package pac_board_commits is new doubly_linked_lists (
+		element_type	=> pac_board_commit.type_commit);
+
+	type type_board_undo_redo_stack is record
+		dos		: pac_board_commits.list;
+		redos	: pac_board_commits.list;
 	end record;
 
 	

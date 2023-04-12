@@ -206,6 +206,21 @@ package body et_undo_redo is
 						domain	=> domain));
 			end commit_non_electrical_devices;
 
+
+			procedure commit_board is 
+				use et_pcb;
+			begin
+				log (text => "board objects (non-electrical)", level => lth + 1);
+							
+				module.board_commits.dos.append (
+					pac_board_commit.make_commit (
+						index	=> module.commit_index, 
+						stage	=> stage, 
+						item	=> module.board,
+						message	=> to_bounded_string (verb_noun),
+						domain	=> domain));
+			end commit_board;
+
 			
 		begin -- query_module
 			increment (module.commit_index);	
@@ -245,6 +260,17 @@ package body et_undo_redo is
 					case verb is
 						when VERB_MOVE | VERB_DELETE | VERB_ROTATE | VERB_ADD | VERB_FLIP =>
 							commit_non_electrical_devices;
+			
+						when others =>
+							null;
+					end case;
+
+
+				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOP | NOUN_ROUTE_RESTRICT |
+					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC => -- CS others ?
+					case verb is
+						when VERB_DRAW | VERB_MOVE | VERB_DELETE =>
+							commit_board;
 			
 						when others =>
 							null;
@@ -418,6 +444,48 @@ package body et_undo_redo is
 				end if;
 			end undo_non_electrical_devices;
 
+
+			procedure undo_board is
+				use et_pcb;
+				use pac_board_commits;
+				dos		: pac_board_commits.list renames module.board_commits.dos;
+				redos	: pac_board_commits.list renames module.board_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_board_commit.type_commit;
+			begin
+				if not dos.is_empty then
+					if dos.last_element.index = module.commit_index then
+
+						log (text => "board objects (non-electrical)", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Restore the devices of the design according to the pre-commit:
+						module.board := pre_commit.item;
+
+						-- Put pre- and post commit on redo-stack:
+						redos.append (pre_commit);
+						redos.append (post_commit);					
+
+						-- Mark the undo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end undo_board;
+
 			
 		begin -- query_module
 			
@@ -435,6 +503,9 @@ package body et_undo_redo is
 				-- Search in devices:
 				undo_devices;
 				undo_non_electrical_devices;
+
+				-- Search in board objects:
+				undo_board;
 				
 
 				if done then
@@ -588,7 +659,7 @@ package body et_undo_redo is
 				end if;
 			end redo_devices;
 
-
+			
 			procedure redo_non_electrical_devices is
 				use et_pcb;
 				use pac_non_electrical_device_commits;
@@ -635,6 +706,53 @@ package body et_undo_redo is
 				end if;
 			end redo_non_electrical_devices;
 
+
+			procedure redo_board is
+				use et_pcb;
+				use pac_board_commits;				
+				dos		: pac_board_commits.list renames module.board_commits.dos;
+				redos	: pac_board_commits.list renames module.board_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_board_commit.type_commit;
+			begin
+				-- If there are no commits on the redo-stack, then there is nothing to do.
+				if not redos.is_empty then
+
+					-- Do the redo-operation if the last commit is 
+					-- the latest among all commits:
+					if redos.last_element.index = commit_index then
+
+						log (text => "board objects (non-electrical)", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := redos.last_element;
+						redos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := redos.last_element;
+						redos.delete_last;
+
+						
+						-- Put pre- and post-commit back to dos-stack:
+						dos.append (pre_commit);
+						dos.append (post_commit);
+
+						-- Restore design according to the post-commit:
+						module.board := post_commit.item;
+
+						-- Mark the redo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:					
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end redo_board;
+
 			
 		begin -- query_module
 
@@ -648,6 +766,9 @@ package body et_undo_redo is
 			-- Search in devices:
 			redo_devices;
 			redo_non_electrical_devices;
+
+			-- Search in board objects:
+			redo_board;
 			
 
 			if done then
