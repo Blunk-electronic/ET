@@ -79,13 +79,13 @@ is
 						et_canvas_board_tracks.move_track (MOUSE, snap_point);
 						
 					when NOUN_DEVICE =>
-						move_electrical_device (MOUSE, point);
+						move_electrical_device (MOUSE, snap_point);
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
-						move_non_electrical_device (MOUSE, point);
+						move_non_electrical_device (MOUSE, snap_point);
 
 					when NOUN_TEXT =>
-						move_text (MOUSE, point);
+						move_text (MOUSE, snap_point);
 						
 					when NOUN_VIA =>
 						move_via (MOUSE, snap_point);
