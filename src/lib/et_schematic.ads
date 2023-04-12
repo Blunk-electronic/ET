@@ -423,7 +423,7 @@ package et_schematic is
 		-- If active_variant is an empty string, then the default variant is active.
 
 		
-		-- General non-component related board stuff (silk screen, documentation, ...):
+		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
 		board			: et_pcb.type_board;
 
 		-- The tree of submodules is stored here. 
@@ -438,7 +438,8 @@ package et_schematic is
 
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric : et_pcb.pac_devices_non_electric.map; -- fiducials, mounting holes, ...
-
+		devices_non_electric_commits : et_pcb.type_non_electrical_devices_undo_redo_stack;
+		
 		-- CS: images
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
 	end record;

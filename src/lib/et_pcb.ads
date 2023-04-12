@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -85,7 +86,7 @@ with et_assy_doc;						use et_assy_doc;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
-
+with et_commit;
 
 package et_pcb is
 	
@@ -417,6 +418,20 @@ package et_pcb is
 
 	use pac_devices_non_electric;
 	
+
+-- COMMITS (required for undo/redo operations via the GUI):
+	use et_commit;
+	
+	package pac_non_electrical_device_commit is new pac_commit (pac_devices_non_electric.map);
+	use pac_non_electrical_device_commit;
+	
+	package pac_non_electrical_device_commits is new doubly_linked_lists (
+		element_type	=> pac_non_electrical_device_commit.type_commit);
+
+	type type_non_electrical_devices_undo_redo_stack is record
+		dos		: pac_non_electrical_device_commits.list;
+		redos	: pac_non_electrical_device_commits.list;
+	end record;
 	
 
 

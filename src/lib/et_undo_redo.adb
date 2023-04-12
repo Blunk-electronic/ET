@@ -43,7 +43,8 @@ with ada.containers;					use ada.containers;
 
 with et_general;						use et_general;
 with et_schematic;						use et_schematic;
-with et_nets;							use et_nets;
+with et_nets;
+with et_pcb;
 with et_modes.schematic;
 with et_modes.board;
 with et_time;							use et_time;
@@ -58,7 +59,6 @@ package body et_undo_redo is
 		noun	: in et_modes.schematic.type_noun;
 		lth		: in type_log_level)
 	is
-		use et_schematic;
 		use et_modes.schematic;
 
 		domain : constant type_domain := DOM_SCHEMATIC;
@@ -73,7 +73,9 @@ package body et_undo_redo is
 			use pac_commit_message;
 
 			
-			procedure commit_nets is begin
+			procedure commit_nets is 
+				use et_nets;
+			begin
 				log (text => "nets", level => lth + 1);
 				
 				module.net_commits.dos.append (pac_net_commit.make_commit (
@@ -149,7 +151,6 @@ package body et_undo_redo is
 		noun	: in et_modes.board.type_noun;
 		lth		: in type_log_level)
 	is
-		use et_schematic;
 		use et_modes.board;
 
 		domain : constant type_domain := DOM_BOARD;
@@ -164,7 +165,9 @@ package body et_undo_redo is
 			use pac_commit_message;
 
 			
-			procedure commit_nets is begin
+			procedure commit_nets is 
+				use et_nets;
+			begin
 				log (text => "nets", level => lth + 1);
 							
 				module.net_commits.dos.append (pac_net_commit.make_commit (
@@ -187,6 +190,21 @@ package body et_undo_redo is
 					message	=> to_bounded_string (verb_noun),
 					domain	=> domain));
 			end commit_devices;
+
+
+			procedure commit_non_electrical_devices is 
+				use et_pcb;
+			begin
+				log (text => "devices (non-electrical)", level => lth + 1);
+							
+				module.devices_non_electric_commits.dos.append (
+					pac_non_electrical_device_commit.make_commit (
+						index	=> module.commit_index, 
+						stage	=> stage, 
+						item	=> module.devices_non_electric,
+						message	=> to_bounded_string (verb_noun),
+						domain	=> domain));
+			end commit_non_electrical_devices;
 
 			
 		begin -- query_module
@@ -226,7 +244,7 @@ package body et_undo_redo is
 				when NOUN_NON_ELECTRICAL_DEVICE =>
 					case verb is
 						when VERB_MOVE | VERB_DELETE | VERB_ROTATE | VERB_ADD | VERB_FLIP =>
-							commit_devices;
+							commit_non_electrical_devices;
 			
 						when others =>
 							null;
@@ -276,7 +294,8 @@ package body et_undo_redo is
 			nothing_to_do : constant string := "nothing to undo";
 
 			
-			procedure undo_nets is 
+			procedure undo_nets is
+				use et_nets;
 				use pac_net_commits;
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
@@ -357,6 +376,48 @@ package body et_undo_redo is
 				end if;
 			end undo_devices;
 
+
+			procedure undo_non_electrical_devices is 
+				use et_pcb;
+				use pac_non_electrical_device_commits;
+				dos		: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.dos;
+				redos	: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_non_electrical_device_commit.type_commit;
+			begin
+				if not dos.is_empty then
+					if dos.last_element.index = module.commit_index then
+
+						log (text => "devices (non-electrical)", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Restore the devices of the design according to the pre-commit:
+						module.devices_non_electric := pre_commit.item;
+
+						-- Put pre- and post commit on redo-stack:
+						redos.append (pre_commit);
+						redos.append (post_commit);					
+
+						-- Mark the undo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end undo_non_electrical_devices;
+
 			
 		begin -- query_module
 			
@@ -373,6 +434,7 @@ package body et_undo_redo is
 
 				-- Search in devices:
 				undo_devices;
+				undo_non_electrical_devices;
 				
 
 				if done then
@@ -435,6 +497,7 @@ package body et_undo_redo is
 			
 			
 			procedure redo_nets is
+				use et_nets;
 				use pac_net_commits;				
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
@@ -525,6 +588,53 @@ package body et_undo_redo is
 				end if;
 			end redo_devices;
 
+
+			procedure redo_non_electrical_devices is
+				use et_pcb;
+				use pac_non_electrical_device_commits;
+				dos		: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.dos;
+				redos	: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_non_electrical_device_commit.type_commit;				
+			begin
+				-- If there are no commits on the redo-stack, then there is nothing to do.
+				if not redos.is_empty then
+
+					-- Do the redo-operation if the last commit is 
+					-- the latest among all commits:
+					if redos.last_element.index = commit_index then
+
+						log (text => "devices (non-electrical)", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := redos.last_element;
+						redos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := redos.last_element;
+						redos.delete_last;
+
+						
+						-- Put pre- and post-commit back to dos-stack:
+						dos.append (pre_commit);
+						dos.append (post_commit);
+
+						-- Restore design according to the post-commit:
+						module.devices_non_electric := post_commit.item;
+
+						-- Mark the redo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:					
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end redo_non_electrical_devices;
+
 			
 		begin -- query_module
 
@@ -537,6 +647,7 @@ package body et_undo_redo is
 
 			-- Search in devices:
 			redo_devices;
+			redo_non_electrical_devices;
 			
 
 			if done then
