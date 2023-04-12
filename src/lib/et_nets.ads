@@ -314,7 +314,7 @@ package et_nets is
 	package pac_net_commits is new doubly_linked_lists (
 		element_type	=> pac_net_commit.type_commit);
 
-	type type_undo_redo_stack is record
+	type type_nets_undo_redo_stack is record
 		dos		: pac_net_commits.list;
 		redos	: pac_net_commits.list;
 	end record;

@@ -79,6 +79,8 @@ with et_canvas_schematic;			use et_canvas_schematic;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
+with et_commit;
+with et_undo_redo;
 
 
 package body et_canvas_schematic_units is
@@ -217,6 +219,7 @@ package body et_canvas_schematic_units is
 		use pac_devices_sch;
 		use pac_units;
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -312,11 +315,20 @@ package body et_canvas_schematic_units is
 		unit			: in type_selected_unit; -- device/unit
 		log_threshold	: in type_log_level)
 	is 
-		su : type_selected_unit := unit;		
+		su : type_selected_unit := unit;
+
+		use et_undo_redo;
+		use et_commit;
 	begin
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+		
 		delete_unit (module_cursor, su, log_threshold);
 		-- NOTE: su has been modified !
 
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+		
 		reset_request_clarification;
 		
 		set_status (status_delete);
@@ -396,6 +408,9 @@ package body et_canvas_schematic_units is
 
 		use pac_devices_sch;
 		use pac_units;
+
+		use et_undo_redo;
+		use et_commit;
 	begin
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
@@ -403,6 +418,9 @@ package body et_canvas_schematic_units is
 		if selected_unit /= pac_proposed_units.no_element then
 
 			su := element (selected_unit);
+
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
 			
 			move_unit (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
@@ -415,7 +433,9 @@ package body et_canvas_schematic_units is
 
 			-- CS write a reduced procedure of move_unit that takes a 
 			-- module cursor, device cursor and unit cursor instead.
-			
+
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);			
 		else
 			log (text => "nothing to do", level => log_threshold);
 		end if;
@@ -470,6 +490,9 @@ package body et_canvas_schematic_units is
 
 		use pac_devices_sch;
 		use pac_units;
+
+		use et_commit;
+		use et_undo_redo;
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
 		log_indentation_up;
@@ -477,6 +500,9 @@ package body et_canvas_schematic_units is
 		if selected_unit /= pac_proposed_units.no_element then
 
 			su := element (selected_unit);
+
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
 			
 			drag_unit (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
@@ -486,6 +512,8 @@ package body et_canvas_schematic_units is
 				point			=> destination,
 				log_threshold	=> log_threshold);
 
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);			
 		else
 			log (text => "nothing to do", level => log_threshold);
 		end if;
@@ -871,10 +899,19 @@ package body et_canvas_schematic_units is
 		log_threshold	: in type_log_level)
 	is 
 		su : type_selected_unit := unit;		
+
+		use et_commit;
+		use et_undo_redo;
 	begin
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+			
 		rotate_unit (module_cursor, su, log_threshold);
 		-- NOTE: su has been modified !
 
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+		
 		reset_request_clarification;
 		
 		set_status (status_rotate);
@@ -1249,14 +1286,22 @@ package body et_canvas_schematic_units is
 	is 
 		use et_devices;
 		use pac_devices_lib;
-	begin
 
+		use et_commit;
+		use et_undo_redo;
+	begin
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+		
 		add_device (
 			module_name		=> key (current_active_module),
 			device_model	=> pac_devices_lib.key (unit_add.device),
 			variant			=> unit_add.variant,
 			destination		=> to_position (position, current_active_sheet),
 			log_threshold	=> log_threshold + 1);
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
 		
 		reset_unit_add;
 		reset_activate_counter;
@@ -1271,11 +1316,16 @@ package body et_canvas_schematic_units is
 		log_threshold	: in type_log_level)
 	is 
 		use pac_unit_name;
+		use et_commit;
+		use et_undo_redo;
 	begin
 		log (text => "finalizing invoke ...", level => log_threshold);
 		log_indentation_up;
 		
 		if length (unit_add.name) > 0 then
+
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
 			
 			invoke_unit (
 				module_name		=> key (current_active_module),
@@ -1283,6 +1333,11 @@ package body et_canvas_schematic_units is
 				unit_name		=> unit_add.name,
 				destination		=> to_position (position, current_active_sheet),
 				log_threshold	=> log_threshold + 1);
+
+
+			-- Commit the current state of the design:
+			commit (POST, verb, noun, log_threshold);
+
 		else
 			log (text => "nothing to do", level => log_threshold + 1);
 		end if;
@@ -1321,6 +1376,7 @@ package body et_canvas_schematic_units is
 			& " unit " & unit_name & " selected.");
 
 	end unit_selected;
+	
 
 	procedure unit_selection_cancelled (self : access gtk.menu_shell.gtk_menu_shell_record'class) is
 	begin

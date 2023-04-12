@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -41,6 +42,10 @@
 with et_canvas_board;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_device_query_board;			use et_device_query_board;
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 package body et_canvas_board_devices is
@@ -251,11 +256,17 @@ package body et_canvas_board_devices is
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
 			use et_schematic;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_electrical_device /= pac_devices_sch.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
 					module_name		=> key (current_active_module),
@@ -263,7 +274,9 @@ package body et_canvas_board_devices is
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -317,19 +330,28 @@ package body et_canvas_board_devices is
 		-- Assigns the final position after the move to the selected 
 		-- non-electrical device.
 		-- Resets global variable preliminary_non_electrical_device:
-		procedure finalize is begin
+		procedure finalize is 
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
 
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
 				move_device (
 					module_name		=> key (current_active_module),
 					device_name		=> key (selected_non_electrical_device),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);			
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -388,11 +410,17 @@ package body et_canvas_board_devices is
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
 			use et_schematic;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_electrical_device /= pac_devices_sch.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 				
 				rotate_device (
 					module_name		=> key (current_active_module),
@@ -400,7 +428,9 @@ package body et_canvas_board_devices is
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -445,11 +475,18 @@ package body et_canvas_board_devices is
 
 		-- Rotates the selected non-electrical device by default_rotation.
 		-- Resets global variable preliminary_non_electrical_device:
-		procedure finalize is begin
+		procedure finalize is 
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 
 				rotate_device (
 					module_name		=> key (current_active_module),
@@ -457,7 +494,9 @@ package body et_canvas_board_devices is
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -508,6 +547,9 @@ package body et_canvas_board_devices is
 		procedure finalize is
 			face : type_face;
 			use et_schematic;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
@@ -516,13 +558,18 @@ package body et_canvas_board_devices is
 
 				face := get_face (selected_electrical_device);
 				toggle (face);
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 				
 				flip_device (
 					module_name		=> key (current_active_module),
 					device_name		=> key (selected_electrical_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -567,6 +614,9 @@ package body et_canvas_board_devices is
 
 		procedure finalize is
 			face : type_face;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
@@ -575,13 +625,18 @@ package body et_canvas_board_devices is
 
 				face := get_face (selected_non_electrical_device);
 				toggle (face);
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 				
 				flip_device (
 					module_name		=> key (current_active_module),
 					device_name		=> key (selected_non_electrical_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
-				
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -625,17 +680,26 @@ package body et_canvas_board_devices is
 		point	: in type_point)
 	is 
 
-		procedure finalize is begin
+		procedure finalize is 
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+		begin
 			log (text => "finalizing deletion ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
 
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
 				delete_device (
 					module_name		=> key (current_active_module),
 					device_name		=> key (selected_non_electrical_device),
 					log_threshold	=> log_threshold);
 
+				-- Commit the current state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;

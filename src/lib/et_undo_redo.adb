@@ -50,9 +50,6 @@ with et_time;							use et_time;
 
 
 package body et_undo_redo is
-
-
-	use pac_net_commit;
 	
 	
 	procedure commit ( -- in schematic domain
@@ -74,31 +71,55 @@ package body et_undo_redo is
 			module		: in out type_module)
 		is 
 			use pac_commit_message;
-		begin
+
+			
+			procedure commit_nets is begin
+				log (text => "nets", level => lth + 1);
+				
+				module.net_commits.dos.append (pac_net_commit.make_commit (
+					index	=> module.commit_index, 
+					stage	=> stage, 
+					item	=> module.nets,
+					message	=> to_bounded_string (verb_noun),
+					domain	=> domain));
+			end commit_nets;
+
+			
+			procedure commit_devices is begin
+				log (text => "devices", level => lth + 1);
+				
+				module.device_commits.dos.append (pac_device_commit.make_commit (
+					index	=> module.commit_index, 
+					stage	=> stage, 
+					item	=> module.devices,
+					message	=> to_bounded_string (verb_noun),
+					domain	=> domain));
+
+			end commit_devices;
+
+			
+		begin -- query_module
 			increment (module.commit_index);			
 
-			case verb is
-				when VERB_DRAW | VERB_DELETE | VERB_DRAG => -- CS others
+			case noun is
+				when NOUN_NET =>
+					case verb is
+						when VERB_DRAW | VERB_DELETE | VERB_DRAG =>
+							commit_nets;
 
-					case noun is
-						when NOUN_NET =>
-							log (text => "nets", level => lth + 1);
-							
-							module.net_commits.dos.append (make_commit (
-								index	=> module.commit_index, 
-								stage	=> stage, 
-								item	=> module.nets,
-								message	=> to_bounded_string (verb_noun),
-								domain	=> domain
-								));
-
-							
-						when others =>
-							null;
+						when others => null;
 					end case;
 					
-				when others =>
-					null;
+				when NOUN_UNIT =>
+					case verb is
+						when VERB_INVOKE | VERB_MOVE | VERB_DELETE | VERB_DRAG =>
+							commit_devices;
+							commit_nets;
+
+						when others => null;
+					end case;
+
+				when others => null;
 			end case;
 		end query_module;
 		
@@ -141,28 +162,76 @@ package body et_undo_redo is
 			module		: in out type_module)
 		is 
 			use pac_commit_message;
-		begin
+
+			
+			procedure commit_nets is begin
+				log (text => "nets", level => lth + 1);
+							
+				module.net_commits.dos.append (pac_net_commit.make_commit (
+					index	=> module.commit_index, 
+					stage	=> stage, 
+					item	=> module.nets,
+					message	=> to_bounded_string (verb_noun),
+					domain	=> domain));
+					-- CS In order to save memory, do not commit the fill lines of zones ?
+			end commit_nets;
+
+			
+			procedure commit_devices is begin
+				log (text => "devices", level => lth + 1);
+							
+				module.device_commits.dos.append (pac_device_commit.make_commit (
+					index	=> module.commit_index, 
+					stage	=> stage, 
+					item	=> module.devices,
+					message	=> to_bounded_string (verb_noun),
+					domain	=> domain));
+			end commit_devices;
+
+			
+		begin -- query_module
 			increment (module.commit_index);	
 
-			case verb is
-				when VERB_DELETE | VERB_ROUTE | VERB_RIPUP | VERB_MOVE => -- CS others
-
-					case noun is
-						when NOUN_NET | NOUN_TRACK =>
-							log (text => "nets", level => lth + 1);
-							
-							module.net_commits.dos.append (make_commit (
-								index	=> module.commit_index, 
-								stage	=> stage, 
-								item	=> module.nets,
-								message	=> to_bounded_string (verb_noun),
-								domain	=> domain
-								));
-								-- CS In order to save memory, do not commit the fill lines of zones ?
-
+			case noun is
+				when NOUN_NET =>
+					case verb is
+						when VERB_ROUTE =>
+							commit_nets;
+			
 						when others =>
 							null;
 					end case;
+
+
+				when NOUN_TRACK =>
+					case verb is
+						when VERB_RIPUP | VERB_MOVE =>
+							commit_nets;
+			
+						when others =>
+							null;
+					end case;
+
+
+				when NOUN_DEVICE =>
+					case verb is
+						when VERB_MOVE | VERB_FLIP | VERB_ROTATE =>
+							commit_devices;
+			
+						when others =>
+							null;
+					end case;
+
+
+				when NOUN_NON_ELECTRICAL_DEVICE =>
+					case verb is
+						when VERB_MOVE | VERB_DELETE | VERB_ROTATE | VERB_ADD | VERB_FLIP =>
+							commit_devices;
+			
+						when others =>
+							null;
+					end case;
+
 					
 				when others =>
 					null;
@@ -194,19 +263,13 @@ package body et_undo_redo is
 		use pac_undo_message;
 		use pac_commit_message;
 
+		domain : type_domain;
 		
-		procedure add_to_message (text : in string) is begin
-			message := message & " " & to_bounded_string (text);
-		end add_to_message;
-	
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is
-			-- Backup places for pre- and post-commits:
-			pre_commit, post_commit : type_commit;
-
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
 
@@ -217,41 +280,82 @@ package body et_undo_redo is
 				use pac_net_commits;
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_net_commit.type_commit;
 			begin
-				if dos.last_element.index = module.commit_index then
+				if not dos.is_empty then
+					if dos.last_element.index = module.commit_index then
 
-					log (text => "nets", level => lth + 1);
-					
-					-- Backup post-commit and delete the original:
-					post_commit := dos.last_element;
-					dos.delete_last;
+						log (text => "nets", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := dos.last_element;
+						dos.delete_last;
 
-					-- Backup pre-commit and delete the original:
-					pre_commit := dos.last_element;
-					dos.delete_last;
+						-- Backup pre-commit and delete the original:
+						pre_commit := dos.last_element;
+						dos.delete_last;
 
-					-- Restore the affected part of the design according 
-					-- to the pre-commit:
-					module.nets := pre_commit.item;
+						-- Restore the nets of the design according to the pre-commit:
+						module.nets := pre_commit.item;
 
+						-- Put pre- and post commit on redo-stack:
+						redos.append (pre_commit);
+						redos.append (post_commit);					
 
-					-- Put pre- and post commit on redo-stack:
-					redos.append (pre_commit);
-					redos.append (post_commit);					
+						-- Mark the undo-operation as successful:
+						done := true;
 
-					-- Mark the undo-operation as successful:
-					done := true;
+						-- Add verb and noun to message:					
+						message := to_bounded_string (to_string (post_commit.message));
 
-					-- Assemble undo-message:
-					add_to_message (to_string (post_commit.message));
-					
-					-- CS add duration between post-commit and current time (like 2 minutes ago)
-					--put_line (to_string_full (post_commit.timestamp));
-
-					-- Add domain to message:
-					add_to_message ("(in " & to_string (post_commit.domain) & ")");
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
 				end if;
 			end undo_nets;
+
+
+			procedure undo_devices is 
+				use pac_device_commits;
+				dos		: pac_device_commits.list renames module.device_commits.dos;
+				redos	: pac_device_commits.list renames module.device_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_device_commit.type_commit;
+			begin
+				if not dos.is_empty then
+					if dos.last_element.index = module.commit_index then
+
+						log (text => "devices", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := dos.last_element;
+						dos.delete_last;
+
+						-- Restore the devices of the design according to the pre-commit:
+						module.devices := pre_commit.item;
+
+						-- Put pre- and post commit on redo-stack:
+						redos.append (pre_commit);
+						redos.append (post_commit);					
+
+						-- Mark the undo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end undo_devices;
 
 			
 		begin -- query_module
@@ -260,25 +364,28 @@ package body et_undo_redo is
 			-- commits in the past. Otherwise there would be nothing to undo:
 			if module.commit_index > 0 then
 
-				-- Build preample of undo-message:
-				add_to_message ("undo:");
-
-				-- Since we have multiple do-stacks (for various kinds of objects),
-				-- the do-stack that contains the latest commit must be processed.
+				-- Since we have multiple do-stacks (for various categories of objects),
+				-- all the do-stacks that contain the latest commit must be processed.
 				-- All other do-stacks remain untouched:
 
 				-- Search in nets:
 				undo_nets;				
 
-				if not done then
-					null;
-					-- CS Search other stacks:
-				end if;
+				-- Search in devices:
+				undo_devices;
+				
 
-				-- CS if done then ?
+				if done then
+ 					-- Add domain to message:
+					message := message & to_bounded_string (" (in " & to_string (domain) & ")");
+				
+					-- Add preamble of undo-message:
+					message := to_bounded_string ("undo: ") & message;
+				end if;
+				
+				-- CS ? if done then
 				decrement (module.commit_index, 2);
 
-				-- end if;
 			else
 				log (text => nothing_to_do, level => lth + 1);
 
@@ -311,10 +418,7 @@ package body et_undo_redo is
 		use pac_redo_message;
 		use pac_commit_message;
 
-		
-		procedure add_to_message (text : in string) is begin
-			message := message & " " & to_bounded_string (text);
-		end add_to_message;
+		domain : type_domain;
 
 		
 		procedure query_module (
@@ -323,9 +427,6 @@ package body et_undo_redo is
 		is 		
 			-- Contains the index of the latest commit:
 			commit_index : constant type_commit_index := module.commit_index + 2;
-
-			-- Backup places for pre- and post-commits:
-			pre_commit, post_commit : type_commit;
 
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
@@ -337,9 +438,11 @@ package body et_undo_redo is
 				use pac_net_commits;				
 				dos		: pac_net_commits.list renames module.net_commits.dos;
 				redos	: pac_net_commits.list renames module.net_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_net_commit.type_commit;
 			begin
-				-- If there are no commits on the redo-stack, then there is
-				-- nothing to do.
+				-- If there are no commits on the redo-stack, then there is nothing to do.
 				if not redos.is_empty then
 
 					-- Do the redo-operation if the last commit is 
@@ -367,44 +470,87 @@ package body et_undo_redo is
 						-- Mark the redo-operation as successful:
 						done := true;
 
-						-- Assemble redo-message:
-						add_to_message (to_string (post_commit.message));
-					
-						-- CS add duration between post-commit and current time (like 2 minutes ago)
-						--put_line (to_string_full (post_commit.timestamp));
+						-- Add verb and noun to message:					
+						message := to_bounded_string (to_string (post_commit.message));
 
 						-- Add domain to message:
-						add_to_message ("(in " & to_string (post_commit.domain) & ")");
+						domain := post_commit.domain;
 					end if;
 				end if;
 			end redo_nets;
 			
-				
+
+			procedure redo_devices is
+				use pac_device_commits;				
+				dos		: pac_device_commits.list renames module.device_commits.dos;
+				redos	: pac_device_commits.list renames module.device_commits.redos;
+
+				-- Backup places for pre- and post-commits:
+				pre_commit, post_commit : pac_device_commit.type_commit;
+			begin
+				-- If there are no commits on the redo-stack, then there is nothing to do.
+				if not redos.is_empty then
+
+					-- Do the redo-operation if the last commit is 
+					-- the latest among all commits:
+					if redos.last_element.index = commit_index then
+
+						log (text => "devices", level => lth + 1);
+						
+						-- Backup post-commit and delete the original:
+						post_commit := redos.last_element;
+						redos.delete_last;
+
+						-- Backup pre-commit and delete the original:
+						pre_commit := redos.last_element;
+						redos.delete_last;
+
+						
+						-- Put pre- and post-commit back to dos-stack:
+						dos.append (pre_commit);
+						dos.append (post_commit);
+
+						-- Restore design according to the post-commit:
+						module.devices := post_commit.item;
+
+						-- Mark the redo-operation as successful:
+						done := true;
+
+						-- Add verb and noun to message:					
+						message := to_bounded_string (to_string (post_commit.message));
+
+						-- Add domain to message:
+						domain := post_commit.domain;
+					end if;
+				end if;
+			end redo_devices;
+
+			
 		begin -- query_module
 
-			-- Since we have multiple redo-stacks (for various kinds of objects),
-			-- the redo-stack that contains the latest commit must be processed.
+			-- Since we have multiple redo-stacks (for various categories of objects),
+			-- all the redo-stacks that contain the latest commit must be processed.
 			-- All other redo-stacks remain untouched:
-
-			-- Build preample of undo-message:
-			add_to_message ("redo:");
 			
 			-- Search in nets:
 			redo_nets;
 
-			if not done then
-				null;
-				-- CS other redo-stacks like
-				-- CS elsif not module.silkscreen_commits.redos.is_empty then
-			end if;
-
+			-- Search in devices:
+			redo_devices;
 			
+
 			if done then
+				-- Add domain to message:
+				message := message & to_bounded_string (" (in " & to_string (domain) & ")");
+			
+				-- Add preamble of message:
+				message := to_bounded_string ("redo: ") & message;
+
 				increment (module.commit_index, 2);
 			else
 				log (text => nothing_to_do, level => lth + 1);
 
-				-- Assemble redo-message (overwrite old stuff in message):
+				-- Assemble redo-message:
 				message := to_bounded_string (nothing_to_do);
 			end if;
 		end query_module;

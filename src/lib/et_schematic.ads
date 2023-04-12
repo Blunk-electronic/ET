@@ -307,6 +307,23 @@ package et_schematic is
 	use pac_devices_sch;
 	
 
+	
+-- COMMITS (required for undo/redo operations via the GUI):
+	use et_commit;
+	
+	package pac_device_commit is new pac_commit (pac_devices_sch.map);
+	use pac_device_commit;
+	
+	package pac_device_commits is new doubly_linked_lists (
+		element_type	=> pac_device_commit.type_commit);
+
+	type type_devices_undo_redo_stack is record
+		dos		: pac_device_commits.list;
+		redos	: pac_device_commits.list;
+	end record;
+
+	
+	
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		devices	: in pac_devices_sch.map;
@@ -378,6 +395,7 @@ package et_schematic is
 
 		-- ALL devices of the module independent of the assembly variant:
 		devices			: pac_devices_sch.map;
+		device_commits	: type_devices_undo_redo_stack;
 		
 		net_classes		: et_pcb.pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
@@ -393,7 +411,7 @@ package et_schematic is
 		-- On adding, moving or deleting units the structure in 
 		-- selector "net" must be updated:
 		nets 	    	: pac_nets.map;
-		net_commits		: et_nets.type_undo_redo_stack;
+		net_commits		: type_nets_undo_redo_stack;
 		
 		-- The assembly variants of the module.
 		-- (means which device is mounted or not or which device can have a different
