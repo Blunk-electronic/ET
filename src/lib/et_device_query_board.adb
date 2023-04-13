@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -48,6 +49,39 @@ package body et_device_query_board is
 	use pac_geometry_2;
 
 
+	function is_proposed (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return boolean
+	is 
+		use et_object_status;
+	begin
+		if is_real (device_cursor) then
+			if element (device_cursor).status.proposed = true then
+				return true;
+			end if;
+		end if;
+
+		return false;
+	end is_proposed;
+
+
+	function is_selected (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return boolean
+	is 
+		use et_object_status;
+	begin
+		if is_real (device_cursor) then
+			if element (device_cursor).status.selected = true then
+				return true;
+			end if;
+		end if;
+
+		return false;
+	end is_selected;
+
+	
+	
 	function get_position (
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
 		return type_package_position

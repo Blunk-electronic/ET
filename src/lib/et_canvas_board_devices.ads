@@ -58,7 +58,7 @@ package et_canvas_board_devices is
 	-- collect preliminary information using this type:
 	type type_preliminary_electrical_device is record
 		-- This flag indicates that the device has been
-		-- clarified among the proposed device:
+		-- clarified among the proposed devices:
 		ready	: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
@@ -116,15 +116,15 @@ package et_canvas_board_devices is
 -- ELECTRICAL DEVICES:
 	
 	use pac_devices_sch;
-	proposed_electrical_devices	: pac_devices_sch.map;
+	--proposed_electrical_devices	: pac_devices_sch.map;
 	selected_electrical_device	: pac_devices_sch.cursor;
 
 	
 	-- Returns true if the given electrical device matches the device 
 	-- indicated by cursor "selected_electrical_device":
-	function electrical_device_is_selected (
-		d : in pac_devices_sch.cursor)
-		return boolean;
+	-- function electrical_device_is_selected (
+	-- 	d : in pac_devices_sch.cursor)
+	-- 	return boolean;
 
 
 	

@@ -84,6 +84,7 @@ with et_frames;
 with et_meta;
 with et_design_rules;
 with et_commit;
+with et_object_status;			use et_object_status;
 
 
 package et_schematic is
@@ -220,6 +221,8 @@ package et_schematic is
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
+
+				status : type_object_status;
 				
 			when et_symbols.VIRTUAL => null;
 
@@ -307,6 +310,8 @@ package et_schematic is
 	use pac_devices_sch;
 	
 
+
+	
 	
 	-- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;

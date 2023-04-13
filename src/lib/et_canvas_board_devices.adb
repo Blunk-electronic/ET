@@ -54,27 +54,27 @@ package body et_canvas_board_devices is
 	use et_project.modules.pac_generic_modules;
 	
 
-	function electrical_device_is_selected (
-		d : in pac_devices_sch.cursor)
-		return boolean
-	is begin
-		-- If there are no selected devices at all, then there is nothing to do:
-		if is_empty (proposed_electrical_devices) then
-			return false;
-		else
-			if selected_electrical_device /= pac_devices_sch.no_element then
-				
-				-- Compare given device and selected_electrical_device:
-				if key (d) = key (selected_electrical_device) then
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end electrical_device_is_selected;
+-- 	function electrical_device_is_selected (
+-- 		d : in pac_devices_sch.cursor)
+-- 		return boolean
+-- 	is begin
+-- 		-- If there are no selected devices at all, then there is nothing to do:
+-- 		if is_empty (proposed_electrical_devices) then
+-- 			return false;
+-- 		else
+-- 			if selected_electrical_device /= pac_devices_sch.no_element then
+-- 				
+-- 				-- Compare given device and selected_electrical_device:
+-- 				if key (d) = key (selected_electrical_device) then
+-- 					return true;
+-- 				else 
+-- 					return false;
+-- 				end if;
+-- 			else
+-- 				return false;
+-- 			end if;
+-- 		end if;
+-- 	end electrical_device_is_selected;
 
 
 	procedure reset_preliminary_electrical_device is begin
@@ -116,7 +116,10 @@ package body et_canvas_board_devices is
 
 	
 	procedure clear_proposed_electrical_devices is begin
-		clear (proposed_electrical_devices);
+		--clear (proposed_electrical_devices);
+		reset_proposed_devices (current_active_module, log_threshold + 1);
+
+		deselect_device (current_active_module, selected_electrical_device, log_threshold + 1);
 		selected_electrical_device := pac_devices_sch.no_element;
 	end clear_proposed_electrical_devices;
 
@@ -135,12 +138,17 @@ package body et_canvas_board_devices is
 		-- device to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_electrical_device
 		-- moves back to the start of the devices list.
-		if next (selected_electrical_device) /= pac_devices_sch.no_element then
-			next (selected_electrical_device);
-		else
-			selected_electrical_device := proposed_electrical_devices.first;
-		end if;
 
+		-- if next (selected_electrical_device) /= pac_devices_sch.no_element then
+		-- 	next (selected_electrical_device);
+		-- else
+		-- 	selected_electrical_device := proposed_electrical_devices.first;
+		-- end if;
+
+		deselect_device (current_active_module, selected_electrical_device, log_threshold + 1);
+		next_proposed   (current_active_module, selected_electrical_device, log_threshold + 1);
+		select_device   (current_active_module, selected_electrical_device, log_threshold + 1);
+		
 		-- show the selected device in the status bar
 		set_status ("selected device " & to_string (key (selected_electrical_device)) 
 			& ". " & status_next_object_clarification);
@@ -170,27 +178,40 @@ package body et_canvas_board_devices is
 	
 	procedure find_electrical_devices (
 		point : in type_point)
-	is begin
+	is 
+		count : natural := 0;
+	begin
 		log (text => "locating devices ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- Collect all units in the vicinity of the given point:
-		proposed_electrical_devices := get_devices (
-			module			=> current_active_module,
+		-- Collect all devices in the vicinity of the given point:
+		-- proposed_electrical_devices := get_devices (
+		-- 	module			=> current_active_module,
+		-- 	place			=> point,
+		-- 	catch_zone		=> get_catch_zone,
+		-- 	log_threshold	=> log_threshold + 1);
+
+		propose_devices (
+			module_cursor	=> current_active_module,
 			place			=> point,
 			catch_zone		=> get_catch_zone,
+			count			=> count,
 			log_threshold	=> log_threshold + 1);
 
 		
 		-- evaluate the number of devices found here:
-		case length (proposed_electrical_devices) is
+		--case length (proposed_electrical_devices) is
+		case count is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_electrical_device;
 				
 			when 1 =>
 				preliminary_electrical_device.ready := true;
-				selected_electrical_device := proposed_electrical_devices.first;
+				--selected_electrical_device := proposed_electrical_devices.first;
+				selected_electrical_device := get_first_proposed (current_active_module, log_threshold + 1);
+				
+				select_device (current_active_module, selected_electrical_device, log_threshold + 1);
 				reset_request_clarification;
 				
 			when others =>
@@ -198,7 +219,9 @@ package body et_canvas_board_devices is
 				set_request_clarification;
 
 				-- preselect the first device
-				selected_electrical_device := proposed_electrical_devices.first;
+				--selected_electrical_device := proposed_electrical_devices.first;
+				selected_electrical_device := get_first_proposed (current_active_module, log_threshold + 1);
+				select_device (current_active_module, selected_electrical_device, log_threshold + 1);
 		end case;
 
 		log_indentation_down;

@@ -243,7 +243,7 @@ package body et_schematic is
 	end get_ports;
 
 
-
+	
 
 	
 	procedure iterate (
