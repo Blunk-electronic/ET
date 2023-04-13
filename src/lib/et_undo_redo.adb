@@ -228,7 +228,7 @@ package body et_undo_redo is
 			case noun is
 				when NOUN_NET =>
 					case verb is
-						when VERB_ROUTE =>
+						when VERB_ROUTE | VERB_RIPUP =>
 							commit_nets;
 			
 						when others =>
@@ -238,7 +238,7 @@ package body et_undo_redo is
 
 				when NOUN_TRACK =>
 					case verb is
-						when VERB_RIPUP | VERB_MOVE =>
+						when VERB_MOVE =>
 							commit_nets;
 			
 						when others =>

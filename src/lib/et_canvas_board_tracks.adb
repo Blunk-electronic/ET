@@ -616,13 +616,21 @@ package body et_canvas_board_tracks is
 		
 		procedure add_to_net is
 			use et_board_ops.conductors;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+
 			add_named_track (
 				module_cursor	=> current_active_module, 
 				net_name		=> PT.net_name,
 				line			=> (line with PT.width, PT.signal_layer),
 				log_threshold	=> log_threshold + 1);
 			
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
 		end add_to_net;
 
 		
