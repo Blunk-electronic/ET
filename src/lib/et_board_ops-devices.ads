@@ -48,6 +48,8 @@ package et_board_ops.devices is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+-- ELECTICAL DEVICES:
+	
 	-- Collects all devices in the vicinity of the given point:	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
@@ -57,7 +59,7 @@ package et_board_ops.devices is
 		return pac_devices_sch.map;
 
 
--- PROPOSED DEVICES:
+	-- PROPOSED DEVICES:
 	
 	-- Sets the proposed-flag of all real devices which are in the
 	-- given zone around the given place.
@@ -95,7 +97,7 @@ package et_board_ops.devices is
 
 
 	
--- SELECTED DEVICES:
+	-- SELECTED DEVICES:
 	
 	-- Sets the selected-flag of the given device:
 	procedure select_device (
@@ -120,7 +122,11 @@ package et_board_ops.devices is
 
 	
 
+--------------------------------------------------------------------------
 	
+-- NON-ELECTICAL DEVICES:
+
+	-- Collects all non-electrical devices in the vicinity of the given point:	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_point;
@@ -128,6 +134,81 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map;
 
+	
+	-- PROPOSED DEVICES:
+	
+	-- Sets the proposed-flag of all real devices which are in the
+	-- given zone around the given place.
+	procedure propose_non_electrical_devices (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_point; -- x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		count			: in out natural; -- the number of affected devices
+		log_threshold	: in type_log_level);
+
+	
+	-- Clears the proposed-flag and the selected-flag of all real devices:
+	procedure reset_proposed_non_electrical_devices (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+	-- Returns the first proposed device. If no device is proposed
+	-- then the return is no_element:
+	function get_first_proposed_non_electrical (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electric.cursor;
+
+	
+	-- Advances to the next proposed device, starting at
+	-- the device given by device_cursor. If there are no
+	-- proposed devices, then device_cursor is set to no_element.
+	-- If there is only one proposed device, then device_cursor
+	-- is unchanged.
+	procedure next_proposed_non_electrical (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in out pac_devices_non_electric.cursor;							
+		log_threshold	: in type_log_level);
+
+
+	
+	-- SELECTED DEVICES:
+	
+	-- Sets the selected-flag of the given device:
+	procedure select_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_non_electric.cursor;							
+		log_threshold	: in type_log_level);
+
+	
+	-- Clears the selected-flag of the given device:
+	procedure deselect_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_non_electric.cursor;							
+		log_threshold	: in type_log_level);
+
+	
+	-- Returns the first selected device. If no device is selected
+	-- then the return is no_element:
+	function get_first_selected_non_electrical (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electric.cursor;
+
+
+------------------------------------------------------------------------
+	
+
+
+
+
+
+
+
+
+
+	
 	
 	-- Adds a non-electric device to the board:
 	procedure add_device (

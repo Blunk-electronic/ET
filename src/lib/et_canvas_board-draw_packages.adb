@@ -1767,7 +1767,6 @@ is
 
 				-- If the device candidate is selected, then we will
 				-- draw it highlighted:
-				--if electrical_device_is_selected (device_cursor) then
 				if is_selected (device_cursor) then
 					brightness := BRIGHT;
 

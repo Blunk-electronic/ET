@@ -90,6 +90,17 @@ package et_device_query_board is
 		return boolean;
 
 
+
+	function is_proposed (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return boolean;
+
+	function is_selected (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return boolean;
+
+
+	
 	
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:

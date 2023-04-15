@@ -87,6 +87,7 @@ with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
 with et_commit;
+with et_object_status;					use et_object_status;
 
 package et_pcb is
 	
@@ -410,6 +411,8 @@ package et_pcb is
 		--value		: pac_device_value.bounded_string; -- 470R
 		--partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		--purpose		: pac_device_purpose.bounded_string; -- brightness_control
+
+		status : type_object_status;
 	end record;
 
 	

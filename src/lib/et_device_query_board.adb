@@ -80,6 +80,41 @@ package body et_device_query_board is
 		return false;
 	end is_selected;
 
+
+
+
+	function is_proposed (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return boolean
+	is 
+		use et_object_status;
+	begin
+		if element (device_cursor).status.proposed = true then
+			return true;
+		end if;
+
+		return false;
+	end is_proposed;
+
+
+	function is_selected (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return boolean
+	is 
+		use et_object_status;
+	begin
+		if element (device_cursor).status.selected = true then
+			return true;
+		end if;
+
+		return false;
+	end is_selected;
+
+
+
+
+
+
 	
 	
 	function get_position (
