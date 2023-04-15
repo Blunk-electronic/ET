@@ -57,6 +57,8 @@ package et_board_ops.devices is
 		return pac_devices_sch.map;
 
 
+-- PROPOSED DEVICES:
+	
 	-- Sets the proposed-flag of all real devices which are in the
 	-- given zone around the given place.
 	procedure propose_devices (
@@ -67,7 +69,7 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Clears the proposed-flag of all real devices:
+	-- Clears the proposed-flag and the selected-flag of all real devices:
 	procedure reset_proposed_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
@@ -92,6 +94,9 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
+	
+-- SELECTED DEVICES:
+	
 	-- Sets the selected-flag of the given device:
 	procedure select_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -106,6 +111,15 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
+	-- Returns the first selected device. If no device is selected
+	-- then the return is no_element:
+	function get_first_selected (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_devices_sch.cursor;
+
+	
+
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;

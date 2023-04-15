@@ -74,8 +74,7 @@ package et_canvas_board_devices is
 
 
 	-- This procedure:
-	-- - Clears list of proposed electrical devices.
-	-- - Sets global variable selected_electrical_device to no_element.
+	-- - Resets all proposed electrical devices.
 	-- - resets global variable preliminary_electrical_device 
 	--   to its default values
 	procedure reset_preliminary_electrical_device;
@@ -113,18 +112,6 @@ package et_canvas_board_devices is
 	
 
 
--- ELECTRICAL DEVICES:
-	
-	use pac_devices_sch;
-	--proposed_electrical_devices	: pac_devices_sch.map;
-	selected_electrical_device	: pac_devices_sch.cursor;
-
-	
-	-- Returns true if the given electrical device matches the device 
-	-- indicated by cursor "selected_electrical_device":
-	-- function electrical_device_is_selected (
-	-- 	d : in pac_devices_sch.cursor)
-	-- 	return boolean;
 
 
 	
@@ -144,9 +131,6 @@ package et_canvas_board_devices is
 	
 
 	
-	-- Clears the list proposed_electrical_device.
-	-- Resets selected_electrical_device to no_element.
-	procedure clear_proposed_electrical_devices;
 
 	-- Clears the list proposed_non_electrical_devices.
 	-- Resets selected_non_electrical_device to no_element.
@@ -154,8 +138,8 @@ package et_canvas_board_devices is
 	
 
 
-	-- Advances cursor selected_electrical_device to next device
-	-- in list proposed_electrical_device:
+	-- Advances to next proposed electrical device and
+	-- selects it. The previous device is deselected:
 	procedure select_electrical_device;
 
 	-- Advances cursor selected_non_electrical_device to next device
@@ -166,9 +150,9 @@ package et_canvas_board_devices is
 	
 	
 	-- Locates all devices in the vicinity of given point.
-	-- If more than one device near point found, then it sets the
-	-- cursor selected_electrical_device to the first device and requests
-	-- for clarification.
+	-- Marks the affected devices as "proposed" and marks the the first
+	-- of them as "selected".
+	-- If more than one device found, then it requests for clarification.
 	procedure find_electrical_devices (
 		point : in type_point);
 
@@ -201,7 +185,7 @@ package et_canvas_board_devices is
 	--   The next call of this procedure sets preliminary_electrical_device.ready
 	--   so that the selected device will be drawn at the tool position.
 	--   The next call of this procedure assigns the final position 
-	--   to the selected_electrical_device:
+	--   to the selected device:
 	procedure move_electrical_device (
 		tool	: in type_tool;
 		point	: in type_point);

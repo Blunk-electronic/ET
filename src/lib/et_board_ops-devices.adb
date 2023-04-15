@@ -214,6 +214,7 @@ package body et_board_ops.devices is
 			begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				device.status.proposed := false;
+				device.status.selected := false;
 			end query_device;
 			
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
@@ -431,6 +432,46 @@ package body et_board_ops.devices is
 	end deselect_device;
 
 
+	
+	function get_first_selected (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_devices_sch.cursor
+	is
+		result : pac_devices_sch.cursor;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+		begin
+			while device_cursor /= pac_devices_sch.no_element loop
+				if is_selected (device_cursor) then
+					result := device_cursor;
+					exit; -- no further probing required
+				end if;
+				
+				next (device_cursor);
+			end loop;
+		end query_module;
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"looking up the first selected device",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_selected;
 	
 
 	

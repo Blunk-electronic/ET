@@ -52,34 +52,12 @@ package body et_canvas_board_devices is
 
 	use et_canvas_board.pac_canvas;
 	use et_project.modules.pac_generic_modules;
-	
-
--- 	function electrical_device_is_selected (
--- 		d : in pac_devices_sch.cursor)
--- 		return boolean
--- 	is begin
--- 		-- If there are no selected devices at all, then there is nothing to do:
--- 		if is_empty (proposed_electrical_devices) then
--- 			return false;
--- 		else
--- 			if selected_electrical_device /= pac_devices_sch.no_element then
--- 				
--- 				-- Compare given device and selected_electrical_device:
--- 				if key (d) = key (selected_electrical_device) then
--- 					return true;
--- 				else 
--- 					return false;
--- 				end if;
--- 			else
--- 				return false;
--- 			end if;
--- 		end if;
--- 	end electrical_device_is_selected;
+	use pac_devices_sch;
 
 
 	procedure reset_preliminary_electrical_device is begin
 		preliminary_electrical_device := (others => <>);
-		clear_proposed_electrical_devices;
+		reset_proposed_devices (current_active_module, log_threshold + 1);
 	end reset_preliminary_electrical_device;
 
 
@@ -115,14 +93,6 @@ package body et_canvas_board_devices is
 	
 
 	
-	procedure clear_proposed_electrical_devices is begin
-		--clear (proposed_electrical_devices);
-		reset_proposed_devices (current_active_module, log_threshold + 1);
-
-		deselect_device (current_active_module, selected_electrical_device, log_threshold + 1);
-		selected_electrical_device := pac_devices_sch.no_element;
-	end clear_proposed_electrical_devices;
-
 	
 	procedure clear_proposed_non_electrical_devices is begin
 		clear (proposed_non_electrical_devices);
@@ -133,24 +103,18 @@ package body et_canvas_board_devices is
 	
 	procedure select_electrical_device is
 		use et_schematic;
+		selected : pac_devices_sch.cursor;
 	begin
-		-- On every call of this procedure we must advance from one
-		-- device to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_electrical_device
-		-- moves back to the start of the devices list.
-
-		-- if next (selected_electrical_device) /= pac_devices_sch.no_element then
-		-- 	next (selected_electrical_device);
-		-- else
-		-- 	selected_electrical_device := proposed_electrical_devices.first;
-		-- end if;
-
-		deselect_device (current_active_module, selected_electrical_device, log_threshold + 1);
-		next_proposed   (current_active_module, selected_electrical_device, log_threshold + 1);
-		select_device   (current_active_module, selected_electrical_device, log_threshold + 1);
+		-- On every call of this procedure we advance from one proposed
+		-- device to the next in a circular manner.
+		selected := get_first_selected (current_active_module, log_threshold + 1);
+		
+		deselect_device (current_active_module, selected, log_threshold + 1);
+		next_proposed   (current_active_module, selected, log_threshold + 1);
+		select_device   (current_active_module, selected, log_threshold + 1);
 		
 		-- show the selected device in the status bar
-		set_status ("selected device " & to_string (key (selected_electrical_device)) 
+		set_status ("selected device " & to_string (key (selected)) 
 			& ". " & status_next_object_clarification);
 		
 	end select_electrical_device;
@@ -180,6 +144,14 @@ package body et_canvas_board_devices is
 		point : in type_point)
 	is 
 		count : natural := 0;
+
+		procedure select_first_proposed is begin
+			select_device (
+				module_cursor	=> current_active_module, 
+				device_cursor	=> get_first_proposed (current_active_module, log_threshold + 1),
+				log_threshold	=> log_threshold + 1);
+		end select_first_proposed;
+		
 	begin
 		log (text => "locating devices ...", level => log_threshold);
 		log_indentation_up;
@@ -208,20 +180,13 @@ package body et_canvas_board_devices is
 				
 			when 1 =>
 				preliminary_electrical_device.ready := true;
-				--selected_electrical_device := proposed_electrical_devices.first;
-				selected_electrical_device := get_first_proposed (current_active_module, log_threshold + 1);
-				
-				select_device (current_active_module, selected_electrical_device, log_threshold + 1);
+				select_first_proposed;
 				reset_request_clarification;
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-
-				-- preselect the first device
-				--selected_electrical_device := proposed_electrical_devices.first;
-				selected_electrical_device := get_first_proposed (current_active_module, log_threshold + 1);
-				select_device (current_active_module, selected_electrical_device, log_threshold + 1);
+				select_first_proposed;			
 		end case;
 
 		log_indentation_down;
@@ -282,18 +247,22 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_electrical_device /= pac_devices_sch.no_element then
+			selected := get_first_selected (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_sch.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_electrical_device),
+					device_name		=> key (selected),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
@@ -327,7 +296,7 @@ package body et_canvas_board_devices is
 				
 			else
 				-- Here the clarification procedure ends.
-				-- A device has been selected (indicated by cursor selected_electrical_device)
+				-- A device has been selected
 				-- via procedure select_electrical_device.
 				-- By setting preliminary_electrical_device.ready, the selected
 				-- device will be drawn at the tool position
@@ -436,18 +405,22 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_electrical_device /= pac_devices_sch.no_element then
+			selected := get_first_selected (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_sch.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				rotate_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_electrical_device),
+					device_name		=> key (selected),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
@@ -482,7 +455,7 @@ package body et_canvas_board_devices is
 
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected (indicated by cursor selected_electrical_device)
+			-- A device has been selected
 			-- via procedure select_electrical_device.
 			reset_request_clarification;
 			finalize;
@@ -573,13 +546,17 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_electrical_device /= pac_devices_sch.no_element then
+			selected := get_first_selected (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_sch.no_element then
 
-				face := get_face (selected_electrical_device);
+				face := get_face (selected);
 				toggle (face);
 
 				-- Commit the current state of the design:
@@ -587,7 +564,7 @@ package body et_canvas_board_devices is
 				
 				flip_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_electrical_device),
+					device_name		=> key (selected),
 					face			=> face,
 					log_threshold	=> log_threshold);
 
@@ -621,7 +598,7 @@ package body et_canvas_board_devices is
 			
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected (indicated by cursor selected_electrical_device)
+			-- A device has been selected
 			-- via procedure select_electrical_device.
 			reset_request_clarification;
 			finalize;
