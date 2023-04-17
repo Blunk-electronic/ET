@@ -70,6 +70,34 @@ package body et_canvas_board_devices is
 	
 
 
+	-- Outputs the name of a device in the status bar:
+	procedure show_selected_device (
+		name			: in type_device_name;
+		electrical		: in boolean;
+		clarification	: in boolean := false)
+	is 
+		praeamble_electric     : constant string := "selected device: ";
+		praeamble_non_electric : constant string := "selected non-electrical device: ";
+	begin
+		if electrical then
+			if clarification then
+				set_status (praeamble_electric & to_string (name)
+					& ". " & status_next_object_clarification);
+			else
+				set_status (praeamble_electric & to_string (name));
+			end if;
+		
+		else
+			if clarification then
+				set_status (praeamble_non_electric & to_string (name)
+					& ". " & status_next_object_clarification);
+			else
+				set_status (praeamble_non_electric & to_string (name));
+			end if;
+		end if;
+	end show_selected_device;
+
+	
 	
 	procedure select_electrical_device is
 		use et_schematic;
@@ -83,10 +111,8 @@ package body et_canvas_board_devices is
 		next_proposed   (current_active_module, selected, log_threshold + 1);
 		select_device   (current_active_module, selected, log_threshold + 1);
 		
-		-- show the selected device in the status bar
-		set_status ("selected device " & to_string (key (selected)) 
-			& ". " & status_next_object_clarification);
-		
+		-- Show the selected device in the status bar
+		show_selected_device (name => key (selected), electrical => true, clarification => true);		
 	end select_electrical_device;
 
 
@@ -103,10 +129,8 @@ package body et_canvas_board_devices is
 		next_proposed_non_electrical   (current_active_module, selected, log_threshold + 1);
 		select_non_electrical_device   (current_active_module, selected, log_threshold + 1);
 		
-		-- show the selected device in the status bar
-		set_status ("selected non-electrical device " & to_string (key (selected)) 
-			& ". " & status_next_object_clarification);
-		
+		-- Show the selected device in the status bar
+		show_selected_device (name => key (selected), electrical => false, clarification => true);		
 	end select_non_electrical_device;
 
 	
@@ -117,12 +141,23 @@ package body et_canvas_board_devices is
 	is 
 		count : natural := 0;
 
-		procedure select_first_proposed is begin
+		
+		procedure select_first_proposed is 
+			proposed : pac_devices_sch.cursor;
+		begin
+			proposed := get_first_proposed (current_active_module, log_threshold + 1);
+			
 			select_device (
 				module_cursor	=> current_active_module, 
-				device_cursor	=> get_first_proposed (current_active_module, log_threshold + 1),
+				device_cursor	=> proposed,
 				log_threshold	=> log_threshold + 1);
+
+			-- If only one device found, then show its name in the status bar:
+			if count = 1 then
+				show_selected_device (name => key (proposed), electrical => true);		
+			end if;
 		end select_first_proposed;
+		
 		
 	begin
 		log (text => "locating devices ...", level => log_threshold);
@@ -165,13 +200,23 @@ package body et_canvas_board_devices is
 	is 
 		count : natural := 0;
 
-		procedure select_first_proposed is begin
+		
+		procedure select_first_proposed is 
+			proposed : pac_devices_non_electric.cursor;
+		begin
+			proposed := get_first_proposed_non_electrical (current_active_module, log_threshold + 1);
+			
 			select_non_electrical_device (
 				module_cursor	=> current_active_module, 
-				device_cursor	=> get_first_proposed_non_electrical (current_active_module, log_threshold + 1),
+				device_cursor	=> proposed,
 				log_threshold	=> log_threshold + 1);
-			
+
+			-- If only one device found, then show its name in the status bar:
+			if count = 1 then
+				show_selected_device (name => key (proposed), electrical => false);		
+			end if;
 		end select_first_proposed;
+
 		
 	begin
 		log (text => "locating non-electrical devices ...", level => log_threshold);
