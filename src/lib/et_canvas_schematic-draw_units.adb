@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -482,7 +483,10 @@ is
 				
 				end_point		=> type_point (set (
 									x => get_x (unit_position) + ohz,
-									y => get_y (unit_position))));
+									y => get_y (unit_position))),
+
+				others			=> <>);
+			
 
 			line_vertical : constant type_line := ( -- from bottom to top
 				start_point		=> type_point (set (
@@ -491,8 +495,10 @@ is
 				
 				end_point		=> type_point (set (
 									x => get_x (unit_position),
-									y => get_y (unit_position) + ohz)));
+									y => get_y (unit_position) + ohz)),
 
+				others			=> <>);
+			
 		begin
 		-- NOTE: This is about the origin of the symbol !
 			set_color_origin (context.cr, brightness);

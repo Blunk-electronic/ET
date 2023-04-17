@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          -- 
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -2806,7 +2807,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									segment.status := type_segment_status.to_bounded_string (to_string (arg));
+									segment.status_2 := type_segment_status.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -3748,47 +3749,47 @@ package body et_kicad.pcb is
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_silk_screen.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						package_silk_screen.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_silk_screen.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_assy_doc.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						package_assy_doc.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_assy_doc.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
-						package_copper.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_copper.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_copper.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stop_mask.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stop_mask.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stencil.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stencil.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
 						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -4220,7 +4221,7 @@ package body et_kicad.pcb is
 					 " width" & pac_geometry_2.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
-					 " status " & type_segment_status.to_string (segment.status),
+					 " status " & type_segment_status.to_string (segment.status_2),
 					 -- CS status should be decoded and detailled output. 
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					 level => log_threshold + 1);

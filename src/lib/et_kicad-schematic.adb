@@ -1358,7 +1358,8 @@ package body et_kicad.schematic is
 			type type_line_scratch is new pac_geometry_2.type_line with null record;
 			line : type_line_scratch := (
 				start_point	=> get_point (segment.coordinates_start), 
-				end_point	=> get_point (segment.coordinates_end));
+				end_point	=> get_point (segment.coordinates_end),
+				others		=> <>);
 			
 		begin -- on_segment
 			return line.on_line (port.coordinates);
@@ -3356,7 +3357,8 @@ package body et_kicad.schematic is
 		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
 			start_point	=> get_point (segment.coordinates_start), 
-			end_point	=> get_point (segment.coordinates_end));
+			end_point	=> get_point (segment.coordinates_end),
+			others		=> <>);
 		
 	begin
 		-- calculate the shortes distance of point from line.
@@ -3738,7 +3740,8 @@ package body et_kicad.schematic is
 		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
 			start_point	=> get_point (segment.coordinates_start), 
-			end_point	=> get_point (segment.coordinates_end));
+			end_point	=> get_point (segment.coordinates_end),
+			others		=> <>);
 		
 	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
@@ -5368,7 +5371,8 @@ package body et_kicad.schematic is
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> get_point (element (segment_cursor_sec).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor_sec).coordinates_end));
+										end_point	=> get_point (element (segment_cursor_sec).coordinates_end),
+										others		=> <>);
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
@@ -5578,7 +5582,8 @@ package body et_kicad.schematic is
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end));
+										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										others		=> <>);
 								begin
 									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_found := true;
@@ -5694,7 +5699,8 @@ package body et_kicad.schematic is
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end));
+										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										others		=> <>);
 								begin
 									-- count segments
 									if line.on_line (get_point (element (junction_cursor).coordinates)) then
@@ -5876,7 +5882,8 @@ package body et_kicad.schematic is
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end));
+										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										others		=> <>);
 								begin
 									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 

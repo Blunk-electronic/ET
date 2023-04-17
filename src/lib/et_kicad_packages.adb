@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -1809,47 +1810,47 @@ package body et_kicad_packages is
 				
 				case line.layer is
 					when TOP_SILK =>
-						silk_screen.top.lines.append ((line.start_point, line.end_point, line.width));
+						silk_screen.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_silk_screen_properties (TOP, silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						silk_screen.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						silk_screen.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_silk_screen_properties (BOTTOM, silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.lines.append ((line.start_point, line.end_point, line.width));
+						assy_doc.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_assy_doc_properties (TOP, assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						assy_doc.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						assy_doc.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
 		
 						
 					when TOP_COPPER => 
-						copper.top.lines.append ((line.start_point, line.end_point, line.width));
+						copper.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						copper.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP => 
-						stop_mask.top.lines.append ((line.start_point, line.end_point, line.width));
+						stop_mask.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_stop_mask_properties (TOP, stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP => 
-						stop_mask.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						stop_mask.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_stop_mask_properties (BOTTOM, stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE => 
-						stencil.top.lines.append ((line.start_point, line.end_point, line.width));
+						stencil.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_stencil_properties (TOP, stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE => 
-						stencil.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						stencil.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
 						line_stencil_properties (BOTTOM, stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;

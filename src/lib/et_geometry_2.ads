@@ -44,6 +44,7 @@ with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_object_status;			use et_object_status;
 
 
 generic
@@ -703,6 +704,7 @@ package et_geometry_2 is
 	type type_line_base is abstract tagged record
 		start_point 	: type_point;
 		end_point   	: type_point;
+		status			: type_object_status;
 	end record;
 
 	
@@ -1058,6 +1060,7 @@ package et_geometry_2 is
 		start_point		: type_point;
 		end_point		: type_point;
 		direction		: type_direction_of_rotation := CW;
+		status			: type_object_status;
 	end record;
 
 	type type_arc is new type_arc_base with null record;
@@ -1301,9 +1304,9 @@ package et_geometry_2 is
 -- CIRCLE
 	
 	type type_circle_base is abstract tagged record
-		center			: type_point;
-		radius  		: type_float_positive := 0.0;
-		-- CS locked : type_locked;
+		center	: type_point;
+		radius  : type_float_positive := 0.0;
+		status	: type_object_status;
 	end record;
 
 	type type_circle is new type_circle_base with null record;

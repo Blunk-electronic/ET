@@ -1486,7 +1486,8 @@ package body et_geometry_2 is
 	begin
 		line := (
 			start_point => set (start_x, start_y),
-			end_point	=> set (end_x, end_y));
+			end_point	=> set (end_x, end_y),
+			others		=> <>);
 
 		if get_length (line) > type_distance'small then
 			return line;
@@ -1502,7 +1503,7 @@ package body et_geometry_2 is
 	is
 		line : type_line;
 	begin
-		line := (start_point, end_point);
+		line := (start_point, end_point, others => <>);
 
 		if get_length (line) > type_distance'small then
 			return line;
@@ -2164,7 +2165,8 @@ package body et_geometry_2 is
 			center		=> to_point (arc.center),
 			start_point	=> to_point (arc.start_point),
 			end_point	=> to_point (arc.end_point),
-			direction	=> arc.direction);
+			direction	=> arc.direction,
+			others 		=> <>);
 
 		return result;
 	end to_arc_coarse;
@@ -2260,7 +2262,8 @@ package body et_geometry_2 is
 
 		procedure do_it is 
 			-- Build a line that runs from the given point to the center of the arc:
-			line : constant type_line_vector := et_geometry_2.to_line_vector (line => (point, arc.center));
+			line : constant type_line_vector := 
+				et_geometry_2.to_line_vector (line => (point, arc.center, others => <>));
 			-- IMPORTANT NOTE: Function to_line_vector computes the direction vector of line as:
 			--  arc.center.x - point.x and arc.center.y - point.y.
 			--  Function after_center (see below) bases on this fact. Otherwise its result
@@ -2406,7 +2409,7 @@ package body et_geometry_2 is
 					when TWO_EXIST =>
 						-- treat the arc like a circle and compute distance point to circle:
 						--result := get_distance_to_circumfence (point, (arc.center, radius));
-						result := get_distance_to_circumfence ((arc.center, radius), point);
+						result := get_distance_to_circumfence ((arc.center, radius, others => <>), point);
 						
 				end case;				
 			end if;				
@@ -3065,7 +3068,8 @@ package body et_geometry_2 is
 		-- Build a virtual circle from the given arc:
 		vc : constant type_circle := (
 				center => arc.center, 
-				radius => get_radius_start (arc));
+				radius => get_radius_start (arc),
+				others => <>);
 
 		-- Compute the intersections of the line with the virtual circle:
 		vi : constant type_intersection_of_line_and_circle := 
@@ -3159,8 +3163,8 @@ package body et_geometry_2 is
 			center		=> center,
 			start_point	=> start_point,
 			end_point	=> origin, -- not determined yet
-			direction	=> get_direction (angle)
-			);
+			direction	=> get_direction (angle),
+			others		=> <>);
 		
 		-- move arc so that its center is at 0/0
 		move_to (arc, origin);
@@ -3481,11 +3485,11 @@ package body et_geometry_2 is
 	begin
 		-- the arc on the left:
 		result (1) := (center => circle_in.center, start_point => PU, 
-						end_point => PL, direction => CCW);
+			end_point => PL, direction => CCW, others => <>);
 
 		-- the arc on the right:
 		result (2) := (center => circle_in.center, start_point => PL,
-						end_point => PU, direction => CCW);			
+			end_point => PU, direction => CCW, others => <>);			
 
 		return result;
 	end split_circle;

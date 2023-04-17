@@ -6,10 +6,12 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---         Bases on the package gtkada.canvas_view written by               --
---         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
+-- Bases on the package gtkada.canvas_view written by                       --
+-- E. Briot, J. Brobecker and A. Charlet, AdaCore                           --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -22,7 +24,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -2168,8 +2169,8 @@ package body pac_canvas is
 		-- CS use function get_intersection with S1, R1, S2, R2 as input
 		-- to compute intersection I.
 		procedure compute_bend_point is 
-			first_line	: constant type_line := (start_point, sup_start);
-			second_line	: constant type_line := (end_point, sup_end);
+			first_line	: constant type_line := (start_point, sup_start, others => <>);
+			second_line	: constant type_line := (end_point, sup_end, others => <>);
 
 			-- first line start vector:
 			S1 : constant type_vector := get_start_vector (first_line);
