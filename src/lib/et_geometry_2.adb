@@ -1384,6 +1384,33 @@ package body et_geometry_2 is
 	
 -- LINE
 
+	function is_selected (
+		line : in type_line)
+		return boolean
+	is begin
+		if line.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+			
+	
+
+	function is_proposed (
+		line : in type_line)
+		return boolean
+	is begin
+		if line.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	
 	function to_string (line : in type_line) return string is begin
 		return 
 			"line: S:" & to_string (line.start_point) 
@@ -2143,6 +2170,32 @@ package body et_geometry_2 is
 
 -- ARC
 
+	function is_selected (
+		arc : in type_arc)
+		return boolean
+	is begin
+		if arc.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+			
+	
+
+	function is_proposed (
+		arc : in type_arc)
+		return boolean
+	is begin
+		if arc.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+	
+	
 	function to_arc_fine (
 		arc : in type_arc)
 		return pac_geometry_1.type_arc_fine
@@ -3439,6 +3492,33 @@ package body et_geometry_2 is
 	
 -- CIRCLE
 
+
+
+	function is_selected (
+		circle : in type_circle)
+		return boolean
+	is begin
+		if circle.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+			
+	
+
+	function is_proposed (
+		circle : in type_circle)
+		return boolean
+	is begin
+		if circle.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+	
 
 	function to_string (circle : in type_circle) return string is begin
 		return

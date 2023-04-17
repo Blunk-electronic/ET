@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS BOARD TRACS                               --
+--                         CANVAS BOARD TRACKS                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

@@ -709,8 +709,19 @@ package et_geometry_2 is
 
 	
 	type type_line is new type_line_base with null record;
+
+
+	function is_selected (
+		line : in type_line)
+		return boolean;
 	
 
+	function is_proposed (
+		line : in type_line)
+		return boolean;
+
+
+	
 	function to_line_fine (
 		line : in type_line)
 		return type_line_fine;
@@ -1067,6 +1078,17 @@ package et_geometry_2 is
 	-- CS use this type wherever a type_arc is declared unnessecarily.
 
 
+	function is_selected (
+		arc : in type_arc)
+		return boolean;
+	
+
+	function is_proposed (
+		arc : in type_arc)
+		return boolean;
+
+
+
 	
 	function to_arc_fine (
 		arc : in type_arc)
@@ -1313,6 +1335,16 @@ package et_geometry_2 is
 	-- CS use this type wherever a type_circle is declared unnessecarily.
 
 
+	function is_selected (
+		circle : in type_circle)
+		return boolean;			
+	
+
+	function is_proposed (
+		circle : in type_circle)
+		return boolean;
+
+	
 	-- Returns the center and radius of the given circle as string.
 	function to_string (circle : in type_circle) return string;
 
