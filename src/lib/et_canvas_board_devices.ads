@@ -103,8 +103,7 @@ package et_canvas_board_devices is
 
 
 	-- This procedure:
-	-- - Clears list of proposed non-electrical devices.
-	-- - Sets global variable selected_non_electrical_device to no_element.
+	-- - Resets all proposed non-electrical devices.
 	-- - resets global variable preliminary_non_electrical_device 
 	--   to its default values
 	procedure reset_preliminary_non_electrical_device;
@@ -114,36 +113,13 @@ package et_canvas_board_devices is
 
 
 
-	
--- NON-ELECTRICAL DEVICES:
-	
-	use pac_devices_non_electric;
-	proposed_non_electrical_devices	: pac_devices_non_electric.map;
-	selected_non_electrical_device	: pac_devices_non_electric.cursor;
-
-	
-	-- Returns true if the given non-electrical device matches the device 
-	-- indicated by cursor "selected_non_electrical_device":
-	function non_electrical_device_is_selected (
-		d : in et_pcb.pac_devices_non_electric.cursor)
-		return boolean;
-
-	
-
-	
-
-	-- Clears the list proposed_non_electrical_devices.
-	-- Resets selected_non_electrical_device to no_element.
-	procedure clear_proposed_non_electrical_devices;
-	
-
-
 	-- Advances to next proposed electrical device and
 	-- selects it. The previous device is deselected:
 	procedure select_electrical_device;
 
-	-- Advances cursor selected_non_electrical_device to next device
-	-- in list proposed_non_electrical_devices:
+	
+	-- Advances to next proposed non-electrical device and
+	-- selects it. The previous device is deselected:
 	procedure select_non_electrical_device;
 	
 
@@ -156,10 +132,10 @@ package et_canvas_board_devices is
 	procedure find_electrical_devices (
 		point : in type_point);
 
-	-- Locates all non-electrical devices in the vicinity of given point.
-	-- If more than one device near point found, then it sets the
-	-- cursor selected_non_electrical_device to the first device and requests
-	-- for clarification.
+	-- Locates all devices in the vicinity of given point.
+	-- Marks the affected devices as "proposed" and marks the the first
+	-- of them as "selected".
+	-- If more than one device found, then it requests for clarification.
 	procedure find_non_electrical_devices (
 		point : in type_point);
 
@@ -215,8 +191,7 @@ package et_canvas_board_devices is
 	-- - If only one device found, then it is rotated immediately.
 	-- - If more than one device found, then clarification is requested.
 	--   No device will be rotated.
-	--   The next call of this procedure rotates the device indicated
-	--   by the cursor selected_electrical_device.
+	--   The next call of this procedure rotates the selected device.
 	-- The rotation is always by 90 degree counter-clockwise:
 	procedure rotate_electrical_device (
 		tool	: in type_tool;
@@ -247,8 +222,7 @@ package et_canvas_board_devices is
 	-- - If only one device found, then it is flipped immediately.
 	-- - If more than one device found, then clarification is requested.
 	--   No device will be flipped.
-	--   The next call of this procedure flips the device indicated
-	--   by the cursor selected_electrical_device.
+	--   The next call of this procedure flips the selected device.
 	procedure flip_electrical_device (
 		tool	: in type_tool;
 		point	: in type_point);
@@ -276,8 +250,7 @@ package et_canvas_board_devices is
 	-- - If only one device found, then it is flipped immediately.
 	-- - If more than one device found, then clarification is requested.
 	--   No device will be flipped.
-	--   The next call of this procedure flips the device indicated
-	--   by the cursor selected_non_electrical_device.
+	--   The next call of this procedure flips the selected device.
 	procedure delete_non_electrical_device (
 		tool	: in type_tool;
 		point	: in type_point);

@@ -1871,7 +1871,7 @@ is
 		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
-			if non_electrical_device_is_selected (device_cursor) then
+			if is_selected (device_cursor) then
 				brightness := BRIGHT;
 
 				-- If a move operation is in progress, then the mouse

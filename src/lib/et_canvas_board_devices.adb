@@ -53,7 +53,8 @@ package body et_canvas_board_devices is
 	use et_canvas_board.pac_canvas;
 	use et_project.modules.pac_generic_modules;
 	use pac_devices_sch;
-
+	use pac_devices_non_electric;
+	
 
 	procedure reset_preliminary_electrical_device is begin
 		preliminary_electrical_device := (others => <>);
@@ -61,44 +62,13 @@ package body et_canvas_board_devices is
 	end reset_preliminary_electrical_device;
 
 
-	
-	
-	function non_electrical_device_is_selected (
-		d : in et_pcb.pac_devices_non_electric.cursor)
-		return boolean
-	is begin
-		-- If there are no selected devices at all, then there is nothing to do:
-		if is_empty (proposed_non_electrical_devices) then
-			return false;
-		else
-			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
-				
-				-- Compare then names of given device and selected_non_electrical_device:
-				if key (d) = key (selected_non_electrical_device) then
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end non_electrical_device_is_selected;
-
 
 	procedure reset_preliminary_non_electrical_device is begin
 		preliminary_non_electrical_device := (others => <>);
-		clear_proposed_non_electrical_devices;
+		reset_proposed_non_electrical_devices (current_active_module, log_threshold + 1);
 	end reset_preliminary_non_electrical_device;
 	
 
-	
-	
-	procedure clear_proposed_non_electrical_devices is begin
-		clear (proposed_non_electrical_devices);
-		selected_non_electrical_device := pac_devices_non_electric.no_element;
-	end clear_proposed_non_electrical_devices;
-	
 
 	
 	procedure select_electrical_device is
@@ -119,20 +89,22 @@ package body et_canvas_board_devices is
 		
 	end select_electrical_device;
 
-	
-	procedure select_non_electrical_device is begin
-		-- On every call of this procedure we must advance from one
-		-- device to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_electrical_device
-		-- moves back to the start of the devices list.
-		if next (selected_non_electrical_device) /= pac_devices_non_electric.no_element then
-			next (selected_non_electrical_device);
-		else
-			selected_non_electrical_device := proposed_non_electrical_devices.first;
-		end if;
 
+
+	
+	procedure select_non_electrical_device is 
+		selected : pac_devices_non_electric.cursor;
+	begin
+		-- On every call of this procedure we advance from one proposed
+		-- device to the next in a circular manner.
+		selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+		
+		deselect_non_electrical_device (current_active_module, selected, log_threshold + 1);
+		next_proposed_non_electrical   (current_active_module, selected, log_threshold + 1);
+		select_non_electrical_device   (current_active_module, selected, log_threshold + 1);
+		
 		-- show the selected device in the status bar
-		set_status ("selected device " & to_string (key (selected_non_electrical_device)) 
+		set_status ("selected non-electrical device " & to_string (key (selected)) 
 			& ". " & status_next_object_clarification);
 		
 	end select_non_electrical_device;
@@ -156,23 +128,15 @@ package body et_canvas_board_devices is
 		log (text => "locating devices ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- Collect all devices in the vicinity of the given point:
-		-- proposed_electrical_devices := get_devices (
-		-- 	module			=> current_active_module,
-		-- 	place			=> point,
-		-- 	catch_zone		=> get_catch_zone,
-		-- 	log_threshold	=> log_threshold + 1);
-
+		-- Propose all devices in the vicinity of the given point:
 		propose_devices (
 			module_cursor	=> current_active_module,
 			place			=> point,
 			catch_zone		=> get_catch_zone,
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
-
 		
-		-- evaluate the number of devices found here:
-		--case length (proposed_electrical_devices) is
+		-- Evaluate the number of devices found here:
 		case count is
 			when 0 =>
 				reset_request_clarification;
@@ -184,6 +148,7 @@ package body et_canvas_board_devices is
 				reset_request_clarification;
 				
 			when others =>
+				-- Preselect the first device among the proposed device:
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 				select_first_proposed;			
@@ -193,37 +158,49 @@ package body et_canvas_board_devices is
 	end find_electrical_devices;
 	
 
+	
+	
 	procedure find_non_electrical_devices (
 		point : in type_point)
-	is begin
+	is 
+		count : natural := 0;
+
+		procedure select_first_proposed is begin
+			select_non_electrical_device (
+				module_cursor	=> current_active_module, 
+				device_cursor	=> get_first_proposed_non_electrical (current_active_module, log_threshold + 1),
+				log_threshold	=> log_threshold + 1);
+			
+		end select_first_proposed;
+		
+	begin
 		log (text => "locating non-electrical devices ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- Collect all units in the vicinity of the given point:
-		proposed_non_electrical_devices := get_devices (
-			module			=> current_active_module,
+		-- Propose all devices in the vicinity of the given point:
+		propose_non_electrical_devices (
+			module_cursor	=> current_active_module,
 			place			=> point,
 			catch_zone		=> get_catch_zone,
+			count			=> count,
 			log_threshold	=> log_threshold + 1);
-
 		
-		-- evaluate the number of devices found here:
-		case length (proposed_non_electrical_devices) is
+		-- Evaluate the number of devices found here:
+		case count is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_non_electrical_device;
 				
 			when 1 =>
 				preliminary_non_electrical_device.ready := true;
-				selected_non_electrical_device := proposed_non_electrical_devices.first;
+				select_first_proposed;
 				reset_request_clarification;
 				
 			when others =>
+				-- Preselect the first device among the proposed device:
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-
-				-- preselect the first device
-				selected_non_electrical_device := proposed_non_electrical_devices.first;
+				select_first_proposed;
 		end case;
 
 		log_indentation_down;
@@ -316,7 +293,7 @@ package body et_canvas_board_devices is
 
 	
 	procedure move_non_electrical_device (
-		tool		: in type_tool;
+		tool	: in type_tool;
 		point	: in type_point)
 	is 
 		-- Assigns the final position after the move to the selected 
@@ -326,18 +303,22 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_non_electrical_device),
+					device_name		=> key (selected),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
@@ -367,10 +348,10 @@ package body et_canvas_board_devices is
 				-- clarification is now pending.
 
 				-- If find_non_electrical_devices has found only one device
-				-- then the flag preliminary_non_electrical_device.read is set true.
+				-- then the flag preliminary_non_electrical_device.ready is set true.
 			else
 				-- Here the clarification procedure ends.
-				-- A device has been selected (indicated by cursor selected_non_electrical_device)
+				-- A device has been selected
 				-- via procedure select_non_electrical_device.
 				-- By setting preliminary_non_electrical_device.ready, the selected
 				-- device will be drawn at the tool position
@@ -475,18 +456,22 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
 				rotate_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_non_electrical_device),
+					device_name		=> key (selected),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
@@ -617,13 +602,17 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
 
-				face := get_face (selected_non_electrical_device);
+			if selected /= pac_devices_non_electric.no_element then
+
+				face := get_face (selected);
 				toggle (face);
 
 				-- Commit the current state of the design:
@@ -631,7 +620,7 @@ package body et_canvas_board_devices is
 				
 				flip_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_non_electrical_device),
+					device_name		=> key (selected),
 					face			=> face,
 					log_threshold	=> log_threshold);
 
@@ -664,7 +653,7 @@ package body et_canvas_board_devices is
 			
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected (indicated by cursor selected_non_electrical_device)
+			-- A device has been selected
 			-- via procedure select_non_electrical_device.
 			reset_request_clarification;
 			finalize;
@@ -684,18 +673,22 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			selected : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing deletion ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_non_electrical_device /= pac_devices_non_electric.no_element then
+			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			
+			if selected /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				delete_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected_non_electrical_device),
+					device_name		=> key (selected),
 					log_threshold	=> log_threshold);
 
 				-- Commit the current state of the design:
@@ -728,7 +721,7 @@ package body et_canvas_board_devices is
 
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected (indicated by cursor selected_non_electrical_device)
+			-- A device has been selected
 			-- via procedure select_non_electrical_device.
 			reset_request_clarification;
 			finalize;

@@ -707,7 +707,7 @@ package body et_board_ops.devices is
 		is
 			dc : pac_devices_non_electric.cursor := device_cursor;
 
-			subtype type_safety_counter is natural range 0 .. natural (module.devices.length);
+			subtype type_safety_counter is natural range 0 .. natural (module.devices_non_electric.length);
 			safety_counter : type_safety_counter := 0;
 			
 		begin
