@@ -274,18 +274,18 @@ package et_canvas_board_tracks is
 	selected_segment : pac_proposed_segments.cursor;
 
 	
-	function to_string (
-		segment_cursor : in pac_proposed_segments.cursor)
-		return string;
+	-- function to_string (
+	-- 	segment_cursor : in pac_proposed_segments.cursor)
+	-- 	return string;
 
 	
 	-- Advances the cursor selected_segment 
 	-- on each call of this procedure.
-	procedure select_track;
+	procedure select_track; -- CS rename to select_segment
 
-	function is_selected (
-		line_cursor	: in pac_conductor_lines.cursor)
-		return boolean;
+	-- function is_selected (
+	-- 	line_cursor	: in pac_conductor_lines.cursor)
+	-- 	return boolean;
 
 
 

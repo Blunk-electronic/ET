@@ -176,6 +176,77 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list;
 
+	
+	-- Sets the proposed-flag of all lines which are
+	-- in the given zone around the given place.
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point; -- x/y
+		layer			: in et_pcb_stack.type_signal_layer;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		count			: in out natural; -- the number of affected devices
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all lines:
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	
+	type type_get_first_line_result is record
+		net		: pac_net_name.bounded_string;
+		line	: pac_conductor_lines.cursor;
+	end record;
+	
+	-- Returns the first proposed line. If no line is proposed
+	-- then the selector "line" in the return is no_element
+	-- and the selector "net" is empty:
+	function get_first_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_get_first_line_result;
+
+
+	-- Advances to the next proposed line, starting at
+	-- the line given by line_cursor. If there are no
+	-- proposed lines, then line_cursor is set to no_element.
+	-- If there is only one proposed line, then line_cursor
+	-- is unchanged.
+	-- CS last_item indicates that the last line has been reached:
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in out pac_conductor_lines.cursor;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level);
+
+
+
+	
+
+	-- Sets the selected-flag of the given line:
+	procedure select_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_conductor_lines.cursor;							
+		log_threshold	: in type_log_level);
+
+	
+	-- Clears the selected-flag of the given line:
+	procedure deselect_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_conductor_lines.cursor;							
+		log_threshold	: in type_log_level);
+
+	
+	-- Returns the first selected line. If no line is proposed
+	-- then the selector "line" in the return is no_element
+	-- and the selector "net" is empty:
+	function get_first_selected_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_get_first_line_result;
 
 
 

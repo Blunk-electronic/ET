@@ -702,9 +702,9 @@ package et_geometry_2 is
 -- LINE
 	
 	type type_line_base is abstract tagged record
-		start_point 	: type_point;
-		end_point   	: type_point;
-		status			: type_object_status;
+		start_point	: type_point;
+		end_point	: type_point;
+		status		: type_object_status;
 	end record;
 
 	

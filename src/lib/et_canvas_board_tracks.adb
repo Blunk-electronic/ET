@@ -70,7 +70,7 @@ with gtk.button;					use gtk.button;
 with et_project.modules;				use et_project.modules;
 with et_canvas_board;
 
-with et_board_ops.conductors;
+with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;
 
 with et_schematic_ops.nets;
@@ -714,112 +714,178 @@ package body et_canvas_board_tracks is
 		preliminary_segment.ready := false;
 		preliminary_segment.tool := MOUSE;
 		clear_proposed_segments;
+		reset_proposed_lines (current_active_module, log_threshold + 1);
 	end reset_preliminary_segment;
 
+ -- 
+	-- function to_string (
+	-- 	segment_cursor : in pac_proposed_segments.cursor)
+	-- 	return string
+	-- is
+	-- 	segment : type_proposed_segment renames element (segment_cursor);
+	-- 	use pac_net_name;
+ -- 
+	-- 	net_name : constant string := to_string ("net " & segment.net_name) & " / ";
+	-- begin
+	-- 	case segment.shape is
+	-- 		when LINE =>
+	-- 			return net_name & to_string (line => segment.line, width => false);
+	-- 				-- no need to show the linewidth
+ -- 
+	-- 		when ARC =>
+	-- 			return net_name & to_string (segment.arc);
+ -- 
+	-- 		when CIRCLE =>
+	-- 			return ""; -- CS
+	-- 			-- return to_string (segment.circle);
+	-- 	end case;
+	-- end to_string;
 
-	function to_string (
-		segment_cursor : in pac_proposed_segments.cursor)
-		return string
-	is
-		segment : type_proposed_segment renames element (segment_cursor);
+
+
+	-- Outputs the selected line in the status bar:
+	procedure show_selected_line (
+		selected			: in et_board_ops.conductors.type_get_first_line_result;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: net ";
 		use pac_net_name;
-
-		net_name : constant string := to_string ("net " & segment.net_name) & " / ";
+		use pac_conductor_lines;
 	begin
-		case segment.shape is
-			when LINE =>
-				return net_name & to_string (line => segment.line, width => false);
-					-- no need to show the linewidth
+		if clarification then
+			set_status (praeamble & to_string (selected.net) -- RESET_N
+				& " / " & to_string (element (selected.line), true) -- start/end point/width/ CS layer
+				& ". " & status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.net) -- RESET_N
+				& " / " & to_string (element (selected.line), true)); -- start/end point/width / CS layer
+		end if;		
+	end show_selected_line;
 
-			when ARC =>
-				return net_name & to_string (segment.arc);
 
-			when CIRCLE =>
-				return ""; -- CS
-				-- return to_string (segment.circle);
-		end case;
-	end to_string;
 
+	
 	
 	procedure select_track is
 		use pac_net_name;
+		use et_board_ops.conductors;
+		selected : type_get_first_line_result;
 	begin
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_segment
 		-- moves back to the start of the list of proposed segments:
-		if next (selected_segment) /= pac_proposed_segments.no_element then
-			next (selected_segment);
-		else
-			selected_segment := proposed_segments.first;
-		end if;
+		-- if next (selected_segment) /= pac_proposed_segments.no_element then
+		-- 	next (selected_segment);
+		-- else
+		-- 	selected_segment := proposed_segments.first;
+		-- end if;
+  -- 
+		-- -- Show information about the selected segment in the status bar:
+		-- set_status ("selected: "
+		-- 	& to_string (selected_segment) & ". "
+		-- 	& status_next_object_clarification);
 
-		-- Show information about the selected segment in the status bar:
-		set_status ("selected: "
-			& to_string (selected_segment) & ". "
-			& status_next_object_clarification);
-		
+
+		selected := get_first_selected_line (current_active_module, log_threshold + 1);
+		deselect_line (current_active_module, selected.line, log_threshold + 1);
+		next_proposed_line (current_active_module, selected.line, log_threshold + 1);
+		select_line (current_active_module, selected.line, log_threshold + 1);
+
+		show_selected_line (selected, clarification => true);
 	end select_track;
 	
 
-	function is_selected (
-		line_cursor	: in pac_conductor_lines.cursor)
-		return boolean
-	is 
-		use pac_conductor_lines;
-	begin
-		if proposed_segments.is_empty then
-			return false;
-		else
-			if selected_segment /= pac_proposed_segments.no_element then
-				declare
-					candidate : type_conductor_line renames element (line_cursor);
-					selected : type_proposed_segment renames element (selected_segment);
-				begin
-					-- CS test selected.shape
-					if selected.line = candidate then
-						return true;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
+	-- function is_selected (
+	-- 	line_cursor	: in pac_conductor_lines.cursor)
+	-- 	return boolean
+	-- is 
+	-- 	use pac_conductor_lines;
+	-- begin
+	-- 	if proposed_segments.is_empty then
+	-- 		return false;
+	-- 	else
+	-- 		if selected_segment /= pac_proposed_segments.no_element then
+	-- 			declare
+	-- 				candidate : type_conductor_line renames element (line_cursor);
+	-- 				selected : type_proposed_segment renames element (selected_segment);
+	-- 			begin
+	-- 				-- CS test selected.shape
+	-- 				if selected.line = candidate then
+	-- 					return true;
+	-- 				else
+	-- 					return false;
+	-- 				end if;
+	-- 			end;
+	-- 		else
+	-- 			return false;
+	-- 		end if;
+	-- 	end if;
+	-- end is_selected;
 
 	
 
 	procedure find_segments (
 	   point : in type_point)
 	is 
-		use pac_conductor_arcs;
+		count_total : natural := 0;
+		
+		-- use pac_conductor_arcs;
 		
 		use et_board_ops.conductors;
 
-		use pac_get_lines_result;
-		lines : pac_get_lines_result.list;
+		-- use pac_get_lines_result;
+		-- lines : pac_get_lines_result.list;
 
 		-- use pac_get_arcs_result;
-		arcs : pac_conductor_arcs.list;
+		-- arcs : pac_conductor_arcs.list;
 		-- circles : pac_conductor_circles.list;
 
-		procedure query_line (c : in pac_get_lines_result.cursor) is begin
-			proposed_segments.append ((
-				net_name	=> element (c).net, -- RESET_N
-				shape		=> LINE,
-				line		=> element (c).line)); -- the segment itself
-		end query_line;
+		
+		-- procedure query_line (c : in pac_get_lines_result.cursor) is begin
+		-- 	proposed_segments.append ((
+		-- 		net_name	=> element (c).net, -- RESET_N
+		-- 		shape		=> LINE,
+		-- 		line		=> element (c).line)); -- the segment itself
+		-- end query_line;
 
 		
 		procedure collect (layer : in type_signal_layer) is 
-			use et_board_ops.conductors;
+			-- use et_board_ops.conductors;
+			count : natural := 0;
 		begin
-			lines := get_lines (current_active_module, layer, point, get_catch_zone, log_threshold + 1);
-			lines.iterate (query_line'access);
-  			-- CS arcs, circles
+			-- lines := get_lines (current_active_module, layer, point, get_catch_zone, log_threshold + 1);
+			-- lines.iterate (query_line'access);
+			-- CS arcs, circles
+
+			propose_lines (current_active_module, point, layer, get_catch_zone, count, log_threshold + 1);
+			count_total := count_total + count;
 		end collect;
+
+
+		procedure select_first_proposed is 
+			--proposed : pac_devices_sch.cursor;
+			proposed : type_get_first_line_result;
+
+			-- use pac_conductor_lines;
+		begin
+			--proposed := get_first_proposed (current_active_module, log_threshold + 1);
+			proposed := get_first_proposed_line (current_active_module, log_threshold + 1);
+
+			-- log (text => "X2 " & to_string (element (proposed.line), true), level => log_threshold + 1);
+			
+			select_line (
+				module_cursor	=> current_active_module, 
+				line_cursor		=> proposed.line,
+				log_threshold	=> log_threshold + 1);
+
+			-- If only one line found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_line (proposed);		
+			end if;
+		end select_first_proposed;
+
+		
 	
 	begin
 		log (text => "locating segments ...", level => log_threshold);
@@ -834,14 +900,16 @@ package body et_canvas_board_tracks is
 
 		
 		-- evaluate the number of segments found here:
-		case proposed_segments.length is
+		--case proposed_segments.length is
+		case count_total is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_segment;
 				
 			when 1 =>
 				preliminary_segment.ready := true;
-				selected_segment := proposed_segments.first;
+				--selected_segment := proposed_segments.first;
+				select_first_proposed;
 				reset_request_clarification;
 				
 			when others =>
@@ -849,7 +917,8 @@ package body et_canvas_board_tracks is
 				set_request_clarification;
 
 				-- preselect the segment
-				selected_segment := proposed_segments.first;
+				-- selected_segment := proposed_segments.first;
+				select_first_proposed;
 		end case;
 		
 		log_indentation_down;
@@ -868,37 +937,45 @@ package body et_canvas_board_tracks is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			use et_board_ops.conductors;
+			selected : type_get_first_line_result;
+
+			use pac_conductor_lines;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_segment /= pac_proposed_segments.no_element then
-				declare
-					use et_board_ops.conductors;
-					segment : type_proposed_segment renames element (selected_segment);
-				begin
+			selected := get_first_selected_line (current_active_module, log_threshold + 1);
+			
+			--if selected_segment /= pac_proposed_segments.no_element then
+			if selected.line /= pac_conductor_lines.no_element then
+				-- declare					
+				-- 	segment : type_proposed_segment renames element (selected_segment);
+				-- begin
 					-- Commit the current state of the design:
 					commit (PRE, verb, noun, log_threshold + 1);
 
-					case segment.shape is
-						when LINE =>
+					-- case segment.shape is
+					-- 	when LINE =>
 							move_line (
 								module_cursor	=> current_active_module,
-								line			=> segment.line,
+								--line			=> segment.line,
+								line			=> element (selected.line),
 								point_of_attack	=> preliminary_segment.point_of_attack,
 								destination		=> point,
 								log_threshold	=> log_threshold);
        
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
+					-- 	when ARC =>
+					-- 		null; -- CS
+     -- 
+					-- 	when CIRCLE =>
+					-- 		null; -- CS
+					-- end case;
 
 					-- Commit the new state of the design:
 					commit (POST, verb, noun, log_threshold + 1);
-				end;
+				-- end;
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;

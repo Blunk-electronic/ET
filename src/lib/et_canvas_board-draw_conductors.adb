@@ -204,7 +204,7 @@ procedure draw_conductors is
 			set_line_width (context.cr, type_view_coordinate (line.width));
 
 			-- If the segment is selected, then it must be drawn highlighted:
-			if is_selected (c) then
+			if is_selected (line) then
 				set_highlight_brightness;
 
 				case verb is

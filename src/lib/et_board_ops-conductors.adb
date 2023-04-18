@@ -49,6 +49,8 @@ with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_device_query_board;			use et_device_query_board;
 
 with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_object_status;
+
 
 
 package body et_board_ops.conductors is
@@ -597,8 +599,501 @@ package body et_board_ops.conductors is
 		log_indentation_down;
 		return result;
 	end get_lines;
+
+
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point; -- x/y
+		layer			: in et_pcb_stack.type_signal_layer;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		count			: in out natural; -- the number of affected devices
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+
+				
+				procedure query_line (
+					line : in out type_conductor_line)
+				is 
+					use et_object_status;
+				begin
+					if line.layer = layer then
+						if in_catch_zone (
+							line	=> line,
+							width	=> line.width,
+							point	=> point,
+							zone	=> catch_zone)
+						then
+							line.status.proposed := true;
+							count := count + 1;
+							log (text => to_string (line, true), level => log_threshold + 2);
+						end if;
+					end if;
+				end query_line;
+
+				
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+				
+				while line_cursor /= pac_conductor_lines.no_element loop
+					net.route.lines.update_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+			
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing lines at" & to_string (point)
+			 & " in signal layer " & to_string (layer)
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		count := 0;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_lines;
+
+		
+
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+
+				procedure query_line (
+					line : in out type_conductor_line)
+				is 
+					use et_object_status;
+				begin
+					line.status.proposed := false;
+					line.status.selected := false;
+				end query_line;
+
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+			begin
+				while line_cursor /= pac_conductor_lines.no_element loop
+					net.route.lines.update_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+			end query_net;
+			
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_lines;
 	
 
+	
+	function get_first_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_get_first_line_result
+	is
+		result : type_get_first_line_result;
+		line_tmp : type_conductor_line;
+
+		proceed : aliased boolean := true;
+		use pac_conductor_lines;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (n : in pac_nets.cursor) is
+				net : type_net renames element (n);
+
+				procedure query_line (l : in pac_conductor_lines.cursor) is
+					use pac_conductor_lines;
+				begin
+					if is_proposed (element (l)) then
+						result.net := key (net_cursor);
+						result.line := l;
+						-- line_tmp := element (l);
+						log (text => "M " & to_string (element (result.line), true), level => log_threshold + 2);
+						proceed := false;  -- no further probing required
+					end if;
+				end query_line;
+				
+			begin
+				log (text => "net " & to_string (key (n)), level => log_threshold + 1);
+				log_indentation_up;
+				-- iterate (net.route.lines, query_line'access, proceed'access);
+				iterate (net.route.lines, query_line'access);
+
+				log (text => "A1 " & to_string (element (result.line), true), level => log_threshold + 2);
+				line_tmp := element (result.line);
+				log (text => "A2 " & to_string (line_tmp, true), level => log_threshold + 2);
+
+				log_indentation_down;
+			end query_net;
+
+			
+		begin
+			-- iterate (module.nets, query_net'access, proceed'access);
+			iterate (module.nets, query_net'access);
+			log (text => "B1 " & to_string (element (result.line), true), level => log_threshold + 2);
+			line_tmp := element (result.line);
+			log (text => "B2 " & to_string (line_tmp, true), level => log_threshold + 2);
+		end query_module;
+
+
+	begin
+		
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"looking up the first proposed line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		log (text => "C " & to_string (element (result.line), true), level => log_threshold + 2);
+		return result;
+	end get_first_proposed_line;
+
+
+
+
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in out pac_conductor_lines.cursor;
+		-- last_item		: in out boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			use et_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			proceed : boolean := true;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				use pac_conductor_lines;
+				lc : pac_conductor_lines.cursor := line_cursor;
+
+				subtype type_safety_counter is natural range 0 .. natural (net.route.lines.length);
+				safety_counter : type_safety_counter := 0;
+
+			begin
+				-- Advance to the next line after the given line:
+				if lc = net.route.lines.last then
+					lc := net.route.lines.first;
+				else
+					next (lc);
+				end if;
+				
+				loop
+					-- Exception is raised in case we get stuck here:
+					safety_counter := safety_counter + 1;
+
+					if is_proposed (element (lc)) then
+						line_cursor := lc;
+						proceed := false; -- abort net iterator (see below)
+						exit; -- no further probing required:
+					else
+						next (lc);
+					end if;
+				end loop;
+			end query_net;
+			
+			
+		begin
+			while net_cursor /= pac_nets.no_element and proceed loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+
+			if proceed then
+				net_cursor := module.nets.first;
+				query_element (net_cursor, query_net'access);
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"advancing to next proposed line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end next_proposed_line;
+
+	
+
+
+	procedure select_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_conductor_lines.cursor;							
+		log_threshold	: in type_log_level)
+	is
+		use pac_conductor_lines;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			proceed : boolean := true;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				lc : pac_conductor_lines.cursor := net.route.lines.first;
+				
+				procedure query_line (
+					line : in out type_conductor_line)
+				is 
+					use et_object_status;
+				begin
+					line.status.selected := true;
+				end query_line;
+
+			begin
+				while lc /= pac_conductor_lines.no_element loop
+					if lc = line_cursor then
+						net.route.lines.update_element (lc, query_line'access);
+						proceed := false; -- aborts the net iterator. see below.
+					end if;
+
+					next (lc);
+				end loop;
+			end query_net;
+				
+
+			net_cursor : pac_nets.cursor := module.nets.first;			
+		begin
+			while net_cursor /= pac_nets.no_element and proceed loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"selecting line " & to_string (element (line_cursor), true), -- log incl. width
+			level => log_threshold);
+
+		-- log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log_indentation_down;
+	end select_line;
+
+
+	
+	procedure deselect_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_conductor_lines.cursor;							
+		log_threshold	: in type_log_level)
+	is
+		use pac_conductor_lines;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			proceed : boolean := true;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				lc : pac_conductor_lines.cursor := net.route.lines.first;
+				
+				procedure query_line (
+					line : in out type_conductor_line)
+				is 
+					use et_object_status;
+				begin
+					line.status.selected := false;
+				end query_line;
+
+			begin
+				while lc /= pac_conductor_lines.no_element loop
+					if lc = line_cursor then
+						net.route.lines.update_element (lc, query_line'access);
+						proceed := false; -- aborts the net iterator. see below.
+					end if;
+
+					next (lc);
+				end loop;
+			end query_net;
+				
+
+			net_cursor : pac_nets.cursor := module.nets.first;			
+		begin
+			while net_cursor /= pac_nets.no_element and proceed loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"deselecting line " & to_string (element (line_cursor), true), -- log incl. width
+			level => log_threshold);
+
+		-- log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log_indentation_down;
+	end deselect_line;
+
+
+	
+	function get_first_selected_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_get_first_line_result
+	is
+		result : type_get_first_line_result;
+
+		proceed : aliased boolean := true;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (n : in pac_nets.cursor) is
+				net : type_net renames element (n);
+
+				procedure query_line (l : in pac_conductor_lines.cursor) is
+					use pac_conductor_lines;
+				begin
+					if is_selected (element (l)) then
+						result.net := key (net_cursor);
+						result.line := l;						
+						proceed := false;  -- no further probing required
+					end if;
+				end query_line;
+				
+			begin
+				iterate (net.route.lines, query_line'access, proceed'access);
+			end query_net;
+
+			
+		begin
+			iterate (module.nets, query_net'access, proceed'access);
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"looking up the first selected line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_selected_line;
+
+
+	
+
+	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
