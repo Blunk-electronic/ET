@@ -57,7 +57,6 @@ package body et_board_ops.conductors is
 
 	use pac_generic_modules;
 	use pac_nets;
-	use pac_conductor_lines;
 	
 
 	function is_freetrack (
@@ -609,13 +608,13 @@ package body et_board_ops.conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+		use pac_conductor_lines;
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
 			proceed : boolean := true;
-
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
