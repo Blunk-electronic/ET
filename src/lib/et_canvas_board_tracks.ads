@@ -241,56 +241,16 @@ package et_canvas_board_tracks is
 	-- Clears preliminary_segment.ready.
 	-- Clears the proposed segments.
 	procedure reset_preliminary_segment;
-	
-
-	-- When segments are proposed, we classify them by their shape:
-	type type_proposed_segment (shape : type_shape) is record
-		net_name : pac_net_name.bounded_string := no_name;
-		
-		case shape is
-			when LINE =>
-				line		: type_conductor_line; -- the line candidate itself
-	
-			when ARC =>
-				arc			: type_conductor_arc;  -- the arc candidate itself
-
-			when CIRCLE =>
-				null; -- CS
-
-		end case;
-	end record;
-
-
-	-- All the proposed segments are collected via a list:
-	package pac_proposed_segments is new indefinite_doubly_linked_lists (type_proposed_segment);
-	use pac_proposed_segments;
-
-	-- Here we store the proposed segments:
-	proposed_segments : pac_proposed_segments.list;
-
-	-- A selected segment among the proposed segments is held here.
-	-- After clarification (among the proposed segments),
-	-- this cursor points to the selected segment candidate:
-	selected_segment : pac_proposed_segments.cursor;
-
-	
-	-- function to_string (
-	-- 	segment_cursor : in pac_proposed_segments.cursor)
-	-- 	return string;
 
 	
 	-- Advances the cursor selected_segment 
 	-- on each call of this procedure.
 	procedure select_track; -- CS rename to select_segment
 
-	-- function is_selected (
-	-- 	line_cursor	: in pac_conductor_lines.cursor)
-	-- 	return boolean;
-
 
 
 	-- Locates segments in the vicinity of the given point
-	-- and stores them in proposed_segments.
+	-- and marks them as "proposed".
 	-- Depending on how many segments have been found, the behaviour is:
 	-- - If only one segment found, then it is selected and 
 	--   the flag preliminary_segment.ready will be set.

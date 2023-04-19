@@ -701,45 +701,13 @@ package body et_canvas_board_tracks is
 		
 
 
-
-	-- Clears the proposed_segments.
-	-- Resets selected_segment:
-	procedure clear_proposed_segments is begin
-		proposed_segments.clear;
-		selected_segment := pac_proposed_segments.no_element;
-	end clear_proposed_segments;
-	
 	
 	procedure reset_preliminary_segment is begin
 		preliminary_segment.ready := false;
 		preliminary_segment.tool := MOUSE;
-		clear_proposed_segments;
 		reset_proposed_lines (current_active_module, log_threshold + 1);
 	end reset_preliminary_segment;
 
- -- 
-	-- function to_string (
-	-- 	segment_cursor : in pac_proposed_segments.cursor)
-	-- 	return string
-	-- is
-	-- 	segment : type_proposed_segment renames element (segment_cursor);
-	-- 	use pac_net_name;
- -- 
-	-- 	net_name : constant string := to_string ("net " & segment.net_name) & " / ";
-	-- begin
-	-- 	case segment.shape is
-	-- 		when LINE =>
-	-- 			return net_name & to_string (line => segment.line, width => false);
-	-- 				-- no need to show the linewidth
- -- 
-	-- 		when ARC =>
-	-- 			return net_name & to_string (segment.arc);
- -- 
-	-- 		when CIRCLE =>
-	-- 			return ""; -- CS
-	-- 			-- return to_string (segment.circle);
-	-- 	end case;
-	-- end to_string;
 
 
 
@@ -754,11 +722,11 @@ package body et_canvas_board_tracks is
 	begin
 		if clarification then
 			set_status (praeamble & to_string (selected.net) -- RESET_N
-				& " / " & to_string (element (selected.line), true) -- start/end point/width/ CS layer
+				& " / " & to_string (element (selected.line), true) -- start/end point/width/layer
 				& ". " & status_next_object_clarification);
 		else
 			set_status (praeamble & to_string (selected.net) -- RESET_N
-				& " / " & to_string (element (selected.line), true)); -- start/end point/width / CS layer
+				& " / " & to_string (element (selected.line), true)); -- start/end point/width/layer
 		end if;		
 	end show_selected_line;
 
@@ -772,20 +740,7 @@ package body et_canvas_board_tracks is
 		selected : type_get_first_line_result;
 	begin
 		-- On every call of this procedure we advance from one
-		-- proposed segment to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_segment
-		-- moves back to the start of the list of proposed segments:
-		-- if next (selected_segment) /= pac_proposed_segments.no_element then
-		-- 	next (selected_segment);
-		-- else
-		-- 	selected_segment := proposed_segments.first;
-		-- end if;
-  -- 
-		-- -- Show information about the selected segment in the status bar:
-		-- set_status ("selected: "
-		-- 	& to_string (selected_segment) & ". "
-		-- 	& status_next_object_clarification);
-
+		-- proposed segment to the next in a circular manner.
 
 		selected := get_first_selected_line (current_active_module, log_threshold + 1);
 		deselect_line (current_active_module, selected.line, log_threshold + 1);
@@ -795,34 +750,6 @@ package body et_canvas_board_tracks is
 		show_selected_line (selected, clarification => true);
 	end select_track;
 	
-
-	-- function is_selected (
-	-- 	line_cursor	: in pac_conductor_lines.cursor)
-	-- 	return boolean
-	-- is 
-	-- 	use pac_conductor_lines;
-	-- begin
-	-- 	if proposed_segments.is_empty then
-	-- 		return false;
-	-- 	else
-	-- 		if selected_segment /= pac_proposed_segments.no_element then
-	-- 			declare
-	-- 				candidate : type_conductor_line renames element (line_cursor);
-	-- 				selected : type_proposed_segment renames element (selected_segment);
-	-- 			begin
-	-- 				-- CS test selected.shape
-	-- 				if selected.line = candidate then
-	-- 					return true;
-	-- 				else
-	-- 					return false;
-	-- 				end if;
-	-- 			end;
-	-- 		else
-	-- 			return false;
-	-- 		end if;
-	-- 	end if;
-	-- end is_selected;
-
 	
 
 	procedure find_segments (
@@ -834,45 +761,20 @@ package body et_canvas_board_tracks is
 		
 		use et_board_ops.conductors;
 
-		-- use pac_get_lines_result;
-		-- lines : pac_get_lines_result.list;
-
-		-- use pac_get_arcs_result;
-		-- arcs : pac_conductor_arcs.list;
-		-- circles : pac_conductor_circles.list;
-
-		
-		-- procedure query_line (c : in pac_get_lines_result.cursor) is begin
-		-- 	proposed_segments.append ((
-		-- 		net_name	=> element (c).net, -- RESET_N
-		-- 		shape		=> LINE,
-		-- 		line		=> element (c).line)); -- the segment itself
-		-- end query_line;
-
 		
 		procedure collect (layer : in type_signal_layer) is 
-			-- use et_board_ops.conductors;
 			count : natural := 0;
 		begin
-			-- lines := get_lines (current_active_module, layer, point, get_catch_zone, log_threshold + 1);
-			-- lines.iterate (query_line'access);
-			-- CS arcs, circles
-
 			propose_lines (current_active_module, point, layer, get_catch_zone, count, log_threshold + 1);
+			-- CS arcs, circles
 			count_total := count_total + count;
 		end collect;
 
 
 		procedure select_first_proposed is 
-			--proposed : pac_devices_sch.cursor;
 			proposed : type_get_first_line_result;
-
-			-- use pac_conductor_lines;
 		begin
-			--proposed := get_first_proposed (current_active_module, log_threshold + 1);
 			proposed := get_first_proposed_line (current_active_module, log_threshold + 1);
-
-			-- log (text => "X2 " & to_string (element (proposed.line), true), level => log_threshold + 1);
 			
 			select_line (
 				module_cursor	=> current_active_module, 
@@ -891,16 +793,13 @@ package body et_canvas_board_tracks is
 		log (text => "locating segments ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all segments in the vicinity of the given point
-		-- and transfer them to the list proposed_segments:
+		-- Collect all segments in the vicinity of the given point:
 		-- CS should depend on enabled signal layer
 		for ly in 1 .. deepest_conductor_layer (current_active_module) loop
 			collect (ly);
 		end loop;
-
 		
 		-- evaluate the number of segments found here:
-		--case proposed_segments.length is
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
@@ -908,7 +807,6 @@ package body et_canvas_board_tracks is
 				
 			when 1 =>
 				preliminary_segment.ready := true;
-				--selected_segment := proposed_segments.first;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -916,8 +814,7 @@ package body et_canvas_board_tracks is
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 
-				-- preselect the segment
-				-- selected_segment := proposed_segments.first;
+				-- preselect the first segment
 				select_first_proposed;
 		end case;
 		
@@ -948,19 +845,15 @@ package body et_canvas_board_tracks is
 
 			selected := get_first_selected_line (current_active_module, log_threshold + 1);
 			
-			--if selected_segment /= pac_proposed_segments.no_element then
 			if selected.line /= pac_conductor_lines.no_element then
-				-- declare					
-				-- 	segment : type_proposed_segment renames element (selected_segment);
-				-- begin
-					-- Commit the current state of the design:
-					commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 
 					-- case segment.shape is
 					-- 	when LINE =>
 							move_line (
 								module_cursor	=> current_active_module,
-								--line			=> segment.line,
 								line			=> element (selected.line),
 								point_of_attack	=> preliminary_segment.point_of_attack,
 								destination		=> point,
@@ -973,9 +866,9 @@ package body et_canvas_board_tracks is
 					-- 		null; -- CS
 					-- end case;
 
-					-- Commit the new state of the design:
-					commit (POST, verb, noun, log_threshold + 1);
-				-- end;
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -1007,8 +900,7 @@ package body et_canvas_board_tracks is
 
 			else
 				-- Here the clarification procedure ends.
-				-- A segment has been selected (indicated by selected_segment)
-				-- via procedure selected_segment.
+				-- A segment has been selected via procedure select_segment.
 				-- By setting preliminary_segment.ready, the selected
 				-- segment will be drawn at the tool position
 				-- when segments are drawn on the canvas.
@@ -1021,7 +913,6 @@ package body et_canvas_board_tracks is
 		else
 			finalize;
 		end if;
-
 	end move_track;
 
 
@@ -1062,43 +953,45 @@ package body et_canvas_board_tracks is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
+			use et_board_ops.conductors;
+			selected : type_get_first_line_result;
+
+			use pac_conductor_lines;
 		begin
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_segment /= pac_proposed_segments.no_element then
+			selected := get_first_selected_line (current_active_module, log_threshold + 1);
+			
+			if selected.line /= pac_conductor_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				declare
-					use et_board_ops.conductors;
-					segment : type_proposed_segment renames element (selected_segment);
-				begin
-					case segment.shape is
-						when LINE =>
+				-- 	case segment.shape is
+				-- 		when LINE =>
 							case ripup_mode is
 								when SINGLE_SEGMENT =>
 									ripup_line_segment (
 										module_cursor	=> current_active_module,
-										net_name		=> segment.net_name,	
-										line			=> segment.line,
+										net_name		=> selected.net,	
+										line			=> element (selected.line),
 										log_threshold	=> log_threshold);
 
 								when WHOLE_NET =>
 									ripup_all_segments (
 										module_cursor	=> current_active_module,
-										net_name		=> segment.net_name,
+										net_name		=> selected.net,
 										log_threshold	=> log_threshold);
 							end case;
        
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
+				-- 		when ARC =>
+				-- 			null; -- CS
+    -- 
+				-- 		when CIRCLE =>
+				-- 			null; -- CS
+				-- 	end case;
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
@@ -1114,36 +1007,27 @@ package body et_canvas_board_tracks is
 		end finalize;
 		
 	begin
-		-- Initially the preliminary_segment is not ready.
-		-- if not preliminary_segment.ready then
-
-			if not clarification_pending then
-				-- Locate all segments in the vicinity of the given point:
-				find_segments (point);
-				
-				-- NOTE: If many segments have been found, then
-				-- clarification is now pending.
-
-				-- If find_segments has found only one segment
-				-- then the flag preliminary_segment.ready is set true.
-
-				if preliminary_segment.ready then
-					finalize;
-				end if;
-			else
-				-- Here the clarification procedure ends.
-				-- A segment has been selected (indicated by selected_segment)
-				-- via procedure select_segment.
-				-- preliminary_segment.ready := true;
-
-				finalize;
-				reset_request_clarification;
-			end if;
+		if not clarification_pending then
+			-- Locate all segments in the vicinity of the given point:
+			find_segments (point);
 			
-		-- else
-		-- 	finalize;
-		-- end if;
+			-- NOTE: If many segments have been found, then
+			-- clarification is now pending.
 
+			-- If find_segments has found only one segment
+			-- then the flag preliminary_segment.ready is set true.
+
+			if preliminary_segment.ready then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- A segment has been selected via procedure select_segment.
+			-- preliminary_segment.ready := true;
+
+			finalize;
+			reset_request_clarification;
+		end if;
 	end ripup;
 
 	
