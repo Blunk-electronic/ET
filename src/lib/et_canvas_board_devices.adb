@@ -46,6 +46,7 @@ with et_device_query_board;			use et_device_query_board;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
+with et_object_status;
 
 
 package body et_canvas_board_devices is
@@ -100,37 +101,39 @@ package body et_canvas_board_devices is
 	
 	
 	procedure select_electrical_device is
+		use et_object_status;
 		use et_schematic;
-		selected : pac_devices_sch.cursor;
+		selected_device : pac_devices_sch.cursor;
 	begin
 		-- On every call of this procedure we advance from one proposed
 		-- device to the next in a circular manner.
-		selected := get_first_selected (current_active_module, log_threshold + 1);
+		selected_device := get_first_device (current_active_module, SELECTED, log_threshold + 1);
 		
-		deselect_device (current_active_module, selected, log_threshold + 1);
-		next_proposed   (current_active_module, selected, log_threshold + 1);
-		select_device   (current_active_module, selected, log_threshold + 1);
+		modify_status (current_active_module, selected_device, (CLEAR, SELECTED), log_threshold + 1);
+		next_proposed_device (current_active_module, selected_device, log_threshold + 1);
+		modify_status (current_active_module, selected_device, (SET, SELECTED), log_threshold + 1);
 		
 		-- Show the selected device in the status bar
-		show_selected_device (name => key (selected), electrical => true, clarification => true);		
+		show_selected_device (name => key (selected_device), electrical => true, clarification => true);		
 	end select_electrical_device;
 
 
 
 	
 	procedure select_non_electrical_device is 
-		selected : pac_devices_non_electric.cursor;
+		selected_device : pac_devices_non_electric.cursor;
+		use et_object_status;
 	begin
 		-- On every call of this procedure we advance from one proposed
 		-- device to the next in a circular manner.
-		selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+		selected_device := get_first_non_electrical_device (current_active_module, SELECTED, log_threshold + 1);
 		
-		deselect_non_electrical_device (current_active_module, selected, log_threshold + 1);
-		next_proposed_non_electrical   (current_active_module, selected, log_threshold + 1);
-		select_non_electrical_device   (current_active_module, selected, log_threshold + 1);
+		modify_status (current_active_module, selected_device, (CLEAR, SELECTED), log_threshold + 1);
+		next_proposed_non_electrical_device (current_active_module, selected_device, log_threshold + 1);
+		modify_status (current_active_module, selected_device, (SET, SELECTED), log_threshold + 1);
 		
 		-- Show the selected device in the status bar
-		show_selected_device (name => key (selected), electrical => false, clarification => true);		
+		show_selected_device (name => key (selected_device), electrical => false, clarification => true);		
 	end select_non_electrical_device;
 
 	
@@ -143,18 +146,16 @@ package body et_canvas_board_devices is
 
 		
 		procedure select_first_proposed is 
-			proposed : pac_devices_sch.cursor;
+			proposed_device : pac_devices_sch.cursor;
+			use et_object_status;
 		begin
-			proposed := get_first_proposed (current_active_module, log_threshold + 1);
-			
-			select_device (
-				module_cursor	=> current_active_module, 
-				device_cursor	=> proposed,
-				log_threshold	=> log_threshold + 1);
+			proposed_device := get_first_device (current_active_module, PROPOSED, log_threshold + 1);
 
+			modify_status (current_active_module, proposed_device, (SET, SELECTED), log_threshold + 1);
+			
 			-- If only one device found, then show its name in the status bar:
 			if count = 1 then
-				show_selected_device (name => key (proposed), electrical => true);		
+				show_selected_device (name => key (proposed_device), electrical => true);		
 			end if;
 		end select_first_proposed;
 		
@@ -202,18 +203,16 @@ package body et_canvas_board_devices is
 
 		
 		procedure select_first_proposed is 
-			proposed : pac_devices_non_electric.cursor;
+			proposed_device : pac_devices_non_electric.cursor;
+			use et_object_status;
 		begin
-			proposed := get_first_proposed_non_electrical (current_active_module, log_threshold + 1);
-			
-			select_non_electrical_device (
-				module_cursor	=> current_active_module, 
-				device_cursor	=> proposed,
-				log_threshold	=> log_threshold + 1);
+			proposed_device := get_first_non_electrical_device (current_active_module, PROPOSED, log_threshold + 1);
 
+			modify_status (current_active_module, proposed_device, (SET, SELECTED), log_threshold + 1);
+			
 			-- If only one device found, then show its name in the status bar:
 			if count = 1 then
-				show_selected_device (name => key (proposed), electrical => false);		
+				show_selected_device (name => key (proposed_device), electrical => false);		
 			end if;
 		end select_first_proposed;
 
@@ -269,22 +268,23 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_sch.cursor;
+			selected_device : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected (current_active_module, log_threshold + 1);
+			selected_device := get_first_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_sch.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
@@ -348,22 +348,23 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_non_electric.cursor;
+			selected_device : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			selected_device := get_first_non_electrical_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_non_electric.no_element then
+			if selected_device /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
 					log_threshold	=> log_threshold);
@@ -431,22 +432,23 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_sch.cursor;
+			selected_device : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected (current_active_module, log_threshold + 1);
+			selected_device := get_first_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_sch.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				rotate_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
@@ -501,22 +503,23 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_non_electric.cursor;
+			selected_device : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			selected_device := get_first_non_electrical_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_non_electric.no_element then
+			if selected_device /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
 				rotate_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
 					log_threshold	=> log_threshold);
@@ -576,17 +579,18 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_sch.cursor;
+			selected_device : pac_devices_sch.cursor;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected (current_active_module, log_threshold + 1);
+			selected_device := get_first_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_sch.no_element then
 
-				face := get_face (selected);
+				face := get_face (selected_device);
 				toggle (face);
 
 				-- Commit the current state of the design:
@@ -594,7 +598,7 @@ package body et_canvas_board_devices is
 				
 				flip_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
 
@@ -647,17 +651,18 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_non_electric.cursor;
+			selected_device : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			selected_device := get_first_non_electrical_device (current_active_module, SELECTED, log_threshold + 1);
 
-			if selected /= pac_devices_non_electric.no_element then
+			if selected_device /= pac_devices_non_electric.no_element then
 
-				face := get_face (selected);
+				face := get_face (selected_device);
 				toggle (face);
 
 				-- Commit the current state of the design:
@@ -665,7 +670,7 @@ package body et_canvas_board_devices is
 				
 				flip_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
 
@@ -718,22 +723,23 @@ package body et_canvas_board_devices is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
-			selected : pac_devices_non_electric.cursor;
+			selected_device : pac_devices_non_electric.cursor;
 		begin
 			log (text => "finalizing deletion ...", level => log_threshold);
 			log_indentation_up;
 
-			selected := get_first_selected_non_electrical (current_active_module, log_threshold + 1);
+			selected_device := get_first_non_electrical_device (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected /= pac_devices_non_electric.no_element then
+			if selected_device /= pac_devices_non_electric.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				delete_device (
 					module_name		=> key (current_active_module),
-					device_name		=> key (selected),
+					device_name		=> key (selected_device),
 					log_threshold	=> log_threshold);
 
 				-- Commit the current state of the design:
