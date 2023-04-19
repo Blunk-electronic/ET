@@ -4,7 +4,7 @@
 --                                                                          --
 --                         OBJECT STATUS FLAGS                              --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2023                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -39,42 +39,23 @@
 -- 
 
 
-package et_object_status is
-
-	type type_proposed is new boolean;
-
-	type type_selected is new boolean;
-
-	type type_moving is new boolean;
-
-	type type_locked is new boolean;
-
-	type type_object_status is record
-		proposed	: type_proposed := false;
-		selected	: type_selected := false;
-		moving		: type_moving := false;
-		locked		: type_locked := false;
-	end record;
-	
-
-	type type_action is (SET, CLEAR);
-
-	type type_flag is (PROPOSED, SELECTED, MOVING, LOCKED);
-
-	type type_status_operation is record
-		action	: type_action;
-		flag	: type_flag;
-	end record;
-
+package body et_object_status is
 
 	function to_string (
 		flag : in type_flag)
-		return string;
+		return string
+	is begin
+		return "flag: " & type_flag'image (flag);
+	end to_string;
 
 	
 	function to_string (
 		operation : in type_status_operation)
-		return string;
+		return string
+	is begin
+		return "operation: " & type_action'image (operation.action)
+			& " " & type_flag'image (operation.flag);
+	end to_string;
 	
 end et_object_status;
 

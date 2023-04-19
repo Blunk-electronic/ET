@@ -65,6 +65,8 @@ with et_devices;					use et_devices;
 with et_design_rules;				use et_design_rules;
 
 with et_exceptions;					use et_exceptions;
+with et_object_status;				use et_object_status;
+
 
 
 package et_board_ops is

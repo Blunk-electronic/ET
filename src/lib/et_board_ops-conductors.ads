@@ -176,6 +176,16 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list;
 
+
+
+	-- Modifies that status flag of a line (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_conductor_lines.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place.
@@ -198,14 +208,16 @@ package et_board_ops.conductors is
 	
 	type type_get_first_line_result is record
 		net		: pac_net_name.bounded_string;
-		line	: pac_conductor_lines.cursor;
+		cursor	: pac_conductor_lines.cursor;
 	end record;
 	
-	-- Returns the first proposed line. If no line is proposed
+	-- Returns the first line according to the given flag.
+	-- If no line is has been found,
 	-- then the selector "line" in the return is no_element
 	-- and the selector "net" is empty:
-	function get_first_proposed_line (
+	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
 		return type_get_first_line_result;
 
@@ -221,33 +233,6 @@ package et_board_ops.conductors is
 		line_cursor		: in out pac_conductor_lines.cursor;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
-
-
-
-	
-
-	-- Sets the selected-flag of the given line:
-	procedure select_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_conductor_lines.cursor;							
-		log_threshold	: in type_log_level);
-
-	
-	-- Clears the selected-flag of the given line:
-	procedure deselect_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_conductor_lines.cursor;							
-		log_threshold	: in type_log_level);
-
-	
-	-- Returns the first selected line. If no line is proposed
-	-- then the selector "line" in the return is no_element
-	-- and the selector "net" is empty:
-	function get_first_selected_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return type_get_first_line_result;
-
 
 
 	
