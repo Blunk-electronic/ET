@@ -206,9 +206,9 @@ package et_board_ops.conductors is
 
 
 	
-	type type_get_first_line_result is record
-		net		: pac_net_name.bounded_string;
-		cursor	: pac_conductor_lines.cursor;
+	type type_get_first_line_result is record -- CS rename to type_line_segment ?
+		net_cursor	: pac_nets.cursor;
+		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 	
 	-- Returns the first line according to the given flag.
@@ -230,7 +230,8 @@ package et_board_ops.conductors is
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in out pac_conductor_lines.cursor;
+		--line_cursor		: in out pac_conductor_lines.cursor;
+		line			: in out type_get_first_line_result;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 

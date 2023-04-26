@@ -865,16 +865,16 @@ package body et_board_ops.conductors is
 					case flag is
 						when PROPOSED =>
 							if is_proposed (element (l)) then
-								result.net := net_name;
-								result.cursor := l;
+								result.net_cursor := net_cursor;
+								result.line_cursor := l;
 								-- log (text => "M " & to_string (element (result.cursor), true), level => log_threshold + 2);
 								proceed := false;  -- no further probing required
 							end if;
 
 						when SELECTED =>
 							if is_selected (element (l)) then
-								result.net := net_name;
-								result.cursor := l;
+								result.net_cursor := net_cursor;
+								result.line_cursor := l;
 								-- log (text => "M " & to_string (element (result.cursor), true), level => log_threshold + 2);
 								proceed := false;  -- no further probing required
 							end if;
@@ -926,7 +926,8 @@ package body et_board_ops.conductors is
 
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in out pac_conductor_lines.cursor;
+		-- line_cursor		: in out pac_conductor_lines.cursor;
+		line			: in out type_get_first_line_result;
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -936,7 +937,9 @@ package body et_board_ops.conductors is
 			module		: in type_module) 
 		is
 			use et_nets;
-			net_cursor : pac_nets.cursor := module.nets.first;
+			--net_cursor : pac_nets.cursor := module.nets.first;
+			--net_cursor : pac_nets.cursor := module.nets.find (line.net);
+			net_cursor : pac_nets.cursor := line.net_cursor;
 			
 			proceed : boolean := true;
 
@@ -946,7 +949,7 @@ package body et_board_ops.conductors is
 				net			: in type_net)
 			is
 				use pac_conductor_lines;
-				lc : pac_conductor_lines.cursor := line_cursor;
+				lc : pac_conductor_lines.cursor := line.line_cursor;
 
 				subtype type_safety_counter is natural range 0 .. natural (net.route.lines.length);
 				safety_counter : type_safety_counter := 0;
@@ -964,7 +967,7 @@ package body et_board_ops.conductors is
 					safety_counter := safety_counter + 1;
 
 					if is_proposed (element (lc)) then
-						line_cursor := lc;
+						line.line_cursor := lc;
 						proceed := false; -- abort net iterator (see below)
 						exit; -- no further probing required:
 					else
@@ -975,6 +978,7 @@ package body et_board_ops.conductors is
 			
 			
 		begin
+			
 			while net_cursor /= pac_nets.no_element and proceed loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
@@ -982,7 +986,12 @@ package body et_board_ops.conductors is
 
 			if proceed then
 				net_cursor := module.nets.first;
-				query_element (net_cursor, query_net'access);
+
+				while net_cursor /= pac_nets.no_element and proceed loop
+					query_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+
 			end if;
 		end query_module;
 		

@@ -73,6 +73,7 @@ with et_canvas_board;
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;
 
+with et_nets;
 with et_schematic_ops.nets;
 
 with et_display;						use et_display;
@@ -714,20 +715,22 @@ package body et_canvas_board_tracks is
 
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected			: in et_board_ops.conductors.type_get_first_line_result;
+		selected		: in et_board_ops.conductors.type_get_first_line_result;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: net ";
 		use pac_net_name;
+		use et_nets;
+		use pac_nets;
 		use pac_conductor_lines;
 	begin
 		if clarification then
-			set_status (praeamble & to_string (selected.net) -- RESET_N
-				& " / " & to_string (element (selected.cursor), true) -- start/end point/width/layer
+			set_status (praeamble & to_string (key (selected.net_cursor)) -- RESET_N
+				& " / " & to_string (element (selected.line_cursor), true) -- start/end point/width/layer
 				& ". " & status_next_object_clarification);
 		else
-			set_status (praeamble & to_string (selected.net) -- RESET_N
-				& " / " & to_string (element (selected.cursor), true)); -- start/end point/width/layer
+			set_status (praeamble & to_string (key (selected.net_cursor)) -- RESET_N
+				& " / " & to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
 		end if;		
 	end show_selected_line;
 
@@ -750,16 +753,16 @@ package body et_canvas_board_tracks is
 		modify_status (
 			module_cursor	=> current_active_module, 
 			operation		=> (CLEAR, SELECTED),
-			line_cursor		=> selected_line.cursor, 
+			line_cursor		=> selected_line.line_cursor, 
 			log_threshold	=> log_threshold + 1);
 		
-		next_proposed_line (current_active_module, selected_line.cursor, log_threshold + 1);
+		next_proposed_line (current_active_module, selected_line, log_threshold + 1);
 		
 		-- select_line (current_active_module, selected_line.line, log_threshold + 1);
 		modify_status (
 			module_cursor	=> current_active_module, 
 			operation		=> (SET, SELECTED),
-			line_cursor		=> selected_line.cursor, 
+			line_cursor		=> selected_line.line_cursor, 
 			log_threshold	=> log_threshold + 1);
 		
 		show_selected_line (selected_line, clarification => true);
@@ -799,7 +802,7 @@ package body et_canvas_board_tracks is
 
 			modify_status (
 				module_cursor	=> current_active_module, 
-				line_cursor		=> proposed_line.cursor, 
+				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
 				log_threshold	=> log_threshold + 1);
 			
@@ -869,7 +872,7 @@ package body et_canvas_board_tracks is
 
 			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected_line.cursor /= pac_conductor_lines.no_element then
+			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -878,7 +881,7 @@ package body et_canvas_board_tracks is
 					-- 	when LINE =>
 							move_line (
 								module_cursor	=> current_active_module,
-								line			=> element (selected_line.cursor),
+								line			=> element (selected_line.line_cursor),
 								point_of_attack	=> preliminary_segment.point_of_attack,
 								destination		=> point,
 								log_threshold	=> log_threshold);
@@ -983,13 +986,16 @@ package body et_canvas_board_tracks is
 
 			use pac_conductor_lines;
 			use et_object_status;
+
+			use et_nets;
+			use pac_nets;
 		begin
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
 			
-			if selected_line.cursor /= pac_conductor_lines.no_element then
+			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1000,14 +1006,14 @@ package body et_canvas_board_tracks is
 								when SINGLE_SEGMENT =>
 									ripup_line_segment (
 										module_cursor	=> current_active_module,
-										net_name		=> selected_line.net,	
-										line			=> element (selected_line.cursor),
+										net_name		=> key (selected_line.net_cursor),
+										line			=> element (selected_line.line_cursor),
 										log_threshold	=> log_threshold);
 
 								when WHOLE_NET =>
 									ripup_all_segments (
 										module_cursor	=> current_active_module,
-										net_name		=> selected_line.net,
+										net_name		=> key (selected_line.net_cursor),
 										log_threshold	=> log_threshold);
 							end case;
        
