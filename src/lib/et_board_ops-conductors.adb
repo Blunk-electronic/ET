@@ -926,7 +926,6 @@ package body et_board_ops.conductors is
 
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		-- line_cursor		: in out pac_conductor_lines.cursor;
 		line			: in out type_get_first_line_result;
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
@@ -934,64 +933,110 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_module)
 		is
 			use et_nets;
-			--net_cursor : pac_nets.cursor := module.nets.first;
-			--net_cursor : pac_nets.cursor := module.nets.find (line.net);
-			net_cursor : pac_nets.cursor := line.net_cursor;
-			
+
+			-- The serach for the next proposed line starts at the
+			-- given line. This flag is used to initiate the search:
+			init : boolean := true;
+
+			-- This flag indicates that a proposed line has been found
+			-- while probing the lines of a net. If a proposed line
+			-- has been found, then it is cleared so that the search
+			-- procedure is cancelled:
 			proceed : boolean := true;
 
+			-- A temporarily cursor that points to the net being
+			-- searched in. The search starts with the given net:
+			nc : pac_nets.cursor := line.net_cursor;
+			
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
 				use pac_conductor_lines;
-				lc : pac_conductor_lines.cursor := line.line_cursor;
-
-				subtype type_safety_counter is natural range 0 .. natural (net.route.lines.length);
-				safety_counter : type_safety_counter := 0;
-
+				-- A temporarily cursor that points to the
+				-- line segment being probed:
+				lc : pac_conductor_lines.cursor;
 			begin
-				-- Advance to the next line after the given line:
-				if lc = net.route.lines.last then
-					lc := net.route.lines.first;
-				else
-					next (lc);
-				end if;
-				
-				loop
-					-- Exception is raised in case we get stuck here:
-					safety_counter := safety_counter + 1;
+				-- The first call of this procedure addresses the GIVEN
+				-- net. Inside this net we start probing the lines
+				-- at the GIVEN line.
+				if init then
+					lc := line.line_cursor; -- go to given line
+					init := false;
 
-					if is_proposed (element (lc)) then
-						line.line_cursor := lc;
-						proceed := false; -- abort net iterator (see below)
-						exit; -- no further probing required:
-					else
+					-- If the given line is not the last one, then
+					-- advance to the next line after the given line.
+					-- If the given line is the last, then do nothing:
+					if lc /= net.route.lines.last then
 						next (lc);
+
+						-- Iterate the lines starting at the GIVEN line
+						-- until the last line. Cancel the iteration
+						-- if the candidate line is proposed and set
+						-- the given line accordingly:
+						while lc /= pac_conductor_lines.no_element loop
+							if is_proposed (element (lc)) then
+								line.line_cursor := lc;
+								line.net_cursor := nc;
+								proceed := false; -- abort net iterator (see below)
+								exit; -- no further probing required:
+							else
+								next (lc);
+							end if;
+						end loop;
 					end if;
-				end loop;
+					
+				else
+				-- For all further calls of this procedure:
+				-- Iterate the lines of the net starting at the first line.
+				-- Cancel the iteration if the candidate line is proposed and set
+				-- the given line accordingly:
+					lc := net.route.lines.first;
+
+					while lc /= pac_conductor_lines.no_element loop
+						if is_proposed (element (lc)) then
+							line.line_cursor := lc;
+							line.net_cursor := nc;
+							proceed := false; -- abort net iterator (see below)
+							exit; -- no further probing required:
+						else
+							next (lc);
+						end if;
+					end loop;					
+				end if;				
 			end query_net;
 			
 			
-		begin
-			
-			while net_cursor /= pac_nets.no_element and proceed loop
-				query_element (net_cursor, query_net'access);
-				next (net_cursor);
+		begin -- query_module
+
+			-- Query the nets one by one until the last net.
+			-- Start at the GIVEN net. The iteration is cancelled once 
+			-- the proceed-flag is cleared by procedure query_net:
+			while nc /= pac_nets.no_element and proceed loop
+				query_element (nc, query_net'access);
+				next (nc);
 			end loop;
 
+			-- If proceed is still true, means no proposed line has been found
+			-- so far, then restart the search at the FIRST net.
 			if proceed then
-				net_cursor := module.nets.first;
+				nc := module.nets.first;
 
-				while net_cursor /= pac_nets.no_element and proceed loop
-					query_element (net_cursor, query_net'access);
-					next (net_cursor);
+				-- Query the nets one by one until the last net.
+				while nc /= pac_nets.no_element and proceed loop
+					query_element (nc, query_net'access);
+					next (nc);
 				end loop;
 
+				-- If proceed ist still true, then set all
+				-- selectors of line to no_element:
+				if proceed then
+					line := (others => <>);
+				end if;
 			end if;
 		end query_module;
 		

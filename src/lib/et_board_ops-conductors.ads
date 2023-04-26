@@ -223,14 +223,13 @@ package et_board_ops.conductors is
 
 
 	-- Advances to the next proposed line, starting at
-	-- the line given by line_cursor. If there are no
-	-- proposed lines, then line_cursor is set to no_element.
-	-- If there is only one proposed line, then line_cursor
-	-- is unchanged.
+	-- the given line. Traverses through line segments and nets
+	-- in a circular manner. If there are no
+	-- proposed lines, then line assumes default values (no_element).
+	-- If there is only one proposed line, then line is unchanged.
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		--line_cursor		: in out pac_conductor_lines.cursor;
 		line			: in out type_get_first_line_result;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
