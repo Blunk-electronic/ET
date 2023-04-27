@@ -839,9 +839,9 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return type_get_first_line_result
+		return type_line_segment
 	is
-		result : type_get_first_line_result;
+		result : type_line_segment;
 
 		use pac_conductor_lines;
 		
@@ -926,7 +926,7 @@ package body et_board_ops.conductors is
 
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_get_first_line_result;
+		line			: in out type_line_segment;
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is

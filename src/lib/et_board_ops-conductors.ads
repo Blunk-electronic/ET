@@ -206,7 +206,7 @@ package et_board_ops.conductors is
 
 
 	
-	type type_get_first_line_result is record -- CS rename to type_line_segment ?
+	type type_line_segment is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
@@ -219,7 +219,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return type_get_first_line_result;
+		return type_line_segment;
 
 
 	-- Advances to the next proposed line, starting at
@@ -230,7 +230,7 @@ package et_board_ops.conductors is
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_get_first_line_result;
+		line			: in out type_line_segment;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
