@@ -62,6 +62,12 @@ package et_assy_doc is
 		width	: type_linewidth;
 	end record;
 
+	
+	function to_string (
+		line	: in type_doc_line)
+		return string;
+
+	
 	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
 	use pac_doc_lines;
 

@@ -67,6 +67,31 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return pac_doc_lines.list;
 						   
+
+	-- Modifies that status flag of a line (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_doc_lines.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the proposed-flag of all lines which are
+	-- in the given zone around the given place.
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point; -- x/y
+		face			: in type_face;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all lines:
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;

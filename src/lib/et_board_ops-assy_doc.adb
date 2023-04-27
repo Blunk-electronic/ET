@@ -155,6 +155,263 @@ package body et_board_ops.assy_doc is
 		return result;
 	end get_lines;
 
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_doc_lines.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+
+			
+			procedure query_line (
+				line	: in out type_doc_line)
+			is begin
+				case operation.flag is
+					when SELECTED =>
+						case operation.action is
+							when SET =>
+								line.status.selected := true;
+
+							when CLEAR =>
+								line.status.selected := false;
+						end case;
+
+					when PROPOSED =>
+						case operation.action is
+							when SET =>
+								line.status.proposed := true;
+
+							when CLEAR =>
+								line.status.proposed := false;
+						end case;
+
+					when others =>
+						null; -- CS
+				end case;							
+			end query_line;
+
+			
+			lc : pac_doc_lines.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_doc_lines.no_element loop
+						if lc = line_cursor then
+							top.update_element (lc, query_line'access);
+							exit;					
+						end if;
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_doc_lines.no_element loop
+						if lc = line_cursor then
+							bottom.update_element (lc, query_line'access);
+							exit;					
+						end if;
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+
+			if lc = pac_doc_lines.no_element then
+				query_bottom;
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " modifying status of "
+			& to_string (element (line_cursor))
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point; -- x/y
+		face			: in type_face;
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			lc : pac_doc_lines.cursor;
+
+			procedure query_line (
+				line	: in out type_doc_line)
+			is 
+				use et_object_status;
+			begin
+				if in_catch_zone (
+					line	=> line,
+					width	=> line.width,
+					point	=> point,
+					zone	=> catch_zone)
+				then
+					line.status.proposed := true;
+					count := count + 1;
+					log (text => to_string (line), level => log_threshold + 1);
+				end if;
+			end query_line;
+
+			
+			procedure query_top is 
+				top : pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_doc_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is 
+				bottom : pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+			begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_doc_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing lines at" & to_string (point)
+			 & " face " & to_string (face)
+			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		count := 0;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_lines;
+
+
+
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+
+			
+			procedure query_line (
+				line	: in out type_doc_line)
+			is 
+				use et_object_status;
+			begin
+				line.status.selected := false;
+				line.status.proposed := false;
+			end query_line;
+
+			
+			lc : pac_doc_lines.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_doc_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_doc_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+
+			if lc = pac_doc_lines.no_element then
+				query_bottom;
+			end if;
+		end query_module;
+
+
+		
+	begin
+		log (text => "resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_lines;
+
 	
 	
 	procedure move_line (

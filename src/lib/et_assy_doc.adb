@@ -41,6 +41,15 @@ with ada.strings;	 			use ada.strings;
 
 package body et_assy_doc is
 
+	function to_string (
+		line	: in type_doc_line)
+		return string
+	is begin
+		return to_string (type_line (line)) & " / width " & to_string (line.width);
+	end to_string;
+
+
+	
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;
 		axis	: in type_axis_2d := Y)

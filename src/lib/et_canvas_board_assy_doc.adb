@@ -48,6 +48,7 @@ with et_logging;						use et_logging;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
+with et_object_status;
 
 
 package body et_canvas_board_assy_doc is
