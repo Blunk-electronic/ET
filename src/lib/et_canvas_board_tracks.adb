@@ -41,8 +41,6 @@
 with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
---with ada.characters;				use ada.characters;
---with ada.characters.handling;		use ada.characters.handling;
 
 with ada.containers;
 
@@ -794,11 +792,6 @@ package body et_canvas_board_tracks is
 			use et_object_status;
 		begin
 			proposed_line := get_first_line (current_active_module, PROPOSED, log_threshold + 1);
-			
-			-- select_line (
-			-- 	module_cursor	=> current_active_module, 
-			-- 	line_cursor		=> proposed.line,
-			-- 	log_threshold	=> log_threshold + 1);
 
 			modify_status (
 				module_cursor	=> current_active_module, 
