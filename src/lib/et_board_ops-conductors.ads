@@ -195,7 +195,7 @@ package et_board_ops.conductors is
 		point			: in type_point; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
-		count			: in out natural; -- the number of affected devices
+		count			: in out natural; -- the number of affected lines
 		log_threshold	: in type_log_level);
 
 
