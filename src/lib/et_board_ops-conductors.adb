@@ -867,7 +867,6 @@ package body et_board_ops.conductors is
 							if is_proposed (element (l)) then
 								result.net_cursor := net_cursor;
 								result.line_cursor := l;
-								-- log (text => "M " & to_string (element (result.cursor), true), level => log_threshold + 2);
 								proceed := false;  -- no further probing required
 							end if;
 
@@ -875,7 +874,6 @@ package body et_board_ops.conductors is
 							if is_selected (element (l)) then
 								result.net_cursor := net_cursor;
 								result.line_cursor := l;
-								-- log (text => "M " & to_string (element (result.cursor), true), level => log_threshold + 2);
 								proceed := false;  -- no further probing required
 							end if;
 
@@ -888,7 +886,6 @@ package body et_board_ops.conductors is
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
 				log_indentation_up;
 				iterate (net.route.lines, query_line'access);
-				--log (text => "A1 " & to_string (element (result.cursor), true), level => log_threshold + 2);
 				log_indentation_down;
 			end query_net;
 
@@ -898,8 +895,6 @@ package body et_board_ops.conductors is
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
-			
-			--log (text => "B1 " & to_string (element (result.cursor), true), level => log_threshold + 2);
 		end query_module;
 
 

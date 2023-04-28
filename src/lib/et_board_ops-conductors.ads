@@ -213,7 +213,7 @@ package et_board_ops.conductors is
 	end record;
 	
 	-- Returns the first line according to the given flag.
-	-- If no line is has been found,
+	-- If no line has been found,
 	-- then the selector "line" in the return is no_element
 	-- and the selector "net" is empty:
 	function get_first_line (
