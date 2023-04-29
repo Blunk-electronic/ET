@@ -92,6 +92,35 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+
+	type type_line_segment is record
+		face	: type_face;
+		cursor	: pac_doc_lines.cursor;
+	end record;
+	
+	-- Returns the first line according to the given flag.
+	-- If no line has been found, then the return is no_element:
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_line_segment;
+
+
+	-- Advances to the next proposed line, starting at
+	-- the given line. Traverses through the lines
+	-- in a circular manner. If there are no
+	-- proposed lines, then line assumes default value (no_element).
+	-- If there is only one proposed line, then line is unchanged.
+	-- CS last_item indicates that the last line has been reached:
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out type_line_segment;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level);
+
+	
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;

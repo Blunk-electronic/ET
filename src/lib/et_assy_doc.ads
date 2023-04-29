@@ -71,6 +71,29 @@ package et_assy_doc is
 	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
 	use pac_doc_lines;
 
+
+	-- Iterates the lines.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lines	: in pac_doc_lines.list;
+		process	: not null access procedure (position : in pac_doc_lines.cursor);
+		proceed	: not null access boolean);
+
+	-- CS likewise iteratator for arcs and circles
+
+	-- Returns true if the "proposed-flag" of the given line is set:
+	function is_proposed (
+		line_cursor	: in pac_doc_lines.cursor)
+		return boolean;
+
+	
+	-- Returns true if the "selected-flag" of the given line is set:
+	function is_selected (
+		line_cursor	: in pac_doc_lines.cursor)
+		return boolean;
+
+
+	
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;

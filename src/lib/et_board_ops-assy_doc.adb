@@ -413,6 +413,197 @@ package body et_board_ops.assy_doc is
 	end reset_proposed_lines;
 
 	
+
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_line_segment
+	is
+		result : type_line_segment;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+
+			
+			procedure query_line (c : in pac_doc_lines.cursor) is
+				line : type_doc_line renames element (c);
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if line.status.proposed then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if line.status.selected then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_line;
+			
+
+			
+		begin
+			-- Query the objects in the top layer first:
+			iterate (top_items, query_line'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_line'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, error:
+			if proceed then
+				raise constraint_error; -- CS
+			end if;
+		end query_module;
+
+			
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"looking up the first line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_line;
+
+
+
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out type_line_segment;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module)
+		is
+			top_items 		: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+			
+			proceed : boolean := true;
+		
+			
+			procedure query_items (
+				items			: in pac_doc_lines.list;
+				start_at_first	: in boolean := false) 
+			is 
+				c : pac_doc_lines.cursor;
+				do_iterate : boolean := false;
+			begin
+				-- If there are no items, then nothing to do.
+				if not items.is_empty then
+					
+					-- Preset the cursor:
+					if start_at_first then
+						c := items.first; -- begin of list
+						do_iterate := true;
+					else
+						c := line.cursor; -- forward to the position given by caller
+						
+						-- Advance to the next item after the given item:
+						if c /= items.last then
+							next (c);
+							do_iterate := true;
+						end if;
+					end if;
+
+
+					if do_iterate then
+						while c /= pac_doc_lines.no_element loop
+							if is_proposed (c) then
+								line.cursor := c;
+								proceed := false;
+								exit; -- no further probing required
+							end if;
+							
+							next (c);						
+						end loop;
+					end if;
+				end if;
+			end query_items;
+
+			
+		begin
+			case line.face is
+				when TOP =>
+					query_items (top_items);
+
+					-- If nothing found, start searching the bottom items:
+					if proceed then
+						query_items (bottom_items, start_at_first => true);
+					end if;
+
+					-- If still nothing found, search the top items from the begining:
+					if proceed then
+						query_items (top_items, start_at_first => true);
+					end if;
+
+					
+				when BOTTOM =>
+					query_items (bottom_items);
+
+					-- If nothing found, start searching the top items:
+					if proceed then
+						query_items (top_items, start_at_first => true);
+					end if;
+
+					-- If still nothing found, search the bottom items from the begining:
+					if proceed then
+						query_items (bottom_items, start_at_first => true);
+					end if;
+				
+			end case;
+
+
+			-- If still nothing found, error:
+			if proceed then
+				raise constraint_error; -- CS
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"advancing to next proposed line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end next_proposed_line;
+
+	
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
