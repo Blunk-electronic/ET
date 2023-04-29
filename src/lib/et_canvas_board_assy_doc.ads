@@ -127,10 +127,10 @@ package et_canvas_board_assy_doc is
 	
 	-- Returns true if the given object matches the object indicated
 	-- by cursor selected_object (see above):
-	function is_selected (
-		line_cursor	: in pac_doc_lines.cursor;
-		face		: in type_face)
-		return boolean;
+	-- function is_selected (
+	-- 	line_cursor	: in pac_doc_lines.cursor;
+	-- 	face		: in type_face)
+	-- 	return boolean;
 
 	function is_selected (
 		arc_cursor	: in pac_doc_arcs.cursor;

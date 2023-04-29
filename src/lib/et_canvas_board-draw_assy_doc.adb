@@ -79,7 +79,8 @@ is
 	begin
 		set_line_width (context.cr, type_view_coordinate (line.width));
 
-		if is_selected (c, face) then
+		--if is_selected (c, face) then
+		if is_selected (c) then
 			set_highlight_brightness;
 
 			case verb is
