@@ -59,7 +59,7 @@ package body et_canvas_board_assy_doc is
 	procedure reset_preliminary_object is begin
 		preliminary_object.ready := false;
 		preliminary_object.tool := MOUSE;
-		clear_proposed_objects;
+		reset_proposed_lines (current_active_module, log_threshold + 1);
 	end reset_preliminary_object;
 
 
@@ -67,132 +67,6 @@ package body et_canvas_board_assy_doc is
 	use pac_doc_arcs;
 	use pac_doc_circles;
 
-	
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	-- function is_selected (
-	-- 	line_cursor	: in pac_doc_lines.cursor;
-	-- 	face		: in type_face)
-	-- 	return boolean
-	-- is begin
-	-- 	if proposed_objects.is_empty then
-	-- 		return false;
-	-- 	else
-	-- 		if selected_object /= pac_proposed_objects.no_element then
-	-- 			declare
-	-- 				candidate : type_doc_line renames element (line_cursor);
-	-- 				selected : type_proposed_object renames element (selected_object);
-	-- 			begin
-	-- 				if selected.line_face = face then
-	-- 					-- CS test selected.shape
-	-- 					if candidate = selected.line then
-	-- 						return true;
-	-- 					else
-	-- 						return false;
-	-- 					end if;
-	-- 				else
-	-- 					return false;
-	-- 				end if;
-	-- 			end;
-	-- 		else
-	-- 			return false;
-	-- 		end if;
-	-- 	end if;
-	-- end is_selected;
-	
-
-	function is_selected (
-		arc_cursor	: in pac_doc_arcs.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_doc_arc renames element (arc_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					if selected.arc_face = face then
-						-- CS test selected.shape						
-						if candidate = selected.arc then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	function is_selected (
-		circle_cursor	: in pac_doc_circles.cursor;
-		face			: in type_face)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_doc_circle renames element (circle_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					if selected.circle_face = face then
-						-- CS test selected.shape
-						if candidate = selected.circle then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-	
-	
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects is begin
-		proposed_objects.clear;
-		selected_object := pac_proposed_objects.no_element;
-	end clear_proposed_objects;
-
-
-	function get_position (
-		object_cursor : in pac_proposed_objects.cursor)
-		return string
-	is
-		object : type_proposed_object renames element (object_cursor);
-		separator : constant string := ", ";
-	begin
-		case object.shape is
-			when LINE =>
-				return keyword_face & to_string (object.line_face) & separator
-					& to_string (object.line);
-
-			when ARC =>
-				return keyword_face & to_string (object.arc_face) & separator
-					& to_string (object.arc);
-				
-			when CIRCLE =>
-				return keyword_face & to_string (object.circle_face) & separator
-					& to_string (object.circle);
-		end case;
-	end get_position;
 
 	
 	-- Outputs the selected line in the status bar:
@@ -413,34 +287,34 @@ package body et_canvas_board_assy_doc is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use et_object_status;
 
+			selected_line : type_line_segment;
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_object /= pac_proposed_objects.no_element then
+			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+
+			if selected_line.cursor /= pac_doc_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				declare
-					object : type_proposed_object renames element (selected_object);
-				begin
-					case object.shape is
-						when LINE =>
+					-- case object.shape is
+						-- when LINE =>
 							delete (
 								module_cursor	=> current_active_module,
-								face			=> object.line_face,
-								line			=> object.line,
+								face			=> selected_line.face,
+								line			=> element (selected_line.cursor),
 								log_threshold	=> log_threshold);
 
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
+					-- 	when ARC =>
+					-- 		null; -- CS
+     -- 
+					-- 	when CIRCLE =>
+					-- 		null; -- CS
+					-- end case;
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
@@ -471,7 +345,7 @@ package body et_canvas_board_assy_doc is
 			end if;
 		else
 			-- Here the clarification procedure ends.
-			-- An object has been selected (indicated by selected_object)
+			-- An object has been selected
 			-- via procedure selected_object.
 
 			finalize;

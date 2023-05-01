@@ -120,6 +120,18 @@ package et_assy_doc is
 	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
 	use pac_doc_arcs;
 
+
+	-- Returns true if the "proposed-flag" of the given arcis set:
+	function is_proposed (
+		arc_cursor	: in pac_doc_arcs.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given arc is set:
+	function is_selected (
+		arc_cursor	: in pac_doc_arcs.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
@@ -148,6 +160,18 @@ package et_assy_doc is
 	use pac_doc_circles;
 	
 
+
+	-- Returns true if the "proposed-flag" of the given circle is set:
+	function is_proposed (
+		circle_cursor	: in pac_doc_circles.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given circle is set:
+	function is_selected (
+		circle_cursor	: in pac_doc_circles.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_doc_circles.list;

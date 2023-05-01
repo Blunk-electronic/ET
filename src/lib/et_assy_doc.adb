@@ -149,7 +149,36 @@ package body et_assy_doc is
 
 
 
+	function is_proposed (
+		arc_cursor	: in pac_doc_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
 
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		arc_cursor	: in pac_doc_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
+	
+
+	
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
 		axis	: in type_axis_2d := Y)
@@ -208,6 +237,32 @@ package body et_assy_doc is
 
 
 
+	function is_proposed (
+		circle_cursor	: in pac_doc_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		circle_cursor	: in pac_doc_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
 
 
 	procedure mirror_circles (

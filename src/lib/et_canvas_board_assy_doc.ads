@@ -6,7 +6,9 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2023                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -89,70 +90,6 @@ package et_canvas_board_assy_doc is
 	-- Clears preliminary_object.ready.
 	-- Clears the proposed objects.
 	procedure reset_preliminary_object;
-
-	
-	-- When objects are proposed, we classify them by
-	-- their shape and face:
-	type type_proposed_object (shape : type_shape) is record
-		case shape is
-			when LINE =>
-				line_face	: type_face;
-				line		: type_doc_line; -- the line candidate itself
-	
-			when ARC =>
-				arc_face	: type_face;
-				arc			: type_doc_arc;  -- the arc candidate itself
-
-			when CIRCLE =>
-				circle_face	: type_face;
-				circle		: type_doc_circle;  -- the circle candidate itself
-
-		end case;
-	end record;
-
-
-	-- All the proposed objects are collected via a list:
-	package pac_proposed_objects is new indefinite_doubly_linked_lists (type_proposed_object);
-	use pac_proposed_objects;
-
-	-- Here we store the proposed objects:
-	proposed_objects : pac_proposed_objects.list;
-
-	-- A selected object among the proposed objects is held here.
-	-- After clarification (among the proposed objects),
-	-- this cursor points to the selected object candidate:
-	selected_object : pac_proposed_objects.cursor;
-	
-	
-	
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	-- function is_selected (
-	-- 	line_cursor	: in pac_doc_lines.cursor;
-	-- 	face		: in type_face)
-	-- 	return boolean;
-
-	function is_selected (
-		arc_cursor	: in pac_doc_arcs.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		circle_cursor	: in pac_doc_circles.cursor;
-		face			: in type_face)
-		return boolean;
-	
-	
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects;
-
-
-	-- Returns the positions of (start, end, center) of the given proposed 
-	-- object as string:
-	function get_position (
-		object_cursor : in pac_proposed_objects.cursor)
-		return string;
 
 	
 
