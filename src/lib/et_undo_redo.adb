@@ -267,7 +267,7 @@ package body et_undo_redo is
 
 
 				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOP | NOUN_ROUTE_RESTRICT |
-					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC => -- CS others ?
+					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC | NOUN_TEXT => -- CS others ?
 					case verb is
 						when VERB_DRAW | VERB_MOVE | VERB_DELETE =>
 							commit_board;

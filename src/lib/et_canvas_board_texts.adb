@@ -85,6 +85,10 @@ with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 
+with et_undo_redo;
+with et_commit;
+with et_object_status;
+
 
 package body et_canvas_board_texts is
 
@@ -1003,12 +1007,18 @@ package body et_canvas_board_texts is
 			use et_board_ops.silkscreen;
 			use et_board_ops.stop_mask;
 			use et_board_ops.conductors;
-			
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
 			if selected_text /= pac_proposed_texts.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
 				declare
 					text : type_proposed_text renames element (selected_text);
 				begin
@@ -1056,6 +1066,10 @@ package body et_canvas_board_texts is
 	
 					end case;
 				end;
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
