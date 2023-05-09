@@ -225,6 +225,10 @@ package body et_undo_redo is
 		begin -- query_module
 			increment (module.commit_index);	
 
+			log (text => "commit index " 
+				 & type_commit_index_zero_based'image (module.commit_index),
+				 level => lth + 1);
+			
 			case noun is
 				when NOUN_NET =>
 					case verb is
