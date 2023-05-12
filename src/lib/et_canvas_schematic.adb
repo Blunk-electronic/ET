@@ -42,6 +42,9 @@ with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
 with ada.exceptions;				use ada.exceptions;
 
+with ada.calendar;					use ada.calendar;
+with ada.calendar.formatting;		use ada.calendar.formatting;
+
 with et_pcb_coordinates;
 with et_terminals;
 with et_devices;					use et_devices;
@@ -458,7 +461,8 @@ package body et_canvas_schematic is
 		
 		use et_display.schematic;
 	begin
--- 		put_line ("draw internal ...");
+		put_line ("draw internal schematic " & image (clock));
+		
 -- 		shift_area (self, area_shifted, cursor_main);
 -- 		shift_area (self, offset, cursor_main);
 

@@ -43,6 +43,9 @@ with ada.directories;
 with ada.exceptions;				use ada.exceptions;
 with ada.containers;
 
+with ada.calendar;					use ada.calendar;
+with ada.calendar.formatting;		use ada.calendar.formatting;
+
 with gtk.window;					use gtk.window;
 
 
@@ -718,6 +721,8 @@ package body et_canvas_board is
 
 		
 	begin -- draw_internal
+		put_line ("draw internal board " & image (clock));
+		
 		frame_height := self.get_frame_height;
 
 		-- The given area must be shifted (left and up) by the position
@@ -734,7 +739,6 @@ package body et_canvas_board is
 
 
 		
--- 		put_line ("draw internal ...");
 		
 		set_color_background (context.cr, et_colors.no_opacity);
 		paint (context.cr);

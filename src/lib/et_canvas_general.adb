@@ -782,6 +782,8 @@ package body pac_canvas is
 
 		
 	begin
+		put_line ("refresh");
+		
 		if area = no_area then
 			a := canvas.get_visible_area;
 		else
@@ -804,6 +806,8 @@ package body pac_canvas is
 	is
 		x1, y1, x2, y2 : gdouble;
 	begin
+		put_line ("on_view_draw");
+		
 		-- Set the global context:
 		context.cr := cr;		
 		
