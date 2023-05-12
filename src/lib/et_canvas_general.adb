@@ -755,75 +755,72 @@ package body pac_canvas is
 	end;
 
 	
-	procedure set_transform (
-		self	: not null access type_view'class;
-		cr		: cairo.cairo_context)
-	is
-		model_p : type_model_point; -- := model_origin;
-		view_p  : type_view_point;
-	begin
-		-- compute a view point according to current model point:
-		view_p := self.model_to_view (model_p);
 
-		-- Set the CTM so that following draw operations are relative
-		-- to the current view point:
-		translate (cr, view_p.x, view_p.y);
-
-		-- Set the CTM so that following draw operations are scaled
-		-- according to the scale factor of the view:
-		--cairo.scale (cr, self.scale, self.scale);
-		cairo.scale (cr, global_scale, global_scale);
-	end set_transform;
 
 	
 	procedure refresh (
-		self : not null access type_view'class;
-		cr   : cairo.cairo_context;
 		area : type_bounding_box := no_area)
 	is
 		a : type_bounding_box;
+
+
+		procedure set_transform is
+			model_p : type_model_point; -- := model_origin;
+			view_p  : type_view_point;
+		begin
+			-- compute a view point according to current model point:
+			view_p := canvas.model_to_view (model_p);
+
+			-- Set the CTM so that following draw operations are relative
+			-- to the current view point:
+			translate (context.cr, view_p.x, view_p.y);
+
+			-- Set the CTM so that following draw operations are scaled
+			-- according to the scale factor of the view:
+			cairo.scale (context.cr, global_scale, global_scale);
+		end set_transform;
+
+		
 	begin
 		if area = no_area then
-			a := self.get_visible_area;
+			a := canvas.get_visible_area;
 		else
 			a := area;
 		end if;
-
-		--  gdk already clears the exposed area to the background color, so
-		--  we do not need to clear ourselves.
-
-		context := (
-			cr		=> cr,
-			layout	=> self.layout,
-			view	=> type_view_ptr (self));
 	
-		save (cr);
-		self.set_transform (cr);
-		self.draw_internal (a);
-		restore (cr);
+
+		save (context.cr);
+		set_transform;
+		canvas.draw_internal (a);
+		restore (context.cr);
 	end refresh;
+
 
 	
 	function on_view_draw (
 		view	: system.address; 
 		cr		: cairo_context) 
-	return gboolean is		
+		return gboolean 
+	is
 		x1, y1, x2, y2 : gdouble;
 	begin
-		clip_extents (cr, x1, y1, x2, y2);
+		-- Set the global context:
+		context.cr := cr;		
+		
+		clip_extents (context.cr, x1, y1, x2, y2);
 
 		if x2 < x1 or else y2 < y1 then
-			canvas.refresh (cr);
+			refresh;
 		else
-			canvas.refresh (cr, canvas.view_to_model ((x1, y1, x2 - x1, y2 - y1)));
+			refresh (canvas.view_to_model ((x1, y1, x2 - x1, y2 - y1)));
 		end if;
 
 		return 1;
 
-	exception
-		when e : others =>
-			process_exception (e);
-			return 0;
+		exception
+			when e : others =>
+				process_exception (e);
+				return 0;
 	end on_view_draw;
 
 	

@@ -542,19 +542,14 @@ package pac_canvas is
 
 	
 	-- The cairo context to perform the actual drawing.
-	-- NOTE: The final drawing is performed in the view (hence in view coordinates):
 	type type_draw_context is record
 		cr     : cairo.cairo_context := cairo.null_context;
-		layout : pango.layout.pango_layout := null; -- CS for displaying text. not used yet
-		view   : type_view_ptr := null;
+		-- layout : pango.layout.pango_layout := null; -- CS for displaying text. not used yet
 	end record;
 
 -- 	procedure layout_changed (self : not null access type_model'class);
 
-	
-	procedure set_transform (
-		self	: not null access type_view'class;
-		cr		: cairo.cairo_context);
+
 
 	
 	-- Returns the position of the pointer in the drawing:
