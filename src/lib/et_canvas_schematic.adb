@@ -461,7 +461,7 @@ package body et_canvas_schematic is
 		
 		use et_display.schematic;
 	begin
-		put_line ("draw internal schematic " & image (clock));
+		-- put_line ("draw internal schematic " & image (clock));
 		
 -- 		shift_area (self, area_shifted, cursor_main);
 -- 		shift_area (self, offset, cursor_main);

@@ -721,7 +721,7 @@ package body et_canvas_board is
 
 		
 	begin -- draw_internal
-		put_line ("draw internal board " & image (clock));
+		-- put_line ("draw internal board " & image (clock));
 		
 		frame_height := self.get_frame_height;
 

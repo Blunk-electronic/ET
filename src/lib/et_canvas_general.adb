@@ -45,6 +45,9 @@ with ada.strings;					use ada.strings;
 with ada.strings.fixed;				use ada.strings.fixed;
 with ada.numerics;
 
+with ada.calendar;					use ada.calendar;
+with ada.calendar.formatting;		use ada.calendar.formatting;
+
 with interfaces.c.strings;			use interfaces.c.strings;
 with gnat.strings;					use gnat.strings;
 
@@ -782,7 +785,7 @@ package body pac_canvas is
 
 		
 	begin
-		put_line ("refresh");
+		-- put_line ("refresh");
 		
 		if area = no_area then
 			a := canvas.get_visible_area;
@@ -806,7 +809,7 @@ package body pac_canvas is
 	is
 		x1, y1, x2, y2 : gdouble;
 	begin
-		put_line ("on_view_draw");
+		put_line ("on_view_draw " & image (clock));
 		
 		-- Set the global context:
 		context.cr := cr;		
@@ -865,20 +868,20 @@ package body pac_canvas is
 	end on_view_realize;
 
 	
-	procedure on_layout_changed_for_view (view : not null access gobject_record'class) is
-		alloc : gtk_allocation;
-	begin
-		canvas.get_allocation (alloc);
-
-		--  on_adjustments_set will be called anyway when size_allocate is called
-		--  so no need to call it now if the size is unknown yet.
-
-		if alloc.width > 1 then
-			canvas.set_adjustment_values;
-			canvas.queue_draw;
-		end if;
-
-	end on_layout_changed_for_view;
+	-- procedure on_layout_changed_for_view (view : not null access gobject_record'class) is
+	-- 	alloc : gtk_allocation;
+	-- begin
+	-- 	canvas.get_allocation (alloc);
+ -- 
+	-- 	--  on_adjustments_set will be called anyway when size_allocate is called
+	-- 	--  so no need to call it now if the size is unknown yet.
+ -- 
+	-- 	if alloc.width > 1 then
+	-- 		canvas.set_adjustment_values;
+	-- 		canvas.queue_draw;
+	-- 	end if;
+ -- 
+	-- end on_layout_changed_for_view;
 
 
 	procedure viewport_changed (self : not null access type_view'class) is begin
@@ -1425,7 +1428,7 @@ package body pac_canvas is
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: gdk_key_type := event.keyval;
 	begin
--- 		put_line ("key pressed");
+		put_line ("key pressed " & image (clock));
 -- 		new_line;
 -- 		put_line (gdk_key_type'image (key));
 --		put_line (gdk_modifier_type'image (key_ctrl));
@@ -1486,7 +1489,7 @@ package body pac_canvas is
 					canvas.update_coordinates_display;
 					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
-
+					
 				when GDK_Left =>
 					canvas.move_cursor (LEFT, cursor_main);
 					canvas.update_coordinates_display;
