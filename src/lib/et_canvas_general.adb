@@ -190,7 +190,7 @@ package body pac_canvas is
 	is
 
 		-- This is required in order to propagate the key-pressed event further.
-		result : boolean; -- to be returned. Indicates that the event has been handled.
+		result : boolean := false; -- to be returned. Indicates that the event has been handled.
 
 		-- Make a pointer to the main window:
 		current_window : constant gtk_window := gtk_window (self);
@@ -200,7 +200,7 @@ package body pac_canvas is
 		
 		key : gdk_key_type := event.keyval;
 	begin
-		--put_line ("top level key pressed");
+		-- put_line ("top level key pressed");
 		
 		case key is
 
@@ -230,11 +230,11 @@ package body pac_canvas is
 
 		end case;
 
--- 		if result = true then
--- 			put_line ("got handled");
--- 		else
--- 			put_line ("not handled");
--- 		end if;
+		-- if result = true then
+		-- 	put_line ("  handled");
+		-- else
+		-- 	put_line ("  not handled");
+		-- end if;
 		
 		return result;
 	end on_key_event;
@@ -1427,8 +1427,25 @@ package body pac_canvas is
 		key_ctrl	: gdk_modifier_type := event.state and control_mask;
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: gdk_key_type := event.keyval;
+
+
+		procedure iter is 
+			i : boolean;
+		begin
+			canvas.update_coordinates_display;
+			
+			-- put_line ("level " & guint'image (main_level));
+			while gtk.main.events_pending loop
+				put_line ("events pending");
+				i := main_iteration;
+			end loop;
+
+			canvas.queue_draw; -- without frame and grid initialization
+			event_handled := true;
+		end iter;
+		
 	begin
-		put_line ("key pressed " & image (clock));
+		-- put_line ("key pressed " & image (clock));
 -- 		new_line;
 -- 		put_line (gdk_key_type'image (key));
 --		put_line (gdk_modifier_type'image (key_ctrl));
@@ -1486,28 +1503,21 @@ package body pac_canvas is
 
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
-					canvas.update_coordinates_display;
-					canvas.queue_draw; -- without frame and grid initialization
-					event_handled := true;
+					iter;
 					
 				when GDK_Left =>
 					canvas.move_cursor (LEFT, cursor_main);
-					canvas.update_coordinates_display;
-					canvas.queue_draw; -- without frame and grid initialization
-					event_handled := true;
+					iter;
 					
 				when GDK_Up =>
 					canvas.move_cursor (UP, cursor_main);
-					canvas.update_coordinates_display;
-					canvas.queue_draw; -- without frame and grid initialization
-					event_handled := true;
+					iter;
 					
 				when GDK_Down =>
 					canvas.move_cursor (DOWN, cursor_main);
-					canvas.update_coordinates_display;
-					canvas.queue_draw; -- without frame and grid initialization
-					event_handled := true;
-
+					iter;
+					
+					
 				-- Some keys are reserved. Nothing happens if they are pressed:
 				-- - CTRL and Shift for scrolling zoom and scrolling (right/left).
 				-- - Tab to navigate in the GUI
@@ -1581,7 +1591,7 @@ package body pac_canvas is
 				or button2_motion_mask
 				or button3_motion_mask
 				or pointer_motion_mask -- whenever the mouse is being moved inside the canvas
-				-- key_press_mask -- no need
+				-- or key_press_mask -- no need
 			);
 
 		-- reaction to mouse movements in the canvas
